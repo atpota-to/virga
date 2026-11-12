@@ -204,6 +204,7 @@
 }
 
 .an-tableview-scroll {
+  position: relative;
   max-height: 18rem;
   margin-top: var(--space-2);
   overflow: auto;

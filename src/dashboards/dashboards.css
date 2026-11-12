@@ -38,6 +38,7 @@
 /* ---- a card on the grid ---------------------------------------------- */
 
 .widget {
+  container: widget / inline-size;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -86,13 +87,20 @@
   }
 }
 
-@media (max-width: 520px) {
-  .widget--stat .stat-window {
+/* A small figure card drops the window label (the header says the period)
+   and steps its number down, so the label beside it isn't cut short. */
+@container widget (max-width: 250px) {
+  .stat-window {
     display: none;
   }
 
-  .widget--stat .stat-value {
+  .stat-value {
     font-size: var(--text-xl);
+  }
+
+  .widget-edit {
+    margin-left: calc(var(--card-pad) * -1 + 4px);
+    margin-right: calc(var(--card-pad) * -1 + 4px);
   }
 }
 
@@ -232,27 +240,26 @@
   cursor: grabbing;
 }
 
-.widget-edit-name {
-  visibility: hidden;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--accent-ink);
-  font-size: var(--text-xs);
-  font-weight: 620;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .widget-edit .btn--icon.btn--sm {
   width: 26px;
 }
 
+/* The controls take what room there is and wrap onto a second line on a
+   small card, rather than spilling out of it. */
 .widget-edit-tools {
   display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px 4px;
+  min-width: 0;
+}
+
+.widget-edit-actions {
+  display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 2px;
 }
 
 .widget-edit .segmented {
@@ -331,6 +338,13 @@
 .stat-sub {
   color: var(--muted);
   font-size: var(--text-sm);
+}
+
+.stat-sub-info {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
 }
 
 .stat .sparkline {

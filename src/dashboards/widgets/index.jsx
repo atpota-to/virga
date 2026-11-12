@@ -16,6 +16,7 @@ import SeriesChart from '../../charts/SeriesChart.jsx';
 import Sparkline from '../../charts/Sparkline.jsx';
 import { fmtFigure, fmtRate, unitNoun } from '../../charts/format.js';
 import Delta from '../../components/Delta.jsx';
+import { FollowerCountTip } from '../../components/InfoTip.jsx';
 import Segmented from '../../components/Segmented.jsx';
 import { movingAverage } from '../../lib/analytics.js';
 import { Link } from '../../lib/router.jsx';
@@ -80,15 +81,26 @@ export function Stat({ icon: Icon, label, window, value, delta, deltaTitle, sub,
 
 function StatFollowers({ archive, period, nowMs, def }) {
   const m = followersModel(archive, period, nowMs);
+  // The profile's own counter leads: it is the number people know. What can
+  // actually be listed (what every chart counts) sits under it, explained.
+  const lead = m.profileCount ?? m.total;
+  const differs = m.profileCount != null && m.profileCount !== m.total;
   return (
     <Stat
       icon={def.icon}
       label="Followers"
       to={def.href}
       window="Now"
-      value={fmtFigure(m.total)}
+      value={fmtFigure(lead)}
       delta={<span className="delta is-up" title={`New in ${periodPhrase(period)}`}>+{m.gained.toLocaleString('en-US')}</span>}
-      sub={m.profileCount != null ? `${m.profileCount.toLocaleString('en-US')} on your profile` : null}
+      sub={
+        differs ? (
+          <span className="stat-sub-info">
+            {m.total.toLocaleString('en-US')} can be listed
+            <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
+          </span>
+        ) : null
+      }
       spark={m.cumulative.map((p) => p.v)}
     />
   );

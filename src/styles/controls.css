@@ -156,6 +156,7 @@
 
 /* A track with its keys in it; the pressed key is lifted onto a white chip. */
 .segmented {
+  position: relative;
   display: inline-flex;
   max-width: 100%;
   padding: 3px;
@@ -741,7 +742,10 @@ input[type='radio'] {
 
 /* ---- tables ------------------------------------------------------- */
 
+/* Positioned, so the screen-reader-only labels inside a scrolling table
+   (absolutely positioned) are held by it, rather than widening the page. */
 .table-scroll {
+  position: relative;
   overflow-x: auto;
 }
 
@@ -885,5 +889,72 @@ input[type='radio'] {
   }
   to {
     transform: translateX(300%);
+  }
+}
+
+/* ---- info tip ------------------------------------------------------ */
+
+.info-tip {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.info-tip-button {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin: -2px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: help;
+}
+
+@media (hover: hover) {
+  .info-tip-button:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+}
+
+.info-tip-pop {
+  position: absolute;
+  z-index: 45;
+  top: calc(100% + 6px);
+  left: -10px;
+  width: min(280px, calc(100vw - 32px));
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: #101828;
+  color: #e7eaf0;
+  font-size: var(--text-xs);
+  font-weight: 450;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+
+/* Out of the layout until it's open, so a closed one never widens the page. */
+.info-tip:not(:hover):not(:focus-within):not([data-open]) .info-tip-pop {
+  display: none;
+}
+
+
+:root[data-theme='dark'] .info-tip-pop {
+  background: #e7eaf0;
+  color: #101828;
+}
+
+@media (pointer: coarse) {
+  .info-tip-button {
+    width: 32px;
+    height: 32px;
+    margin: -8px -6px;
   }
 }

@@ -320,7 +320,6 @@ function WidgetFrame({
           >
             <GripVertical size={16} aria-hidden="true" />
           </button>
-          <span className="widget-edit-name">{def.name}</span>
           <div className="widget-edit-tools">
             {def.sizes.length > 1 && (
               <div className="segmented segmented--sm" role="group" aria-label={`Size of ${def.name}`}>
@@ -339,6 +338,7 @@ function WidgetFrame({
                 ))}
               </div>
             )}
+            <span className="widget-edit-actions">
             <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} earlier`} title="Move earlier" disabled={index === 0} onClick={() => onMove(index - 1)}>
               <ChevronLeft size={15} aria-hidden="true" />
             </Button>
@@ -348,6 +348,7 @@ function WidgetFrame({
             <Button variant="ghost" size="sm" icon className="widget-remove" aria-label={`Remove ${def.name}`} title="Remove" onClick={onRemove}>
               <X size={15} aria-hidden="true" />
             </Button>
+            </span>
           </div>
         </div>
       )}

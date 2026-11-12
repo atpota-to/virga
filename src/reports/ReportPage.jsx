@@ -24,6 +24,7 @@ import { fmtFigure, fmtRate, unitLabel, unitNoun } from '../charts/format.js';
 import Button from '../components/Button.jsx';
 import Delta from '../components/Delta.jsx';
 import Figures from '../components/Figures.jsx';
+import { FollowerCountTip } from '../components/InfoTip.jsx';
 import Menu from '../components/Menu.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
@@ -269,7 +270,7 @@ export function ReportsIndex() {
     const pe = peopleModel(archive, period, nowMs);
     const a = atmosphereModel(archive, period, nowMs);
     return {
-      followers: [fmtFigure(f.total), `+${f.gained.toLocaleString('en-US')} in ${periodPhrase(period)}`],
+      followers: [fmtFigure(f.profileCount ?? f.total), `+${f.gained.toLocaleString('en-US')} in ${periodPhrase(period)}`],
       blocks: b ? [fmtFigure(b.total), `blocked by, +${b.received.toLocaleString('en-US')} in ${periodPhrase(period)}`] : ['—', 'read at the next sync'],
       posts: [fmtFigure(p.count), `posts in ${periodPhrase(period)}`],
       engagement: [fmtFigure(e.total), `received in ${periodPhrase(period)}`],
@@ -373,7 +374,14 @@ function FollowersReport({ archive, period, nowMs }) {
       <Figures
         label="Followers in figures"
         items={[
-          fig('Followers', m.total, { sub: m.counterGap ? `${m.profileCount.toLocaleString('en-US')} on your profile` : null }),
+          fig('Followers', m.profileCount ?? m.total, {
+            sub: m.counterGap ? (
+              <span className="fig-note">
+                {m.total.toLocaleString('en-US')} can be listed
+                <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
+              </span>
+            ) : null,
+          }),
           fig(period.days ? `New in ${periodPhrase(period)}` : 'Gained, all time', m.gained, {
             delta: period.days ? m.compare.pct : undefined,
             deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
