@@ -5,8 +5,13 @@ import {
   clearAllSessionDrafts,
   clearAutosave,
   collectPreviewUrls,
+  countSetAside,
   createAutosaver,
   deserializeComposerState,
+  forgetSessionDrafts,
+  MAX_SET_ASIDE,
+  setAside,
+  takeSetAside,
   hasAutosaveContent,
   loadSessionDraft,
   previewUrlIsHeld,
@@ -492,5 +497,100 @@ describe('session drafts', () => {
     expect(previewUrlIsHeld('blob:kept', live)).toBe(true);
     expect(previewUrlIsHeld('blob:card', live)).toBe(true);
     expect(previewUrlIsHeld('blob:gone', live)).toBe(false);
+  });
+});
+
+describe('the timer choice and posts set aside', () => {
+  it('keep whether the writer chose the timer, in both layers', () => {
+    const store = memoryStore();
+    const s = state({ posts: [post({ text: 'keep it' })] });
+    writeAutosave(ALICE, s, { store, now: NOW, lifespanTouched: true });
+    expect(readAutosave(ALICE, { store, now: NOW }).lifespanTouched).toBe(true);
+    writeAutosave(ALICE, s, { store, now: NOW });
+    expect(readAutosave(ALICE, { store, now: NOW }).lifespanTouched).toBeUndefined();
+    saveSessionDraft(ALICE, s, { now: NOW, lifespanTouched: true });
+    expect(loadSessionDraft(ALICE)).toEqual({ state: s, savedAt: NOW, lifespanTouched: true });
+  });
+
+  it('passes the timer choice through the debounced writer', () => {
+    const store = memoryStore();
+    const timers = [];
+    const autosave = createAutosaver({
+      store,
+      now: () => NOW,
+      setTimer: (fn) => timers.push(fn),
+      clearTimer: () => {},
+      target: null,
+      doc: null,
+    });
+    autosave.save(ALICE, state({ posts: [post({ text: 'x' })] }), { lifespanTouched: true });
+    autosave.flush();
+    expect(readAutosave(ALICE, { store, now: NOW }).lifespanTouched).toBe(true);
+  });
+
+  it('set a post aside without touching the one being written, and give it back once', () => {
+    const store = memoryStore();
+    writeAutosave(ALICE, state({ posts: [post({ text: 'current' })] }), { store, now: NOW });
+    const id = setAside(ALICE, state({ posts: [post({ text: 'the essay' })] }), { store, now: NOW, lifespanTouched: true });
+    expect(id).toBeTruthy();
+    expect(countSetAside(ALICE, { store, now: NOW })).toBe(1);
+    expect(readAutosave(ALICE, { store, now: NOW }).state.posts[0].text).toBe('current');
+
+    const back = takeSetAside(ALICE, { store, now: NOW });
+    expect(back.state.posts[0].text).toBe('the essay');
+    expect(back.inMemory).toBe(true);
+    expect(back.lifespanTouched).toBe(true);
+    expect(countSetAside(ALICE, { store, now: NOW })).toBe(0);
+    expect(takeSetAside(ALICE, { store, now: NOW })).toBeNull();
+  });
+
+  it('bring a set-aside post back after a reload, from storage', () => {
+    const store = memoryStore();
+    const id = setAside(ALICE, state({ posts: [post({ text: 'after reload' })] }), { store, now: NOW });
+    clearAllSessionDrafts(); // the tab closed
+    const back = takeSetAside(ALICE, { id, store, now: NOW + 1000, base: state({ langs: ['fr'] }) });
+    expect(back.inMemory).toBe(false);
+    expect(back.state.posts[0].text).toBe('after reload');
+    expect(store.data.has(autosaveKey(ALICE))).toBe(false);
+  });
+
+  it('survive the post being written being cleared, emptied or replaced', () => {
+    const store = memoryStore();
+    setAside(ALICE, state({ posts: [post({ text: 'aside' })] }), { store, now: NOW });
+    writeAutosave(ALICE, state({ posts: [post({ text: 'one' })] }), { store, now: NOW });
+    writeAutosave(ALICE, state(), { store, now: NOW });
+    expect(readAutosave(ALICE, { store, now: NOW })).toBeNull();
+    clearAutosave(ALICE, { store, now: NOW });
+    clearAllSessionDrafts();
+    expect(countSetAside(ALICE, { store, now: NOW })).toBe(1);
+    expect(takeSetAside(ALICE, { store, now: NOW }).state.posts[0].text).toBe('aside');
+  });
+
+  it('expire after a day, and keep at most MAX_SET_ASIDE', () => {
+    const store = memoryStore();
+    setAside(ALICE, state({ posts: [post({ text: 'old' })] }), { store, now: NOW });
+    clearAllSessionDrafts();
+    expect(countSetAside(ALICE, { store, now: NOW + AUTOSAVE_TTL_MS + 1 })).toBe(0);
+
+    for (let i = 0; i < MAX_SET_ASIDE + 2; i += 1) {
+      setAside(BOB, state({ asDid: BOB, posts: [post({ text: `n${i}` })] }), { store, now: NOW + i });
+    }
+    expect(countSetAside(BOB, { store, now: NOW + 20 })).toBe(MAX_SET_ASIDE);
+    expect(takeSetAside(BOB, { store, now: NOW + 20 }).state.posts[0].text).toBe(`n${MAX_SET_ASIDE + 1}`);
+  });
+
+  it('are dropped from this tab with the account', () => {
+    const store = memoryStore();
+    setAside(ALICE, state({ posts: [post({ text: 'x', images: [{ id: 'i', previewUrl: 'blob:aside' }] })] }), { store: null, now: NOW });
+    saveSessionDraft(ALICE, state({ posts: [post({ text: 'y' })] }));
+    expect(previewUrlIsHeld('blob:aside', state())).toBe(true);
+    forgetSessionDrafts(ALICE);
+    expect(loadSessionDraft(ALICE)).toBeNull();
+    expect(countSetAside(ALICE, { store, now: NOW })).toBe(0);
+    expect(previewUrlIsHeld('blob:aside', state())).toBe(false);
+  });
+
+  it('never set aside an empty post', () => {
+    expect(setAside(ALICE, state(), { store: memoryStore(), now: NOW })).toBeNull();
   });
 });

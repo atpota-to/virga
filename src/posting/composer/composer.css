@@ -840,6 +840,11 @@
   white-space: nowrap;
 }
 
+/* Holds the "More for this post" menu so its place can be measured. */
+.composer-more {
+  display: inline-flex;
+}
+
 .composer-options .btn[aria-pressed='true'] {
   background: var(--accent-wash);
   color: var(--accent-ink);

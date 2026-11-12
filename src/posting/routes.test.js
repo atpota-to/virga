@@ -16,6 +16,15 @@ describe('posting pages', () => {
     }
   });
 
+  it('never say both read only and can post', () => {
+    // AccessBadge draws 'read' as "Read only", which a page that writes
+    // contradicts.
+    for (const page of POSTING_PAGES) {
+      if (page.access.includes('read')) expect(page.access).not.toContain('post');
+    }
+    expect(POSTING_PAGE_BY_KEY.library.access).toEqual(['post']);
+  });
+
   it('send the ones that run on Virga’s server through the long-session check', () => {
     expect(POSTING_PAGES.filter((p) => p.needsBackend).map((p) => p.key)).toEqual(['scheduled', 'schedule', 'timers']);
     for (const page of POSTING_PAGES.filter((p) => p.needsBackend)) expect(page.access).toContain('server');

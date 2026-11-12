@@ -8,13 +8,18 @@ import { describe, expect, it, vi } from 'vitest';
 import { Agent } from '@atproto/api';
 import { OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
 import { SESSION_HINT_KEY } from '../lib/sessionHint.js';
+import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import {
   ACCOUNTS_KEY,
   ACTIVE_KEY,
+  OPEN_AT_SIGNIN_KEY,
   SESSION_EXPIRED_EVENT,
   backendTokenKey,
   readAccounts,
   recordSignIn,
+  markSignedOut,
+  forgetAccount,
+  readActiveDid,
   writeActiveDid,
   writeBackendToken,
 } from './accounts.js';
@@ -76,7 +81,7 @@ function fakeBrowser({ sessions = {}, callback = null, legacy = null } = {}) {
 }
 
 /** A controller over a fake world. `answer(url, init)` is Virga's server. */
-function setup({ storage = memoryStorage(), browser = fakeBrowser(), backendReturn = null, onCallbackPath = false, answer } = {}) {
+function setup({ storage = memoryStorage(), tabStorage = memoryStorage(), browser = fakeBrowser(), backendReturn = null, onCallbackPath = false, answer } = {}) {
   const state = { rows: [], statuses: {}, active: NO_ACTIVE, switching: null, error: null };
   const log = { active: [], switching: [], events: [] };
   const set = {
@@ -95,7 +100,7 @@ function setup({ storage = memoryStorage(), browser = fakeBrowser(), backendRetu
   const fetch = vi.fn(async (url, init) => (answer ? answer(String(url), init) : json({ success: true })));
   const env = {
     storage,
-    tabStorage: memoryStorage(),
+    tabStorage,
     browser,
     backendUrl: COCOON,
     fetch,
@@ -505,5 +510,275 @@ describe('capabilitiesFrom', () => {
     expect(caps.canPost).toBe(false);
     for (const token of POSTING_TOKENS) expect(caps.missing).toContain(token);
     expect(capabilitiesFrom({ mode: 'browser', scope: OAUTH_SCOPE }, 'ready')).toMatchObject({ canPost: true, missing: [] });
+  });
+});
+
+/** The tokens Virga's server was asked to sign out, in order. */
+function loggedOut(fetch) {
+  return fetch.mock.calls.filter(([url]) => String(url).endsWith('/oauth/logout')).map(([, init]) => init.headers.Authorization);
+}
+
+describe('following another tab', () => {
+  it('sends the token another tab signed in with, not the one the agent was built with', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN });
+    const seen = [];
+    const { ctrl, state } = setup({
+      storage,
+      answer: (url, init) => {
+        const auth = new Headers(init?.headers).get('authorization');
+        if (url.includes('/oauth/proxy')) seen.push(auth);
+        if (url.includes('/oauth/session')) return json({ success: true, authenticated: true, scope: OAUTH_SCOPE });
+        if (auth === `Bearer ${TOKEN}`) return json({ success: false, code: 'FRONTEND_SESSION_INVALID', error: 'gone' }, 401);
+        return json({ success: true, data: { did: MIRA, handle: 'mira.example.com', didDoc: {}, collections: [], handleIsCorrect: true } });
+      },
+    });
+    await ctrl.startOnce();
+    const agent = state.active.agent;
+    const requester = ctrl.backendFor(MIRA);
+    writeBackendToken(storage, MIRA, TOKEN2);
+    await ctrl.reread();
+    await agent.com.atproto.repo.describeRepo({ repo: MIRA });
+    expect(seen).toEqual([`Bearer ${TOKEN2}`]);
+    await requester.request('/api/schedule/list');
+    expect(ctrl.statusOf(MIRA)).toBe('ready');
+  });
+
+  it('leaves the open account when another tab signs it out, saying so', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN, at: 2 });
+    remember(storage, LAB, 'backend', { token: TOKEN2, at: 1 });
+    writeActiveDid(storage, MIRA);
+    const { ctrl, state, log } = setup({ storage });
+    await ctrl.startOnce();
+    // What the other tab's signOutAccount leaves in storage.
+    markSignedOut(storage, MIRA);
+    storage.removeItem(backendTokenKey(MIRA));
+    await ctrl.reread();
+    expect(state.active.did).toBe(LAB);
+    expect(log.events.map(([name]) => name)).toEqual([SESSION_NOTICE_EVENT]);
+    expect(log.events[0][1].text).toMatch(/isn’t signed in here any more/);
+  });
+
+  it('falls to the front page when the account another tab removed was the only one', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser');
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA) } });
+    const { ctrl, state } = setup({ storage, browser });
+    await ctrl.startOnce();
+    expect(state.active.did).toBe(MIRA);
+    forgetAccount(storage, MIRA);
+    await ctrl.reread();
+    expect(state.active).toEqual(NO_ACTIVE);
+    expect(readActiveDid(storage)).toBeNull();
+  });
+
+  it('stays on an account this tab already found had ended, which is signing in again', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser', { at: 2 });
+    remember(storage, LAB, 'browser', { at: 1 });
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA), [LAB]: oauthSession(LAB) } });
+    const { ctrl, state } = setup({ storage, browser });
+    await ctrl.startOnce();
+    browser.drop(MIRA, { revoked: false });
+    await ctrl.reread();
+    expect(state.active.did).toBe(MIRA);
+  });
+
+  it('builds the open account again when another tab moved it to a long session', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser');
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA) } });
+    const { ctrl, state } = setup({ storage, browser });
+    await ctrl.startOnce();
+    expect(state.active.mode).toBe('browser');
+    recordSignIn(storage, { did: MIRA, mode: 'backend' });
+    writeBackendToken(storage, MIRA, TOKEN);
+    await ctrl.reread();
+    expect(state.active.did).toBe(MIRA);
+    expect(state.active.mode).toBe('backend');
+  });
+
+  it('forgets an agent built for an account another tab signed out', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN, at: 2 });
+    remember(storage, LAB, 'backend', { token: TOKEN2, at: 1 });
+    writeActiveDid(storage, MIRA);
+    const { ctrl } = setup({ storage });
+    await ctrl.startOnce();
+    await ctrl.agentFor(LAB);
+    markSignedOut(storage, LAB);
+    storage.removeItem(backendTokenKey(LAB));
+    await ctrl.reread();
+    await expect(ctrl.agentFor(LAB)).rejects.toMatchObject({ code: 'REAUTH_REQUIRED' });
+  });
+
+  it('takes back the "signed out" it had for an account another tab signed in again', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN, at: 2 });
+    remember(storage, LAB, 'browser', { at: 1 });
+    writeActiveDid(storage, MIRA);
+    const browser = fakeBrowser({ sessions: {} });
+    const { ctrl } = setup({ storage, browser });
+    await ctrl.startOnce();
+    await ctrl.agentFor(LAB).catch(() => {});
+    await vi.waitFor(() => expect(ctrl.statusOf(LAB)).toBe('needsSignIn'));
+    browser.sessions[LAB] = oauthSession(LAB);
+    recordSignIn(storage, { did: LAB, mode: 'browser' });
+    await ctrl.reread();
+    expect(ctrl.statusOf(LAB)).toBe('ready');
+    await expect(ctrl.agentFor(LAB)).resolves.toBeTruthy();
+  });
+
+  it('follows a browser sign-out made in another tab without asking anyone to sign in', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser', { at: 2 });
+    remember(storage, LAB, 'browser', { at: 1 });
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA), [LAB]: oauthSession(LAB) } });
+    const { ctrl, state, log } = setup({ storage, browser });
+    await ctrl.startOnce();
+    // The other tab marks the row before it ends the session, so even a
+    // drop the library couldn't tell from an expiry changes nothing here.
+    markSignedOut(storage, MIRA);
+    browser.drop(MIRA, { revoked: false });
+    expect(log.events.filter(([name]) => name === SESSION_EXPIRED_EVENT)).toEqual([]);
+    // One it could tell was a sign-out leaves the account.
+    browser.drop(LAB, { revoked: true });
+    expect(ctrl.statusOf(LAB)).toBe('needsSignIn');
+    await ctrl.reread();
+    expect(state.active).toEqual(NO_ACTIVE);
+    expect(log.events.filter(([name]) => name === SESSION_EXPIRED_EVENT)).toEqual([]);
+  });
+
+  it('leaves the open account when its browser session is revoked from another tab', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser', { at: 2 });
+    remember(storage, LAB, 'browser', { at: 1 });
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA), [LAB]: oauthSession(LAB) } });
+    const { ctrl, state, log } = setup({ storage, browser });
+    await ctrl.startOnce();
+    browser.drop(MIRA, { revoked: true });
+    await vi.waitFor(() => expect(state.active.did).toBe(LAB));
+    expect(log.events).toEqual([]);
+  });
+
+  it('marks the row signed out before it ends the session, for the other tabs to read', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser');
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA) } });
+    let rowWhenEnded = null;
+    browser.signOut.mockImplementation(async () => {
+      rowWhenEnded = readAccounts(storage).find((a) => a.did === MIRA);
+    });
+    const { ctrl } = setup({ storage, browser });
+    await ctrl.startOnce();
+    await ctrl.signOutAccount(MIRA);
+    expect(rowWhenEnded.signedOut).toBe(true);
+  });
+});
+
+describe('signing an account in again', () => {
+  it('signs out the token a fresh long session replaces', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN });
+    const { ctrl, fetch } = setup({ storage, backendReturn: { kind: 'session', did: MIRA, token: TOKEN2, intent: 'reauth' } });
+    await ctrl.startOnce();
+    expect(storage.getItem(backendTokenKey(MIRA))).toBe(TOKEN2);
+    await vi.waitFor(() => expect(loggedOut(fetch)).toEqual([`Bearer ${TOKEN}`]));
+  });
+
+  it('leaves the token alone when the same one comes back', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN });
+    const { ctrl, fetch } = setup({ storage, backendReturn: { kind: 'session', did: MIRA, token: TOKEN, intent: 'reauth' } });
+    await ctrl.startOnce();
+    expect(loggedOut(fetch)).toEqual([]);
+  });
+
+  it('signs out a token from a return it refused', async () => {
+    const error = Object.assign(new Error('x'), { params: new URLSearchParams({ error: 'unexpected_return' }) });
+    const { ctrl, fetch, storage } = setup({ backendReturn: { kind: 'error', error, orphanToken: TOKEN } });
+    await ctrl.startOnce();
+    expect(loggedOut(fetch)).toEqual([`Bearer ${TOKEN}`]);
+    expect(storage.getItem(backendTokenKey(MIRA))).toBeNull();
+  });
+
+  it('records the open account when another one leaves to sign in again', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser');
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA) } });
+    const tabStorage = memoryStorage();
+    const { ctrl } = setup({ storage, browser, tabStorage });
+    await ctrl.startOnce();
+    await ctrl.signIn('lab.example.org', { mode: 'browser', intent: 'reauth' });
+    expect(tabStorage.getItem(OPEN_AT_SIGNIN_KEY)).toBe(MIRA);
+    await ctrl.signIn('third.example.org', { mode: 'browser', intent: 'add' });
+    expect(tabStorage.getItem(OPEN_AT_SIGNIN_KEY)).toBeNull();
+  });
+
+  it('keeps the open account open when another one signs back in through Virga’s server', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN, at: 2 });
+    remember(storage, LAB, 'backend', { at: 1 });
+    markSignedOut(storage, LAB);
+    writeActiveDid(storage, MIRA);
+    const tabStorage = memoryStorage({ [OPEN_AT_SIGNIN_KEY]: MIRA });
+    const { ctrl, state } = setup({ storage, tabStorage, backendReturn: { kind: 'session', did: LAB, token: TOKEN2, intent: 'reauth' } });
+    await ctrl.startOnce();
+    expect(state.active.did).toBe(MIRA);
+    expect(readActiveDid(storage)).toBe(MIRA);
+    expect(ctrl.statusOf(LAB)).toBe('ready');
+    expect(tabStorage.getItem(OPEN_AT_SIGNIN_KEY)).toBeNull();
+  });
+
+  it('keeps the open account open when another one signs back in in the browser', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'browser', { at: 2 });
+    remember(storage, LAB, 'browser', { at: 1 });
+    markSignedOut(storage, LAB);
+    writeActiveDid(storage, MIRA);
+    const lab = oauthSession(LAB);
+    const browser = fakeBrowser({ sessions: { [MIRA]: oauthSession(MIRA), [LAB]: lab }, callback: { session: lab, intent: 'reauth' } });
+    const tabStorage = memoryStorage({ [OPEN_AT_SIGNIN_KEY]: MIRA });
+    const { ctrl, state } = setup({ storage, browser, tabStorage, onCallbackPath: true });
+    await ctrl.startOnce();
+    expect(state.active.did).toBe(MIRA);
+    expect(ctrl.statusOf(LAB)).toBe('ready');
+  });
+
+  it('opens the account that signed in when the one open before can’t be', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { at: 2 });
+    remember(storage, LAB, 'backend', { at: 1 });
+    markSignedOut(storage, MIRA);
+    const tabStorage = memoryStorage({ [OPEN_AT_SIGNIN_KEY]: MIRA });
+    const { ctrl, state } = setup({ storage, tabStorage, backendReturn: { kind: 'session', did: LAB, token: TOKEN2, intent: 'reauth' } });
+    await ctrl.startOnce();
+    expect(state.active.did).toBe(LAB);
+  });
+
+  it('opens a newly added account, whatever was open', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN });
+    writeActiveDid(storage, MIRA);
+    const tabStorage = memoryStorage({ [OPEN_AT_SIGNIN_KEY]: MIRA });
+    const { ctrl, state } = setup({ storage, tabStorage, backendReturn: { kind: 'session', did: LAB, token: TOKEN2, intent: 'add' } });
+    await ctrl.startOnce();
+    expect(state.active.did).toBe(LAB);
+  });
+});
+
+describe('checking an account', () => {
+  it('answers unknown, not expired, when the server didn’t confirm the session had ended', async () => {
+    const storage = memoryStorage();
+    remember(storage, MIRA, 'backend', { token: TOKEN });
+    const { ctrl } = setup({
+      storage,
+      answer: (url) =>
+        url.includes('/oauth/session?lite=1') ? json({ success: true, authenticated: true, oauthSessionMissing: true }) : json({ success: true }),
+    });
+    await ctrl.startOnce();
+    expect(await ctrl.checkAccount(MIRA)).toBe('unknown');
+    expect(ctrl.statusOf(MIRA)).toBe('unknown');
   });
 });

@@ -6,7 +6,12 @@ import {
   generateAltTextForFile,
   synthesizeStyle,
 } from './aiService.js';
-import { isAdviserAtLimit, readAdviserUsage } from './usage.js';
+import {
+  isAdviserAtLimit,
+  markAdviserLimitReached,
+  readAdviserUsage,
+  recordAdviserUsage,
+} from './usage.js';
 
 const DID = 'did:plc:writer';
 
@@ -36,6 +41,8 @@ function requester(answer) {
   };
   return req;
 }
+
+const req0 = () => requester({ overallStatus: 'ok', checks: [] });
 
 function cocoonError(status, body) {
   const code =
@@ -114,6 +121,29 @@ describe('analyzePost', () => {
     expect(err.status).toBe(429);
     expect(err.payload).toMatchObject({ limit: 30 });
     expect(err.message).toMatch(/used up/);
+    expect(isAdviserAtLimit(DID, { store })).toBe(true);
+  });
+
+  it('forgets a used-up count once cocoon answers without usage (now unlimited)', async () => {
+    const store = memoryStore();
+    markAdviserLimitReached(DID, 30, { store });
+    recordAdviserUsage(DID, { used: 2, limit: 3 }, { feature: 'style', store });
+    expect(isAdviserAtLimit(DID, { store })).toBe(true);
+    await analyzePost(req0(), { text: 'hi' }, { store });
+    expect(readAdviserUsage(DID, { store })).toBeNull();
+    expect(isAdviserAtLimit(DID, { store })).toBe(false);
+    // Only the feature that answered.
+    expect(readAdviserUsage(DID, { feature: 'style', store })).toMatchObject({
+      used: 2,
+      limit: 3,
+    });
+  });
+
+  it('keeps the count when the request fails for another reason', async () => {
+    const store = memoryStore();
+    markAdviserLimitReached(DID, 30, { store });
+    const req = requester(cocoonError(503, { error: 'AI unavailable' }));
+    await analyzePost(req, { text: 'hi' }, { store }).catch(() => {});
     expect(isAdviserAtLimit(DID, { store })).toBe(true);
   });
 

@@ -10,7 +10,7 @@ import { isMissingScopeError } from '../../session/scopes.js';
 import PostingPermissionNotice from '../../accounts/PostingPermissionNotice.jsx';
 import { useComposer } from '../composer/ComposerContext.jsx';
 import { DRAFTS_CHANGED_EVENT, emitPostsChanged } from '../events.js';
-import { DRAFT_LIMIT_MESSAGE, deleteDraft, listDrafts, openDraft, postingDeviceId } from '../drafts/drafts.js';
+import { DRAFT_LIMIT_MESSAGE, deleteDraft, listDrafts, openDraft, postingDeviceId, pruneOrphanedDraftMedia } from '../drafts/drafts.js';
 import { resolveDefaultGates, usePostingSettings } from '../settings.js';
 import { createScheduled, getLimits, listScheduled, scheduledRoomProblem, scheduledUsageLine } from '../schedule/scheduleService.js';
 import { nextOpenSlot } from '../schedule/postingQueue.js';
@@ -26,6 +26,8 @@ import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
 import './hub.css';
 
 const PAGE = 50;
+// Accounts whose stray draft files this tab has already cleared out.
+const prunedMedia = new Set();
 // Bluesky doesn't say how many drafts it keeps; past this many, say that it may stop.
 const MANY_DRAFTS = 50;
 
@@ -94,6 +96,18 @@ export default function DraftsPage({ did, id = null }) {
     composer.open({ draftId: id, draftOwnerDid: did, asDid: did });
     navigate(postingPath('drafts'), { replace: true });
   }, [id, did, composer]);
+
+  // Files kept for drafts that were posted or deleted in another app are
+  // cleared out once a tab, after the list reads. Not while the composer is
+  // open: a save there may be between keeping its files and writing the draft.
+  const composerOpen = composer.isOpen;
+  useEffect(() => {
+    if (list.status !== 'ready' || composerOpen || prunedMedia.has(did)) return;
+    prunedMedia.add(did);
+    Promise.resolve(agentFor(did))
+      .then((agent) => pruneOrphanedDraftMedia(agent, did))
+      .catch(() => prunedMedia.delete(did));
+  }, [list.status, composerOpen, did, agentFor]);
 
   const rows = useMemo(() => draftRows(list.views, { deviceId: postingDeviceId() }), [list.views]);
   const viewsById = useMemo(() => new Map(list.views.map((v) => [v.id, v])), [list.views]);

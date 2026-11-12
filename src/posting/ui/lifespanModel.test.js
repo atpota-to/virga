@@ -5,7 +5,7 @@ import {
   firstActAt,
   lengthChoice,
   pinBounds,
-  startHasPassed,
+  timerStart,
   toggleAllow,
   toggleEffect,
   withAllow,
@@ -230,19 +230,97 @@ describe('putting a post that’s out on a timer', () => {
     expect(firstActAt(normalizeTimer({}), { now: NOW })).toBeNull();
   });
 
-  it('knows when counting from the post would already be past', () => {
+  it('counts from the post only while cocoon would, and says when it can’t', () => {
+    // on() is a one-hour delete; cocoon (validateArm) keeps a postedAt only
+    // while it's inside that hour, and otherwise counts from now.
     expect(
-      startHasPassed(on(), { postedAt: '2026-11-11T00:00:00Z', now: NOW }),
-    ).toBe(true);
+      timerStart(on(), {
+        start: 'now',
+        postedAt: '2026-11-12T11:30:00Z',
+        now: NOW,
+      }),
+    ).toEqual({
+      startedAt: NOW,
+      from: 'now',
+      passed: '',
+    });
+    const inside = timerStart(on(), {
+      start: 'posted',
+      postedAt: '2026-11-12T11:30:00Z',
+      now: NOW,
+    });
+    expect(inside).toEqual({
+      startedAt: Date.parse('2026-11-12T11:30:00Z'),
+      from: 'wentUp',
+      passed: '',
+    });
     expect(
-      startHasPassed(on(), { postedAt: '2026-11-12T11:50:00Z', now: NOW }),
-    ).toBe(false);
+      firstActAt(on(), { startedAt: inside.startedAt, now: NOW }).toISOString(),
+    ).toBe('2026-11-12T12:30:00.000Z');
+    // Inside the hour but within the five-minute floor.
     expect(
-      startHasPassed(on({ deleteAt: '2026-11-13T00:00:00Z' }), {
+      timerStart(on(), {
+        start: 'posted',
+        postedAt: '2026-11-12T11:02:00Z',
+        now: NOW,
+      }),
+    ).toMatchObject({ from: 'wentUp', passed: 'floor' });
+    // The whole hour has gone by: the full hour again from now, not five minutes.
+    const elapsed = timerStart(on(), {
+      start: 'posted',
+      postedAt: '2026-11-11T00:00:00Z',
+      now: NOW,
+    });
+    expect(elapsed).toEqual({ startedAt: NOW, from: 'now', passed: 'elapsed' });
+    expect(
+      firstActAt(on(), {
+        startedAt: elapsed.startedAt,
+        now: NOW,
+      }).toISOString(),
+    ).toBe('2026-11-12T13:00:00.000Z');
+    // Exactly the length ago is out of cocoon's window too.
+    expect(
+      timerStart(on(), {
+        start: 'posted',
+        postedAt: '2026-11-12T11:00:00Z',
+        now: NOW,
+      }).passed,
+    ).toBe('elapsed');
+    // A start in the future, or one that can't be read, counts from now.
+    expect(
+      timerStart(on(), {
+        start: 'posted',
+        postedAt: '2026-11-12T12:30:00Z',
+        now: NOW,
+      }),
+    ).toEqual({
+      startedAt: NOW,
+      from: 'now',
+      passed: '',
+    });
+    expect(
+      timerStart(on(), { start: 'posted', postedAt: null, now: NOW }).from,
+    ).toBe('now');
+    // A pinned time doesn't depend on the start.
+    expect(
+      timerStart(on({ deleteAt: '2026-11-13T00:00:00Z' }), {
+        start: 'posted',
         postedAt: '2026-11-01T00:00:00Z',
         now: NOW,
       }),
-    ).toBe(false);
+    ).toEqual({ startedAt: NOW, from: 'now', passed: '' });
+  });
+
+  it('says where the length counts from for a post that’s already out', () => {
+    expect(editorNotes(on(), { now: NOW }).summary).toMatch(
+      /1 hour after it goes up\./,
+    );
+    expect(editorNotes(on(), { countFrom: 'now', now: NOW }).summary).toMatch(
+      /1 hour from now\./,
+    );
+    expect(
+      editorNotes(on(), { countFrom: 'wentUp', now: NOW }).summary,
+    ).toMatch(/1 hour after it went up\./);
   });
 
   it('keeps only curate lists', () => {

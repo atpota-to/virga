@@ -1125,13 +1125,28 @@ export function describeWhen(timer, now = Date.now()) {
     : formatLifespan(t.lifespanSeconds);
 }
 
-/** The full rule as one sentence for the composer, including what happens to a spared post. */
-export function describeTimer(timer, now = Date.now()) {
+/** How a length is counted, for describeTimer: the post isn't out yet, or is. */
+const COUNTED_FROM = {
+  goesUp: 'after it goes up',
+  wentUp: 'after it went up',
+  now: 'from now',
+};
+
+/**
+ * The full rule as one sentence for the composer, including what happens to
+ * a spared post. `from` says where a length is counted from: 'goesUp' (a post
+ * not out yet, the default), or for a post already out, 'wentUp' or 'now'.
+ */
+export function describeTimer(
+  timer,
+  now = Date.now(),
+  { from = 'goesUp' } = {},
+) {
   const t = normalizeTimer(timer);
   const c = t.conditions;
   const at = t.deleteAt
     ? describeDeleteAt(t.deleteAt, now)
-    : `${formatLifespan(t.lifespanSeconds)} after it goes up`;
+    : `${formatLifespan(t.lifespanSeconds)} ${COUNTED_FROM[from] || COUNTED_FROM.goesUp}`;
   const does = describeEffects(t.effects);
   if (c.clauses.length === 0) return `${does} ${at}.`;
 

@@ -4,12 +4,14 @@
 // shared with Anisota). It answers each counted request with
 // `usage: { used, limit }`, and a request over the allowance with
 // `{ error: 'monthly_limit', limit }`. Accounts whose allowance is unlimited
-// get no `usage` at all, so nothing is ever recorded for them and they are
-// never "at the limit" here.
+// get no `usage` at all, so an answer without it clears what was kept: an
+// account that was used up and then became unlimited (or had its count reset)
+// is no longer "at the limit" here once one request has gone through.
 //
 // This copy is a hint, never a gate on its own: it lets the composer skip the
 // automatic check once the month's reads are used up, and lets a page say how
-// many are left. If it's stale, the worst case is one refused request.
+// many are left. A request the writer asks for is always sent (cocoon refuses
+// it before spending anything), so a stale hint costs one refused request.
 //
 // Stored at localStorage `virga:adviser-usage:<did>` as `{ month, used, limit }`
 // for adviser reads, with the same shape under `altText` and `style` for the
@@ -124,6 +126,37 @@ export function recordAdviserUsage(
     // Storage full or refused: the count is only a hint.
   }
   return entry;
+}
+
+/**
+ * Forget `feature`'s count for the account: cocoon answered a request for it
+ * without `usage`, which it does only for an unlimited allowance.
+ */
+export function clearAdviserUsage(
+  did,
+  { feature = 'adviser', store = localStore() } = {},
+) {
+  checkFeature(feature);
+  if (!did || !store) return;
+  const all = readAll(did, store);
+  const next = { ...all };
+  if (feature === 'adviser') {
+    delete next.month;
+    delete next.used;
+    delete next.limit;
+  } else {
+    delete next[feature];
+  }
+  try {
+    if (
+      Object.keys(next).length === 0 &&
+      typeof store.removeItem === 'function'
+    )
+      store.removeItem(adviserUsageKey(did));
+    else store.setItem(adviserUsageKey(did), JSON.stringify(next));
+  } catch {
+    // Storage refused: the count is only a hint.
+  }
 }
 
 /**

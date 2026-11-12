@@ -130,12 +130,12 @@ describe('byteToCharIndex', () => {
 });
 
 describe('sanitizeText', () => {
-  it('strips zero-width marks and the BOM, folds NBSP to a space, drops control chars', () => {
+  it('strips the zero-width space, direction marks and the BOM, folds NBSP to a space, drops control chars', () => {
     const messy =
       'a\u200Bb\u200Cc\u200Dd\u200Ee\u200Ff\uFEFFg\u00A0h\u0000i\u0007j\u001Fk\u007Fl\nm\rn\to';
-    // NBSP becomes a space; tab, LF and CR are kept; everything else
-    // invisible goes.
-    expect(sanitizeText(messy)).toBe('abcdefg hijkl\nm\rn\to');
+    // NBSP becomes a space; tab, LF, CR and the two joiners are kept;
+    // everything else invisible goes.
+    expect(sanitizeText(messy)).toBe('ab\u200Cc\u200Ddefg hijkl\nm\rn\to');
   });
 
   it('keeps the characters just outside each stripped range', () => {
@@ -156,19 +156,22 @@ describe('sanitizeText', () => {
   // of a sequence or half a surrogate pair would leave an orphaned code unit
   // for the byte-offset arithmetic.
   it('takes zero-width marks one character at a time, never half a surrogate pair', () => {
-    // Five alternatives, not one joined sequence.
-    for (const mark of ['\u200B', '\u200C', '\u200D', '\u200E', '\u200F']) {
+    // Three alternatives, not one joined sequence.
+    for (const mark of ['\u200B', '\u200E', '\u200F']) {
       expect(sanitizeText(`a${mark}b`), mark.codePointAt(0).toString(16)).toBe(
         'ab',
       );
     }
 
-    // A ZWJ emoji sequence: the joiner (U+200D) goes, both emoji come through
-    // whole.
-    const scientist = sanitizeText('\u{1F469}\u200D\u{1F52C}');
-    expect(scientist).toBe('\u{1F469}\u{1F52C}');
-    expect([...scientist]).toHaveLength(2);
-    expect(encoder.encode(scientist)).toHaveLength(8);
+    // The joiners are part of the writing: a ZWJ emoji sequence stays one
+    // emoji, and a Persian word keeps its ZWNJ.
+    const scientist = '\u{1F469}\u200D\u{1F52C}';
+    expect(sanitizeText(scientist)).toBe(scientist);
+    expect([
+      ...new Intl.Segmenter().segment(sanitizeText(scientist)),
+    ]).toHaveLength(1);
+    const persian = 'می\u200Cخواهم';
+    expect(sanitizeText(persian)).toBe(persian);
 
     // A skin-tone modifier is itself a surrogate pair and is in no stripped
     // set, so the whole grapheme survives byte for byte.
@@ -181,8 +184,9 @@ describe('sanitizeText', () => {
     // Pins the outcome: emoji come back as unbroken pairs.
     const text = '\u0000\u{1F98B}\u0007\u{1F469}\u200D\u{1F52C}\u001F';
     const cleaned = sanitizeText(text);
-    expect(cleaned).toBe('\u{1F98B}\u{1F469}\u{1F52C}');
-    expect(encoder.encode(cleaned)).toHaveLength(12); // three 4-byte emoji
+    expect(cleaned).toBe('\u{1F98B}\u{1F469}\u200D\u{1F52C}');
+    // Three 4-byte emoji and the 3-byte joiner.
+    expect(encoder.encode(cleaned)).toHaveLength(15);
     // A stray surrogate would round-trip as U+FFFD.
     expect(decoder.decode(encoder.encode(cleaned))).toBe(cleaned);
   });

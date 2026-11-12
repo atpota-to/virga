@@ -16,7 +16,7 @@
 
 import { countGraphemes } from './graphemes.js';
 import {
-  createUrlRegex,
+  findUrlsAndMentions,
   isValidDomain,
   isPrecededByQuote,
 } from './urlMatching.js';
@@ -62,21 +62,22 @@ export function toShortUrl(url) {
 export function findShortenableLinks(text) {
   if (!text || !text.includes('://')) return [];
 
-  const regex = createUrlRegex();
+  // The same URL/mention split facet detection uses, and the same skips: a
+  // link a mention or address overlaps gets no facet there, so no shortening.
+  const { urls, mentions } = findUrlsAndMentions(text);
   const spans = [];
-  let match;
 
-  while ((match = regex.exec(text)) !== null) {
-    const matchText = match[0];
+  for (const { charStart, charEnd, matchText } of urls) {
     // Bare domains keep their full text (see the module note).
     if (!/^https?:\/\//i.test(matchText)) continue;
 
-    const charStart = match.index;
+    if (mentions.some(({ start, end }) => start < charEnd && charStart < end))
+      continue;
     if (isPrecededByQuote(text, charStart)) continue;
     if (!isValidDomain(matchText)) continue;
     if (toShortUrl(matchText) === matchText) continue;
 
-    spans.push({ charStart, charEnd: charStart + matchText.length, matchText });
+    spans.push({ charStart, charEnd, matchText });
   }
 
   return spans;

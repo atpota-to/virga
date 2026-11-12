@@ -13,7 +13,8 @@
 //
 // Whatever is picked is read again from the public AppView (getPosts and the
 // feed and list reads) before it's attached, for its cid and the post as it
-// now is: an archive row keeps only the start of the text and no cid.
+// now is: an archive row keeps only the start of the text and no cid. A post
+// by someone else is checked for quoting turned off (its postgate) too.
 //
 // Public reads take `fetch` (the global one by default) and go to APPVIEW;
 // signed-in reads take the account's agent and always ask Bluesky's AppView.
@@ -30,6 +31,7 @@ import {
   itemFromLink,
   itemFromList,
   itemFromPost,
+  markQuotesOff,
 } from './model.js';
 
 const APPVIEW_SERVICE = ['bsky_appview', 'did:web:api.bsky.app'];
@@ -545,6 +547,54 @@ async function readRecord(kind, uri, { fetch, signal }) {
   return null;
 }
 
+const POSTGATE_COLLECTION = 'app.bsky.feed.postgate';
+const DISABLE_RULE = 'app.bsky.feed.postgate#disableRule';
+const POST_AT = /^at:\/\/([^/]+)\/app\.bsky\.feed\.post\/([^/?#]+)$/;
+
+/**
+ * Whether the post's author has turned quoting off: its postgate (at the
+ * post's rkey) holds a disableRule. The public reads carry no viewer state,
+ * so `viewer.embeddingDisabled` is never there to say; the record is public.
+ * An author's own post can always be quoted by them. False when there's no
+ * postgate, or it couldn't be read: that says nothing either way.
+ */
+export async function quotesTurnedOff(uri, { selfDid, fetch, signal } = {}) {
+  const at = POST_AT.exec(str(uri));
+  if (!at || (selfDid && at[1] === selfDid)) return false;
+  try {
+    const body = await publicXrpc(
+      'com.atproto.repo.getRecord',
+      { repo: at[1], collection: POSTGATE_COLLECTION, rkey: at[2] },
+      { fetch, signal },
+    );
+    const rules = body?.value?.embeddingRules;
+    return (
+      Array.isArray(rules) && rules.some((rule) => rule?.$type === DISABLE_RULE)
+    );
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    return false;
+  }
+}
+
+function quotesOffError() {
+  const error = new Error('That post’s author doesn’t allow quotes.');
+  error.code = 'QUOTES_OFF';
+  return error;
+}
+
+/** Whether the post at `view` (or `uri`) can't be quoted by `selfDid`. */
+async function quotesOffFor(view, uri, { selfDid, fetch, signal }) {
+  const mine = Boolean(selfDid) && view?.author?.did === selfDid;
+  if (!mine && view?.viewer?.embeddingDisabled) return true;
+  return quotesTurnedOff(uri, { selfDid, fetch, signal });
+}
+
+/** Throws QUOTES_OFF when the post at `view` (or `uri`) can't be quoted. */
+async function checkQuotable(view, uri, opts) {
+  if (await quotesOffFor(view, uri, opts)) throw quotesOffError();
+}
+
 function goneError(kind) {
   const noun = { post: 'post', feed: 'feed', list: 'list' }[kind] || 'record';
   const error = new Error(`That ${noun} is gone, so it can’t be attached.`);
@@ -555,9 +605,10 @@ function goneError(kind) {
 /**
  * A picked post, feed or list read again from the public AppView, as the
  * item it now is (its cid, its full text, its counts), keeping the shelf it
- * was picked from and its reason. Templates and links come back as they are.
- * Throws `{ code: 'GONE' }` for one that no longer exists; any other failure
- * throws as it came.
+ * was picked from and its reason. A post whose author doesn't allow quotes
+ * comes back marked `quotesOff`, to be shown but not attached. Templates and
+ * links come back as they are. Throws `{ code: 'GONE' }` for one that no
+ * longer exists; any other failure throws as it came.
  */
 export async function hydratePick(item, { selfDid, fetch, signal } = {}) {
   const kind = item?.kind;
@@ -571,29 +622,42 @@ export async function hydratePick(item, { selfDid, fetch, signal } = {}) {
       : kind === 'feed'
         ? itemFromFeed(view, { group: item.group || 'yours' })
         : itemFromList(view);
-  return {
+  const out = {
     ...fresh,
     shelf: item.shelf || fresh.shelf,
     reason: item.reason || '',
   };
+  // The public read has no viewer state, so what a signed-in shelf already
+  // knew is kept, and the postgate is asked otherwise.
+  if (
+    kind === 'post' &&
+    (item.quotesOff ||
+      (await quotesOffFor(view, item.uri, { selfDid, fetch, signal })))
+  )
+    return markQuotesOff(out);
+  return out;
 }
 
 /**
  * A plan's attachment with its cid and view filled in (a template's quote,
  * or a post picked from the archive). A link, or a record that already has
- * both, comes back as it is. Throws `{ code: 'GONE' }` as hydratePick does.
+ * both, comes back as it is, once a post is known to be quotable. Throws
+ * `{ code: 'GONE' }` and `{ code: 'QUOTES_OFF' }` as hydratePick does.
  */
-export async function hydrateAttachment(attach, { fetch, signal } = {}) {
-  if (
-    !attach ||
-    attach.kind === 'link' ||
-    !attach.uri ||
-    (attach.cid && attach.view)
-  )
-    return attach;
-  const view = await readRecord(attach.kind, attach.uri, { fetch, signal });
-  if (!view) throw goneError(attach.kind);
-  return { ...attach, cid: view.cid || attach.cid || null, view };
+export async function hydrateAttachment(
+  attach,
+  { selfDid, fetch, signal } = {},
+) {
+  if (!attach || attach.kind === 'link' || !attach.uri) return attach;
+  let out = attach;
+  if (!(attach.cid && attach.view)) {
+    const view = await readRecord(attach.kind, attach.uri, { fetch, signal });
+    if (!view) throw goneError(attach.kind);
+    out = { ...attach, cid: view.cid || attach.cid || null, view };
+  }
+  if (out.kind === 'post')
+    await checkQuotable(out.view, out.uri, { selfDid, fetch, signal });
+  return out;
 }
 
 function embedUri(entry) {
@@ -794,8 +858,16 @@ export async function resolvePastedLink(
   if (!text) return null;
   const found = await recordFromLink(text, { fetch, signal });
   if (found) {
-    if (found.kind === 'post')
-      return itemFromPost(found.view, { shelf: 'search', selfDid });
+    if (found.kind === 'post') {
+      const item = itemFromPost(found.view, { shelf: 'search', selfDid });
+      return (await quotesOffFor(found.view, item.uri, {
+        selfDid,
+        fetch,
+        signal,
+      }))
+        ? markQuotesOff(item)
+        : item;
+    }
     if (found.kind === 'feed')
       return itemFromFeed(found.view, { group: 'search' });
     return itemFromList(found.view);
@@ -851,7 +923,7 @@ export function librarySources({ did, agent, handle, fetch, openStore } = {}) {
     hydrate: (item, { signal } = {}) =>
       hydratePick(item, { selfDid: did, fetch, signal }),
     hydrateAttachment: (attach, { signal } = {}) =>
-      hydrateAttachment(attach, { fetch, signal }),
+      hydrateAttachment(attach, { selfDid: did, fetch, signal }),
     hydrateEmbeds: (entries, { signal } = {}) =>
       hydrateEmbedViews(entries, { fetch, signal }),
     resolveLink: (input, { signal } = {}) =>

@@ -5,7 +5,21 @@
 
 import { toJsonShape } from './recordCid.js';
 
-export const BLOB_UPLOAD_TIMEOUT_MS = 60_000;
+// An upload's deadline grows with its size: a fixed one fails a big image on
+// a slow uplink every time, retries included. The rate is per upload, and
+// publish runs four at once, so 16 KiB/s each assumes about half a megabit up
+// in all; a 1.9 MiB image gets about two and a half minutes.
+export const BLOB_UPLOAD_BASE_MS = 30_000;
+export const BLOB_UPLOAD_MIN_BYTES_PER_SECOND = 16 * 1024;
+
+/** How long an upload of `byteCount` bytes may take before it is given up. */
+export function blobUploadTimeoutMs(byteCount) {
+  const bytes = Number.isFinite(byteCount) && byteCount > 0 ? byteCount : 0;
+  return (
+    BLOB_UPLOAD_BASE_MS +
+    Math.ceil((bytes / BLOB_UPLOAD_MIN_BYTES_PER_SECOND) * 1000)
+  );
+}
 
 /** A blob's CID, from either the JSON form or the legacy `{ cid }` form. */
 export function blobCid(blob) {
@@ -33,11 +47,12 @@ function abortError() {
  * @param {{ did: string, agent: object }} target
  * @param {Blob | Uint8Array | ArrayBuffer} data
  * @param {{ encoding: string, signal?: AbortSignal, timeoutMs?: number }} options
+ *   `timeoutMs` defaults to blobUploadTimeoutMs of the byte count
  */
 export async function uploadBlob(
   target,
   data,
-  { encoding, signal, timeoutMs = BLOB_UPLOAD_TIMEOUT_MS } = {},
+  { encoding, signal, timeoutMs } = {},
 ) {
   const type =
     encoding ||
@@ -54,29 +69,38 @@ export async function uploadBlob(
         ? new Uint8Array(data)
         : new Uint8Array(await data.arrayBuffer());
 
+  // The request gets its own signal, so a timeout or a cancel actually stops
+  // the transfer instead of leaving it to use the uplink after we've given up.
+  // The race still settles at once for an agent that ignores the signal.
+  const request = new AbortController();
   let timer;
   let onAbort;
   const stop = new Promise((_, reject) => {
     timer = setTimeout(
-      () =>
+      () => {
         reject(
           Object.assign(new Error('The upload timed out.'), { timedOut: true }),
-        ),
-      timeoutMs,
+        );
+        request.abort();
+      },
+      timeoutMs ?? blobUploadTimeoutMs(bytes.length),
     );
     if (signal) {
-      onAbort = () => reject(abortError());
+      onAbort = () => {
+        reject(abortError());
+        request.abort();
+      };
       signal.addEventListener('abort', onAbort, { once: true });
     }
   });
+  const upload = target.agent.com.atproto.repo.uploadBlob(bytes, {
+    encoding: type,
+    signal: request.signal,
+  });
+  // Rejects with the abort once the race is lost; nothing waits on it then.
+  Promise.resolve(upload).catch(() => {});
   try {
-    const res = await Promise.race([
-      target.agent.com.atproto.repo.uploadBlob(bytes, {
-        encoding: type,
-        ...(signal ? { signal } : {}),
-      }),
-      stop,
-    ]);
+    const res = await Promise.race([upload, stop]);
     const blob = toJsonShape(res?.data?.blob);
     if (!blobCid(blob))
       throw new Error('The PDS did not return the uploaded blob.');

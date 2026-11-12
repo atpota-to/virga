@@ -4,10 +4,10 @@
 // and is parked while media uploads; then the records are built and written
 // in one go. A single post is one createRecord, or one applyWrites when it
 // carries a threadgate or postgate; a thread is one applyWrites holding every
-// post (and the root's gates), its replies chained through locally computed
-// CIDs. Every write uses a client-chosen key and is retried idempotently
-// (publishRecord.js), and nothing is ever rolled back: applyWrites is atomic,
-// and blobs no record names are collected by the PDS.
+// post, the root's threadgate and a postgate per post, its replies chained
+// through locally computed CIDs. Every write uses a client-chosen key and is
+// retried idempotently (publishRecord.js), and nothing is ever rolled back:
+// applyWrites is atomic, and blobs no record names are collected by the PDS.
 //
 // Everything is done as `target` — uploads, video, card thumbnails, the
 // writes — and a blob uploaded as another account is uploaded again, because
@@ -455,15 +455,20 @@ export async function publish(state, target, options = {}) {
         now: records[0].createdAt,
       });
       const rkey = created[0].rkey;
+      // A threadgate covers the whole thread from its root, but a postgate
+      // guards only the post it names, so every post of a new thread gets its
+      // own or the rest of the thread stays quotable.
       const gateWrites = state.reply
         ? []
-        : buildGateWrites({
-            did: repo,
-            rkey,
-            threadgateRules: threadgateAllow,
-            postgateRules: postgateEmbeddingRules,
-            createdAt: created[0].record.createdAt,
-          });
+        : created.flatMap((post, i) =>
+            buildGateWrites({
+              did: repo,
+              rkey: post.rkey,
+              threadgateRules: i === 0 ? threadgateAllow : null,
+              postgateRules: postgateEmbeddingRules,
+              createdAt: post.record.createdAt,
+            }),
+          );
       await publishWithIdempotentRetry(
         target.agent,
         async () => {

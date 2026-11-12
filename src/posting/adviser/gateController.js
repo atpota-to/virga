@@ -16,7 +16,11 @@
 // 10 s deadline, and lets the post through when there's nothing to read or
 // the month's checks are known to be used up. Mode 'manual' is the composer's
 // "Check this post" button: it ignores the scope and always shows the sheet,
-// including when there's nothing to check or nothing left this month.
+// including when there's nothing to check. It asks even when this browser
+// thinks the month is used up, because that hint can be stale (the account
+// became unlimited, or its count was reset): cocoon refuses an over-limit
+// request with monthly_limit before spending anything, and that refusal is
+// the limit sheet.
 //
 // No double billing: a 'publish' from the sheet means the read already
 // happened, so the composer publishes without checking again.
@@ -293,10 +297,6 @@ export function createAdviserGateController({
         if (!plan.hasSomething)
           return finish(
             await openSheet(sheetFor('manual', 'empty', plan, state)),
-          );
-        if (atLimit(did))
-          return finish(
-            await openSheet(sheetFor('manual', 'limit', plan, state)),
           );
       }
 

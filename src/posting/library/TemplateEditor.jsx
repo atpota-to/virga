@@ -125,6 +125,55 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
     [closeRef],
   );
 
+  // A prompt that replaces the footer takes focus (its group's name and its
+  // question are read with it), or focus would stay in the field above with
+  // nothing said; answering it hands focus back to the button that raised it.
+  const formRef = useRef(null);
+  const keepEditingRef = useRef(null);
+  const keepItRef = useRef(null);
+  const cancelRef = useRef(null);
+  const deleteRef = useRef(null);
+  const prompt = confirmDiscard ? 'discard' : confirmDelete ? 'delete' : null;
+  const lastPrompt = useRef(null);
+  useEffect(() => {
+    const was = lastPrompt.current;
+    lastPrompt.current = prompt;
+    if (prompt === 'discard') keepEditingRef.current?.focus();
+    else if (prompt === 'delete') keepItRef.current?.focus();
+    else if (was === 'discard') cancelRef.current?.focus();
+    else if (was === 'delete') deleteRef.current?.focus();
+  }, [prompt]);
+
+  // Escape in the form is answered here, not by the dialog: the browser lets
+  // a page stop only one Escape without a click between, so a second one
+  // reaching the dialog would close it over "Discard your changes?". Here it
+  // means no: it puts a prompt away, and only asks to close when none is up.
+  const onFormKeyDown = (e) => {
+    if (e.key !== 'Escape' || e.defaultPrevented || e.nativeEvent?.isComposing) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirmDiscard) setConfirmDiscard(false);
+    else if (confirmDelete) {
+      if (!saving) setConfirmDelete(false);
+    } else closeRef.current?.();
+  };
+
+  // A close the page couldn't stop (an Escape from outside the form) still
+  // closes the editor, so the page's own state follows the dialog's. When the
+  // page closes it, the form has left the document first.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  useEffect(() => {
+    const form = formRef.current;
+    const dialog = form?.closest('dialog');
+    if (!dialog) return undefined;
+    const onNativeClose = () => {
+      if (form.isConnected) onCloseRef.current?.();
+    };
+    dialog.addEventListener('close', onNativeClose);
+    return () => dialog.removeEventListener('close', onNativeClose);
+  }, []);
+
   // What an existing quote is, read, so the form can name it.
   useEffect(() => {
     const kind = templateEmbedKind(initial.embed);
@@ -270,7 +319,7 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
   const shownPosts = posts.items.slice(0, posts.shown);
 
   return (
-    <form className="tpl-form" onSubmit={save} noValidate>
+    <form ref={formRef} className="tpl-form" onSubmit={save} onKeyDown={onFormKeyDown} noValidate>
       <p className="note">
         Templates are saved in your repo, where anyone can read them. Don’t put anything private in one.
       </p>
@@ -600,8 +649,10 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
 
       {confirmDiscard ? (
         <div className="tpl-actions" role="group" aria-label="Discard changes?">
-          <span className="tpl-actions-note">Discard your changes?</span>
-          <Button onClick={() => setConfirmDiscard(false)} data-autofocus>
+          <span className="tpl-actions-note" id={`${uid}-discard-note`}>
+            Discard your changes?
+          </span>
+          <Button ref={keepEditingRef} aria-describedby={`${uid}-discard-note`} onClick={() => setConfirmDiscard(false)}>
             Keep editing
           </Button>
           <Button variant="danger" onClick={onClose}>
@@ -610,8 +661,10 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
         </div>
       ) : confirmDelete ? (
         <div className="tpl-actions" role="group" aria-label="Delete this template?">
-          <span className="tpl-actions-note">Delete “{template?.name}” for good? It goes from your repo, and from every app that reads it.</span>
-          <Button onClick={() => setConfirmDelete(false)} disabled={saving}>
+          <span className="tpl-actions-note" id={`${uid}-delete-note`}>
+            Delete “{template?.name}” for good? It goes from your repo, and from every app that reads it.
+          </span>
+          <Button ref={keepItRef} aria-describedby={`${uid}-delete-note`} onClick={() => setConfirmDelete(false)} disabled={saving}>
             Keep it
           </Button>
           <Button variant="danger" onClick={doDelete} disabled={saving} aria-busy={saving || undefined}>
@@ -621,12 +674,12 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
       ) : (
         <div className="tpl-actions">
           {template?.rkey && (
-            <Button variant="ghost" className="tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
+            <Button ref={deleteRef} variant="ghost" className="tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
               <Trash2 size={14} aria-hidden="true" />
               Delete
             </Button>
           )}
-          <Button onClick={() => closeRef.current?.()} disabled={saving}>
+          <Button ref={cancelRef} onClick={() => closeRef.current?.()} disabled={saving}>
             Cancel
           </Button>
           <Button variant="primary" type="submit" disabled={saving} aria-busy={saving || undefined}>

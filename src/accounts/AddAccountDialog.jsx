@@ -75,7 +75,7 @@ export default function AddAccountDialog({ open, onClose }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={busy}
-            autoFocus
+            data-autofocus
             aria-describedby={error ? 'add-account-error' : 'add-account-note'}
           />
         </label>

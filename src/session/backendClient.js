@@ -14,6 +14,10 @@
 // or the browser never sends the request at all, hence the exact header sets.
 
 const PROXY_TIMEOUT_MS = 60_000;
+// An upload's deadline is its caller's, which grows with the file's size
+// (src/posting/lib/blobs.js); this one only stops a call with none from
+// hanging for ever.
+const UPLOAD_FALLBACK_TIMEOUT_MS = 10 * 60_000;
 const LITE_TIMEOUT_MS = 8_000;
 const SESSION_TIMEOUT_MS = 20_000;
 
@@ -153,7 +157,8 @@ const TOKEN = /^vg_[0-9a-f]{64}$/;
  *
  *   null                                  not a return
  *   { kind: 'session', did, token, intent, pending }
- *   { kind: 'error', error }              error.params.get('error') is the code
+ *   { kind: 'error', error, orphanToken? } error.params.get('error') is the code;
+ *                                         orphanToken is a well-formed token that was refused
  *
  * A token is taken only from the fragment and only when the nonce in the
  * address is the one this tab sent. An error return carries no token, so it
@@ -176,7 +181,11 @@ export function readBackendReturn({ pathname, search, hash }, pending, returnPat
   if (!token && !did) return null;
   const nonce = query.get('n');
   if (!pending || !nonce || pending.nonce !== nonce) {
-    return { kind: 'error', error: returnError('unexpected_return', 'This sign-in wasn’t started from this tab, so it was ignored.') };
+    const error = returnError('unexpected_return', 'This sign-in wasn’t started from this tab, so it was ignored.');
+    // A refused token is still live on the server, and while it lives the
+    // server counts the account as signed in somewhere: handed back so it
+    // can be signed out rather than left to keep the grant alive.
+    return TOKEN.test(token || '') ? { kind: 'error', error, orphanToken: token } : { kind: 'error', error };
   }
   if (!TOKEN.test(token || '') || !DID.test(did || '')) {
     return { kind: 'error', error: returnError('callback_failed', 'The sign-in came back without a usable session.') };
@@ -204,6 +213,19 @@ export function stripReturnFromAddress(win = globalThis.window) {
 }
 
 /* ---- the Agent's transport ------------------------------------------- */
+
+/**
+ * `token` is the token itself, or a function that reads it. The session
+ * layer passes a reader, so an agent built before another tab signed the
+ * account in again sends the new token and not the one it was built with.
+ */
+function tokenNow(token) {
+  const value = typeof token === 'function' ? token() : token;
+  return typeof value === 'string' && value ? value : null;
+}
+
+/** What a request answers when there is no token to send: the server's own 401, without asking it. */
+const NO_TOKEN_ENVELOPE = { success: false, code: 'FRONTEND_SESSION_INVALID', error: 'Not signed in through Virga’s server' };
 
 function jsonResponse(body, status, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -245,13 +267,17 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
     const u = new URL(url, 'https://xrpc.invalid');
     const nsid = u.pathname.replace(/^\/xrpc\//, '');
     const inHeaders = new Headers(init.headers || undefined);
-    const signal = withDeadline(init.signal || null, timeoutMs);
+    const upload = nsid === 'com.atproto.repo.uploadBlob';
+    const signal = upload ? init.signal || withDeadline(null, UPLOAD_FALLBACK_TIMEOUT_MS) : withDeadline(init.signal || null, timeoutMs);
 
     if (BINARY_OUTPUT.has(nsid)) {
       throw new TypeError(`${nsid} answers in bytes and can't go through Virga’s server; read it from the PDS directly.`);
     }
 
-    if (nsid === 'com.atproto.repo.uploadBlob') {
+    const bearer = tokenNow(token);
+    if (!bearer) return unwrapEnvelope(jsonResponse(NO_TOKEN_ENVELOPE, 401), { did, onUnauthorized });
+
+    if (upload) {
       const mime = (inHeaders.get('content-type') || '').split(';')[0].trim();
       // The server stores whatever type it is told; octet-stream would put an
       // untyped blob in the repo, which no post can use.
@@ -260,7 +286,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
       }
       const res = await fetch(`${backendUrl}/oauth/upload-blob?encoding=${encodeURIComponent(mime)}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+        headers: { Authorization: `Bearer ${bearer}`, 'Content-Type': 'application/octet-stream' },
         body: init.body,
         signal,
       });
@@ -268,7 +294,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
     }
 
     const headers = {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${bearer}`,
       'X-XRPC-Method': nsid,
       'Content-Type': 'application/json',
     };
@@ -311,7 +337,8 @@ export function requestError(status, body) {
 }
 
 /**
- * A requester for cocoon's `/api/*` endpoints, as one account (the token's).
+ * A requester for cocoon's `/api/*` endpoints, as one account (the token's;
+ * `token` may be a reader, as for createBackendFetchHandler).
  * `request` resolves to the whole parsed body: the services read `.data`,
  * `.moved` or `.unavailable` themselves, and the AI endpoints answer bare.
  * A non-2xx answer, or `success: false`, throws `requestError(...)`. A 401
@@ -324,7 +351,16 @@ export function createBackendRequester({ backendUrl, token, did, fetch = globalT
     async request(path, { method = 'GET', query, body, signal, timeoutMs = 30_000 } = {}) {
       const url = new URL(`${backendUrl}${path.startsWith('/') ? '' : '/'}${path}`);
       appendQuery(url, query);
-      const headers = { Authorization: `Bearer ${token}` };
+      const bearer = tokenNow(token);
+      if (!bearer) {
+        try {
+          onUnauthorized?.(did, NO_TOKEN_ENVELOPE.code);
+        } catch {
+          // As below.
+        }
+        throw requestError(401, NO_TOKEN_ENVELOPE);
+      }
+      const headers = { Authorization: `Bearer ${bearer}` };
       if (body !== undefined) headers['Content-Type'] = 'application/json';
       const combined = withDeadline(signal || null, timeoutMs);
       let res;
@@ -398,16 +434,37 @@ export function fetchBackendSession({ backendUrl, token, fetch = globalThis.fetc
  * stay signed in; the server ends the account's grant only when no token is
  * left. Never throws; true when the server confirmed.
  */
-export async function backendSignOut({ backendUrl, token, fetch = globalThis.fetch }) {
+// Virga's server answers 503 with one of these when it couldn't finish the
+// sign-out yet (its store didn't answer) and has left the token in place.
+const TRANSIENT_LOGOUT_CODES = new Set(['VALIDATION_TRANSIENT_ERROR', 'LOGOUT_TRANSIENT_ERROR']);
+const LOGOUT_RETRY_MS = 1500;
+
+export async function backendSignOut({ backendUrl, token, fetch = globalThis.fetch, retryDelayMs = LOGOUT_RETRY_MS }) {
   if (!token) return false;
-  try {
+  const attempt = async () => {
     const res = await fetch(`${backendUrl}/oauth/logout`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: '{}',
       signal: withDeadline(null, SESSION_TIMEOUT_MS),
     });
-    return res.ok;
+    if (res.ok) return 'done';
+    if (res.status !== 503) return 'failed';
+    const body = await res.json().catch(() => null);
+    return TRANSIENT_LOGOUT_CODES.has(body?.code) ? 'again' : 'failed';
+  };
+  try {
+    // One more try for a sign-out the server couldn't finish: the token goes
+    // from this browser either way, and a grant whose last token is still
+    // live on the server isn't revoked.
+    const first = await attempt();
+    if (first !== 'again') return first === 'done';
+  } catch {
+    return false;
+  }
+  try {
+    await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+    return (await attempt()) === 'done';
   } catch {
     return false;
   }

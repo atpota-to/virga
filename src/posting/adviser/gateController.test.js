@@ -377,12 +377,27 @@ describe('the "Check this post" button (manual)', () => {
     expect(analyzePost).not.toHaveBeenCalled();
   });
 
-  it('shows the limit without asking when the month’s checks are used up', async () => {
+  it('still asks when this browser thinks the month is used up', async () => {
+    // The hint can be stale: the account may be unlimited by now.
     const { ctl, analyzePost } = setup({ atLimit: true });
+    ctl.check(state(['fine']), { mode: 'manual' });
+    await flush();
+    expect(analyzePost).toHaveBeenCalledTimes(1);
+    expect(ctl.getView().sheet?.status).toBe('ready');
+  });
+
+  it('shows the limit when cocoon refuses a check the hint already expected', async () => {
+    const { ctl, analyzePost } = setup({
+      atLimit: true,
+      answer: Object.assign(new Error('used up'), {
+        code: 'monthly_limit',
+        status: 429,
+      }),
+    });
     ctl.check(state(), { mode: 'manual' });
     await flush();
+    expect(analyzePost).toHaveBeenCalledTimes(1);
     expect(ctl.getView().sheet?.status).toBe('limit');
-    expect(analyzePost).not.toHaveBeenCalled();
   });
 
   it('ignores the scope and "check before posting", and always shows the read', async () => {

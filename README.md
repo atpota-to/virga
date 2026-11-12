@@ -130,7 +130,10 @@ text. Settings › Posting says exactly what is sent and to whom.
 
 Scheduling, the queue, timers and the adviser need a long session, because Virga's server
 does them while the browser is closed. On a browser-session account those pages say so
-and offer to reconnect. Scheduled replies and scheduled videos aren't offered.
+and offer to reconnect. They keep running while any browser is signed in to Virga with a
+long session for the account; signing out of the last one stops them until it signs in
+that way again, so a sign-out with posts or timers waiting asks first. Scheduled replies
+and scheduled videos aren't offered.
 
 **Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
@@ -281,8 +284,10 @@ Long sessions, scheduling, timers and the adviser need cocoon's Virga client dep
 (`docs/VIRGA_CLIENT.md` in the cocoon repo), in this order:
 
 1. Apply cocoon's migration `039_virga_oauth_client.sql`.
-2. Set cocoon's `VIRGA_OAUTH_PRIVATE_KEY` (ES256), `VIRGA_FRONTEND_URL` (Virga's
-   origin, plus `VIRGA_EXTRA_FRONTEND_URLS` for any other exact origin) and
+2. Set cocoon's `VIRGA_OAUTH_PRIVATE_KEY_1` (an ES256 JWK as JSON; `_2` and `_3` are
+   optional, for rotating keys; cocoon's `docs/VIRGA_CLIENT.md` says how to make one),
+   `VIRGA_FRONTEND_URL` (Virga's origin, plus `VIRGA_EXTRA_FRONTEND_URLS` for any other
+   exact origin) and
    `VIRGA_OAUTH_PUBLIC_BASE=https://<virga origin>/backend`. The base is the client_id's
    home, so it must not change once anyone has signed in. Optionally
    `VIRGA_FEATURE_LIMITS=flat`.

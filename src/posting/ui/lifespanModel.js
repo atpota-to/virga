@@ -154,7 +154,9 @@ export function pinBounds(from = Date.now()) {
  *   thread    that a thread goes with its first post
  *
  * `fit` is the editor's `{ editingExisting?, reply?, thread? }`; `publishAt`
- * the scheduled time, else the post goes out now.
+ * the scheduled time, else the post goes out now. `countFrom` is for a post
+ * already out: 'now' or 'wentUp', where its length is counted from
+ * (timerStart's `from`); left out, the post is still to go up.
  */
 export function editorNotes(
   rule,
@@ -163,6 +165,7 @@ export function editorNotes(
     publishAt = null,
     limits = null,
     holds = null,
+    countFrom = 'goesUp',
     now = Date.now(),
   } = {},
 ) {
@@ -190,7 +193,9 @@ export function editorNotes(
   const deletes = fitted.effects.some((e) => e.action === 'delete');
   return {
     fitted,
-    summary: fitted.enabled ? describeTimer(fitted, now) : '',
+    summary: fitted.enabled
+      ? describeTimer(fitted, now, { from: countFrom })
+      : '',
     fitNote: t.enabled ? describeFitChange(t, timerFit) : '',
     pin,
     pinBlocks,
@@ -245,12 +250,35 @@ export function firstActAt(
 }
 
 /**
- * Whether counting from when the post went up would already be past its
- * time (so it acts at cocoon's five-minute floor).
+ * Where a timer on a post that's already out starts counting, as cocoon will
+ * count it (validateArm): from when the post went up only while that's
+ * inside the rule's length, otherwise from now. A start in the future (a
+ * clock off) or one that can't be read also counts from now.
+ *
+ *   startedAt  the start to send as `postedAt`, in ms
+ *   from       'wentUp' or 'now', the start that will actually be used
+ *   passed     '' or, when 'posted' was asked for:
+ *              'floor'    its time comes within five minutes, so it acts at
+ *                         cocoon's five-minute floor
+ *              'elapsed'  the whole length has already gone by, so cocoon
+ *                         counts it again from now
+ *
+ * A pinned time doesn't depend on the start; it counts from now.
  */
-export function startHasPassed(rule, { postedAt, now = Date.now() } = {}) {
+export function timerStart(
+  rule,
+  { start = 'now', postedAt = null, now = Date.now() } = {},
+) {
+  const fromNow = { startedAt: now, from: 'now', passed: '' };
   const t = normalizeTimer(rule);
-  const from = Date.parse(postedAt || '');
-  if (!t.enabled || t.deleteAt || !Number.isFinite(from)) return false;
-  return from + t.lifespanSeconds * 1000 <= now + MIN_LIFESPAN_SECONDS * 1000;
+  if (start !== 'posted' || !t.enabled || t.deleteAt) return fromNow;
+  const at = Date.parse(postedAt || '');
+  if (!Number.isFinite(at) || at > now) return fromNow;
+  const length = t.lifespanSeconds * 1000;
+  if (now - at >= length) return { ...fromNow, passed: 'elapsed' };
+  return {
+    startedAt: at,
+    from: 'wentUp',
+    passed: at + length <= now + MIN_LIFESPAN_SECONDS * 1000 ? 'floor' : '',
+  };
 }

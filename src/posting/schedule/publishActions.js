@@ -28,6 +28,19 @@ export const EMPTY_QUEUE_HINT =
 export const NEEDS_BACKEND_HINT =
   'Scheduling needs a long session. Reconnect this account through Virga’s server.';
 
+/** The same, in a build that only signs in through the browser: there's nothing to reconnect to. */
+export const NO_BACKEND_HINT =
+  'Scheduling needs a long session, which this copy of Virga doesn’t offer.';
+
+/**
+ * Why scheduling is off for an account without a long session, for the
+ * build's sign-in (`authMode`, the session's): only a build that offers
+ * Virga's server ('backend') can be told to reconnect through it.
+ */
+export function needsBackendHint(authMode = 'backend') {
+  return authMode === 'backend' ? NEEDS_BACKEND_HINT : NO_BACKEND_HINT;
+}
+
 export const REPLY_HINT = 'Replies can’t be scheduled. Post it now instead.';
 export const VIDEO_HINT =
   'Posts with video can’t be scheduled. Post it now instead.';
@@ -49,14 +62,16 @@ export function getPublishActionLabel(action) {
 /**
  * Why this post can't be scheduled or queued at all, or null when it can:
  * the account has no long session, or the post is a reply (or continues a
- * thread) or carries a video, which cocoon can't hold.
+ * thread) or carries a video, which cocoon can't hold. `authMode` is the
+ * session's, which picks the long-session wording (needsBackendHint).
  */
 export function scheduleBlockReason({
   canSchedule = true,
   reply = false,
   video = false,
+  authMode = 'backend',
 } = {}) {
-  if (!canSchedule) return NEEDS_BACKEND_HINT;
+  if (!canSchedule) return needsBackendHint(authMode);
   if (reply) return REPLY_HINT;
   if (video) return VIDEO_HINT;
   return null;

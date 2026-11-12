@@ -142,6 +142,13 @@ describe('readBackendReturn', () => {
     expect(noNonce.error.params.get('error')).toBe('unexpected_return');
   });
 
+  it('hands back a refused token that is still live, to be signed out', () => {
+    const r = readBackendReturn(at('?n=n1', `#session=${TOKEN}&did=${DID}`), { nonce: 'other' }, '/oauth/return');
+    expect(r.orphanToken).toBe(TOKEN);
+    const junk = readBackendReturn(at('?n=n1', `#session=nope&did=${DID}`), { nonce: 'other' }, '/oauth/return');
+    expect(junk).not.toHaveProperty('orphanToken');
+  });
+
   it('never reads a token from the query', () => {
     const r = readBackendReturn(at(`?n=n1&session=${TOKEN}&did=${DID}`), pending, '/oauth/return');
     expect(r).toBeNull();
@@ -304,6 +311,18 @@ describe('uploadBlob through the fetch handler', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it('leaves an upload’s deadline to its caller, not the 60 s one for other calls', async () => {
+    const fetch = recorder(() => json({ success: true, data: { blob } }));
+    const caller = new AbortController();
+    await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch, timeoutMs: 5 })('/xrpc/com.atproto.repo.uploadBlob', {
+      method: 'POST',
+      headers: { 'content-type': 'image/png' },
+      body: new Uint8Array(1),
+      signal: caller.signal,
+    });
+    expect(fetch.calls[0].init.signal).toBe(caller.signal);
+  });
+
   it('turns an upload failure into an XRPC error', async () => {
     const fetch = recorder(() => json({ success: false, error: 'Forward timed out', code: 'PDS_UPLOAD_TIMEOUT' }, 504));
     const res = await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch })('/xrpc/com.atproto.repo.uploadBlob', {
@@ -429,6 +448,21 @@ describe('session checks and sign-out', () => {
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json' });
   });
 
+  it('tries a sign-out the server couldn’t finish once more, and only that kind', async () => {
+    let n = 0;
+    const flaky = recorder(() => (++n === 1 ? json({ success: false, code: 'LOGOUT_TRANSIENT_ERROR' }, 503) : json({ success: true })));
+    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: flaky, retryDelayMs: 0 })).toBe(true);
+    expect(flaky.calls).toHaveLength(2);
+
+    const down = recorder(() => json({ success: false, code: 'VALIDATION_TRANSIENT_ERROR' }, 503));
+    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: down, retryDelayMs: 0 })).toBe(false);
+    expect(down.calls).toHaveLength(2);
+
+    const refused = recorder(() => json({ success: false, code: 'FRONTEND_SESSION_INVALID' }, 401));
+    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: refused, retryDelayMs: 0 })).toBe(false);
+    expect(refused.calls).toHaveLength(1);
+  });
+
   it('never throws from a sign-out, and sends nothing without a token', async () => {
     const fetch = vi.fn(async () => {
       throw new TypeError('Failed to fetch');
@@ -437,5 +471,36 @@ describe('session checks and sign-out', () => {
     const idle = vi.fn();
     expect(await backendSignOut({ backendUrl: COCOON, token: null, fetch: idle })).toBe(false);
     expect(idle).not.toHaveBeenCalled();
+  });
+});
+
+describe('a token read at each request', () => {
+  it('sends whatever the reader holds now, through the Agent and the requester', async () => {
+    let current = TOKEN;
+    const fetch = vi.fn(async () => json({ success: true, data: { preferences: [] } }));
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: () => current, did: DID, fetch }) });
+    const req = createBackendRequester({ backendUrl: COCOON, token: () => current, did: DID, fetch });
+    await agent.app.bsky.actor.getPreferences();
+    await req.request('/api/schedule/list');
+    current = `vg_${'cd'.repeat(32)}`;
+    await agent.app.bsky.actor.getPreferences();
+    await req.request('/api/schedule/list');
+    expect(fetch.mock.calls.map(([, init]) => init.headers.Authorization)).toEqual([
+      `Bearer ${TOKEN}`,
+      `Bearer ${TOKEN}`,
+      `Bearer ${current}`,
+      `Bearer ${current}`,
+    ]);
+  });
+
+  it('answers 401 without asking the server once the token has gone', async () => {
+    const fetch = vi.fn();
+    const onUnauthorized = vi.fn();
+    const res = await createBackendFetchHandler({ backendUrl: COCOON, token: () => null, did: DID, fetch, onUnauthorized })('/xrpc/app.bsky.actor.getPreferences', {});
+    expect(res.status).toBe(401);
+    const req = createBackendRequester({ backendUrl: COCOON, token: () => null, did: DID, fetch, onUnauthorized });
+    await expect(req.request('/api/schedule/list')).rejects.toMatchObject({ status: 401, code: 'FRONTEND_SESSION_INVALID' });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(onUnauthorized).toHaveBeenCalledWith(DID, 'FRONTEND_SESSION_INVALID');
   });
 });

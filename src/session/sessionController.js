@@ -6,6 +6,7 @@
 
 import { OAUTH_RETURN_PATH, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
 import { readSessionHint, syncSessionHint, writeSessionHint } from '../lib/sessionHint.js';
+import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import { missingScopes } from './scopes.js';
 import * as A from './accounts.js';
 import * as B from './backendClient.js';
@@ -52,6 +53,7 @@ export function capabilitiesFrom(row, status) {
 export function createSessionController(set, env) {
   const { browser } = env;
   const agents = new Map(); // did -> Promise<Agent>, for accounts other than the open one
+  const built = new Map(); // did -> { mode, token }, what each account's agent was built from
   const browserSessions = new Map(); // did -> OAuthSession
   const requesters = new Map(); // did -> { token, requester }
   const signingOut = new Set(); // dids whose session this tab is ending on purpose
@@ -93,6 +95,7 @@ export function createSessionController(set, env) {
   }
 
   function forgetBuilt(did) {
+    built.delete(did);
     agents.delete(did);
     requesters.delete(did);
     browserSessions.delete(did);
@@ -166,10 +169,15 @@ export function createSessionController(set, env) {
     sleep: env.sleep,
   });
 
-  function backendAgent(Agent, did, token) {
+  // The token is read at each request, not kept: another tab that signs the
+  // account in again replaces it, and an agent holding the old one would
+  // fail every call while the account looked fine.
+  const tokenReader = (did) => () => A.readBackendToken(env.storage, did);
+
+  function backendAgent(Agent, did) {
     return new Agent({
       did,
-      fetchHandler: B.createBackendFetchHandler({ backendUrl: env.backendUrl, fetch: env.fetch, token, did, onUnauthorized }),
+      fetchHandler: B.createBackendFetchHandler({ backendUrl: env.backendUrl, fetch: env.fetch, token: tokenReader(did), did, onUnauthorized }),
     });
   }
 
@@ -180,7 +188,8 @@ export function createSessionController(set, env) {
     if (account.mode === 'backend') {
       const token = A.readBackendToken(env.storage, did);
       if (!token) throw A.makeReauthRequiredError(did);
-      return { did, agent: backendAgent(Agent, did, token), session: { sub: did, did, mode: 'backend' }, mode: 'backend' };
+      built.set(did, { mode: 'backend', token });
+      return { did, agent: backendAgent(Agent, did), session: { sub: did, did, mode: 'backend' }, mode: 'backend' };
     }
     let oauth = browserSessions.get(did);
     if (!oauth) {
@@ -198,6 +207,7 @@ export function createSessionController(set, env) {
         }
       });
     }
+    built.set(did, { mode: 'browser', token: null });
     return { did, agent: new Agent(oauth), session: { sub: did, did, mode: 'browser', oauth }, mode: 'browser' };
   }
 
@@ -282,17 +292,51 @@ export function createSessionController(set, env) {
     }
   }
 
+  /** Whether `did` can be opened without a sign-in, as far as this browser knows. */
+  function usable(did) {
+    const account = find(did);
+    if (!account || account.signedOut) return false;
+    return account.mode !== 'backend' || Boolean(A.readBackendToken(env.storage, did));
+  }
+
+  /**
+   * Whether a sign-in that just came back should leave the account that was
+   * open before it open. Signing another account back in (to post as it from
+   * the composer, or from Settings) is for that account's sake: it doesn't
+   * switch the app to it. A new account, or the open one signing in again,
+   * opens as usual.
+   */
+  function keepsOpen(intent, did, openBefore) {
+    return intent === 'reauth' && Boolean(openBefore) && openBefore !== did && usable(openBefore);
+  }
+
+  /**
+   * End a long-session token this browser no longer holds. While it lives,
+   * the server counts the account as signed in somewhere, so a later sign-out
+   * would leave Virga's grant (and the scheduled posts and timers that run on
+   * it) in place.
+   */
+  function dropToken(token) {
+    if (token) B.backendSignOut({ backendUrl: env.backendUrl, fetch: env.fetch, token }).catch(() => {});
+  }
+
   async function start() {
     const store = env.storage;
     let list = rows();
+    const openBefore = A.takeOpenAtSignIn(env.tabStorage);
 
-    if (env.backendReturn?.kind === 'error') set.error(env.backendReturn.error);
+    if (env.backendReturn?.kind === 'error') {
+      set.error(env.backendReturn.error);
+      dropToken(env.backendReturn.orphanToken);
+    }
     if (env.backendReturn?.kind === 'session') {
-      const { did, token } = env.backendReturn;
+      const { did, token, intent } = env.backendReturn;
       const before = A.findAccount(list, did);
+      const replaced = A.readBackendToken(store, did);
       A.writeBackendToken(store, did, token);
+      if (replaced && replaced !== token) dropToken(replaced);
       list = A.recordSignIn(store, { did, mode: 'backend' });
-      A.writeActiveDid(store, did);
+      if (!keepsOpen(intent, did, openBefore)) A.writeActiveDid(store, did);
       H.clearReauthAttempts(env.tabStorage);
       forgetBuilt(did);
       clearStatus(did);
@@ -311,12 +355,12 @@ export function createSessionController(set, env) {
           browserSessions.set(did, done.session);
           const scope = await browser.grantedScope(done.session);
           list = A.recordSignIn(store, { did, mode: 'browser', scope: scope ?? undefined });
-          A.writeActiveDid(store, did);
+          if (!keepsOpen(done.intent, did, openBefore)) A.writeActiveDid(store, did);
           clearStatus(did);
           if (before?.mode === 'backend') {
             const token = A.readBackendToken(store, did);
             A.removeBackendToken(store, did);
-            B.backendSignOut({ backendUrl: env.backendUrl, fetch: env.fetch, token });
+            dropToken(token);
           }
         }
       } catch (err) {
@@ -377,9 +421,73 @@ export function createSessionController(set, env) {
     browserSessions.delete(sub);
     agents.delete(sub);
     if (signingOut.has(sub)) return;
+    // Already signed out (another tab marks the row before it ends the
+    // session): reread follows that, and there is nothing to sign in again.
+    if (account.signedOut) return;
     // Signed out on purpose in another tab: follow it quietly. Anything
     // else (a refresh the server refused) is a session that ended.
     markNeedsSignIn(sub, { discovered: !revoked });
+    if (revoked && active.did === sub) leave(sub).catch(() => {});
+  }
+
+  /**
+   * Another tab changed the list. Follow what it did to the accounts built
+   * here: one signed out or removed is left (the open one with a notice, as
+   * its archive must not stay on screen), one whose kind of sign-in changed
+   * is built again, and one signed back in loses the "signed out" this tab
+   * had for it.
+   */
+  async function followOtherTab(list) {
+    for (const account of list) {
+      if (statuses[account.did] === 'needsSignIn' && usable(account.did)) {
+        clearStatus(account.did);
+        forgetBuilt(account.did);
+      }
+    }
+    for (const [did, was] of [...built]) {
+      if (did === active.did) continue;
+      const row = A.findAccount(list, did);
+      if (!row || !usable(did) || row.mode !== was.mode) forgetBuilt(did);
+    }
+
+    const did = active.did;
+    if (!did || signingOut.has(did)) return;
+    const row = A.findAccount(list, did);
+    if (!row || !usable(did)) {
+      // This tab already knows (it found the session had ended, and is
+      // sending its reader to sign in again).
+      if (statuses[did] === 'needsSignIn') return;
+      forgetBuilt(did);
+      clearStatus(did);
+      env.dispatch(SESSION_NOTICE_EVENT, {
+        text: `${A.reauthNoticeLabel(row || { did })} isn’t signed in here any more: another tab signed it out, or its sign-in ended.`,
+        tone: 'info',
+      });
+      await leave(did);
+      return;
+    }
+    const was = built.get(did);
+    if (was && row.mode !== was.mode) {
+      // Moved to a long session (or back) in another tab: the session this
+      // tab's agent holds has been ended.
+      forgetBuilt(did);
+      try {
+        await open(row);
+      } catch (err) {
+        if (A.isReauthRequiredError(err)) markNeedsSignIn(did);
+        else setStatus(did, 'unknown');
+      }
+    } else if (was?.mode === 'backend') {
+      const token = A.readBackendToken(env.storage, did);
+      if (token !== was.token) {
+        // Signed in again elsewhere: the agent reads the new token itself,
+        // but what this tab thought of the old one no longer holds.
+        built.set(did, { mode: 'backend', token });
+        backendChecker.forget(did);
+        lastRecovery.delete(did);
+        clearStatus(did);
+      }
+    }
   }
 
   return {
@@ -427,6 +535,7 @@ export function createSessionController(set, env) {
 
     async signIn(input, { mode = env.authMode, intent = 'add' } = {}) {
       const handle = String(input || '').trim().replace(/^@/, '');
+      A.writeOpenAtSignIn(env.tabStorage, intent === 'reauth' ? active.did : null);
       if (mode === 'backend') {
         return B.startBackendSignIn({
           backendUrl: env.backendUrl,
@@ -450,6 +559,10 @@ export function createSessionController(set, env) {
       if (!account) return;
       const store = env.storage;
       signingOut.add(did);
+      // Marked before the session ends, so another tab that has it open
+      // follows the sign-out (reread) instead of reading the dropped session
+      // as one that expired and sending its reader to sign in again.
+      A.markSignedOut(store, did);
       try {
         if (account.mode === 'backend') {
           const token = A.readBackendToken(store, did);
@@ -464,7 +577,6 @@ export function createSessionController(set, env) {
         signingOut.delete(did);
       }
       forgetBuilt(did);
-      A.markSignedOut(store, did);
       clearStatus(did);
       refreshRows();
       if (active.did === did) await leave(did);
@@ -514,7 +626,7 @@ export function createSessionController(set, env) {
       if (!token) return null;
       const held = requesters.get(did);
       if (held?.token === token) return held.requester;
-      const requester = B.createBackendRequester({ backendUrl: env.backendUrl, fetch: env.fetch, token, did, onUnauthorized });
+      const requester = B.createBackendRequester({ backendUrl: env.backendUrl, fetch: env.fetch, token: tokenReader(did), did, onUnauthorized });
       requesters.set(did, { token, requester });
       return requester;
     },
@@ -524,12 +636,15 @@ export function createSessionController(set, env) {
       if (!account || account.signedOut) return H.SESSION_CHECK_STATUS.EXPIRED;
       const checker = account.mode === 'backend' ? backendChecker : browserChecker;
       const result = await checker.check(did);
-      return result.status;
+      // The same reading settleCheck gives the account's status: an
+      // "expired" the server didn't confirm (a cold start, a missing
+      // session row) is unknown, not signed out.
+      return result.status === H.SESSION_CHECK_STATUS.EXPIRED && !result.definitive ? H.SESSION_CHECK_STATUS.UNKNOWN : result.status;
     },
 
-    /** Another tab changed the account list: read it again. */
+    /** Another tab changed the account list: read it again, and follow it. */
     reread() {
-      refreshRows();
+      return followOtherTab(refreshRows()).catch(() => {});
     },
   };
 }

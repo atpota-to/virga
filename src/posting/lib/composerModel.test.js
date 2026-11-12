@@ -11,6 +11,7 @@ import {
   validateComposer,
   MAX_POSTS,
 } from './composerModel.js';
+import { countComposerGraphemes } from './inlineLinks.js';
 
 const ME = 'did:plc:me';
 const OTHER = 'did:plc:other';
@@ -566,6 +567,67 @@ describe('resolvePostTexts', () => {
       'https://example.com/a/very/long/path/indeed',
       'https://example.com/another/long/path',
     ]);
+  });
+
+  it('keeps the punctuation after a link in the post, and out of its address', async () => {
+    const cases = [
+      [
+        'Did you see https://example.com/page?',
+        'Did you see example.com/page?',
+        'https://example.com/page',
+      ],
+      [
+        'Look: https://example.com: neat',
+        'Look: example.com: neat',
+        'https://example.com',
+      ],
+      [
+        'Read https://example.com/page. Thanks',
+        'Read example.com/page. Thanks',
+        'https://example.com/page',
+      ],
+      [
+        'See (https://example.com/page) ok',
+        'See (example.com/page) ok',
+        'https://example.com/page',
+      ],
+      ['<https://example.com/x>', '<example.com/x>', 'https://example.com/x'],
+    ];
+    for (const [input, written, uri] of cases) {
+      const [post] = await resolvePostTexts(
+        normalizeComposerState({ asDid: ME, posts: [{ text: input }] }),
+        { resolveMention: async () => null },
+      );
+      expect(post.text, input).toBe(written);
+      expect(
+        post.facets.map((f) => f.features[0].uri),
+        input,
+      ).toEqual([uri]);
+      // The count measured what was written.
+      expect(countComposerGraphemes(input), input).toBe(
+        [...new Intl.Segmenter().segment(written)].length,
+      );
+    }
+  });
+
+  it('links a URL with an address in it whole, and counts it as written', async () => {
+    const url =
+      'https://example.com/newsletter/subscribe?ref=share&email=reader@example.org&utm_source=bsky&utm_medium=social';
+    const text = `${'a'.repeat(270)} ${url}`;
+    const s = normalizeComposerState({
+      asDid: ME,
+      langs: ['en'],
+      posts: [{ text }],
+    });
+    const [post] = await resolvePostTexts(s, {
+      resolveMention: async () => null,
+    });
+    expect(post.facets.map((f) => f.features[0].uri)).toEqual([url]);
+    expect(post.text).toBe(`${'a'.repeat(270)} example.com/newsletter/s...`);
+    const written = [...new Intl.Segmenter().segment(post.text)].length;
+    expect(countComposerGraphemes(text)).toBe(written);
+    expect(written).toBeLessThanOrEqual(300);
+    expect(validateComposer(s)).toEqual([]);
   });
 
   it('stops when cancelled', async () => {

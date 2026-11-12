@@ -11,6 +11,7 @@ import { emptyComposerState } from '../lib/composerModel.js';
 import {
   EMPTY_QUEUE_HINT,
   NEEDS_BACKEND_HINT,
+  NO_BACKEND_HINT,
   REPLY_HINT,
   VIDEO_HINT,
 } from '../schedule/publishActions.js';
@@ -79,6 +80,17 @@ describe('composerActions', () => {
       disabled: true,
       reason: NEEDS_BACKEND_HINT,
     });
+  });
+
+  it('doesn’t offer a long session in a build without one', () => {
+    const r = composerActions(stateWith('hi'), {
+      defaultAction: 'schedule',
+      queue: QUEUE,
+      caps: { canPost: true, canSchedule: false },
+      authMode: 'browser',
+    });
+    expect(r.actions.schedule).toEqual({ disabled: true, reason: NO_BACKEND_HINT });
+    expect(r.actions.queue.reason).toBe(NO_BACKEND_HINT);
   });
 
   it('keeps an empty queue primary but disabled', () => {
@@ -212,5 +224,17 @@ describe('actionLabel', () => {
       ),
     ).toBe('Save draft');
     expect(actionLabel('draft', stateWith('hi'))).toBe('Save as draft');
+  });
+});
+
+describe('Post now instead', () => {
+  it('makes the main button post now, whatever the usual action is, until a time is chosen', () => {
+    for (const defaultAction of ['queue', 'schedule', 'draft']) {
+      const m = composerActions(stateWith('hello'), { defaultAction, queue: QUEUE, caps: CAPS, postNow: true });
+      expect(m.primary).toBe('post');
+    }
+    expect(composerActions(stateWith('hello'), { defaultAction: 'queue', queue: QUEUE, caps: CAPS }).primary).toBe('queue');
+    const queued = stateWith('hello', { schedule: { mode: 'queue' } });
+    expect(composerActions(queued, { defaultAction: 'post', queue: QUEUE, caps: CAPS, postNow: true }).primary).toBe('queue');
   });
 });

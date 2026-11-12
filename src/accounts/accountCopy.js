@@ -47,3 +47,34 @@ export function requestReauth(did, { immediate = false } = {}) {
 export function showSessionNotice(text, { tone = 'danger' } = {}) {
   window.dispatchEvent(new CustomEvent(SESSION_NOTICE_EVENT, { detail: { text, tone } }));
 }
+
+function count(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+/**
+ * What signing `name` out stops, for a long session with work waiting on
+ * Virga's server, or null when nothing is waiting. `work` is `{ posts,
+ * timers }`, or null when it couldn't be read. Virga's server ends the
+ * account's grant when the last browser signed in to Virga with it signs
+ * out, and the queue and the timers run on that grant.
+ */
+export function pendingWorkWarning(name, work) {
+  const others = `no other browser or device is signed in to Virga as ${name}`;
+  const until = `until ${name} signs back in with a long session`;
+  if (work == null) {
+    return `Virga couldn’t check whether ${name} has scheduled posts or post timers waiting. If it has, and ${others}, they stop ${until}.`;
+  }
+  const what = [];
+  const stops = [];
+  if (work.posts > 0) {
+    what.push(count(work.posts, 'scheduled post', 'scheduled posts'));
+    stops.push(work.posts === 1 ? 'the post won’t go out' : 'the posts won’t go out');
+  }
+  if (work.timers > 0) {
+    what.push(count(work.timers, 'post timer', 'post timers'));
+    stops.push(work.timers === 1 ? 'the timer won’t delete anything' : 'the timers won’t delete anything');
+  }
+  if (!what.length) return null;
+  return `${name} has ${what.join(' and ')} waiting on Virga’s server. If ${others}, ${stops.join(' and ')} ${until}.`;
+}

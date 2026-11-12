@@ -13,6 +13,10 @@
 //     `embed`, `reply`), which keep links, tags, the post being replied to and
 //     already-uploaded media whole.
 //
+// Beside them each post may carry one field of Virga's (`virgaCard`), for
+// what a link card holds that neither shape keeps: an image not uploaded yet,
+// and whether the writer edited the card.
+//
 // Reading takes both and prefers the fuller one. Media are device-bound: each
 // file is kept in this browser (draftMedia.js) and the draft names it by a
 // `localRef` path.
@@ -25,6 +29,7 @@ import { gatesFromRules, gatesToRules } from '../lib/gates.js';
 import { kindForCollection } from '../lib/postLink.js';
 import { blobCid, isBlob } from '../lib/blobs.js';
 import { toJsonShape } from '../lib/recordCid.js';
+import { fetchLinkCard } from '../lib/linkCard.js';
 import {
   emptyComposerState,
   emptyPost,
@@ -34,11 +39,13 @@ import {
 } from '../lib/composerModel.js';
 import {
   openDraftMedia,
+  pruneDraftMedia,
   removeDraftMedia,
   stateLocalRefs,
   storeDraftMedia,
   loadDraftMedia,
 } from './draftMedia.js';
+import { autosaveKey, loadSessionDraft } from '../autosave.js';
 
 const APPVIEW_SERVICE = ['bsky_appview', 'did:web:api.bsky.app'];
 
@@ -295,10 +302,22 @@ function draftPost(post, text, { index, tags, selfLabels, reply, owner }) {
     if (post.video.alt) video.alt = post.video.alt;
     out.embedVideos = [video];
   }
-  if (post.card?.url)
+  if (post.card?.url) {
     out.embedExternals = [
       { $type: 'app.bsky.draft.defs#draftEmbedExternal', uri: post.card.url },
     ];
+    // A card image that isn't uploaded yet is only an address (the card
+    // service's), and whether the writer edited the card isn't a field of
+    // either shape. Both ride on the post, beside `embed` rather than in it,
+    // so nothing that publishes an `embed` as it stands carries them out.
+    const extra = {};
+    const thumbUrl = owned(post.card.thumbBlob, post.card.thumbBlobDid, owner)
+      ? null
+      : httpsUrl(post.card.thumb);
+    if (thumbUrl) extra.thumb = thumbUrl;
+    if (post.card.edited) extra.edited = true;
+    if (Object.keys(extra).length) out[CARD_EXTRA] = extra;
+  }
   if (post.record?.uri && post.record?.cid) {
     out.embedRecords = [
       {
@@ -380,6 +399,20 @@ export function composerStateToDraft(
 }
 
 /* ---- draft → composer state ------------------------------------------- */
+
+// The post's field for what a draft's card can't otherwise keep:
+// `{ thumb?: https URL, edited?: true }`.
+const CARD_EXTRA = 'virgaCard';
+
+function httpsUrl(value) {
+  if (typeof value !== 'string' || !value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' ? url.href : null;
+  } catch {
+    return null;
+  }
+}
 
 const cdnImage = (did, cid, size = 'feed_thumbnail') =>
   did && cid ? `${BSKY_CDN}/img/${size}/plain/${did}/${cid}@jpeg` : null;
@@ -465,13 +498,21 @@ function readVideo(post, media, owner) {
 }
 
 function readCard(post, media, owner) {
+  const extra = isObject(post[CARD_EXTRA]) ? post[CARD_EXTRA] : {};
+  const thumbUrl = httpsUrl(extra.thumb);
+  const card = readCardFields(post, media, owner, thumbUrl);
+  if (card && extra.edited === true) card.edited = true;
+  return card;
+}
+
+function readCardFields(post, media, owner, thumbUrl) {
   if (media?.$type === EXTERNAL && media.external?.uri) {
     const thumbBlob = plainBlob(media.external.thumb);
     const card = {
       url: media.external.uri,
       title: str(media.external.title),
       description: str(media.external.description),
-      thumb: thumbBlob ? cdnImage(owner, blobCid(thumbBlob)) : null,
+      thumb: thumbBlob ? cdnImage(owner, blobCid(thumbBlob)) : thumbUrl,
     };
     if (thumbBlob) {
       card.thumbBlob = thumbBlob;
@@ -482,10 +523,10 @@ function readCard(post, media, owner) {
   const uri = Array.isArray(post.embedExternals)
     ? post.embedExternals[0]?.uri
     : null;
-  // Only the address survives in the lexicon's field: the composer reads the
-  // card again from it.
+  // Only the address survives in the lexicon's field (a draft from Bluesky's
+  // app): openDraft reads the rest of the card again from it.
   return typeof uri === 'string' && uri
-    ? { url: uri, title: '', description: '', thumb: null }
+    ? { url: uri, title: '', description: '', thumb: thumbUrl }
     : null;
 }
 
@@ -810,10 +851,131 @@ export async function deleteDraft(
  */
 export async function openDraft(
   draftView,
-  { asDid, defaults, media, makePreviewUrl } = {},
+  { asDid, defaults, media, makePreviewUrl, fetchCard = fetchLinkCard } = {},
 ) {
   const state = draftToComposerState(draftView, { asDid, defaults });
   const opts = { media };
   if (makePreviewUrl !== undefined) opts.makePreviewUrl = makePreviewUrl;
-  return loadDraftMedia(asDid, state, opts);
+  const [loaded, cards] = await Promise.all([
+    loadDraftMedia(asDid, state, opts),
+    fetchCard ? completeDraftCards(state, { fetchCard }) : null,
+  ]);
+  if (!cards) return loaded;
+  return {
+    ...loaded,
+    state: {
+      ...loaded.state,
+      posts: loaded.state.posts.map((p, i) =>
+        cards[i] ? { ...p, card: cards[i] } : p,
+      ),
+    },
+  };
+}
+
+// The composer only reads a card for a link it hasn't got one for, and a
+// draft opened here may be posted straight from the Drafts page: a card
+// without its title or image has to be completed before either.
+const CARD_WAIT_MS = 5_000;
+
+/**
+ * The cards in `state` with what the draft lost filled in from the card
+ * service: the title, description and image a draft from Bluesky's app never
+ * kept, or an image only an older draft lacks. What the draft does say (an
+ * edited title, an uploaded image) is kept. One card per post, or null where
+ * nothing changed; null when nothing changed at all.
+ */
+export async function completeDraftCards(
+  state,
+  { fetchCard = fetchLinkCard, timeoutMs = CARD_WAIT_MS } = {},
+) {
+  const signal =
+    typeof AbortSignal !== 'undefined' &&
+    typeof AbortSignal.timeout === 'function'
+      ? AbortSignal.timeout(timeoutMs)
+      : undefined;
+  let changed = false;
+  const cards = await Promise.all(
+    (state?.posts || []).map(async (p) => {
+      const card = p?.card;
+      // A card the writer edited says what they chose, a removed image too.
+      if (!card?.url || card.edited) return null;
+      const lacksThumb = !card.thumb && !card.thumbBlob && !card.thumbFile;
+      if (str(card.title) && !lacksThumb) return null;
+      const fresh = await Promise.resolve(fetchCard(card.url, { signal })).catch(
+        () => null,
+      );
+      if (!fresh) return null;
+      const next = {
+        ...card,
+        title: str(card.title) || str(fresh.title),
+        description: str(card.description) || str(fresh.description),
+        thumb: lacksThumb ? fresh.thumb || null : card.thumb,
+      };
+      if (!card.associatedRefs && fresh.associatedRefs)
+        next.associatedRefs = fresh.associatedRefs;
+      changed = true;
+      return next;
+    }),
+  );
+  return changed ? cards : null;
+}
+
+/* ---- files no draft names any more ------------------------------------ */
+
+// A file is only forgotten once it's this old: a draft saved while the list
+// was read, or a post in the composer that names it, has had the day the
+// composer keeps a post for (autosave.js's AUTOSAVE_TTL_MS) and a day more.
+export const ORPHAN_MEDIA_MIN_AGE_MS = 2 * 24 * 60 * 60 * 1000;
+
+// Every localRef in the account's stored composer entry (the post being
+// written and the ones set aside), read as raw JSON: whatever names a file
+// keeps it, valid entry or not, and reading never clears anything.
+function autosavedLocalRefs(did, store) {
+  let entry = null;
+  try {
+    entry = JSON.parse(store?.getItem(autosaveKey(did)) || 'null');
+  } catch {
+    return [];
+  }
+  const refs = [];
+  const walk = (value) => {
+    if (Array.isArray(value)) value.forEach(walk);
+    else if (isObject(value)) {
+      if (typeof value.localRef === 'string' && value.localRef)
+        refs.push(value.localRef);
+      Object.values(value).forEach(walk);
+    }
+  };
+  walk(entry);
+  return refs;
+}
+
+/**
+ * Forget the files in this browser that no draft of the account names any
+ * more: ones whose draft was posted or deleted in another app, or that a
+ * failed removal left behind. Reads every draft first and does nothing
+ * unless that read is complete. Files the composer's stored or in-memory
+ * post names, and files newer than `minAgeMs`, stay. Returns the paths
+ * forgotten.
+ */
+export async function pruneOrphanedDraftMedia(
+  agent,
+  did,
+  {
+    media,
+    now = Date.now(),
+    minAgeMs = ORPHAN_MEDIA_MIN_AGE_MS,
+    store = localStore(),
+    signal,
+  } = {},
+) {
+  if (!agent || !did) return [];
+  const all = await listAllDrafts(agent, { signal });
+  if (all.complete !== true) return [];
+  const keep = [
+    ...all.flatMap(draftLocalRefs),
+    ...autosavedLocalRefs(did, store),
+    ...stateLocalRefs(loadSessionDraft(did)?.state),
+  ];
+  return pruneDraftMedia(did, keep, { media, savedBefore: now - minAgeMs });
 }

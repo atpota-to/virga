@@ -2,7 +2,7 @@
 // this app may move; every other queued row keeps its minute and the re-pack
 // steps around it (recomputeQueueAssignment's `occupied`). Pure.
 
-import { recomputeQueueAssignment } from './postingQueue.js';
+import { MIN_LEAD_MS, recomputeQueueAssignment } from './postingQueue.js';
 import {
   scheduledRowDeadlineStatus,
   scheduledRowTimerProblem,
@@ -15,21 +15,33 @@ const instant = (value) => (value ? new Date(value).getTime() : NaN);
 
 /**
  * The account's queued rows, split into what this app may move (its own,
- * pending, none of a thread out yet; soonest first) and what it may not
- * (every other queued row, whatever its client or state, which still holds
- * its minute). Rows without a `clientKey` are never moved: a row this app
- * can't show it owns is someone else's.
+ * pending, none of a thread out yet, its time still ahead; soonest first) and
+ * what it may not (every other queued row, whatever its client or state,
+ * which still holds its minute). Rows without a `clientKey` are never moved:
+ * a row this app can't show it owns is someone else's.
+ *
+ * A pending row whose time is no later than the first slot a re-pack can
+ * hand out (`now` + MIN_LEAD_MS) is due, or waiting out a retry after a
+ * failed attempt. It stays where it is: re-packing would give it the next
+ * future slot, delaying it by a slot and pushing every row behind it back
+ * one, and cocoon's reorder would also clear its retry time.
  */
 export function splitQueueRows(
   rows = [],
-  { clientKey = VIRGA_CLIENT_KEY } = {},
+  { clientKey = VIRGA_CLIENT_KEY, now = Date.now() } = {},
 ) {
+  const nowMs = now instanceof Date ? now.getTime() : Number(now);
   const movable = [];
   const occupied = [];
   for (const row of rows || []) {
     if (!row?.queued) continue;
+    const at = instant(row.scheduledFor);
+    const due = Number.isFinite(nowMs) && at <= nowMs + MIN_LEAD_MS;
     const mine =
-      row.clientKey === clientKey && row.status === 'pending' && !row.partial;
+      row.clientKey === clientKey &&
+      row.status === 'pending' &&
+      !row.partial &&
+      !due;
     (mine ? movable : occupied).push(row);
   }
   movable.sort((a, b) => instant(a.scheduledFor) - instant(b.scheduledFor));
@@ -95,7 +107,7 @@ export function queueTimerConflict(rows, assignment) {
  * @param {string[]} orderedIds - the movable rows' ids in their new order
  */
 export function planQueueReorder(schedule, rows, orderedIds, now = new Date()) {
-  const { movable, occupied } = splitQueueRows(rows);
+  const { movable, occupied } = splitQueueRows(rows, { now });
   const byId = new Map(movable.map((r) => [r.id, r]));
   const ordered = (orderedIds || []).map((id) => byId.get(id)).filter(Boolean);
   // A movable row the new order forgot keeps its place at the end, rather

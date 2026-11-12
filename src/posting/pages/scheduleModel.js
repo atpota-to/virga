@@ -158,24 +158,103 @@ export function rowStatus(row, now = Date.now()) {
 }
 
 /**
+ * How close to its time a waiting row stops offering "Post now". Posting now
+ * publishes first and takes the scheduled copy off after, so a row the
+ * per-minute worker can pick up while that publish runs (a few seconds of
+ * uploads and writes) would go out twice. Two minutes covers a worker tick
+ * and a slow publish.
+ */
+export const POST_NOW_CUTOFF_MS = 2 * 60 * 1000;
+
+/**
+ * Whether a waiting row is due, or close enough to its time that the worker
+ * may take it before "Post now" could take it off: its time (or its next
+ * retry, when the row carries one) is within POST_NOW_CUTOFF_MS. A row whose
+ * time has passed with no retry time known counts as due, since it may be
+ * waiting out a retry the list doesn't show.
+ */
+export function rowIsDueSoon(row, now = Date.now()) {
+  if (row?.status !== 'pending') return false;
+  const at = instant(row.scheduledFor);
+  const retry = instant(row.nextAttemptAt);
+  const dueAt = Number.isFinite(retry) && retry > at ? retry : at;
+  return Number.isFinite(dueAt) && dueAt <= now + POST_NOW_CUTOFF_MS;
+}
+
+/**
  * What can be done to a row from this page:
  *   edit     open it in the composer (Virga's own rows, waiting or failed)
- *   postNow  post it now and drop the scheduled copy (Virga's own, whole)
+ *   postNow  post it now and drop the scheduled copy (Virga's own, whole,
+ *            and not about to go out at its time: rowIsDueSoon)
  *   retry    send a failed one again as it is (Virga's own)
  *   cancel   take it off the schedule (any app's: cocoon allows that)
  *   note     why another app's row can only be cancelled
  */
-export function rowActions(row) {
+export function rowActions(row, now = Date.now()) {
   const mine = rowClientKey(row) === 'virga';
   const waitingOrFailed = row?.status === 'pending' || row?.status === 'failed';
   return {
     edit: canEditScheduledRow(row),
-    postNow: mine && waitingOrFailed && !row?.partial,
+    postNow:
+      mine && waitingOrFailed && !row?.partial && !rowIsDueSoon(row, now),
     retry: mine && row?.status === 'failed',
     cancel: canCancelScheduledRow(row),
     note: mine
       ? ''
       : `Scheduled in ${clientName(row)}. You can cancel it here; to change it, open ${clientName(row) === 'another app' ? 'the app it came from' : clientName(row)}.`,
+  };
+}
+
+/** The collection Virga can put a timer on (cocoon refuses any other from Virga). */
+const BSKY_POST = 'app.bsky.feed.post';
+
+/**
+ * What the "A timer couldn't be set" list offers for one note row:
+ *
+ *   arm      the post to hand TimerDialog (`{ uri, text, postedAt,
+ *            extraUris, row }`), or null when Virga can't set it here
+ *   dismiss  whether Dismiss is offered (Virga's own notes: cocoon won't
+ *            take another app's acknowledgement)
+ *   note     a sentence in place of the button, or ''
+ *
+ * Another app's note can't be cleared from here, so once a timer is set on
+ * it in this visit (`armed`, the row ids set so far) it says where to clear
+ * it instead of offering the timer again. A post that went out somewhere
+ * other than Bluesky (an Anisota post) can only take a timer in that app.
+ */
+export function timerNoteActions(row, { armed = null } = {}) {
+  const mine = rowClientKey(row) === 'virga';
+  const app = clientName(row) || 'the app it came from';
+  const uri = typeof row?.resultUri === 'string' ? row.resultUri : '';
+  const [, , repo = '', collection = ''] = uri.split('/');
+  const isArmed = Boolean(armed && row?.id && armed.has(row.id));
+  if (!mine && isArmed)
+    return {
+      arm: null,
+      dismiss: false,
+      note: `Timer set. Dismiss this note in ${app}.`,
+    };
+  if (!uri) return { arm: null, dismiss: mine, note: '' };
+  if (collection !== BSKY_POST)
+    return {
+      arm: null,
+      dismiss: mine,
+      note: `Set its timer in ${app}.`,
+    };
+  const rkeys = Array.isArray(row.payload?.rkeys) ? row.payload.rkeys : [];
+  return {
+    arm: {
+      uri,
+      text: rowFacts(row).text,
+      postedAt: row.scheduledFor,
+      extraUris: rkeys
+        .slice(1)
+        .filter((k) => typeof k === 'string' && k)
+        .map((k) => `at://${repo}/${collection}/${k}`),
+      row,
+    },
+    dismiss: mine,
+    note: '',
   };
 }
 
@@ -313,8 +392,8 @@ export function moveIdTo(ids = [], id, index) {
 }
 
 /** The ids of the rows this app may move in the queue, soonest first. */
-export function movableIds(rows = []) {
-  return splitQueueRows(rows).movable.map((r) => r.id);
+export function movableIds(rows = [], now = Date.now()) {
+  return splitQueueRows(rows, { now }).movable.map((r) => r.id);
 }
 
 /** Rows with the times an assignment gives them (an optimistic redraw), re-sorted. */
@@ -706,7 +785,7 @@ export function nextOpenSlots(
  * re-packed.
  */
 export function offScheduleRows(schedule, rows = [], now = Date.now()) {
-  const { movable } = splitQueueRows(rows);
+  const { movable } = splitQueueRows(rows, { now });
   if (!movable.length) return [];
   if (isScheduleEmpty(schedule)) return movable;
   const last = Math.max(
@@ -808,7 +887,7 @@ function coded(code, message) {
  *
  * @returns {Promise<{ result, cancelled: boolean, timer: object|null, notes: string[] }>}
  */
-export async function postScheduledNow(row, { did, deps }) {
+export async function postScheduledNow(row, { did, deps, now = Date.now() }) {
   if (!row?.id)
     throw coded(
       'BAD_ROW',
@@ -823,6 +902,13 @@ export async function postScheduledNow(row, { did, deps }) {
     throw coded(
       'PARTIALLY_PUBLISHED',
       'Part of this thread is already out. Retry it to post the rest.',
+    );
+  // Checked again here because the confirm dialog can stay open past the
+  // row's time; see POST_NOW_CUTOFF_MS.
+  if (rowIsDueSoon(row, now))
+    throw coded(
+      'ALREADY_DUE',
+      'It’s about to go out at its scheduled time, so it can’t also be posted now.',
     );
   const hasMedia = Object.keys(row.payload?.media || {}).length > 0;
   const media = hasMedia

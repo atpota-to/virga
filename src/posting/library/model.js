@@ -389,7 +389,10 @@ export function itemFromPost(
       : `Replying to @${parentView.author.handle}`;
   }
   const hydrated = !!view?.cid;
-  return baseItem({
+  // Only a signed-in read carries viewer state; a public one says nothing
+  // here, and sources.hydratePick asks the post's postgate instead.
+  const quotesOff = !mine && view?.viewer?.embeddingDisabled === true;
+  const item = baseItem({
     id: `post:${view?.uri || ''}`,
     kind: 'post',
     shelf: shelfId,
@@ -404,6 +407,17 @@ export function itemFromPost(
     at,
     score: engagementScore(view),
   });
+  return quotesOff ? markQuotesOff(item) : item;
+}
+
+/**
+ * A post item marked as one its author doesn't allow quotes of: listed with
+ * a word saying so, and previewFor blocks attaching it.
+ */
+export function markQuotesOff(item) {
+  if (!item || item.quotesOff) return item;
+  const label = item.label ? `${item.label} · quotes off` : 'Quotes off';
+  return { ...item, quotesOff: true, label, subtitle: label };
 }
 
 /**
@@ -1075,6 +1089,8 @@ const NOTE_UNSUPPORTED =
   "What this template attaches can't be added here, so only its text will be added.";
 const BLOCKED_LOCKED =
   'This post already quotes something, so only the text can be added.';
+export const BLOCKED_QUOTES_OFF =
+  "Its author doesn't allow quotes, so it can't be attached.";
 const BLOCKED_LOCKED_EMPTY =
   "This post already quotes something, so this can't be added.";
 const BLOCKED_GONE_EMPTY = {
@@ -1163,7 +1179,11 @@ export function previewFor(
   let attachment = attachmentFor(item, ctx);
   let replacesAttachment = false;
 
-  if (slot === 'record' && quoteSlotLocked) {
+  const quotesOff = item?.kind === 'post' && item.quotesOff === true;
+  if (quotesOff) {
+    blocked = BLOCKED_QUOTES_OFF;
+    attachment = null;
+  } else if (slot === 'record' && quoteSlotLocked) {
     blocked = isTemplate && hasText ? BLOCKED_LOCKED : BLOCKED_LOCKED_EMPTY;
     attachment = null;
   } else if (slot === 'record' && carried?.record) {
@@ -1183,7 +1203,8 @@ export function previewFor(
     else blocked = blocked || BLOCKED_UNSUPPORTED_EMPTY;
   }
 
-  const attaches = !!slot && !(slot === 'record' && quoteSlotLocked);
+  const attaches =
+    !!slot && !quotesOff && !(slot === 'record' && quoteSlotLocked);
   const usable = !!item?.kind && (hasText || attaches);
 
   return {

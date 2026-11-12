@@ -9,14 +9,11 @@
 import { createByteMap } from './richText.js';
 import { detectPostLink } from './postLink.js';
 import {
-  createUrlRegex,
+  findUrlsAndMentions,
   isValidDomain,
   isPrecededByQuote,
 } from './urlMatching.js';
-import {
-  findMentions,
-  resolveMention as defaultResolveMention,
-} from './mentions.js';
+import { resolveMention as defaultResolveMention } from './mentions.js';
 import { findHashtags } from './hashtags.js';
 
 const MENTION = 'app.bsky.richtext.facet#mention';
@@ -127,12 +124,17 @@ export async function detectFacets(text, options = {}) {
     return null;
   };
 
+  // URLs first: an '@' inside one is part of the address. The character
+  // count reads the same split (linkShortening.js), so it shortens exactly
+  // the links faceted here.
+  const { urls, mentions } = findUrlsAndMentions(text);
+
   // Ranges claimed by mentions (and email addresses), so URL detection
   // doesn't link a handle's or an address's domain half.
   const coveredRanges = [];
   const pendingMentions = [];
 
-  for (const { start, end, handle, email } of findMentions(text)) {
+  for (const { start, end, handle, email } of mentions) {
     coveredRanges.push({ start, end });
     if (email) continue;
     if (isExactlyQuoted(text, start, end, text.substring(start, end), true))
@@ -192,15 +194,7 @@ export async function detectFacets(text, options = {}) {
   const isRangeCovered = (start, end) =>
     coveredRanges.some((range) => overlaps(start, end, range.start, range.end));
 
-  // Shared with the character counter, which must shorten exactly the spans
-  // that become link facets (urlMatching.js).
-  const urlRegex = createUrlRegex();
-  let match;
-  while ((match = urlRegex.exec(text)) !== null) {
-    const matchText = match[0];
-    const charStart = match.index;
-    const charEnd = charStart + matchText.length;
-
+  for (const { charStart, charEnd, matchText, rawEnd } of urls) {
     if (isRangeCovered(charStart, charEnd)) continue;
     if (isPrecededByQuote(text, charStart)) continue;
     if (isExactlyQuoted(text, charStart, charEnd, matchText, false)) continue;
@@ -210,8 +204,9 @@ export async function detectFacets(text, options = {}) {
       : `https://${matchText}`;
 
     // "Complete" = followed by whitespace or the end of the text, so cards
-    // aren't fetched while the URL is still being typed.
-    const charAfterUrl = text[charEnd];
+    // aren't fetched while the URL is still being typed. Measured past any
+    // trimmed punctuation: a link that ends a sentence is finished.
+    const charAfterUrl = text[rawEnd];
     const isUrlComplete = !charAfterUrl || /\s/.test(charAfterUrl);
     const byteStart = byteMap[charStart];
     const byteEnd = byteMap[charEnd];

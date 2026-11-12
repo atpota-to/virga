@@ -76,8 +76,9 @@ function Toggles({ label, labelledBy, children }) {
  *
  * Optional: `did` (the writer; offers its lists for "Limit replies"),
  * `allowExactTime` (default true), `showToggle` (default true) with
- * `toggleLabel`, and `holds` (the timer the post already has, which frees its
- * slot).
+ * `toggleLabel`, `holds` (the timer the post already has, which frees its
+ * slot), and `countFrom` ('wentUp' or 'now', for a post that's already out:
+ * what the sentence says a length counts from).
  */
 export default function LifespanEditor({
   value,
@@ -90,6 +91,7 @@ export default function LifespanEditor({
   showToggle = true,
   toggleLabel = 'Put a timer on this post',
   holds = null,
+  countFrom = 'goesUp',
 }) {
   const id = useId();
   const rule = useMemo(() => normalizeTimer(value), [value]);
@@ -129,7 +131,14 @@ export default function LifespanEditor({
     };
   }, [did]);
 
-  const notes = editorNotes(rule, { fit, publishAt, limits, holds, now });
+  const notes = editorNotes(rule, {
+    fit,
+    publishAt,
+    limits,
+    holds,
+    countFrom,
+    now,
+  });
   const deletes = rule.effects.some((e) => e.action === 'delete');
   const gate = effectFor(rule.effects, 'limitReplies');
   const allow = gate?.allow || [];

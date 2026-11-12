@@ -4,6 +4,7 @@ import {
   adviserUsageKey,
   adviserUsageLine,
   adviserUsesLeft,
+  clearAdviserUsage,
   currentMonthKey,
   isAdviserAtLimit,
   markAdviserLimitReached,
@@ -21,6 +22,7 @@ function memoryStore() {
     map,
     getItem: (k) => (map.has(k) ? map.get(k) : null),
     setItem: (k, v) => map.set(k, String(v)),
+    removeItem: (k) => map.delete(k),
   };
 }
 
@@ -94,6 +96,24 @@ describe('recording and reading', () => {
     expect(
       recordAdviserUsage(DID, { used: 'x', limit: 30 }, { now: NOW, store }),
     ).toBeNull();
+    expect(store.map.size).toBe(0);
+  });
+
+  it('clears one allowance and leaves the others', () => {
+    const store = memoryStore();
+    markAdviserLimitReached(DID, 30, { now: NOW, store });
+    recordAdviserUsage(
+      DID,
+      { used: 2, limit: 15 },
+      { feature: 'altText', now: NOW, store },
+    );
+    clearAdviserUsage(DID, { store });
+    expect(isAdviserAtLimit(DID, { now: NOW, store })).toBe(false);
+    expect(readAdviserUsage(DID, { now: NOW, store })).toBeNull();
+    expect(
+      readAdviserUsage(DID, { feature: 'altText', now: NOW, store }),
+    ).toMatchObject({ used: 2, limit: 15 });
+    clearAdviserUsage(DID, { feature: 'altText', store });
     expect(store.map.size).toBe(0);
   });
 

@@ -25,6 +25,7 @@ import {
   POSTED_FILTERS,
   deletePost,
   filterPostRows,
+  gatesQuotesOnlyFor,
   isReplyRow,
   postRowActions,
   readPostGates,
@@ -155,7 +156,7 @@ export default function PostedPage({ did }) {
   };
 
   const menuItems = (row) => {
-    const offer = postRowActions(row, { did, canPost: caps.canPost, canSchedule: caps.canSchedule });
+    const offer = postRowActions(row, { canPost: caps.canPost, canSchedule: caps.canSchedule });
     return [
       { key: 'open', label: 'Open on Bluesky', icon: ExternalLink, onSelect: () => window.open(bskyUrlFor(row.uri), '_blank', 'noopener') },
       offer.copy && {
@@ -171,7 +172,7 @@ export default function PostedPage({ did }) {
         onSelect: () =>
           act(row, 'Its settings couldn’t be read.', async (post, agent) => {
             const value = await readPostGates(post.uri, { agent });
-            setGates({ post, value, quotesOnly: offer.gatesQuotesOnly });
+            setGates({ post, value, quotesOnly: gatesQuotesOnlyFor(offer, post.record) });
           }),
       },
       offer.timer && {

@@ -31,6 +31,20 @@ export function classifyRestoreError(err, mod = {}) {
   return 'unknown';
 }
 
+/**
+ * Whether a dropped session's `cause` says it was signed out on purpose. The
+ * library hands another tab's deletions over a BroadcastChannel, and
+ * structured cloning turns its TokenRevokedError into a plain Error (the
+ * class doesn't set its own name), so the class can only be trusted in the
+ * tab that signed out. The message survives the cloning.
+ */
+export function isRevokedCause(cause, mod = {}) {
+  if (!cause) return false;
+  if (typeof mod.TokenRevokedError === 'function' && cause instanceof mod.TokenRevokedError) return true;
+  if (cause.name === 'TokenRevokedError') return true;
+  return /was successfully revoked/i.test(String(cause.message || ''));
+}
+
 /** The scope a session was granted, without a network round trip, or null. */
 export async function grantedScopeOf(session) {
   try {
@@ -98,17 +112,28 @@ export function createBrowserDriver({
     },
 
     /**
-     * End one account's session in this browser. Through the session, not
-     * `client.revoke`, which would also clear the library's pointer for
-     * whichever account it named.
+     * End one account's session in this browser. Through the session where
+     * there is one, not `client.revoke`, which would also clear the library's
+     * pointer for whichever account it named. Restoring needs the
+     * authorization server's metadata, which the library caches for a
+     * minute only; when it can't be had (offline, a server down), revoke is
+     * the way that still deletes the stored refresh token and key. The
+     * pointer it clears is read only by legacySession, for a browser from
+     * before the account list.
      */
     async signOut(did, session = null) {
       let s = session;
       if (!s) {
+        let client;
         try {
-          const client = await getClient();
+          client = await getClient();
           s = await client.restore(did, false);
         } catch {
+          try {
+            await client?.revoke(did);
+          } catch {
+            // Nothing stored for it, or nothing more this browser can do.
+          }
           return;
         }
       }
@@ -131,8 +156,7 @@ export function createBrowserDriver({
         const sub = event?.detail?.sub;
         const cause = event?.detail?.cause;
         const m = await module().catch(() => ({}));
-        const revoked = typeof m.TokenRevokedError === 'function' && cause instanceof m.TokenRevokedError;
-        fn(sub, { revoked });
+        fn(sub, { revoked: isRevokedCause(cause, m) });
       };
       events.addEventListener('deleted', handler);
       return () => events.removeEventListener('deleted', handler);

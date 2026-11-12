@@ -58,6 +58,11 @@ export function postFacts(state) {
  * @param {{ canPost: boolean, canSchedule: boolean }} options.caps
  * @param {boolean} [options.signedOut] - the posting account needs a sign-in
  * @param {boolean} [options.missingMedia] - a draft's media isn't in this browser
+ * @param {boolean} [options.postNow] - the writer chose "Post now instead", so
+ *   the primary posts now whatever the account's usual action is
+ * @param {'browser'|'backend'} [options.authMode] - the build's sign-in, which
+ *   decides whether a browser account is told it can reconnect for a long
+ *   session (a build without long sessions has nothing to reconnect to)
  */
 export function composerActions(
   state,
@@ -67,6 +72,8 @@ export function composerActions(
     caps = {},
     signedOut = false,
     missingMedia = false,
+    postNow = false,
+    authMode = 'backend',
   } = {},
 ) {
   const f = postFacts(state);
@@ -88,6 +95,7 @@ export function composerActions(
     canSchedule: !!caps.canSchedule,
     reply: f.reply,
     video: f.hasVideo,
+    authMode,
   });
   const queueEmpty = isScheduleEmpty(queue);
   const scheduling = (action) =>
@@ -119,6 +127,7 @@ export function composerActions(
   let draftFallback = false;
   if (state?.schedule?.mode === 'queue') primary = PUBLISH_ACTIONS.QUEUE;
   else if (state?.schedule?.mode === 'at') primary = PUBLISH_ACTIONS.SCHEDULE;
+  else if (postNow) primary = PUBLISH_ACTIONS.POST;
   else
     primary = resolvePrimaryPublishAction({
       preferred: defaultAction,

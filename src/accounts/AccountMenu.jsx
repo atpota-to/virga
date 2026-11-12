@@ -12,8 +12,9 @@ import { signInErrorMessage } from '../lib/oauthClient.js';
 import { navigate } from '../lib/router.jsx';
 import { accountSignInId, isReauthRequiredError, shortDid as shortAccountDid } from '../session/accounts.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
-import { offersLongerSession, requestReauth, showSessionNotice, statusLabel } from './accountCopy.js';
+import { offersLongerSession, pendingWorkWarning, requestReauth, showSessionNotice, statusLabel } from './accountCopy.js';
 import AddAccountDialog from './AddAccountDialog.jsx';
+import { hasPendingWork, readPendingWork, usePendingWork } from './pendingWork.js';
 import './accounts.css';
 
 /** The name for the open account's profile: display name, else @handle, else a short DID. */
@@ -73,11 +74,99 @@ export function useAccountActions() {
   };
 }
 
+/**
+ * The warnings for `accounts` whose sign-out would stop work waiting on
+ * Virga's server, from usePendingWork's `byDid`. Nothing for accounts with
+ * nothing waiting.
+ */
+export function PendingWorkWarnings({ accounts, work }) {
+  const lines = (accounts || [])
+    .filter((a) => a.did in work.byDid && hasPendingWork(work.byDid[a.did]))
+    .map((a) => [a.did, pendingWorkWarning(rowName(a), work.byDid[a.did])]);
+  if (work.checking) {
+    return (
+      <p className="note" role="status">
+        Checking for scheduled posts and post timers…
+      </p>
+    );
+  }
+  return lines.map(([key, text]) => (
+    <p key={key} className="callout callout--warn">
+      {text}
+    </p>
+  ));
+}
+
+/** Asks before a sign-out that would stop a long session's scheduled posts or timers (see pendingWork.js). */
+function SignOutWarningDialog({ ask, onClose }) {
+  const [busy, setBusy] = useState(false);
+  const name = ask ? rowName(ask.account) : '';
+  async function confirm() {
+    setBusy(true);
+    try {
+      await ask.proceed();
+    } finally {
+      setBusy(false);
+      onClose();
+    }
+  }
+  return (
+    <Dialog
+      open={Boolean(ask)}
+      onClose={onClose}
+      title={`Sign out of ${name}`}
+      tone="danger"
+      actions={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="danger" onClick={confirm} disabled={busy}>
+            {busy ? 'Signing out…' : 'Sign out'}
+          </Button>
+        </>
+      }
+    >
+      {ask && (
+        <p className="callout callout--warn">{pendingWorkWarning(name, ask.work)}</p>
+      )}
+    </Dialog>
+  );
+}
+
+/**
+ * Sign-outs that ask first when they would stop work waiting on Virga's
+ * server. `guard(account, proceed)` runs `proceed` straight away for a
+ * browser session or a long one with nothing waiting, and otherwise opens
+ * the dialog (render `dialog`). `checking` is the DID being looked at.
+ */
+export function useSignOutGuard() {
+  const { backendFor } = useAtprotoSession();
+  const [ask, setAsk] = useState(null); // { account, work, proceed }
+  const [checking, setChecking] = useState(null);
+  async function guard(account, proceed) {
+    const requester = account?.mode === 'backend' && account.status !== 'needsSignIn' ? backendFor(account.did) : null;
+    if (!requester) return proceed();
+    setChecking(account.did);
+    let work;
+    try {
+      work = await readPendingWork(requester);
+    } catch {
+      work = null;
+    } finally {
+      setChecking(null);
+    }
+    if (!hasPendingWork(work)) return proceed();
+    setAsk({ account, work, proceed });
+    return undefined;
+  }
+  return { guard, checking, dialog: <SignOutWarningDialog ask={ask} onClose={() => setAsk(null)} /> };
+}
+
 /** Confirm, then sign every account here out, the open one last. */
 export function SignOutAllDialog({ open, onClose }) {
-  const { accounts, did, signOutAccount } = useAtprotoSession();
+  const { accounts, did, signOutAccount, backendFor } = useAtprotoSession();
   const [busy, setBusy] = useState(false);
   const signedIn = accounts.filter((a) => a.status !== 'needsSignIn');
+  const work = usePendingWork(signedIn, backendFor, open);
   async function confirm() {
     setBusy(true);
     const order = [...signedIn.filter((a) => a.did !== did), ...signedIn.filter((a) => a.did === did)];
@@ -96,15 +185,18 @@ export function SignOutAllDialog({ open, onClose }) {
       actions={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="danger" onClick={confirm} disabled={busy}>
+          <Button variant="danger" onClick={confirm} disabled={busy || work.checking}>
             {busy ? 'Signing out…' : 'Sign out of all'}
           </Button>
         </>
       }
     >
-      <p>
-        Each account’s session in this browser ends. Their archives and dashboards stay here, and each can sign back in from the front page.
-      </p>
+      <div className="dialog-form">
+        <p>
+          Each account’s session in this browser ends. Their archives and dashboards stay here, and each can sign back in from the front page.
+        </p>
+        <PendingWorkWarnings accounts={signedIn} work={work} />
+      </div>
     </Dialog>
   );
 }
@@ -112,6 +204,7 @@ export function SignOutAllDialog({ open, onClose }) {
 export function AccountMenu({ profile, did, onSignOut, compact = false, placement = 'down' }) {
   const { accounts, switching, mode, authMode } = useAtprotoSession();
   const actions = useAccountActions();
+  const signOutGuard = useSignOutGuard();
   const [adding, setAdding] = useState(false);
   const [signingOutAll, setSigningOutAll] = useState(false);
   const handle = profile?.handle || null;
@@ -173,9 +266,9 @@ export function AccountMenu({ profile, did, onSignOut, compact = false, placemen
       label: signedIn.length > 1 ? `Sign out of ${name}` : 'Sign out',
       hint:
         mode === 'backend'
-          ? 'Ends the long session in this browser. Your archive stays here for next time.'
+          ? 'Ends the long session in this browser. Scheduled posts and timers stop if no other browser is signed in. Your archive stays here.'
           : 'Your archive stays in this browser for next time.',
-      onSelect: onSignOut,
+      onSelect: () => signOutGuard.guard(activeRow || { did, mode }, onSignOut),
     },
     signedIn.length > 1 && {
       key: 'sign-out-all',
@@ -208,6 +301,7 @@ export function AccountMenu({ profile, did, onSignOut, compact = false, placemen
       </Menu>
       <AddAccountDialog open={adding} onClose={() => setAdding(false)} />
       <SignOutAllDialog open={signingOutAll} onClose={() => setSigningOutAll(false)} />
+      {signOutGuard.dialog}
     </>
   );
 }

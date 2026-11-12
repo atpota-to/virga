@@ -1083,6 +1083,26 @@ describe('previewFor', () => {
     ).toBe(null);
   });
 
+  it('blocks a post whose author doesn’t allow quotes, from a signed-in view', () => {
+    const theirs = {
+      ...ownPostView,
+      uri: 'at://did:plc:wren/app.bsky.feed.post/q',
+      author: { did: 'did:plc:wren', handle: 'wren.example' },
+      viewer: { embeddingDisabled: true },
+    };
+    const item = itemFromPost(theirs, { shelf: 'saved', selfDid: SELF });
+    expect(item.quotesOff).toBe(true);
+    expect(item.label).toMatch(/· quotes off$/);
+    const p = previewFor(item, { currentText: '' });
+    expect(p.blocked).toBe("Its author doesn't allow quotes, so it can't be attached.");
+    expect(p.attachment).toBe(null);
+    expect(p.usable).toBe(false);
+    // The author's own post isn't gated for them.
+    const own = itemFromPost({ ...ownPostView, viewer: { embeddingDisabled: true } }, { selfDid: SELF });
+    expect(own.quotesOff).toBeFalsy();
+    expect(previewFor(own, { currentText: '' }).usable).toBe(true);
+  });
+
   it('previews an attachment-only item with the slash range left out', () => {
     const preview = previewFor(
       itemFromFeed({

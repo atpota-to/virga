@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import Segmented from '../../components/Segmented.jsx';
 import { publicXrpc } from '../library/sources.js';
 import { MAX_REPLY_RULES } from '../lib/gates.js';
-import { replyMode, toggleRule, hasRule, RULE_OPTIONS, rulesNote } from '../composer/gatesModel.js';
+import { replyMode, toggleRule, hasRule, RULE_OPTIONS, rulesNote, isForeignListRule, unlistedRules } from '../composer/gatesModel.js';
 import '../composer/composer.css';
 
 /**
@@ -21,6 +21,15 @@ export default function GatesEditor({ did, value, onChange, disabled = false, co
   const change = (patch) => onChange?.({ reply, quotes, ...patch });
   const full = reply ? reply.length >= MAX_REPLY_RULES : false;
   const note = rulesNote(reply);
+  // A list rule the account's own lists don't account for (another account's
+  // list, or one since deleted) is still shown, so it can be taken out.
+  const unlisted =
+    mode === 'some' && lists.status !== 'loading'
+      ? unlistedRules(
+          reply,
+          lists.items.map((l) => l.uri),
+        )
+      : [];
 
   return (
     <div className="gates-editor gates-editor--full" data-compact={compact || undefined}>
@@ -78,6 +87,17 @@ export default function GatesEditor({ did, value, onChange, disabled = false, co
                   />
                   <span>
                     Members of <strong>{list.name || 'a list'}</strong>
+                  </span>
+                </label>
+              );
+            })}
+            {unlisted.map((rule) => {
+              const last = reply.length === 1;
+              return (
+                <label key={rule.list} className="check gates-rule">
+                  <input type="checkbox" checked disabled={disabled || last} onChange={() => change({ reply: toggleRule(reply, rule) })} />
+                  <span>
+                    {isForeignListRule(rule, did) ? 'Members of a list from another account' : 'Members of a list that couldn’t be found'}
                   </span>
                 </label>
               );

@@ -12,6 +12,10 @@
 // after a day. Writes wait two seconds for typing to stop, and one still
 // waiting when the page is hidden is written then; one meant for an account
 // that is no longer the composer's is dropped, never filed under the next.
+//
+// Beside the post being written, each account can have posts set aside (in
+// both layers): ones the composer moved out of the way rather than write
+// over, which come back the next time it opens with nothing in it.
 
 import { toJsonShape } from './lib/recordCid.js';
 
@@ -252,6 +256,19 @@ export function deserializeComposerState(stored, base = {}) {
 }
 
 /* ---- localStorage ----------------------------------------------------- */
+//
+// One entry per account holds two things: the post being written (`state`,
+// null when there is none) and the posts set aside for it (`aside`, newest
+// last), which the composer moves there instead of writing over them: an
+// intent that brings its own words, or a post carried over from another
+// account. Both live under the one key so that removing an account's data
+// from this browser removes them together. Each piece expires a day after it
+// was saved. `lifespanTouched` says whether the writer chose the timer
+// themselves, so a restore never puts the account's default back over an
+// explicit "No timer".
+
+/** The most posts kept aside per account; past it the oldest goes. */
+export const MAX_SET_ASIDE = 10;
 
 function remove(store, did) {
   try {
@@ -261,40 +278,116 @@ function remove(store, did) {
   }
 }
 
-/** Forget `did`'s saved post. */
-export function clearAutosave(did, { store = localStore() } = {}) {
-  if (did) remove(store, did);
+const touchedFlag = (v) => (typeof v === 'boolean' ? v : undefined);
+
+function freshPiece(piece, now) {
+  return (
+    isObject(piece) &&
+    typeof piece.savedAt === 'number' &&
+    now - piece.savedAt <= AUTOSAVE_TTL_MS &&
+    hasAutosaveContent(piece.state)
+  );
+}
+
+// The stored entry for `did`, read into `{ current, aside }` with whatever has
+// expired or doesn't belong taken out. Null when there's no usable entry.
+function readEntry(store, did, now) {
+  let entry = null;
+  try {
+    entry = JSON.parse(store.getItem(autosaveKey(did)) || 'null');
+  } catch {
+    entry = null;
+  }
+  if (!isObject(entry) || entry.version !== AUTOSAVE_VERSION || (entry.did && entry.did !== did)) return null;
+  const current = freshPiece(entry, now)
+    ? {
+        state: entry.state,
+        savedAt: entry.savedAt,
+        mediaLeftOut: Number(entry.mediaLeftOut) || 0,
+        lifespanTouched: touchedFlag(entry.lifespanTouched),
+      }
+    : null;
+  const aside = (Array.isArray(entry.aside) ? entry.aside : []).filter(
+    (a) => freshPiece(a, now) && typeof a.id === 'string' && a.id,
+  );
+  return { current, aside };
+}
+
+function storePiece(piece) {
+  const out = {
+    savedAt: piece.savedAt,
+    mediaLeftOut: piece.mediaLeftOut || 0,
+    state: piece.state,
+  };
+  if (typeof piece.lifespanTouched === 'boolean') out.lifespanTouched = piece.lifespanTouched;
+  return out;
+}
+
+// Write `{ current, aside }` for `did`; nothing in either removes the key.
+function writeEntry(store, did, { current, aside }, now) {
+  if (!current && !aside.length) {
+    remove(store, did);
+    return null;
+  }
+  const entry = {
+    version: AUTOSAVE_VERSION,
+    savedAt: current ? current.savedAt : now,
+    did,
+    mediaLeftOut: current ? current.mediaLeftOut || 0 : 0,
+    state: current ? current.state : null,
+    aside: aside.map((a) => ({ id: a.id, ...storePiece(a) })),
+  };
+  if (current && typeof current.lifespanTouched === 'boolean') entry.lifespanTouched = current.lifespanTouched;
+  store.setItem(autosaveKey(did), JSON.stringify(entry));
+  return entry;
 }
 
 /**
- * Write `state` for `did` now. An empty state clears the entry. Returns the
- * entry written, or null. When storage is full, tries again without the
- * hydrated views before giving up.
+ * Forget the post being written for `did`. Posts set aside for it stay; they
+ * go with the rest of the account's data, or after a day.
+ */
+export function clearAutosave(did, { store = localStore(), now = Date.now() } = {}) {
+  if (!did || !store) return;
+  const found = readEntry(store, did, now);
+  if (!found?.aside.length) {
+    remove(store, did);
+    return;
+  }
+  try {
+    writeEntry(store, did, { current: null, aside: found.aside }, now);
+  } catch {
+    remove(store, did);
+  }
+}
+
+/**
+ * Write `state` for `did` now. An empty state clears the post being written
+ * (not what was set aside). Returns the entry written, or null. When storage
+ * is full, tries again without the hydrated views before giving up.
+ * `lifespanTouched` is kept beside the state.
  */
 export function writeAutosave(
   did,
   state,
-  { store = localStore(), now = Date.now() } = {},
+  { store = localStore(), now = Date.now(), lifespanTouched } = {},
 ) {
   if (!did || !store) return null;
   if (!hasAutosaveContent(state)) {
-    remove(store, did);
+    clearAutosave(did, { store, now });
     return null;
   }
+  const aside = readEntry(store, did, now)?.aside || [];
   for (const views of [true, false]) {
     const { state: saved, mediaLeftOut } = serializeComposerState(state, {
       views,
     });
-    const entry = {
-      version: AUTOSAVE_VERSION,
-      savedAt: now,
-      did,
-      mediaLeftOut,
-      state: saved,
-    };
     try {
-      store.setItem(autosaveKey(did), JSON.stringify(entry));
-      return entry;
+      return writeEntry(
+        store,
+        did,
+        { current: { state: saved, savedAt: now, mediaLeftOut, lifespanTouched: touchedFlag(lifespanTouched) }, aside },
+        now,
+      );
     } catch {
       // Over quota: the second pass is smaller.
     }
@@ -303,47 +396,119 @@ export function writeAutosave(
 }
 
 /**
- * `did`'s saved post: `{ state, savedAt, mediaLeftOut }` with the state laid
- * over `base`, or null. An entry that is from another version, older than a
- * day, filed for another account, or empty is cleared on the way.
+ * `did`'s saved post: `{ state, savedAt, mediaLeftOut, lifespanTouched }`
+ * with the state laid over `base`, or null. `lifespanTouched` is undefined
+ * for an entry saved before it was kept. An entry that is from another
+ * version, filed for another account, or holds nothing current is cleared on
+ * the way (posts set aside for the account stay).
  */
 export function readAutosave(
   did,
   { store = localStore(), now = Date.now(), base } = {},
 ) {
   if (!did || !store) return null;
-  let entry = null;
-  try {
-    entry = JSON.parse(store.getItem(autosaveKey(did)) || 'null');
-  } catch {
-    entry = null;
-  }
-  if (!entry) {
-    remove(store, did);
-    return null;
-  }
-  const stale =
-    entry.version !== AUTOSAVE_VERSION ||
-    typeof entry.savedAt !== 'number' ||
-    now - entry.savedAt > AUTOSAVE_TTL_MS ||
-    (entry.did && entry.did !== did) ||
-    !hasAutosaveContent(entry.state);
-  if (stale) {
-    remove(store, did);
+  const found = readEntry(store, did, now);
+  if (!found?.current) {
+    if (!found?.aside.length) remove(store, did);
     return null;
   }
   return {
-    state: deserializeComposerState(entry.state, base),
-    savedAt: entry.savedAt,
-    mediaLeftOut: Number(entry.mediaLeftOut) || 0,
+    state: deserializeComposerState(found.current.state, base),
+    savedAt: found.current.savedAt,
+    mediaLeftOut: found.current.mediaLeftOut,
+    lifespanTouched: found.current.lifespanTouched,
   };
+}
+
+/* ---- set aside -------------------------------------------------------- */
+
+let asideIds = 0;
+const newAsideId = (now) => `aside-${now.toString(36)}-${(asideIds += 1)}`;
+
+const sessionAside = new Map(); // did → [{ id, state, savedAt, lifespanTouched }]
+
+/**
+ * Keep `state` aside for `did`, in this tab (files and all) and in
+ * localStorage (what a reload can bring back). Returns its id, or null when
+ * there was nothing in it. At most MAX_SET_ASIDE are kept per account.
+ */
+export function setAside(
+  did,
+  state,
+  { store = localStore(), now = Date.now(), lifespanTouched } = {},
+) {
+  if (!did || !hasAutosaveContent(state)) return null;
+  const id = newAsideId(now);
+  const piece = { id, state, savedAt: now, lifespanTouched: touchedFlag(lifespanTouched) };
+  sessionAside.set(did, [...(sessionAside.get(did) || []), piece].slice(-MAX_SET_ASIDE));
+  if (store) {
+    const found = readEntry(store, did, now) || { current: null, aside: [] };
+    for (const views of [true, false]) {
+      const { state: saved, mediaLeftOut } = serializeComposerState(state, { views });
+      const aside = [...found.aside, { id, state: saved, savedAt: now, mediaLeftOut, lifespanTouched: piece.lifespanTouched }].slice(-MAX_SET_ASIDE);
+      try {
+        writeEntry(store, did, { current: found.current, aside }, now);
+        break;
+      } catch {
+        // Over quota: the second pass is smaller; this tab still holds it.
+      }
+    }
+  }
+  return id;
+}
+
+/** How many posts are set aside for `did` (in this tab or saved). */
+export function countSetAside(did, { store = localStore(), now = Date.now() } = {}) {
+  if (!did) return 0;
+  const ids = new Set((sessionAside.get(did) || []).map((a) => a.id));
+  for (const a of (store && readEntry(store, did, now)?.aside) || []) ids.add(a.id);
+  return ids.size;
+}
+
+/**
+ * Take a post set aside for `did` back out: the one with `id`, or the newest.
+ * `{ state, savedAt, mediaLeftOut, lifespanTouched, inMemory }`, or null.
+ * The tab's copy wins (it still has its files); the saved one is laid over
+ * `base`. Either way it's gone from both afterwards.
+ */
+export function takeSetAside(
+  did,
+  { id = null, store = localStore(), now = Date.now(), base } = {},
+) {
+  if (!did) return null;
+  const mem = sessionAside.get(did) || [];
+  const found = (store && readEntry(store, did, now)) || { current: null, aside: [] };
+  const wanted = id || [...mem, ...found.aside].sort((a, b) => a.savedAt - b.savedAt).at(-1)?.id;
+  if (!wanted) return null;
+  const inMemory = mem.find((a) => a.id === wanted) || null;
+  const saved = found.aside.find((a) => a.id === wanted) || null;
+  const rest = mem.filter((a) => a.id !== wanted);
+  if (rest.length) sessionAside.set(did, rest);
+  else sessionAside.delete(did);
+  if (saved) {
+    try {
+      writeEntry(store, did, { current: found.current, aside: found.aside.filter((a) => a.id !== wanted) }, now);
+    } catch {
+      // It comes back once more after a reload; nothing is lost.
+    }
+  }
+  if (inMemory) return { state: inMemory.state, savedAt: inMemory.savedAt, mediaLeftOut: 0, lifespanTouched: inMemory.lifespanTouched, inMemory: true };
+  if (saved && now - saved.savedAt <= AUTOSAVE_TTL_MS)
+    return {
+      state: deserializeComposerState(saved.state, base),
+      savedAt: saved.savedAt,
+      mediaLeftOut: Number(saved.mediaLeftOut) || 0,
+      lifespanTouched: touchedFlag(saved.lifespanTouched),
+      inMemory: false,
+    };
+  return null;
 }
 
 /**
  * The debounced writer the composer holds:
  *
  *   const autosave = createAutosaver({ currentDid: () => composerDid })
- *   autosave.save(did, state)   // written two seconds after the last call
+ *   autosave.save(did, state, { lifespanTouched })   // written two seconds after the last call
  *   autosave.flush()            // write what's waiting now
  *   autosave.cancel()           // drop what's waiting (after a publish)
  *   autosave.dispose()          // cancel and stop listening for page hide
@@ -377,12 +542,16 @@ export function createAutosaver({
     if (!job) return null;
     if (typeof currentDid === 'function' && currentDid() !== job.did)
       return null;
-    return writeAutosave(job.did, job.state, { store, now: now() });
+    return writeAutosave(job.did, job.state, {
+      store,
+      now: now(),
+      lifespanTouched: job.lifespanTouched,
+    });
   };
 
-  const save = (did, state) => {
+  const save = (did, state, { lifespanTouched } = {}) => {
     if (timer !== null) clearTimer(timer);
-    pending = did ? { did, state } : null;
+    pending = did ? { did, state, lifespanTouched } : null;
     timer = pending ? setTimer(flush, debounceMs) : null;
   };
 
@@ -409,14 +578,22 @@ export function createAutosaver({
 
 const sessionDrafts = new Map();
 
-/** Keep `state` (files and all) for `did` until the tab closes. */
-export function saveSessionDraft(did, state, now = Date.now()) {
+/**
+ * Keep `state` (files and all) for `did` until the tab closes. The third
+ * argument is the time, or `{ now, lifespanTouched }`.
+ */
+export function saveSessionDraft(did, state, opts = {}) {
   if (!did) return;
+  const { now = Date.now(), lifespanTouched } = typeof opts === 'number' ? { now: opts } : opts || {};
   if (!hasAutosaveContent(state)) sessionDrafts.delete(did);
-  else sessionDrafts.set(did, { state, savedAt: now });
+  else {
+    const kept = { state, savedAt: now };
+    if (typeof lifespanTouched === 'boolean') kept.lifespanTouched = lifespanTouched;
+    sessionDrafts.set(did, kept);
+  }
 }
 
-/** `{ state, savedAt }` kept for `did`, or null. */
+/** `{ state, savedAt, lifespanTouched? }` kept for `did`, or null. */
 export function loadSessionDraft(did) {
   return (did && sessionDrafts.get(did)) || null;
 }
@@ -425,8 +602,19 @@ export function clearSessionDraft(did) {
   if (did) sessionDrafts.delete(did);
 }
 
+/**
+ * Forget everything this tab holds for `did`: the post being written and
+ * the posts set aside. For an account that has left this browser.
+ */
+export function forgetSessionDrafts(did) {
+  if (!did) return;
+  sessionDrafts.delete(did);
+  sessionAside.delete(did);
+}
+
 export function clearAllSessionDrafts() {
   sessionDrafts.clear();
+  sessionAside.clear();
 }
 
 /** Every object URL a state shows (image previews, a card's picked thumbnail). */
@@ -445,12 +633,18 @@ export function collectPreviewUrls(state) {
 
 /**
  * Whether an object URL may be revoked: only when neither `state` (the
- * composer as it now is) nor any account's kept draft still shows it.
+ * composer as it now is) nor any account's kept or set-aside post still
+ * shows it.
  */
 export function previewUrlIsHeld(url, state) {
   if (collectPreviewUrls(state).has(url)) return true;
   for (const { state: kept } of sessionDrafts.values()) {
     if (collectPreviewUrls(kept).has(url)) return true;
+  }
+  for (const list of sessionAside.values()) {
+    for (const { state: kept } of list) {
+      if (collectPreviewUrls(kept).has(url)) return true;
+    }
   }
   return false;
 }

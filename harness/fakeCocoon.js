@@ -1051,7 +1051,30 @@ export function createCocoon({
 
   function armTimer(did, client, v, { id = uuid(), extra = {} } = {}) {
     const existing = liveTimers(did).find((t) => t.post_uri === v.uri);
-    if (existing) return { row: existing, existing: true };
+    if (existing) {
+      // cocoon's armSelfDestruct: a re-arm is the author changing the rule, so
+      // an armed row takes the new one and becomes the arming client's (the
+      // grant that carries it out must be). Nothing the old rule decided or
+      // spent carries over. A 'checking' row is mid-evaluation and stands.
+      if (existing.status === 'armed') {
+        Object.assign(existing, {
+          conditions: v.conditions,
+          effects: v.effects,
+          lifespan_seconds: v.seconds,
+          check_at: v.checkAt,
+          snippet: v.snippet,
+          post_cid: v.cid,
+          extra_uris: v.extra,
+          client_key: client,
+          acted: null,
+          resolution: v.resolution || null,
+          attempts: 0,
+          last_error: null,
+          last_error_code: null,
+        });
+      }
+      return { row: existing, existing: true };
+    }
     const row = {
       id,
       user_did: did,

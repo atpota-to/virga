@@ -1,7 +1,7 @@
 // Settings › Account: every account signed in here, how each is signed in,
 // and the ways to switch, lengthen, end or forget it.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ExternalLink, LogIn, LogOut, Timer, Trash2, UserPlus } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
@@ -10,7 +10,8 @@ import { COCOON_URL } from '../config.js';
 import { Link } from '../lib/router.jsx';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { modeLabel, offersLongerSession, requestReauth, statusLabel } from './accountCopy.js';
-import { SignOutAllDialog, accountName, useAccountActions } from './AccountMenu.jsx';
+import { PendingWorkWarnings, SignOutAllDialog, accountName, useAccountActions, useSignOutGuard } from './AccountMenu.jsx';
+import { usePendingWork } from './pendingWork.js';
 import AddAccountDialog from './AddAccountDialog.jsx';
 import './accounts.css';
 
@@ -27,10 +28,12 @@ function rowName(account) {
 }
 
 function RemoveAccountDialog({ account, onClose }) {
-  const { removeAccount } = useAtprotoSession();
+  const { removeAccount, backendFor } = useAtprotoSession();
   const [deleteData, setDeleteData] = useState(false);
   const [busy, setBusy] = useState(false);
   const name = account ? rowName(account) : '';
+  const listed = useMemo(() => (account ? [account] : []), [account]);
+  const work = usePendingWork(listed, backendFor, Boolean(account));
   async function confirm() {
     setBusy(true);
     try {
@@ -50,7 +53,7 @@ function RemoveAccountDialog({ account, onClose }) {
       actions={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="danger" onClick={confirm} disabled={busy}>
+          <Button variant="danger" onClick={confirm} disabled={busy || work.checking}>
             {busy ? 'Removing…' : 'Remove'}
           </Button>
         </>
@@ -58,6 +61,7 @@ function RemoveAccountDialog({ account, onClose }) {
     >
       <div className="dialog-form">
         <p>It signs out and stops being listed here. You can add it again any time by signing in.</p>
+        <PendingWorkWarnings accounts={listed} work={work} />
         <label className="choice" data-on={deleteData || undefined}>
           <input type="checkbox" checked={deleteData} onChange={(e) => setDeleteData(e.target.checked)} />
           <span>
@@ -72,10 +76,11 @@ function RemoveAccountDialog({ account, onClose }) {
   );
 }
 
-function AccountRow({ account, active, onRemove }) {
+function AccountRow({ account, active, onRemove, signOutGuard }) {
   const { switching, signOutAccount, authMode } = useAtprotoSession();
   const actions = useAccountActions();
   const [busy, setBusy] = useState(false);
+  const checking = signOutGuard.checking === account.did;
   const name = rowName(account);
   const status = statusLabel(account.status, { active, switching: switching === account.did });
   const needsSignIn = account.status === 'needsSignIn';
@@ -101,7 +106,7 @@ function AccountRow({ account, active, onRemove }) {
         ) : (
           !active && (
             <Button size="sm" disabled={Boolean(switching)} onClick={() => actions.open(account)} aria-label={`Switch to ${name}`}>
-              Switch to
+              Switch
             </Button>
           )
         )}
@@ -124,19 +129,21 @@ function AccountRow({ account, active, onRemove }) {
         {!needsSignIn && (
           <Button
             size="sm"
-            disabled={busy}
+            disabled={busy || checking}
             aria-label={`Sign out of ${name}`}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                await signOutAccount(account.did);
-              } finally {
-                setBusy(false);
-              }
-            }}
+            onClick={() =>
+              signOutGuard.guard(account, async () => {
+                setBusy(true);
+                try {
+                  await signOutAccount(account.did);
+                } finally {
+                  setBusy(false);
+                }
+              })
+            }
           >
             <LogOut size={15} aria-hidden="true" />
-            {busy ? 'Signing out…' : 'Sign out'}
+            {busy ? 'Signing out…' : checking ? 'Checking…' : 'Sign out'}
           </Button>
         )}
         <Button size="sm" variant="ghost" icon aria-label={`Remove ${name} from this browser`} title="Remove from this browser" onClick={() => onRemove(account)}>
@@ -153,6 +160,7 @@ export default function AccountsSettings() {
   const [adding, setAdding] = useState(false);
   const [signingOutAll, setSigningOutAll] = useState(false);
   const [removing, setRemoving] = useState(null);
+  const signOutGuard = useSignOutGuard();
   const signedIn = accounts.filter((a) => a.status !== 'needsSignIn');
   const ordered = [...accounts].sort((a, b) => (a.did === did ? -1 : b.did === did ? 1 : 0));
 
@@ -165,7 +173,7 @@ export default function AccountsSettings() {
         </div>
         <ul className="accounts-list">
           {ordered.map((a) => (
-            <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} />
+            <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} signOutGuard={signOutGuard} />
           ))}
         </ul>
         <div className="settings-actions">
@@ -175,7 +183,7 @@ export default function AccountsSettings() {
           </Button>
           {signedIn.length > 1 && (
             <Button variant="danger" onClick={() => setSigningOutAll(true)}>
-              Sign out of all {signedIn.length}
+              Sign out of all {signedIn.length} accounts
             </Button>
           )}
         </div>
@@ -197,8 +205,9 @@ export default function AccountsSettings() {
           </li>
         </ul>
         <p className="settings-text">
-          Signing out ends the session in this browser only: your other browsers and devices stay signed in. Your archive is never sent to
-          Virga’s server.
+          Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and post
+          timers keep running while any browser or device is signed in to Virga with a long session for the account; signing out of the
+          last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
           {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}
         </p>
       </section>
@@ -215,6 +224,7 @@ export default function AccountsSettings() {
       <AddAccountDialog open={adding} onClose={() => setAdding(false)} />
       <SignOutAllDialog open={signingOutAll} onClose={() => setSigningOutAll(false)} />
       <RemoveAccountDialog account={removing} onClose={() => setRemoving(null)} />
+      {signOutGuard.dialog}
     </>
   );
 }

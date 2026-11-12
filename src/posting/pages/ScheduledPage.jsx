@@ -70,6 +70,7 @@ import {
   scheduledLimitsLine,
   scheduledSections,
   timeInZone,
+  timerNoteActions,
   zoneLabel,
 } from './scheduleModel.js';
 import { ActionDialog, QueueCalendar } from './scheduleParts.jsx';
@@ -96,7 +97,7 @@ function ScheduledRow({
 }) {
   const facts = rowFacts(row);
   const status = rowStatus(row, now);
-  const actions = rowActions(row);
+  const actions = rowActions(row, now);
   const tags = rowTags(facts);
   const other = clientName(row);
   const menu = [];
@@ -301,6 +302,7 @@ export default function ScheduledPage({ did }) {
   const [announce, setAnnounce] = useState('');
   const [confirm, setConfirm] = useState(null);
   const [timerFor, setTimerFor] = useState(null);
+  const [armedNotes, setArmedNotes] = useState(() => new Set());
   const listRef = useRef(null);
   const busyRef = useRef(false);
   busyRef.current = Object.keys(busy).length > 0 || Boolean(drag);
@@ -321,7 +323,7 @@ export default function ScheduledPage({ did }) {
 
   const saved = list.data?.rows || [];
   const rows = override && override.base === list.data ? override.rows : saved;
-  const movable = useMemo(() => movableIds(rows), [rows]);
+  const movable = useMemo(() => movableIds(rows, now), [rows, now]);
   const canReorder = !isScheduleEmpty(schedule) && movable.length > 1;
 
   // While a row is being moved, the queue is drawn at the times the new
@@ -694,12 +696,7 @@ export default function ScheduledPage({ did }) {
             <ul className="hub-list hub-list--rows">
               {timerNotes.map((row) => {
                 const facts = rowFacts(row);
-                const mine = row.clientKey === 'virga';
-                const rkeys = Array.isArray(row.payload?.rkeys)
-                  ? row.payload.rkeys
-                  : [];
-                const uri = row.resultUri;
-                const repo = uri ? uri.split('/')[2] : did;
+                const note = timerNoteActions(row, { armed: armedNotes });
                 return (
                   <li
                     key={row.id}
@@ -722,30 +719,16 @@ export default function ScheduledPage({ did }) {
                           </span>
                         )}
                       </p>
+                      {note.note && <p className="field-hint">{note.note}</p>}
                     </div>
                     <div className="hub-row-actions">
-                      {uri && (
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            setTimerFor({
-                              uri,
-                              text: facts.text,
-                              postedAt: row.scheduledFor,
-                              extraUris: rkeys
-                                .slice(1)
-                                .map(
-                                  (k) => `at://${repo}/app.bsky.feed.post/${k}`,
-                                ),
-                              row,
-                            })
-                          }
-                        >
+                      {note.arm && (
+                        <Button size="sm" onClick={() => setTimerFor(note.arm)}>
                           <Timer size={14} aria-hidden="true" />
                           Set a timer
                         </Button>
                       )}
-                      {mine && (
+                      {note.dismiss && (
                         <Button
                           size="sm"
                           variant="ghost"
@@ -964,7 +947,11 @@ export default function ScheduledPage({ did }) {
             const row = timerFor.row;
             setTimerFor(null);
             toast?.('The timer is set. Posting › Timers shows it.');
-            if (row?.clientKey === 'virga') await acknowledge(row);
+            if (!row) return;
+            if (row.clientKey === 'virga') await acknowledge(row);
+            // Another app's note can only be cleared in that app, so it
+            // stays listed; remember it's done so it stops offering a timer.
+            else setArmedNotes((set) => new Set(set).add(row.id));
           }}
         />
       )}

@@ -270,12 +270,13 @@ export default function WeeklySchedulePage({ did }) {
   };
 
   const repack = async () => {
-    const { movable } = splitQueueRows(rows);
+    const at = new Date();
+    const { movable } = splitQueueRows(rows, { now: at });
     const plan = planQueueReorder(
       schedule,
       rows,
       movable.map((r) => r.id),
-      new Date(),
+      at,
     );
     if (plan.conflict) {
       setError(plan.conflict.message);

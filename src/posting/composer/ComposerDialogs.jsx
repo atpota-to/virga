@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import PostPreview from '../ui/PostPreview.jsx';
@@ -8,6 +8,21 @@ import LanguagePicker from './LanguagePicker.jsx';
 import { ADULT_LABEL_OPTIONS, GRAPHIC_LABEL } from './languages.js';
 import { relativeTime } from '../../lib/time.js';
 import { countGraphemes } from '../lib/graphemes.js';
+
+/**
+ * Runs `reset` as a dialog opens, and only then. The composer re-renders
+ * while a dialog is up (a read finishing, a setting or the default timer
+ * changing), and that mustn't undo what's being chosen in it.
+ */
+function useResetOnOpen(open, reset) {
+  const wasOpen = useRef(false);
+  const latest = useRef(reset);
+  latest.current = reset;
+  useEffect(() => {
+    if (open && !wasOpen.current) latest.current();
+    wasOpen.current = open;
+  }, [open]);
+}
 
 /** A yes-or-no question over the composer; `choices` are its buttons. */
 export function ConfirmDialog({ ask, onAnswer }) {
@@ -38,11 +53,10 @@ export function MetaDialog({ open, langs, labels, onClose, onSave }) {
   const id = useId();
   const [l, setL] = useState(langs || []);
   const [lab, setLab] = useState(labels || []);
-  useEffect(() => {
-    if (!open) return;
+  useResetOnOpen(open, () => {
     setL(langs || []);
     setLab(labels || []);
-  }, [open, langs, labels]);
+  });
   const adult = lab.find((x) => ADULT_LABEL_OPTIONS.some((o) => o.value === x)) || '';
   const graphic = lab.includes(GRAPHIC_LABEL.value);
   const setAdult = (v) => setLab([...(v ? [v] : []), ...(graphic ? [GRAPHIC_LABEL.value] : [])]);
@@ -105,9 +119,7 @@ export function MetaDialog({ open, langs, labels, onClose, onSave }) {
 /** Who can reply and quote, for this post only. */
 export function GatesDialog({ open, did, value, sourceLine, onClose, onSave, onUseDefault }) {
   const [v, setV] = useState(value);
-  useEffect(() => {
-    if (open) setV(value);
-  }, [open, value]);
+  useResetOnOpen(open, () => setV(value));
   return (
     <Dialog
       open={open}
@@ -144,9 +156,7 @@ export function GatesDialog({ open, did, value, sourceLine, onClose, onSave, onU
 /** The post's timer: how long it stays up, and what it waits for. */
 export function LifespanDialog({ open, value, fit, publishAt, limits, did, holds, note, onClose, onSave }) {
   const [rule, setRule] = useState(value);
-  useEffect(() => {
-    if (open) setRule(value);
-  }, [open, value]);
+  useResetOnOpen(open, () => setRule(value));
   return (
     <Dialog
       open={open}
@@ -223,9 +233,7 @@ export function ContinueThreadDialog({ open, status, items, error, onClose, onPi
 export function VideoAltDialog({ open, alt, max, onClose, onSave }) {
   const id = useId();
   const [text, setText] = useState(alt || '');
-  useEffect(() => {
-    if (open) setText(alt || '');
-  }, [open, alt]);
+  useResetOnOpen(open, () => setText(alt || ''));
   const over = max && countGraphemes(text) > max;
   return (
     <Dialog

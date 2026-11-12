@@ -12,6 +12,8 @@ import {
   composerTimerFit,
   defaultRuleFromSettings,
   describeTimer,
+  formatLifespan,
+  MIN_LIFESPAN_SECONDS,
   normalizeTimer,
 } from '../timers/selfDestruct.js';
 import {
@@ -24,7 +26,7 @@ import { publicXrpc } from '../library/sources.js';
 import { ruleOfTimerRow, formatInZone } from '../pages/scheduleModel.js';
 import LifespanEditor from './LifespanEditor.jsx';
 import NeedsBackend from './NeedsBackend.jsx';
-import { editorNotes, firstActAt, startHasPassed } from './lifespanModel.js';
+import { editorNotes, firstActAt, timerStart } from './lifespanModel.js';
 import '../pages/schedule.css';
 
 /**
@@ -113,16 +115,25 @@ export default function TimerDialog({ open, onClose, did, post, onArmed }) {
   );
   const now = Date.now();
   const holds = info.existing ? ruleOfTimerRow(info.existing) : null;
-  const notes = editorNotes(rule, { fit, limits: info.limits, holds, now });
   const postedAtMs = Date.parse(info.postedAt || '');
-  const startedAt =
-    start === 'posted' && Number.isFinite(postedAtMs) ? postedAtMs : now;
+  const ruleNow = normalizeTimer({ ...rule, enabled: true });
+  // The start cocoon will actually count from, worked out before the notes
+  // so the sentence, the first-acts time and the request all agree with it.
+  const counting = timerStart(ruleNow, {
+    start,
+    postedAt: info.postedAt,
+    now,
+  });
+  const notes = editorNotes(rule, {
+    fit,
+    limits: info.limits,
+    holds,
+    countFrom: counting.from,
+    now,
+  });
   const actsAt = notes.fitted.enabled
-    ? firstActAt(notes.fitted, { startedAt, now })
+    ? firstActAt(notes.fitted, { startedAt: counting.startedAt, now })
     : null;
-  const passed =
-    start === 'posted' &&
-    startHasPassed(notes.fitted, { postedAt: info.postedAt, now });
   const blocked =
     !notes.fitted.enabled || Boolean(notes.room) || notes.pinBlocks;
 
@@ -135,7 +146,10 @@ export default function TimerDialog({ open, onClose, did, post, onArmed }) {
         cid: post.cid,
         extraUris: post.extraUris || [],
         snippet: post.text,
-        postedAt: new Date(startedAt).toISOString(),
+        // Read again at the press: the render's clock can be minutes old.
+        postedAt: new Date(
+          timerStart(ruleNow, { start, postedAt: info.postedAt }).startedAt,
+        ).toISOString(),
         rule,
         fit: composerTimerFit({ reply: Boolean(info.reply) }),
       });
@@ -263,18 +277,23 @@ export default function TimerDialog({ open, onClose, did, post, onArmed }) {
               />
             </div>
             <LifespanEditor
-              value={normalizeTimer({ ...rule, enabled: true })}
+              value={ruleNow}
               onChange={(next) => setRule({ ...next, enabled: true })}
               fit={fit}
               limits={info.limits}
               holds={holds}
               did={owner}
               showToggle={false}
+              countFrom={counting.from}
             />
             {actsAt && !notes.room && (
               <p className="field-hint" aria-live="polite">
-                {passed ? 'That time has already passed, so it' : 'It'} first
-                acts {formatInZone(actsAt, undefined, now)}.
+                {counting.passed === 'elapsed'
+                  ? `It went up more than ${formatLifespan(notes.fitted.lifespanSeconds)} ago, so the time counts from now instead. It`
+                  : counting.passed === 'floor'
+                    ? `That’s less than ${MIN_LIFESPAN_SECONDS / 60} minutes away, the soonest a timer can act, so it`
+                    : 'It'}{' '}
+                first acts {formatInZone(actsAt, undefined, now)}.
               </p>
             )}
           </>

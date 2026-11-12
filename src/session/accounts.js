@@ -175,6 +175,28 @@ export function writeActiveDid(storage, did) {
   else remove(storage, ACTIVE_KEY);
 }
 
+/*
+ * The account a tab had open when it left to sign one in again, kept in that
+ * tab's sessionStorage. Signing a different account back in (from the
+ * composer's list of accounts to post as, or from Settings) brings this one
+ * back open rather than switching to the one that signed in. Kept here, not
+ * in the sign-in's state, which would tell one account's server the DID of
+ * the other.
+ */
+export const OPEN_AT_SIGNIN_KEY = 'virga:signin-open';
+
+export function writeOpenAtSignIn(tabStorage, did) {
+  if (isDid(did)) write(tabStorage, OPEN_AT_SIGNIN_KEY, did);
+  else remove(tabStorage, OPEN_AT_SIGNIN_KEY);
+}
+
+/** The account recorded by writeOpenAtSignIn, once. */
+export function takeOpenAtSignIn(tabStorage) {
+  const did = read(tabStorage, OPEN_AT_SIGNIN_KEY);
+  remove(tabStorage, OPEN_AT_SIGNIN_KEY);
+  return isDid(did) ? did : null;
+}
+
 // A long session's token is `vg_` and 64 hex digits (cocoon's Virga client).
 const TOKEN = /^vg_[0-9a-f]{64}$/;
 

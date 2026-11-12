@@ -352,12 +352,25 @@ export async function removeDraftMedia(did, refs, { media } = {}) {
 /**
  * Forget every file no draft in `keep` (paths, or anything with them) still
  * names. Only safe with the complete list of the account's drafts, plus any
- * path the open composer holds.
+ * path the open composer holds. With `savedBefore` (a time in ms), a file
+ * kept at or after it stays whatever `keep` says: it may belong to a draft
+ * being saved while the list was read.
  */
-export async function pruneDraftMedia(did, keep, { media } = {}) {
+export async function pruneDraftMedia(did, keep, { media, savedBefore } = {}) {
   const store = media || (await openDraftMedia(did));
   const kept = new Set(keep || []);
-  const drop = (await store.refs()).filter((ref) => !kept.has(ref));
+  let drop = (await store.refs()).filter((ref) => !kept.has(ref));
+  if (typeof savedBefore === 'number') {
+    const old = await Promise.all(
+      drop.map(async (ref) => {
+        const entry = await store.get(ref);
+        // Every entry this module writes has a savedAt; one without can't
+        // be from a save in progress.
+        return !entry || !(entry.savedAt >= savedBefore);
+      }),
+    );
+    drop = drop.filter((_, i) => old[i]);
+  }
   await store.remove(drop);
   return drop;
 }

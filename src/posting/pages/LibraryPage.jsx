@@ -20,8 +20,8 @@ export default function LibraryPage({ did }) {
   const [newTemplate, setNewTemplate] = useState(false);
 
   const onUse = async (item, answers) => {
+    // The composer counts a template's use as it applies the plan.
     const plan = await lib.planFor(item, answers);
-    lib.recordUse(item);
     composer.open({ asDid: did, attach: plan });
   };
 

@@ -25,6 +25,7 @@ import {
   publicXrpc,
   readArchivePosts,
   resolveExternalLink,
+  quotesTurnedOff,
   resolvePastedLink,
   resolveRecordLink,
   savedFeedUris,
@@ -770,7 +771,7 @@ describe('reading a pick again', () => {
       view: { uri: list, cid: 'cl', name: 'L' },
     });
     const whole = { kind: 'post', uri: postUri(SELF, 'a'), cid: 'c', view: {} };
-    expect(await hydrateAttachment(whole, { fetch })).toBe(whole);
+    expect(await hydrateAttachment(whole, { selfDid: SELF, fetch })).toBe(whole);
     expect(
       await hydrateAttachment(
         { kind: 'link', url: 'https://a.example' },
@@ -778,6 +779,52 @@ describe('reading a pick again', () => {
       ),
     ).toEqual({ kind: 'link', url: 'https://a.example' });
     expect(calls).toHaveLength(1);
+  });
+
+  describe('a post its author doesn’t allow quotes of', () => {
+    const uri = postUri(OTHER, 'gated');
+    const gate = (rules) => ({
+      'app.bsky.feed.getPosts': ({ uris }) => ({ posts: uris.map((u) => view(u)) }),
+      'com.atproto.repo.getRecord': ({ collection, rkey }) =>
+        collection === 'app.bsky.feed.postgate' && rkey === 'gated'
+          ? { uri, value: { embeddingRules: rules } }
+          : json({ error: 'RecordNotFound' }, 400),
+    });
+
+    it('reads the postgate, since the public read has no viewer state', async () => {
+      const { fetch } = fakeFetch(gate([{ $type: 'app.bsky.feed.postgate#disableRule' }]));
+      expect(await quotesTurnedOff(uri, { fetch })).toBe(true);
+      expect(await quotesTurnedOff(uri, { selfDid: OTHER, fetch })).toBe(false);
+      const { fetch: open } = fakeFetch(gate([]));
+      expect(await quotesTurnedOff(uri, { fetch: open })).toBe(false);
+      const { fetch: none } = fakeFetch({});
+      expect(await quotesTurnedOff(uri, { fetch: none })).toBe(false);
+    });
+
+    it('is shown marked, and refused when it would be attached', async () => {
+      const { fetch } = fakeFetch(gate([{ $type: 'app.bsky.feed.postgate#disableRule' }]));
+      const shown = await hydratePick({ kind: 'post', uri, shelf: 'saved' }, { selfDid: SELF, fetch });
+      expect(shown).toMatchObject({ quotesOff: true, view: { uri } });
+      expect(shown.label).toMatch(/quotes off$/);
+      await expect(
+        hydrateAttachment({ kind: 'post', uri }, { selfDid: SELF, fetch }),
+      ).rejects.toMatchObject({ code: 'QUOTES_OFF', message: 'That post’s author doesn’t allow quotes.' });
+      // A signed-in view that already says so is refused without asking.
+      const { fetch: quiet, calls } = fakeFetch({});
+      await expect(
+        hydrateAttachment(
+          { kind: 'post', uri, cid: 'c', view: view(uri, { viewer: { embeddingDisabled: true } }) },
+          { selfDid: SELF, fetch: quiet },
+        ),
+      ).rejects.toMatchObject({ code: 'QUOTES_OFF' });
+      expect(calls).toHaveLength(0);
+    });
+
+    it('is marked when pasted as a link', async () => {
+      const { fetch } = fakeFetch(gate([{ $type: 'app.bsky.feed.postgate#disableRule' }]));
+      const item = await resolvePastedLink(`https://bsky.app/profile/${OTHER}/post/gated`, { selfDid: SELF, fetch });
+      expect(item).toMatchObject({ kind: 'post', quotesOff: true });
+    });
   });
 });
 

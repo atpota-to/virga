@@ -398,6 +398,51 @@ describe('timers', () => {
     const after = await listTimers(req);
     expect(after.rows.some((t) => t.id === theirs.id)).toBe(false);
   });
+
+  it('rewrites an armed timer on re-arm and moves it to the arming client', async () => {
+    const { req } = setup({ tiers: { [ME.did]: 'member' } });
+    const { rows } = await listTimers(req);
+    const theirs = rows.find((t) => t.clientKey === 'anisota');
+    const res = await req.request('/api/self-destruct/create', {
+      method: 'POST',
+      body: body(theirs.postUri, {
+        lifespanSeconds: 7200,
+        effects: [{ action: 'limitReplies', allow: ['following'] }],
+      }),
+    });
+    expect(res.data).toMatchObject({
+      id: theirs.id,
+      clientKey: 'virga',
+      conditions: {},
+      lifespanSeconds: 7200,
+      effects: [{ action: 'limitReplies', allow: ['following'] }],
+      checkAt: new Date(NOW + 2 * HOUR).toISOString(),
+    });
+    const after = await listTimers(req);
+    expect(after.rows.find((t) => t.id === theirs.id)).toMatchObject({
+      clientKey: 'virga',
+      lifespanSeconds: 7200,
+      attempts: 0,
+      lastError: null,
+    });
+  });
+
+  it('leaves a timer that is mid-check alone on re-arm', async () => {
+    const { req, cocoon } = setup({ tiers: { [ME.did]: 'member' } });
+    const { rows } = await listTimers(req);
+    const theirs = rows.find((t) => t.clientKey === 'anisota');
+    cocoon.inspect().timers.find((t) => t.id === theirs.id).status = 'checking';
+    const res = await req.request('/api/self-destruct/create', {
+      method: 'POST',
+      body: body(theirs.postUri, { lifespanSeconds: 7200 }),
+    });
+    expect(res.data).toMatchObject({
+      id: theirs.id,
+      clientKey: 'anisota',
+      lifespanSeconds: theirs.lifespanSeconds,
+      checkAt: theirs.checkAt,
+    });
+  });
 });
 
 describe('sessions and the adviser', () => {

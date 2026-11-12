@@ -38,17 +38,15 @@ import { emitPostsChanged } from '../events.js';
 import { readPostingSettings, resolveDefaultGates, usePostingSettings } from '../settings.js';
 import {
   createAutosaver,
-  clearAutosave,
-  readAutosave,
   saveSessionDraft,
-  loadSessionDraft,
-  clearSessionDraft,
+  forgetSessionDrafts,
+  takeSetAside,
   collectPreviewUrls,
   previewUrlIsHeld,
   hasAutosaveContent,
 } from '../autosave.js';
 import { createDraft, updateDraft, deleteDraft, listAllDrafts, openDraft, postingDeviceId, DRAFT_DEVICE_NAME } from '../drafts/drafts.js';
-import { openDraftMedia, missingDraftMedia } from '../drafts/draftMedia.js';
+import { openDraftMedia, missingDraftMedia, loadDraftMedia } from '../drafts/draftMedia.js';
 import { templateService } from '../templates/templateService.js';
 import { useTemplates } from '../templates/useTemplates.js';
 import { readTemplateUsage, recordTemplateUse } from '../templates/templateUsage.js';
@@ -70,7 +68,7 @@ import {
 import { serializeForSchedule, reconstructFromScheduled } from '../schedule/scheduleSerialize.js';
 import { scheduleErrorMessage } from '../schedule/scheduledPostError.js';
 import { nextOpenSlot, queueSlotMoveNote } from '../schedule/postingQueue.js';
-import { NEEDS_BACKEND_HINT } from '../schedule/publishActions.js';
+import { needsBackendHint } from '../schedule/publishActions.js';
 import {
   composerTimerFit,
   immediateTimerProblem,
@@ -116,11 +114,24 @@ import {
   SLOW_PUBLISH_NOTE,
 } from './submit.js';
 import { loadReplyTarget, loadRecordTarget, loadDraftTarget, loadScheduledTarget, continueCandidates } from './loaders.js';
+import { gatesForAccount } from './gatesModel.js';
+import {
+  clearKept,
+  keptPostFor,
+  mediaPatches,
+  otherKeptAccount,
+  restoredTouched,
+  setAsideKept,
+  setAsideState,
+  worthSettingAside,
+} from './restore.js';
 import './composer.css';
 
 const DISMISS_SPLIT_KEY = 'virga:composer-split-dismissed';
 const GATES_CACHE_MS = 5 * 60 * 1000;
 const GATES_FAILURE_CACHE_MS = 30 * 1000;
+// The widest a Menu's list grows (22rem in controls.css) and the page's gutter.
+const MENU_ROOM_PX = 22 * 16 + 16;
 
 function nextHour(now = Date.now()) {
   const d = new Date(now + 60 * 60 * 1000);
@@ -162,8 +173,17 @@ export default function Composer({ open, intent, onClose }) {
   );
   const stateRef = useRef(state);
   stateRef.current = state;
+  const openRef = useRef(open);
+  openRef.current = open;
   const [generation, setGeneration] = useState(0);
   const lifespanTouched = useRef(false);
+  // What an intent seeded the post with (`{ texts }`), while it's still that:
+  // a post nobody has written in yet isn't worth setting aside.
+  const seedRef = useRef(null);
+  const reseedRef = useRef(null);
+  // The writer picked "Post now instead": the main button posts now until
+  // another time is chosen, whatever the account's usual action is.
+  const [postNow, setPostNow] = useState(false);
 
   const asDid = state.asDid || activeDid || '';
   const { settings } = usePostingSettings(asDid);
@@ -197,16 +217,20 @@ export default function Composer({ open, intent, onClose }) {
     }
   });
   const [dragOver, setDragOver] = useState(false);
+  const [moreAlign, setMoreAlign] = useState('end');
+  const composerRef = useRef(null);
+  const dropFiles = useRef(() => {});
+  const moreRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const loadToken = useRef(0);
   const replyRefPending = useRef(null);
   const scheduledRowRef = useRef(null);
-  const displacedRef = useRef(null);
   const editors = useRef(new Map());
   const dismissedLinks = useRef(new Map());
   const videoJobs = useRef(new Map());
   const busyRef = useRef(false);
+  const adviserReadingRef = useRef(false);
   const attemptRef = useRef(0);
   const abortRef = useRef(null);
   const pickFor = useRef(null);
@@ -231,7 +255,36 @@ export default function Composer({ open, intent, onClose }) {
     resolve?.(value);
   };
 
+  /* ---- autosave ------------------------------------------------------- */
+
+  const autosaver = useMemo(() => createAutosaver({ currentDid: () => stateRef.current.asDid }), []);
+  useEffect(() => () => autosaver.dispose(), [autosaver]);
+  // The accounts this composer has written something for since the last
+  // load. An empty state only clears an entry the composer wrote itself, so
+  // opening, or switching to, an account with nothing on screen never wipes
+  // what was kept for it.
+  const wroteFor = useRef(new Set());
+  useEffect(() => {
+    const did = state.asDid;
+    if (!did) return;
+    if (reseedRef.current != null && reseedRef.current === loadToken.current) {
+      reseedRef.current = null;
+      seedRef.current = { texts: state.posts.map((p) => p.text) };
+    }
+    if (hasAutosaveContent(state)) wroteFor.current.add(did);
+    else if (!wroteFor.current.delete(did)) return;
+    const meta = { lifespanTouched: lifespanTouched.current };
+    autosaver.save(did, state, meta);
+    saveSessionDraft(did, state, meta);
+  }, [state, autosaver]);
+
   const loadState = useCallback((next, { touched = false } = {}) => {
+    // Whatever was waiting to be written belonged to the state this replaces,
+    // which has been kept, set aside or cleared on purpose by now.
+    autosaver.cancel();
+    wroteFor.current = new Set();
+    seedRef.current = null;
+    setPostNow(false);
     dispatch({ type: 'load', state: next });
     lifespanTouched.current = touched;
     setGeneration((g) => g + 1);
@@ -240,19 +293,9 @@ export default function Composer({ open, intent, onClose }) {
     setRecordLoading({});
     setMediaNote('');
     dismissedLinks.current = new Map();
-  }, []);
+  }, [autosaver]);
 
   const indexOfPost = (postId) => stateRef.current.posts.findIndex((p) => p.id === postId);
-
-  /* ---- autosave ------------------------------------------------------- */
-
-  const autosaver = useMemo(() => createAutosaver({ currentDid: () => stateRef.current.asDid }), []);
-  useEffect(() => () => autosaver.dispose(), [autosaver]);
-  useEffect(() => {
-    if (!state.asDid) return;
-    autosaver.save(state.asDid, state);
-    saveSessionDraft(state.asDid, state);
-  }, [state, autosaver]);
 
   /* ---- default reply settings (§6.6) ------------------------------------ */
 
@@ -348,8 +391,10 @@ export default function Composer({ open, intent, onClose }) {
   const templatesApi = useTemplates(asDid, { enabled: open && !!asDid });
   const templateUsage = useMemo(() => (open ? readTemplateUsage(asDid) : {}), [open, asDid, generation]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Closed, the composer has no account to read for: that ends a read or a
+  // sheet in progress, so neither turns up over the page later.
   const adviser = useAdviserGate({
-    did: asDid,
+    did: open ? asDid : null,
     settings: settings.adviser,
     requester: caps.canUseAi ? requester : null,
     canUseAi: caps.canUseAi,
@@ -373,6 +418,18 @@ export default function Composer({ open, intent, onClose }) {
 
   function startFromIntent(raw) {
     const plan = normalizeIntent(raw, { activeDid });
+    const cur = stateRef.current;
+
+    // Reopened with nothing new: what was being written is still here, as
+    // whichever account it was going out as. Anything still loading for it
+    // goes on loading.
+    if (!plan.hasContent && !isEmptyComposer(cur)) {
+      setError(null);
+      if (plan.mode === 'queue') dispatch({ type: 'setSchedule', schedule: { mode: 'queue' } });
+      if (plan.mode === 'schedule') openWhen();
+      return;
+    }
+
     const token = ++loadToken.current;
     setError(null);
     setPermissionForced(false);
@@ -381,53 +438,32 @@ export default function Composer({ open, intent, onClose }) {
     scheduledRowRef.current = null;
     const s = readPostingSettings(plan.asDid);
     const base = emptyComposerState({ asDid: plan.asDid, defaults: s });
-    const cur = stateRef.current;
-    const notes = [];
 
     if (!plan.hasContent) {
       setLoads({});
-      // Reopened: what was being written is still here.
-      if (!isEmptyComposer(cur) && (!raw?.asDid || raw.asDid === cur.asDid)) {
-        if (plan.mode === 'queue') dispatch({ type: 'setSchedule', schedule: { mode: 'queue' } });
-        if (plan.mode === 'schedule') openWhen();
-        return;
-      }
-      const kept = loadSessionDraft(plan.asDid);
-      if (kept && hasAutosaveContent(kept.state)) {
-        loadState(kept.state, { touched: !!kept.state.lifespan?.enabled });
-        setNotices([]);
-        return;
-      }
-      const saved = readAutosave(plan.asDid, { base });
-      if (saved) {
-        loadState(normalizeComposerState(saved.state), { touched: !!saved.state.lifespan?.enabled });
-        const left = saved.mediaLeftOut;
-        setNotices([
-          {
-            key: 'restored',
-            tone: left ? 'warn' : 'info',
-            text: `Picked up where you left off${left ? `. ${left === 1 ? 'One image or video' : `${left} images or videos`} couldn’t be kept after the page closed; add ${left === 1 ? 'it' : 'them'} again` : ''}.`,
-            action: { label: 'Start over', run: () => startOver(false) },
-          },
-        ]);
-        return;
-      }
+      if (restoreFor(plan.asDid, base, token)) return;
       loadState(seedFromIntent(base, plan, { emptyPost }));
-      setNotices([]);
+      setNotices(elsewhereNotices(plan.asDid));
       if (plan.mode === 'schedule') openWhen(base);
       return;
     }
 
-    if (!isEmptyComposer(cur)) {
-      displacedRef.current = { state: cur };
-      notes.push({
-        key: 'displaced',
-        tone: 'info',
-        text: 'The post you were writing is set aside.',
-        action: { label: 'Open it instead', run: () => restoreDisplaced() },
-      });
+    // An intent with words of its own: the post in progress is set aside,
+    // never written over. So is one kept for this account from before a
+    // reload, which the empty composer on screen doesn't show.
+    const notes = [];
+    let aside = null;
+    if (worthSettingAside(cur, seedRef.current)) {
+      const id = setAsideState(cur.asDid, cur, { touched: lifespanTouched.current });
+      if (id) aside = { did: cur.asDid, id };
+    } else if (!isEmptyComposer(cur)) {
+      clearKept(cur.asDid);
     }
+    const keptId = setAsideKept(plan.asDid, { base });
+    if (!aside && keptId) aside = { did: plan.asDid, id: keptId };
+    if (aside) notes.push(asideNotice(aside, 'The post you were writing is set aside.'));
     loadState(seedFromIntent(base, plan, { emptyPost }));
+    seedRef.current = { texts: plan.texts };
     for (const n of plan.notes) notes.push({ key: `mode-${n}`, tone: 'info', text: n });
     if (plan.fromLink) notes.push({ key: 'link', tone: 'info', text: 'From a link. Nothing is posted until you send it.' });
     setNotices(notes);
@@ -436,14 +472,125 @@ export default function Composer({ open, intent, onClose }) {
     runLoads(plan, token);
   }
 
-  function restoreDisplaced() {
-    const d = displacedRef.current;
-    displacedRef.current = null;
-    if (!d) return;
-    loadToken.current += 1;
+  /* ---- what's kept, and what's set aside ---------------------------------- */
+
+  function restoredNotice(left, { key = 'restored', lead = 'Picked up where you left off' } = {}) {
+    return {
+      key,
+      tone: left ? 'warn' : 'info',
+      text: `${lead}${left ? `. ${left === 1 ? 'One image or video' : `${left} images or videos`} couldn’t be kept after the page closed; add ${left === 1 ? 'it' : 'them'} again` : ''}.`,
+      action: { label: 'Start over', run: () => startOver(false) },
+    };
+  }
+
+  function asideNotice({ did, id }, text) {
+    return {
+      key: `aside-${id}`,
+      tone: 'info',
+      text: `${text} It’s offered again the next time the composer opens with nothing in it.`,
+      action: { label: 'Open it instead', run: () => openAside(did, id) },
+    };
+  }
+
+  // Where an unsent post went, when the composer opens empty for one account
+  // and another has one kept.
+  function elsewhereNotices(did) {
+    const other = otherKeptAccount(accounts, did);
+    if (!other) return [];
+    return [
+      {
+        key: `elsewhere-${other.did}`,
+        tone: 'info',
+        text: `You have an unsent post as ${accountLabel(other.account, other.did)}.`,
+        action: { label: 'Open it', run: () => changeAsDid(other.did) },
+      },
+    ];
+  }
+
+  function loadKept(kept, token, notes = []) {
     setLoads({});
-    loadState(d.state, { touched: !!d.state.lifespan?.enabled });
-    setNotices([]);
+    setWhenOpen(false);
+    loadState(kept.state, { touched: kept.touched });
+    setNotices(notes);
+    fillMedia(kept.state, token);
+  }
+
+  /**
+   * Put on screen what was kept for `did`: the post being written (this
+   * tab's copy, else the saved one), else the newest post set aside. False
+   * when there's nothing.
+   */
+  function restoreFor(did, base, token) {
+    const kept = keptPostFor(did, { base });
+    if (kept) {
+      loadKept(kept, token, kept.from === 'session' ? [] : [restoredNotice(kept.mediaLeftOut)]);
+      return true;
+    }
+    const aside = takeSetAside(did, { base });
+    if (aside) {
+      loadKept(
+        { state: aside.inMemory ? aside.state : normalizeComposerState(aside.state), touched: restoredTouched(aside) },
+        token,
+        [restoredNotice(aside.mediaLeftOut, { key: 'restored-aside', lead: 'Here’s the post you set aside' })],
+      );
+      return true;
+    }
+    return false;
+  }
+
+  // A set-aside post back on screen; the one it replaces is set aside in turn.
+  function openAside(did, id) {
+    const cur = stateRef.current;
+    const base = emptyComposerState({ asDid: did, defaults: readPostingSettings(did) });
+    autosaver.cancel();
+    const item = takeSetAside(did, { id, base });
+    if (!item) {
+      setNotices((list) => list.filter((n) => n.key !== `aside-${id}`));
+      toast?.('That post isn’t kept in this browser any more.', { tone: 'danger' });
+      return;
+    }
+    const token = ++loadToken.current;
+    let swapped = null;
+    if (worthSettingAside(cur, seedRef.current)) swapped = setAsideState(cur.asDid, cur, { touched: lifespanTouched.current });
+    else if (!isEmptyComposer(cur)) clearKept(cur.asDid);
+    scheduledRowRef.current = null;
+    setError(null);
+    setPermissionForced(false);
+    setSourceWarning('');
+    loadKept(
+      { state: item.inMemory ? item.state : normalizeComposerState(item.state), touched: restoredTouched(item) },
+      token,
+      swapped ? [asideNotice({ did: cur.asDid, id: swapped }, 'The post you were writing is set aside.')] : [],
+    );
+  }
+
+  // A restored post's images and video that live in this browser's draft
+  // store (by localRef) are read back in, so they aren't asked for again.
+  async function fillMedia(kept, token) {
+    if (!missingDraftMedia(kept).length) return;
+    const fresh = () => loadToken.current === token;
+    setLoads((l) => ({ ...l, media: 'loading' }));
+    let missing = [];
+    try {
+      const filled = await loadDraftMedia(kept.asDid, kept);
+      if (!fresh()) return;
+      for (const action of mediaPatches(stateRef.current, filled.state)) dispatch(action);
+      missing = filled.missing || [];
+    } catch {
+      missing = missingDraftMedia(kept);
+    } finally {
+      if (fresh()) setLoads((l) => ({ ...l, media: undefined }));
+    }
+    if (!fresh() || !missing.length) return;
+    const n = missing.length;
+    setNotices((list) => [
+      ...list.filter((x) => x.key !== 'missing-media'),
+      {
+        key: 'missing-media',
+        tone: 'warn',
+        text: `${n === 1 ? 'One image or video in this post isn’t' : `${n} images or videos in this post aren’t`} in this browser any more. Add ${n === 1 ? 'it' : 'them'} again before posting.`,
+      },
+    ]);
   }
 
   async function runLoads(plan, token) {
@@ -490,6 +637,13 @@ export default function Composer({ open, intent, onClose }) {
         if (!fresh()) return;
         loadState(loaded);
         setLoads({});
+        // A draft keeps only the reply's uri, cid and root; the post itself
+        // is read again so the writer can see what they're answering. If it
+        // can't be, the draft still goes out as a reply to it.
+        if (loaded.reply?.uri && !loaded.reply.author) {
+          replyRefPending.current = { kind: 'post', uri: loaded.reply.uri, soft: true };
+          loadReply(replyRefPending.current, token);
+        }
         if (missing?.length) {
           setNotices((n) => [
             ...n,
@@ -553,6 +707,9 @@ export default function Composer({ open, intent, onClose }) {
     const pending = pendingPlan.current;
     if (!pending || pending.token !== loadToken.current) return;
     pendingPlan.current = null;
+    // What the template or attachment puts in is still the intent's, not the
+    // writer's: the seed is taken again once it's on screen.
+    reseedRef.current = pending.token;
     const postId = stateRef.current.posts[0]?.id;
     if (pending.template) applyTemplate(postId, pending.template, null);
     else applyPlan(pending.plan, postId, null);
@@ -560,33 +717,107 @@ export default function Composer({ open, intent, onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generation, loads]);
 
+  // `ref.soft`: the state already holds the reply's uri, cid and root (a
+  // draft), so a failed read only means there's nothing to show, not that
+  // posting must wait.
   async function loadReply(ref, token = loadToken.current) {
+    const soft = !!ref?.soft;
     const fresh = () => loadToken.current === token;
-    setLoads((l) => ({ ...l, reply: 'loading' }));
+    setLoads((l) => ({ ...l, reply: soft ? { soft: true, loading: true } : 'loading' }));
     try {
       const reply = await loadReplyTarget(ref);
-      if (!fresh()) return;
+      // Taken off ("Don't reply"), or another post chosen, while it was read.
+      if (!fresh() || replyRefPending.current !== ref) return;
       dispatch({ type: 'setReply', reply });
       replyRefPending.current = null;
       setLoads((l) => ({ ...l, reply: undefined }));
     } catch (err) {
-      if (fresh()) setLoads((l) => ({ ...l, reply: { error: `${err.message} Until it can, this would go out as a new post.` } }));
+      if (!fresh() || replyRefPending.current !== ref) return;
+      const error = soft
+        ? `${err.message} It still goes out as a reply to that post.`
+        : `${err.message} Until it can, this would go out as a new post.`;
+      setLoads((l) => ({ ...l, reply: { error, soft } }));
     }
   }
 
   /* ---- post as -------------------------------------------------------- */
 
   function changeAsDid(did) {
-    const old = stateRef.current.asDid;
+    const cur = stateRef.current;
+    const old = cur.asDid;
     if (!did || did === old) return;
     autosaver.cancel();
-    clearAutosave(old);
-    clearSessionDraft(old);
-    dispatch({ type: 'setAsDid', did });
     setError(null);
     setPermissionForced(false);
     setQueuePreview({ status: 'idle', at: null });
+    const base = emptyComposerState({ asDid: did, defaults: readPostingSettings(did) });
+    const label = accountLabel(accounts.find((a) => a.did === did), did);
+
+    // Nothing written: what was kept for that account comes back instead.
+    if (isEmptyComposer(cur)) {
+      const token = ++loadToken.current;
+      if (restoreFor(did, base, token)) return;
+      dispatch({ type: 'setAsDid', did });
+      setNotices((list) => list.filter((n) => !n.key.startsWith('elsewhere-')));
+      return;
+    }
+
+    // The post goes with the writer to the new account. One already kept
+    // there is set aside rather than written over.
+    const asideId = setAsideKept(did, { base });
+    clearKept(old);
+    let next = composerReducer(cur, { type: 'setAsDid', did });
+    // Default gates are read again for the new account; chosen ones keep
+    // only what it can use.
+    const fitted = next.gates.custom ? gatesForAccount(next.gates, did) : { dropped: 0 };
+    if (fitted.dropped) next = { ...next, gates: fitted.gates };
+    dispatch({ type: 'load', state: next });
+    const notes = [];
+    if (asideId) notes.push(asideNotice({ did, id: asideId }, `You already had a post in progress as ${label}. It’s set aside.`));
+    if (fitted.dropped) {
+      notes.push({
+        key: 'gates-lists',
+        tone: 'warn',
+        text: fitted.reset
+          ? `Replies were limited to members of another account’s list, which ${label} can’t use, so this post now has ${label}’s usual reply settings.`
+          : `${fitted.dropped === 1 ? 'A list' : 'Lists'} from another account can’t limit replies to ${label}’s post, so ${fitted.dropped === 1 ? 'it was' : 'they were'} taken out of who can reply.`,
+      });
+    }
+    setNotices((list) => [...list.filter((n) => !n.key.startsWith('elsewhere-') && n.key !== 'gates-lists'), ...notes]);
   }
+
+  // An account removed from this browser takes its unsent post with it: the
+  // composer outlives the switch that follows (D17), so without this it
+  // would show that post to whoever is signed in next and write it back to
+  // storage. What's on disk is left as the removal left it.
+  const seenAccounts = useRef(new Set());
+  useEffect(() => {
+    const present = new Set(accounts.map((a) => a.did));
+    const asDidNow = stateRef.current.asDid;
+    const gone = !!asDidNow && seenAccounts.current.has(asDidNow) && !present.has(asDidNow);
+    for (const did of seenAccounts.current) if (!present.has(did)) forgetSessionDrafts(did);
+    seenAccounts.current = present;
+    if (!gone) return;
+    const home = present.has(activeDid) ? activeDid : accounts[0]?.did || '';
+    const old = stateRef.current;
+    const token = ++loadToken.current;
+    setError(null);
+    setPermissionForced(false);
+    setSourceWarning('');
+    scheduledRowRef.current = null;
+    replyRefPending.current = null;
+    const base = emptyComposerState({ asDid: home, defaults: readPostingSettings(home) });
+    if (!home || !restoreFor(home, base, token)) {
+      setLoads({});
+      setWhenOpen(false);
+      loadState(base);
+      setNotices([]);
+    }
+    // Held only if another account's kept post still shows it.
+    for (const url of collectPreviewUrls(old)) if (!previewUrlIsHeld(url, null)) URL.revokeObjectURL(url);
+    // restoreFor and loadState read through refs; only the list matters here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accounts, activeDid]);
 
   /* ---- media ---------------------------------------------------------- */
 
@@ -881,8 +1112,9 @@ export default function Composer({ open, intent, onClose }) {
     const s = stateRef.current;
     const post = s.posts[activeIndex] || s.posts[0];
     if (s.reply) {
-      const { draft } = draftFromReply({ text: post.text, reply: s.reply, record: post.record, card: post.card });
-      setTemplateSeed({ text: draft.text, embed: draft.embed || seedEmbed(post) });
+      // As draftFromReply made it: offered on replies only, with the note
+      // that says which name became a blank.
+      setTemplateSeed(draftFromReply({ text: post.text, reply: s.reply, record: post.record, card: post.card }));
     } else {
       setTemplateSeed({ text: post.text, embed: seedEmbed(post) });
     }
@@ -915,7 +1147,8 @@ export default function Composer({ open, intent, onClose }) {
 
   async function pickContinue(item) {
     setDialogs((d) => ({ ...d, continue: false }));
-    await loadReply({ kind: 'post', uri: item.uri });
+    replyRefPending.current = { kind: 'post', uri: item.uri };
+    await loadReply(replyRefPending.current);
   }
 
   /* ---- sending -------------------------------------------------------- */
@@ -926,6 +1159,8 @@ export default function Composer({ open, intent, onClose }) {
     caps,
     signedOut,
     missingMedia: missingDraftMedia(state).length > 0,
+    postNow: postNow && !state.schedule,
+    authMode: session.authMode,
   });
   // With the limits read, a full allowance is said before anyone tries.
   const scheduleRoom = limits.status === 'ready' ? scheduledRoomProblem(limits.value, { editing: state.source?.kind === 'scheduled' }) : '';
@@ -936,9 +1171,12 @@ export default function Composer({ open, intent, onClose }) {
   }
   const usageLine = limits.status === 'ready' && caps.canSchedule ? scheduledUsageLine(limits.value) : '';
   const replyLoad = loads.reply;
-  const blockedByLoad = loads.scheduled === 'loading' || loads.draft === 'loading' || replyLoad === 'loading' || !!replyLoad?.error;
+  // A draft's reply already holds what posting needs (`soft`), so reading
+  // the post it answers never holds it up.
+  const replyBlocks = replyLoad === 'loading' || (!!replyLoad?.error && !replyLoad.soft);
+  const blockedByLoad = loads.scheduled === 'loading' || loads.draft === 'loading' || loads.media === 'loading' || replyBlocks;
   if (blockedByLoad) {
-    const reason = replyLoad?.error ? 'The post you’re replying to couldn’t be read.' : 'Still reading what this post needs.';
+    const reason = replyBlocks && replyLoad?.error ? 'The post you’re replying to couldn’t be read.' : 'Still reading what this post needs.';
     for (const key of Object.keys(model.actions)) model.actions[key] = { disabled: true, reason };
   }
 
@@ -952,8 +1190,17 @@ export default function Composer({ open, intent, onClose }) {
     if (id) editors.current.get(id)?.focus();
   }
 
+  // Back from the adviser to keep editing: the button that started the check
+  // was disabled while it ran, so focus has nowhere to return to by itself.
+  function refocusAfterAdviser() {
+    const index = Math.min(activeIndex, stateRef.current.posts.length - 1);
+    requestAnimationFrame(() => {
+      if (openRef.current) focusPost(Math.max(0, index));
+    });
+  }
+
   function runAction(action) {
-    if (busyRef.current) return;
+    if (busyRef.current || adviserReadingRef.current) return;
     if (action === 'post') submitPost();
     else if (action === 'schedule') {
       if (stateRef.current.schedule?.mode !== 'at' || !whenOpen) openWhen();
@@ -1025,7 +1272,10 @@ export default function Composer({ open, intent, onClose }) {
         setBusy((b) => ({ ...b, line: null, adviser: true }));
         const decision = await adviser.check(s, { mode: 'gate' });
         setBusy((b) => (b ? { ...b, adviser: false, line: 'Getting it ready' } : b));
-        if (decision === 'edit') return;
+        if (decision === 'edit') {
+          refocusAfterAdviser();
+          return;
+        }
         if (decision === 'draft') {
           endBusy(attempt);
           await saveDraft();
@@ -1152,9 +1402,8 @@ export default function Composer({ open, intent, onClose }) {
   function resetAfterSend(did) {
     const old = stateRef.current;
     autosaver.cancel();
-    clearAutosave(did);
-    clearSessionDraft(did);
-    if (old.asDid !== did) clearSessionDraft(old.asDid);
+    clearKept(did);
+    if (old.asDid !== did) clearKept(old.asDid);
     const home = activeDid || did;
     const fresh = emptyComposerState({ asDid: home, defaults: readPostingSettings(home) });
     loadState(fresh);
@@ -1162,7 +1411,6 @@ export default function Composer({ open, intent, onClose }) {
       if (!previewUrlIsHeld(url, fresh)) URL.revokeObjectURL(url);
     }
     scheduledRowRef.current = null;
-    displacedRef.current = null;
     setNotices([]);
     setWhenOpen(false);
     setShowTags(false);
@@ -1199,7 +1447,7 @@ export default function Composer({ open, intent, onClose }) {
     }
     const req = backendFor(did);
     if (!req) {
-      showError({ text: NEEDS_BACKEND_HINT });
+      showError({ text: needsBackendHint(session.authMode) });
       return;
     }
     const editing = s.source?.kind === 'scheduled' ? s.source : null;
@@ -1327,8 +1575,7 @@ export default function Composer({ open, intent, onClose }) {
     const old = stateRef.current;
     loadToken.current += 1;
     autosaver.cancel();
-    clearAutosave(did);
-    clearSessionDraft(did);
+    clearKept(did);
     const fresh = emptyComposerState({ asDid: did, defaults: readPostingSettings(did) });
     loadState(fresh);
     for (const url of collectPreviewUrls(old)) if (!previewUrlIsHeld(url, fresh)) URL.revokeObjectURL(url);
@@ -1360,6 +1607,30 @@ export default function Composer({ open, intent, onClose }) {
     }, 40);
     return () => clearTimeout(timer);
   }, [open, generation, narrow]);
+
+  // A file dropped anywhere outside the post area while the composer is open
+  // (its title bar, the send bar, the backdrop) would otherwise open in the
+  // tab and unload the page with everything picked. Dropped on the dialog,
+  // it's added like a drop on the post area.
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') return undefined;
+    const hasFiles = (e) => Array.from(e.dataTransfer?.types || []).includes('Files');
+    const onOver = (e) => {
+      if (hasFiles(e)) e.preventDefault();
+    };
+    const onDrop = (e) => {
+      if (!hasFiles(e) || e.defaultPrevented) return;
+      e.preventDefault();
+      const dialog = composerRef.current?.closest('dialog');
+      if (dialog?.contains(e.target)) dropFiles.current(Array.from(e.dataTransfer.files || []));
+    };
+    window.addEventListener('dragover', onOver);
+    window.addEventListener('drop', onDrop);
+    return () => {
+      window.removeEventListener('dragover', onOver);
+      window.removeEventListener('drop', onDrop);
+    };
+  }, [open]);
 
   /* ---- the queue's next slot, shown before it's used ---------------------- */
 
@@ -1445,12 +1716,12 @@ export default function Composer({ open, intent, onClose }) {
     applyTemplate: (index, template, range) => applyTemplate(stateRef.current.posts[index]?.id, template, range),
     split: (index) => {
       const post = stateRef.current.posts[index];
-      const parts = splitForThread(post.text);
-      if (parts.length < 2) return;
       const room = MAX_POSTS - stateRef.current.posts.length;
-      const keep = parts.slice(0, room + 1);
-      dispatch({ type: 'setText', index, text: keep[0] });
-      keep.slice(1).forEach((text, i) => dispatch({ type: 'addPost', after: index + i, post: { ...emptyPost(), text } }));
+      // What doesn't fit in the posts there's room for stays in the last one.
+      const parts = splitForThread(post.text, undefined, { maxParts: room + 1 });
+      if (parts.length < 2) return;
+      dispatch({ type: 'setText', index, text: parts[0] });
+      parts.slice(1).forEach((text, i) => dispatch({ type: 'addPost', after: index + i, post: { ...emptyPost(), text } }));
     },
     dismissSplit: () => {
       setSplitDismissed(true);
@@ -1464,7 +1735,11 @@ export default function Composer({ open, intent, onClose }) {
 
   /* ---- rendering -------------------------------------------------------- */
 
-  const disabled = !!busy || loads.scheduled === 'loading' || loads.draft === 'loading';
+  // A read by the adviser holds the post still too: a fix it offers is made
+  // against the words it read.
+  const adviserReading = !!adviser.busyProps;
+  const disabled = !!busy || adviserReading || loads.scheduled === 'loading' || loads.draft === 'loading';
+  adviserReadingRef.current = adviserReading;
   const replying = !!state.reply;
   const title = replying
     ? 'Reply'
@@ -1497,6 +1772,7 @@ export default function Composer({ open, intent, onClose }) {
   function onKeyDown(e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent?.isComposing) {
       e.preventDefault();
+      if (disabled) return;
       if (!model.actions[model.primary]?.disabled) runAction(model.primary);
       else showError({ text: model.actions[model.primary].reason });
     }
@@ -1521,10 +1797,21 @@ export default function Composer({ open, intent, onClose }) {
       setDragOver(false);
       if (!files.length) return;
       e.preventDefault();
-      if (disabled) return;
-      addFiles(stateRef.current.posts[activeIndex]?.id || stateRef.current.posts[0].id, files, { allowVideo: false });
+      dropFiles.current(files);
     },
   };
+  dropFiles.current = (files) => {
+    if (disabled || !files.length) return;
+    addFiles(stateRef.current.posts[activeIndex]?.id || stateRef.current.posts[0].id, files, { allowVideo: false });
+  };
+
+  function placeMore() {
+    const rect = moreRef.current?.getBoundingClientRect?.();
+    if (!rect || typeof window === 'undefined') return;
+    const roomLeft = rect.right;
+    const roomRight = window.innerWidth - rect.left;
+    setMoreAlign(roomLeft >= MENU_ROOM_PX || roomLeft >= roomRight ? 'end' : 'start');
+  }
 
   const moreItems = [
     !replying && { key: 'continue', label: 'Continue a thread', hint: 'Reply to one of your own posts', onSelect: openContinue },
@@ -1541,7 +1828,7 @@ export default function Composer({ open, intent, onClose }) {
       <PublishButton
         state={state}
         model={model}
-        busy={!!busy}
+        busy={!!busy || adviserReading}
         onAction={runAction}
         footnote={usageLine ? `${usageLine}. Limits are shared with Anisota.` : ''}
       />
@@ -1554,7 +1841,7 @@ export default function Composer({ open, intent, onClose }) {
         autosaver.flush();
         onClose?.();
       }} title={title} className="composer-dialog" actions={actions}>
-        <div className="composer" onKeyDown={onKeyDown} data-drag={dragOver || undefined} {...dropProps}>
+        <div ref={composerRef} className="composer" onKeyDown={onKeyDown} data-drag={dragOver || undefined} {...dropProps}>
           <PostAsPicker
             asDid={asDid}
             activeDid={activeDid}
@@ -1621,7 +1908,7 @@ export default function Composer({ open, intent, onClose }) {
               <ReplyContext
                 reply={state.reply}
                 selfDid={asDid}
-                loading={replyLoad === 'loading'}
+                loading={replyLoad === 'loading' || !!replyLoad?.loading}
                 error={replyLoad?.error || ''}
                 disabled={disabled}
                 onRetry={() => replyRefPending.current && loadReply(replyRefPending.current)}
@@ -1667,7 +1954,7 @@ export default function Composer({ open, intent, onClose }) {
                     recordLoading={!!recordLoading[post.id] || (index === 0 && loads.quote === 'loading')}
                     problems={problemsByPost[index] || []}
                     requireAltText={settings.requireAltText}
-                    offerSplit={settings.showThreadSuggestion !== false && !splitDismissed}
+                    offerSplit={settings.showThreadSuggestion !== false && !splitDismissed && state.posts.length < MAX_POSTS}
                   />
                 ))}
               </div>
@@ -1731,15 +2018,20 @@ export default function Composer({ open, intent, onClose }) {
                       const decision = await adviser.check(stateRef.current, { mode: 'manual' });
                       if (decision === 'publish') submitPost({ skipAdviser: true });
                       else if (decision === 'draft') saveDraft();
+                      else refocusAfterAdviser();
                     }}
                   >
                     <Sparkles size={15} aria-hidden="true" />
                     Check this post
                   </Button>
                 )}
-                <Menu label="More for this post" icon variant="ghost" placement="up" align="end" items={moreItems.filter(Boolean)}>
-                  <MoreHorizontal size={16} aria-hidden="true" />
-                </Menu>
+                {/* The list hangs toward whichever side has room: on a phone the
+                    row wraps and this button can sit at the left edge. */}
+                <span className="composer-more" ref={moreRef} onPointerDownCapture={placeMore} onFocusCapture={placeMore}>
+                  <Menu label="More for this post" icon variant="ghost" placement="up" align={moreAlign} items={moreItems.filter(Boolean)}>
+                    <MoreHorizontal size={16} aria-hidden="true" />
+                  </Menu>
+                </span>
               </div>
               {timerNote && !state.lifespan?.enabled && (
                 <p className="field-hint composer-timer-note">{timerNote}</p>
@@ -1758,6 +2050,7 @@ export default function Composer({ open, intent, onClose }) {
                       onClick={() => {
                         dispatch({ type: 'setSchedule', schedule: null });
                         setWhenOpen(false);
+                        setPostNow(true);
                       }}
                     >
                       Post now instead

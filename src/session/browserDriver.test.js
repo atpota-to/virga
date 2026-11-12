@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { classifyRestoreError, createBrowserDriver, grantedScopeOf, isCallbackResult } from './browserDriver.js';
+import { classifyRestoreError, createBrowserDriver, grantedScopeOf, isCallbackResult, isRevokedCause } from './browserDriver.js';
 
 class TokenRefreshError extends Error {}
 class TokenRevokedError extends Error {}
@@ -89,13 +89,21 @@ describe('the browser driver', () => {
     expect(await driverWith(fakeClient()).finishCallback()).toBeNull();
   });
 
-  it('signs out through the session, never client.revoke', async () => {
+  it('signs out through the session when it can be restored', async () => {
     const signOut = vi.fn(async () => {});
     const client = fakeClient({ sessions: { [LAB]: { sub: LAB, signOut } } });
     await driverWith(client).signOut(LAB);
     expect(signOut).toHaveBeenCalled();
     expect(client.revoke).not.toHaveBeenCalled();
-    // A session that's already gone is nothing to sign out.
+  });
+
+  it('still deletes the stored session when it can’t be restored', async () => {
+    // Offline, or the authorization server down: restore needs its metadata,
+    // revoke deletes the stored tokens and key without it.
+    const client = fakeClient({ sessions: { [LAB]: new TypeError('Failed to fetch') } });
+    await expect(driverWith(client).signOut(LAB)).resolves.toBeUndefined();
+    expect(client.revoke).toHaveBeenCalledWith(LAB);
+    client.revoke.mockRejectedValueOnce(new Error('nothing stored'));
     await expect(driverWith(client).signOut(MIRA)).resolves.toBeUndefined();
   });
 
@@ -121,5 +129,35 @@ describe('the browser driver', () => {
     events.dispatchEvent(new CustomEvent('deleted', { detail: { sub: MIRA } }));
     await new Promise((r) => setTimeout(r, 5));
     expect(seen).toHaveLength(2);
+  });
+});
+
+describe('isRevokedCause', () => {
+  it('knows a sign-out made in another tab, whose error arrives as a plain Error', () => {
+    // What the library's TokenRevokedError becomes after the BroadcastChannel
+    // clones it: the class and the name are gone, the message is kept.
+    const real = new TokenRevokedError(`The session for "${MIRA}" was successfully revoked`);
+    const cloned = structuredClone(real);
+    expect(cloned instanceof TokenRevokedError).toBe(false);
+    expect(isRevokedCause(cloned, mod)).toBe(true);
+    expect(isRevokedCause(real, mod)).toBe(true);
+    expect(isRevokedCause(Object.assign(new Error('x'), { name: 'TokenRevokedError' }), mod)).toBe(true);
+  });
+
+  it('reads anything else as a session that ended', () => {
+    expect(isRevokedCause(structuredClone(new TokenRefreshError('The session was deleted by another process')), mod)).toBe(false);
+    expect(isRevokedCause(undefined, mod)).toBe(false);
+  });
+});
+
+describe('a session dropped in another tab', () => {
+  it('reaches onDeleted as a sign-out', async () => {
+    const events = new EventTarget();
+    const driver = createBrowserDriver({ getClient: async () => fakeClient(), loadModule: async () => mod, events });
+    const seen = [];
+    driver.onDeleted((sub, info) => seen.push([sub, info.revoked]));
+    const cause = structuredClone(new TokenRevokedError(`The session for "${MIRA}" was successfully revoked`));
+    events.dispatchEvent(new CustomEvent('deleted', { detail: { sub: MIRA, cause } }));
+    await vi.waitFor(() => expect(seen).toEqual([[MIRA, true]]));
   });
 });

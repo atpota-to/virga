@@ -118,17 +118,19 @@ export function hasStrippedControlCharacter(text) {
 }
 
 /**
- * Remove hidden characters that interfere with URL detection: zero-width
- * marks, the BOM and stray control characters; a non-breaking space becomes a
- * plain one.
+ * Remove hidden characters that interfere with URL detection: the zero-width
+ * space, the LRM and RLM marks, the BOM and stray control characters; a
+ * non-breaking space becomes a plain one. The joiners (ZWNJ U+200C, ZWJ
+ * U+200D) stay: they are part of what was written, holding emoji sequences
+ * like 👩‍💻 together and shaping Persian and Indic words.
  * @param {string} text
  * @returns {string}
  */
 export function sanitizeText(text) {
   const withoutHiddenCharacters = String(text ?? '')
-    // U+200B-U+200F (ZWSP, ZWNJ, ZWJ, LRM, RLM) as a range, so the ZWJ isn't
-    // read as joining its neighbours into a sequence.
-    .replace(/[\u200B-\u200F]/g, '')
+    // Three single characters, never a range: U+200C and U+200D sit between
+    // them.
+    .replace(/[\u200B\u200E\u200F]/g, '')
     .replace(/\uFEFF/g, '')
     .replace(/\u00A0/g, ' ');
 

@@ -49,3 +49,40 @@ export function rulesNote(reply) {
   if (reply.length === 1) return 'Choose at least one group, or choose Nobody.';
   return '';
 }
+
+// The account a list belongs to: the repo in its at:// URI.
+const listOwner = (uri) => (typeof uri === 'string' ? uri.match(/^at:\/\/([^/]+)\//)?.[1] || '' : '');
+
+/** Whether a list rule names a list `did` doesn't own. */
+export function isForeignListRule(rule, did) {
+  return rule?.type === 'list' && listOwner(rule.list) !== did;
+}
+
+/**
+ * Gates as they can go out from `did`: a threadgate may only name the
+ * writer's own lists (and one naming another account's list would tie the
+ * two accounts together in public), so list rules from another account come
+ * out. `{ gates, dropped }`, where `dropped` counts them; when they were all
+ * the rules there were, the gates go back to `did`'s default (custom false)
+ * rather than read as "nobody".
+ */
+export function gatesForAccount(gates, did) {
+  const reply = gates?.reply;
+  if (!Array.isArray(reply)) return { gates, dropped: 0 };
+  const kept = reply.filter((r) => !isForeignListRule(r, did));
+  const dropped = reply.length - kept.length;
+  if (!dropped) return { gates, dropped: 0 };
+  if (!kept.length) return { gates: { ...gates, custom: false, reply: null }, dropped, reset: true };
+  return { gates: { ...gates, reply: kept }, dropped, reset: false };
+}
+
+/**
+ * The list rules in `reply` that none of `listUris` (the account's own lists)
+ * accounts for: another account's list, or one since deleted. The editor
+ * still shows these, so they can be taken out.
+ */
+export function unlistedRules(reply, listUris = []) {
+  if (!Array.isArray(reply)) return [];
+  const known = new Set(listUris);
+  return reply.filter((r) => r?.type === 'list' && !known.has(r.list));
+}

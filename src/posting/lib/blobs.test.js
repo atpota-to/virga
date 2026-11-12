@@ -1,6 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { jsonToLex } from '@atproto/api';
-import { blobCid, isBlob, uploadBlob } from './blobs.js';
+import {
+  BLOB_UPLOAD_BASE_MS,
+  blobCid,
+  blobUploadTimeoutMs,
+  isBlob,
+  uploadBlob,
+} from './blobs.js';
 
 const CID = 'bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm';
 const json = {
@@ -38,7 +44,10 @@ describe('uploadBlob', () => {
     );
     expect(blob).toEqual(json);
     expect(upload.mock.calls[0][0]).toBeInstanceOf(Uint8Array);
-    expect(upload.mock.calls[0][1]).toEqual({ encoding: 'image/jpeg' });
+    expect(upload.mock.calls[0][1]).toEqual({
+      encoding: 'image/jpeg',
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it('reads a Blob’s bytes and type', async () => {
@@ -84,6 +93,58 @@ describe('uploadBlob', () => {
         { encoding: 'image/jpeg' },
       ),
     ).rejects.toThrow(/did not return/);
+  });
+
+  it('gives a bigger upload longer, so a slow uplink can still send four images at once', () => {
+    expect(blobUploadTimeoutMs(0)).toBe(BLOB_UPLOAD_BASE_MS);
+    // A full-size image (1.9 MiB) at about 128 kbps, its share of a
+    // half-megabit uplink with three others going.
+    const fullSize = Math.round(1.9 * 1024 * 1024);
+    const seconds = fullSize / ((128 * 1000) / 8);
+    expect(blobUploadTimeoutMs(fullSize)).toBeGreaterThan(seconds * 1000);
+    expect(blobUploadTimeoutMs(2_000_000)).toBeGreaterThan(
+      blobUploadTimeoutMs(200_000),
+    );
+  });
+
+  it('waits by size when no deadline is given, then aborts the request', async () => {
+    vi.useFakeTimers();
+    try {
+      let requestSignal;
+      const upload = vi.fn((_bytes, { signal }) => {
+        requestSignal = signal;
+        return new Promise(() => {});
+      });
+      const bytes = new Uint8Array(1024 * 1024);
+      const pending = uploadBlob(targetWith(upload), bytes, {
+        encoding: 'image/jpeg',
+      });
+      const check = expect(pending).rejects.toMatchObject({ timedOut: true });
+      // A fixed minute would have given up here.
+      await vi.advanceTimersByTimeAsync(60_000);
+      expect(requestSignal.aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(blobUploadTimeoutMs(bytes.length));
+      await check;
+      expect(requestSignal.aborted).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('aborts the request when the caller cancels', async () => {
+    const controller = new AbortController();
+    let requestSignal;
+    const pending = uploadBlob(
+      targetWith((_bytes, { signal }) => {
+        requestSignal = signal;
+        return new Promise(() => {});
+      }),
+      new Uint8Array([1]),
+      { encoding: 'image/jpeg', signal: controller.signal },
+    );
+    controller.abort();
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    expect(requestSignal.aborted).toBe(true);
   });
 
   it('times out', async () => {

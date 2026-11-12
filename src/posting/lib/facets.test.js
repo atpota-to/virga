@@ -544,6 +544,38 @@ describe('links', () => {
     expect(shape(bare.facets)).toEqual([link('https://example.com', 3, 14)]);
   });
 
+  it('leaves the punctuation that ends a sentence out of the link, and still offers the card', async () => {
+    const text =
+      'Did you see https://example.com/page? Read https://example.com/b.';
+    const result = await preview(text);
+    expect(shape(result.facets)).toEqual([
+      link('https://example.com/page', 12, 36),
+      link('https://example.com/b', 43, 64),
+    ]);
+    expect(result.externalLinks.map((l) => l.url)).toEqual([
+      'https://example.com/page',
+      'https://example.com/b',
+    ]);
+
+    const wrapped = await preview(
+      'See (https://example.com/page) or <https://example.com/x>',
+    );
+    expect(shape(wrapped.facets).map((f) => f.uri)).toEqual([
+      'https://example.com/page',
+      'https://example.com/x',
+    ]);
+  });
+
+  it('links a URL whose query holds an address or an @handle, with no mention inside it', async () => {
+    resolveHandleToDid.mockResolvedValue('did:plc:actiasluna');
+    const url =
+      'https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test';
+    const text = `join ${url} now`;
+    const result = await submit(text);
+    expect(shape(result.facets)).toEqual([link(url, 5, 5 + url.length)]);
+    expect(resolveHandleToDid).not.toHaveBeenCalled();
+  });
+
   it('turns a post or feed link into an embed at once, and leaves other links as cards', async () => {
     // A pasted post link becomes a quote embed at once, bypassing isUrlComplete.
     const post = await preview('x https://bsky.app/profile/a.test/post/3k,y');

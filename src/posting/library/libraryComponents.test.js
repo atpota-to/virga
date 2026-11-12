@@ -98,7 +98,6 @@ function fakeLib(overrides = {}) {
     hydrate: async (i) => i,
     resolveLink: async () => null,
     planFor: async () => ({}),
-    recordUse: () => null,
     ...overrides,
   };
 }

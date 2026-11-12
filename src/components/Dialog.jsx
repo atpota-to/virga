@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import Button from './Button.jsx';
 
@@ -11,6 +11,11 @@ import Button from './Button.jsx';
  * goes on the <dialog>, for a dialog that needs its own width. Mark the
  * control that should have focus when it opens with `data-autofocus`.
  */
+/** Closes a <dialog> that is still open, which hands focus back to its opener. */
+export function closeIfOpen(el) {
+  if (el?.open) el.close?.();
+}
+
 export default function Dialog({ open, onClose, title, children, actions = null, tone = null, className = '' }) {
   const ref = useRef(null);
   const titleId = useId();
@@ -25,6 +30,14 @@ export default function Dialog({ open, onClose, title, children, actions = null,
     }
     if (!open && el.open) el.close?.();
   }, [open]);
+  // A dialog its parent unmounts while open (`{state && <SomeDialog open />}`)
+  // leaves the DOM without close(), so the browser never returns focus to the
+  // control that opened it and focus falls to <body>. A layout cleanup runs
+  // before React removes the element, while close() can still restore focus.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    return () => closeIfOpen(el);
+  }, []);
   return (
     <dialog
       ref={ref}

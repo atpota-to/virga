@@ -408,4 +408,16 @@ describe('removing and pruning', () => {
     ]);
     expect(await media.refs()).toEqual(['virga-media:b']);
   });
+
+  it('keeps a file saved since `savedBefore`, whatever the drafts say', async () => {
+    const media = await openDraftMedia(ALICE, { indexedDB: idb });
+    await media.put([
+      { ref: 'virga-media:old', file: file('a'), savedAt: 100 },
+      { ref: 'virga-media:new', file: file('b'), savedAt: 200 },
+    ]);
+    expect(await pruneDraftMedia(ALICE, [], { media, savedBefore: 200 })).toEqual([
+      'virga-media:old',
+    ]);
+    expect(await media.refs()).toEqual(['virga-media:new']);
+  });
 });

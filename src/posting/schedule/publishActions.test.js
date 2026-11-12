@@ -3,6 +3,7 @@ import {
   DEFAULT_PUBLISH_ACTION,
   EMPTY_QUEUE_HINT,
   NEEDS_BACKEND_HINT,
+  NO_BACKEND_HINT,
   PUBLISH_ACTIONS,
   PUBLISH_ACTION_OPTIONS,
   REPLY_HINT,
@@ -11,6 +12,7 @@ import {
   normalizePublishAction,
   publishActionBlockReason,
   resolvePrimaryPublishAction,
+  needsBackendHint,
   scheduleBlockReason,
 } from './publishActions.js';
 import { DEFAULT_ACTIONS } from '../settings.js';
@@ -139,6 +141,18 @@ describe('why an action is off', () => {
     );
     expect(scheduleBlockReason({ reply: true, video: true })).toBe(REPLY_HINT);
     expect(scheduleBlockReason({ video: true })).toBe(VIDEO_HINT);
+  });
+
+  it('only says to reconnect where this copy of Virga offers its server', () => {
+    expect(
+      scheduleBlockReason({ canSchedule: false, authMode: 'backend' }),
+    ).toBe(NEEDS_BACKEND_HINT);
+    expect(
+      scheduleBlockReason({ canSchedule: false, authMode: 'browser' }),
+    ).toBe(NO_BACKEND_HINT);
+    expect(NO_BACKEND_HINT).not.toMatch(/Reconnect/);
+    expect(needsBackendHint('browser')).toBe(NO_BACKEND_HINT);
+    expect(needsBackendHint('backend')).toBe(NEEDS_BACKEND_HINT);
   });
 
   it('puts that reason on Schedule and Add to queue, ahead of the empty week', () => {

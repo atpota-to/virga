@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { X } from 'lucide-react';
 import { normalizeTags, MAX_TAGS } from '../lib/tags.js';
 
@@ -46,7 +47,15 @@ export default function TagsField({ tags = [], onChange, disabled = false }) {
             else setDraft(v);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            // Enter while an input method is still composing picks the word,
+            // it doesn't end the tag.
+            if (e.nativeEvent?.isComposing) return;
+            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+              // The composer sends on this same key press, from what it has
+              // rendered: the tag being typed has to be part of that first.
+              // The event goes on to the composer, which does the sending.
+              if (draft.trim()) flushSync(() => commit(draft));
+            } else if (e.key === 'Enter') {
               e.preventDefault();
               if (draft.trim()) commit(draft);
             } else if (e.key === 'Backspace' && !draft && tags.length) {

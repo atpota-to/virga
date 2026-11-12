@@ -6,6 +6,7 @@ import { ImageGrid, VideoAttachment } from './MediaGrid.jsx';
 import { LinkCard, RecordCard } from './EmbedCards.jsx';
 import { countComposerGraphemes } from '../lib/inlineLinks.js';
 import { MAX_POST_GRAPHEMES } from '../lib/composerModel.js';
+import { limitAnnouncement } from './editing.js';
 
 /**
  * One post of what's being written (a single post is a thread of one): its
@@ -175,8 +176,13 @@ export default function PostBlock({
             <BookOpen size={17} aria-hidden="true" />
           </Button>
         </span>
-        <span id={countId} className={`field-hint num post-count${over ? ' is-over' : ''}`} aria-live="polite">
+        {/* The count is read with the editor (aria-describedby), not as it
+            changes; only crossing toward or past the limit is announced. */}
+        <span id={countId} className={`field-hint num post-count${over ? ' is-over' : ''}`}>
           {over ? `${count} of ${MAX_POST_GRAPHEMES}, ${count - MAX_POST_GRAPHEMES} over` : `${count} of ${MAX_POST_GRAPHEMES}`}
+        </span>
+        <span className="visually-hidden" aria-live="polite">
+          {limitAnnouncement(count)}
         </span>
       </div>
     </article>

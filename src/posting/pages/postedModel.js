@@ -162,17 +162,28 @@ export function templateSeedFrom(record) {
 }
 
 /** What a post row offers, given the account's capabilities. */
-export function postRowActions(row, { did, canPost, canSchedule }) {
-  const reply = isReplyRow(row, did);
+export function postRowActions(row, { canPost, canSchedule }) {
   return {
     reply: canPost,
     quote: canPost,
     copy: canPost,
     gates: canPost,
-    // Replies take no threadgate: only quoting can be changed on one.
-    gatesQuotesOnly: reply,
+    // Replies take no threadgate: only quoting can be changed on one. That
+    // holds for a reply in a thread of the account's own too, which
+    // isReplyRow files with posts (`replyTo` is then the account itself).
+    gatesQuotesOnly: Boolean(row?.replyTo),
     timer: canSchedule,
     template: true,
     delete: canPost,
   };
+}
+
+/**
+ * Whether only quoting can be changed on the post: true for any reply, its
+ * own thread's included. A threadgate belongs at the thread's root (its rkey
+ * has to match the root's), so one written at a reply's rkey gates nothing.
+ * `record` is the post as it reads now (readPostNow).
+ */
+export function gatesQuotesOnlyFor(offer, record) {
+  return Boolean(offer?.gatesQuotesOnly || record?.reply);
 }

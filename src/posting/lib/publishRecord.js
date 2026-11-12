@@ -59,7 +59,11 @@ export function isRetriablePublishError(err) {
       : typeof err.statusCode === 'number'
         ? err.statusCode
         : undefined;
-  if (status !== undefined) return status === 429 || status >= 500;
+  // Below 100 is not an HTTP status: @atproto/xrpc reports a fetch that threw
+  // (no response at all) as ResponseType.Unknown, status 1, so it is read as
+  // the network failure it is.
+  if (status !== undefined && status >= 100)
+    return status === 429 || status >= 500;
   return isTransientNetworkError(err);
 }
 

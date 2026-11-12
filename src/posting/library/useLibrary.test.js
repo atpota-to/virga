@@ -159,6 +159,29 @@ describe('useLibrary', () => {
     });
   });
 
+  it('leaves counting a template’s use to the composer, which applies the plan', async () => {
+    const store = new Map();
+    const localStorage = {
+      getItem: (k) => (store.has(k) ? store.get(k) : null),
+      setItem: (k, v) => store.set(k, String(v)),
+      removeItem: (k) => store.delete(k),
+    };
+    vi.stubGlobal('localStorage', localStorage);
+    try {
+      const lib = render({ did: SELF, sources: sources(), store: createLibraryStore() });
+      expect(lib).not.toHaveProperty('recordUse');
+      const plan = await lib.planFor({
+        kind: 'template',
+        title: 'Thanks',
+        source: { rkey: 't1', name: 'Thanks', text: 'Thanks for the follow!', variables: [] },
+      });
+      expect(plan.templateRkey).toBe('t1');
+      expect(store.size).toBe(0);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('reads nothing without an account', () => {
     const lib = render({ did: null, store: createLibraryStore() });
     expect(lib.items('posts')).toEqual([]);

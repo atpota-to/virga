@@ -164,7 +164,9 @@ describe('splitQueueRows', () => {
       row('unknown', '2026-09-06T09:00:00Z', { clientKey: undefined }),
       { ...row('oneoff', '2026-09-06T09:00:00Z'), queued: false },
     ];
-    const { movable, occupied } = splitQueueRows(rows);
+    const { movable, occupied } = splitQueueRows(rows, {
+      now: new Date('2026-08-30T12:00:00Z'),
+    });
     expect(movable.map((r) => r.id)).toEqual(['sooner', 'later']);
     expect(occupied.map((r) => r.id)).toEqual([
       'theirs',
@@ -172,6 +174,21 @@ describe('splitQueueRows', () => {
       'failed',
       'unknown',
     ]);
+  });
+});
+
+describe('splitQueueRows and a row whose time has come', () => {
+  const now = new Date('2026-11-16T10:00:00Z');
+
+  it('holds a pending row that is due or waiting on a retry in place', () => {
+    const rows = [
+      row('due', '2026-11-16T09:00:00Z'),
+      row('soon', '2026-11-16T10:00:30Z'),
+      row('ahead', '2026-11-17T09:00:00Z'),
+    ];
+    const { movable, occupied } = splitQueueRows(rows, { now });
+    expect(movable.map((r) => r.id)).toEqual(['ahead']);
+    expect(occupied.map((r) => r.id)).toEqual(['due', 'soon']);
   });
 });
 
@@ -226,5 +243,43 @@ describe('planQueueReorder', () => {
     ];
     const plan = planQueueReorder(schedule, rows, ['b', 'a'], now);
     expect(plan.conflict?.id).toBe('a');
+  });
+});
+
+describe('planQueueReorder with a row waiting on a retry', () => {
+  // Weekdays at 09:00 UTC; it's Monday 10:00. A was due at 09:00, failed
+  // once and is waiting to be tried again.
+  const schedule = {
+    timezone: 'UTC',
+    slots: {
+      mon: ['09:00'],
+      tue: ['09:00'],
+      wed: ['09:00'],
+      thu: ['09:00'],
+      fri: ['09:00'],
+    },
+  };
+  const now = new Date('2026-11-16T10:00:00Z');
+  const rows = [
+    row('A', '2026-11-16T09:00:00+00:00'),
+    row('B', '2026-11-17T09:00:00+00:00'),
+    row('C', '2026-11-18T09:00:00+00:00'),
+  ];
+
+  it('leaves the overdue row where it is and swaps only the two asked for', () => {
+    const plan = planQueueReorder(schedule, rows, ['C', 'B'], now);
+    expect(plan.moves).toEqual([
+      { id: 'C', scheduledFor: '2026-11-17T09:00:00.000Z' },
+      { id: 'B', scheduledFor: '2026-11-18T09:00:00.000Z' },
+    ]);
+  });
+
+  it('never moves the overdue row, even when an old order still names it', () => {
+    const plan = planQueueReorder(schedule, rows, ['A', 'C', 'B'], now);
+    expect(plan.moves.map((m) => m.id)).not.toContain('A');
+    expect(plan.moves).toEqual([
+      { id: 'C', scheduledFor: '2026-11-17T09:00:00.000Z' },
+      { id: 'B', scheduledFor: '2026-11-18T09:00:00.000Z' },
+    ]);
   });
 });

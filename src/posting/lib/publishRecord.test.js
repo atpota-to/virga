@@ -10,6 +10,7 @@ import {
   isTransientNetworkError,
 } from './publishRecord.js';
 import { isTid } from './tid.js';
+import { Agent } from '@atproto/api';
 
 // Idempotent post writes, so a slow/timed-out publish can retry without a
 // duplicate:
@@ -43,6 +44,30 @@ describe('isRetriablePublishError', () => {
     expect(
       isRetriablePublishError({ message: 'UND_ERR_CONNECT_TIMEOUT error' }),
     ).toBe(true);
+  });
+
+  it('retries a request the real agent never got an answer to', async () => {
+    // @atproto/xrpc reports a fetch that threw as status 1 (ResponseType
+    // .Unknown), not as an HTTP status.
+    const agent = new Agent({
+      did: 'did:plc:x',
+      fetchHandler: async () => {
+        throw new TypeError('Failed to fetch');
+      },
+    });
+    const err = await agent.com.atproto.repo
+      .createRecord({
+        repo: 'did:plc:x',
+        collection: 'app.bsky.feed.post',
+        record: { text: 'hi' },
+      })
+      .catch((e) => e);
+    expect(err.status).toBe(1);
+    expect(isRetriablePublishError(err)).toBe(true);
+    // An answer that isn't a transient failure is still not retried.
+    expect(isRetriablePublishError({ status: 1, message: 'Bad record' })).toBe(
+      false,
+    );
   });
 
   it('does not retry client rejections or nothing', () => {

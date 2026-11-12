@@ -14,7 +14,11 @@
 // `not_enough_posts`, …), `detail` and `payload` for callers that branch.
 
 import { blobToBase64 } from '../schedule/scheduleSerialize.js';
-import { markAdviserLimitReached, recordAdviserUsage } from './usage.js';
+import {
+  clearAdviserUsage,
+  markAdviserLimitReached,
+  recordAdviserUsage,
+} from './usage.js';
 
 /** cocoon's gateway gives up at 25 s; this leaves room for the trip there. */
 export const AI_REQUEST_TIMEOUT_MS = 30_000;
@@ -113,11 +117,12 @@ async function postAi(req, path, body, { signal, feature, store } = {}) {
       cause: err,
     });
   }
-  if (feature && req.did && data?.usage) {
-    recordAdviserUsage(req.did, data.usage, {
-      feature,
-      ...(store ? { store } : {}),
-    });
+  if (feature && req.did) {
+    const opts = { feature, ...(store ? { store } : {}) };
+    // No `usage` on a 2xx means cocoon didn't count it: the allowance is
+    // unlimited now, so a used-up count kept from before must not stand.
+    if (!recordAdviserUsage(req.did, data?.usage, opts))
+      clearAdviserUsage(req.did, opts);
   }
   return data;
 }

@@ -122,12 +122,15 @@ export function removeLinkFromText(text, { charStart, charEnd, expect } = {}) {
  * An over-long post cut into posts that each fit `max` graphemes (counted as
  * they'll be written, links shortened), at the last paragraph, sentence or
  * word break that fits. A word longer than a whole post is cut where it must.
+ * `maxParts` caps how many posts it makes: whatever doesn't fit in the
+ * others stays, as written, in the last one (over the limit, so it's still
+ * flagged) rather than being dropped.
  */
-export function splitForThread(text, max = MAX_POST_GRAPHEMES) {
+export function splitForThread(text, max = MAX_POST_GRAPHEMES, { maxParts = Infinity } = {}) {
   const parts = [];
   let rest = str(text).trim();
   const fits = (s) => countComposerGraphemes(s.trim()) <= max;
-  while (rest && !fits(rest)) {
+  while (rest && !fits(rest) && parts.length < maxParts - 1) {
     const cut = bestCut(rest, fits);
     parts.push(rest.slice(0, cut).trim());
     rest = rest.slice(cut).trim();
@@ -155,4 +158,19 @@ function bestCut(text, fits) {
   // No break: never cut a surrogate pair in half.
   const code = text.charCodeAt(lo - 1);
   return code >= 0xd800 && code <= 0xdbff ? lo - 1 : lo;
+}
+
+/** How close a post's count is to the limit, from this many characters left. */
+export const NEAR_LIMIT_LEFT = 20;
+
+/**
+ * What a screen reader is told about a post's length: a sentence only when
+ * the count crosses into "close to the limit" or "over it", so the count
+ * itself, which changes with every key, is never read out as it changes.
+ * '' while there's room.
+ */
+export function limitAnnouncement(count, max = MAX_POST_GRAPHEMES) {
+  if (count > max) return `Over the ${max}-character limit.`;
+  if (max - count <= NEAR_LIMIT_LEFT) return `Close to the ${max}-character limit.`;
+  return '';
 }

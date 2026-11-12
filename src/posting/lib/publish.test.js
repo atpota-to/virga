@@ -335,6 +335,33 @@ describe('publish: a thread', () => {
     );
   });
 
+  it('puts a postgate on every post of a new thread, and the threadgate on the root only', async () => {
+    const { target, repo } = fakeTarget();
+    const s = state([{ text: 'one' }, { text: 'two' }, { text: 'three' }], {
+      gates: { custom: true, reply: [{ type: 'follower' }], quotes: false },
+    });
+    await go(s, target);
+    const { writes } = repo.applyWrites.mock.calls[0][0];
+    const posts = writes.filter((w) => w.collection === 'app.bsky.feed.post');
+    const postgates = writes.filter(
+      (w) => w.collection === 'app.bsky.feed.postgate',
+    );
+    const threadgates = writes.filter(
+      (w) => w.collection === 'app.bsky.feed.threadgate',
+    );
+    expect(postgates.map((w) => w.rkey)).toEqual(posts.map((w) => w.rkey));
+    for (const [i, gate] of postgates.entries()) {
+      expect(gate.value.post).toBe(
+        `at://${ME}/app.bsky.feed.post/${posts[i].rkey}`,
+      );
+      expect(gate.value.embeddingRules).toEqual([
+        { $type: 'app.bsky.feed.postgate#disableRule' },
+      ]);
+      expect(gate.value.createdAt).toBe(posts[i].value.createdAt);
+    }
+    expect(threadgates.map((w) => w.rkey)).toEqual([posts[0].rkey]);
+  });
+
   it('continues an existing thread, with no gates', async () => {
     const { target, repo } = fakeTarget();
     const reply = {

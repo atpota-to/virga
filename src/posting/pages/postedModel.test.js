@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   deletePost,
   filterPostRows,
+  gatesQuotesOnlyFor,
   isReplyRow,
   postRowActions,
   readPostGates,
@@ -179,19 +180,39 @@ describe('textForComposer and templateSeedFrom', () => {
 
 describe('postRowActions', () => {
   it('offers by capability', () => {
-    expect(postRowActions(rows[0], { did: DID, canPost: true, canSchedule: false })).toMatchObject({
+    expect(postRowActions(rows[0], { canPost: true, canSchedule: false })).toMatchObject({
       reply: true,
       gates: true,
       gatesQuotesOnly: false,
       timer: false,
       delete: true,
     });
-    expect(postRowActions(rows[1], { did: DID, canPost: false, canSchedule: true })).toMatchObject({
+    expect(postRowActions(rows[1], { canPost: false, canSchedule: true })).toMatchObject({
       reply: false,
       gatesQuotesOnly: true,
       timer: true,
       delete: false,
       template: true,
     });
+  });
+});
+
+describe('gatesQuotesOnlyFor', () => {
+  const offer = (row) => postRowActions(row, { canPost: true, canSchedule: true });
+  const reply = { parent: { uri: 'at://x/app.bsky.feed.post/p', cid: 'c' }, root: { uri: 'at://x/app.bsky.feed.post/r', cid: 'c' } };
+
+  it('takes a post that continues the account’s own thread as a reply', () => {
+    expect(isReplyRow(rows[2], DID)).toBe(false);
+    expect(offer(rows[2]).gatesQuotesOnly).toBe(true);
+    // A row that doesn't say (one built from a view without its parent): the
+    // post as it reads now settles it.
+    const bare = { uri: rows[2].uri, text: rows[2].text, replyTo: null };
+    expect(offer(bare).gatesQuotesOnly).toBe(false);
+    expect(gatesQuotesOnlyFor(offer(bare), { text: 'continuing my thread', reply })).toBe(true);
+  });
+
+  it('keeps a reply to somebody else a reply, and a post that starts a thread not one', () => {
+    expect(gatesQuotesOnlyFor(offer(rows[1]), { text: 'Agreed' })).toBe(true);
+    expect(gatesQuotesOnlyFor(offer(rows[0]), { text: 'A walk by the river' })).toBe(false);
   });
 });

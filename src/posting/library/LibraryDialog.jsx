@@ -33,8 +33,9 @@ export default function LibraryDialog({ open, onClose, did, context = {}, onPick
   });
 
   const onUse = async (item, answers) => {
+    // Not counted here: the composer counts a template's use when it applies
+    // the plan, whichever way the plan reached it.
     const plan = await lib.planFor(item, answers);
-    lib.recordUse(item);
     onClose?.();
     setTimeout(() => onPick?.(plan, item), 0);
   };

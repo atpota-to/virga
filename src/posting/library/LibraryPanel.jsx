@@ -43,6 +43,7 @@ const SORTS = [
 function errorText(err) {
   if (!err) return '';
   if (err.code === 'GONE') return err.message || 'That isn’t there any more.';
+  if (err.code === 'QUOTES_OFF') return err.message || 'Its author doesn’t allow quotes.';
   return err.message ? `Couldn’t read it: ${err.message}` : 'Couldn’t read it. Try again.';
 }
 

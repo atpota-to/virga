@@ -11,11 +11,13 @@ import {
   listDrafts,
   openDraft,
   postingDeviceId,
+  pruneOrphanedDraftMedia,
   summarizeDraft,
   updateDraft,
 } from './drafts.js';
 import { emptyComposerState, emptyPost } from '../lib/composerModel.js';
 import { POSTING_EVENTS, onPostingEvent } from '../events.js';
+import { autosaveKey, clearSessionDraft, saveSessionDraft } from '../autosave.js';
 
 const ALICE = 'did:plc:alice';
 const BOB = 'did:plc:bob';
@@ -965,5 +967,147 @@ describe('postingDeviceId', () => {
     expect(data.get('virga:posting-device')).toBe(id);
     expect(postingDeviceId(store)).toBe(id);
     expect(postingDeviceId(null)).toBeNull();
+  });
+});
+
+describe('a draft’s link card', () => {
+  const CARD = {
+    url: 'https://example.com/a',
+    title: 'Ex',
+    description: 'D',
+    thumb: 'https://cardyb.bsky.app/v1/image?url=x',
+  };
+
+  it('keeps an image that isn’t uploaded yet, and reads it back', () => {
+    const s = state({ posts: [post({ text: 'see', card: CARD })] });
+    const draft = composerStateToDraft(s, { texts: [{ text: 'see' }], deviceId: DEVICE });
+    // Not in the embed: an app that publishes the embed as it stands
+    // mustn't carry an address out in a record.
+    expect(draft.posts[0].embed.external).not.toHaveProperty('thumb');
+    const back = draftToComposerState({ id: '3d', draft }, { asDid: ALICE });
+    expect(back.posts[0].card).toEqual(CARD);
+  });
+
+  it('keeps only https images, and says when the writer edited the card', () => {
+    const s = state({
+      posts: [post({ text: 'see', card: { ...CARD, thumb: 'blob:https://virga/1', edited: true } })],
+    });
+    const draft = composerStateToDraft(s, { texts: [{ text: 'see' }], deviceId: DEVICE });
+    const back = draftToComposerState({ id: '3d', draft }, { asDid: ALICE });
+    expect(back.posts[0].card).toMatchObject({ thumb: null, edited: true });
+  });
+
+  it('is read again when opened from a draft that kept only its address', async () => {
+    const fetchCard = vi.fn(async (url) => ({
+      url,
+      title: 'Fetched',
+      description: 'From the card service',
+      thumb: 'https://cardyb.bsky.app/v1/image?url=y',
+    }));
+    const view = {
+      id: '3app',
+      draft: {
+        posts: [
+          {
+            text: 'from the app',
+            embedExternals: [{ $type: 'app.bsky.draft.defs#draftEmbedExternal', uri: CARD.url }],
+          },
+        ],
+      },
+    };
+    const { state: opened } = await openDraft(view, { asDid: ALICE, media: memoryMedia(), fetchCard });
+    expect(fetchCard).toHaveBeenCalledWith(CARD.url, expect.any(Object));
+    expect(opened.posts[0].card).toEqual({
+      url: CARD.url,
+      title: 'Fetched',
+      description: 'From the card service',
+      thumb: 'https://cardyb.bsky.app/v1/image?url=y',
+    });
+  });
+
+  it('fills in a missing image without touching what the writer wrote', async () => {
+    const fetchCard = vi.fn(async (url) => ({ url, title: 'Theirs', description: 'Theirs', thumb: 'https://img.example/t.jpg' }));
+    const s = state({ posts: [post({ text: 'x', card: { ...CARD, thumb: null } })] });
+    const draft = composerStateToDraft(s, { texts: [{ text: 'x' }], deviceId: DEVICE });
+    const { state: opened } = await openDraft({ id: '3d', draft }, { asDid: ALICE, media: memoryMedia(), fetchCard });
+    expect(opened.posts[0].card).toMatchObject({ title: 'Ex', description: 'D', thumb: 'https://img.example/t.jpg' });
+  });
+
+  it('leaves a whole card, an edited one and an unreachable service alone', async () => {
+    const fetchCard = vi.fn(async () => null);
+    const whole = state({ posts: [post({ text: 'x', card: CARD })] });
+    const edited = state({ posts: [post({ text: 'x', card: { ...CARD, title: '', thumb: null, edited: true } })] });
+    const lacking = state({ posts: [post({ text: 'x', card: { ...CARD, thumb: null } })] });
+    for (const s of [whole, edited]) {
+      const draft = composerStateToDraft(s, { texts: [{ text: 'x' }], deviceId: DEVICE });
+      await openDraft({ id: '3d', draft }, { asDid: ALICE, media: memoryMedia(), fetchCard });
+    }
+    expect(fetchCard).not.toHaveBeenCalled();
+    const draft = composerStateToDraft(lacking, { texts: [{ text: 'x' }], deviceId: DEVICE });
+    const { state: opened } = await openDraft({ id: '3d', draft }, { asDid: ALICE, media: memoryMedia(), fetchCard });
+    expect(fetchCard).toHaveBeenCalledTimes(1);
+    expect(opened.posts[0].card).toMatchObject({ title: 'Ex', thumb: null });
+  });
+});
+
+describe('pruneOrphanedDraftMedia', () => {
+  const NOW = Date.UTC(2026, 10, 20);
+  const OLD = NOW - 3 * 24 * 60 * 60 * 1000;
+  const entry = (ref, savedAt = OLD) => ({ ref, file: { name: ref, type: 'image/jpeg', size: 1 }, savedAt });
+  const withImage = (path) => ({
+    posts: [{ text: 'x', embedImages: [{ image: {}, localRef: { path }, alt: '' }] }],
+  });
+  const memoryStore = (entries = {}) => {
+    const rows = new Map(Object.entries(entries));
+    return { getItem: (k) => (rows.has(k) ? rows.get(k) : null) };
+  };
+
+  it('forgets files no draft, stored post or open post names, and keeps new ones', async () => {
+    const { agent, stash } = fakeAgent({ pageSize: 1 });
+    stash.set('d1', { id: 'd1', draft: withImage('virga-media:kept'), createdAt: 'a', updatedAt: '2' });
+    stash.set('d2', { id: 'd2', draft: withImage('virga-media:kept2'), createdAt: 'a', updatedAt: '1' });
+    const media = memoryMedia();
+    await media.put([
+      entry('virga-media:kept'),
+      entry('virga-media:kept2'),
+      entry('virga-media:posted-elsewhere'),
+      entry('virga-media:autosaved'),
+      entry('virga-media:in-memory'),
+      entry('virga-media:just-saved', NOW - 60_000),
+    ]);
+    const store = memoryStore({
+      [autosaveKey(ALICE)]: JSON.stringify({
+        version: 1,
+        state: { posts: [{ images: [{ localRef: 'virga-media:autosaved' }] }] },
+      }),
+    });
+    saveSessionDraft(ALICE, state({ posts: [post({ text: 'x', images: [{ id: 'i', localRef: 'virga-media:in-memory' }] })] }));
+    try {
+      const dropped = await pruneOrphanedDraftMedia(agent, ALICE, { media, store, now: NOW });
+      expect(dropped).toEqual(['virga-media:posted-elsewhere']);
+      expect((await media.refs()).sort()).toEqual([
+        'virga-media:autosaved',
+        'virga-media:in-memory',
+        'virga-media:just-saved',
+        'virga-media:kept',
+        'virga-media:kept2',
+      ]);
+    } finally {
+      clearSessionDraft(ALICE);
+    }
+  });
+
+  it('does nothing when the list couldn’t be read to the end', async () => {
+    const media = memoryMedia();
+    await media.put([entry('virga-media:a')]);
+    const { agent: failing } = fakeAgent({ failGet: true });
+    await expect(pruneOrphanedDraftMedia(failing, ALICE, { media, now: NOW })).rejects.toThrow('offline');
+    const endless = {
+      did: ALICE,
+      withProxy: () => endless,
+      app: { bsky: { draft: { getDrafts: vi.fn(async ({ cursor } = {}) => ({ data: { drafts: [{ id: `d${cursor || 0}`, draft: { posts: [] } }], cursor: String(Number(cursor || 0) + 1) } })) } } },
+    };
+    expect(await pruneOrphanedDraftMedia(endless, ALICE, { media, now: NOW, store: memoryStore() })).toEqual([]);
+    expect(await media.refs()).toEqual(['virga-media:a']);
   });
 });

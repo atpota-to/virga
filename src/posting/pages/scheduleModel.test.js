@@ -22,7 +22,9 @@ import {
   previewOrder,
   quickPicks,
   removeSlot,
+  POST_NOW_CUTOFF_MS,
   rowActions,
+  rowIsDueSoon,
   rowFacts,
   rowStatus,
   rowTags,
@@ -31,6 +33,7 @@ import {
   scheduledSections,
   slotLabel,
   timerLimitsLine,
+  timerNoteActions,
   timerRowModel,
   timerSections,
   weekSummary,
@@ -210,6 +213,93 @@ describe('a row’s facts and state', () => {
   });
 });
 
+describe('Post now near a row’s time', () => {
+  it('isn’t offered once the worker may already be taking the row', () => {
+    const due = row('a', '2026-11-12T11:59:00Z');
+    const soon = row('b', new Date(NOW + POST_NOW_CUTOFF_MS).toISOString());
+    const later = row(
+      'c',
+      new Date(NOW + POST_NOW_CUTOFF_MS + 60_000).toISOString(),
+    );
+    expect(rowActions(due, NOW).postNow).toBe(false);
+    expect(rowActions(soon, NOW).postNow).toBe(false);
+    expect(rowActions(later, NOW).postNow).toBe(true);
+    // Still editable and cancellable: only posting it twice is the risk.
+    expect(rowActions(due, NOW)).toMatchObject({ edit: true, cancel: true });
+    // A failed row isn't picked up by the worker, so it can still be posted.
+    expect(
+      rowActions(row('d', '2026-11-12T09:00:00Z', { status: 'failed' }), NOW)
+        .postNow,
+    ).toBe(true);
+  });
+
+  it('reads a retry time when the row carries one', () => {
+    const waiting = row('a', '2026-11-12T11:00:00Z', {
+      nextAttemptAt: '2026-11-12T12:30:00Z',
+    });
+    expect(rowIsDueSoon(waiting, NOW)).toBe(false);
+    expect(
+      rowIsDueSoon({ ...waiting, nextAttemptAt: '2026-11-12T12:01:00Z' }, NOW),
+    ).toBe(true);
+    expect(rowIsDueSoon(row('b', '2026-11-12T11:00:00Z'), NOW)).toBe(true);
+    expect(
+      rowIsDueSoon(
+        { ...row('c', '2026-11-12T11:00:00Z'), status: 'publishing' },
+        NOW,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('a timer note from Virga or another app', () => {
+  const note = (extra = {}) => ({
+    id: 'n1',
+    status: 'published',
+    lastErrorCode: 'TIMER_NOT_ARMED',
+    clientKey: 'virga',
+    scheduledFor: '2026-11-11T09:00:00Z',
+    resultUri: 'at://did:plc:me/app.bsky.feed.post/r1',
+    payload: { posts: [{ record: { text: 'Hi' } }], rkeys: ['r1', 'r2'] },
+    ...extra,
+  });
+
+  it('offers a timer on a Bluesky post, thread and all, and Dismiss on Virga’s own', () => {
+    const out = timerNoteActions(note());
+    expect(out.arm).toMatchObject({
+      uri: 'at://did:plc:me/app.bsky.feed.post/r1',
+      text: 'Hi',
+      postedAt: '2026-11-11T09:00:00Z',
+      extraUris: ['at://did:plc:me/app.bsky.feed.post/r2'],
+    });
+    expect(out).toMatchObject({ dismiss: true, note: '' });
+  });
+
+  it('sends an Anisota post’s timer back to Anisota', () => {
+    const out = timerNoteActions(
+      note({
+        clientKey: 'anisota',
+        resultUri: 'at://did:plc:me/net.anisota.feed.post/r1',
+      }),
+    );
+    expect(out).toEqual({
+      arm: null,
+      dismiss: false,
+      note: 'Set its timer in Anisota.',
+    });
+  });
+
+  it('stops offering a timer on another app’s note once one is set', () => {
+    const theirs = note({ clientKey: 'anisota' });
+    expect(timerNoteActions(theirs).arm).not.toBeNull();
+    expect(timerNoteActions(theirs).dismiss).toBe(false);
+    expect(timerNoteActions(theirs, { armed: new Set(['n1']) })).toEqual({
+      arm: null,
+      dismiss: false,
+      note: 'Timer set. Dismiss this note in Anisota.',
+    });
+  });
+});
+
 describe('times in the queue’s zone', () => {
   it('groups by the day in that zone', () => {
     const rows = [
@@ -252,7 +342,7 @@ describe('reordering the queue', () => {
   ];
 
   it('moves only this app’s rows, and other rows keep their places', () => {
-    expect(movableIds(rows)).toEqual(['a', 'b', 'c']);
+    expect(movableIds(rows, NOW)).toEqual(['a', 'b', 'c']);
     expect(previewOrder(rows, ['c', 'a', 'b']).map((r) => r.id)).toEqual([
       'c',
       'x',
@@ -548,6 +638,15 @@ describe('the weekly schedule', () => {
       'off',
     ]);
   });
+
+  it('leaves out a row that’s due or waiting on a retry', () => {
+    const schedule = week({ thu: ['09:00'], fri: ['09:00'] });
+    const rows = [
+      row('overdue', '2026-11-12T10:30:00Z'),
+      row('on', '2026-11-13T09:00:00Z'),
+    ];
+    expect(offScheduleRows(schedule, rows, NOW)).toEqual([]);
+  });
 });
 
 describe('the time picker', () => {
@@ -580,6 +679,9 @@ describe('the time picker', () => {
 });
 
 describe('posting a scheduled row now', () => {
+  // On the test's clock, not the machine's: whether a row is about to go out
+  // depends on it.
+  const postNow = (r, opts) => postScheduledNow(r, { now: NOW, ...opts });
   const scheduled = row('r1', '2026-11-13T09:00:00Z', {
     payload: {
       posts: [{ record: { text: 'Hi' } }],
@@ -613,7 +715,7 @@ describe('posting a scheduled row now', () => {
 
   it('posts, then cancels the row, then sets the timer', async () => {
     const d = deps();
-    const out = await postScheduledNow(scheduled, {
+    const out = await postNow(scheduled, {
       did: 'did:plc:me',
       deps: d,
     });
@@ -636,7 +738,7 @@ describe('posting a scheduled row now', () => {
       .mockResolvedValueOnce({});
     expect(
       (
-        await postScheduledNow(scheduled, {
+        await postNow(scheduled, {
           did: 'd',
           deps: deps({ cancelScheduled: cancel }),
         })
@@ -648,7 +750,7 @@ describe('posting a scheduled row now', () => {
         code: 'NOT_CANCELLABLE',
       });
     });
-    const out = await postScheduledNow(scheduled, {
+    const out = await postNow(scheduled, {
       did: 'd',
       deps: deps({ cancelScheduled: never }),
     });
@@ -668,7 +770,7 @@ describe('posting a scheduled row now', () => {
       })),
     });
     await expect(
-      postScheduledNow(withMedia, { did: 'd', deps: d }),
+      postNow(withMedia, { did: 'd', deps: d }),
     ).rejects.toMatchObject({ code: 'IMAGE_MISSING' });
     expect(d.getScheduledMedia).toHaveBeenCalledWith(d.requester, 'r1');
     expect(d.publish).not.toHaveBeenCalled();
@@ -676,7 +778,7 @@ describe('posting a scheduled row now', () => {
 
   it('refuses another app’s row and a thread part way out', async () => {
     await expect(
-      postScheduledNow(
+      postNow(
         { ...scheduled, clientKey: 'anisota' },
         { did: 'd', deps: deps() },
       ),
@@ -684,10 +786,7 @@ describe('posting a scheduled row now', () => {
       code: 'NOT_YOUR_CLIENT',
     });
     await expect(
-      postScheduledNow(
-        { ...scheduled, partial: true },
-        { did: 'd', deps: deps() },
-      ),
+      postNow({ ...scheduled, partial: true }, { did: 'd', deps: deps() }),
     ).rejects.toMatchObject({
       code: 'PARTIALLY_PUBLISHED',
     });
@@ -695,14 +794,14 @@ describe('posting a scheduled row now', () => {
 
   it('leaves the row alone when the post fails', async () => {
     const d = deps({ publish: vi.fn().mockRejectedValue(new Error('down')) });
-    await expect(
-      postScheduledNow(scheduled, { did: 'd', deps: d }),
-    ).rejects.toThrow('down');
+    await expect(postNow(scheduled, { did: 'd', deps: d })).rejects.toThrow(
+      'down',
+    );
     expect(d.cancelScheduled).not.toHaveBeenCalled();
   });
 
   it('says when the timer didn’t take', async () => {
-    const out = await postScheduledNow(scheduled, {
+    const out = await postNow(scheduled, {
       did: 'd',
       deps: deps({
         armTimer: vi.fn(async () => ({
@@ -712,5 +811,16 @@ describe('posting a scheduled row now', () => {
       }),
     });
     expect(out.notes).toEqual(['It went out without its timer: No room.']);
+  });
+
+  it('won’t post a row that’s due or about to be, which the worker may be taking', async () => {
+    for (const at of ['2026-11-12T11:00:00Z', '2026-11-12T12:01:30Z']) {
+      const d = deps();
+      await expect(
+        postNow({ ...scheduled, scheduledFor: at }, { did: 'd', deps: d }),
+      ).rejects.toMatchObject({ code: 'ALREADY_DUE' });
+      expect(d.publish).not.toHaveBeenCalled();
+      expect(d.cancelScheduled).not.toHaveBeenCalled();
+    }
   });
 });

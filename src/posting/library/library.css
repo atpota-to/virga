@@ -217,8 +217,13 @@
   gap: 2px;
 }
 
+/* Templates meant for the other kind of post: still usable, so set apart by
+   a rule above them rather than faded (fading takes their small text under
+   4.5:1 in both themes). */
 .lib-section[data-muted] {
-  opacity: 0.72;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
 }
 
 .lib-section-head {

@@ -17,6 +17,32 @@ import { buttonClass } from './Button.jsx';
  * 'up' (for a button at the foot of the screen); the list hangs from the
  * button's right edge, or its left with `align="start"`.
  */
+/**
+ * Escape closes the open list and nothing else. A menu inside a modal
+ * <dialog> (the composer's) would otherwise let the dialog take the same
+ * key as a cancel and close too. Returns whether it was Escape.
+ */
+export function closeOnEscape(event, close) {
+  if (event.key !== 'Escape') return false;
+  event.preventDefault();
+  event.stopPropagation();
+  close();
+  return true;
+}
+
+/**
+ * Taking an item: focus goes back to the menu button before the list
+ * unmounts and before the item runs. A dialog the item opens remembers
+ * whatever had focus when it opened and returns focus there when it closes;
+ * if that were the item's own button, already gone, focus would fall to
+ * <body>.
+ */
+export function chooseItem(item, { focusButton, close }) {
+  focusButton();
+  close();
+  item.onSelect?.();
+}
+
 export default function Menu({
   label,
   items,
@@ -38,16 +64,17 @@ export default function Menu({
     const onPointer = (event) => {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
-    const onKey = (event) => {
-      if (event.key !== 'Escape') return;
-      setOpen(false);
-      buttonRef.current?.focus();
-    };
+    const onKey = (event) =>
+      closeOnEscape(event, () => {
+        setOpen(false);
+        buttonRef.current?.focus();
+      });
+    // Captured, so the list hears Escape before anything inside it does.
     document.addEventListener('pointerdown', onPointer);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);
     return () => {
       document.removeEventListener('pointerdown', onPointer);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey, true);
     };
   }, [open]);
 
@@ -86,10 +113,12 @@ export default function Menu({
                   type="button"
                   className="menu-item"
                   data-tone={item.tone}
-                  onClick={() => {
-                    setOpen(false);
-                    item.onSelect?.();
-                  }}
+                  onClick={() =>
+                    chooseItem(item, {
+                      focusButton: () => buttonRef.current?.focus(),
+                      close: () => setOpen(false),
+                    })
+                  }
                 >
                   {Icon && <Icon className="menu-item-icon" size={16} aria-hidden="true" />}
                   <span className="menu-item-text">

@@ -25,7 +25,9 @@
  *   planFor(item, answers)  a LibraryPlan, its attachment read again (cid, view)
  *   hydrate(item)           the item read again (hydratePick)
  *   resolveLink(text)       a pasted link as an item, or null
- *   recordUse(item)         count a template's use
+ *
+ * Using a template is counted by the composer as it applies the plan (every
+ * way in reaches it there), so nothing here counts one.
  */
 import {
   useCallback,
@@ -37,10 +39,7 @@ import {
 } from 'react';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { useTemplates } from '../templates/useTemplates.js';
-import {
-  readTemplateUsage,
-  recordTemplateUse,
-} from '../templates/templateUsage.js';
+import { readTemplateUsage } from '../templates/templateUsage.js';
 import {
   applyPlanFor,
   dedupeById,
@@ -753,11 +752,6 @@ export function useLibrary({
 
   /* ---- using an item -------------------------------------------------- */
 
-  const recordUse = useCallback((item) => {
-    if (item?.kind !== 'template') return null;
-    return recordTemplateUse(item.source?.rkey, liveRef.current.did);
-  }, []);
-
   const hydrate = useCallback(
     (item, opts) => liveRef.current.sources.hydrate(item, opts),
     [],
@@ -802,7 +796,6 @@ export function useLibrary({
       search,
       templates,
       templateEmbeds: embeds,
-      recordUse,
       hydrate,
       planFor,
       resolveLink,
@@ -826,7 +819,6 @@ export function useLibrary({
       search,
       templates,
       embeds,
-      recordUse,
       hydrate,
       planFor,
       resolveLink,

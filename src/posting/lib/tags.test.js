@@ -27,9 +27,21 @@ describe('normalizeTags', () => {
 
   it('clamps each tag to 64 graphemes, counting an emoji as one', () => {
     expect(normalizeTags('a'.repeat(70))[0]).toHaveLength(64);
-    const family = '\u{1F468}‍\u{1F469}‍\u{1F467}';
-    const tags = normalizeTags(family.repeat(70));
+    // Eight bytes a grapheme, so the 640-byte cap doesn't bite first.
+    const thumb = '\u{1F44D}\u{1F3FD}';
+    const tags = normalizeTags(thumb.repeat(70));
     expect([...new Intl.Segmenter().segment(tags[0])]).toHaveLength(64);
+  });
+
+  it('keeps the joiners that hold an emoji sequence or a word together', () => {
+    const coder = '\u{1F469}\u200D\u{1F4BB}';
+    const persian = 'می\u200Cخواهم';
+    expect(normalizeTags([coder, persian])).toEqual([coder, persian]);
+    // A whole ZWJ family is one grapheme of 18 bytes; 640 bytes holds 35.
+    const family = '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}';
+    const [tag] = normalizeTags(family.repeat(70));
+    expect([...new Intl.Segmenter().segment(tag)]).toHaveLength(35);
+    expect(tag.startsWith(family)).toBe(true);
   });
 
   it('keeps each tag within 640 bytes', () => {

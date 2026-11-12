@@ -6,6 +6,7 @@ import {
   misleadingLinkNotes,
   removeLinkFromText,
   splitForThread,
+  limitAnnouncement,
 } from './editing.js';
 import { countComposerGraphemes } from '../lib/inlineLinks.js';
 
@@ -161,5 +162,32 @@ describe('splitForThread', () => {
   it('counts links as they will be written', () => {
     const url = `https://example.org/${'a'.repeat(200)}`;
     expect(splitForThread(`${url} ${'w '.repeat(100).trim()}`)).toHaveLength(1);
+  });
+});
+
+describe('splitForThread with no room for every part', () => {
+  it('keeps what doesn’t fit in the last post instead of dropping it', () => {
+    const sentence = 'The river ran high after the storm and the herons came back to the shallows. ';
+    const text = sentence.repeat(12).trim();
+    const all = splitForThread(text, 300);
+    expect(all.length).toBeGreaterThan(2);
+    const two = splitForThread(text, 300, { maxParts: 2 });
+    expect(two).toHaveLength(2);
+    expect(two[0]).toBe(all[0]);
+    expect(countComposerGraphemes(two[1])).toBeGreaterThan(300);
+    // Every word is still there.
+    expect(two.join(' ').split(/\s+/)).toEqual(text.split(/\s+/));
+    // A full thread has no room at all: nothing is split off.
+    expect(splitForThread(text, 300, { maxParts: 1 })).toEqual([text]);
+  });
+});
+
+describe('limitAnnouncement', () => {
+  it('says something only near or past the limit', () => {
+    expect(limitAnnouncement(12)).toBe('');
+    expect(limitAnnouncement(279)).toBe('');
+    expect(limitAnnouncement(280)).toBe('Close to the 300-character limit.');
+    expect(limitAnnouncement(300)).toBe('Close to the 300-character limit.');
+    expect(limitAnnouncement(301)).toBe('Over the 300-character limit.');
   });
 });

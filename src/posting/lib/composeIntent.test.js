@@ -148,12 +148,19 @@ describe('parseComposeIntent — the post limit', () => {
   });
 
   it('counts grapheme clusters, not code units', () => {
-    // One cluster, two code points, four UTF-16 code units. Deliberately not a
-    // ZWJ sequence: sanitizeText strips U+200D along with the zero-width range,
-    // so a family emoji arrives here already split into its members.
+    // One cluster, two code points, four UTF-16 code units.
     const intent = parseComposeIntent({ text: '👍🏽'.repeat(400) });
     expect(intent.text.length).toBeGreaterThan(MAX_POST_GRAPHEMES);
     expect(countGraphemes(intent.text)).toBe(MAX_POST_GRAPHEMES);
+  });
+
+  it('keeps the joiners in shared text, so emoji sequences and words arrive whole', () => {
+    const text = 'Shipping \u{1F469}\u200D\u{1F4BB} today, می\u200Cخواهم';
+    expect(parseComposeIntent({ text }).text).toBe(text);
+    // The zero-width space still goes.
+    expect(parseComposeIntent({ text: 'see\u200Bexample.com' }).text).toBe(
+      'seeexample.com',
+    );
   });
 
   it('never splits a grapheme cluster when it cuts', () => {
