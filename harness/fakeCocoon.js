@@ -1188,6 +1188,15 @@ export function createCocoon({
           postTimers: usage.plain,
           conditionalTimers: usage.conditional,
         },
+        // cocoon reports the flat ceilings to Virga callers beside the policy.
+        ...(auth.client === 'virga'
+          ? {
+              caps: {
+                scheduledPosts: MAX_PENDING_SCHEDULED,
+                timers: MAX_LIVE_TIMERS,
+              },
+            }
+          : {}),
       },
     ];
   };

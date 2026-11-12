@@ -196,6 +196,49 @@ function zonedSlotToUTC(y, m, d, hh, mm, tz) {
   return new Date(Math.max(a, b));
 }
 
+/**
+ * The UTC instant of a wall-clock date and time in `tz`: `date` 'YYYY-MM-DD',
+ * `time` 'HH:MM'. Same rules as the queue's slots (a time inside a
+ * spring-forward gap resolves forward). Null for anything unreadable.
+ */
+export function zonedWallTimeToUtc(date, time, tz) {
+  const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(date || ''));
+  const t = /^(\d{2}):(\d{2})$/.exec(String(time || ''));
+  if (!d || !t) return null;
+  const [y, m, day] = [+d[1], +d[2], +d[3]];
+  const [hh, mm] = [+t[1], +t[2]];
+  if (m < 1 || m > 12 || day < 1 || day > 31 || hh > 23 || mm > 59) return null;
+  // Date.UTC rolls 31 Feb into March; a date that isn't on the calendar isn't one.
+  const check = new Date(Date.UTC(y, m - 1, day));
+  if (check.getUTCMonth() !== m - 1) return null;
+  try {
+    return zonedSlotToUTC(y, m, day, hh, mm, tz);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The wall-clock date ('YYYY-MM-DD'), time ('HH:MM') and weekday key of an
+ * instant in `tz`, for showing it in a picker. Null for anything unreadable.
+ */
+export function zonedWallTime(value, tz) {
+  const ms =
+    value instanceof Date ? value.getTime() : new Date(value || NaN).getTime();
+  if (!Number.isFinite(ms)) return null;
+  try {
+    const local = new Date(ms + tzOffsetMs(ms, tz));
+    const pad = (n) => String(n).padStart(2, '0');
+    return {
+      date: `${local.getUTCFullYear()}-${pad(local.getUTCMonth() + 1)}-${pad(local.getUTCDate())}`,
+      time: `${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`,
+      weekday: DOW_KEYS[local.getUTCDay()],
+    };
+  } catch {
+    return null;
+  }
+}
+
 // The backend's horizon is rolling (validateCreate refuses anything past its own
 // now + MAX_HORIZON_DAYS at request time), but the loop walks calendar days, so
 // a day-90 slot can sit past it. The margin also absorbs clock skew and latency.

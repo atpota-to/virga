@@ -492,7 +492,9 @@ describe('sessions and the adviser', () => {
     const res = await route(`${COCOON_URL}/api/limits/status`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    expect((await res.json()).features.postTimers.limit).toBe(1);
+    const status = await res.json();
+    expect(status.features.postTimers.limit).toBe(1);
+    expect(status.caps).toEqual({ scheduledPosts: 50, timers: 200 });
     expect(await route(`${COCOON_URL}/api/nothing-here`, {})).toHaveProperty(
       'status',
       404,

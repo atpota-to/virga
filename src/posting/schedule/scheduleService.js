@@ -331,7 +331,7 @@ export async function cancelScheduled(req, id, { signal } = {}) {
  * but the flat caps) and `usage` (null where cocoon didn't count it), plus
  * the policy it applied to this app (`'membership'` or `'flat'`).
  *
- * @returns {{ policy: string|null, isMember: boolean, features: Record<string, { limit: number|null }>, usage: Record<string, number|null> }}
+ * @returns {{ policy: string|null, isMember: boolean, features: Record<string, { limit: number|null }>, usage: Record<string, number|null>, caps: { scheduledPosts: number|null, timers: number|null } }}
  */
 export function normalizeLimits(body) {
   const features = {};
@@ -344,11 +344,17 @@ export function normalizeLimits(body) {
     const n = body?.usage?.[key];
     usage[key] = Number.isFinite(n) ? n : null;
   }
+  // The flat ceilings everyone has (cocoon reports them beside the policy).
+  const cap = (n) => (Number.isFinite(n) && n > 0 ? n : null);
   return {
     policy: typeof body?.policy === 'string' ? body.policy : null,
     isMember: body?.isMember === true,
     features,
     usage,
+    caps: {
+      scheduledPosts: cap(body?.caps?.scheduledPosts),
+      timers: cap(body?.caps?.timers),
+    },
   };
 }
 

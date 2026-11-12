@@ -19,6 +19,8 @@ import {
   groupByDateBucket,
   MIN_LEAD_MS,
   QUEUE_HORIZON_DAYS,
+  zonedWallTime,
+  zonedWallTimeToUtc,
 } from './postingQueue.js';
 
 const row = (over = {}) => ({
@@ -418,5 +420,48 @@ describe('small readers', () => {
 
   it('keeps the horizon in step with cocoon’s', () => {
     expect(QUEUE_HORIZON_DAYS).toBe(90);
+  });
+});
+
+describe('zoned wall times (the time picker)', () => {
+  it('turns a wall time in a zone into its instant, and back', () => {
+    const at = zonedWallTimeToUtc('2026-11-13', '09:00', 'America/New_York');
+    expect(at.toISOString()).toBe('2026-11-13T14:00:00.000Z');
+    expect(zonedWallTime(at, 'America/New_York')).toEqual({
+      date: '2026-11-13',
+      time: '09:00',
+      weekday: 'fri',
+    });
+    expect(zonedWallTime(at, 'Asia/Tokyo')).toEqual({
+      date: '2026-11-13',
+      time: '23:00',
+      weekday: 'fri',
+    });
+  });
+
+  it('follows the clock change on the date asked about', () => {
+    expect(
+      zonedWallTimeToUtc('2026-07-01', '09:00', 'Europe/London').toISOString(),
+    ).toBe('2026-07-01T08:00:00.000Z');
+    expect(
+      zonedWallTimeToUtc('2026-12-01', '09:00', 'Europe/London').toISOString(),
+    ).toBe('2026-12-01T09:00:00.000Z');
+    // 02:30 doesn't exist on the spring-forward night: it moves past the gap.
+    expect(
+      zonedWallTimeToUtc(
+        '2026-03-08',
+        '02:30',
+        'America/New_York',
+      ).toISOString(),
+    ).toBe('2026-03-08T07:30:00.000Z');
+  });
+
+  it('refuses what is not a date, a time or a zone', () => {
+    expect(zonedWallTimeToUtc('2026-02-31', '09:00', 'UTC')).toBeNull();
+    expect(zonedWallTimeToUtc('2026-02-10', '25:00', 'UTC')).toBeNull();
+    expect(zonedWallTimeToUtc('', '09:00', 'UTC')).toBeNull();
+    expect(zonedWallTimeToUtc('2026-02-10', '09:00', 'Not/AZone')).toBeNull();
+    expect(zonedWallTime('nope', 'UTC')).toBeNull();
+    expect(zonedWallTime(Date.now(), 'Not/AZone')).toBeNull();
   });
 });

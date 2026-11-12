@@ -1,16 +1,44 @@
+import { useState } from 'react';
+import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
+import { useComposer } from '../composer/ComposerContext.jsx';
+import { useLibrary } from '../library/useLibrary.js';
+import LibraryPanel from '../library/LibraryPanel.jsx';
+import TemplateEditor from '../library/TemplateEditor.jsx';
 import PostingHeader from '../ui/PostingHeader.jsx';
+import './hub.css';
 
-/** The library page. A placeholder until the page itself is built. */
-// eslint-disable-next-line no-unused-vars
+/**
+ * The library as a page: every shelf (templates, your posts and replies,
+ * saved posts, links, feeds, lists, and search), to browse on its own.
+ * Using something starts a new post with it in.
+ */
 export default function LibraryPage({ did }) {
+  const composer = useComposer();
+  const { accounts } = useAtprotoSession();
+  const handle = accounts.find((a) => a.did === did)?.handle || null;
+  const lib = useLibrary({ did, isOpen: true, reply: null, selfHandle: handle });
+  const [newTemplate, setNewTemplate] = useState(false);
+
+  const onUse = async (item, answers) => {
+    const plan = await lib.planFor(item, answers);
+    lib.recordUse(item);
+    composer.open({ asDid: did, attach: plan });
+  };
+
   return (
     <>
       <PostingHeader page="library" />
-      <div className="page-body">
-        <div className="card empty-page">
-          <p className="card-sub">Things to quote or attach show here.</p>
-        </div>
+      <div className="page-body hub">
+        <LibraryPanel
+          lib={lib}
+          mode="page"
+          initialShelf="templates"
+          verb="Use in a new post"
+          onUse={onUse}
+          onNewTemplate={() => setNewTemplate(true)}
+        />
       </div>
+      <TemplateEditor open={newTemplate} did={did} onClose={() => setNewTemplate(false)} />
     </>
   );
 }

@@ -401,8 +401,23 @@ describe('limits', () => {
         conditionalTimers: { limit: null },
       },
       usage: { scheduledPosts: 2, postTimers: 1, conditionalTimers: null },
+      caps: { scheduledPosts: null, timers: null },
     });
     expect(req.calls[0].path).toBe('/api/limits/status');
+  });
+
+  it('reads the flat ceilings cocoon reports beside the policy', () => {
+    const limits = normalizeLimits({
+      policy: 'flat',
+      features: { scheduledPosts: { isUnlimited: true, limit: null } },
+      caps: { scheduledPosts: 50, timers: 200 },
+    });
+    expect(limits.caps).toEqual({ scheduledPosts: 50, timers: 200 });
+    expect(limits.features.scheduledPosts.limit).toBeNull();
+    expect(normalizeLimits({ caps: { scheduledPosts: 'x' } }).caps).toEqual({
+      scheduledPosts: null,
+      timers: null,
+    });
   });
 
   it('reads an older cocoon with no policy or usage as limits without counts', () => {
