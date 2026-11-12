@@ -180,7 +180,13 @@ export default function PostedPage({ did }) {
         hint: 'Delete it after a while, or when something happens',
         onSelect: () =>
           act(row, 'The post couldn’t be read.', (post) =>
-            setTimer({ uri: post.uri, cid: post.cid, text: post.record?.text || '', postedAt: post.record?.createdAt || row.at }),
+            setTimer({
+              uri: post.uri,
+              cid: post.cid,
+              text: post.record?.text || '',
+              postedAt: post.record?.createdAt || row.at,
+              reply: Boolean(post.record?.reply),
+            }),
           ),
       },
       offer.template && {

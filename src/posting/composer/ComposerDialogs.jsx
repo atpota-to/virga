@@ -142,7 +142,7 @@ export function GatesDialog({ open, did, value, sourceLine, onClose, onSave, onU
 }
 
 /** The post's timer: how long it stays up, and what it waits for. */
-export function LifespanDialog({ open, value, fit, publishAt, limits, note, onClose, onSave }) {
+export function LifespanDialog({ open, value, fit, publishAt, limits, did, holds, note, onClose, onSave }) {
   const [rule, setRule] = useState(value);
   useEffect(() => {
     if (open) setRule(value);
@@ -170,7 +170,7 @@ export function LifespanDialog({ open, value, fit, publishAt, limits, note, onCl
     >
       <div className="dialog-form">
         {note && <p className="callout callout--warn">{note}</p>}
-        <LifespanEditor value={rule} onChange={setRule} fit={fit} publishAt={publishAt} limits={limits} />
+        <LifespanEditor value={rule} onChange={setRule} fit={fit} publishAt={publishAt} limits={limits} did={did} holds={holds} />
       </div>
     </Dialog>
   );

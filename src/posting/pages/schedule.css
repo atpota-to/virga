@@ -580,7 +580,7 @@ button.sched-cal-cell:focus-visible {
 
 /* ---- the time picker --------------------------------------------------- */
 
-/* Doubled class: posting.css's .when-picker row rule loads after this file. */
+/* Doubled class, to win over any later row rule for the picker. */
 .when-picker.sched-when {
   display: flex;
   flex-direction: column;

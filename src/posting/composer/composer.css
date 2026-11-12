@@ -1200,13 +1200,3 @@
 .settings-row--stack .settings-row-text {
   flex: none;
 }
-
-/* ---- the "Posted" toast's link ----------------------------------------- */
-
-/* The toast stack ignores the pointer so it never blocks the page; its link
-   still takes a press. */
-.toast a {
-  color: inherit;
-  font-weight: 650;
-  pointer-events: auto;
-}

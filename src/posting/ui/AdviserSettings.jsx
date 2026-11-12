@@ -296,9 +296,10 @@ export default function AdviserSettings({ open, onClose, did }) {
             <li>to learn your style, your recent public posts; to describe an image, the image and the post’s text.</li>
           </ul>
           <p>
-            Virga’s server passes it to an AI model through an AI gateway and sends the answer back. The gateway is set up so
-            what’s sent isn’t kept or used for training. Virga’s server keeps only how many of this month’s free uses this
-            account has had, a count it shares with Anisota. Your goals, notes and style description stay in this browser.
+            Virga’s server passes it, with this account’s DID for counting use, to an AI model through an AI gateway, and sends
+            the answer back. It doesn’t store what was sent; whether the model’s provider keeps it is set by the gateway’s
+            account settings, not per request. Virga’s server keeps only how many of this month’s free uses this account has
+            had, a count it shares with Anisota. Your goals, notes and style description stay in this browser.
           </p>
         </div>
       </details>

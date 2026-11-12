@@ -81,7 +81,7 @@ import {
   draftTimerNote,
 } from '../timers/selfDestruct.js';
 import { armAfterPublish, timerDidForUri, timerSnippet } from '../timers/timerService.js';
-import { useAdviserGate } from './adviserGate.js';
+import { useAdviserGate } from '../adviser/useAdviserGate.js';
 
 import AltTextDialog from '../ui/AltTextDialog.jsx';
 import AdviserSheet from '../ui/AdviserSheet.jsx';
@@ -1031,8 +1031,15 @@ export default function Composer({ open, intent, onClose }) {
           await saveDraft();
           return;
         }
-        // A fix taken from the sheet changed the text.
+        // A fix taken from the sheet changed the text, so it is checked again:
+        // a fix can make a post too long.
         s = { ...stateRef.current, lifespan: s.lifespan };
+        const after = validateComposer(s, { requireAltText: settings.requireAltText });
+        if (after.length) {
+          showError({ text: after[0].message });
+          if (after[0].postIndex != null) focusPost(after[0].postIndex);
+          return;
+        }
       }
       if (s.lifespan?.enabled && fit.available) {
         const p = immediateTimerProblem(s.lifespan);
@@ -1469,7 +1476,8 @@ export default function Composer({ open, intent, onClose }) {
           ? 'New thread'
           : 'New post';
   const locked = state.source?.kind === 'scheduled';
-  const altTarget = dialogs.alt ? state.posts.find((p) => p.id === dialogs.alt.postId)?.images.find((i) => i.id === dialogs.alt.imageId) : null;
+  const altPost = dialogs.alt ? state.posts.find((p) => p.id === dialogs.alt.postId) : null;
+  const altTarget = altPost ? altPost.images.find((i) => i.id === dialogs.alt.imageId) : null;
   const videoAltPost = dialogs.videoAlt ? state.posts.find((p) => p.id === dialogs.videoAlt) : null;
   const cardPost = dialogs.card ? state.posts.find((p) => p.id === dialogs.card) : null;
   const libraryPost = libraryFor ? state.posts.find((p) => p.id === libraryFor.postId) : null;
@@ -1841,6 +1849,7 @@ export default function Composer({ open, intent, onClose }) {
         }}
         did={asDid}
         requester={caps.canUseAi ? requester : null}
+        context={altPost?.text || ''}
       />
       <VideoAltDialog
         open={!!videoAltPost}
@@ -1895,6 +1904,8 @@ export default function Composer({ open, intent, onClose }) {
         fit={{ editingExisting: false, reply: replying, thread: state.posts.length > 1 }}
         publishAt={state.schedule?.mode === 'at' ? state.schedule.at : undefined}
         limits={limits.value}
+        did={asDid}
+        holds={state.source?.kind === 'scheduled' ? scheduledRowRef.current?.payload?.selfDestruct : null}
         note={timerNote}
         onClose={() => setDialogs((d) => ({ ...d, timer: false }))}
         onSave={(rule) => {

@@ -99,7 +99,7 @@ export const POSTING_PAGES = Object.freeze([
     icon: Library,
     needsBackend: false,
     pinned: true,
-    access: ['read'],
+    access: ['read', 'post'],
     desc: 'Your posts, saved posts, links, feeds and lists, ready to quote or attach.',
   },
 ]);

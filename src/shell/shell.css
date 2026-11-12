@@ -774,6 +774,14 @@
   color: #ffffff;
 }
 
+/* The stack ignores the pointer so it never blocks the page; a link in a
+   toast (the post that just went out) still takes a press. */
+.toast a {
+  color: inherit;
+  font-weight: 650;
+  pointer-events: auto;
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;
