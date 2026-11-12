@@ -6,7 +6,9 @@
 // unnoticed.
 
 import { buildRepoCar } from './buildCar.js';
-import { ME, PDS, postRecord, repoRecords } from './world.js';
+import { ME, PDS, activityOf, postRecord, repoRecords, tidAt } from './world.js';
+
+const DAY = 86_400_000;
 
 const sleep = (ms) => (ms > 0 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());
 
@@ -73,7 +75,7 @@ function feedItems(world) {
  */
 export function createRouter(world) {
   const feed = feedItems(world);
-  const people = new Map([[ME.did, world.profile], ...world.cast.map((p) => [p.did, p])]);
+  const people = new Map([[ME.did, world.profile], ...world.cast.map((p) => [p.did, p]), ...world.followedOnly.map((p) => [p.did, p])]);
   let car = null;
 
   return async function route(input) {
@@ -82,6 +84,26 @@ export function createRouter(world) {
     const method = url.pathname.split('/xrpc/')[1] || '';
 
     if (url.hostname === 'plc.directory') {
+      // The account's history: made on Bluesky's own host under its first
+      // handle, a handle of its own a year later, then a move to its own PDS.
+      if (url.pathname.endsWith('/log/audit')) {
+        const op = (handle, pds, at) => ({
+          did: ME.did,
+          operation: {
+            type: 'plc_operation',
+            alsoKnownAs: [`at://${handle}`],
+            services: { atproto_pds: { type: 'AtprotoPersonalDataServer', endpoint: pds } },
+          },
+          cid: 'bafyharness',
+          nullified: false,
+          createdAt: new Date(at).toISOString(),
+        });
+        return json([
+          op('mira.bsky.social', 'https://bsky.social', world.start),
+          op(ME.handle, 'https://bsky.social', world.start + 380 * DAY),
+          op(ME.handle, PDS, world.now - 210 * DAY),
+        ]);
+      }
       return json({
         id: decodeURIComponent(url.pathname.slice(1)),
         alsoKnownAs: [`at://${ME.handle}`],
@@ -101,6 +123,28 @@ export function createRouter(world) {
         return json({ profiles: q.getAll('actors').map((did) => people.get(did)).filter(Boolean).map(card) });
       }
       if (method === 'app.bsky.feed.getAuthorFeed') {
+        const actor = q.get('actor');
+        // Someone else's feed: one item, as old as their activity says.
+        if (actor !== ME.did && actor !== ME.handle) {
+          const person = people.get(actor);
+          const activity = person ? activityOf(person.did) : 'gone';
+          if (activity === 'gone') return json({ error: 'InvalidRequest', message: 'Profile not found' }, 400);
+          if (activity === 'never') return json({ feed: [] });
+          const at = new Date(world.now - activity * DAY - 3_600_000).toISOString();
+          return json({
+            feed: [
+              {
+                post: {
+                  uri: `at://${person.did}/app.bsky.feed.post/${tidAt(Date.parse(at))}`,
+                  cid: 'bafyharness',
+                  author: card(person),
+                  record: { $type: 'app.bsky.feed.post', text: 'A post.', createdAt: at },
+                  indexedAt: at,
+                },
+              },
+            ],
+          });
+        }
         const { rows, cursor } = pageOf(feed, q.get('limit'), q.get('cursor'));
         return json({ feed: rows, cursor });
       }
@@ -108,7 +152,7 @@ export function createRouter(world) {
         const uri = `at://${q.get('repo')}/${q.get('collection')}/${q.get('rkey')}`;
         const list = world.lists.find((l) => l.uri === uri);
         if (!list) return json({ error: 'RecordNotFound' }, 400);
-        return json({ uri, value: { $type: 'app.bsky.graph.list', name: 'A list', purpose: list.purpose } });
+        return json({ uri, value: { $type: 'app.bsky.graph.list', name: list.name, purpose: list.purpose } });
       }
     }
 

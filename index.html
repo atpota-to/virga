@@ -8,8 +8,23 @@
       name="description"
       content="Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data."
     />
-    <meta name="theme-color" content="#3b5aa8" />
+    <meta name="theme-color" content="#f5f6f8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <script>
+      // Theme and density before the first paint, from what src/lib/preferences.jsx
+      // stores, so a dark-mode reader never sees a white flash. Kept tiny on purpose.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('virga:preferences') || '{}') || {};
+          var t = p.theme === 'light' || p.theme === 'dark' ? p.theme
+            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = t;
+          document.documentElement.dataset.density = p.density === 'compact' ? 'compact' : 'comfortable';
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

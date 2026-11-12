@@ -11,9 +11,9 @@
  * Pressing the pressed key calls `onChange` with it again, which a caller is
  * free to ignore.
  */
-export default function Segmented({ options, value, onChange, label, className = '' }) {
+export default function Segmented({ options, value, onChange, label, size = 'md', className = '' }) {
   return (
-    <div className={`segmented ${className}`.trim()} role="group" aria-label={label}>
+    <div className={`segmented${size === 'sm' ? ' segmented--sm' : ''} ${className}`.trim()} role="group" aria-label={label}>
       {options.map((o) => {
         const on = o.value === value;
         const Icon = o.icon;
@@ -27,7 +27,7 @@ export default function Segmented({ options, value, onChange, label, className =
             title={o.title}
             onClick={() => onChange(o.value)}
           >
-            {Icon && <Icon className="segmented-icon" size={18} aria-hidden="true" />}
+            {Icon && <Icon className="segmented-icon" size={15} aria-hidden="true" />}
             <span className="segmented-label">{o.label}</span>
           </button>
         );

@@ -233,6 +233,10 @@ const LIST_BLOCK_SOURCE = 'app.bsky.graph.listblock:subject';
  */
 export async function sweepBlocks(did, { onProgress, signal } = {}) {
   const blocks = [];
+  // What each list is, kept for Lists you're on: its name and purpose, who
+  // made it and when the account was added. Subscribers are counted for the
+  // moderation lists below.
+  const listInfo = new Map();
   const seen = new Set();
   const direct = await backlinkSweep(did, BLOCK_SOURCE, (rows) =>
     onProgress?.({ stage: 'direct', fetched: rows, done: rows }),
@@ -288,6 +292,16 @@ export async function sweepBlocks(did, { onProgress, signal } = {}) {
       if (parts) {
         const record = await getPublicRecord(parts.did, parts.collection, parts.rkey, signal);
         keep = record?.purpose === 'app.bsky.graph.defs#modlist' ? list : null;
+        if (record) {
+          listInfo.set(list.listUri, {
+            uri: list.listUri,
+            owner: parts.did,
+            name: typeof record.name === 'string' ? record.name.slice(0, 120) : '',
+            purpose: record.purpose === 'app.bsky.graph.defs#modlist' ? 'moderation' : record.purpose === 'app.bsky.graph.defs#referencelist' ? 'reference' : 'curation',
+            memberAt: list.memberAt || null,
+            subscribers: null,
+          });
+        }
       }
       checked += 1;
       onProgress?.({ stage: 'check', fetched: directPaths, done: checked, total: lists.size });
@@ -329,6 +343,9 @@ export async function sweepBlocks(did, { onProgress, signal } = {}) {
     if (subscriptions.error) return result({ error: subscriptions.error });
     if (subscriptions.truncated) return result({ truncated: true, error: TOO_MANY_BLOCKS });
 
+    const info = listInfo.get(listUri);
+    if (info) info.subscribers = subscriptions.rows.length;
+
     for (const row of subscriptions.rows) {
       if (!row?.did || !row?.rkey) continue;
       const recordUri = `at://${row.did}/${row.collection || 'app.bsky.graph.listblock'}/${row.rkey}`;
@@ -350,6 +367,7 @@ export async function sweepBlocks(did, { onProgress, signal } = {}) {
   function result(flags = {}) {
     return {
       blocks,
+      lists: Array.from(listInfo.values()),
       complete: false,
       truncated: false,
       aborted: false,

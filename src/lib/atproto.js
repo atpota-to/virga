@@ -201,3 +201,30 @@ export function tidToTimestamp(rkey) {
   const d = new Date(ms);
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
+
+/**
+ * A did:plc's operation log from the PLC directory, oldest first: every
+ * handle and PDS it has had, and when it changed. `null` for a did:web
+ * (which keeps no history) or when the directory can't be reached.
+ *
+ * @returns {Promise<Array<{at: string, handles: string[], pds: string|null, nullified: boolean}>|null>}
+ */
+export async function getPlcHistory(did) {
+  if (!String(did || '').startsWith('did:plc:')) return null;
+  try {
+    const res = await fetchWithTimeout(`${PLC_DIRECTORY}/${did}/log/audit`, {}, 15_000);
+    if (!res.ok) return null;
+    const log = await res.json();
+    if (!Array.isArray(log)) return null;
+    return log.map((entry) => {
+      const op = entry?.operation || {};
+      const handles = (op.alsoKnownAs || (op.handle ? [`at://${op.handle}`] : []))
+        .map((aka) => String(aka).replace(/^at:\/\//, ''))
+        .filter(Boolean);
+      const pds = op.services?.atproto_pds?.endpoint || op.service || null;
+      return { at: entry?.createdAt || null, handles, pds, nullified: Boolean(entry?.nullified), type: op.type || null };
+    });
+  } catch {
+    return null;
+  }
+}

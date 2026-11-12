@@ -57,3 +57,15 @@ and a bug that only shows against a real PDS will not show here.
 
 Nothing here ships. `npm run build` uses the root `index.html` and never reads this
 directory.
+
+## What changes between syncs
+
+So the tools have something to find:
+
+- **Followers churn.** From the second sync on, a dozen followers have left and three
+  have arrived, so the Unfollow tracker has entries. The sweep count is kept in
+  localStorage with the archive; clear the site's data to start over.
+- **Some follows have gone quiet.** Thirty-six follows outside the cast answer the
+  activity check as quiet, never posted, or gone, for Follow cleanup.
+- **The account has a history.** The PLC directory's audit log has a first handle on
+  bsky.social, a handle of its own, and a move to its own PDS, for the Identity inspector.

@@ -21,6 +21,38 @@ const sleep = (ms) => (ms > 0 ? new Promise((r) => setTimeout(r, ms)) : Promise.
 const world = buildWorld();
 installFakeNetwork(world, { latency });
 
+/**
+ * Followers change between syncs, as they do: from the second sweep on, a
+ * dozen people have left and three have arrived, so the Unfollow tracker has
+ * something to find. The sweep count is kept across reloads, with the
+ * archive; clear the site's data to start over.
+ */
+const SWEEPS_KEY = 'virga-harness:follower-sweeps';
+const arrivals = [0, 1, 2].map((i) => {
+  const at = world.now - (3 + i * 5) * 3_600_000;
+  const did = `did:plc:virgaharnessnew${String(i).padStart(4, '0')}`;
+  return {
+    did,
+    handle: ['tove.example.org', 'quentin.example.net', 'zadie.example.com'][i],
+    displayName: ['Tove Haddad', 'Quentin Abara', ''][i],
+    avatar: '',
+    viewer: { followedBy: `at://${did}/app.bsky.graph.follow/${tidAt(at, 900 + i)}` },
+  };
+});
+let followerList = world.followers;
+
+function followersForSweep() {
+  let n = 0;
+  try {
+    n = Number(localStorage.getItem(SWEEPS_KEY) || 0) + 1;
+    localStorage.setItem(SWEEPS_KEY, String(n));
+  } catch {
+    n = 1;
+  }
+  if (n < 2) return world.followers;
+  return [...arrivals, ...world.followers.filter((_, i) => i % 397 !== 11)];
+}
+
 /** The signed-in reads and the two follow writes, from the world. */
 function buildAgent() {
   const records = {
@@ -34,7 +66,8 @@ function buildAgent() {
         graph: {
           async getFollowers({ limit, cursor }) {
             await sleep(latency);
-            const { rows, cursor: next } = pageOf(world.followers, limit, cursor);
+            if (!cursor) followerList = followersForSweep();
+            const { rows, cursor: next } = pageOf(followerList, limit, cursor);
             return { data: { followers: rows, cursor: next } };
           },
         },
