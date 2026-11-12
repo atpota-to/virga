@@ -1,3 +1,4 @@
+import { LogOut } from 'lucide-react';
 import Menu from './Menu.jsx';
 import { APP_NAME } from '../config.js';
 
@@ -19,6 +20,7 @@ export default function TopBar({ did, profile, onSignOut }) {
           variant="text"
           items={[
             {
+              icon: LogOut,
               label: 'Sign out',
               hint: 'Your archive stays in this browser for next time.',
               onSelect: onSignOut,

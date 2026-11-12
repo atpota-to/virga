@@ -104,6 +104,13 @@ Thread and Daylight:
   coral is the second thing on a chart.
 - **The guide.** The bar pinned to the bottom of the screen says what the archive holds
   and when it was synced, and becomes the progress while a sync runs.
+- **On a phone, the controls are at the bottom.** The six sections are a tab bar along
+  the bottom edge, each a glyph over its name. Above them is one row with the filters,
+  which swipes sideways when a section has more than fit, and More, which holds the
+  sync and the exports. The top bar scrolls away with the page.
+- **Glyphs where they repeat.** A kind of engagement (like, repost, reply, quote,
+  mention) wears the same glyph in the filter as in a post's counts. Every glyph has its
+  name beside it, or as its name for a screen reader where there is no room.
 
 Colours, type and spacing are tokens in `src/styles/theme.css`.
 

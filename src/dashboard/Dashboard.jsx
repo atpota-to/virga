@@ -12,9 +12,12 @@
 //   the tabs              pure derivation over that archive via analytics.js,
 //                         all scoped by ONE period filter row, so every number
 //                         on screen answers for the same window.
-//   the guide             the bar pinned to the bottom of the screen: what the
-//                         archive holds and when it was synced, the sync
-//                         itself, and the exports.
+//   the dock              the controls: the six sections, the filters, and
+//                         the guide (what the archive holds, the sync, the
+//                         exports). On a desk the sections and filters head
+//                         the page and the guide is a bar pinned to the
+//                         bottom. On a phone all three are one panel at the
+//                         bottom, where a thumb reaches.
 //
 // Chart discipline: single-hue series (the type FILTER switches what one
 // series shows rather than stacking four hues); dense zero-filled buckets so a
@@ -28,13 +31,24 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowDownLeft,
   ArrowUpRight,
+  AtSign,
+  Ban,
   Check,
+  Cloud,
+  Download,
+  Ellipsis,
   Heart,
   MessageCircle,
   MessagesSquare,
+  PenLine,
   Quote,
+  RefreshCw,
   Repeat2,
+  RotateCcw,
+  UserPlus,
+  UsersRound,
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import Figures from '../components/Figures.jsx';
@@ -118,20 +132,32 @@ const RELATIONS = [
 
 /** The Engagement tab's two directions: what your posts earn, what you give. */
 const DIRECTIONS = [
-  { key: 'received', label: 'Received' },
-  { key: 'given', label: 'Given' },
+  { key: 'received', label: 'Received', icon: ArrowDownLeft },
+  { key: 'given', label: 'Given', icon: ArrowUpRight },
 ];
+
+/**
+ * The period keys, as short as the keys of a chart are: "30d", with the long
+ * form ("30 days") as the key's name for a screen reader and its tooltip.
+ */
+const PERIOD_SHORT = { '7d': '7d', '30d': '30d', '90d': '90d', '1y': '1y', all: 'All' };
+
+/**
+ * One glyph per kind of engagement, the same ones a post's counts wear in the
+ * Top posts list, so the filter and what it filters look alike.
+ */
+const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Quote, mention: AtSign };
 
 /** How many people a People list shows at first, and adds per "Show more". */
 const PEOPLE_PAGE = 12;
 
 const TABS = [
-  { key: 'followers', label: 'Followers' },
-  { key: 'blocks', label: 'Blocks' },
-  { key: 'posts', label: 'Posts' },
-  { key: 'engagement', label: 'Engagement' },
-  { key: 'people', label: 'People' },
-  { key: 'atmosphere', label: 'Atmosphere' },
+  { key: 'followers', label: 'Followers', icon: UserPlus },
+  { key: 'blocks', label: 'Blocks', icon: Ban },
+  { key: 'posts', label: 'Posts', icon: PenLine },
+  { key: 'engagement', label: 'Engagement', icon: Heart },
+  { key: 'people', label: 'People', icon: UsersRound },
+  { key: 'atmosphere', label: 'Atmosphere', icon: Cloud },
 ];
 
 /**
@@ -170,58 +196,90 @@ export default function Dashboard({ agent, did, handle = null, onBuilt = null })
   const showKind = tab === 'engagement' || tab === 'people';
   const kinds = tab === 'people' ? EVENT_KINDS : ENGAGEMENT_KINDS;
 
+  // On a phone the sections are at the foot of the screen, so the page can be
+  // anywhere when one is pressed. A new section starts at its top.
+  const changeTab = (next) => {
+    setTab(next);
+    if (next !== tab) window.scrollTo(0, 0);
+  };
+
   return (
     <div className="an">
-      {firstRun ? (
-        <FirstRun archive={archive} />
-      ) : (
-        <>
+      {firstRun && <FirstRun archive={archive} />}
+
+      {/* Nothing to put in the dock before the first build, until that build
+          is under way and the guide has its progress to show. */}
+      {(!firstRun || archive.sync) && (
+        <div className="an-dock" data-syncing={archive.sync ? '' : undefined}>
           {/* The sections, then the window and (where it applies) the kind
               of engagement: rows of keys, each the same Segmented, so "which
               one is on" reads the same in all of them. */}
-          <Segmented
-            className="an-tabs"
-            label="Sections"
-            value={tab}
-            onChange={setTab}
-            options={TABS.map((t) => ({ value: t.key, label: t.label }))}
-          />
-
-          <div className="an-filters">
+          {!firstRun && (
             <Segmented
-              label="Period"
-              value={periodKey}
-              onChange={setPeriodKey}
-              options={ANALYTICS_PERIODS.map((p) => ({ value: p.key, label: p.label }))}
+              className="an-tabs"
+              label="Sections"
+              value={tab}
+              onChange={changeTab}
+              options={TABS.map((t) => ({ value: t.key, label: t.label, icon: t.icon }))}
             />
-            {tab === 'engagement' && (
-              <Segmented
-                label="Engagement direction"
-                value={direction}
-                onChange={setDirection}
-                options={DIRECTIONS.map((d) => ({ value: d.key, label: d.label }))}
-              />
-            )}
-            {showKind && (
-              <Segmented
-                label="Engagement type"
-                value={kind}
-                onChange={setKind}
-                options={kinds.map((k) => ({ value: k.key, label: k.label }))}
-              />
-            )}
-            {/* Only once the follows are known: filtering against an empty
-                set would call everyone "not following". */}
-            {tab === 'people' && archive.meta.following && (
-              <Segmented
-                label="Show people"
-                value={relation}
-                onChange={setRelation}
-                options={RELATIONS.map((r) => ({ value: r.key, label: r.label }))}
-              />
-            )}
-          </div>
+          )}
 
+          <div className="an-dock-row">
+            {!firstRun && (
+              <div className="an-filters">
+                <Segmented
+                  label="Period"
+                  value={periodKey}
+                  onChange={setPeriodKey}
+                  options={ANALYTICS_PERIODS.map((p) => ({
+                    value: p.key,
+                    label: PERIOD_SHORT[p.key] || p.label,
+                    ariaLabel: p.label,
+                    title: p.label,
+                  }))}
+                />
+                {tab === 'engagement' && (
+                  <Segmented
+                    label="Engagement direction"
+                    value={direction}
+                    onChange={setDirection}
+                    options={DIRECTIONS.map((d) => ({ value: d.key, label: d.label, icon: d.icon }))}
+                  />
+                )}
+                {showKind && (
+                  <Segmented
+                    className="an-kinds"
+                    label="Engagement type"
+                    value={kind}
+                    onChange={setKind}
+                    options={kinds.map((k) => ({
+                      value: k.key,
+                      label: k.label,
+                      icon: KIND_ICON[k.key],
+                      title: KIND_ICON[k.key] ? k.label : undefined,
+                    }))}
+                  />
+                )}
+                {/* Only once the follows are known: filtering against an empty
+                    set would call everyone "not following". */}
+                {tab === 'people' && archive.meta.following && (
+                  <Segmented
+                    label="Show people"
+                    value={relation}
+                    onChange={setRelation}
+                    options={RELATIONS.map((r) => ({ value: r.key, label: r.label }))}
+                  />
+                )}
+              </div>
+            )}
+
+            <Guide archive={archive} />
+          </div>
+        </div>
+      )}
+
+      {!firstRun && (
+        <>
           {tab === 'followers' && <FollowersTab archive={archive} period={period} nowMs={nowMs} />}
           {tab === 'blocks' && <BlocksTab archive={archive} period={period} nowMs={nowMs} />}
           {tab === 'posts' && <PostsTab archive={archive} period={period} nowMs={nowMs} />}
@@ -250,8 +308,6 @@ export default function Dashboard({ agent, did, handle = null, onBuilt = null })
           {tab === 'atmosphere' && <AtmosphereTab archive={archive} period={period} nowMs={nowMs} />}
         </>
       )}
-
-      <Guide archive={archive} />
     </div>
   );
 }
@@ -879,11 +935,15 @@ function carDetail(p) {
 }
 
 /**
- * The guide: the bar pinned to the bottom of the screen, the app's own line
- * to the reader. At rest it says what the archive holds and when it was last
- * synced, with Sync beside it and the occasional actions (rebuild, the two
- * exports) under More. While a sync runs it becomes the progress. Before the
- * first build there is nothing to say, so it isn't there.
+ * The guide: the app's own line to the reader. At rest it says what the
+ * archive holds and when it was last synced, with Sync beside it and the
+ * occasional actions (rebuild, the two exports) under More. While a sync runs
+ * it becomes the progress. Before the first build there is nothing to say, so
+ * it isn't there.
+ *
+ * On a desk it is a bar pinned to the bottom of the screen. On a phone it is
+ * the More button at the end of the filters, and what the bar said is the
+ * first thing in its menu.
  */
 function Guide({ archive }) {
   const { sync, syncError, meta, posts, followers, blocks, persistent, blocked, runSync, cancelSync } = archive;
@@ -899,52 +959,70 @@ function Guide({ archive }) {
 
   const pm = meta.posts;
   if (!pm) return null;
+
+  const when = !pm.complete ? 'Archive incomplete' : pm.syncedAt ? `Synced ${relativeTime(pm.syncedAt)}` : 'Not synced yet';
+  const counts = [
+    `${posts.length.toLocaleString('en-US')} ${posts.length === 1 ? 'post' : 'posts'}`,
+    `${followers.length.toLocaleString('en-US')} ${followers.length === 1 ? 'follower' : 'followers'}`,
+    `blocked by ${reach.toLocaleString('en-US')}`,
+  ].join(' · ');
+  const storage = persistent
+    ? null
+    : blocked
+      ? 'Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it.'
+      : 'This browser holds the archive for this session only.';
+  const sync1 = () => runSync(pm.complete ? 'incremental' : 'resume');
+
   return (
-    <div className="guide" role="region" aria-label="Your archive">
+    <div className="guide" role="region" aria-label="Your archive" data-alert={syncError ? '' : undefined}>
       <div className="guide-bar">
         <p className="guide-status">
-          <span className="guide-when">
-            {!pm.complete ? 'Archive incomplete' : pm.syncedAt ? `Synced ${relativeTime(pm.syncedAt)}` : 'Not synced yet'}
-          </span>
+          <span className="guide-when">{when}</span>
           <span className="guide-counts">
             {' · '}
-            {posts.length.toLocaleString('en-US')} {posts.length === 1 ? 'post' : 'posts'}
-            {' · '}
-            {followers.length.toLocaleString('en-US')} {followers.length === 1 ? 'follower' : 'followers'}
-            {' · '}
-            blocked by {reach.toLocaleString('en-US')}
+            {counts}
           </span>
         </p>
         <div className="guide-actions">
-          {!pm.complete && (
-            <Button size="sm" variant="primary" onClick={() => runSync('resume')}>
-              Resume build
-            </Button>
-          )}
-          <Button size="sm" variant={pm.complete ? 'primary' : 'quiet'} onClick={() => runSync('incremental')}>
-            Sync
+          <Button className="guide-sync" size="sm" variant="primary" onClick={sync1}>
+            <RefreshCw size={16} aria-hidden="true" />
+            {pm.complete ? 'Sync' : 'Resume'}
           </Button>
           <Menu
+            className="guide-more"
             label="More"
             placement="up"
             items={[
+              // What the bar says and does, for a phone, where there is no bar.
               {
-                label: 'Rebuild the post archive',
-                hint: 'Clears it and reads every post again. The only way deleted posts leave, and old posts’ counts fully refresh.',
+                className: 'menu-item--phone',
+                icon: RefreshCw,
+                label: pm.complete ? 'Sync now' : 'Resume the build',
+                hint: [syncError, `${when} · ${counts}`, storage].filter(Boolean).join(' '),
+                onSelect: sync1,
+              },
+              {
+                icon: RotateCcw,
+                label: 'Rebuild posts',
+                hint: 'Clears the post archive and reads every post again. The only way deleted posts leave, and old posts’ counts fully refresh.',
                 onSelect: () => runSync('full'),
               },
               {
-                label: 'Export everything (JSON)',
+                icon: Download,
+                label: 'Export all (JSON)',
                 hint: 'Posts, followers, blocks, engagement and repo records, as this browser holds them.',
                 onSelect: () => exportArchive(archive),
               },
               {
+                icon: Download,
                 label: 'Export posts (CSV)',
                 hint: 'Every post with its counts, newest first, as a spreadsheet.',
                 onSelect: () => exportPosts(archive),
               },
             ]}
-          />
+          >
+            <Ellipsis size={20} aria-hidden="true" />
+          </Menu>
         </div>
       </div>
       {syncError && (
@@ -952,13 +1030,7 @@ function Guide({ archive }) {
           {syncError}
         </p>
       )}
-      {!persistent && (
-        <p className="guide-note">
-          {blocked
-            ? 'Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it.'
-            : 'This browser holds the archive for this session only.'}
-        </p>
-      )}
+      {storage && <p className="guide-note">{storage}</p>}
     </div>
   );
 }
@@ -992,6 +1064,9 @@ function SyncProgress({ sync, onCancel }) {
             {finishing ? 'finishing' : `step ${index + 1} of ${plan.length}`}
           </span>
           {detail && <span className="an-sync-detail"> · {detail}</span>}
+          {/* On a phone the segments below carry no words, so the share is
+              said here. */}
+          {pct != null && <span className="an-sync-pct"> · {pct}%</span>}
         </p>
         <Button size="sm" onClick={onCancel}>
           Cancel
@@ -1375,9 +1450,9 @@ function BlocksTab({ archive, period, nowMs }) {
         className="an-figures"
         label="Blocks in figures"
         items={[
-          stat({ label: 'Current block reach', value: model.total }),
-          stat({ label: 'Direct blocks', value: model.directTotal }),
-          stat({ label: 'Via moderation lists', value: model.listTotal }),
+          stat({ label: 'Blocked by', value: model.total }),
+          stat({ label: 'Direct', value: model.directTotal }),
+          stat({ label: 'Via lists', value: model.listTotal }),
           stat({
             label: `New in ${period.label.toLowerCase()}`,
             value: model.received,
@@ -1621,7 +1696,7 @@ function EngagementTab({ archive, did, period, kind, nowMs }) {
         label="Engagement in figures"
         items={[
           stat({
-            label: kind === 'all' ? 'Engagement received' : `${head} received`,
+            label: kind === 'all' ? 'Received' : `${head} received`,
             value: model.total,
             delta: period.days ? model.compare.pct : null,
             deltaTitle: period.days
@@ -1788,7 +1863,7 @@ function GivenTab({ archive, did, period, kind, nowMs }) {
         label="Engagement given in figures"
         items={[
           stat({
-            label: `${head} given`,
+            label: kind === 'all' ? 'Given' : `${head} given`,
             value: model.total,
             delta: period.days ? model.compare.pct : null,
             deltaTitle: period.days

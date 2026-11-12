@@ -7,11 +7,12 @@ import { buttonClass } from './Button.jsx';
  * teach the arrow keys. Escape and a press anywhere else close it, and
  * Escape puts focus back on the button.
  *
- * `items` are `{ label, hint?, onSelect }`. `label` is the button's words;
- * pass `children` to draw something else in it (an avatar and a handle) and
- * `label` becomes its accessible name. `placement` is 'down' or 'up' (for a
- * button at the foot of the screen); the list hangs from the button's right
- * edge.
+ * `items` are `{ label, hint?, icon?, className?, onSelect }`, where `icon` is
+ * a component drawn before the label. `label` is the button's words; pass
+ * `children` to draw something else in it (an avatar and a handle, or an icon
+ * alone) and `label` becomes its accessible name. `placement` is 'down' or
+ * 'up' (for a button at the foot of the screen); the list hangs from the
+ * button's right edge.
  */
 export default function Menu({
   label,
@@ -63,27 +64,34 @@ export default function Menu({
         aria-expanded={open}
         aria-controls={listId}
         aria-label={children ? label : undefined}
+        title={children ? label : undefined}
         onClick={() => setOpen((v) => !v)}
       >
         {children || label}
       </button>
       {open && (
         <ul id={listId} className="menu-list">
-          {items.map((item) => (
-            <li key={item.label}>
-              <button
-                type="button"
-                className="menu-item"
-                onClick={() => {
-                  setOpen(false);
-                  item.onSelect?.();
-                }}
-              >
-                <span className="menu-item-label">{item.label}</span>
-                {item.hint && <span className="menu-item-hint">{item.hint}</span>}
-              </button>
-            </li>
-          ))}
+          {items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.label} className={item.className}>
+                <button
+                  type="button"
+                  className="menu-item"
+                  onClick={() => {
+                    setOpen(false);
+                    item.onSelect?.();
+                  }}
+                >
+                  {Icon && <Icon className="menu-item-icon" size={18} aria-hidden="true" />}
+                  <span className="menu-item-text">
+                    <span className="menu-item-label">{item.label}</span>
+                    {item.hint && <span className="menu-item-hint">{item.hint}</span>}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

@@ -154,16 +154,26 @@
   font-weight: 450;
 }
 
+/* On a phone the controls are at the bottom, so the top bar is only a
+   heading: it goes up with the page, and says the name and no more. */
 @media (max-width: 700px) {
-  .topbar-who-name,
+  .topbar {
+    position: absolute;
+  }
+
+  .topbar-who-name {
+    max-width: 11rem;
+  }
+
   .topbar-who-handle {
-    max-width: 9.5rem;
+    display: none;
   }
 }
 
 /* ---- the dashboard's column --------------------------------------- */
 
-/* Room under the last card for the guide and the strip of hill it sits on. */
+/* Room under the last card for the guide (on a phone, the whole dock) and
+   the strip of hill it sits on. */
 .app-main {
   max-width: calc(var(--wrap) + 2 * var(--gutter));
   margin: 0 auto;
@@ -173,7 +183,7 @@
 @media (max-width: 700px) {
   .app-main {
     padding-top: calc(var(--topbar) + var(--space-4));
-    padding-bottom: 150px;
+    padding-bottom: calc(176px + env(safe-area-inset-bottom));
   }
 }
 
@@ -324,8 +334,10 @@
 
 /* ---- the guide ---------------------------------------------------- */
 
-/* Pinned to the bottom of the screen, on the hill: what the archive holds,
-   and the sync. One white bar, and nothing else down there. */
+/* On a desk: pinned to the bottom of the screen, on the hill. What the
+   archive holds, and the sync. One white bar, and nothing else down there.
+   On a phone it is part of the dock (dashboard.css), which undoes all of
+   this. */
 .guide {
   position: fixed;
   z-index: 20;
@@ -373,6 +385,29 @@
   gap: 6px;
 }
 
+/* More is three dots in a circle. */
+.guide-more .menu-button {
+  width: 38px;
+  padding: 0;
+}
+
+/* A sync that failed: a dot on More, where a phone keeps what went wrong. */
+.guide[data-alert] .guide-more .menu-button {
+  position: relative;
+}
+
+.guide[data-alert] .guide-more .menu-button::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--card-solid);
+  border-radius: 50%;
+  background: var(--danger);
+}
+
 .guide-note {
   padding: 4px 16px 8px 0;
   color: var(--ink-muted);
@@ -384,17 +419,8 @@
   color: var(--danger);
 }
 
-@media (max-width: 700px) {
-  .guide {
-    bottom: max(10px, env(safe-area-inset-bottom));
-    width: calc(100% - 20px);
-    padding-left: 18px;
-    border-radius: 28px;
-  }
-
-  /* The counts are in the figures above; down here a phone has room for
-     when, and the button. */
-  .guide-counts {
-    display: none;
-  }
+/* The share of the step under way: said in the line on a phone, and on the
+   step's own segment on a desk. */
+.an-sync-pct {
+  display: none;
 }

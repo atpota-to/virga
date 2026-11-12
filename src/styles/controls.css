@@ -93,6 +93,10 @@
 }
 
 .segmented-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
   min-height: 38px;
   padding: 0 16px;
   border: 0;
@@ -119,6 +123,15 @@
 .segmented-key.is-on {
   background: var(--accent);
   color: #ffffff;
+}
+
+.segmented-icon {
+  flex: none;
+}
+
+/* A key with a glyph sits a little closer to its edge on the glyph's side. */
+.segmented-key.has-icon {
+  padding-left: 13px;
 }
 
 /* Fingers get the full 44px whatever the size says. */
@@ -257,8 +270,8 @@
 
 .menu-item {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: flex-start;
+  gap: 10px;
   width: 100%;
   padding: 10px 14px;
   border: 0;
@@ -274,6 +287,19 @@
   }
 }
 
+.menu-item-icon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--ink-muted);
+}
+
+.menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .menu-item-label {
   font-size: var(--text-sm);
   font-weight: 600;
@@ -283,4 +309,15 @@
   color: var(--ink-muted);
   font-size: var(--text-xs);
   line-height: 1.35;
+}
+
+/* An item a phone needs in the list because it has no room for it outside. */
+.menu-item--phone {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .menu-item--phone {
+    display: block;
+  }
 }
