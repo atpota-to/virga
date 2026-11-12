@@ -21,6 +21,7 @@ import { navigate, usePath } from '../lib/router.jsx';
 import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import PostingPage from '../posting/PostingPage.jsx';
 import { parseComposeIntent } from '../posting/lib/composeIntent.js';
+import { takePendingCompose } from '../lib/pendingCompose.js';
 import FirstRun from './FirstRun.jsx';
 import Sidebar from './Sidebar.jsx';
 import { AppBar, TabBar } from './MobileNav.jsx';
@@ -175,6 +176,9 @@ function OpenComposer({ fromLink = false }) {
     // StrictMode runs this twice on mount; the ref keeps it to one open.
     if (opened.current) return;
     opened.current = true;
+    // Opened here, so a link kept from the front page is spent: it mustn't
+    // reopen on some later sign-in in this tab.
+    takePendingCompose();
     const intent = parseComposeIntent(window.location.search);
     composer.open(
       intent.hasIntent

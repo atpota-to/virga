@@ -22,6 +22,7 @@ import { navigate, usePath } from './lib/router.jsx';
 import { useAtprotoSession } from './session/useAtprotoSession.jsx';
 import { getProfile } from './lib/atproto.js';
 import { OAUTH_CALLBACK_PATH, OAUTH_RETURN_PATH } from './config.js';
+import { isComposePath, rememberPendingCompose, takePendingCompose } from './lib/pendingCompose.js';
 
 export default function App() {
   return (
@@ -44,15 +45,27 @@ function AppInner() {
   // The sign-in comes back to its own address. Once it has been dealt with,
   // the address is the app's again, so a reload doesn't replay it. A failure
   // stays put, to say what happened; a visit with nothing to finish (a
-  // reload, the address typed in) is simply sent on.
+  // reload, the address typed in) is simply sent on, to a compose link kept
+  // from before the sign-in if there is one.
   useEffect(() => {
     if (!returning || loading) return;
-    if (session || !error) navigate('/', { replace: true });
+    if (session || !error) {
+      const pending = session ? takePendingCompose() : null;
+      if (pending) navigate(pending, { replace: true, keepQuery: false });
+      else navigate('/', { replace: true });
+    }
   }, [returning, loading, session, error]);
 
   // A sign-in that came back without a session says so, even with another
   // account already open behind it.
   const view = loading ? 'loading' : returning && error ? 'returned' : session && agent ? 'app' : 'landing';
+
+  // A compose link opened while signed out: the sign-in redirect leaves the
+  // page, so the link is kept to reopen once it comes back.
+  const composeLink = view === 'landing' && isComposePath(path);
+  useEffect(() => {
+    if (composeLink) rememberPendingCompose(window.location.pathname, window.location.search);
+  }, [composeLink]);
 
   if (view === 'loading') {
     return (
@@ -61,7 +74,7 @@ function AppInner() {
       </p>
     );
   }
-  if (view === 'landing') return <Landing />;
+  if (view === 'landing') return <Landing composing={composeLink} />;
   if (view === 'returned') return <SignInReturn error={error} />;
   return (
     <ComposerProvider>

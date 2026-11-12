@@ -85,7 +85,7 @@ function RememberedAccounts({ busy, setBusy, setError }) {
  * accounts this browser remembers, and the one field that starts a sign-in.
  * All the copy here is a draft.
  */
-export default function Landing() {
+export default function Landing({ composing = false }) {
   const { signIn, accounts, authMode } = useAtprotoSession();
   const [opening, setOpening] = useState(null);
   const { sky, setPref } = usePreferences();
@@ -158,6 +158,11 @@ export default function Landing() {
             </p>
 
             <form className="signin" onSubmit={handleSubmit}>
+              {composing && (
+                <p className="callout" role="status">
+                  Sign in to finish your post. What you were sharing opens in the composer once you’re in.
+                </p>
+              )}
               <RememberedAccounts busy={opening} setBusy={setOpening} setError={setError} />
               <label className="field-label" htmlFor="signin-input">
                 {accounts.length ? 'Or sign in with another handle' : 'Your handle'}
