@@ -1,9 +1,11 @@
 // The tools, grouped as the Tools page shows them. `access` says what each
 // can touch: 'read' (only reads), 'follow' (uses the follow permission the
 // sign-in already asks for), or 'ask' (would need a permission Virga doesn't
-// ask for today, so it isn't built).
+// ask for today, so it isn't built). Writing and scheduling posts is a
+// section of its own (src/posting/), not a tool.
 
-import { Archive, Clock, Fingerprint, List, Send, Shield, UserMinus, UserPlus, UserX, UsersRound } from 'lucide-react';
+import { Archive, Clock, Fingerprint, List, Shield, UserMinus, UserPlus, UserX, UsersRound } from 'lucide-react';
+import { ACCESS } from '../components/AccessBadge.jsx';
 
 export const TOOL_SECTIONS = Object.freeze([
   { key: 'tidy', title: 'Tidy up', desc: 'Keep your follows and followers in order.' },
@@ -22,13 +24,8 @@ export const TOOLS = Object.freeze([
   { key: 'identity', name: 'Identity inspector', icon: Fingerprint, section: 'data', access: 'read', desc: 'Your DID, your PDS, your handle history and what each app writes to your repo.' },
   { key: 'interaction-lookup', name: 'Interaction lookup', icon: UsersRound, section: 'later', access: 'read', planned: true, desc: 'Your whole history with one account: likes, replies and follows, both ways.' },
   { key: 'list-manager', name: 'List manager', icon: List, section: 'later', access: 'ask', planned: true, desc: 'Keep a Bluesky list in step with a filter, such as mutuals you talk to every week.' },
-  { key: 'scheduled-posts', name: 'Drafts and scheduled posts', icon: Send, section: 'later', access: 'ask', planned: true, desc: 'Write now and post later, from this browser.' },
 ]);
 
 export const TOOL_BY_KEY = Object.freeze(Object.fromEntries(TOOLS.map((t) => [t.key, t])));
 
-export const ACCESS = Object.freeze({
-  read: { label: 'Read only', tone: '' },
-  follow: { label: 'Can follow and unfollow', tone: 'accent' },
-  ask: { label: 'Would ask for a new permission', tone: 'warn' },
-});
+export { ACCESS };

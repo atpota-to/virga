@@ -10,9 +10,18 @@
 //   /tools                    the tools, as a list
 //   /tools/:tool              one tool
 //   /settings/:section        settings
+//   /posting                  posting: the overview
+//   /posting/:page            drafts, scheduled, schedule, timers, posted,
+//                             templates, library (src/posting/routes.js)
+//   /posting/compose          opens the composer, then the overview
+//   /intent/compose?text&url&tags
+//                             a compose link from elsewhere: opens the
+//                             composer with it, then the overview
 //
-// The query string is carried along on every move. The real app never has
-// one; the harness keeps its flags (?latency=0) there.
+// The query string is carried along on a move unless the new address has one
+// of its own, or `keepQuery: false` says to drop it. The harness keeps its
+// flags (?latency=0) there; an intent's ?text= is the one query that has to
+// be dropped, or it would follow the reader around.
 
 import { useSyncExternalStore } from 'react';
 
@@ -42,16 +51,22 @@ export function usePath() {
 
 /**
  * Go to `to`. A new history entry unless `replace`. The page starts at its
- * top, as a new page does, unless `keepScroll`.
+ * top, as a new page does, unless `keepScroll`. The current query string
+ * comes along when `to` has none, unless `keepQuery` is false.
  */
-export function navigate(to, { replace = false, keepScroll = false } = {}) {
+export function navigate(to, { replace = false, keepScroll = false, keepQuery = true } = {}) {
   if (typeof window === 'undefined') return;
-  const search = to.includes('?') ? '' : window.location.search;
-  const href = `${to}${search}`;
+  const href = hrefFor(to, window.location.search, { keepQuery });
   if (href === `${window.location.pathname}${window.location.search}`) return;
   window.history[replace ? 'replaceState' : 'pushState'](null, '', href);
   notify();
   if (!keepScroll) window.scrollTo(0, 0);
+}
+
+/** The address a move to `to` lands on, given the current query string. */
+export function hrefFor(to, currentSearch = '', { keepQuery = true } = {}) {
+  const search = keepQuery && !String(to).includes('?') ? currentSearch || '' : '';
+  return `${to}${search}`;
 }
 
 /**

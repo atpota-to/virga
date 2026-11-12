@@ -8,13 +8,19 @@ swapped out:
 | --- | --- |
 | `src/session/useAtprotoSession.jsx` | `harness/fakeSession.jsx` |
 
-The fake presents a made-up account, Mira Okafor (`mira.example.com`), as signed in. Its
-agent answers the signed-in reads (followers, notifications, follow records) from
-memory, and Follow and Following change that memory for the life of the page.
-`harness/fakeNetwork.js` replaces `fetch`, so the public reads (the author feed,
-profiles, the DID document, the repo download, Constellation) are answered from the same
-fixtures. Nothing leaves the machine, and a request to a host it doesn't know is refused
-with a warning in the console.
+(`harness/harness.js` puts the rest together and reads the address flags.)
+
+The fake presents two made-up accounts as signed in on this browser: Mira Okafor
+(`mira.example.com`), with three years of history, and Field Lab (`lab.example.org`), a
+small, quiet second account to switch to and post as. Each has an agent
+(`harness/fakeXrpc.js`) that answers the signed-in reads and takes the writes, and, in
+the default long-session mode, a requester for Virga's server: the real one from
+`src/session/backendClient.js`, pointed at a fake server (`harness/fakeCocoon.js`).
+`harness/fakeNetwork.js` replaces `fetch`, so the public reads (the author feed, posts,
+threads, profiles, feeds and lists, the DID documents, the repo download,
+Constellation), Bluesky's card and video services and Virga's server are answered from
+the same fixtures. Nothing leaves the machine, and a request to a host it doesn't know
+is refused with a warning in the console.
 
 ## Running it
 
@@ -29,10 +35,20 @@ Clear the site's data to start over.
 
 | address | what you get |
 | --- | --- |
-| `/` | signed in |
-| `/?signedout` | the front page. Signing in as anyone lands in the dashboard; `nobody` fails, to show the error |
+| `/` | signed in as Mira, with Field Lab beside her, both on long sessions |
+| `?accounts=1` | only Mira |
+| `?mode=browser` | both accounts on browser sessions: the pages that need Virga's server say so |
+| `?signedout` | the front page, with both accounts remembered. Signing in as anyone lands in the dashboard (as Field Lab for `lab.example.org`); `nobody` fails, to show the error |
+| `?expired=lab` | that account (by handle) starts signed out; the other is open |
+| `?scope=read` | the sessions were granted what Virga asked for before it could post: posts, gates, templates, drafts and uploads are refused for a missing scope (following still works) |
+| `?tier=member` | the accounts are members, so Virga's server applies no free limits |
+| `?limits=flat` | Virga's server applies only its flat caps (`VIRGA_FEATURE_LIMITS=flat`) |
+| `?ai=slow`, `?ai=down` | the adviser and alt text take longer than the composer waits, or are unavailable |
+| `?cron=20` | how often, in seconds, the server's workers run (20 by default); `0` stops them |
 | `/oauth/callback` | a sign-in that came back declined |
 | `?latency=0` | no simulated delay on requests (60ms each by default) |
+
+Flags combine: `/posting/scheduled?mode=browser&accounts=1`.
 
 ## The fixtures
 
@@ -43,17 +59,84 @@ with no name, some with no picture, some with a very long name), 5,600 likes and
 nine other collections in the repo, 148 direct blocks and nine lists, four of them
 moderation lists with subscribers.
 
+Field Lab is five months old, with nine posts, forty followers from the same cast and
+nothing pointing at it.
+
+On the posting side, Mira has two Bluesky drafts (one a thread), six bookmarks, two
+feeds and two lists of her own, two templates in her repo, and a Bluesky setting that
+lets only people she follows and people she mentions reply. Field Lab has none of it,
+so the defaults show.
+
 Nobody in it is real. It is stand-in content shaped like the real thing, for building
 and looking, not for shipping.
 
-`harness/world.test.js` runs with `npm test`. It checks that the real code still reads
-the fixtures the way it reads real answers, which is the only thing that stops them
-drifting.
+## The agent
+
+Any property chain on the fake agent is an NSID, and calling it answers from the
+account's world (`agent.app.bsky.feed.searchPosts(params)` resolves to `{ data }`, as an
+`@atproto/api` Agent's call does). It answers the dashboard's reads; the repo writes
+(`createRecord`, `putRecord`, `deleteRecord`, `applyWrites`, `getRecord`, `listRecords`,
+`uploadBlob`); Bluesky drafts, kept in memory per account; preferences; bookmarks; post
+search; and service-auth tokens for the video service. A method it doesn't know fails
+with `MethodNotImplemented` and a console warning.
+
+Writes land in the account's world (`harness/repo.js`) with the CIDs a PDS would give
+them, so a post shows up in the author feed, in `getPosts` and `getPostThread`, in the
+next repo download and in the next sync. Uploaded images come back in post views as
+`data:` URLs. A post written here picks up a like every few minutes, so timers with
+conditions have something to count.
+
+It refuses what a real account would: writing to another repo, creating over a record
+that's there, a swap that doesn't match, drafts or bookmarks asked of anyone but
+Bluesky's AppView, and anything the session's granted scope doesn't cover (with the
+PDS's "Missing required scope" wording). It doesn't check inputs against the lexicons.
+
+## Virga's server
+
+The fake server answers at `VITE_COCOON_URL`'s host, in cocoon's own shapes: scheduled
+posts (`/api/schedule/create`, `list`, `get`, `media`, `update` with its four kinds,
+`reorder`, `cancel`), timers (`/api/self-destruct/create`, `list`, `cancel`),
+`/api/limits/status` with what's in use, the adviser and alt text (`/api/ai/analyze-post`,
+`synthesize-style`, `alt-text`), and `/oauth/session` and `/oauth/logout`.
+
+Rows belong to the app that made them. Virga sees every row of the account, each with
+its `clientKey`; it can cancel another app's row but not change it (403
+`NOT_YOUR_CLIENT`). Mira starts with a post scheduled from Anisota, one of Virga's in the
+queue, one that failed, one that went out without its timer, a timer set from Anisota
+and one that has already deleted its post. Limits are counted across both apps, so a
+free account starts with two of its three scheduled posts and its one conditional
+timer in use.
+
+Every 20 seconds the server's workers run: due posts are written into the account's
+world at the keys reserved when they were scheduled, and due timers read the post's
+counts and delete it, limit its replies or turn off its quotes. The adviser's verdicts
+come from a few word lists, so the same draft always gets the same read.
+
+From the browser console, `__harness.cron()` runs the workers now,
+`__harness.expire('lab')` ends Field Lab's long session on the server (the next request
+finds out, and after three checks the account shows as signed out),
+`__harness.agentFor(did)` is the agent the page uses, and
+`__harness.cocoon.inspect()` shows what the server holds.
+
+## Cards and video
+
+The card service answers any web address with a title, a description and a real PNG
+through its image proxy, big enough that the composer has to shrink it; an address on
+`.invalid` has no card. The video service checks that each service-auth token is
+addressed to the right place (the upload's to the account's PDS for `uploadBlob`, the
+rest to the video service), keeps the upload as one of the account's blobs and reports
+it processed after a few seconds.
+
+`harness/world.test.js`, `fakeXrpc.test.js` and `fakeCocoon.test.js` run with
+`npm test`. They check that the real code still reads the fixtures the way it reads real
+answers, and that the posting services (publish, drafts, scheduling, timers) work
+against the fakes, which is the only thing that stops them drifting.
 
 ## What it is not
 
-Not a mock of the protocol. It doesn't check OAuth, permissions, rate limits or lexicons,
-and a bug that only shows against a real PDS will not show here.
+Not a mock of the protocol. It doesn't check OAuth, rate limits or lexicons, its
+permission check is only the scope string, and a bug that only shows against a real PDS
+or the real server will not show here.
 
 Nothing here ships. `npm run build` uses the root `index.html` and never reads this
 directory.

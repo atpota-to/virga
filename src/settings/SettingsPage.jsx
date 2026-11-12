@@ -1,6 +1,6 @@
-// Settings: the account, the archive and its sync, the dashboards, how Virga
-// looks (the live sky lives here, off until it's asked for), what the
-// sign-in lets Virga do, and where the data comes from.
+// Settings: the account, the archive and its sync, the dashboards, posting,
+// how Virga looks (the live sky lives here, off until it's asked for), what
+// the sign-in lets Virga do, and where the data comes from.
 
 import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowUp, Download, HardDrive, Pencil, RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
@@ -13,6 +13,7 @@ import { COCOON_URL, PERMISSION_GROUPS } from '../config.js';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
+import PostingSettingsSection from '../posting/PostingSettingsSection.jsx';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link, navigate } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
@@ -32,6 +33,7 @@ const SECTIONS = [
   { key: 'account', label: 'Account' },
   { key: 'data', label: 'Data and sync' },
   { key: 'dashboards', label: 'Dashboards' },
+  { key: 'posting', label: 'Posting' },
   { key: 'appearance', label: 'Appearance' },
   { key: 'permissions', label: 'Permissions' },
   { key: 'about', label: 'About' },
@@ -56,6 +58,7 @@ export default function SettingsPage({ section }) {
           {current === 'account' && <AccountsSettings />}
           {current === 'data' && <DataSection />}
           {current === 'dashboards' && <DashboardsSection />}
+          {current === 'posting' && <PostingSettingsSection />}
           {current === 'appearance' && <AppearanceSection />}
           {current === 'permissions' && <PermissionsSection />}
           {current === 'about' && <AboutSection />}
@@ -625,6 +628,18 @@ function AboutSection() {
           <li>
             <strong>Virga’s server ({COCOON_HOST})</strong>, for an account with a long session: the sign-in, and the signed-in requests,
             which it passes on to your account. Scheduled posts and post timers are kept there until they run.
+          </li>
+          <li>
+            <strong>Bluesky’s link card service (cardyb.bsky.app)</strong>, while you write a post with a link: the page’s title,
+            description and picture, for the card under the post.
+          </li>
+          <li>
+            <strong>Bluesky’s video service (video.bsky.app)</strong>, when you post a video: the video, which it processes before the
+            post goes out.
+          </li>
+          <li>
+            <strong>The post adviser and alt text</strong>, only when you turn them on or ask: the post (or the image) goes to Virga’s
+            server, which passes it to an AI model and sends back what it made of it.
           </li>
           <li>
             <strong>Constellation</strong>: who blocks you, and which lists you’re on.

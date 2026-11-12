@@ -4,7 +4,9 @@
 //
 // Switching accounts happens in place: the shell stays up while the next
 // account's agent is built, then everything below the per-account key
-// remounts for it. Only the app's start shows the loading line.
+// remounts for it. Only the app's start shows the loading line. Toasts, the
+// session notices and the composer sit above that key, so a toast, a notice
+// or a half-written post outlives a switch.
 
 import { useEffect, useState } from 'react';
 import { ArchiveProvider } from './archive/ArchiveContext.jsx';
@@ -13,6 +15,8 @@ import SessionNotices from './accounts/SessionNotices.jsx';
 import Landing from './pages/Landing.jsx';
 import SignInReturn from './pages/SignInReturn.jsx';
 import Shell from './shell/Shell.jsx';
+import { ToastProvider } from './shell/bits.jsx';
+import { ComposerProvider } from './posting/composer/ComposerContext.jsx';
 import { PreferencesProvider } from './lib/preferences.jsx';
 import { navigate, usePath } from './lib/router.jsx';
 import { useAtprotoSession } from './session/useAtprotoSession.jsx';
@@ -22,7 +26,9 @@ import { OAUTH_CALLBACK_PATH, OAUTH_RETURN_PATH } from './config.js';
 export default function App() {
   return (
     <PreferencesProvider>
-      <AppInner />
+      <ToastProvider>
+        <AppInner />
+      </ToastProvider>
     </PreferencesProvider>
   );
 }
@@ -58,14 +64,14 @@ function AppInner() {
   if (view === 'landing') return <Landing />;
   if (view === 'returned') return <SignInReturn error={error} />;
   return (
-    <>
+    <ComposerProvider>
       <SessionNotices />
       <ArchiveProvider key={did} agent={agent} did={did} profile={profile}>
         <DashboardsProvider key={did} did={did}>
           <Shell profile={profile} did={did} onSignOut={signOut} />
         </DashboardsProvider>
       </ArchiveProvider>
-    </>
+    </ComposerProvider>
   );
 }
 

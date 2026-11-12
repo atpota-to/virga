@@ -1,8 +1,10 @@
 // The signed-in app: sidebar (or, on a phone, an app bar and tabs), the page
 // the address names, and the sync's state wherever there is room for it.
-// Behind it all, only when it has been asked for, the live sky.
+// Behind it all, only when it has been asked for, the live sky. Toasts and
+// the composer are mounted above it in App.jsx, so they outlive a switch of
+// account, which remounts this.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Hillside from '../hillside/Hillside.jsx';
 import Button from '../components/Button.jsx';
 import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
@@ -15,35 +17,24 @@ import ToolPage, { ToolsIndex } from '../tools/ToolPage.jsx';
 import { TOOL_BY_KEY } from '../tools/registry.js';
 import SettingsPage from '../settings/SettingsPage.jsx';
 import { usePreferences } from '../lib/preferences.jsx';
-import { navigate, pathParts, usePath } from '../lib/router.jsx';
+import { navigate, usePath } from '../lib/router.jsx';
+import { useComposer } from '../posting/composer/ComposerContext.jsx';
+import PostingPage from '../posting/PostingPage.jsx';
+import { parseComposeIntent } from '../posting/lib/composeIntent.js';
 import FirstRun from './FirstRun.jsx';
 import Sidebar from './Sidebar.jsx';
 import { AppBar, TabBar } from './MobileNav.jsx';
 import { SyncBanner } from './SyncStatus.jsx';
-import { ToastProvider, useIsNarrow } from './bits.jsx';
+import { useIsNarrow } from './bits.jsx';
+import { needsArchive as routeNeedsArchive, opensBeforeArchive, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
+import { isNewPostShortcut } from './shortcuts.js';
 import './shell.css';
 
-export function parseRoute(path) {
-  const [section, page] = pathParts(path);
-  if (!section) return { section: 'dashboard', dashboard: null };
-  if (section === 'dashboard') return { section, dashboard: page || null };
-  if (section === 'reports' || section === 'tools') return { section, page: page || null };
-  if (section === 'settings') return { section, page: page || null };
-  return { section: 'missing' };
-}
+export { parseRoute };
 
-const SECTION_TITLE = { dashboard: 'Dashboards', reports: 'Reports', tools: 'Tools', settings: 'Settings', missing: 'Not found' };
-
-export default function Shell(props) {
-  return (
-    <ToastProvider>
-      <ShellInner {...props} />
-    </ToastProvider>
-  );
-}
-
-function ShellInner({ profile, did, onSignOut }) {
+export default function Shell({ profile, did, onSignOut }) {
   const archive = useArchive();
+  const composer = useComposer();
   const { dashboards, addDashboard } = useDashboards();
   const prefs = usePreferences();
   const path = usePath();
@@ -61,13 +52,24 @@ function ShellInner({ profile, did, onSignOut }) {
     }
   }, [route.section, dashboard, dashboards, lastDashboard]);
 
+  useNewPostShortcut(composer);
+
   const built = isBuilt(archive);
-  const needsArchive = route.section === 'dashboard' || route.section === 'reports' || (route.section === 'tools' && route.page);
+  const needsArchive = routeNeedsArchive(route);
   const dayFor = { archive: built ? 1 : 0, day: 1, dawn: 0 };
   const skyHere = prefs.sky && (prefs.skyScope === 'everywhere' || route.section === 'dashboard');
 
   let page;
-  if (!archive.loaded) page = <p className="page-loading">Opening your archive…</p>;
+  if (opensBeforeArchive(route)) {
+    page =
+      route.section === 'intent' ? (
+        <OpenComposer key="intent" fromLink />
+      ) : route.page === 'compose' ? (
+        <OpenComposer key="compose" />
+      ) : (
+        <PostingPage pageKey={route.page} id={route.id} did={did} />
+      );
+  } else if (!archive.loaded) page = <p className="page-loading">Opening your archive…</p>;
   else if (needsArchive && !built) page = <FirstRun archive={archive} />;
   else if (route.section === 'dashboard') page = dashboard ? <DashboardPage dashboard={dashboard} /> : null;
   else if (route.section === 'reports') page = route.page ? <ReportPage reportKey={route.page} /> : <ReportsIndex />;
@@ -82,7 +84,9 @@ function ShellInner({ profile, did, onSignOut }) {
         ? REPORT_BY_KEY[route.page]?.label || 'Reports'
         : route.section === 'tools' && route.page
           ? TOOL_BY_KEY[route.page]?.name || 'Tools'
-          : SECTION_TITLE[route.section];
+          : route.section === 'posting'
+            ? postingTitle(route)
+            : SECTION_TITLE[route.section];
 
   useEffect(() => {
     document.title = `${title} · Virga`;
@@ -106,10 +110,20 @@ function ShellInner({ profile, did, onSignOut }) {
           did={did}
           onSignOut={onSignOut}
           onNewDashboard={() => setCreating(true)}
+          onNewPost={() => composer.open({})}
         />
       )}
       <div className="shell-main">
-        {narrow && <AppBar archive={archive} title={SECTION_TITLE[route.section]} profile={profile} did={did} onSignOut={onSignOut} />}
+        {narrow && (
+          <AppBar
+            archive={archive}
+            title={route.section === 'posting' ? postingTitle(route) : SECTION_TITLE[route.section]}
+            profile={profile}
+            did={did}
+            onSignOut={onSignOut}
+            onNewPost={() => composer.open({})}
+          />
+        )}
         {(narrow || prefs.sidebar === 'collapsed') && <SyncBanner archive={archive} />}
         <main id="main" className="shell-content" tabIndex={-1}>
           {page}
@@ -127,6 +141,50 @@ function ShellInner({ profile, did, onSignOut }) {
       />
     </div>
   );
+}
+
+/**
+ * "n" opens the composer, unless focus is in a field or a dialog is open
+ * (the composer is one).
+ */
+function useNewPostShortcut(composer) {
+  const ref = useRef(composer);
+  ref.current = composer;
+  useEffect(() => {
+    const onKey = (event) => {
+      const inDialog = Boolean(document.querySelector('dialog[open]')) || Boolean(event.target?.closest?.('dialog'));
+      if (ref.current.isOpen || !isNewPostShortcut(event, { inDialog })) return;
+      event.preventDefault();
+      ref.current.open({});
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+}
+
+/**
+ * /posting/compose and /intent/compose: open the composer with what the
+ * address carries (text, a link, tags), then move to the posting overview
+ * and drop the query, so the words don't follow the reader around and a
+ * reload doesn't open the composer again.
+ */
+function OpenComposer({ fromLink = false }) {
+  const composer = useComposer();
+  const opened = useRef(false);
+  useEffect(() => {
+    // StrictMode runs this twice on mount; the ref keeps it to one open.
+    if (opened.current) return;
+    opened.current = true;
+    const intent = parseComposeIntent(window.location.search);
+    composer.open(
+      intent.hasIntent
+        ? { text: intent.text, ...(intent.tags.length ? { tags: intent.tags } : null), ...(fromLink ? { fromLink: true, url: intent.url || undefined } : null) }
+        : {},
+    );
+    navigate('/posting', { replace: true, keepQuery: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return <p className="page-loading">Opening the composer…</p>;
 }
 
 /** The dashboard last looked at, so the Dashboard tab goes back to it. */
