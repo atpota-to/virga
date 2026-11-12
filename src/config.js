@@ -26,8 +26,9 @@ const BSKY_APPVIEW_AUD = 'did:web:api.bsky.app%23bsky_appview';
  *                                 follower's follow record (which dates it)
  *   rpc …listNotifications        who liked, reposted, replied to, quoted
  *                                 and mentioned you
- *   repo app.bsky.graph.follow    the People tab's Follow and Following
- *                                 buttons: create and delete follow records
+ *   repo app.bsky.graph.follow    the Follow buttons, Follow cleanup and the
+ *                                 Follow-back queue: create and delete
+ *                                 follow records
  *
  * Everything else the dashboard reads is public and fetched without the
  * session. See https://atproto.com/specs/permission for the syntax.

@@ -55,6 +55,63 @@ const LAST = [
 ];
 const HUES = [212, 28, 146, 268, 338, 48, 188, 12, 96, 300];
 
+/** The lists the account is on, by position: even ones below 8 are moderation lists. */
+const LIST_NAMES = [
+  'Muted for now',
+  'Gardening people',
+  'Too many takes',
+  'Urbanists I read',
+  'Reply guys',
+  'Bookish',
+  'Low-effort replies',
+  'Cycling',
+  'Mutuals',
+];
+
+/**
+ * A few dozen more accounts the account follows, outside the cast: people it
+ * followed once and rarely hears from. Some have gone quiet, a few are gone
+ * altogether, which is what Follow cleanup is for. Built without the RNG, so
+ * the rest of the world draws the same as before they were added.
+ */
+function followedOnlyPeople() {
+  return Array.from({ length: 36 }, (_, i) => {
+    const first = FIRST[(i * 5 + 2) % FIRST.length];
+    const last = LAST[(i * 3 + 1) % LAST.length];
+    return {
+      did: `did:plc:virgaharnessfol${String(i).padStart(4, '0')}`,
+      handle: `${first.toLowerCase()}.${last.toLowerCase().replace(/[^a-z]/g, '')}.example.net`,
+      displayName: i % 7 === 3 ? '' : `${first} ${last}`,
+      avatar: i % 4 === 1 ? '' : avatarFor(first[0], HUES[(i + 3) % HUES.length]),
+    };
+  });
+}
+
+/** A number from a string, for deterministic per-account facts. */
+export function hashOf(text) {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/**
+ * When an account outside the main account was last active, as days ago, or
+ * 'gone' (deleted or deactivated) or 'never' (has never posted). The cast is
+ * mostly active; the follows outside it are mostly quiet.
+ */
+export function activityOf(did) {
+  const h = hashOf(did);
+  if (did.includes('fol')) {
+    if (h % 9 === 0) return 'gone';
+    if (h % 13 === 0) return 'never';
+    return h % 420;
+  }
+  return h % 28;
+}
+
 /** A round avatar with an initial on it, as a data URI. No image host needed. */
 function avatarFor(letter, hue) {
   const svg =
@@ -197,6 +254,7 @@ export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
   }).reverse();
 
   /* ---- who the account follows ---------------------------------- */
+  const followedOnly = followedOnlyPeople();
   const follows = cast
     .filter((_, i) => i % 3 !== 2)
     .map((person, i) => {
@@ -206,6 +264,14 @@ export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
         value: { $type: 'app.bsky.graph.follow', subject: person.did, createdAt: new Date(at).toISOString() },
       };
     });
+  // The ones outside the cast were followed a while ago, without the RNG.
+  followedOnly.forEach((person, i) => {
+    const at = now - (60 + i * 23) * DAY;
+    follows.push({
+      uri: `at://${ME.did}/app.bsky.graph.follow/${tidAt(at, 500 + i)}`,
+      value: { $type: 'app.bsky.graph.follow', subject: person.did, createdAt: new Date(at).toISOString() },
+    });
+  });
 
   /* ---- notifications -------------------------------------------- */
   const REASONS = ['like', 'like', 'like', 'like', 'repost', 'reply', 'reply', 'quote', 'mention', 'follow'];
@@ -251,6 +317,7 @@ export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
     const memberAt = now - (40 + i * 97 + rand() * 30) * DAY;
     const mod = i % 2 === 0 && i < 8;
     return {
+      name: LIST_NAMES[i],
       uri: `at://${owner}/app.bsky.graph.list/${tidAt(memberAt - 30 * DAY, i)}`,
       purpose: mod ? 'app.bsky.graph.defs#modlist' : 'app.bsky.graph.defs#curatelist',
       item: { did: owner, collection: 'app.bsky.graph.listitem', rkey: tidAt(memberAt, i) },
@@ -290,9 +357,10 @@ export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
     followersCount: FOLLOWERS + 263,
     followsCount: follows.length,
     postsCount: posts.length,
+    createdAt: new Date(start).toISOString(),
   };
 
-  return { now, profile, cast, posts, followers, follows, notifications, likes, reposts, blockers, lists, others };
+  return { now, start, profile, cast, followedOnly, posts, followers, follows, notifications, likes, reposts, blockers, lists, others };
 }
 
 /** One post as its repo record, the shape both the feed and the CAR carry. */

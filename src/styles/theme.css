@@ -1,68 +1,106 @@
 /*
-  Virga: sky above, field below, and your numbers on cards in front of it.
+  Virga: a quiet, light workspace for your numbers (the Ledger direction).
 
-  The look comes from two of the Open Social site's landing page directions.
-  From Daylight: the ink and paper, the sky and field colours, one typeface
-  (Mona Sans, whose width axis sets a big title apart from the text under it),
-  white cards with a deep soft shadow, and pill-shaped controls. From Thread:
-  the hillside out of focus behind everything, a translucent bar across the
-  top, and the guide pinned to the bottom of the screen.
+  Plain grounds, one-pixel lines instead of shadows, small radii, and one
+  blue that means "the data, or what is pressed". Coral is the second thing
+  on a chart and the colour of a change downward. The live sky from the first
+  version is still here, behind a switch in Settings › Appearance: when it is
+  on, the page ground goes clear and the cards stay solid in front of it.
 
-  One typeface, in sentence case. Monospace is for code only: NSIDs, DIDs and
-  record names. Numbers are set in the same face as the words, in its ordinary
-  figures: Mona Sans's tabular ones have a slashed zero and a flagged 1, and
-  read as a second, monospace face.
+  One typeface, Mona Sans, in sentence case. Monospace is for code only:
+  NSIDs, DIDs and record names. Numbers are set in the same face as the
+  words, in its ordinary figures (its tabular ones have a slashed zero).
 
-  There is no dark theme. The sky is the theme, and it has a dawn and a day.
+  Two themes, light and dark, chosen in Settings (or following the system).
+  The chart colours are separate steps for each, checked for colour-blind
+  separation and contrast against their own surface, not an inverted copy.
+  `data-theme` on <html> is set before the first paint by the inline script
+  in index.html, and kept in step by src/lib/preferences.jsx.
 */
 
 :root {
   color-scheme: light;
 
-  /* Ink and paper. */
-  --ink: #0b1a33;
-  --ink-soft: #2b3954;
-  --ink-muted: #42506a;
-  --ink-faint: #5a6781;
-  --paper: #f6f9fe;
-  --card: rgb(255 255 255 / 0.94);
-  --card-solid: #ffffff;
-  --line: rgb(11 26 51 / 0.14);
-  --line-soft: rgb(11 26 51 / 0.08);
+  /* Grounds, back to front. */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #fafafb;
+  --surface-3: #f2f4f7;
+  --hover: #eef0f3;
+  --scrim: rgb(16 24 40 / 0.4);
 
-  /* The sky and the field, top to bottom. */
-  --sky-1: #1c54cc;
-  --sky-2: #3a7fe2;
-  --sky-3: #8bbaf0;
-  --sky-4: #d4e7f8;
-  --field-1: #94d43c;
-  --field-2: #4fa624;
-  --field-3: #236617;
-  --sun: #ffd24a;
+  /* Ink. --faint is for marks, never for text. */
+  --ink: #101828;
+  --ink-2: #344054;
+  --muted: #5d6b82;
+  --faint: #98a2b3;
 
-  /* What the charts and the controls are drawn in. Blue is the data and
-     whatever is pressed. Coral is the second thing on a chart: the other
-     series, or the trend under the bars. */
+  /* Lines. */
+  --line: #e4e7ec;
+  --line-2: #d0d5dd;
+  --line-soft: #f2f4f7;
+
+  /* The blue: the data, and whatever is pressed. */
   --accent: #1d5ee0;
-  --accent-strong: #154bb9;
-  --accent-soft: #9cbcf4;
-  --accent-wash: #e3effd;
+  --accent-hover: #1849b5;
+  --accent-ink: #1849b5;
+  --accent-wash: #eef3fd;
+  --accent-line: #c9d8f7;
+  --on-accent: #ffffff;
+
+  /* Coral: the second series, and a change downward. */
   --second: #e8553a;
-  --second-ink: #ad3a1a;
-  /* A change against the window before: which way it went, not whether that
-     is good. More blocks is "up" too. */
-  --up: var(--accent-strong);
+  --second-ink: #b13a1f;
+  --second-wash: #fdeeea;
+
+  /* A change against the window before says which way it went, not
+     whether that is good: more blocks is "up" too. */
+  --up: var(--accent-ink);
+  --up-wash: var(--accent-wash);
   --down: var(--second-ink);
-  --danger: #b3261e;
+  --down-wash: var(--second-wash);
+
+  /* States. Each always ships with a word or an icon beside it. */
+  --ok: #12b76a;
+  --warn: #b54708;
+  --warn-wash: #fdf3e2;
+  --danger: #b42318;
+  --danger-hover: #912018;
+  --danger-wash: #fef3f2;
+
+  /* Charts. Four categorical slots in a fixed order, a sequential ramp for
+     the heatmaps (lightest is "nothing"), and the chrome. */
+  --chart-1: #1d5ee0;
+  --chart-2: #e8553a;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-area: rgb(29 94 224 / 0.08);
+  --chart-grid: #eef0f3;
+  --chart-axis: #d0d5dd;
+  --chart-ghost: #5d6b82;
+  --heat-0: #f2f5fa;
+  --heat-1: #dce8fb;
+  --heat-2: #b7d3f6;
+  --heat-3: #86b6ef;
+  --heat-4: #5598e7;
+  --heat-5: #2a78d6;
+  --heat-6: #1c5cab;
+
+  /* Avatars without a picture. */
+  --avatar-bg: #e4e7ec;
+  --avatar-ink: #344054;
 
   /* Type. */
   --sans: 'Mona Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --text-xs: 0.8125rem;
-  --text-sm: 0.9375rem;
-  --text-base: 1.0625rem;
-  --text-lg: 1.3125rem;
-  --leading-tight: 1.2;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
 
   /* Space. */
   --space-1: 4px;
@@ -73,25 +111,105 @@
   --space-6: 32px;
   --space-7: 48px;
 
+  /* Density: what Compact (Settings › Appearance) tightens. */
+  --card-pad: 16px;
+  --grid-gap: 16px;
+  --page-pad: 28px;
+  --row-pad: 10px;
+  --control-h: 34px;
+
   /* Shape. */
-  --radius: 24px;
-  --radius-sm: 14px;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
   --pill: 999px;
-  --shadow: 0 30px 50px -34px rgb(8 28 60 / 0.6), 0 1px 3px rgb(8 28 60 / 0.07);
-  --shadow-bar: 0 18px 36px -22px rgb(8 28 60 / 0.55), 0 1px 3px rgb(8 28 60 / 0.08);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+  --shadow-lg: 0 20px 40px -12px rgb(16 24 40 / 0.25), 0 0 0 1px rgb(16 24 40 / 0.05);
+  --focus: 0 0 0 3px rgb(29 94 224 / 0.35);
 
   /* Layout. */
-  --wrap: 1120px;
-  --gutter: clamp(16px, 4vw, 40px);
-  --topbar: 64px;
+  --sidebar-w: 248px;
+  --rail-w: 64px;
+  --appbar-h: 56px;
+  --tabbar-h: 64px;
+  --content-max: 1440px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@media (max-width: 700px) {
+:root[data-density='compact'] {
+  --card-pad: 12px;
+  --grid-gap: 10px;
+  --page-pad: 20px;
+  --row-pad: 7px;
+  --control-h: 30px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0c0e12;
+  --surface: #14171d;
+  --surface-2: #101318;
+  --surface-3: #1b1f27;
+  --hover: #1e232c;
+  --scrim: rgb(0 0 0 / 0.6);
+
+  --ink: #e7eaf0;
+  --ink-2: #c3cad6;
+  --muted: #959eae;
+  --faint: #5d6676;
+
+  --line: #252a33;
+  --line-2: #353c48;
+  --line-soft: #1c2028;
+
+  --accent: #2f6fd6;
+  --accent-hover: #3d7ee6;
+  --accent-ink: #7ab0f5;
+  --accent-wash: #16233a;
+  --accent-line: #284068;
+  --on-accent: #ffffff;
+
+  --second: #d95926;
+  --second-ink: #f0906a;
+  --second-wash: #2e1a14;
+
+  --ok: #2fbf71;
+  --warn: #f5b454;
+  --warn-wash: #2c2210;
+  --danger: #f97066;
+  --danger-hover: #fda29b;
+  --danger-wash: #2d1513;
+
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-area: rgb(57 135 229 / 0.14);
+  --chart-grid: #1f242d;
+  --chart-axis: #353c48;
+  --chart-ghost: #959eae;
+  --heat-0: #1a1f28;
+  --heat-1: #18304f;
+  --heat-2: #1c4373;
+  --heat-3: #235a9a;
+  --heat-4: #2d72c2;
+  --heat-5: #3987e5;
+  --heat-6: #7ab0f5;
+
+  --avatar-bg: #252a33;
+  --avatar-ink: #c3cad6;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 6px 16px -4px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --focus: 0 0 0 3px rgb(122 176 245 / 0.4);
+}
+
+@media (max-width: 760px) {
   :root {
-    --text-base: 1rem;
-    --text-lg: 1.1875rem;
-    --radius: 20px;
-    --topbar: 56px;
+    --page-pad: 16px;
+    --text-base: 0.9375rem;
   }
 }

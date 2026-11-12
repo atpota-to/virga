@@ -1,0 +1,174 @@
+/* Reports: filters under the header, the split rows, the index tiles. */
+
+.report-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: var(--content-max);
+  padding: 0 var(--page-pad) 12px;
+}
+
+/* On a phone the kinds of engagement are their glyphs; the names stay in
+   the markup for a screen reader and as each key's tooltip. */
+@media (max-width: 760px) {
+  .kind-filter .segmented-key.has-icon .segmented-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .kind-filter .segmented-key.has-icon {
+    padding: 0 10px;
+  }
+}
+
+.report-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: var(--grid-gap);
+}
+
+.report-split--wide {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+}
+
+@media (max-width: 1000px) {
+  .report-split--wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.report-rows {
+  margin: 0;
+}
+
+.card--flush .card-head {
+  margin-bottom: 4px;
+}
+
+.card .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fig-note {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.fig-unit {
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 0.6em;
+  font-weight: 560;
+}
+
+.how-counted {
+  padding: 14px var(--card-pad);
+}
+
+.how-counted-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 78ch;
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+.day-row {
+  display: grid;
+  grid-template-columns: 64px 56px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding-top: var(--row-pad);
+  padding-bottom: var(--row-pad);
+  border-top: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+}
+
+.day-row-date {
+  color: var(--muted);
+}
+
+.day-row-n {
+  color: var(--accent-ink);
+  font-weight: 640;
+}
+
+.day-row-post {
+  overflow: hidden;
+  color: var(--ink-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- the index --------------------------------------------------------- */
+
+.report-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--grid-gap);
+}
+
+.report-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+  .report-tile:hover {
+    border-color: var(--accent-line);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.report-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 4px;
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+}
+
+.report-tile-name {
+  font-size: var(--text-md);
+  font-weight: 640;
+}
+
+.report-tile-desc {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.report-tile-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+}
+
+.report-tile-figure .num {
+  font-size: var(--text-xl);
+  font-weight: 640;
+  letter-spacing: -0.02em;
+}

@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Virga harness</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <script>
+      // Theme and density before the first paint, from what src/lib/preferences.jsx
+      // stores, so a dark-mode reader never sees a white flash. Kept tiny on purpose.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('virga:preferences') || '{}') || {};
+          var t = p.theme === 'light' || p.theme === 'dark' ? p.theme
+            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = t;
+          document.documentElement.dataset.density = p.density === 'compact' ? 'compact' : 'comfortable';
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

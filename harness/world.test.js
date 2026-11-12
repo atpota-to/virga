@@ -9,6 +9,7 @@ import { createRouter } from './fakeNetwork.js';
 import { ME, PDS, buildWorld, repoRecords, tidAt } from './world.js';
 import { compactPostFromFeedItem, inboundFromNotification, outboundFromRecord } from '../src/lib/analytics.js';
 import { followFromRecord } from '../src/lib/analyticsSync.js';
+import { feedItemTime } from '../src/lib/activity.js';
 import { rkeyFromAtUri, tidToTimestamp } from '../src/lib/atproto.js';
 import { readRepoCar } from '../src/lib/carRepo.js';
 
@@ -90,6 +91,32 @@ describe('the fake network', () => {
     for (const did of [world.cast[0].did, 'did:plc:nobodyatall']) params.append('actors', did);
     const res = await get(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?${params}`);
     expect(res.profiles.map((p) => p.did)).toEqual([world.cast[0].did]);
+  });
+
+  it('answers when other accounts were last active, and says which are gone', async () => {
+    const seen = { active: 0, never: 0, gone: 0 };
+    for (const person of world.followedOnly) {
+      const res = await route(`https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${person.did}&limit=1`);
+      if (res.status === 400) seen.gone += 1;
+      else {
+        const body = await res.json();
+        if (body.feed.length) {
+          expect(feedItemTime(body.feed[0])).toBeTruthy();
+          seen.active += 1;
+        } else seen.never += 1;
+      }
+    }
+    expect(seen.active).toBeGreaterThan(0);
+    expect(seen.gone).toBeGreaterThan(0);
+  });
+
+  it('names its lists, and keeps a history for the account’s DID', async () => {
+    const list = world.lists[0];
+    const [, , repo, collection, rkey] = list.uri.split('/');
+    const res = await get(`https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=${repo}&collection=${collection}&rkey=${rkey}`);
+    expect(res.value.name).toBe(list.name);
+    const log = await get(`https://plc.directory/${ME.did}/log/audit`);
+    expect(log.map((op) => op.operation.alsoKnownAs[0])).toEqual(['at://mira.bsky.social', `at://${ME.handle}`, `at://${ME.handle}`]);
   });
 
   it('leaves every other host alone', async () => {

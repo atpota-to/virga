@@ -1,68 +1,14 @@
-/* The shell: the sky behind everything, the bar across the top, the column
-   the dashboard sits in, the front page, and the guide at the bottom. */
+/* Outside the shell: restoring a session, the front page, and a sign-in that
+   came back without a session. */
 
-.app {
-  position: relative;
-  min-height: 100svh;
-  isolation: isolate;
-}
-
-/* ---- the sky ------------------------------------------------------ */
-
-/* The hillside, fixed behind the page. --crest is where the hill meets the
-   sky, measured in the small viewport so it holds still while a phone's
-   toolbar comes and goes. On the front page the hill stands most of the way
-   up and nearly in focus, as in Daylight's opening; behind the dashboard it
-   drops to a band along the bottom and goes soft, as in Thread, so the cards
-   have the sky to themselves. */
-.sky {
-  --crest: 70svh;
-  --hill-blur: 3px;
-  position: fixed;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100lvh;
-}
-
-.app[data-view='dashboard'] .sky {
-  --crest: calc(100svh - 128px);
-  --hill-blur: 8px;
-}
-
-/* The hill settles into its new place rather than jumping there. */
-.sky .hillside-crest {
-  transition: height 1.4s var(--ease);
-}
-
-@media (max-width: 700px) {
-  .sky {
-    --crest: 74svh;
-  }
-
-  .app[data-view='dashboard'] .sky {
-    --crest: calc(100svh - 96px);
-    --hill-blur: 6px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sky .hillside-crest {
-    transition: none;
-  }
-}
-
-/* ---- restoring a session ------------------------------------------ */
-
-/* Held back a moment, so a restore that takes no time doesn't flash words. */
 .app-status {
   position: fixed;
   top: 40svh;
   left: 0;
   right: 0;
+  color: var(--muted);
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 560;
   text-align: center;
   animation: app-status-in 0.4s ease 0.5s both;
 }
@@ -73,354 +19,386 @@
   }
 }
 
-/* ---- the top bar -------------------------------------------------- */
+/* ---- the front page ------------------------------------------------- */
 
-.topbar {
-  position: fixed;
-  z-index: 20;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--topbar);
-  background: rgb(255 255 255 / 0.78);
-  box-shadow: 0 1px 0 var(--line-soft);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  backdrop-filter: blur(18px) saturate(1.4);
+.landing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--bg);
+  isolation: isolate;
 }
 
-.topbar-in {
+.landing[data-sky] {
+  background: transparent;
+}
+
+.landing-sky {
+  --crest: 78svh;
+  --hill-blur: 3px;
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+}
+
+.landing-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  max-width: calc(var(--wrap) + 2 * var(--gutter));
-  height: 100%;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 18px 28px;
 }
 
-.topbar-name {
-  font-size: 1.5rem;
-  font-weight: 760;
-  font-stretch: 88%;
-  letter-spacing: -0.035em;
-  line-height: 1;
+.landing-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 28px 48px;
 }
 
-.topbar-account {
-  min-width: 0;
-}
-
-.topbar-account .menu-button {
-  gap: 10px;
-  min-width: 0;
-  min-height: 44px;
-  padding: 0 14px 0 6px;
-}
-
-.topbar-avatar {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: var(--accent-wash);
-}
-
-.topbar-who {
+.landing-hero {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 48px;
+  padding: 24px 0 56px;
+}
+
+.landing-copy {
+  display: flex;
+  flex: 1 1 440px;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-  text-align: left;
+  gap: 18px;
+  max-width: 560px;
 }
 
-.topbar-who-name,
-.topbar-who-handle {
-  max-width: 16rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.topbar-who-name {
+.landing-eyebrow {
+  color: var(--accent-ink);
   font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.topbar-who-handle {
-  color: var(--ink-muted);
-  font-size: var(--text-xs);
-  font-weight: 450;
-}
-
-/* On a phone the controls are at the bottom, so the top bar is only a
-   heading: it goes up with the page, and says the name and no more. */
-@media (max-width: 700px) {
-  .topbar {
-    position: absolute;
-  }
-
-  .topbar-who-name {
-    max-width: 11rem;
-  }
-
-  .topbar-who-handle {
-    display: none;
-  }
-}
-
-/* ---- the dashboard's column --------------------------------------- */
-
-/* Room under the last card for the guide (on a phone, the whole dock) and
-   the strip of hill it sits on. */
-.app-main {
-  max-width: calc(var(--wrap) + 2 * var(--gutter));
-  margin: 0 auto;
-  padding: calc(var(--topbar) + var(--space-5)) var(--gutter) 190px;
-}
-
-@media (max-width: 700px) {
-  .app-main {
-    padding-top: calc(var(--topbar) + var(--space-4));
-    padding-bottom: calc(176px + env(safe-area-inset-bottom));
-  }
-}
-
-/* ---- the front page ----------------------------------------------- */
-
-/* The name in the sky, what this is, the field that starts a sign-in, and
-   what signing in allows. The sky is at dawn here, pale and warm toward the
-   horizon, so the words are in ink: white would be lost on it. */
-.landing {
-  min-height: 100svh;
-  padding: clamp(40px, 11svh, 120px) clamp(20px, 6vw, 96px) 64px;
-}
-
-.landing-in {
-  max-width: 1240px;
-  margin: 0 auto;
+  font-weight: 620;
 }
 
 .landing-title {
-  margin-left: -0.04em;
-  /* Room under the line for the g, which hangs well below it at this size. */
-  padding-bottom: 0.14em;
-  font-size: clamp(5.5rem, min(26vw, 34svh), 17rem);
-  font-weight: 780;
-  font-stretch: 86%;
-  letter-spacing: -0.05em;
-  line-height: 0.84;
-}
-
-.landing-heading {
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 760;
-  font-stretch: 90%;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
+  font-size: clamp(2.25rem, 1.4rem + 3vw, 3.5rem);
+  font-weight: 720;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 .landing-lede {
-  max-width: 32em;
-  margin-top: clamp(12px, 2svh, 24px);
-  font-size: clamp(1.125rem, 0.9rem + 0.8vw, 1.5rem);
-  font-weight: 550;
-  line-height: 1.35;
+  color: var(--ink-2);
+  font-size: var(--text-lg);
+  line-height: 1.5;
 }
 
-.landing-lede + p {
-  margin-top: var(--space-5);
+.landing[data-sky] .landing-copy {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
 }
 
-/* The sign-in: one white pill holding the field and its button, as the guide
-   holds its line and its button. */
 .signin {
-  max-width: 34rem;
-  margin-top: clamp(24px, 4svh, 44px);
-}
-
-.signin-label {
-  display: block;
-  margin: 0 0 var(--space-2) var(--space-5);
-  font-size: var(--text-sm);
-  font-weight: 650;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .signin-row {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 6px;
-  border-radius: var(--pill);
-  background: #ffffff;
-  box-shadow: var(--shadow-bar);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.signin-row:focus-within {
-  outline: 3px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.signin-input {
-  flex: 1 1 auto;
+.signin-row .input {
+  flex: 1 1 240px;
   min-width: 0;
-  height: 48px;
-  padding: 0 0 0 18px;
-  border: 0;
-  border-radius: var(--pill);
-  background: transparent;
-  font-size: 1.125rem;
-  font-weight: 500;
 }
 
-.signin-input:focus {
-  outline: none;
-}
-
-.signin-input::placeholder {
-  color: var(--ink-faint);
-  opacity: 1;
-}
-
-.signin-button {
-  flex: none;
-  min-height: 48px;
-}
-
-.signin-error {
-  margin: var(--space-3) 0 0;
-  padding: 12px 18px;
-  border-radius: 18px;
-  background: #ffffff;
-  color: var(--danger);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-/* What signing in allows, and where the data goes: the small print, on a
-   card so it reads against the sky. */
 .landing-note {
-  max-width: 34rem;
-  margin-top: var(--space-4);
-  padding: 16px 22px;
-  border-radius: var(--radius);
-  background: rgb(255 255 255 / 0.88);
-  color: var(--ink-soft);
-  font-size: var(--text-sm);
-  line-height: 1.5;
-}
-
-.landing-details {
-  max-width: 34rem;
-  margin-top: var(--space-5);
-  padding: 14px 22px;
-  border-radius: var(--radius);
-  background: rgb(255 255 255 / 0.88);
+  color: var(--muted);
   font-size: var(--text-sm);
 }
 
-.landing-details summary {
-  width: max-content;
-  font-weight: 600;
-  cursor: pointer;
+.landing-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
 }
 
-.landing-details code {
-  display: block;
-  margin-top: var(--space-2);
-  overflow-wrap: anywhere;
-}
-
-/* ---- the guide ---------------------------------------------------- */
-
-/* On a desk: pinned to the bottom of the screen, on the hill. What the
-   archive holds, and the sync. One white bar, and nothing else down there.
-   On a phone it is part of the dock (dashboard.css), which undoes all of
-   this. */
-.guide {
-  position: fixed;
-  z-index: 20;
-  left: 50%;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  width: min(920px, calc(100% - 2 * var(--gutter)));
-  padding: 8px 8px 8px 24px;
-  border-radius: 31px;
-  background: rgb(255 255 255 / 0.9);
-  box-shadow: var(--shadow-bar);
-  translate: -50% 0;
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
-}
-
-.guide-bar {
+.landing-points > div {
   display: flex;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  min-height: 46px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.guide-status {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-size: var(--text-sm);
-  line-height: 1.3;
+.landing-points svg {
+  color: var(--accent-ink);
 }
 
-.guide-when,
-.an-sync-doing {
+.landing-points h2 {
+  font-size: var(--text-md);
   font-weight: 650;
 }
 
-.guide-counts,
-.an-sync-count,
-.an-sync-detail {
-  color: var(--ink-muted);
+.landing-points p {
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
 
-.guide-actions {
+.landing[data-sky] .landing-points {
+  padding: 24px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+.landing-foot {
   display: flex;
-  flex: none;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 28px 28px;
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+/* An outline of the product, drawn in shapes rather than numbers. */
+.landing-preview {
+  flex: 1 1 420px;
+  max-width: 560px;
+}
+
+.preview-window {
+  display: flex;
+  height: 380px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.preview-side {
+  display: flex;
+  flex: 0 0 70px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 10px;
+  border-right: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.preview-side span {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.preview-side .preview-logo {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 6px;
+  border-radius: 5px;
+  background: var(--accent);
+}
+
+.preview-side .is-on {
+  background: var(--accent-line);
+}
+
+.preview-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.preview-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.preview-tile,
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.preview-tile svg {
+  height: 18px;
+}
+
+.preview-tile path,
+.preview-chart path {
+  fill: none;
+  stroke: var(--chart-1);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.preview-chart {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.preview-chart path.area {
+  fill: var(--chart-area);
+  stroke: none;
+}
+
+.preview-line {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.preview-line.short {
+  width: 45%;
+}
+
+.preview-line.big {
+  width: 60%;
+  height: 12px;
+  background: var(--ink-2);
+  opacity: 0.8;
+}
+
+.preview-row {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 2fr 1fr;
+  gap: 8px;
+  min-height: 0;
+}
+
+.preview-row + .preview-row {
+  grid-template-columns: 1fr 1fr;
+}
+
+.preview-bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+
+.preview-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--chart-1);
+}
+
+.preview-person {
+  display: flex;
   align-items: center;
   gap: 6px;
 }
 
-/* More is three dots in a circle. */
-.guide-more .menu-button {
-  width: 38px;
-  padding: 0;
+.preview-person .preview-line {
+  flex: 1;
 }
 
-/* A sync that failed: a dot on More, where a phone keeps what went wrong. */
-.guide[data-alert] .guide-more .menu-button {
-  position: relative;
-}
-
-.guide[data-alert] .guide-more .menu-button::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--card-solid);
+.preview-dot {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--danger);
+  background: var(--avatar-bg);
 }
 
-.guide-note {
-  padding: 4px 16px 8px 0;
-  color: var(--ink-muted);
+.preview-heat {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.preview-heat span {
+  height: 10px;
+  border-radius: 2px;
+  background: var(--heat-1);
+}
+
+.preview-heat span[data-step='2'] {
+  background: var(--heat-2);
+}
+.preview-heat span[data-step='3'] {
+  background: var(--heat-3);
+}
+.preview-heat span[data-step='4'] {
+  background: var(--heat-4);
+}
+.preview-heat span[data-step='5'] {
+  background: var(--heat-5);
+}
+.preview-heat span[data-step='6'] {
+  background: var(--heat-6);
+}
+
+@media (max-width: 760px) {
+  .landing-bar,
+  .landing-main,
+  .landing-foot {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .landing-hero {
+    gap: 32px;
+    padding-bottom: 32px;
+  }
+
+  .preview-window {
+    height: 300px;
+  }
+}
+
+/* ---- a sign-in that came back --------------------------------------- */
+
+.landing--center {
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.return-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 560px;
+  padding: 28px;
+}
+
+.return-title {
+  font-size: var(--text-2xl);
+  font-weight: 680;
+}
+
+.return-code {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
   font-size: var(--text-xs);
-  line-height: 1.4;
-}
-
-.guide-note--error {
-  color: var(--danger);
-}
-
-/* The share of the step under way: said in the line on a phone, and on the
-   step's own segment on a desk. */
-.an-sync-pct {
-  display: none;
+  overflow-wrap: anywhere;
 }

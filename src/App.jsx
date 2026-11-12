@@ -1,22 +1,30 @@
-// The whole app is one screen with four states: restoring a session, signed
-// out (the front page), coming back from a sign-in, and signed in (the
-// dashboard). Behind all of them is the same hillside. It sits at dawn until
-// there is an archive to chart, and the sun comes up when there is.
+// Four states: restoring a session, signed out (the front page), coming back
+// from a sign-in that failed, and signed in (the shell around the archive).
+// Nothing moves behind any of it unless the live sky has been asked for.
 
-import { useCallback, useEffect, useState } from 'react';
-import Hillside from './hillside/Hillside.jsx';
-import Dashboard from './dashboard/Dashboard.jsx';
+import { useEffect, useState } from 'react';
+import { ArchiveProvider } from './archive/ArchiveContext.jsx';
+import { DashboardsProvider } from './dashboards/DashboardsContext.jsx';
 import Landing from './pages/Landing.jsx';
 import SignInReturn from './pages/SignInReturn.jsx';
-import TopBar from './components/TopBar.jsx';
+import Shell from './shell/Shell.jsx';
+import { PreferencesProvider } from './lib/preferences.jsx';
+import { navigate, usePath } from './lib/router.jsx';
 import { useAtprotoSession } from './session/useAtprotoSession.jsx';
 import { getProfile } from './lib/atproto.js';
 import { OAUTH_CALLBACK_PATH } from './config.js';
 
 export default function App() {
+  return (
+    <PreferencesProvider>
+      <AppInner />
+    </PreferencesProvider>
+  );
+}
+
+function AppInner() {
   const { session, agent, did, loading, error, signOut } = useAtprotoSession();
-  const [path, setPath] = useState(() => window.location.pathname);
-  const [built, setBuilt] = useState(false);
+  const path = usePath();
   const profile = useProfile(did);
 
   const returning = path.startsWith(OAUTH_CALLBACK_PATH);
@@ -27,48 +35,26 @@ export default function App() {
   // reload, the address typed in) is simply sent on.
   useEffect(() => {
     if (!returning || loading) return;
-    if (session || !error) {
-      window.history.replaceState(null, '', '/');
-      setPath('/');
-    }
+    if (session || !error) navigate('/', { replace: true });
   }, [returning, loading, session, error]);
 
-  const onBuilt = useCallback((value) => setBuilt(Boolean(value)), []);
+  const view = loading ? 'loading' : session && agent ? 'app' : returning && error ? 'returned' : 'landing';
 
-  const view = loading
-    ? 'loading'
-    : session && agent
-      ? 'dashboard'
-      : returning && error
-        ? 'returned'
-        : 'landing';
-  const day = view === 'dashboard' && built ? 1 : 0;
-
+  if (view === 'loading') {
+    return (
+      <p className="app-status" role="status">
+        {returning ? 'Signing you in…' : 'Opening Virga…'}
+      </p>
+    );
+  }
+  if (view === 'landing') return <Landing />;
+  if (view === 'returned') return <SignInReturn error={error} />;
   return (
-    <div className="app" data-view={view}>
-      <div className="sky">
-        <Hillside day={day} depth={0.8} />
-      </div>
-
-      {view === 'loading' && (
-        <p className="app-status" role="status">
-          {returning ? 'Signing you in…' : 'Opening Virga…'}
-        </p>
-      )}
-
-      {view === 'landing' && <Landing />}
-
-      {view === 'returned' && <SignInReturn error={error} />}
-
-      {view === 'dashboard' && (
-        <>
-          <TopBar did={did} profile={profile} onSignOut={signOut} />
-          <main className="app-main">
-            <Dashboard key={did} agent={agent} did={did} handle={profile?.handle || null} onBuilt={onBuilt} />
-          </main>
-        </>
-      )}
-    </div>
+    <ArchiveProvider key={did} agent={agent} did={did} profile={profile}>
+      <DashboardsProvider key={did} did={did}>
+        <Shell profile={profile} did={did} onSignOut={signOut} />
+      </DashboardsProvider>
+    </ArchiveProvider>
   );
 }
 
@@ -88,6 +74,10 @@ function useProfile(did) {
           handle: p.handle && p.handle !== 'handle.invalid' ? p.handle : null,
           displayName: p.displayName?.trim() || null,
           avatar: p.avatar || null,
+          followersCount: p.followersCount ?? null,
+          followsCount: p.followsCount ?? null,
+          postsCount: p.postsCount ?? null,
+          createdAt: p.createdAt || null,
         });
       })
       .catch(() => {});

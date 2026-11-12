@@ -7,20 +7,20 @@ import { callbackErrorMessage } from '../lib/oauthClient.js';
  */
 export default function SignInReturn({ error }) {
   return (
-    <main className="landing">
-      <div className="landing-in">
-        <h1 className="landing-heading">Sign-in didn’t complete</h1>
+    <div className="landing landing--center">
+      <main className="card return-card">
+        <h1 className="return-title">Sign-in didn’t complete</h1>
         <p className="landing-lede">{callbackErrorMessage(error)}</p>
         <p>
-          <a className="btn btn--primary" href="/">
+          <a className="btn btn--primary btn--lg" href="/">
             Back to the start
           </a>
         </p>
-        <details className="landing-details">
+        <details className="disclosure">
           <summary>Details</summary>
-          <code>{String(error?.message || error)}</code>
+          <code className="return-code">{String(error?.message || error)}</code>
         </details>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

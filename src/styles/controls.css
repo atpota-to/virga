@@ -1,5 +1,7 @@
-/* The kit: the button, the segmented control, the section head, the figures
-   row and the menu. Everything pressable is a pill. */
+/* The kit: buttons, segmented controls, menus, fields, switches, cards,
+   section heads, figures, tables and the small marks (badges, avatars).
+   Everything here is drawn from the tokens in theme.css, so it follows the
+   theme and the density without a second rule. */
 
 /* ---- button ------------------------------------------------------- */
 
@@ -7,138 +9,219 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45em;
-  min-height: 46px;
-  padding: 0 22px;
-  border: 1px solid var(--line);
-  border-radius: var(--pill);
-  background: var(--card-solid);
-  color: var(--ink);
-  font-weight: 600;
+  gap: 6px;
+  min-height: var(--control-h);
+  padding: 0 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 580;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.btn svg {
+  flex: none;
 }
 
 @media (hover: hover) {
   .btn:hover:not(:disabled) {
-    border-color: var(--ink-faint);
+    background: var(--surface-3);
+    color: var(--ink);
   }
 }
 
-/* The one that matters most on a view: ink, as the two pills at the foot of
-   Daylight are. */
 .btn--primary {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 @media (hover: hover) {
   .btn--primary:hover:not(:disabled) {
-    border-color: #17305c;
-    background: #17305c;
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+    color: var(--on-accent);
   }
 }
 
-/* An action that doesn't need a box: words, underlined when pointed at. */
-.btn--text {
-  border-color: transparent;
-  background: transparent;
-  color: var(--ink-soft);
+.btn--danger {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+}
+
+:root[data-theme='dark'] .btn--danger {
+  border-color: #b42318;
+  background: #b42318;
 }
 
 @media (hover: hover) {
+  .btn--danger:hover:not(:disabled) {
+    border-color: var(--danger-hover);
+    background: var(--danger-hover);
+    color: #ffffff;
+  }
+
+  :root[data-theme='dark'] .btn--danger:hover:not(:disabled) {
+    border-color: #912018;
+    background: #912018;
+  }
+}
+
+/* No box until it is pointed at: toolbars, card corners. */
+.btn--ghost,
+.btn--text {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+@media (hover: hover) {
+  .btn--ghost:hover:not(:disabled),
   .btn--text:hover:not(:disabled) {
     border-color: transparent;
-    background: rgb(11 26 51 / 0.07);
+    background: var(--hover);
+    color: var(--ink);
   }
 }
 
 .btn--sm {
-  min-height: 38px;
-  padding: 0 16px;
-  font-size: var(--text-sm);
+  min-height: 28px;
+  padding: 0 9px;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-sm);
 }
 
-/* A button that is a state (Following): pressed, in the blue. */
+.btn--lg {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: var(--text-md);
+}
+
+/* A square button holding an icon alone. */
+.btn--icon {
+  width: var(--control-h);
+  padding: 0;
+}
+
+.btn--icon.btn--sm {
+  width: 28px;
+}
+
+/* A button that is a state (Following): pressed, in the blue wash. */
 .btn.is-on {
-  border-color: var(--accent);
+  border-color: var(--line-2);
+  background: var(--surface);
+  color: var(--ink-2);
+}
+
+.btn--primary.is-on {
+  border-color: var(--accent-line);
   background: var(--accent-wash);
-  color: var(--accent-strong);
+  color: var(--accent-ink);
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: default;
+}
+
+.btn[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* Fingers get the full 44px whatever the size says. */
+@media (pointer: coarse) {
+  .btn,
+  .btn--sm {
+    min-height: 40px;
+  }
+
+  .btn--icon,
+  .btn--icon.btn--sm {
+    width: 40px;
+  }
 }
 
 /* ---- segmented ---------------------------------------------------- */
 
-/* A track with its keys in it; the pressed key is the blue pill. Out on the
-   sky the track is white; on a card it takes the pale sky tone (.an-card
-   below sets it). */
+/* A track with its keys in it; the pressed key is lifted onto a white chip. */
 .segmented {
-  --track: rgb(255 255 255 / 0.86);
   display: inline-flex;
   max-width: 100%;
-  padding: 4px;
-  border-radius: var(--pill);
-  background: var(--track);
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.segmented::-webkit-scrollbar {
+  display: none;
 }
 
 .segmented-key {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4em;
-  min-height: 38px;
-  padding: 0 16px;
+  gap: 6px;
+  min-height: calc(var(--control-h) - 6px);
+  padding: 0 10px;
   border: 0;
-  border-radius: var(--pill);
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--muted);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 560;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color 0.12s ease,
+    color 0.12s ease;
 }
 
 @media (hover: hover) {
   .segmented-key:hover:not(.is-on) {
-    background: rgb(11 26 51 / 0.07);
     color: var(--ink);
   }
 }
 
 .segmented-key.is-on {
-  background: var(--accent);
-  color: #ffffff;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme='dark'] .segmented-key.is-on {
+  background: var(--line-2);
 }
 
 .segmented-icon {
   flex: none;
+  width: 15px;
+  height: 15px;
 }
 
-/* A key with a glyph sits a little closer to its edge on the glyph's side. */
-.segmented-key.has-icon {
-  padding-left: 13px;
+.segmented--sm .segmented-key {
+  min-height: 24px;
+  padding: 0 8px;
+  font-size: var(--text-xs);
 }
 
-/* Fingers get the full 44px whatever the size says. */
 @media (pointer: coarse) {
-  .btn--sm,
   .segmented-key {
-    min-height: 44px;
+    min-height: 36px;
   }
 }
 
@@ -149,93 +232,173 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .section-head-title {
-  font-size: var(--text-lg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-md);
+  font-weight: 620;
 }
 
 .section-head-meta {
   margin-left: auto;
   min-width: 0;
-  color: var(--ink-muted);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* ---- card --------------------------------------------------------- */
+
+.card {
+  min-width: 0;
+  padding: var(--card-pad);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.card-title {
+  font-size: var(--text-md);
+  font-weight: 620;
+}
+
+.card-sub {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.card-caption {
+  margin-top: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  max-width: 78ch;
+}
+
+/* A card whose rows run edge to edge. */
+.card--flush {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.card--flush > .card-head,
+.card--flush > .card-caption,
+.card--flush > .card-foot {
+  padding: 0 var(--card-pad);
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  color: var(--muted);
   font-size: var(--text-sm);
 }
 
 /* ---- figures ------------------------------------------------------ */
 
-/* A row of big numerals, each with its label under it. One card, the cells
-   set apart by a hairline. Two to a row on a phone. */
+/* A strip of figures: label, number, note. One card, the cells set apart by
+   a hairline; they wrap two to a row on a phone. */
 .figures {
   display: grid;
-  grid-template-columns: repeat(var(--figures-count, 4), minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   margin: 0;
-  padding: var(--space-5) 0;
-  border-radius: var(--radius);
-  background: var(--card);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
 }
 
 .figures-cell {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   min-width: 0;
-  padding: 0 var(--space-5);
-}
-
-.figures-cell + .figures-cell {
+  margin: 0 0 0 -1px;
+  padding: var(--card-pad) calc(var(--card-pad) + 2px);
   border-left: 1px solid var(--line-soft);
 }
 
-.figures-value {
-  order: 1;
-  margin: 0;
-  font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
-  font-weight: 720;
-  font-stretch: 88%;
-  letter-spacing: -0.035em;
-  line-height: 1;
-}
-
 .figures-label {
-  order: 2;
-  margin-top: var(--space-2);
-  color: var(--ink-muted);
+  order: 1;
+  color: var(--muted);
   font-size: var(--text-sm);
   font-weight: 500;
-  line-height: 1.3;
+}
+
+.figures-value {
+  order: 2;
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 620;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .figures-note {
   order: 3;
-  margin: 2px 0 0;
-  color: var(--ink-faint);
-  font-size: var(--text-xs);
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 560px) {
   .figures {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--space-5);
-    padding: var(--space-4) 0;
   }
 
   .figures-cell {
-    padding: 0 var(--space-4);
+    border-top: 1px solid var(--line-soft);
   }
 
-  /* Two to a row: the hairline only between the pair, and an odd one out
-     takes the row. */
-  .figures-cell:nth-child(odd) {
-    border-left: 0;
+  .figures-value {
+    font-size: var(--text-xl);
   }
+}
 
-  .figures-cell:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
+/* A change against the window before. */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 7px;
+  border-radius: var(--pill);
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.delta.is-up {
+  background: var(--up-wash);
+  color: var(--up);
+}
+
+.delta.is-down {
+  background: var(--down-wash);
+  color: var(--down);
+}
+
+.delta--plain {
+  padding: 0;
+  background: none !important;
 }
 
 /* ---- menu --------------------------------------------------------- */
@@ -247,25 +410,29 @@
 
 .menu-list {
   position: absolute;
-  z-index: 30;
-  top: calc(100% + 8px);
+  z-index: 40;
+  top: calc(100% + 6px);
   right: 0;
   width: max-content;
   min-width: 13rem;
-  max-width: min(22rem, calc(100vw - 2 * var(--gutter)));
+  max-width: min(22rem, calc(100vw - 32px));
   margin: 0;
-  padding: 6px;
+  padding: 4px;
   list-style: none;
-  border-radius: 20px;
-  background: var(--card-solid);
-  box-shadow:
-    0 24px 48px -20px rgb(8 28 60 / 0.5),
-    0 0 0 1px var(--line-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
 }
 
 .menu[data-placement='up'] .menu-list {
   top: auto;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 6px);
+}
+
+.menu[data-align='start'] .menu-list {
+  right: auto;
+  left: 0;
 }
 
 .menu-item {
@@ -273,9 +440,9 @@
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 10px;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: transparent;
   text-align: left;
   cursor: pointer;
@@ -283,14 +450,24 @@
 
 @media (hover: hover) {
   .menu-item:hover {
-    background: var(--accent-wash);
+    background: var(--hover);
   }
+}
+
+.menu-item[data-tone='danger'] {
+  color: var(--danger);
 }
 
 .menu-item-icon {
   flex: none;
+  width: 16px;
+  height: 16px;
   margin-top: 1px;
-  color: var(--ink-muted);
+  color: var(--muted);
+}
+
+.menu-item[data-tone='danger'] .menu-item-icon {
+  color: inherit;
 }
 
 .menu-item-text {
@@ -302,22 +479,411 @@
 
 .menu-item-label {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 560;
 }
 
 .menu-item-hint {
-  color: var(--ink-muted);
+  color: var(--muted);
   font-size: var(--text-xs);
   line-height: 1.35;
 }
 
-/* An item a phone needs in the list because it has no room for it outside. */
-.menu-item--phone {
+.menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--line);
+}
+
+/* ---- fields ------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--control-h);
+  padding: 0 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--text-base);
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus);
+}
+
+.input--lg {
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: var(--text-md);
+}
+
+/* A search field: the glass sits inside the left edge. */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search > svg {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search > .input {
+  padding-left: 32px;
+}
+
+select.input {
+  padding-right: 28px;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 50%,
+    calc(100% - 10px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ---- switch ------------------------------------------------------- */
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: 40px;
+  height: 24px;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--pill);
+  background: var(--line-2);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.switch::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 0.25);
+  transition: transform 0.15s var(--ease);
+}
+
+.switch[aria-checked='true'] {
+  background: var(--accent);
+}
+
+.switch[aria-checked='true']::after {
+  transform: translateX(16px);
+}
+
+.switch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---- badges, chips, avatars --------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--pill);
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+  font-weight: 580;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.badge--accent {
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+}
+
+.badge--warn {
+  background: var(--warn-wash);
+  color: var(--warn);
+}
+
+.badge--danger {
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+
+.badge--outline {
+  border: 1px solid var(--line-2);
+  background: transparent;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--pill);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 560;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+@media (pointer: coarse) {
+  .chip {
+    min-height: 36px;
+  }
+}
+
+.avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--avatar-bg);
+  color: var(--avatar-ink);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.avatar--sm {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+
+.avatar--lg {
+  width: 44px;
+  height: 44px;
+  font-size: var(--text-md);
+}
+
+/* A dot that says a state, always beside its word. */
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.dot--warn {
+  background: var(--warn);
+}
+
+.dot--danger {
+  background: var(--danger);
+}
+
+.dot--idle {
+  background: var(--faint);
+}
+
+/* ---- tables ------------------------------------------------------- */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--row-pad) 12px;
+  border-top: 1px solid var(--line-soft);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table thead th {
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.table .is-num {
+  text-align: right;
+}
+
+.table tr.is-selected {
+  background: var(--accent-wash);
+}
+
+/* ---- empty states and notes --------------------------------------- */
+
+.empty {
+  padding: var(--space-5) var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.note {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  max-width: 80ch;
+}
+
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+  font-size: var(--text-sm);
+}
+
+.callout svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+}
+
+.callout--warn {
+  border-color: transparent;
+  background: var(--warn-wash);
+  color: var(--warn);
+}
+
+.callout--danger {
+  border-color: transparent;
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+
+/* A plain details/summary disclosure. */
+.disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.disclosure > summary::-webkit-details-marker {
   display: none;
 }
 
-@media (max-width: 700px) {
-  .menu-item--phone {
-    display: block;
+.disclosure > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.disclosure[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+/* A progress bar, determinate or moving. */
+.progress {
+  position: relative;
+  height: 4px;
+  border-radius: var(--pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.progress-fill[data-indeterminate] {
+  width: 35%;
+  animation: progress-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
   }
 }
