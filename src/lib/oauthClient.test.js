@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import handler from '../../api/client-metadata.js';
-import { OAUTH_SCOPE } from '../config.js';
+import { AUTH_MODE, COCOON_URL, OAUTH_SCOPE, PERMISSION_GROUPS } from '../config.js';
+import { isValidScopeToken } from '../session/scopes.js';
 import {
   buildClientMetadata,
   buildLoopbackClientId,
@@ -37,18 +39,62 @@ function serve(host) {
 describe('the scope a sign-in asks for', () => {
   const tokens = OAUTH_SCOPE.split(' ');
 
-  it('is the two signed-in reads and the follow record, and nothing broader', () => {
+  it('is the signed-in reads, follows, posting and its media, drafts and templates, and nothing broader', () => {
+    const appview = 'did:web:api.bsky.app%23bsky_appview';
     expect(tokens).toEqual([
       'atproto',
-      'rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview',
-      'rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview',
+      `rpc:app.bsky.graph.getFollowers?aud=${appview}`,
+      `rpc:app.bsky.notification.listNotifications?aud=${appview}`,
       'repo:app.bsky.graph.follow?action=create&action=delete',
+      'repo:app.bsky.feed.post',
+      'repo:app.bsky.feed.threadgate',
+      'repo:app.bsky.feed.postgate',
+      'repo:net.anisota.feed.template',
+      'blob:image/*',
+      'blob:video/*',
+      `rpc:app.bsky.draft.getDrafts?aud=${appview}`,
+      `rpc:app.bsky.draft.createDraft?aud=${appview}`,
+      `rpc:app.bsky.draft.updateDraft?aud=${appview}`,
+      `rpc:app.bsky.draft.deleteDraft?aud=${appview}`,
+      `rpc:app.bsky.actor.getPreferences?aud=${appview}`,
+      `rpc:app.bsky.bookmark.getBookmarks?aud=${appview}`,
+      `rpc:app.bsky.feed.searchPosts?aud=${appview}`,
+      'rpc:com.atproto.repo.uploadBlob?aud=*',
+      'rpc:app.bsky.video.getUploadLimits?aud=*',
+      'rpc:app.bsky.video.getJobStatus?aud=*',
     ]);
   });
 
   it('never asks for the transitional scopes that reach the whole account', () => {
     for (const token of tokens) expect(token).not.toMatch(/^transition:/);
     expect(tokens).not.toContain('repo:*');
+    for (const token of tokens) expect(token).not.toMatch(/^(repo|rpc|blob):\*/);
+  });
+
+  it('writes every token in the permission grammar', () => {
+    // Read 2026-11-12 from https://atproto.com/specs/permission.
+    for (const token of tokens) expect(isValidScopeToken(token), token).toBe(true);
+  });
+
+  it('asks once for each token', () => {
+    expect(new Set(tokens).size).toBe(tokens.length);
+  });
+
+  it('explains every token it asks for, once', () => {
+    // Settings › Permissions is written from PERMISSION_GROUPS.
+    const explained = PERMISSION_GROUPS.flatMap((g) => g.tokens);
+    expect([...explained].sort()).toEqual([...tokens].sort());
+    for (const group of PERMISSION_GROUPS) {
+      expect(group.title).toMatch(/\S/);
+      expect(group.text).toMatch(/\S/);
+    }
+  });
+});
+
+describe('the build flags', () => {
+  it('sign new accounts in through the browser unless told otherwise', () => {
+    expect(['browser', 'backend']).toContain(AUTH_MODE);
+    expect(COCOON_URL).toMatch(/^https?:\/\/[^/]+$/);
   });
 });
 
@@ -122,6 +168,15 @@ describe('signInErrorMessage', () => {
     );
   });
 
+  it('words the errors Virga’s server answers a sign-in with', () => {
+    const coded = (code, status = 400) => Object.assign(new Error('x'), { code, status });
+    expect(signInErrorMessage(coded('HANDLE_NOT_FOUND'))).toMatch(/Couldn’t find that account/);
+    expect(signInErrorMessage(coded('AUTHORIZE_FAILED', 502))).toMatch(/isn’t accepting sign-ins/);
+    expect(signInErrorMessage(coded('VIRGA_CLIENT_UNAVAILABLE', 503))).toMatch(/Virga’s server isn’t taking sign-ins/);
+    expect(signInErrorMessage(Object.assign(new TypeError('Failed to fetch'), { code: 'NETWORK_ERROR' }))).toMatch(/Couldn’t reach Virga’s server/);
+    expect(signInErrorMessage(new Error('Invalid redirect_uri. Must be an allowed frontend URL.'))).toMatch(/doesn’t take sign-ins from this address/);
+  });
+
   it('never shows the library’s own text for anything else', () => {
     const zod = new Error(
       '[{"code":"invalid_type","expected":"object","received":"string"}]',
@@ -143,10 +198,34 @@ describe('callbackErrorMessage', () => {
     expect(callbackErrorMessage(err)).toMatch(/Access wasn’t granted/);
   });
 
+  it('words the returns from Virga’s server', () => {
+    const back = (error) => Object.assign(new Error(error), { params: new URLSearchParams({ error }) });
+    expect(callbackErrorMessage(back('unexpected_return'))).toMatch(/wasn’t started from this tab/);
+    expect(callbackErrorMessage(back('invalid_scope'))).toMatch(/didn’t accept the permissions/);
+    expect(callbackErrorMessage(back('VIRGA_CLIENT_UNAVAILABLE'))).toMatch(/isn’t taking sign-ins/);
+    expect(callbackErrorMessage(back('callback_failed'))).toMatch(/didn’t finish/);
+  });
+
   it('falls back to a general sentence', () => {
     expect(
       callbackErrorMessage(new Error('Unknown authorization session "x"')),
     ).toMatch(/didn’t finish/);
     expect(callbackErrorMessage(null)).toMatch(/didn’t finish/);
+  });
+});
+
+describe('the deployment’s rewrites', () => {
+  const { rewrites } = JSON.parse(readFileSync(new URL('../../vercel.json', import.meta.url), 'utf8'));
+
+  it('passes /backend to Virga’s server, ahead of the app’s catch-all', () => {
+    const backend = rewrites.findIndex((r) => r.source === '/backend/:path*');
+    const catchAll = rewrites.findIndex((r) => r.destination === '/index.html');
+    expect(backend).toBeGreaterThanOrEqual(0);
+    expect(rewrites[backend].destination).toBe('https://cocoon.anisota.net/virga/:path*');
+    expect(backend).toBeLessThan(catchAll);
+    // The authorization server reads the long-session client's metadata and
+    // keys from /backend for as long as any session lasts.
+    expect(new RegExp(`^${rewrites[catchAll].source}$`).test('/backend/jwks.json')).toBe(false);
+    expect(new RegExp(`^${rewrites[catchAll].source}$`).test('/settings/account')).toBe(true);
   });
 });

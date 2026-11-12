@@ -16,6 +16,17 @@ export const ME = {
   displayName: 'Mira Okafor',
 };
 
+/**
+ * A second account on the same browser, for switching and posting as
+ * someone else: a small, quiet one with a few followers and nothing posted.
+ */
+export const LAB = {
+  did: 'did:plc:virgaharnesslab7k2pq',
+  handle: 'lab.example.org',
+  displayName: 'Field Lab',
+  avatar: avatarFor('F', 146),
+};
+
 export const PDS = 'https://pds.harness.example';
 
 /** Tiny deterministic RNG, so two runs draw the same account. */

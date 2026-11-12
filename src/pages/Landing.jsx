@@ -1,17 +1,93 @@
 import { useRef, useState } from 'react';
-import { LayoutDashboard, Lock, Wrench } from 'lucide-react';
+import { ChevronRight, LayoutDashboard, Lock, Wrench, X } from 'lucide-react';
+import { reauthModeFor } from '../accounts/accountCopy.js';
+import Avatar from '../components/Avatar.jsx';
+import Button from '../components/Button.jsx';
 import Hillside from '../hillside/Hillside.jsx';
 import { APP_NAME } from '../config.js';
 import { signInErrorMessage } from '../lib/oauthClient.js';
 import { usePreferences } from '../lib/preferences.jsx';
+import { accountHandle, accountName, accountSignInId, lastOpenedLabel } from '../session/accounts.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
+import '../accounts/accounts.css';
 
 /**
- * The front page, for someone who isn't signed in: what this is, and the one
- * field that starts a sign-in. All the copy here is a draft.
+ * The accounts this browser remembers, to come back to without typing a
+ * handle. One whose sign-in still holds opens at once; the rest sign in again.
+ */
+function RememberedAccounts({ busy, setBusy, setError }) {
+  const { accounts, signIn, switchAccount, removeAccount, authMode } = useAtprotoSession();
+  if (!accounts.length) return null;
+
+  const signInAgain = (account) => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth' });
+
+  async function open(account) {
+    setBusy(account.did);
+    setError(null);
+    try {
+      if (account.status === 'needsSignIn') {
+        await signInAgain(account);
+        return; // Redirected away.
+      }
+      // An account whose session holds opens in place; one that turns out
+      // to have ended signs in again.
+      await switchAccount(account.did).catch((err) => {
+        if (err?.code === 'REAUTH_REQUIRED') return signInAgain(account);
+        throw err;
+      });
+    } catch (err) {
+      console.warn('[sign-in] failed to start:', err);
+      setBusy(null);
+      setError(signInErrorMessage(err));
+    }
+  }
+
+  return (
+    <div className="remembered">
+      <h2 className="field-label" id="remembered-title">
+        Continue as
+      </h2>
+      <ul className="remembered-list" aria-labelledby="remembered-title">
+        {accounts.map((a) => {
+          const name = accountName(a);
+          const meta = [accountHandle(a), lastOpenedLabel(a.lastUsed)].filter(Boolean).join(' · ');
+          return (
+            <li key={a.did} className="remembered-row">
+              <button type="button" className="remembered-open" disabled={Boolean(busy)} onClick={() => open(a)} aria-label={`Continue as ${name}`}>
+                <Avatar src={a.avatar} name={name} size="lg" />
+                <span className="remembered-text">
+                  <span className="remembered-name">{busy === a.did ? 'Opening…' : name}</span>
+                  {meta && <span className="remembered-meta">{meta}</span>}
+                </span>
+                <ChevronRight className="remembered-chevron" size={16} aria-hidden="true" />
+              </button>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon
+                aria-label={`Forget ${name} on this browser`}
+                title="Forget on this browser (its archive stays)"
+                disabled={Boolean(busy)}
+                onClick={() => removeAccount(a.did, { deleteData: false })}
+              >
+                <X size={15} aria-hidden="true" />
+              </Button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * The front page, for someone who isn't signed in: what this is, the
+ * accounts this browser remembers, and the one field that starts a sign-in.
+ * All the copy here is a draft.
  */
 export default function Landing() {
-  const { signIn } = useAtprotoSession();
+  const { signIn, accounts, authMode } = useAtprotoSession();
+  const [opening, setOpening] = useState(null);
   const { sky, setPref } = usePreferences();
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -43,7 +119,7 @@ export default function Landing() {
     setBusy(true);
     setError(null);
     try {
-      await signIn(value);
+      await signIn(value, { mode: authMode, intent: 'add' });
       // Redirected away. Nothing below runs unless the redirect didn't happen.
     } catch (err) {
       console.warn('[sign-in] failed to start:', err);
@@ -82,8 +158,9 @@ export default function Landing() {
             </p>
 
             <form className="signin" onSubmit={handleSubmit}>
+              <RememberedAccounts busy={opening} setBusy={setOpening} setError={setError} />
               <label className="field-label" htmlFor="signin-input">
-                Your handle
+                {accounts.length ? 'Or sign in with another handle' : 'Your handle'}
               </label>
               <div className="signin-row">
                 {/* A handle is not prose: iOS otherwise capitalizes the first
@@ -119,8 +196,9 @@ export default function Landing() {
                 </p>
               )}
               <p id="signin-note" className="landing-note">
-                You sign in on your own account’s server, not here. Virga can then read your follower list and your notifications, and
-                follow or unfollow someone when you press Follow. It can’t post, like or read your messages.
+                You sign in on your own account’s server, not here. Virga can then read your follower list and your notifications, follow or
+                unfollow someone when you press Follow, and post, reply or delete a post when you ask it to. It can’t like, repost or read your
+                messages.
               </p>
             </form>
           </div>
@@ -201,14 +279,15 @@ export default function Landing() {
           <div>
             <Lock size={18} aria-hidden="true" />
             <h2>Kept in your browser</h2>
-            <p>Your archive lives in this browser, and you can export it whenever you like. Virga has no server to send it to.</p>
+            <p>Your archive lives in this browser, and you can export it whenever you like. It’s never sent anywhere, not even to Virga’s server.</p>
           </div>
         </section>
       </main>
 
       <footer className="landing-foot">
         <span>
-          No Virga server, no database. Requests go to your PDS, Bluesky’s public API, plc.directory and Constellation.
+          No database. Requests go to your PDS, Bluesky’s public API, plc.directory and Constellation, and, for long sessions and
+          scheduled posts, to Virga’s server.
         </span>
         <span>Draft copy</span>
       </footer>

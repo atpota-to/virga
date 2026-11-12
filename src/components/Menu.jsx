@@ -7,11 +7,13 @@ import { buttonClass } from './Button.jsx';
  * teach the arrow keys. Escape and a press anywhere else close it, and
  * Escape puts focus back on the button.
  *
- * `items` are `{ label, hint?, icon?, tone?, className?, onSelect }`, where
+ * `items` are `{ key?, label, hint?, icon?, tone?, className?, onSelect }`, where
  * `icon` is a component drawn before the label and `tone: 'danger'` marks an
- * action that can't be taken back; `{ separator: true }` draws a rule. `label` is the button's words; pass
- * `children` to draw something else in it (an avatar and a handle, or an icon
- * alone) and `label` becomes its accessible name. `placement` is 'down' or
+ * action that can't be taken back; `{ separator: true }` draws a rule. Give
+ * `key` when two items could share a label (two accounts with one name).
+ * `label` is the button's words; pass `children` to draw something else in it
+ * (an avatar and a handle, or an icon alone) and `label` becomes its
+ * accessible name. `placement` is 'down' or
  * 'up' (for a button at the foot of the screen); the list hangs from the
  * button's right edge, or its left with `align="start"`.
  */
@@ -79,7 +81,7 @@ export default function Menu({
             if (item.separator) return <li key={`sep-${index}`} className="menu-sep" role="separator" />;
             const Icon = item.icon;
             return (
-              <li key={item.label} className={item.className}>
+              <li key={item.key ?? item.label} className={item.className}>
                 <button
                   type="button"
                   className="menu-item"

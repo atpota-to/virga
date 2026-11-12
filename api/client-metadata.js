@@ -32,9 +32,10 @@ export default function handler(req, res) {
   }
 
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  // Short cache so a change here reaches authorization servers quickly while
-  // still letting them and the CDN cache modestly.
-  res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300');
+  // Short cache: an authorization server checks every sign-in against the
+  // scope declared here, so a deploy that adds a permission has to reach it
+  // within a minute, not five.
+  res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');
   return res
     .status(200)
     .send(JSON.stringify(buildClientMetadata(`https://${host}`), null, 2));

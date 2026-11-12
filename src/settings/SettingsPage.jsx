@@ -3,12 +3,13 @@
 // sign-in lets Virga do, and where the data comes from.
 
 import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Download, ExternalLink, HardDrive, LogOut, Pencil, RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
-import Avatar from '../components/Avatar.jsx';
+import { ArrowDown, ArrowUp, Download, HardDrive, Pencil, RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
+import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
+import { COCOON_URL, PERMISSION_GROUPS } from '../config.js';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
@@ -19,6 +20,14 @@ import { PageHeader, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
 
+const COCOON_HOST = (() => {
+  try {
+    return new URL(COCOON_URL).host;
+  } catch {
+    return COCOON_URL;
+  }
+})();
+
 const SECTIONS = [
   { key: 'account', label: 'Account' },
   { key: 'data', label: 'Data and sync' },
@@ -28,7 +37,9 @@ const SECTIONS = [
   { key: 'about', label: 'About' },
 ];
 
-export default function SettingsPage({ section, profile, onSignOut }) {
+// `profile` and `onSignOut` are still passed by the shell; the account
+// section reads every account from the session itself.
+export default function SettingsPage({ section }) {
   const current = SECTIONS.find((s) => s.key === section) ? section : 'account';
   return (
     <>
@@ -42,7 +53,7 @@ export default function SettingsPage({ section, profile, onSignOut }) {
           ))}
         </nav>
         <div className="settings-body">
-          {current === 'account' && <AccountSection profile={profile} onSignOut={onSignOut} />}
+          {current === 'account' && <AccountsSettings />}
           {current === 'data' && <DataSection />}
           {current === 'dashboards' && <DashboardsSection />}
           {current === 'appearance' && <AppearanceSection />}
@@ -75,48 +86,6 @@ function Row({ label, hint = null, children }) {
       </div>
       <div className="settings-row-control">{children}</div>
     </div>
-  );
-}
-
-/* ---- account ------------------------------------------------------- */
-
-function AccountSection({ profile, onSignOut }) {
-  const archive = useArchive();
-  const handle = profile?.handle;
-  return (
-    <>
-      <Section title="Signed in as">
-        <div className="account-card">
-          <Avatar src={profile?.avatar} name={profile?.displayName || handle} size="lg" />
-          <div className="account-card-text">
-            <span className="account-card-name">{profile?.displayName || (handle ? `@${handle}` : archive.did)}</span>
-            {handle && <span className="muted">@{handle}</span>}
-            <code className="muted account-card-did">{archive.did}</code>
-          </div>
-          <div className="account-card-actions">
-            <Button as="a" href={`https://bsky.app/profile/${encodeURIComponent(handle || archive.did)}`} target="_blank" rel="noopener noreferrer">
-              <ExternalLink size={15} aria-hidden="true" />
-              Open on Bluesky
-            </Button>
-            <Button onClick={onSignOut}>
-              <LogOut size={15} aria-hidden="true" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </Section>
-      <Section title="Other accounts">
-        <p className="settings-text">
-          To look at another account, sign out and sign in with it. Each account keeps its own archive and its own dashboards in this
-          browser, and signing out leaves them there for next time.
-        </p>
-      </Section>
-      <Section title="Identity">
-        <p className="settings-text">
-          Your DID, your PDS and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
-        </p>
-      </Section>
-    </>
   );
 }
 
@@ -229,7 +198,7 @@ function DataSection() {
                 ? 'Another Virga tab is holding the archive open, so this one lasts the session only. Close that tab and reload to keep it.'
                 : 'This browser holds the archive for this session only.'
               : estimate
-                ? `Virga is using about ${megabytes(estimate.usage)} here.`
+                ? `Virga is using about ${megabytes(estimate.usage)} here, for every account signed in on this browser.`
                 : 'In IndexedDB, in a database of its own for this account.'
           }
         >
@@ -595,27 +564,33 @@ function PermissionsSection() {
     <>
       <Section title="What signing in lets Virga do" sub="It asks for these and nothing else.">
         <ul className="perm-list">
-          <li>
-            <strong>Know who you are.</strong> <code>atproto</code>
-          </li>
-          <li>
-            <strong>Read your follower list, as you.</strong> Only a signed-in read carries each follower’s follow record, which is what
-            dates the growth curve. <code>rpc:app.bsky.graph.getFollowers</code>
-          </li>
-          <li>
-            <strong>Read your notifications.</strong> Who liked, reposted, replied to, quoted and mentioned you.{' '}
-            <code>rpc:app.bsky.notification.listNotifications</code>
-          </li>
-          <li>
-            <strong>Follow and unfollow, when you press the button.</strong> Create and delete follow records in your repo, for the Follow
-            buttons, Follow cleanup and the Follow-back queue. <code>repo:app.bsky.graph.follow</code>
-          </li>
+          {PERMISSION_GROUPS.map((group) => (
+            <li key={group.key}>
+              <strong>{group.title}</strong> {group.text}{' '}
+              {/* The resource and its name; the full strings, audiences and
+                  all, are in src/config.js and the README. */}
+              {group.tokens.map((token, i) => (
+                <span key={token}>
+                  {i > 0 && ' '}
+                  <code>{token.split('?')[0]}</code>
+                </span>
+              ))}
+            </li>
+          ))}
         </ul>
       </Section>
       <Section title="What it can’t do">
         <p className="settings-text">
-          It can’t post, like, repost, block, mute, change your profile or read your messages. Everything else it reads is public and fetched
-          without your session. Two of the tools listed under Later would need more, and would ask first.
+          It can’t like, repost, block, mute, change your profile, or read your messages. It posts, replies and deletes posts only when you
+          ask it to, and never edits a post once it’s published. Everything else it reads is public and fetched without your session.
+        </p>
+      </Section>
+      <Section title="Where the sign-in is kept">
+        <p className="settings-text">
+          A browser session stays in this browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
+          {COCOON_HOST}, which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed.
+          Virga’s server is used only for long sessions and the features that need one; your archive never goes there. Settings ›{' '}
+          <Link to="/settings/account">Account</Link> says which kind each account has.
         </p>
       </Section>
     </>
@@ -630,9 +605,10 @@ function AboutSection() {
     <>
       <Section title="About Virga">
         <p className="settings-text">
-          Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data. There is no
-          Virga server and no database: everything is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and
-          kept in this browser.
+          Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data, and a place to
+          write and schedule posts. There is no database: the archive is read from your PDS, Bluesky’s public API, the PLC directory and
+          Constellation, and kept in this browser. Virga’s server is used only for long sessions and the features that run while the browser
+          is closed.
         </p>
       </Section>
       <Section title="Where the data comes from">
@@ -644,7 +620,11 @@ function AboutSection() {
             <strong>Bluesky’s public API</strong>: your posts and their counts, profiles, lists, and when accounts were last active.
           </li>
           <li>
-            <strong>Bluesky, signed in as you</strong>: your follower list and your notifications.
+            <strong>Bluesky, signed in as you</strong>: your follower list and your notifications, and what you post.
+          </li>
+          <li>
+            <strong>Virga’s server ({COCOON_HOST})</strong>, for an account with a long session: the sign-in, and the signed-in requests,
+            which it passes on to your account. Scheduled posts and post timers are kept there until they run.
           </li>
           <li>
             <strong>Constellation</strong>: who blocks you, and which lists you’re on.

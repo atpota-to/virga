@@ -1,28 +1,27 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { getOauthClient, getOauthEvents } from '../lib/oauthClient.js';
-import {
-  clearSessionHint as clearStoredHint,
-  readSessionHint,
-  restoresAtStartup,
-  writeSessionHint,
-} from '../lib/sessionHint.js';
-import { OAUTH_CALLBACK_PATH, OAUTH_SCOPE } from '../config.js';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { AUTH_MODE, COCOON_URL, OAUTH_CALLBACK_PATH, OAUTH_RETURN_PATH } from '../config.js';
+import { getProfile } from '../lib/atproto.js';
+import { resetAnalyticsStore } from '../lib/analyticsStore.js';
+import { readSessionHint, restoresAtStartup } from '../lib/sessionHint.js';
+import * as A from './accounts.js';
+import * as B from './backendClient.js';
+import { createBrowserDriver } from './browserDriver.js';
+import { rememberPdsUrl, resolvePdsUrl } from './pds.js';
+import { NO_ACTIVE, capabilitiesFrom, createSessionController } from './sessionController.js';
+
+// The session layer: every account this browser has signed in with, which
+// one is open, and an atproto Agent for any of them. Two kinds of sign-in
+// live side by side, each account keeping the one it signed in with:
+//
+//   browser   atproto OAuth in this browser (src/session/browserDriver.js)
+//   backend   a long session held by Virga's server (src/session/backendClient.js)
+//
+// This is the only module the app imports for auth; the harness swaps it
+// for harness/fakeSession.jsx, which has to offer the same value.
 
 const Ctx = createContext(null);
 
-// The session hint (src/lib/sessionHint.js) is what keeps the OAuth stack out
-// of a signed-out visit: it is set the moment a sign-in is started (before the
-// redirect), confirmed once `init()` returns a real session, and cleared
-// whenever the session is deleted or `init()` finds none.
-
-function storage() {
+function local() {
   try {
     return typeof localStorage === 'undefined' ? null : localStorage;
   } catch {
@@ -30,152 +29,208 @@ function storage() {
   }
 }
 
-function setSessionHint() {
-  writeSessionHint(storage());
+function perTab() {
+  try {
+    return typeof sessionStorage === 'undefined' ? null : sessionStorage;
+  } catch {
+    return null;
+  }
 }
 
-function clearSessionHint() {
-  clearStoredHint(storage());
+function onPath(prefix) {
+  return typeof window !== 'undefined' && window.location.pathname.startsWith(prefix);
 }
 
-function onCallbackPath() {
-  return (
-    typeof window !== 'undefined' &&
-    window.location.pathname.startsWith(OAUTH_CALLBACK_PATH)
-  );
+// A return from Virga's server is read, checked against this tab's nonce
+// and taken out of the address once, as the module loads: under StrictMode
+// an effect runs twice, and the second run would see a clean address (or,
+// worse, a token still in it). Whatever came back, the pending sign-in is
+// over.
+const BACKEND_RETURN = (() => {
+  if (typeof window === 'undefined' || !onPath(OAUTH_RETURN_PATH)) return null;
+  const pending = B.readSigninPending(perTab());
+  const result = B.readBackendReturn(window.location, pending, OAUTH_RETURN_PATH);
+  B.clearSigninPending(perTab());
+  if (window.location.search || window.location.hash) B.stripReturnFromAddress(window);
+  return result;
+})();
+
+let agentModule = null;
+function loadAgentClass() {
+  agentModule ||= import('@atproto/api').then((m) => m.Agent);
+  agentModule.catch(() => {
+    agentModule = null;
+  });
+  return agentModule;
+}
+
+function deleteDatabase(name) {
+  return new Promise((resolve) => {
+    if (typeof indexedDB === 'undefined') return resolve(false);
+    let done = false;
+    const finish = (ok) => {
+      if (!done) {
+        done = true;
+        resolve(ok);
+      }
+    };
+    try {
+      const req = indexedDB.deleteDatabase(name);
+      req.onsuccess = () => finish(true);
+      req.onerror = () => finish(false);
+      // Another tab holding the database open delays the delete until it
+      // lets go; don't hold the page up for it.
+      req.onblocked = () => setTimeout(() => finish(false), 5_000);
+    } catch {
+      finish(false);
+    }
+  });
+}
+
+/** The real world, for the controller. */
+function browserEnv() {
+  return {
+    storage: local(),
+    tabStorage: perTab(),
+    browser: createBrowserDriver(),
+    backendUrl: COCOON_URL,
+    fetch: undefined,
+    loadAgent: loadAgentClass,
+    backendReturn: BACKEND_RETURN,
+    onCallbackPath: onPath(OAUTH_CALLBACK_PATH),
+    authMode: AUTH_MODE,
+    getProfile,
+    resolvePdsUrl,
+    rememberPdsUrl,
+    resetAnalyticsStore,
+    deleteDatabase,
+    dispatch: (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail })),
+    origin: () => window.location.origin,
+    assign: (url) => window.location.assign(url),
+    sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  };
 }
 
 /**
- * Provides atproto OAuth session state.
+ * Provides the session layer. The value:
  *
- *   const { session, agent, did, signIn, signOut, loading, error } =
- *     useAtprotoSession();
- *
- * `session` is an `OAuthSession` (or `null`). `agent` is an `@atproto/api`
- * Agent bound to that session, ready to use against the account's PDS.
+ *   session, agent, did   the open account, always published together
+ *   loading               only while the app starts or a sign-in is finished
+ *   switching             the DID being switched to, while the old one stays up
+ *   error                 a sign-in that came back without a session
+ *   signIn, signOut, mode, accounts, switchAccount, signOutAccount,
+ *   removeAccount, agentFor, targetFor, backendFor, capabilitiesFor,
+ *   checkAccount, authMode
  */
 export function AtprotoSessionProvider({ children }) {
-  const [session, setSession] = useState(null);
+  const [rows, setRows] = useState(() => A.readAccounts(local()));
+  const [statuses, setStatuses] = useState({});
+  const [active, setActive] = useState(NO_ACTIVE);
+  const [switching, setSwitching] = useState(null);
   const [error, setError] = useState(null);
+  const [ctrl] = useState(() =>
+    createSessionController(
+      { rows: setRows, statuses: setStatuses, active: setActive, switching: setSwitching, error: setError },
+      browserEnv(),
+    ),
+  );
   // Whether there is anything to restore. Decided once, as the app starts.
   const [restoreWanted] = useState(() =>
     restoresAtStartup({
-      hint: readSessionHint(storage()),
-      onCallback: onCallbackPath(),
+      hint: readSessionHint(local()),
+      onCallback: onPath(OAUTH_CALLBACK_PATH),
+      onReturn: BACKEND_RETURN !== null,
+      hasAccounts: A.signedInAccounts(A.readAccounts(local())).length > 0,
     }),
   );
   const [loading, setLoading] = useState(restoreWanted);
 
   useEffect(() => {
-    // A visitor who has not signed in never loads the OAuth stack.
+    // A visitor who has never signed in loads none of the session stack.
     if (!restoreWanted) {
       setLoading(false);
       return undefined;
     }
-
     let cancelled = false;
-    let detachEvents = null;
-    setLoading(true);
-
-    (async () => {
-      let client;
-      try {
-        client = await getOauthClient();
-      } catch (err) {
-        if (!cancelled) {
-          setError(err);
-          setLoading(false);
-        }
-        return;
-      }
-      if (cancelled) return;
-
-      const events = getOauthEvents();
-      const onDeleted = (event) => {
-        const sub = event?.detail?.sub;
-        clearSessionHint();
-        setSession((current) => (current && current.sub === sub ? null : current));
-      };
-      events.addEventListener('deleted', onDeleted);
-      detachEvents = () => events.removeEventListener('deleted', onDeleted);
-
-      try {
-        const result = await client.init();
-        if (cancelled) return;
-        if (result?.session) {
-          setSessionHint();
-          setSession(result.session);
-        } else {
-          // No live session (never signed in, or it was revoked or expired):
-          // drop the hint so the next visit skips the OAuth load entirely.
-          clearSessionHint();
-        }
-      } catch (err) {
-        // The hint is left alone: a restore that failed for want of a network
-        // should be tried again next time, and a sign-in that was declined
-        // clears it on the next load, when init() finds no session.
-        if (!cancelled) setError(err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      if (detachEvents) detachEvents();
-    };
-  }, [restoreWanted]);
-
-  const [agent, setAgent] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!session) {
-      setAgent(null);
-      return undefined;
-    }
-    import('@atproto/api').then(({ Agent }) => {
-      if (cancelled) return;
-      setAgent(new Agent(session));
+    ctrl.startOnce().then(() => {
+      if (!cancelled) setLoading(false);
     });
     return () => {
       cancelled = true;
     };
-  }, [session]);
+  }, [ctrl, restoreWanted]);
 
-  const signIn = useCallback(async (input) => {
-    const client = await getOauthClient();
-    // Optimistically mark that a session may exist, so the load after the
-    // redirect runs the OAuth stack. init() clears this again if the flow
-    // doesn't yield a session.
-    setSessionHint();
-    // Resolves to a redirect: the promise typically never resolves.
-    await client.signIn(input, { scope: OAUTH_SCOPE });
-  }, []);
+  // Another tab signed an account in or out: the list here follows.
+  useEffect(() => {
+    const onStorage = (event) => {
+      if (event.key === A.ACCOUNTS_KEY || event.key === null) ctrl.reread();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [ctrl]);
 
+  const signIn = useCallback((input, opts) => ctrl.signIn(input, opts), [ctrl]);
+  const switchAccount = useCallback((did) => ctrl.switchAccount(did), [ctrl]);
+  const signOutAccount = useCallback((did) => ctrl.signOutAccount(did), [ctrl]);
+  const removeAccount = useCallback((did, opts) => ctrl.removeAccount(did, opts), [ctrl]);
+  const agentFor = useCallback((did) => ctrl.agentFor(did), [ctrl]);
+  const targetFor = useCallback((did) => ctrl.targetFor(did), [ctrl]);
+  const checkAccount = useCallback((did) => ctrl.checkAccount(did), [ctrl]);
   const signOut = useCallback(async () => {
-    if (!session) return;
-    try {
-      await session.signOut();
-    } catch {
-      // ignore network errors on revoke; we still drop local state
-    }
-    clearSessionHint();
-    setSession(null);
-  }, [session]);
+    if (active.did) await ctrl.signOutAccount(active.did);
+  }, [ctrl, active.did]);
+
+  const accounts = useMemo(
+    () =>
+      rows.map((r) => ({
+        did: r.did,
+        handle: r.handle,
+        displayName: r.displayName,
+        avatar: r.avatar,
+        mode: r.mode,
+        lastUsed: r.lastUsed,
+        status: ctrl.statusOf(r.did),
+      })),
+    // statuses is read through ctrl.statusOf.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rows, statuses, ctrl],
+  );
+
+  // Recomputed when the list or a status changes, so a caller holding the
+  // old function doesn't read a stale grant.
+  const backendFor = useCallback((did) => ctrl.backendFor(did), [ctrl, rows]); // eslint-disable-line react-hooks/exhaustive-deps
+  const capabilitiesFor = useCallback(
+    (did) => {
+      const row = rows.find((r) => r.did === did) || null;
+      return capabilitiesFrom(row, row ? ctrl.statusOf(did) : 'needsSignIn');
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rows, statuses, ctrl],
+  );
 
   const value = useMemo(
     () => ({
-      session,
-      agent,
-      did: session?.sub || null,
-      // True until init() resolves and (if signed in) the Agent module has loaded.
-      loading: loading || Boolean(session && !agent),
+      session: active.session,
+      agent: active.agent,
+      did: active.did,
+      loading,
+      switching,
       error,
       signIn,
       signOut,
+      mode: active.mode,
+      accounts,
+      switchAccount,
+      signOutAccount,
+      removeAccount,
+      agentFor,
+      targetFor,
+      backendFor,
+      capabilitiesFor,
+      checkAccount,
+      authMode: AUTH_MODE,
     }),
-    [session, agent, loading, error, signIn, signOut],
+    [active, loading, switching, error, signIn, signOut, accounts, switchAccount, signOutAccount, removeAccount, agentFor, targetFor, backendFor, capabilitiesFor, checkAccount],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

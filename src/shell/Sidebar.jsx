@@ -2,70 +2,18 @@
 // archive's state, and Settings. Folds to a rail of icons; on a phone it is
 // replaced by the app bar and the tab bar (MobileNav.jsx).
 
-import {
-  ExternalLink,
-  LayoutDashboard,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Plus,
-  Settings,
-  Wrench,
-} from 'lucide-react';
-import Avatar from '../components/Avatar.jsx';
+import { LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Settings, Wrench } from 'lucide-react';
+import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import Button from '../components/Button.jsx';
-import Menu from '../components/Menu.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import { usePreferences } from '../lib/preferences.jsx';
-import { Link, navigate } from '../lib/router.jsx';
+import { Link } from '../lib/router.jsx';
 import { REPORTS } from '../reports/registry.js';
 import { TOOLS, TOOL_BY_KEY } from '../tools/registry.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { SyncCard } from './SyncStatus.jsx';
 
 const PINNED_TOOLS = ['follow-cleanup', 'unfollow-tracker', 'best-time'];
-
-export function accountName(profile, did) {
-  const handle = profile?.handle || null;
-  return profile?.displayName || (handle ? `@${handle}` : shortDid(did));
-}
-
-export function shortDid(did) {
-  if (!did) return '';
-  return did.length <= 24 ? did : `${did.slice(0, 12)}…${did.slice(-6)}`;
-}
-
-export function AccountMenu({ profile, did, onSignOut, compact = false, placement = 'down' }) {
-  const handle = profile?.handle || null;
-  const name = accountName(profile, did);
-  return (
-    <Menu
-      className={`account-menu${compact ? ' account-menu--compact' : ''}`}
-      label={`Account: ${handle ? `@${handle}` : did}`}
-      variant="ghost"
-      placement={placement}
-      align="start"
-      items={[
-        {
-          icon: ExternalLink,
-          label: 'Open your profile on Bluesky',
-          onSelect: () => window.open(`https://bsky.app/profile/${encodeURIComponent(handle || did)}`, '_blank', 'noopener'),
-        },
-        { icon: Settings, label: 'Settings', onSelect: () => navigate('/settings/account') },
-        { separator: true },
-        { icon: LogOut, label: 'Sign out', hint: 'Your archive stays in this browser for next time.', onSelect: onSignOut },
-      ]}
-    >
-      <Avatar src={profile?.avatar} name={name} size={compact ? 'sm' : 'md'} />
-      {!compact && (
-        <span className="account-who">
-          <span className="account-name">{name}</span>
-          {handle && <span className="account-handle">@{handle}</span>}
-        </span>
-      )}
-    </Menu>
-  );
-}
 
 function NavItem({ to, icon: Icon, label, count = null, current = false, collapsed = false }) {
   return (

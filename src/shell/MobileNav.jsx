@@ -5,7 +5,7 @@ import { BarChart3, LayoutDashboard, RefreshCw, Settings, Wrench } from 'lucide-
 import Button from '../components/Button.jsx';
 import { Link } from '../lib/router.jsx';
 import { LogoMark, useSkyTaps } from './bits.jsx';
-import { AccountMenu } from './Sidebar.jsx';
+import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import { syncWhen } from './SyncStatus.jsx';
 
 export function AppBar({ archive, title, profile, did, onSignOut }) {

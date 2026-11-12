@@ -6,7 +6,8 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/oauth-client-metadata.json", "destination": "/api/client-metadata" },
-    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
+    { "source": "/backend/:path*", "destination": "https://cocoon.anisota.net/virga/:path*" },
+    { "source": "/((?!api/|assets/|backend/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
