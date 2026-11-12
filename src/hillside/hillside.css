@@ -1,0 +1,75 @@
+/* The hillside fills whatever it's put in. Under the canvas, a flat picture of
+   the same sky and field, for the moment before the 3D one is drawn and for
+   browsers without WebGL. --crest (from the page) is where the hill meets the
+   sky. */
+
+.hillside {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #1c54cc 0%,
+    #3a7fe2 calc(var(--crest, 50%) * 0.5),
+    #8bbaf0 calc(var(--crest, 50%) - 6%),
+    #d4e7f8 calc(var(--crest, 50%) - 0.5%),
+    #94d43c var(--crest, 50%),
+    #4fa624 calc(var(--crest, 50%) + 10%),
+    #236617 100%
+  );
+}
+
+.hillside[data-dawn] {
+  background: linear-gradient(
+    180deg,
+    #3b5aa8 0%,
+    #7890cf calc(var(--crest, 50%) * 0.5),
+    #e7b7a6 calc(var(--crest, 50%) - 6%),
+    #ffd59e calc(var(--crest, 50%) - 0.5%),
+    #9cb04a var(--crest, 50%),
+    #557c2c calc(var(--crest, 50%) + 10%),
+    #22431e 100%
+  );
+}
+
+/* Measured, never seen: its height is where the crest goes. */
+.hillside-crest {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: var(--crest, 50%);
+  visibility: hidden;
+}
+
+/* Out of focus behind the page by --hill-blur, and a little bigger than its
+   box, so the blur has no soft edges. It comes in sharp, and the focus moves
+   to the page a moment later. */
+.hillside-canvas {
+  --bleed: calc(var(--hill-blur, 6px) * 2.5);
+  position: absolute;
+  top: calc(var(--bleed) * -1);
+  left: calc(var(--bleed) * -1);
+  display: block;
+  width: calc(100% + var(--bleed) * 2);
+  height: calc(100% + var(--bleed) * 2);
+  opacity: 0;
+  transition:
+    opacity 0.9s ease,
+    filter 1.6s ease 0.6s;
+}
+
+.hillside[data-ready] .hillside-canvas {
+  opacity: 1;
+}
+
+.hillside[data-soft] .hillside-canvas {
+  filter: blur(var(--hill-blur, 6px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hillside-canvas {
+    transition: none;
+  }
+}

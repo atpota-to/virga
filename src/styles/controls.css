@@ -1,0 +1,323 @@
+/* The kit: the button, the segmented control, the section head, the figures
+   row and the menu. Everything pressable is a pill. */
+
+/* ---- button ------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+  background: var(--card-solid);
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .btn:hover:not(:disabled) {
+    border-color: var(--ink-faint);
+  }
+}
+
+/* The one that matters most on a view: ink, as the two pills at the foot of
+   Daylight are. */
+.btn--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .btn--primary:hover:not(:disabled) {
+    border-color: #17305c;
+    background: #17305c;
+  }
+}
+
+/* An action that doesn't need a box: words, underlined when pointed at. */
+.btn--text {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+@media (hover: hover) {
+  .btn--text:hover:not(:disabled) {
+    border-color: transparent;
+    background: rgb(11 26 51 / 0.07);
+  }
+}
+
+.btn--sm {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: var(--text-sm);
+}
+
+/* A button that is a state (Following): pressed, in the blue. */
+.btn.is-on {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  color: var(--accent-strong);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ---- segmented ---------------------------------------------------- */
+
+/* A track with its keys in it; the pressed key is the blue pill. Out on the
+   sky the track is white; on a card it takes the pale sky tone (.an-card
+   below sets it). */
+.segmented {
+  --track: rgb(255 255 255 / 0.86);
+  display: inline-flex;
+  max-width: 100%;
+  padding: 4px;
+  border-radius: var(--pill);
+  background: var(--track);
+}
+
+.segmented-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--pill);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .segmented-key:hover:not(.is-on) {
+    background: rgb(11 26 51 / 0.07);
+    color: var(--ink);
+  }
+}
+
+.segmented-key.is-on {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.segmented-icon {
+  flex: none;
+}
+
+/* A key with a glyph sits a little closer to its edge on the glyph's side. */
+.segmented-key.has-icon {
+  padding-left: 13px;
+}
+
+/* Fingers get the full 44px whatever the size says. */
+@media (pointer: coarse) {
+  .btn--sm,
+  .segmented-key {
+    min-height: 44px;
+  }
+}
+
+/* ---- section head ------------------------------------------------- */
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.section-head-title {
+  font-size: var(--text-lg);
+}
+
+.section-head-meta {
+  margin-left: auto;
+  min-width: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* ---- figures ------------------------------------------------------ */
+
+/* A row of big numerals, each with its label under it. One card, the cells
+   set apart by a hairline. Two to a row on a phone. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(var(--figures-count, 4), minmax(0, 1fr));
+  margin: 0;
+  padding: var(--space-5) 0;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.figures-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 var(--space-5);
+}
+
+.figures-cell + .figures-cell {
+  border-left: 1px solid var(--line-soft);
+}
+
+.figures-value {
+  order: 1;
+  margin: 0;
+  font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
+  font-weight: 720;
+  font-stretch: 88%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.figures-label {
+  order: 2;
+  margin-top: var(--space-2);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.figures-note {
+  order: 3;
+  margin: 2px 0 0;
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
+@media (max-width: 700px) {
+  .figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-5);
+    padding: var(--space-4) 0;
+  }
+
+  .figures-cell {
+    padding: 0 var(--space-4);
+  }
+
+  /* Two to a row: the hairline only between the pair, and an odd one out
+     takes the row. */
+  .figures-cell:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .figures-cell:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- menu --------------------------------------------------------- */
+
+.menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.menu-list {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  right: 0;
+  width: max-content;
+  min-width: 13rem;
+  max-width: min(22rem, calc(100vw - 2 * var(--gutter)));
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 20px;
+  background: var(--card-solid);
+  box-shadow:
+    0 24px 48px -20px rgb(8 28 60 / 0.5),
+    0 0 0 1px var(--line-soft);
+}
+
+.menu[data-placement='up'] .menu-list {
+  top: auto;
+  bottom: calc(100% + 10px);
+}
+
+.menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .menu-item:hover {
+    background: var(--accent-wash);
+  }
+}
+
+.menu-item-icon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--ink-muted);
+}
+
+.menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.menu-item-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.menu-item-hint {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
+/* An item a phone needs in the list because it has no room for it outside. */
+.menu-item--phone {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .menu-item--phone {
+    display: block;
+  }
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c54cc" />
+      <stop offset="1" stop-color="#8bbaf0" />
+    </linearGradient>
+    <linearGradient id="rain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#sky)" />
+  <!-- Virga: rain that leaves the cloud and is gone before it lands. -->
+  <g stroke="url(#rain)" stroke-width="4" stroke-linecap="round">
+    <path d="M22 33 L16 52" />
+    <path d="M33 33 L27 55" />
+    <path d="M44 33 L38 50" />
+  </g>
+  <path
+    fill="#fff"
+    d="M18 34a9 9 0 0 1 1.6-17.9A13 13 0 0 1 44.4 18 8.5 8.5 0 0 1 46 34z"
+  />
+</svg>

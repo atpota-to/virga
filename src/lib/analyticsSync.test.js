@@ -1,0 +1,542 @@
+// Stop-rule invariants for the analytics sweeps. Each sweep is a paginated
+// walk whose entire correctness is WHERE IT STOPS: an incremental post sweep
+// that stops one page early silently loses posts forever, and one that never
+// stops re-downloads a 250-page archive on every visit. These tests pin the
+// stopping logic with fake agents and a fake AppView.
+
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  followFromRecord,
+  sweepBlocks,
+  sweepFollowers,
+  sweepFollowing,
+  sweepInbound,
+  sweepOutbound,
+  sweepPosts,
+} from './analyticsSync.js';
+import { tidToTimestamp } from './atproto.js';
+
+/** Mint a real TID for a timestamp — the same encoding tidToTimestamp reads. */
+const B32 = '234567abcdefghijklmnopqrstuvwxyz';
+function tidFor(ms) {
+  let n = ((BigInt(Math.floor(ms)) * 1000n) << 10n) | 5n;
+  let s = '';
+  for (let i = 0; i < 13; i++) {
+    s = B32[Number(n & 31n)] + s;
+    n >>= 5n;
+  }
+  return s;
+}
+
+const DAY = 86_400_000;
+const NOW = Date.parse('2026-06-20T12:00:00.000Z');
+
+function feedItem(uri, atMs) {
+  return {
+    post: {
+      uri,
+      likeCount: 1,
+      repostCount: 0,
+      replyCount: 0,
+      quoteCount: 0,
+      record: { text: uri, createdAt: new Date(atMs).toISOString() },
+    },
+  };
+}
+
+/** getAuthorFeed fake: fixed pages keyed by cursor (null → page 0). */
+function fakeAuthorFeed(pages) {
+  return vi.fn(async (url) => {
+    const cursor = new URL(url).searchParams.get('cursor');
+    const i = cursor ? Number(cursor) : 0;
+    const feed = pages[i] || [];
+    const body = { feed, cursor: i + 1 < pages.length ? String(i + 1) : undefined };
+    return { ok: true, json: async () => body };
+  });
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe('sweepPosts', () => {
+  it('pages a full build to exhaustion and hands each page over as it lands', async () => {
+    const pages = [
+      [feedItem('at://me/app.bsky.feed.post/a', NOW - 1 * DAY)],
+      [feedItem('at://me/app.bsky.feed.post/b', NOW - 2 * DAY)],
+    ];
+    vi.stubGlobal('fetch', fakeAuthorFeed(pages));
+    const banked = [];
+    const res = await sweepPosts({ did: 'did:plc:me', onPage: (rows) => banked.push(...rows) });
+    expect(res).toMatchObject({ fetched: 2, complete: true, cursor: null, error: null });
+    expect(banked.map((r) => r.rkey)).toEqual(['a', 'b']);
+  });
+
+  it('stops an incremental sweep only once a page is all-known AND past the rehydrate window', async () => {
+    const recent = NOW - 1 * DAY; // known, but inside the window → counts refresh
+    const old = NOW - 40 * DAY; // known and old → the stopping page
+    const pages = [
+      [feedItem('at://me/app.bsky.feed.post/new1', NOW), feedItem('at://me/app.bsky.feed.post/recent', recent)],
+      [feedItem('at://me/app.bsky.feed.post/old1', old), feedItem('at://me/app.bsky.feed.post/old2', old)],
+      [feedItem('at://me/app.bsky.feed.post/never', NOW - 50 * DAY)],
+    ];
+    const fetchFake = fakeAuthorFeed(pages);
+    vi.stubGlobal('fetch', fetchFake);
+    const banked = [];
+    const res = await sweepPosts({
+      did: 'did:plc:me',
+      knownUris: new Set(['at://me/app.bsky.feed.post/recent', 'at://me/app.bsky.feed.post/old1', 'at://me/app.bsky.feed.post/old2']),
+      rehydrateSinceMs: NOW - 30 * DAY,
+      onPage: (rows) => banked.push(...rows),
+    });
+    expect(res.complete).toBe(true);
+    // Page 3 was never requested — page 2 was all-known and all-old.
+    expect(fetchFake).toHaveBeenCalledTimes(2);
+    // The known-but-recent row was re-emitted so its counts refresh.
+    expect(banked.map((r) => r.rkey)).toContain('recent');
+    expect(banked.map((r) => r.rkey)).not.toContain('never');
+  });
+
+  it("is not fooled into stopping by a page of other people's reposts", async () => {
+    const repost = { ...feedItem('at://them/app.bsky.feed.post/x', NOW - 40 * DAY), reason: { $type: 'app.bsky.feed.defs#reasonRepost' } };
+    const pages = [[repost], [feedItem('at://me/app.bsky.feed.post/mine', NOW - 45 * DAY)]];
+    vi.stubGlobal('fetch', fakeAuthorFeed(pages));
+    const res = await sweepPosts({
+      did: 'did:plc:me',
+      knownUris: new Set(),
+      rehydrateSinceMs: NOW - 30 * DAY,
+    });
+    // The repost page banked nothing but did NOT end the sweep; page 2's own
+    // post was new, so it was fetched and kept.
+    expect(res.fetched).toBe(1);
+    expect(res.complete).toBe(true);
+  });
+
+  it('hands each page its resume-after cursor, so a kill at any moment is resumable', async () => {
+    const pages = [
+      [feedItem('at://me/app.bsky.feed.post/a', NOW - 1 * DAY)],
+      [feedItem('at://me/app.bsky.feed.post/b', NOW - 2 * DAY)],
+    ];
+    vi.stubGlobal('fetch', fakeAuthorFeed(pages));
+    const checkpoints = [];
+    await sweepPosts({
+      did: 'did:plc:me',
+      onPage: (rows, { cursor }) => checkpoints.push([rows[0].rkey, cursor]),
+    });
+    // Page one checkpoints the cursor that FOLLOWS it (its own rows are
+    // already persisted); the final page has nothing to resume to.
+    expect(checkpoints).toEqual([
+      ['a', '1'],
+      ['b', null],
+    ]);
+  });
+
+  it('hands back the cursor when a page fails, so a build resumes instead of restarting', async () => {
+    let calls = 0;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url) => {
+        const cursor = new URL(url).searchParams.get('cursor');
+        if (!cursor) {
+          calls++;
+          return { ok: true, json: async () => ({ feed: [feedItem('at://me/app.bsky.feed.post/a', NOW)], cursor: '1' }) };
+        }
+        return { ok: false, status: 500 };
+      }),
+    );
+    const res = await sweepPosts({ did: 'did:plc:me' });
+    expect(calls).toBe(1);
+    expect(res.complete).toBe(false);
+    expect(res.cursor).toBe('1');
+    expect(res.error).toMatch(/500/);
+  });
+});
+
+describe('sweepFollowers', () => {
+  it('dates each follower from their follow record TID and sweeps to the end', async () => {
+    const followedMs = NOW - 3 * DAY;
+    const agent = {
+      app: { bsky: { graph: {
+        getFollowers: vi.fn(async ({ cursor }) =>
+          cursor
+            ? { data: { followers: [], cursor: undefined } }
+            : {
+                data: {
+                  followers: [
+                    {
+                      did: 'did:plc:fan',
+                      handle: 'fan.example',
+                      viewer: { followedBy: `at://did:plc:fan/app.bsky.graph.follow/${tidFor(followedMs)}` },
+                    },
+                    { did: 'did:plc:mystery', viewer: {} },
+                  ],
+                  cursor: 'next',
+                },
+              },
+        ),
+      } } },
+    };
+    const res = await sweepFollowers(agent, 'did:plc:me');
+    expect(res.complete).toBe(true);
+    expect(res.followers).toHaveLength(2);
+    expect(Date.parse(res.followers[0].followedAt)).toBe(Date.parse(tidToTimestamp(tidFor(followedMs))));
+    // No follow record visible → no invented date, but still a counted follower.
+    expect(res.followers[1].followedAt).toBeNull();
+  });
+});
+
+describe('sweepFollowing', () => {
+  const followRecord = (subject, ms) => ({
+    uri: `at://did:plc:me/app.bsky.graph.follow/${tidFor(ms)}`,
+    value: { $type: 'app.bsky.graph.follow', subject, createdAt: new Date(ms).toISOString() },
+  });
+
+  it('reads every follow record to the end, keyed by record so duplicates survive', async () => {
+    const pages = [
+      [followRecord('did:plc:ana', NOW - 9 * DAY), followRecord('did:plc:bo', NOW - 5 * DAY)],
+      [followRecord('did:plc:ana', NOW - 2 * DAY), { uri: 'at://did:plc:me/app.bsky.graph.follow/x', value: {} }],
+    ];
+    const listRecords = vi.fn(async ({ collection, cursor }) => {
+      expect(collection).toBe('app.bsky.graph.follow');
+      const i = cursor ? Number(cursor) : 0;
+      return { data: { records: pages[i], cursor: i + 1 < pages.length ? String(i + 1) : undefined } };
+    });
+    const seen = [];
+    const res = await sweepFollowing({ com: { atproto: { repo: { listRecords } } } }, 'did:plc:me', {
+      onProgress: (p) => seen.push(p.fetched),
+    });
+    expect(res).toMatchObject({ complete: true, error: null });
+    expect(res.following.map((f) => f.did)).toEqual(['did:plc:ana', 'did:plc:bo', 'did:plc:ana']);
+    expect(Date.parse(res.following[1].followedAt)).toBe(Date.parse(tidToTimestamp(tidFor(NOW - 5 * DAY))));
+    expect(seen).toEqual([2, 3]);
+  });
+
+  it('reads a repo with no follow collection as following no one', async () => {
+    const listRecords = vi.fn(async () => {
+      throw new Error('Could not locate collection');
+    });
+    const res = await sweepFollowing({ com: { atproto: { repo: { listRecords } } } }, 'did:plc:me');
+    expect(res).toMatchObject({ complete: true, following: [], error: null });
+  });
+
+  it('reports a failure as incomplete, so a partial set never replaces a whole one', async () => {
+    const listRecords = vi.fn(async () => {
+      throw new Error('HTTP 502');
+    });
+    const res = await sweepFollowing({ com: { atproto: { repo: { listRecords } } } }, 'did:plc:me');
+    expect(res.complete).toBe(false);
+    expect(res.error).toMatch(/502/);
+  });
+
+  it('shapes only records that name a DID', () => {
+    expect(followFromRecord({ uri: 'at://me/app.bsky.graph.follow/x', value: { subject: 'not-a-did' } })).toBeNull();
+    expect(followFromRecord({ value: { subject: 'did:plc:a' } })).toBeNull();
+    expect(
+      followFromRecord({
+        uri: 'at://me/app.bsky.graph.follow/x',
+        value: { subject: 'did:plc:a', createdAt: '2026-01-02T00:00:00.000Z' },
+      }),
+    ).toEqual({ uri: 'at://me/app.bsky.graph.follow/x', did: 'did:plc:a', followedAt: '2026-01-02T00:00:00.000Z' });
+  });
+});
+
+describe('sweepBlocks', () => {
+  it('pages Constellation backlinks and dates block records from their TIDs', async () => {
+    const blockedMs = NOW - 4 * DAY;
+    const blockTid = tidFor(blockedMs);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url) => {
+        const parsed = new URL(url);
+        expect(parsed.searchParams.get('subject')).toBe('did:plc:me');
+        const source = parsed.searchParams.get('source');
+        if (source === 'app.bsky.graph.listitem:subject') {
+          expect(parsed.pathname).toMatch(/getManyToMany$/);
+          expect(parsed.searchParams.get('pathToOther')).toBe('list');
+          return { ok: true, json: async () => ({ items: [], cursor: null }) };
+        }
+        expect(source).toBe('app.bsky.graph.block:subject');
+        const cursor = parsed.searchParams.get('cursor');
+        return {
+          ok: true,
+          json: async () =>
+            cursor
+              ? { records: [], cursor: null }
+              : {
+                  records: [
+                    {
+                      did: 'did:plc:blocker',
+                      collection: 'app.bsky.graph.block',
+                      rkey: blockTid,
+                    },
+                  ],
+                  cursor: 'next',
+                },
+        };
+      }),
+    );
+
+    const res = await sweepBlocks('did:plc:me');
+    expect(res).toMatchObject({ complete: true, truncated: false, error: null });
+    expect(res.blocks).toHaveLength(1);
+    expect(res.blocks[0]).toMatchObject({
+      uri: `at://did:plc:blocker/app.bsky.graph.block/${blockTid}`,
+      did: 'did:plc:blocker',
+      source: 'direct',
+    });
+    expect(Date.parse(res.blocks[0].blockedAt)).toBe(
+      Date.parse(tidToTimestamp(blockTid)),
+    );
+  });
+
+  it('follows moderation-list membership to the people blocking that list', async () => {
+    const memberTid = tidFor(NOW - 4 * DAY);
+    const staleTid = tidFor(NOW - 5 * DAY);
+    const curationTid = tidFor(NOW - 6 * DAY);
+    const subscribedTid = tidFor(NOW - 2 * DAY);
+    const listUri = 'at://did:plc:curator/app.bsky.graph.list/mods';
+    const staleListUri = 'at://did:plc:curator/app.bsky.graph.list/stale';
+    const curationListUri = 'at://did:plc:curator/app.bsky.graph.list/curation';
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url) => {
+        const parsed = new URL(url);
+        if (parsed.pathname.endsWith('/com.atproto.repo.getRecord')) {
+          expect(parsed.searchParams.get('repo')).toBe('did:plc:curator');
+          expect(parsed.searchParams.get('collection')).toBe('app.bsky.graph.list');
+          const rkey = parsed.searchParams.get('rkey');
+          if (rkey === 'stale') {
+            return { ok: false, status: 400 };
+          }
+          const purpose =
+            rkey === 'mods'
+              ? 'app.bsky.graph.defs#modlist'
+              : 'app.bsky.graph.defs#curatelist';
+          return { ok: true, status: 200, json: async () => ({ value: { purpose } }) };
+        }
+
+        const subject = parsed.searchParams.get('subject');
+        const source = parsed.searchParams.get('source');
+        if (source === 'app.bsky.graph.block:subject') {
+          return { ok: true, json: async () => ({ records: [] }) };
+        }
+        if (source === 'app.bsky.graph.listitem:subject') {
+          expect(subject).toBe('did:plc:me');
+          expect(parsed.pathname).toMatch(/getManyToMany$/);
+          expect(parsed.searchParams.get('pathToOther')).toBe('list');
+          return {
+            ok: true,
+            json: async () => ({
+              items: [{
+                linkRecord: {
+                  did: 'did:plc:curator',
+                  collection: 'app.bsky.graph.listitem',
+                  rkey: memberTid,
+                },
+                otherSubject: listUri,
+              }, {
+                linkRecord: {
+                  did: 'did:plc:curator',
+                  collection: 'app.bsky.graph.listitem',
+                  rkey: staleTid,
+                },
+                otherSubject: staleListUri,
+              }, {
+                linkRecord: {
+                  did: 'did:plc:curator',
+                  collection: 'app.bsky.graph.listitem',
+                  rkey: curationTid,
+                },
+                otherSubject: curationListUri,
+              }],
+            }),
+          };
+        }
+        expect(subject).toBe(listUri);
+        expect(source).toBe('app.bsky.graph.listblock:subject');
+        return {
+          ok: true,
+          json: async () => ({
+            records: [{
+              did: 'did:plc:subscriber',
+              collection: 'app.bsky.graph.listblock',
+              rkey: subscribedTid,
+            }],
+          }),
+        };
+      }),
+    );
+
+    const res = await sweepBlocks('did:plc:me');
+    expect(res).toMatchObject({ complete: true, error: null });
+    expect(res.blocks).toHaveLength(1);
+    expect(res.blocks[0]).toMatchObject({
+      did: 'did:plc:subscriber',
+      source: 'list',
+      listUri,
+    });
+    // Membership predates the subscription, so the subscription creates the
+    // effective block.
+    expect(Date.parse(res.blocks[0].blockedAt)).toBe(
+      Date.parse(tidToTimestamp(subscribedTid)),
+    );
+  });
+
+  it('does not present a partial backlink sweep as complete', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 400 })));
+    const res = await sweepBlocks('did:plc:me');
+    expect(res.complete).toBe(false);
+    expect(res.error).toMatch(/unavailable/i);
+  });
+});
+
+describe('sweepInbound', () => {
+  const notif = (uri, reason, atMs) => ({
+    uri,
+    reason,
+    author: { did: 'did:plc:them' },
+    indexedAt: new Date(atMs).toISOString(),
+  });
+
+  function fakeAgent(pages) {
+    return {
+      app: { bsky: { notification: {
+        listNotifications: vi.fn(async ({ cursor }) => {
+          const i = cursor ? Number(cursor) : 0;
+          return {
+            data: {
+              notifications: pages[i] || [],
+              cursor: i + 1 < pages.length ? String(i + 1) : undefined,
+            },
+          };
+        }),
+      } } },
+    };
+  }
+
+  it('banks events down to the cutoff and stops there', async () => {
+    const agent = fakeAgent([
+      [notif('n1', 'like', NOW - 1 * DAY), notif('n2', 'follow', NOW - 1 * DAY)],
+      [notif('n3', 'reply', NOW - 400 * DAY)],
+      [notif('n4', 'like', NOW - 401 * DAY)],
+    ]);
+    const res = await sweepInbound(agent, { cutoffMs: NOW - 365 * DAY });
+    expect(res.complete).toBe(true);
+    // The follow was dropped as a non-engagement reason; the too-old reply was
+    // seen (it proves the cutoff) but not banked.
+    expect(res.events.map((e) => e.uri)).toEqual(['n1']);
+    expect(agent.app.bsky.notification.listNotifications).toHaveBeenCalledTimes(2);
+    expect(res.reachedMs).toBe(NOW - 400 * DAY);
+  });
+
+  it('stops at known events only when previous coverage already reaches the cutoff', async () => {
+    const pages = [
+      [notif('known1', 'like', NOW - 1 * DAY)],
+      [notif('known2', 'like', NOW - 2 * DAY)],
+    ];
+    const known = new Set(['known1', 'known2']);
+    // Covered at least as deep as asked → the first all-known page ends it.
+    const covered = await sweepInbound(fakeAgent(pages), {
+      cutoffMs: NOW - 30 * DAY,
+      knownUris: known,
+      coveredToMs: NOW - 365 * DAY,
+    });
+    expect(covered.complete).toBe(true);
+    // Not covered that deep → known pages are paged THROUGH to the end.
+    const uncovered = await sweepInbound(fakeAgent(pages), {
+      cutoffMs: NOW - 30 * DAY,
+      knownUris: known,
+      coveredToMs: NOW - 7 * DAY,
+    });
+    expect(uncovered.complete).toBe(true);
+    expect(uncovered.events).toHaveLength(2);
+  });
+});
+
+describe('sweepOutbound', () => {
+  const likeRecord = (rkey, targetDid, atMs) => ({
+    uri: `at://did:plc:me/app.bsky.feed.like/${rkey}`,
+    value: {
+      subject: { uri: `at://${targetDid}/app.bsky.feed.post/x` },
+      createdAt: new Date(atMs).toISOString(),
+    },
+  });
+
+  it('stops each collection at the cutoff by rkey TID and tolerates a missing one', async () => {
+    const pages = {
+      'app.bsky.feed.like': [
+        { records: [likeRecord(tidFor(NOW - 1 * DAY), 'did:plc:a', NOW - 1 * DAY)], cursor: 'c1' },
+        { records: [likeRecord(tidFor(NOW - 400 * DAY), 'did:plc:b', NOW - 400 * DAY)], cursor: 'c2' },
+        { records: [likeRecord(tidFor(NOW - 500 * DAY), 'did:plc:c', NOW - 500 * DAY)], cursor: undefined },
+      ],
+    };
+    const calls = { 'app.bsky.feed.like': 0, 'app.bsky.feed.repost': 0 };
+    const agent = {
+      com: { atproto: { repo: {
+        listRecords: vi.fn(async ({ collection }) => {
+          if (collection === 'app.bsky.feed.repost') throw new Error('Could not locate record');
+          const page = pages[collection][calls[collection]++];
+          return { data: page };
+        }),
+      } } },
+    };
+    const res = await sweepOutbound(agent, 'did:plc:me', { cutoffMs: NOW - 365 * DAY });
+    expect(res.complete).toBe(true);
+    expect(res.error).toBeNull();
+    // Banked the in-window like; the past-cutoff page ended the walk before page 3.
+    expect(res.events.map((e) => e.did)).toEqual(['did:plc:a']);
+    expect(calls['app.bsky.feed.like']).toBe(2);
+  });
+});
+
+describe('sweepBlocks progress', () => {
+  it('names each stage and counts list paths as each list lands', async () => {
+    const listUri = 'at://did:plc:curator/app.bsky.graph.list/mods';
+    const memberTid = tidFor(NOW - 4 * DAY);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url) => {
+        const parsed = new URL(url);
+        const source = parsed.searchParams.get('source');
+        if (parsed.pathname.endsWith('getRecord')) {
+          return { ok: true, status: 200, json: async () => ({ value: { purpose: 'app.bsky.graph.defs#modlist' } }) };
+        }
+        if (source === 'app.bsky.graph.listitem:subject') {
+          return {
+            ok: true,
+            json: async () => ({
+              items: [{ linkRecord: { did: 'did:plc:curator', rkey: memberTid }, otherSubject: listUri }],
+              cursor: null,
+            }),
+          };
+        }
+        if (source === 'app.bsky.graph.listblock:subject') {
+          return {
+            ok: true,
+            json: async () => ({
+              records: [
+                { did: 'did:plc:sub1', collection: 'app.bsky.graph.listblock', rkey: tidFor(NOW - DAY) },
+                { did: 'did:plc:sub2', collection: 'app.bsky.graph.listblock', rkey: tidFor(NOW - DAY) },
+              ],
+              cursor: null,
+            }),
+          };
+        }
+        return {
+          ok: true,
+          json: async () => ({
+            records: [{ did: 'did:plc:blocker', collection: 'app.bsky.graph.block', rkey: tidFor(NOW - DAY) }],
+            cursor: null,
+          }),
+        };
+      }),
+    );
+    const reports = [];
+    const res = await sweepBlocks('did:plc:me', { onProgress: (p) => reports.push(p) });
+    expect(res.complete).toBe(true);
+    expect([...new Set(reports.map((p) => p.stage))]).toEqual(['direct', 'lists', 'check', 'subscribers']);
+    expect(reports.find((p) => p.stage === 'check' && p.done === 1)).toMatchObject({ total: 1 });
+    expect(reports.at(-1)).toEqual({ stage: 'subscribers', fetched: 3, done: 1, total: 1 });
+  });
+});
