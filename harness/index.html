@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Virga harness</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Absolute, not `./main.jsx`: this shell is served for every address,
+         so a relative one would resolve against whatever the browser asked
+         for and not against this file. -->
+    <script type="module" src="/harness/main.jsx"></script>
+  </body>
+</html>

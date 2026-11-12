@@ -1,0 +1,143 @@
+import { afterEach, describe, it, expect, vi } from 'vitest';
+import {
+  backlinkRows,
+  flattenSources,
+  getBacklinkCount,
+  getBacklinks,
+  getManyToMany,
+} from './constellation.js';
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe('getBacklinks', () => {
+  it('backs off and retries when the public instance rate-limits a request', async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers: { get: () => '2' },
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ records: [{ did: 'did:plc:a' }] }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = getBacklinks('did:plc:me', 'app.bsky.graph.block:subject');
+    await vi.advanceTimersByTimeAsync(2000);
+
+    expect(await request).toEqual({ records: [{ did: 'did:plc:a' }] });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('retry pacing', () => {
+  it('waits out a Retry-After only so long before asking again', async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers: { get: () => '600' },
+      })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ total: 3 }) });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = getBacklinkCount(
+      'at://did:plc:me/app.bsky.feed.post/1',
+      'app.bsky.feed.like:subject.uri',
+    );
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(await request).toEqual({ total: 3 });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives each attempt a deadline of its own', async () => {
+    const fetchMock = vi.fn(async (_url, init) => {
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+      return { ok: true, json: async () => ({ records: [] }) };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    await getBacklinks('did:plc:me', 'app.bsky.graph.block:subject');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getManyToMany', () => {
+  it('asks Constellation to return the list URI beside each membership', async () => {
+    const fetchMock = vi.fn(async (url) => {
+      const parsed = new URL(url);
+      expect(parsed.pathname).toMatch(/blue\.microcosm\.links\.getManyToMany$/);
+      expect(parsed.searchParams.get('subject')).toBe('did:plc:me');
+      expect(parsed.searchParams.get('source')).toBe('app.bsky.graph.listitem:subject');
+      expect(parsed.searchParams.get('pathToOther')).toBe('list');
+      expect(parsed.searchParams.get('limit')).toBe('100');
+      return {
+        ok: true,
+        json: async () => ({
+          items: [{ linkRecord: { rkey: '3l' }, otherSubject: 'at://did/list/key' }],
+        }),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const page = await getManyToMany(
+      'did:plc:me',
+      'app.bsky.graph.listitem:subject',
+      'list',
+    );
+    expect(page.items[0].otherSubject).toBe('at://did/list/key');
+  });
+});
+
+describe('backlinkRows', () => {
+  it('reads the XRPC route, which calls them `records`', () => {
+    // The bug this guards: reading only `linking_records` turned a 200 with
+    // 34 backlinks into "this post was never touched" — silently, because an
+    // undefined array iterates as an empty one.
+    const page = { total: 2, records: [{ did: 'did:plc:a', rkey: '3l' }], cursor: null };
+    expect(backlinkRows(page)).toHaveLength(1);
+  });
+
+  it('still reads the older /links route, which calls them `linking_records`', () => {
+    expect(backlinkRows({ linking_records: [{ did: 'did:plc:a' }, { did: 'did:plc:b' }] })).toHaveLength(2);
+  });
+
+  it('gives an empty array for an empty or failed page', () => {
+    expect(backlinkRows({ records: [] })).toEqual([]);
+    expect(backlinkRows(null)).toEqual([]);
+    expect(backlinkRows({})).toEqual([]);
+  });
+});
+
+describe('flattenSources', () => {
+  it('strips the leading dot /links/all puts on each path', () => {
+    // getBacklinks rejects ".subject.uri"; its source param wants it bare.
+    const [row] = flattenSources({
+      links: { 'app.bsky.feed.like': { '.subject.uri': { records: 3, distinct_dids: 2 } } },
+    });
+    expect(row.source).toBe('app.bsky.feed.like:subject.uri');
+    expect(row.count).toBe(3);
+    expect(row.distinctDids).toBe(2);
+  });
+
+  it('sorts by count, busiest first', () => {
+    const rows = flattenSources({
+      links: {
+        'app.bsky.feed.like': { '.subject.uri': { records: 1 } },
+        'app.bsky.feed.post': { '.reply.root.uri': { records: 29 } },
+      },
+    });
+    expect(rows.map((r) => r.count)).toEqual([29, 1]);
+  });
+
+  it('returns null when the call itself failed', () => {
+    expect(flattenSources(null)).toBeNull();
+  });
+});

@@ -1,0 +1,777 @@
+// The dashboard's network sweeps: the code that walks paginated APIs
+// and hands compact rows back for the archive. Pure fetch loops: no React, no
+// IndexedDB. The dashboard orchestrates (and persists) what these gather.
+//
+// Where each fact comes from, and why:
+//
+//   followers   app.bsky.graph.getFollowers through the OWNER'S OAUTH AGENT.
+//               Auth is the point: only an authenticated call carries
+//               `viewer.followedBy` — the at-uri of each follower's own
+//               follow record — and that record's rkey is a TID, so the key
+//               alone dates the follow. There is no history API for follower
+//               counts; this reconstruction from present followers is the
+//               honest substitute, and its known blind spot (people who
+//               unfollowed or deleted are invisible) is stated in the UI.
+//
+//   following   the owner's own app.bsky.graph.follow records via listRecords
+//               on the PDS — the authoritative "who do I follow", with each
+//               record's URI kept so the People tab can unfollow by rkey.
+//               Always a full sweep, like followers: only a full set sees an
+//               unfollow made somewhere else.
+//
+//   posts       app.bsky.feed.getAuthorFeed on the PUBLIC AppView. Public
+//               data through the public host, exactly like the rest of
+//               src/lib — and the sweep is a page per hundred posts, a
+//               load the PDS proxy shouldn't carry. Carries engagement
+//               counts (likes/reposts/replies/quotes) the raw repo doesn't.
+//
+//   inbound     app.bsky.notification.listNotifications through the agent
+//               (owner-only data). Who liked/reposted/replied/quoted/
+//               mentioned, with a timestamp — the only per-actor inbound
+//               record there is. Retention is the AppView's, not ours, so
+//               each sweep banks events into the archive and coverage GROWS
+//               from first sync onward.
+//
+//   outbound    the owner's own app.bsky.feed.like / repost records via
+//               listRecords on the PDS (newest-first; verified against the
+//               live PDS — descending rkey, cursor pages backward). Replies
+//               and quotes need no sweep at all: the post archive already
+//               knows their targets.
+//
+// Progress is reported as facts, not percentages: how many rows so far, how
+// far back in time a newest-first walk has reached, which stage a multi-stage
+// sweep is in and how many of that stage's units are done. Turning those into
+// a bar is syncProgress.js's job, where the weighting can be tested.
+//
+// Every sweep is resumable and abort-aware. Pages are handed to `onPage` as
+// they land so the caller can persist incrementally — a sweep that dies at
+// page 200 has still banked 200 pages — and the return says honestly whether
+// the sweep completed, was aborted, or failed partway (with the cursor to
+// resume from where that is meaningful).
+
+import { APPVIEW } from '../config.js';
+import { rkeyFromAtUri, tidToTimestamp, resolveProfiles } from './atproto.js';
+import { compactPostFromFeedItem, inboundFromNotification, outboundFromRecord } from './analytics.js';
+import { backlinkRows, getBacklinks, getManyToMany } from './constellation.js';
+
+/** Page size everywhere — the API maximum for all four endpoints. */
+const PAGE = 100;
+
+/**
+ * Hard page caps, so no sweep can run unbounded against a surprise (an
+ * account with a million followers, a notification firehose). A page is 100
+ * rows, so these read up to 100,000 followers, 10,000 follows, 20,000 block
+ * paths per walk and 50,000 posts per sync (a longer post archive resumes
+ * from its cursor). Hitting one is reported, never passed off as the whole
+ * set.
+ */
+const CAPS = { followers: 1000, following: 100, blocks: 200, posts: 500, inbound: 80, outboundPerKind: 120 };
+
+/** One polite second ask, then the truth. Mirrors resolveProfiles' retry. */
+async function withRetry(fn, signal) {
+  try {
+    return await fn();
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    await new Promise((r) => setTimeout(r, 800));
+    return fn();
+  }
+}
+
+const aborted = (signal) => Boolean(signal?.aborted);
+
+/* ------------------------------------------------------------------ */
+/* Followers                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sweep every current follower. Always a full sweep: an incremental one
+ * cannot see unfollows, so topping up would only ever let the list grow
+ * stale in the one direction nobody notices.
+ *
+ * @returns {Promise<{followers:Array, complete:boolean, aborted:boolean, error:string|null}>}
+ */
+export async function sweepFollowers(agent, did, { onProgress, signal } = {}) {
+  const followers = [];
+  let cursor;
+  let error = null;
+  let complete = false;
+  for (let page = 0; page < CAPS.followers; page++) {
+    if (aborted(signal)) return { followers, complete: false, aborted: true, error: null };
+    let res;
+    try {
+      res = await withRetry(
+        () => agent.app.bsky.graph.getFollowers({ actor: did, limit: PAGE, cursor }),
+        signal,
+      );
+    } catch (err) {
+      error = err?.message || String(err);
+      break;
+    }
+    const batch = res?.data?.followers || [];
+    for (const f of batch) {
+      if (!f?.did) continue;
+      followers.push({
+        did: f.did,
+        handle: f.handle || '',
+        displayName: f.displayName || '',
+        avatar: f.avatar || '',
+        // Their follow record's TID. Null for the rare non-TID rkey — the
+        // account still counts toward the total, just not toward the curve.
+        followedAt: tidToTimestamp(rkeyFromAtUri(f.viewer?.followedBy)),
+      });
+    }
+    onProgress?.({ fetched: followers.length });
+    cursor = res?.data?.cursor;
+    if (!cursor || batch.length === 0) {
+      complete = true;
+      break;
+    }
+  }
+  // Past the cap: what was read is real, but it isn't everyone, and a partial
+  // list would draw a growth curve that starts in the middle.
+  if (!complete && !error) error = 'more followers than the sweep reads';
+  return { followers, complete, aborted: false, error };
+}
+
+/* ------------------------------------------------------------------ */
+/* Following                                                            */
+/* ------------------------------------------------------------------ */
+
+const FOLLOW = 'app.bsky.graph.follow';
+
+/**
+ * One of the owner's follow records → `{ uri, did, followedAt }`, keyed by the
+ * record's own URI: a repo can hold two follow records for one subject (an
+ * old client's double tap), and unfollowing has to delete both. Dated by the
+ * rkey TID first, as everywhere else in the dashboard, then by createdAt.
+ */
+export function followFromRecord(record) {
+  const did = record?.value?.subject;
+  if (!record?.uri || typeof did !== 'string' || !did.startsWith('did:')) return null;
+  const followedAt = tidToTimestamp(rkeyFromAtUri(record.uri)) || record.value?.createdAt || null;
+  return { uri: record.uri, did, followedAt };
+}
+
+/**
+ * Sweep every account the owner follows, from their own PDS. Always the full
+ * set — an incremental sweep could never notice an unfollow made in another
+ * client, and a stale "Following" beside someone is worse than none.
+ *
+ * @returns {Promise<{following:Array, complete:boolean, aborted:boolean, error:string|null}>}
+ */
+export async function sweepFollowing(agent, did, { onProgress, signal } = {}) {
+  const following = [];
+  let cursor;
+  for (let page = 0; page < CAPS.following; page++) {
+    if (aborted(signal)) return { following, complete: false, aborted: true, error: null };
+    let res;
+    try {
+      res = await withRetry(
+        () => agent.com.atproto.repo.listRecords({ repo: did, collection: FOLLOW, limit: PAGE, cursor }),
+        signal,
+      );
+    } catch (err) {
+      if (aborted(signal)) return { following, complete: false, aborted: true, error: null };
+      // A repo that has never followed anyone has no such collection, which
+      // some PDS implementations answer with a 400. That is an empty set.
+      if (/could not locate|not found/i.test(err?.message || '')) {
+        return { following, complete: true, aborted: false, error: null };
+      }
+      return { following, complete: false, aborted: false, error: err?.message || String(err) };
+    }
+    const batch = res?.data?.records || [];
+    for (const record of batch) {
+      const row = followFromRecord(record);
+      if (row) following.push(row);
+    }
+    onProgress?.({ fetched: following.length });
+    cursor = res?.data?.cursor;
+    if (!cursor || batch.length === 0) return { following, complete: true, aborted: false, error: null };
+  }
+  // Past the cap: what was read is real, but it isn't everyone, and a partial
+  // set would mark real follows as "not following".
+  return { following, complete: false, aborted: false, error: 'more follows than the sweep reads' };
+}
+
+/* ------------------------------------------------------------------ */
+/* Blocks                                                               */
+/* ------------------------------------------------------------------ */
+
+// A walk that hit its page cap. Said out loud: a block count that silently
+// stopped at the cap would read as the whole of it.
+const TOO_MANY_BLOCKS = 'more block records than the sweep reads';
+
+const BLOCK_SOURCE = 'app.bsky.graph.block:subject';
+const LIST_MEMBER_SOURCE = 'app.bsky.graph.listitem:subject';
+const LIST_BLOCK_SOURCE = 'app.bsky.graph.listblock:subject';
+
+/**
+ * Sweep every current direct block and every moderation-list block path
+ * pointing at the owner through Constellation. List membership records first
+ * reveal the moderation list URI; backlinks to that URI then reveal everyone
+ * subscribed to block the list.
+ *
+ * The effective date of a list block is the later of the membership and list
+ * subscription records: the block cannot exist until both do. Constellation
+ * indexes current backlinks, not deleted records, so removed blocks,
+ * subscriptions and memberships disappear on the next complete sweep.
+ *
+ * Progress names its stage, because the four take wildly different times —
+ * measured on one account with ~600 list memberships: direct blocks ~3s, finding the lists ~1s,
+ * checking ~600 lists ~7s, then ~280 moderation lists' subscribers ~70s:
+ *
+ *   { stage: 'direct',      fetched, done: rows read }
+ *   { stage: 'lists',       fetched, done: memberships read }
+ *   { stage: 'check',       fetched, done, total }  lists checked of all lists
+ *   { stage: 'subscribers', fetched, done, total }  modlists walked of all
+ *
+ * `fetched` is always the block paths found so far.
+ *
+ * @returns {Promise<{blocks:Array, complete:boolean, truncated:boolean,
+ *                    aborted:boolean, error:string|null}>}
+ */
+export async function sweepBlocks(did, { onProgress, signal } = {}) {
+  const blocks = [];
+  const seen = new Set();
+  const direct = await backlinkSweep(did, BLOCK_SOURCE, (rows) =>
+    onProgress?.({ stage: 'direct', fetched: rows, done: rows }),
+  );
+  if (direct.aborted) return result({ aborted: true });
+  if (direct.error) return result({ error: direct.error });
+  if (direct.truncated) return result({ truncated: true, error: TOO_MANY_BLOCKS });
+
+  for (const row of direct.rows) {
+    if (!row?.did || !row?.rkey) continue;
+    const uri = `at://${row.did}/${row.collection || 'app.bsky.graph.block'}/${row.rkey}`;
+    if (seen.has(uri)) continue;
+    seen.add(uri);
+    blocks.push({
+      uri,
+      did: row.did,
+      source: 'direct',
+      blockedAt: tidToTimestamp(row.rkey),
+    });
+  }
+  const directPaths = blocks.length;
+  onProgress?.({ stage: 'lists', fetched: directPaths, done: 0 });
+
+  const memberships = await manyToManySweep(did, LIST_MEMBER_SOURCE, 'list', (items) =>
+    onProgress?.({ stage: 'lists', fetched: directPaths, done: items }),
+  );
+  if (memberships.aborted) return result({ aborted: true });
+  if (memberships.error) return result({ error: memberships.error });
+  if (memberships.truncated) return result({ truncated: true, error: TOO_MANY_BLOCKS });
+
+  // getManyToMany returns each list URI beside its list-item record, replacing
+  // hundreds of individual list-item hydration requests.
+  const lists = new Map();
+  for (const item of memberships.items) {
+    const row = item?.linkRecord;
+    const listUri = item?.otherSubject;
+    if (!row?.rkey || !listUri) continue;
+    const memberAt = tidToTimestamp(row.rkey);
+    const existing = lists.get(listUri);
+    if (!existing || earlier(memberAt, existing.memberAt)) lists.set(listUri, { listUri, memberAt });
+  }
+
+  // Only moderation lists can create list blocks. Read each unique list record
+  // through the public AppView first, keeping ordinary curation lists away
+  // from the rate-limited Constellation list-block endpoint.
+  let hydratedLists;
+  let checked = 0;
+  onProgress?.({ stage: 'check', fetched: directPaths, done: 0, total: lists.size });
+  try {
+    hydratedLists = await mapConcurrent(Array.from(lists.values()), 8, async (list) => {
+      const parts = atUriParts(list.listUri);
+      let keep = null;
+      if (parts) {
+        const record = await getPublicRecord(parts.did, parts.collection, parts.rkey, signal);
+        keep = record?.purpose === 'app.bsky.graph.defs#modlist' ? list : null;
+      }
+      checked += 1;
+      onProgress?.({ stage: 'check', fetched: directPaths, done: checked, total: lists.size });
+      return keep;
+    });
+  } catch (err) {
+    if (aborted(signal)) return result({ aborted: true });
+    return result({ error: err?.message || String(err) });
+  }
+  const moderationLists = hydratedLists.filter(Boolean);
+
+  // The long stage. Paths are counted as each list lands (not after the
+  // whole walk), so the count keeps moving through the minute this takes.
+  let walked = 0;
+  let listPaths = 0;
+  onProgress?.({ stage: 'subscribers', fetched: directPaths, done: 0, total: moderationLists.length });
+  const listSubscriptions = await mapConcurrent(
+    moderationLists,
+    1,
+    async (list) => {
+      // Keep the remaining moderation-list fan-out below the public
+      // Constellation instance's rate limit.
+      await pause(250, signal);
+      const subscriptions = await backlinkSweep(list.listUri, LIST_BLOCK_SOURCE);
+      walked += 1;
+      listPaths += subscriptions.rows?.length || 0;
+      onProgress?.({
+        stage: 'subscribers',
+        fetched: directPaths + listPaths,
+        done: walked,
+        total: moderationLists.length,
+      });
+      return { ...list, subscriptions };
+    },
+  );
+
+  for (const { listUri, memberAt, subscriptions } of listSubscriptions) {
+    if (subscriptions.aborted) return result({ aborted: true });
+    if (subscriptions.error) return result({ error: subscriptions.error });
+    if (subscriptions.truncated) return result({ truncated: true, error: TOO_MANY_BLOCKS });
+
+    for (const row of subscriptions.rows) {
+      if (!row?.did || !row?.rkey) continue;
+      const recordUri = `at://${row.did}/${row.collection || 'app.bsky.graph.listblock'}/${row.rkey}`;
+      const uri = `list:${listUri}:${recordUri}`;
+      if (seen.has(uri)) continue;
+      seen.add(uri);
+      blocks.push({
+        uri,
+        did: row.did,
+        source: 'list',
+        listUri,
+        blockedAt: effectiveBlockDate(memberAt, tidToTimestamp(row.rkey)),
+      });
+    }
+  }
+
+  return result({ complete: true });
+
+  function result(flags = {}) {
+    return {
+      blocks,
+      complete: false,
+      truncated: false,
+      aborted: false,
+      error: null,
+      ...flags,
+    };
+  }
+
+  async function backlinkSweep(target, source, onRows) {
+    const rows = [];
+    let cursor;
+    for (let pageNumber = 0; pageNumber < CAPS.blocks; pageNumber++) {
+      if (aborted(signal)) return { rows, aborted: true };
+      const page = await getBacklinks(target, source, { limit: PAGE, cursor, signal });
+      if (aborted(signal)) return { rows, aborted: true };
+      if (!page) return { rows, error: 'Constellation backlinks unavailable' };
+      const batch = backlinkRows(page);
+      rows.push(...batch);
+      onRows?.(rows.length);
+      const next = page.cursor || null;
+      if (!next || batch.length === 0) return { rows, complete: true };
+      if (next === cursor) return { rows, error: 'Constellation returned a repeated cursor' };
+      cursor = next;
+    }
+    return { rows, truncated: true };
+  }
+
+  async function manyToManySweep(subject, source, pathToOther, onItems) {
+    const items = [];
+    let cursor;
+    for (let pageNumber = 0; pageNumber < CAPS.blocks; pageNumber++) {
+      if (aborted(signal)) return { items, aborted: true };
+      const page = await getManyToMany(subject, source, pathToOther, {
+        limit: PAGE,
+        cursor,
+        signal,
+      });
+      if (aborted(signal)) return { items, aborted: true };
+      if (!page) return { items, error: 'Constellation list membership join unavailable' };
+      const batch = page.items || [];
+      items.push(...batch);
+      onItems?.(items.length);
+      const next = page.cursor || null;
+      if (!next || batch.length === 0) return { items, complete: true };
+      if (next === cursor) return { items, error: 'Constellation returned a repeated cursor' };
+      cursor = next;
+    }
+    return { items, truncated: true };
+  }
+}
+
+async function getPublicRecord(repo, collection, rkey, signal) {
+  const params = new URLSearchParams({ repo, collection, rkey });
+  const response = await withRetry(
+    () => fetch(`${APPVIEW}/xrpc/com.atproto.repo.getRecord?${params}`, { signal }),
+    signal,
+  );
+  // com.atproto.repo.getRecord reports a deleted/missing record as HTTP 400
+  // RecordNotFound rather than 404. Constellation can retain that backlink
+  // briefly, and one stale row must not discard every healthy moderation list.
+  if (response.status === 400 || response.status === 404) return null;
+  if (!response.ok) throw new Error(`HTTP ${response.status} while reading moderation-list record`);
+  const body = await response.json();
+  return body?.value || null;
+}
+
+function effectiveBlockDate(memberAt, subscribedAt) {
+  const memberMs = Date.parse(memberAt || '');
+  const subscribedMs = Date.parse(subscribedAt || '');
+  if (!Number.isFinite(memberMs) || !Number.isFinite(subscribedMs)) return null;
+  return new Date(Math.max(memberMs, subscribedMs)).toISOString();
+}
+
+function earlier(a, b) {
+  const aMs = Date.parse(a || '');
+  const bMs = Date.parse(b || '');
+  return Number.isFinite(aMs) && (!Number.isFinite(bMs) || aMs < bMs);
+}
+
+function atUriParts(uri) {
+  const match = String(uri || '').match(/^at:\/\/([^/]+)\/([^/]+)\/([^/?#]+)/);
+  if (!match) return null;
+  return { did: match[1], collection: match[2], rkey: match[3] };
+}
+
+async function mapConcurrent(items, concurrency, mapper) {
+  const out = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next++;
+      out[index] = await mapper(items[index], index);
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
+  );
+  return out;
+}
+
+function pause(ms, signal) {
+  return new Promise((resolve) => {
+    if (signal?.aborted) {
+      resolve();
+      return;
+    }
+    const done = () => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    };
+    const timer = setTimeout(done, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      done();
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Posts                                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sweep the author feed into compact archive rows, newest first.
+ *
+ * Two modes fall out of the parameters rather than a flag:
+ *
+ *   full         knownUris empty (or rehydrateSinceMs = Infinity): pages to
+ *                exhaustion. ~250 pages here — the one expensive sweep, run
+ *                once and checkpointed via `resumeCursor` so an interruption
+ *                resumes instead of restarting.
+ *   incremental  stops at the first page where every item is already known
+ *                AND already older than `rehydrateSinceMs`. Known-but-recent
+ *                rows are re-emitted on purpose: engagement keeps landing on
+ *                recent posts after they're archived, so the recent window
+ *                gets its counts refreshed on every sync.
+ *
+ * @returns {Promise<{fetched:number, complete:boolean, aborted:boolean,
+ *                    cursor:string|null, error:string|null}>}
+ */
+export async function sweepPosts({
+  did,
+  knownUris = null,
+  rehydrateSinceMs = Infinity,
+  resumeCursor = null,
+  onPage,
+  onProgress,
+  signal,
+} = {}) {
+  let cursor = resumeCursor || null;
+  let fetched = 0;
+  // How far back the walk has reached — the oldest own post seen. With the
+  // archive's own post dates, that is how the dashboard measures a newest-first
+  // walk honestly: "posts newer than here" over "posts it has to reach".
+  let reachedMs = null;
+  for (let page = 0; page < CAPS.posts; page++) {
+    if (aborted(signal)) return { fetched, complete: false, aborted: true, cursor, error: null };
+    const params = new URLSearchParams({
+      actor: did,
+      limit: String(PAGE),
+      filter: 'posts_with_replies',
+    });
+    if (cursor) params.set('cursor', cursor);
+    let res;
+    try {
+      res = await withRetry(async () => {
+        const r = await fetch(`${APPVIEW}/xrpc/app.bsky.feed.getAuthorFeed?${params}`, { signal });
+        if (!r.ok) throw new Error(`HTTP ${r.status} from getAuthorFeed`);
+        return r.json();
+      }, signal);
+    } catch (err) {
+      if (aborted(signal)) return { fetched, complete: false, aborted: true, cursor, error: null };
+      return { fetched, complete: false, aborted: false, cursor, error: err?.message || String(err) };
+    }
+
+    const feed = res?.feed || [];
+    const rows = [];
+    // "Nothing new here" must only consider the owner's own posts: a repost
+    // resurfacing an ancient post of someone else lands mid-feed and would
+    // otherwise read as an unknown item, un-stopping every incremental sweep.
+    let sawNew = false;
+    let oldestOwnMs = Infinity;
+    for (const item of feed) {
+      const row = compactPostFromFeedItem(item);
+      if (!row) continue;
+      rows.push(row);
+      const at = Date.parse(row.at);
+      if (Number.isFinite(at) && at < oldestOwnMs) oldestOwnMs = at;
+      if (!knownUris?.has(row.uri)) sawNew = true;
+    }
+    fetched += rows.length;
+    if (Number.isFinite(oldestOwnMs) && (reachedMs == null || oldestOwnMs < reachedMs)) reachedMs = oldestOwnMs;
+    // The cursor handed to onPage resumes AFTER this page — the page itself
+    // is in `rows`, so a caller that persists both can survive being killed
+    // at any moment (a tab close, the deploy auto-reload) and continue from
+    // here instead of page one. Null on the final page.
+    if (rows.length) await onPage?.(rows, { cursor: res?.cursor || null });
+    onProgress?.({ fetched, reachedMs });
+
+    const done =
+      !res?.cursor ||
+      feed.length === 0 ||
+      (!sawNew && rows.length > 0 && oldestOwnMs < rehydrateSinceMs);
+    if (done) return { fetched, complete: true, aborted: false, cursor: null, error: null };
+    cursor = res.cursor;
+  }
+  // Cap reached — everything gathered is real, but the sweep isn't finished.
+  return { fetched, complete: false, aborted: false, cursor, error: null };
+}
+
+/* ------------------------------------------------------------------ */
+/* Inbound engagement (notifications)                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sweep notifications back to `cutoffMs`, banking engagement events.
+ *
+ * `coveredToMs` is how deep a PREVIOUS sweep already reached: a page of
+ * already-known events only ends the sweep when this sweep isn't being asked
+ * to dig deeper than any before it — otherwise known events are pages we
+ * page THROUGH on the way down to the new cutoff.
+ *
+ * `reachedMs` in the result is the oldest event time seen (known or new) —
+ * with the previous coverage, the dashboard's honest "coverage since" caption.
+ *
+ * @returns {Promise<{events:Array, fetched:number, reachedMs:number|null,
+ *                    complete:boolean, truncated:boolean, aborted:boolean, error:string|null}>}
+ */
+export async function sweepInbound(
+  agent,
+  { cutoffMs, knownUris = null, coveredToMs = null, onPage, onProgress, signal } = {},
+) {
+  const events = [];
+  let cursor;
+  let reachedMs = null;
+  // The feed's own position (indexedAt of the oldest notification read, of
+  // any reason) — what progress is measured by, since the walk ends by time.
+  let positionMs = null;
+  const covered = coveredToMs != null && coveredToMs <= cutoffMs;
+  for (let page = 0; page < CAPS.inbound; page++) {
+    if (aborted(signal)) return result({ aborted: true });
+    let res;
+    try {
+      res = await withRetry(
+        () => agent.app.bsky.notification.listNotifications({ limit: PAGE, cursor }),
+        signal,
+      );
+    } catch (err) {
+      return result({ error: err?.message || String(err) });
+    }
+    const batch = res?.data?.notifications || [];
+    const rows = [];
+    let sawNew = false;
+    let pageOldest = Infinity;
+    for (const n of batch) {
+      // The STOP test reads indexedAt on every notification, engagement or
+      // not: it is the feed's own position, so a page of old follows still
+      // ends the walk, and a backdated createdAt cannot end it early.
+      const idx = Date.parse(n?.indexedAt || '');
+      if (Number.isFinite(idx) && idx < pageOldest) pageOldest = idx;
+      const ev = inboundFromNotification(n);
+      if (!ev) continue;
+      const at = Date.parse(ev.at);
+      if (Number.isFinite(at) && (reachedMs == null || at < reachedMs)) reachedMs = at;
+      if (!Number.isFinite(at) || at < cutoffMs) continue; // older than asked for — not banked
+      if (!knownUris?.has(ev.uri)) sawNew = true;
+      rows.push(ev);
+    }
+    events.push(...rows);
+    if (Number.isFinite(pageOldest) && (positionMs == null || pageOldest < positionMs)) positionMs = pageOldest;
+    if (rows.length) await onPage?.(rows);
+    onProgress?.({ fetched: events.length, reachedMs: positionMs });
+
+    if (!res?.data?.cursor || batch.length === 0) return result({ complete: true });
+    if (pageOldest < cutoffMs) return result({ complete: true });
+    if (!sawNew && rows.length > 0 && covered) return result({ complete: true });
+    cursor = res.data.cursor;
+  }
+  return result({ truncated: true });
+
+  function result(flags = {}) {
+    return {
+      events,
+      fetched: events.length,
+      reachedMs,
+      complete: false,
+      truncated: false,
+      aborted: false,
+      error: null,
+      ...flags,
+    };
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Outbound engagement (own likes + reposts)                            */
+/* ------------------------------------------------------------------ */
+
+const OUTBOUND_COLLECTIONS = [
+  { collection: 'app.bsky.feed.like', kind: 'like' },
+  { collection: 'app.bsky.feed.repost', kind: 'repost' },
+];
+
+/**
+ * Sweep the owner's like and repost records back to `cutoffMs`. Same
+ * coverage contract as sweepInbound. Records are dated by their own
+ * createdAt (outboundFromRecord), but the STOP test reads the rkey TID —
+ * the feed pages in rkey order, so a backdated createdAt must not end the
+ * sweep early.
+ */
+export async function sweepOutbound(
+  agent,
+  did,
+  { cutoffMs, knownUris = null, coveredToMs = null, onPage, onProgress, signal } = {},
+) {
+  const events = [];
+  let reachedMs = null;
+  let error = null;
+  let truncated = false;
+  let complete = true;
+  const covered = coveredToMs != null && coveredToMs <= cutoffMs;
+
+  for (const [part, { collection, kind }] of OUTBOUND_COLLECTIONS.entries()) {
+    let cursor;
+    let finished = false;
+    let positionMs = null; // the rkey-TID position of this collection's walk
+    for (let page = 0; page < CAPS.outboundPerKind; page++) {
+      if (aborted(signal)) {
+        return { events, fetched: events.length, reachedMs, complete: false, truncated, aborted: true, error };
+      }
+      let res;
+      try {
+        res = await withRetry(
+          () => agent.com.atproto.repo.listRecords({ repo: did, collection, limit: PAGE, cursor }),
+          signal,
+        );
+      } catch (err) {
+        // A missing collection is an empty archive, not a failure — a repo
+        // that has never reposted 400s here on some PDS implementations.
+        if (/could not locate|not found/i.test(err?.message || '')) {
+          finished = true;
+          break;
+        }
+        error = err?.message || String(err);
+        break;
+      }
+      const batch = res?.data?.records || [];
+      const rows = [];
+      let sawNew = false;
+      let pageOldestTid = Infinity;
+      for (const record of batch) {
+        const tid = Date.parse(tidToTimestamp(rkeyFromAtUri(record?.uri)) || '');
+        if (Number.isFinite(tid) && tid < pageOldestTid) pageOldestTid = tid;
+        const ev = outboundFromRecord(kind, record);
+        if (!ev) continue;
+        const at = Date.parse(ev.at);
+        if (Number.isFinite(at) && (reachedMs == null || at < reachedMs)) reachedMs = at;
+        if (Number.isFinite(at) && at < cutoffMs) continue;
+        if (!knownUris?.has(ev.uri)) sawNew = true;
+        rows.push(ev);
+      }
+      events.push(...rows);
+      if (Number.isFinite(pageOldestTid) && (positionMs == null || pageOldestTid < positionMs)) {
+        positionMs = pageOldestTid;
+      }
+      if (rows.length) await onPage?.(rows);
+      onProgress?.({ fetched: events.length, reachedMs: positionMs, part, parts: OUTBOUND_COLLECTIONS.length });
+
+      if (!res?.data?.cursor || batch.length === 0) {
+        finished = true;
+        break;
+      }
+      if (pageOldestTid < cutoffMs) {
+        finished = true;
+        break;
+      }
+      if (!sawNew && rows.length > 0 && covered) {
+        finished = true;
+        break;
+      }
+      cursor = res.data.cursor;
+    }
+    if (!finished) {
+      if (error) break;
+      truncated = true;
+    }
+    complete = complete && finished;
+  }
+  return { events, fetched: events.length, reachedMs, complete, truncated, aborted: false, error };
+}
+
+/* ------------------------------------------------------------------ */
+/* Actor cards                                                          */
+/* ------------------------------------------------------------------ */
+
+/** Actor cards older than this get re-resolved — handles and avatars drift. */
+const ACTOR_TTL_MS = 7 * 86_400_000;
+
+/**
+ * Make sure an actor card exists (and is reasonably fresh) for each DID.
+ * Resolution goes through resolveProfiles — public AppView, chunked, its own
+ * retry — and unresolved DIDs are simply absent, exactly as that helper
+ * leaves them: a deactivated account renders as its DID, never invented.
+ *
+ * @param {Array<string>} dids
+ * @param {Map<string,object>} cache  did → card, mutated in place.
+ * @returns {Promise<Array<object>>} Only the newly resolved cards (for persisting).
+ */
+export async function hydrateActors(dids, cache) {
+  const now = Date.now();
+  const missing = Array.from(new Set(dids || [])).filter((did) => {
+    const hit = cache.get(did);
+    return !hit || !hit.handle || now - (hit.at || 0) > ACTOR_TTL_MS;
+  });
+  if (missing.length === 0) return [];
+  const profiles = await resolveProfiles(missing);
+  const fresh = [];
+  for (const [did, p] of Object.entries(profiles)) {
+    const card = { did, handle: p.handle, displayName: p.displayName, avatar: p.avatar, at: now };
+    cache.set(did, card);
+    fresh.push(card);
+  }
+  return fresh;
+}

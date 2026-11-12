@@ -1,0 +1,97 @@
+/*
+  Virga: sky above, field below, and your numbers on cards in front of it.
+
+  The look comes from two of the Open Social site's landing page directions.
+  From Daylight: the ink and paper, the sky and field colours, one typeface
+  (Mona Sans, whose width axis sets a big title apart from the text under it),
+  white cards with a deep soft shadow, and pill-shaped controls. From Thread:
+  the hillside out of focus behind everything, a translucent bar across the
+  top, and the guide pinned to the bottom of the screen.
+
+  One typeface, in sentence case. Monospace is for code only: NSIDs, DIDs and
+  record names. Numbers are set in the same face as the words, in its ordinary
+  figures: Mona Sans's tabular ones have a slashed zero and a flagged 1, and
+  read as a second, monospace face.
+
+  There is no dark theme. The sky is the theme, and it has a dawn and a day.
+*/
+
+:root {
+  color-scheme: light;
+
+  /* Ink and paper. */
+  --ink: #0b1a33;
+  --ink-soft: #2b3954;
+  --ink-muted: #42506a;
+  --ink-faint: #5a6781;
+  --paper: #f6f9fe;
+  --card: rgb(255 255 255 / 0.94);
+  --card-solid: #ffffff;
+  --line: rgb(11 26 51 / 0.14);
+  --line-soft: rgb(11 26 51 / 0.08);
+
+  /* The sky and the field, top to bottom. */
+  --sky-1: #1c54cc;
+  --sky-2: #3a7fe2;
+  --sky-3: #8bbaf0;
+  --sky-4: #d4e7f8;
+  --field-1: #94d43c;
+  --field-2: #4fa624;
+  --field-3: #236617;
+  --sun: #ffd24a;
+
+  /* What the charts and the controls are drawn in. Blue is the data and
+     whatever is pressed. Coral is the second thing on a chart: the other
+     series, or the trend under the bars. */
+  --accent: #1d5ee0;
+  --accent-strong: #154bb9;
+  --accent-soft: #9cbcf4;
+  --accent-wash: #e3effd;
+  --second: #e8553a;
+  --second-ink: #ad3a1a;
+  /* A change against the window before: which way it went, not whether that
+     is good. More blocks is "up" too. */
+  --up: var(--accent-strong);
+  --down: var(--second-ink);
+  --danger: #b3261e;
+
+  /* Type. */
+  --sans: 'Mona Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.3125rem;
+  --leading-tight: 1.2;
+
+  /* Space. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Shape. */
+  --radius: 24px;
+  --radius-sm: 14px;
+  --pill: 999px;
+  --shadow: 0 30px 50px -34px rgb(8 28 60 / 0.6), 0 1px 3px rgb(8 28 60 / 0.07);
+  --shadow-bar: 0 18px 36px -22px rgb(8 28 60 / 0.55), 0 1px 3px rgb(8 28 60 / 0.08);
+
+  /* Layout. */
+  --wrap: 1120px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --topbar: 64px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (max-width: 700px) {
+  :root {
+    --text-base: 1rem;
+    --text-lg: 1.1875rem;
+    --radius: 20px;
+    --topbar: 56px;
+  }
+}
