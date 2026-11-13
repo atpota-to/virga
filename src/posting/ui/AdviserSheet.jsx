@@ -108,8 +108,7 @@ function AdviserNotice({ read }) {
         <Sparkles size={20} aria-hidden="true" />
         <p className="adviser-empty-title">This month’s free checks are used up</p>
         <p>
-          {read.usageLine || 'They start again on the first of next month.'} Checks are counted for each account and shared
-          with Anisota.
+          {read.usageLine || 'They start again on the first of next month.'} Checks are counted for each account.
         </p>
       </div>
     );

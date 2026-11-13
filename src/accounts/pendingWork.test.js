@@ -20,7 +20,7 @@ function requester(byPath) {
 }
 
 describe('readPendingWork', () => {
-  it('counts Virga’s waiting posts and live timers, and nothing else', async () => {
+  it('counts the waiting posts and live timers, and nothing else', async () => {
     const req = requester({
       '/api/schedule/list': {
         success: true,
@@ -29,8 +29,8 @@ describe('readPendingWork', () => {
           { id: 2, status: 'publishing', clientKey: 'virga' },
           { id: 3, status: 'failed', clientKey: 'virga' },
           { id: 4, status: 'published', clientKey: 'virga' },
-          // Another app's row runs on its own grant.
-          { id: 5, status: 'pending', clientKey: 'anisota' },
+          // A row that doesn't say whose it is is still the account's.
+          { id: 5, status: 'pending' },
         ],
       },
       '/api/self-destruct/list': {
@@ -43,7 +43,7 @@ describe('readPendingWork', () => {
         ],
       },
     });
-    expect(await readPendingWork(req)).toEqual({ posts: 2, timers: 2 });
+    expect(await readPendingWork(req)).toEqual({ posts: 3, timers: 2 });
   });
 
   it('fails when a list can’t be read, so the dialog says it couldn’t check', async () => {

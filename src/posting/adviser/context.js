@@ -279,7 +279,7 @@ export async function gatherReplyContext(
 
 /**
  * The analyze-post body for a plan and the context gathered for it. The text
- * is trimmed: cocoon checks each excerpt it returns against exactly what it
+ * is trimmed: the server checks each excerpt it returns against exactly what it
  * was sent.
  */
 export function analyzePayload(plan, context = null) {

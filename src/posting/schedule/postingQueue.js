@@ -7,10 +7,8 @@
 //
 // `now` is injectable everywhere for deterministic tests.
 //
-// cocoon's list holds every client's rows for the account (each with its
-// `clientKey`), so two weekly schedules can place posts in one repo. Every
-// queued row holds its minute, whoever placed it; only this app's own rows
-// are ever moved.
+// Every queued row holds its minute until it is moved; a row that can't move
+// (failed, part-published, due) is stepped around.
 
 export const QUEUE_HORIZON_DAYS = 90; // matches backend MAX_HORIZON_DAYS
 export const MIN_LEAD_MS = 60 * 1000; // never place a slot < 1 min out
@@ -311,9 +309,9 @@ function toIsoOrNull(value) {
  * `newScheduledFor` is null past the horizon. The caller reschedules only rows
  * whose time changed (pendingMoves).
  *
- * `orderedRows` are the rows this app may move. `occupied` are queued rows it
- * may not (another client's, or a thread part-way out): their minutes are
- * skipped, so a re-pack never lands on top of them.
+ * `orderedRows` are the rows that may move. `occupied` are queued rows that
+ * may not (failed, due, or a thread part-way out): their minutes are skipped,
+ * so a re-pack never lands on top of them.
  */
 export function recomputeQueueAssignment(
   schedule,

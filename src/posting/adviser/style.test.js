@@ -219,7 +219,7 @@ describe('synthesizeStyleFromTexts', () => {
     expect(req.calls[0].body).toEqual({ posts: texts });
   });
 
-  it('refuses too few posts without asking cocoon', async () => {
+  it('refuses too few posts without asking the server', async () => {
     const req = requester({ summary: 'x' });
     await expect(
       synthesizeStyleFromTexts(req, { texts: ['a', 'b'] }),

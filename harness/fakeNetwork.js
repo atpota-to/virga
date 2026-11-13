@@ -1,14 +1,13 @@
 // The network, answered from harness/world.js. Every host the app reads
 // without a session (the public AppView, the PLC directory, the accounts' PDS,
 // Constellation, Bluesky's card and video services) is routed here, and so is
-// Virga's server (harness/fakeCocoon.js, at src/config.js's COCOON_URL), so
-// the harness needs no connection and touches no real account. Anything else
-// that isn't this dev server is refused, loudly, so a new outside request
-// can't slip in unnoticed.
+// Virga's server (harness/fakeServer.js, at its SERVER_ORIGIN rather than this
+// dev server's /api, which Vite would answer itself), so the harness needs no
+// connection and touches no real account. Anything else that isn't this dev
+// server is refused, loudly, so a new outside request can't slip in unnoticed.
 
-import { COCOON_URL } from '../src/config.js';
 import { buildRepoCar } from './buildCar.js';
-import { createCocoonRouter } from './fakeCocoon.js';
+import { SERVER_ORIGIN, createServerRouter } from './fakeServer.js';
 import { readServiceToken } from './fakeXrpc.js';
 import { cardImage } from './png.js';
 import { listCollection, readBlob, readRecord, storeBlob } from './repo.js';
@@ -74,17 +73,17 @@ async function bodyBytes(body) {
 /**
  * Build the router for the worlds (one, or every account's). `route(url, init)`
  * answers with a Response, or null for a URL that isn't one of the outside
- * hosts. `cocoon` (createCocoon's) adds Virga's server; `videoProcessingMs` is
+ * hosts. `server` (createServer's) adds Virga's server; `videoProcessingMs` is
  * how long the video service takes to "process" an upload.
  */
-export function createRouter(worlds, { cocoon = null, now = () => Date.now(), videoProcessingMs = 4000 } = {}) {
+export function createRouter(worlds, { server = null, now = () => Date.now(), videoProcessingMs = 4000 } = {}) {
   const list = Array.isArray(worlds) ? worlds : [worlds];
   const views = createViews(list);
   const worldOf = (actor) => views.byDid.get(actor) || views.byDid.get(views.resolveHandle(actor)) || null;
   const cars = new Map(); // did → { revision, car }
   const videoJobs = new Map();
   const cardImages = new Map();
-  const cocoonRoute = cocoon ? createCocoonRouter(cocoon, new URL(COCOON_URL).origin) : null;
+  const serverRoute = server ? createServerRouter(server, SERVER_ORIGIN) : null;
 
   function carFor(world) {
     const cached = cars.get(world.me.did);
@@ -171,8 +170,8 @@ export function createRouter(worlds, { cocoon = null, now = () => Date.now(), vi
     const q = url.searchParams;
     const method = url.pathname.split('/xrpc/')[1] || '';
 
-    if (cocoonRoute) {
-      const answer = await cocoonRoute(url, init);
+    if (serverRoute) {
+      const answer = await serverRoute(url, init);
       if (answer) return answer;
     }
 
@@ -372,9 +371,9 @@ export function createRouter(worlds, { cocoon = null, now = () => Date.now(), vi
  * Swap `window.fetch` for one that answers from the worlds. Requests to this
  * dev server pass through; requests to any other host are refused.
  */
-export function installFakeNetwork(worlds, { latency = 60, cocoon = null } = {}) {
+export function installFakeNetwork(worlds, { latency = 60, server = null } = {}) {
   const real = window.fetch.bind(window);
-  const route = createRouter(worlds, { cocoon });
+  const route = createRouter(worlds, { server });
   window.fetch = async (input, init) => {
     const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
     const url = new URL(href, window.location.href);

@@ -1,8 +1,8 @@
 /*
  * Quick notes for revising a generated alt-text description, and the kind of
- * image chosen before the first one. A quick note goes to cocoon twice: as a
+ * image chosen before the first one. A quick note goes to the server twice: as a
  * sentence in the note (the request in words) and as an id (so the rules stop
- * arguing with it). The ids are pinned against cocoon's lib/alt-text-prompt.js,
+ * arguing with it). The ids are pinned against server/ai/altTextPrompt.js,
  * which drops any it doesn't know.
  */
 import { describe, expect, it } from 'vitest';
@@ -24,7 +24,7 @@ import {
   toggleQuickNote,
 } from './altTextFollowUp.js';
 
-describe('the ids cocoon knows', () => {
+describe('the ids the server knows', () => {
   it('quick notes match ALT_TEXT_PRESETS', () => {
     expect(ALT_TEXT_QUICK_NOTES.map((n) => n.id).sort()).toEqual([
       'describe',
@@ -76,7 +76,7 @@ describe('choosing quick notes', () => {
   });
 });
 
-describe('the note sent to cocoon', () => {
+describe('the note sent to the server', () => {
   it("puts each quick note's sentence before the author's words", () => {
     expect(
       composeFollowUp(['describe'], "  It's the settings page in the app  "),
@@ -92,7 +92,7 @@ describe('the note sent to cocoon', () => {
     expect(hasFollowUpDraft([], 'a heron')).toBe(true);
   });
 
-  it("never runs past cocoon's cap, so the author's words are never cut", () => {
+  it("never runs past the server's cap, so the author's words are never cut", () => {
     // The longest set that can be on together: one of each pair, plus plain.
     const longest = ['describe', 'detail', 'plain'];
     const words = 'm'.repeat(ALT_TEXT_NOTE_MAX);

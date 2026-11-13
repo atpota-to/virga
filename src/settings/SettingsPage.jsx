@@ -9,7 +9,7 @@ import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
-import { COCOON_URL, PERMISSION_GROUPS } from '../config.js';
+import { PERMISSION_GROUPS, backendHost } from '../config.js';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
@@ -20,14 +20,6 @@ import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PageHeader, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
-
-const COCOON_HOST = (() => {
-  try {
-    return new URL(COCOON_URL).host;
-  } catch {
-    return COCOON_URL;
-  }
-})();
 
 const SECTIONS = [
   { key: 'account', label: 'Account' },
@@ -591,7 +583,7 @@ function PermissionsSection() {
       <Section title="Where the sign-in is kept">
         <p className="settings-text">
           A browser session stays in this browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
-          {COCOON_HOST}, which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed.
+          {backendHost()}, which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed.
           Virga’s server is used only for long sessions and the features that need one; your archive never goes there. Settings ›{' '}
           <Link to="/settings/account">Account</Link> says which kind each account has.
         </p>
@@ -626,7 +618,7 @@ function AboutSection() {
             <strong>Bluesky, signed in as you</strong>: your follower list and your notifications, and what you post.
           </li>
           <li>
-            <strong>Virga’s server ({COCOON_HOST})</strong>, for an account with a long session: the sign-in, and the signed-in requests,
+            <strong>Virga’s server ({backendHost()})</strong>, for an account with a long session: the sign-in, and the signed-in requests,
             which it passes on to your account. Scheduled posts and post timers are kept there until they run.
           </li>
           <li>

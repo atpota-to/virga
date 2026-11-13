@@ -5,7 +5,7 @@
 // answers its signed-in reads and takes its writes; long-session accounts
 // also get a requester for Virga's server, the real one from
 // src/session/backendClient.js, pointed at the fake server in
-// harness/fakeCocoon.js. Switching between accounts happens in place, as it
+// harness/fakeServer.js. Switching between accounts happens in place, as it
 // does in the real app.
 //
 // The real module's exported shape and value are mirrored exactly: if it
@@ -14,8 +14,9 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { createHarness, readFlags } from './harness.js';
+import { SERVER_ORIGIN } from './fakeServer.js';
 import { LAB, ME } from './world.js';
-import { COCOON_URL, OAUTH_CALLBACK_PATH } from '../src/config.js';
+import { OAUTH_CALLBACK_PATH } from '../src/config.js';
 import { makeReauthRequiredError } from '../src/session/accounts.js';
 import { backendSignOut, checkBackendSession, createBackendRequester } from '../src/session/backendClient.js';
 import { resolvePdsUrl } from '../src/session/pds.js';
@@ -37,7 +38,7 @@ const expiredAtStart = (id) => Boolean(flags.expired) && id.handle.startsWith(fl
 // Long sessions hold a token from Virga's server, minted as a sign-in would.
 const tokens = new Map();
 if (flags.mode === 'backend' && !flags.signedOut) {
-  for (const id of flags.accounts) if (!expiredAtStart(id)) tokens.set(id.did, harness.cocoon.mintToken(id.did));
+  for (const id of flags.accounts) if (!expiredAtStart(id)) tokens.set(id.did, harness.server.mintToken(id.did));
 }
 
 export function AtprotoSessionProvider({ children }) {
@@ -70,7 +71,7 @@ export function AtprotoSessionProvider({ children }) {
     if (/^nobody/i.test(String(input))) throw new Error(`Failed to resolve identity: ${input}`);
     const id = String(input).replace(/^@/, '') === LAB.handle || input === LAB.did ? LAB : ME;
     if (!harness.worldOf(id.did)) throw new Error(`Failed to resolve identity: ${input}`);
-    if (flags.mode === 'backend') tokens.set(id.did, harness.cocoon.mintToken(id.did));
+    if (flags.mode === 'backend') tokens.set(id.did, harness.server.mintToken(id.did));
     setStatus(id.did, 'ready');
     setActiveDid(id.did);
   }, []);
@@ -94,7 +95,7 @@ export function AtprotoSessionProvider({ children }) {
     tokens.delete(did);
     requesters.current.delete(did);
     // Per device, as the real one: the server ends the grant only with the last token.
-    if (token) await backendSignOut({ backendUrl: COCOON_URL, token, fetch: fetchNow });
+    if (token) await backendSignOut({ backendUrl: SERVER_ORIGIN, token, fetch: fetchNow });
   }, []);
 
   const signOutAccount = useCallback(
@@ -139,7 +140,7 @@ export function AtprotoSessionProvider({ children }) {
   const liteCheck = useCallback(async (did) => {
     const token = tokens.get(did);
     if (!token) return { status: 'expired', definitive: true };
-    return interpretLiteSessionResponse(await checkBackendSession({ backendUrl: COCOON_URL, token, fetch: fetchNow }));
+    return interpretLiteSessionResponse(await checkBackendSession({ backendUrl: SERVER_ORIGIN, token, fetch: fetchNow }));
   }, []);
 
   // A 401 from the server: confirmed the way the real session layer does
@@ -163,7 +164,7 @@ export function AtprotoSessionProvider({ children }) {
       if (!row || row.mode !== 'backend' || row.status === 'needsSignIn' || !token) return null;
       const held = requesters.current.get(did);
       if (held?.token === token) return held.requester;
-      const requester = createBackendRequester({ backendUrl: COCOON_URL, token, did, fetch: fetchNow, onUnauthorized });
+      const requester = createBackendRequester({ backendUrl: SERVER_ORIGIN, token, did, fetch: fetchNow, onUnauthorized });
       requesters.current.set(did, { token, requester });
       return requester;
     },

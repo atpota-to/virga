@@ -211,7 +211,6 @@ export default function HubPage({ did }) {
                         <span className="hub-row-meta">
                           <time dateTime={row.scheduledFor}>{whenLabel(row.scheduledFor, now)}</time>
                           {row.queued && <span className="badge badge--outline">Queue</span>}
-                          {row.clientKey && row.clientKey !== 'virga' && <span className="badge">From Anisota</span>}
                           {row.status === 'publishing' && <span>Going out now</span>}
                         </span>
                       </div>

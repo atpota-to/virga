@@ -83,7 +83,7 @@ export function useAdviserGate({
     [sheet, ctl],
   );
 
-  // Re-read after each request: aiService keeps the count cocoon answers with.
+  // Re-read after each request: aiService keeps the count the server answers with.
   const usageVersion = view.usageVersion;
   const usageLine = useMemo(
     () => ctl.usageLine(),

@@ -1,5 +1,5 @@
 // The alt-text dialog's decisions (ui/AltTextDialog.jsx), kept pure: the
-// length limit, what a description or a revision asks cocoon for, what the
+// length limit, what a description or a revision asks the server for, what the
 // dialog holds after an answer, and the allowance line.
 
 import { countGraphemes } from '../lib/graphemes.js';
@@ -14,7 +14,7 @@ import { adviserUsageLine } from './usage.js';
 /** Bluesky's limit on an image's description. */
 export const ALT_TEXT_MAX_GRAPHEMES = 2000;
 
-/** cocoon clips a description to this, so a longer one never comes back. */
+/** The server clips a description to this, so a longer one never comes back. */
 export const GENERATED_ALT_MAX = 1000;
 
 /** The post's text sent along as context, at most. */

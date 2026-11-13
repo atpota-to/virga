@@ -1,5 +1,5 @@
 // App-wide constants. Nothing here is a secret. The two build flags below
-// (VITE_AUTH_MODE, VITE_COCOON_URL) only say which sign-in a new account gets
+// (VITE_AUTH_MODE, VITE_BACKEND_URL) only say which sign-in a new account gets
 // and where Virga's server is; the server's keys never reach the browser.
 
 export const APP_NAME = 'Virga';
@@ -19,8 +19,8 @@ export const OAUTH_CALLBACK_PATH = '/oauth/callback';
 // startsWith, and a browser-mode callback is finished by a different library.
 export const OAUTH_RETURN_PATH = '/oauth/return';
 
-// `import.meta.env` is Vite's; this module is also loaded by the Vercel
-// function in api/, under plain Node, where it is undefined.
+// `import.meta.env` is Vite's; this module is also loaded by the server
+// (api/, server/), under plain Node, where it is undefined.
 const ENV = import.meta.env || {};
 
 /**
@@ -33,10 +33,26 @@ export const AUTH_MODE = ENV.VITE_AUTH_MODE === 'backend' ? 'backend' : 'browser
 
 /**
  * Virga's server: the sign-in for long sessions, and the scheduled posts,
- * timers and the adviser, which have to run while the browser is closed.
- * No trailing slash.
+ * timers and the adviser, which have to run while the browser is closed. Its
+ * functions are this deployment's /api/*, so the default is '' (same origin).
+ * VITE_BACKEND_URL points a dev server or a preview at another deployment
+ * (that server has to list this origin as a frontend). No trailing slash.
  */
-export const COCOON_URL = String(ENV.VITE_COCOON_URL || 'https://cocoon.anisota.net').replace(/\/+$/, '');
+export const BACKEND_URL = String(ENV.VITE_BACKEND_URL || '').replace(/\/+$/, '');
+
+/**
+ * The server's host, for the sentences that name it: this site's own unless
+ * VITE_BACKEND_URL says otherwise. Read at render, so a module that imports
+ * this still loads where there is no window.
+ */
+export function backendHost(base = BACKEND_URL) {
+  try {
+    if (base) return new URL(base).host;
+    return typeof window !== 'undefined' && window.location ? window.location.host : '';
+  } catch {
+    return base;
+  }
+}
 
 // The Bluesky AppView, as the service the signed-in reads are sent to. `%23`
 // is `#`, encoded as the permission spec writes it in a scope string.
@@ -59,8 +75,8 @@ const appview = (nsid) => `rpc:${nsid}?aud=${BSKY_APPVIEW_AUD}`;
  * (getServiceAuth names a bare DID as the audience: the video service, or the
  * account's own PDS), which a service-scoped token can't match.
  *
- * Keep in step with cocoon's VIRGA_SCOPE, which has to declare the same
- * string for a long-session sign-in to be accepted.
+ * Virga's server imports OAUTH_SCOPE from here for its long-session
+ * sign-in, so the two can't drift apart.
  */
 export const PERMISSION_GROUPS = [
   {
@@ -134,9 +150,9 @@ export const PERMISSION_GROUPS = [
   },
 ];
 
-// The order the tokens are asked for in. Pinned by oauthClient.test.js and
-// identical to cocoon's VIRGA_SCOPE, so it is spelled out rather than built
-// from the groups above (which are ordered for reading).
+// The order the tokens are asked for in. Pinned by oauthClient.test.js, and
+// what Virga's server requests for a long session, so it is spelled out
+// rather than built from the groups above (which are ordered for reading).
 export const OAUTH_SCOPE = [
   'atproto',
   appview('app.bsky.graph.getFollowers'),

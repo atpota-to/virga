@@ -193,7 +193,7 @@ export async function loadDraftTarget({
 
 /**
  * A scheduled post for the composer: getScheduled, its images, then
- * reconstructFromScheduled. Only Virga's own rows that haven't gone out can
+ * reconstructFromScheduled. Only rows that haven't started going out can
  * be changed here.
  */
 export async function loadScheduledTarget({
@@ -228,12 +228,6 @@ export async function loadScheduledTarget({
       'GONE',
       'That scheduled post is gone. It may already have gone out.',
     );
-  if ((row.clientKey || 'anisota') !== 'virga') {
-    throw loadError(
-      'NOT_YOURS',
-      'This post was scheduled in Anisota, so it can only be changed there.',
-    );
-  }
   if (row.partial)
     throw loadError(
       'PARTIAL',

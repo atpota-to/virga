@@ -10,15 +10,20 @@
 //   ?expired=lab     that account (by handle) starts signed out; the other is open
 //   ?scope=read      the sessions were granted reading only, as before
 //                    posting: writes are refused for a missing scope
-//   ?tier=member     the accounts are members (no free limits on Virga's server)
-//   ?limits=flat     Virga's server applies only its flat caps (VIRGA_FEATURE_LIMITS=flat)
+//   ?limits=3,1,1    per-account limits on scheduled posts, plain timers and
+//                    conditional timers (the server's SCHEDULED_POSTS_LIMIT,
+//                    POST_TIMERS_LIMIT, CONDITIONAL_TIMERS_LIMIT); a blank or
+//                    0 leaves that one unlimited. The default is unlimited, as
+//                    the server's is, with only its flat caps
+//   ?ailimits=30,15,3 the monthly AI allowances: adviser reads, descriptions,
+//                    style readings ('unlimited' for none; the default is 30,15,3)
 //   ?ai=slow|down    the adviser and alt text take longer than the composer
 //                    waits, or are unavailable
 //   ?cron=20         how often (seconds) the server's workers run; 0 stops them
 //   ?latency=60      simulated delay per request, in ms
 
 import { OAUTH_SCOPE } from '../src/config.js';
-import { createCocoon } from './fakeCocoon.js';
+import { DEFAULT_AI_LIMITS, createServer } from './fakeServer.js';
 import { createFakeAgent } from './fakeXrpc.js';
 import { installFakeNetwork } from './fakeNetwork.js';
 import { LAB, ME, PDS, buildWorld } from './world.js';
@@ -34,6 +39,26 @@ export const READ_ONLY_SCOPE = OAUTH_SCOPE.split(' ')
   )
   .join(' ');
 
+/** `?limits=` as the server's per-feature limits; a blank or 0 is unlimited. */
+function readLimits(value) {
+  const [scheduledPosts, postTimers, conditionalTimers] = String(value || '')
+    .split(',')
+    .map((part) => (/^\d+$/.test(part.trim()) && Number(part) > 0 ? Number(part) : undefined));
+  return { scheduledPosts, postTimers, conditionalTimers };
+}
+
+/** `?ailimits=` as the monthly AI allowances: adviser, altText, style. */
+function readAiLimits(value) {
+  if (value == null) return { ...DEFAULT_AI_LIMITS };
+  if (/^(unlimited|none)$/i.test(value.trim())) return { adviser: null, altText: null, style: null };
+  const [adviser, altText, style] = value.split(',').map((part) => (/^\d+$/.test(part.trim()) ? Number(part) : undefined));
+  return {
+    adviser: adviser ?? DEFAULT_AI_LIMITS.adviser,
+    altText: altText ?? DEFAULT_AI_LIMITS.altText,
+    style: style ?? DEFAULT_AI_LIMITS.style,
+  };
+}
+
 /** The flags above, from a query string. */
 export function readFlags(search) {
   const params = new URLSearchParams(search);
@@ -47,8 +72,8 @@ export function readFlags(search) {
     signedOut: params.has('signedout'),
     expired: params.get('expired') || null,
     scope: params.get('scope') === 'read' ? READ_ONLY_SCOPE : OAUTH_SCOPE,
-    tier: params.get('tier') === 'member' ? 'member' : null,
-    policy: params.get('limits') === 'flat' ? 'flat' : 'membership',
+    limits: readLimits(params.get('limits')),
+    aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
     cronSeconds: num('cron', 20),
     latency: num('latency', 60),
@@ -62,16 +87,15 @@ export function readFlags(search) {
 export function createHarness(flags, { now = Date.now() } = {}) {
   const worlds = flags.accounts.map((account) => {
     const world = buildWorld({ now, account });
-    // What Virga's server reports about the session (/oauth/session).
+    // What Virga's server reports about the session (/api/oauth/session).
     world.scope = flags.scope;
     world.pdsUrl = PDS;
     return world;
   });
-  const tiers = Object.fromEntries(worlds.map((w) => [w.me.did, flags.tier]));
-  const cocoon = createCocoon({
+  const server = createServer({
     worlds,
-    policy: flags.policy,
-    tiers,
+    limits: flags.limits,
+    aiLimits: flags.aiLimits,
     ai: flags.ai,
   });
   const agents = new Map();
@@ -79,7 +103,7 @@ export function createHarness(flags, { now = Date.now() } = {}) {
   return {
     flags,
     worlds,
-    cocoon,
+    server,
     worldOf: (did) => worlds.find((w) => w.me.did === did) || null,
     /** The account's agent: the same one for the life of the page. */
     agentFor(did) {
@@ -101,15 +125,15 @@ export function createHarness(flags, { now = Date.now() } = {}) {
      * Replace `window.fetch` and start the server's workers. Also puts
      * `window.__harness` on the page: `cron()` runs the workers now,
      * `expire(handle)` ends an account's long session on the server,
-     * `agentFor(did)` is the agent the page uses, and `cocoon.inspect()`
+     * `agentFor(did)` is the agent the page uses, and `server.inspect()`
      * shows what the server holds.
      */
     install() {
       const agentFor = this.agentFor;
-      installFakeNetwork(worlds, { latency: flags.latency, cocoon });
+      installFakeNetwork(worlds, { latency: flags.latency, server });
       let timer = null;
       const cron = async () => {
-        const { published, settled } = await cocoon.runCron();
+        const { published, settled } = await server.runCron();
         if (published.length || settled.length) {
           console.info(
             `[harness] the server published ${published.length} scheduled post(s) and settled ${settled.length} timer(s)`,
@@ -122,12 +146,12 @@ export function createHarness(flags, { now = Date.now() } = {}) {
       window.__harness = {
         flags,
         worlds,
-        cocoon,
+        server,
         cron,
         agentFor,
         expire(handle) {
           const world = worlds.find((w) => w.me.handle.startsWith(handle));
-          if (world) cocoon.expireAccount(world.me.did);
+          if (world) server.expireAccount(world.me.did);
           return Boolean(world);
         },
         stopCron: () => clearInterval(timer),

@@ -419,7 +419,7 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
               : 'Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.'}
           </p>
         )}
-        {info.usage && <p className="field-hint">{info.usage}. Limits are shared with Anisota.</p>}
+        {info.usage && <p className="field-hint">{info.usage}.</p>}
         {info.room && (
           <p className="callout callout--warn" role="status">
             {info.room}

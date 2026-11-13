@@ -65,7 +65,7 @@ const READ = {
   context: null,
   contextKind: null,
   readTheRoom: true,
-  usageLine: '18 of 30 free checks left this month. Shared with Anisota.',
+  usageLine: '18 of 30 free checks left this month.',
   result: {
     sentiment: { label: 'negative', score: -0.6 },
     checks: [

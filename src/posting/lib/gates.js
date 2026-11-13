@@ -55,7 +55,7 @@ function replyRulesToLexicon(reply) {
  * Gates as lexicon rules: `threadgateAllow` is null (no threadgate), `[]`
  * (nobody) or the allow rules; `postgateEmbeddingRules` is null (no postgate)
  * or `[disableRule]`. Drafts store these as they are, and scheduling sends
- * them as cocoon's `gates.threadgate` / `gates.postgate`.
+ * them as the server's `gates.threadgate` / `gates.postgate`.
  * @param {{ reply?: null | Array, quotes?: boolean } | null} gates
  * @returns {{ threadgateAllow: null | object[], postgateEmbeddingRules: null | object[] }}
  */

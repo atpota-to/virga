@@ -1,12 +1,12 @@
-// Timers on published posts, through cocoon's /api/self-destruct/* endpoints.
+// Timers on published posts, through Virga's server (/api/self-destruct/*).
 //
 // A timer is a row on Virga's server, not a record in the repo, because it has
-// to act while this browser is closed: when it comes due, cocoon reads the
+// to act while this browser is closed: when it comes due, the server reads the
 // post's public counts and deletes it, limits its replies or turns off its
 // quotes (the rule model is ./selfDestruct.js; this file is the transport).
 //
 // Every call takes the requester of the account the post was written as
-// (`backendFor(<DID in the post URI>)`): cocoon takes the acting account from
+// (`backendFor(<DID in the post URI>)`): the server takes the acting account from
 // the token and refuses a post outside that repo, and a timer sent with
 // another account's token would be refused or, worse, look like that
 // account's.
@@ -24,10 +24,10 @@ import {
 
 const BASE = '/api/self-destruct';
 
-/** cocoon keeps at most this much of a post's text beside its timer. */
+/** The server keeps at most this much of a post's text beside its timer. */
 export const TIMER_SNIPPET_MAX = 200;
 
-/** cocoon arms a thread of at most this many posts besides the root. */
+/** The server arms a thread of at most this many posts besides the root. */
 export const MAX_EXTRA_URIS = 100;
 
 function codedError(code, message, extra = {}) {
@@ -80,7 +80,7 @@ function checkRequester(req, uri) {
 /* ---- outcomes --------------------------------------------------------- */
 
 /**
- * Whether cocoon said plainly that timers aren't on here (`code:
+ * Whether the server said plainly that timers aren't on here (`code:
  * 'UNAVAILABLE'`, its migrations not applied). The only failure that may hide
  * the feature for the session.
  */
@@ -89,7 +89,7 @@ export function isTimersUnavailableError(err) {
 }
 
 /**
- * Whether a failure means this cocoon has no timer endpoints at all: a
+ * Whether a failure means this server has no timer endpoints at all: a
  * missing route (404, or 405 where the path exists for other methods), or
  * UNAVAILABLE. Real refusals are 400/402/409 with a code.
  */
@@ -102,8 +102,8 @@ export function isTimersUnsupported(err) {
 
 /**
  * Whether a failed arm may still have armed: the request timed out, the
- * connection dropped, or a gateway gave up (408/502/504), so cocoon may have
- * written the timer before the answer was lost. A status of cocoon's own (400,
+ * connection dropped, or a gateway gave up (408/502/504), so the server may have
+ * written the timer before the answer was lost. A status of the server's own (400,
  * 409, 503 UNAVAILABLE) is an answer; so is a request never sent.
  */
 export function isArmOutcomeUnknown(err) {
@@ -157,9 +157,9 @@ export function timerPostUrl(row) {
 
 /* ---- availability ------------------------------------------------------ */
 
-// Whether this cocoon can hold a timer at all. Asked once per page load (it
+// Whether this server can hold a timer at all. Asked once per page load (it
 // only changes with a deploy); any list or arm answer settles it too. Only
-// cocoon's explicit word hides the feature (`unavailable: true` from the
+// the server's explicit word hides the feature (`unavailable: true` from the
 // list, or UNAVAILABLE), never a 404 from a deploy that hasn't caught up.
 // 'unknown' still offers timers; a failed arm is reported where it happens.
 
@@ -200,7 +200,7 @@ export function probeTimerAvailability(req) {
 }
 
 /**
- * When `err` is cocoon's explicit UNAVAILABLE, stop offering timers on this
+ * When `err` is the server's explicit UNAVAILABLE, stop offering timers on this
  * page. Anything else changes nothing. Returns whether it did.
  */
 export function markTimersUnavailable(err) {
@@ -219,11 +219,11 @@ export function resetTimerAvailability() {
 /* ---- reads ------------------------------------------------------------- */
 
 /**
- * The account's timers, and whether this cocoon can hold one. By default:
+ * The account's timers, and whether this server can hold one. By default:
  * live ones, ones that gave up, and rules that acted without deleting in the
  * last week; `history` returns everything settled instead.
  *
- * `unavailable` (cocoon's migrations aren't applied) is not "nothing is
+ * `unavailable` (the server's migrations aren't applied) is not "nothing is
  * counting down". A real failure throws.
  *
  * @returns {Promise<{ rows: object[], unavailable: boolean }>}
@@ -251,7 +251,7 @@ export async function listTimers(req, { history = false, signal } = {}) {
  * Timer slots in use per bucket (selfDestruct.timerUsage): live timers plus
  * scheduled posts waiting with one, leaving out the row an edit rewrites.
  * `scheduledRows` is listScheduled's `rows`. Null when the timer list can't be
- * read, so the caller lets cocoon decide.
+ * read, so the caller lets the server decide.
  */
 export async function loadTimerUsage(
   req,
@@ -273,7 +273,7 @@ export async function loadTimerUsage(
 
 /**
  * The create body for a timer, or null when the fitted rule is off. Effects
- * are always present: cocoon reads absent effects as delete, so a rule that
+ * are always present: the server reads absent effects as delete, so a rule that
  * only limits replies would otherwise take the post down.
  */
 export function timerBody({
@@ -374,8 +374,8 @@ export async function confirmArmAfterUnknown(req, body, firstError = null) {
 /**
  * Put a timer on a post: one request, never rejects.
  *
- *   armed       cocoon has it (`row` is cocoon's)
- *   failed      cocoon said no, the rule can't be kept, or the requester
+ *   armed       the server has it (`row` is the server's)
+ *   failed      the server said no, the rule can't be kept, or the requester
  *               isn't the post's account (`error`, with a `code` where one
  *               is known; QUOTA_EXCEEDED carries `payload.feature`)
  *   confirming  the answer was lost; `confirmation` resolves to what became
@@ -520,7 +520,7 @@ export async function armAfterPublish(
 }
 
 /**
- * Call a timer off, leaving the post where it is. Answers cocoon's row
+ * Call a timer off, leaving the post where it is. Answers the server's row
  * (`{ id, status: 'cancelled' }`). 409 NOT_CANCELLABLE means it is being
  * checked or has settled: reload rather than patch, the worker may hold it.
  */

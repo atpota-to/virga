@@ -23,6 +23,7 @@ import {
   normalizeLimits,
   reorderScheduled,
   retryScheduled,
+  rowClientKey,
   scheduledRoomProblem,
   scheduledUsageLine,
   updateScheduled,
@@ -100,7 +101,7 @@ describe('listScheduled', () => {
     expect(req.calls[0]).toMatchObject({ path: '/api/schedule/list' });
   });
 
-  it('says so when cocoon has no scheduling, rather than reading it as empty', async () => {
+  it('says so when the server has no scheduling, rather than reading it as empty', async () => {
     const req = fakeRequester()
       .answer('/api/schedule/list', refused(404, 'UNAVAILABLE'))
       .answer('/api/schedule/list', {
@@ -206,7 +207,7 @@ describe('writes', () => {
     expect(heard).toEqual([]);
   });
 
-  it('sends each kind of update in cocoon’s shape', async () => {
+  it('sends each kind of update in the server’s shape', async () => {
     const ok = { success: true, data: { id: 'a' } };
     const req = fakeRequester().answer('/api/schedule/update', ok, ok, ok, ok);
     await updateScheduled(req, 'a', {
@@ -301,7 +302,7 @@ describe('reorderScheduled', () => {
     expect(heard).toEqual([{ did: DID, change: 'reordered', ids: ['b'] }]);
   });
 
-  it('goes straight to row-by-row past cocoon’s limit of moves', async () => {
+  it('goes straight to row-by-row past the server’s limit of moves', async () => {
     const many = Array.from({ length: 51 }, (_, i) => ({
       id: `r${i}`,
       scheduledFor: '2026-11-14T09:00:00Z',
@@ -359,18 +360,23 @@ describe('reading rows', () => {
     ).toBe(false);
   });
 
-  it('edits only Virga’s own rows that are still waiting or failed, and cancels any', () => {
-    const virga = { clientKey: 'virga', status: 'pending' };
-    expect(canEditScheduledRow(virga)).toBe(true);
-    expect(canEditScheduledRow({ ...virga, status: 'failed' })).toBe(true);
-    expect(canEditScheduledRow({ ...virga, partial: true })).toBe(false);
-    expect(canEditScheduledRow({ ...virga, status: 'publishing' })).toBe(false);
-    expect(canEditScheduledRow({ ...virga, clientKey: 'anisota' })).toBe(false);
-    expect(canEditScheduledRow({ status: 'pending' })).toBe(false);
-    expect(
-      canCancelScheduledRow({ clientKey: 'anisota', status: 'pending' }),
-    ).toBe(true);
+  it('edits rows that are still waiting or failed, and cancels the same', () => {
+    const row = { clientKey: 'virga', status: 'pending' };
+    expect(canEditScheduledRow(row)).toBe(true);
+    expect(canEditScheduledRow({ ...row, status: 'failed' })).toBe(true);
+    expect(canEditScheduledRow({ ...row, partial: true })).toBe(false);
+    expect(canEditScheduledRow({ ...row, status: 'publishing' })).toBe(false);
+    expect(canEditScheduledRow({ status: 'pending' })).toBe(true);
+    expect(canCancelScheduledRow({ status: 'pending' })).toBe(true);
+    expect(canCancelScheduledRow({ status: 'failed' })).toBe(true);
     expect(canCancelScheduledRow({ status: 'publishing' })).toBe(false);
+  });
+
+  it('reads a row without a client as Virga’s', () => {
+    expect(rowClientKey({ clientKey: 'virga' })).toBe('virga');
+    expect(rowClientKey({})).toBe('virga');
+    expect(rowClientKey({ clientKey: '' })).toBe('virga');
+    expect(rowClientKey(null)).toBe('virga');
   });
 });
 
@@ -406,7 +412,7 @@ describe('limits', () => {
     expect(req.calls[0].path).toBe('/api/limits/status');
   });
 
-  it('reads the flat ceilings cocoon reports beside the policy', () => {
+  it('reads the flat ceilings the server reports beside the policy', () => {
     const limits = normalizeLimits({
       policy: 'flat',
       features: { scheduledPosts: { isUnlimited: true, limit: null } },
@@ -420,7 +426,7 @@ describe('limits', () => {
     });
   });
 
-  it('reads an older cocoon with no policy or usage as limits without counts', () => {
+  it('reads an older server with no policy or usage as limits without counts', () => {
     const limits = normalizeLimits({
       features: { scheduledPosts: { limit: 3 } },
     });
@@ -433,7 +439,7 @@ describe('limits', () => {
   it('says when the scheduled posts are all in use, but not for an edit', () => {
     const full = normalizeLimits({ ...body, usage: { scheduledPosts: 3 } });
     expect(scheduledRoomProblem(full)).toBe(
-      'This account can keep 3 scheduled posts at a time, and they’re all in use. Limits are shared with Anisota.',
+      'This account can keep 3 scheduled posts at a time, and they’re all in use.',
     );
     expect(scheduledRoomProblem(full, { editing: true })).toBe('');
     expect(scheduledRoomProblem(normalizeLimits(body))).toBe('');

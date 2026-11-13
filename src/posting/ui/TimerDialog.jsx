@@ -117,7 +117,7 @@ export default function TimerDialog({ open, onClose, did, post, onArmed }) {
   const holds = info.existing ? ruleOfTimerRow(info.existing) : null;
   const postedAtMs = Date.parse(info.postedAt || '');
   const ruleNow = normalizeTimer({ ...rule, enabled: true });
-  // The start cocoon will actually count from, worked out before the notes
+  // The start the server will actually count from, worked out before the notes
   // so the sentence, the first-acts time and the request all agree with it.
   const counting = timerStart(ruleNow, {
     start,

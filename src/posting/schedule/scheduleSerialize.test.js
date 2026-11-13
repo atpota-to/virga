@@ -81,7 +81,7 @@ describe('base64', () => {
 });
 
 describe('serializeForSchedule: the body', () => {
-  it('is exactly cocoon’s create body for a plain post', async () => {
+  it('is exactly the server’s create body for a plain post', async () => {
     const body = await serialize(state());
     expect(body).toEqual({
       scheduledFor: AT,
@@ -355,7 +355,7 @@ describe('serializeForSchedule: media and embeds', () => {
     expect(body.payload.mediaBytes).toEqual({});
   });
 
-  it('sends no thumbUrl cocoon would refuse', async () => {
+  it('sends no thumbUrl the server would refuse', async () => {
     const body = await serialize(
       state({}, [
         {
@@ -511,7 +511,7 @@ describe('serializeForSchedule: media and embeds', () => {
   });
 });
 
-describe('serializeForSchedule: what cocoon can’t schedule', () => {
+describe('serializeForSchedule: what the server can’t schedule', () => {
   it('refuses a reply', async () => {
     const err = await rejection(
       serialize(
@@ -592,7 +592,7 @@ describe('serializeForSchedule: the timer', () => {
     expect(body.payload.selfDestruct).toBeNull();
   });
 
-  it('sends the rule as cocoon’s wire spec', async () => {
+  it('sends the rule as the server’s wire spec', async () => {
     const body = await serialize(
       state({
         lifespan: {
@@ -919,7 +919,7 @@ describe('reconstructFromScheduled: the row’s fields', () => {
       { asDid: DID },
     );
     expect(s.schedule).toEqual({ mode: 'at', at: '2026-09-02T09:00:00.000Z' });
-    expect(s.source.clientKey).toBeNull();
+    expect(s.source.clientKey).toBe('virga');
   });
 
   it('brings langs, labels and tags off the root, and the gates as the post’s own', () => {

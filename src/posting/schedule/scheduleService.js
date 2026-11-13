@@ -1,27 +1,25 @@
-// Scheduled and queued posts, through cocoon's /api/schedule/* endpoints.
+// Scheduled and queued posts, through Virga's server (/api/schedule/*).
 //
-// A scheduled post is a row on Virga's server until it goes out: cocoon's
+// A scheduled post is a row on Virga's server until it goes out: the server's
 // worker publishes it, as the account, at its time. Nothing about it is in the
-// repo before then. The bodies are cocoon's (scheduleSerialize.js builds the
-// create one); a queued post is a scheduled row with `queued: true` whose time
-// is a slot of the weekly schedule (postingQueue.js), which cocoon never sees.
+// repo before then. The bodies are the server's (scheduleSerialize.js builds
+// the create one); a queued post is a scheduled row with `queued: true` whose
+// time is a slot of the weekly schedule (postingQueue.js), which the server
+// never sees.
 //
 // Every call takes the Requester of the account the post is scheduled as
-// (`backendFor(asDid)`): cocoon takes the account from the token, and
-// listing, editing and cancelling all act on that account's rows. The list
-// holds every client's rows for the account, each with its `clientKey`;
-// cocoon refuses changes to another client's (403 NOT_YOUR_CLIENT) except a
-// cancel.
+// (`backendFor(asDid)`): the server takes the account from the token, and
+// listing, editing and cancelling all act on that account's rows.
 
 import { SCHEDULED_CHANGED_EVENT, emitPostingEvent } from '../events.js';
 import { quotaMessage } from './scheduledPostError.js';
 
 const BASE = '/api/schedule';
 
-/** cocoon's flat cap on pending scheduled rows per account, for everyone. */
+/** The server's flat cap on pending scheduled rows per account, for everyone. */
 export const MAX_PENDING_SCHEDULED = 50;
 
-/** Most moves cocoon takes in one reorder. */
+/** Most moves the server takes in one reorder. */
 export const MAX_REORDER_MOVES = 50;
 
 /** The limits /api/limits/status reports that posting reads. */
@@ -44,7 +42,7 @@ function checkRequester(req) {
   if (!req || typeof req.request !== 'function') throw needsBackend();
 }
 
-/** An instant as ISO-Z (cocoon renders times as `+00:00`), else the input. */
+/** An instant as ISO-Z (the server renders times as `+00:00`), else the input. */
 function toIso(value) {
   if (value instanceof Date) return value.toISOString();
   const ms = value ? new Date(value).getTime() : NaN;
@@ -93,24 +91,23 @@ export function isTimerNoteRow(row) {
   );
 }
 
-/** The client a row was scheduled from (`'virga'`, `'anisota'`), or null. */
+/**
+ * The app a row belongs to. Virga's server holds only Virga's rows and says
+ * so (`clientKey: 'virga'`); a row that doesn't say is Virga's too.
+ */
 export function rowClientKey(row) {
-  return typeof row?.clientKey === 'string' ? row.clientKey : null;
+  return typeof row?.clientKey === 'string' && row.clientKey ? row.clientKey : 'virga';
 }
 
 /**
- * Whether Virga may open a row in the composer and save it back: its own,
- * not part-way out, and still waiting (or failed, which a full edit revives).
+ * Whether a row may be opened in the composer and saved back: not part-way
+ * out, and still waiting (or failed, which a full edit revives).
  */
 export function canEditScheduledRow(row) {
-  return (
-    rowClientKey(row) === 'virga' &&
-    !row?.partial &&
-    (row?.status === 'pending' || row?.status === 'failed')
-  );
+  return !row?.partial && (row?.status === 'pending' || row?.status === 'failed');
 }
 
-/** Whether a row may be cancelled from here: cocoon allows it across clients. */
+/** Whether a row may be cancelled (or, once failed, dismissed). */
 export function canCancelScheduledRow(row) {
   return row?.status === 'pending' || row?.status === 'failed';
 }
@@ -120,7 +117,7 @@ export function canCancelScheduledRow(row) {
 /**
  * The account's scheduled posts: `rows` is everything waiting, going out or
  * failed (every count, cap and slot calculation uses these), `timerNotes` the
- * published rows whose timer couldn't be set. `unavailable` is cocoon saying
+ * published rows whose timer couldn't be set. `unavailable` is the server saying
  * scheduling isn't set up there.
  *
  * @returns {Promise<{ rows: object[], timerNotes: object[], unavailable?: true }>}
@@ -154,7 +151,7 @@ export async function getScheduled(req, id, { signal } = {}) {
 
 /**
  * A row's stored images as `{ [mediaId]: { base64, encoding } }`, for editing.
- * An image cocoon can no longer read is left out (its media was swept, or
+ * An image the server can no longer read is left out (its media was swept, or
  * never arrived), so the caller sees what is there.
  */
 export async function getScheduledMedia(req, id, { signal } = {}) {
@@ -169,7 +166,7 @@ export async function getScheduledMedia(req, id, { signal } = {}) {
 
 /**
  * Schedule a post or thread. `body` is serializeForSchedule's. Answers
- * cocoon's row. QUOTA_EXCEEDED (with `payload.feature`) and RATE_LIMITED
+ * the server's row. QUOTA_EXCEEDED (with `payload.feature`) and RATE_LIMITED
  * arrive as thrown errors.
  */
 export async function createScheduled(req, body, { signal } = {}) {
@@ -187,12 +184,12 @@ export async function createScheduled(req, body, { signal } = {}) {
 }
 
 /**
- * Change a scheduled row. `patch` is one of cocoon's four shapes:
+ * Change a scheduled row. `patch` is one of the server's four shapes:
  *   `{ scheduledFor }`                     move it (time only)
  *   the same body as create                rewrite it (every image again)
  *   `{ retry: true }`                      send a failed row again as it is
  *   `{ acknowledgeTimer: true }`           clear a "timer couldn't be set" note
- * Answers cocoon's row.
+ * Answers the server's row.
  */
 export async function updateScheduled(req, id, patch = {}, { signal } = {}) {
   checkRequester(req);
@@ -227,7 +224,7 @@ export function acknowledgeTimerNote(req, id, options) {
 }
 
 /**
- * Whether a reorder failure means this cocoon has no reorder endpoint (or
+ * Whether a reorder failure means this server has no reorder endpoint (or
  * too many moves for it), so the caller should move rows one at a time. Real
  * refusals are 409/400 with a code.
  */
@@ -242,7 +239,7 @@ export function isReorderUnsupported(err) {
 
 /**
  * Move queued posts to new slots, all at once (row-at-a-time writes can stop
- * half way and leave two posts sharing a minute). cocoon refuses the lot (409
+ * half way and leave two posts sharing a minute). The server refuses the lot (409
  * NOT_REORDERABLE, or DELETE_TIME_TOO_EARLY naming one) when any row isn't
  * movable; that throws, and nothing was written.
  *
@@ -328,8 +325,8 @@ export async function cancelScheduled(req, id, { signal } = {}) {
 
 /**
  * /api/limits/status in one shape: per feature, `limit` (null for no limit
- * but the flat caps) and `usage` (null where cocoon didn't count it), plus
- * the policy it applied to this app (`'membership'` or `'flat'`).
+ * but the flat caps) and `usage` (null where the server didn't count it), plus
+ * the policy it applied (`'flat'`: the same limits for every account).
  *
  * @returns {{ policy: string|null, isMember: boolean, features: Record<string, { limit: number|null }>, usage: Record<string, number|null>, caps: { scheduledPosts: number|null, timers: number|null } }}
  */
@@ -344,7 +341,7 @@ export function normalizeLimits(body) {
     const n = body?.usage?.[key];
     usage[key] = Number.isFinite(n) ? n : null;
   }
-  // The flat ceilings everyone has (cocoon reports them beside the policy).
+  // The flat ceilings everyone has (the server reports them beside the policy).
   const cap = (n) => (Number.isFinite(n) && n > 0 ? n : null);
   return {
     policy: typeof body?.policy === 'string' ? body.policy : null,
@@ -367,7 +364,7 @@ export async function getLimits(req, { signal } = {}) {
 
 /**
  * Why one more post can't be scheduled under the account's limits, or ''
- * when it can (or when nothing is known: cocoon decides). Editing an existing
+ * when it can (or when nothing is known: the server decides). Editing an existing
  * row doesn't take another slot.
  */
 export function scheduledRoomProblem(limits, { editing = false } = {}) {
@@ -380,7 +377,7 @@ export function scheduledRoomProblem(limits, { editing = false } = {}) {
 }
 
 /**
- * "2 of 3 scheduled posts in use" for a limit cocoon reports, or '' when
+ * "2 of 3 scheduled posts in use" for a limit the server reports, or '' when
  * there is no limit or no count.
  */
 export function scheduledUsageLine(limits) {

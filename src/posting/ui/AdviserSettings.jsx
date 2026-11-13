@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { BookOpenText } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Segmented from '../../components/Segmented.jsx';
-import { COCOON_URL } from '../../config.js';
+import { backendHost } from '../../config.js';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { usePostingSettings } from '../settings.js';
 import { ADVISER_TEXT_LIMITS, nextPostingAdviserState, normalizeAdviserSettings } from '../adviser/setup.js';
@@ -12,14 +12,6 @@ import { SettingsCard, SettingsRow } from './SettingsParts.jsx';
 import NeedsBackend from './NeedsBackend.jsx';
 import StyleDialog from './StyleDialog.jsx';
 import './adviser.css';
-
-const SERVER_HOST = (() => {
-  try {
-    return new URL(COCOON_URL).host;
-  } catch {
-    return COCOON_URL;
-  }
-})();
 
 const REVIEW_OPTIONS = [
   { value: 'significant', label: 'When something’s off' },
@@ -285,7 +277,7 @@ export default function AdviserSettings({ open, onClose, did }) {
         <div className="adviser-sent-body">
           <p>
             Only when the adviser reads a post, or you ask for a description or a style reading, this goes to Virga’s server (
-            {SERVER_HOST}), signed in as this account:
+            {backendHost()}), signed in as this account:
           </p>
           <ul>
             <li>the post’s text, your goals, your notes for the proofread and your style description;</li>
@@ -299,7 +291,7 @@ export default function AdviserSettings({ open, onClose, did }) {
             Virga’s server passes it, with this account’s DID for counting use, to an AI model through an AI gateway, and sends
             the answer back. It doesn’t store what was sent; whether the model’s provider keeps it is set by the gateway’s
             account settings, not per request. Virga’s server keeps only how many of this month’s free uses this account has
-            had, a count it shares with Anisota. Your goals, notes and style description stay in this browser.
+            had. Your goals, notes and style description stay in this browser.
           </p>
         </div>
       </details>

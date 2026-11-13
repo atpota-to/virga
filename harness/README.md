@@ -15,7 +15,7 @@ The fake presents two made-up accounts as signed in on this browser: Mira Okafor
 small, quiet second account to switch to and post as. Each has an agent
 (`harness/fakeXrpc.js`) that answers the signed-in reads and takes the writes, and, in
 the default long-session mode, a requester for Virga's server: the real one from
-`src/session/backendClient.js`, pointed at a fake server (`harness/fakeCocoon.js`).
+`src/session/backendClient.js`, pointed at a fake server (`harness/fakeServer.js`).
 `harness/fakeNetwork.js` replaces `fetch`, so the public reads (the author feed, posts,
 threads, profiles, feeds and lists, the DID documents, the repo download,
 Constellation), Bluesky's card and video services and Virga's server are answered from
@@ -41,8 +41,8 @@ Clear the site's data to start over.
 | `?signedout` | the front page, with both accounts remembered. Signing in as anyone lands in the dashboard (as Field Lab for `lab.example.org`); `nobody` fails, to show the error |
 | `?expired=lab` | that account (by handle) starts signed out; the other is open |
 | `?scope=read` | the sessions were granted what Virga asked for before it could post: posts, gates, templates, drafts and uploads are refused for a missing scope (following still works) |
-| `?tier=member` | the accounts are members, so Virga's server applies no free limits |
-| `?limits=flat` | Virga's server applies only its flat caps (`VIRGA_FEATURE_LIMITS=flat`) |
+| `?limits=3,1,1` | limits on scheduled posts, plain timers and conditional timers per account, as the server's `SCHEDULED_POSTS_LIMIT`, `POST_TIMERS_LIMIT` and `CONDITIONAL_TIMERS_LIMIT` would set them; a blank or `0` leaves one unlimited. By default there are none, as on the server, only its flat caps (50 scheduled posts, 200 timers) |
+| `?ailimits=30,15,3` | the monthly AI allowances: adviser reads, image descriptions, style readings (these are the defaults); `?ailimits=unlimited` counts nothing |
 | `?ai=slow`, `?ai=down` | the adviser and alt text take longer than the composer waits, or are unavailable |
 | `?cron=20` | how often, in seconds, the server's workers run (20 by default); `0` stops them |
 | `/oauth/callback` | a sign-in that came back declined |
@@ -93,19 +93,22 @@ PDS's "Missing required scope" wording). It doesn't check inputs against the lex
 
 ## Virga's server
 
-The fake server answers at `VITE_COCOON_URL`'s host, in cocoon's own shapes: scheduled
-posts (`/api/schedule/create`, `list`, `get`, `media`, `update` with its four kinds,
-`reorder`, `cancel`), timers (`/api/self-destruct/create`, `list`, `cancel`),
+The fake server stands in for this repo's own (`api/`, `server/`), in its shapes:
+scheduled posts (`/api/schedule/create`, `list`, `get`, `media`, `update` with its four
+kinds, `reorder`, `cancel`), timers (`/api/self-destruct/create`, `list`, `cancel`),
 `/api/limits/status` with what's in use, the adviser and alt text (`/api/ai/analyze-post`,
-`synthesize-style`, `alt-text`), and `/oauth/session` and `/oauth/logout`.
+`synthesize-style`, `alt-text`), and `/api/oauth/session` and `/api/oauth/logout`. It
+answers at a fixed address of its own (`SERVER_ORIGIN`, `https://server.harness.invalid`)
+rather than the dev server's `/api`, which Vite would answer itself; the session stand-in
+points the requester there.
 
-Rows belong to the app that made them. Virga sees every row of the account, each with
-its `clientKey`; it can cancel another app's row but not change it (403
-`NOT_YOUR_CLIENT`). Mira starts with a post scheduled from Anisota, one of Virga's in the
-queue, one that failed, one that went out without its timer, a timer set from Anisota
-and one that has already deleted its post. Limits are counted across both apps, so a
-free account starts with two of its three scheduled posts and its one conditional
-timer in use.
+It serves one app: an account sees and changes only its own rows, every row and timer
+says it is Virga's (`clientKey: 'virga'`), and a request with a token the server doesn't
+know gets 401 `FRONTEND_SESSION_INVALID`. Mira starts with a post at a time of its own,
+one in the queue, one that failed, one that went out without its timer, a conditional
+timer counting down and one that has already deleted its post. The limits are flat:
+unlimited unless `?limits=` sets some, with the caps always reported, and the AI
+allowances are 30 adviser reads, 15 descriptions and 3 style readings a month.
 
 Every 20 seconds the server's workers run: due posts are written into the account's
 world at the keys reserved when they were scheduled, and due timers read the post's
@@ -116,7 +119,7 @@ From the browser console, `__harness.cron()` runs the workers now,
 `__harness.expire('lab')` ends Field Lab's long session on the server (the next request
 finds out, and after three checks the account shows as signed out),
 `__harness.agentFor(did)` is the agent the page uses, and
-`__harness.cocoon.inspect()` shows what the server holds.
+`__harness.server.inspect()` shows what the server holds.
 
 ## Cards and video
 
@@ -127,7 +130,7 @@ addressed to the right place (the upload's to the account's PDS for `uploadBlob`
 rest to the video service), keeps the upload as one of the account's blobs and reports
 it processed after a few seconds.
 
-`harness/world.test.js`, `fakeXrpc.test.js` and `fakeCocoon.test.js` run with
+`harness/world.test.js`, `fakeXrpc.test.js` and `fakeServer.test.js` run with
 `npm test`. They check that the real code still reads the fixtures the way it reads real
 answers, and that the posting services (publish, drafts, scheduling, timers) work
 against the fakes, which is the only thing that stops them drifting.

@@ -1,11 +1,11 @@
 // Timers on posts: the pure model (no side effects; `now` is injectable
 // everywhere). A post published with a lifespan is acted on by Virga's server
-// (cocoon) when it comes due: deleted, or its replies limited, or its quotes
+// when it comes due: deleted, or its replies limited, or its quotes
 // turned off, subject to optional conditions read from its public counts.
 // Sense 'unless' spares the post when the clauses hold, 'onlyIf' acts only when
 // they hold.
 //
-// Wire shape sent to cocoon (cocoon's lib/self-destruct.js is the authority; it
+// Wire shape sent to the server (server/timers/selfDestruct.js is the authority; it
 // re-normalizes everything it is sent and refuses what it can't read):
 //
 //   { lifespanSeconds, deleteAt?, conditions: {
@@ -20,7 +20,7 @@
 // deriving it from a pin would bake in publish latency (10 minutes stored as
 // 8m35s). Only extendWindowSeconds reads a window out of a pin.
 
-// Must match MIN/MAX_LIFESPAN_SECONDS in the cocoon library, which refuses
+// Must match MIN/MAX_LIFESPAN_SECONDS in server/timers/selfDestruct.js, which refuses
 // anything outside the range.
 export const MIN_LIFESPAN_SECONDS = 5 * 60;
 export const MAX_LIFESPAN_SECONDS = 30 * 24 * 60 * 60;
@@ -107,7 +107,7 @@ export const SPARE_ACTIONS = ['keep', 'extend'];
 export const CONDITION_SENSES = ['unless', 'onlyIf'];
 
 // The counts a clause can test, in editor order. selfReplies counts the author's
-// own replies in the thread; cocoon reads it from the thread, not the post's
+// own replies in the thread; the server reads it from the thread, not the post's
 // counters.
 export const METRICS = [
   { key: 'likes', label: 'Likes', noun: 'like' },
@@ -138,7 +138,7 @@ const LEGACY_THRESHOLDS = {
 
 export const MAX_CLAUSES = METRICS.length;
 
-// Who the count is about. Quotes only: cocoon reads quoting posts with their
+// Who the count is about. Quotes only: the server reads quoting posts with their
 // authors, whereas a like count has no actors attached.
 export const FILTERABLE_METRICS = ['quotes'];
 
@@ -166,8 +166,8 @@ export function normalizeActorFilter(raw) {
 }
 
 /**
- * Key for a clause's count. Must match cocoon's clauseCountKey exactly, since
- * cocoon writes the counts this reads.
+ * Key for a clause's count. Must match the server's clauseCountKey exactly, since
+ * the server writes the counts this reads.
  */
 export function clauseCountKey(clause) {
   if (!clause || !clause.from) return clause ? clause.metric : '';
@@ -209,7 +209,7 @@ export function normalizeThreshold(value) {
   return Math.min(rounded, 1_000_000);
 }
 
-/** A lifespan clamped into the range cocoon will accept. */
+/** A lifespan clamped into the range the server will accept. */
 export function normalizeLifespan(value) {
   const n = Math.floor(Number(value));
   if (!Number.isFinite(n)) return DEFAULT_LIFESPAN_SECONDS;
@@ -391,7 +391,7 @@ export function normalizeEffect(raw) {
   return { action: 'limitReplies', allow };
 }
 
-/** Effects in apply order. Empty or unreadable means delete, matching cocoon's fallback. */
+/** Effects in apply order. Empty or unreadable means delete, matching the server's fallback. */
 export function normalizeEffects(raw) {
   const seen = new Set();
   const out = [];
@@ -482,7 +482,7 @@ export function withEffect(effects, action, on, extra = {}) {
 
 /**
  * The timer without gate effects, for a record with no threadgate or postgate;
- * cocoon refuses gate effects on those. A rule left with no effects disarms
+ * the server refuses gate effects on those. A rule left with no effects disarms
  * rather than falling back to delete.
  */
 export function withoutGateEffects(timer) {
@@ -501,7 +501,7 @@ export function withoutEffects(timer, actions) {
 }
 
 /**
- * The timer without conditions, for a record with no public counts (cocoon
+ * The timer without conditions, for a record with no public counts (the server
  * only evaluates app.bsky.feed.post).
  *   'unless'  clauses dropped; the rule runs on time unconditionally.
  *   'onlyIf'  the rule disarms, since dropping the clauses would turn "delete
@@ -523,11 +523,11 @@ export function withoutConditions(timer) {
  *   gatesSupported        only an app.bsky.feed.post has a threadgate/postgate
  *   conditionsSupported   only an app.bsky.feed.post has counts to read
  *                         (both always true for what Virga posts; kept so the
- *                         rule model matches cocoon's)
+ *                         rule model matches the server's)
  *   replyLimitSupported   Bluesky honours a threadgate only on a thread's root,
  *                         so replies drop limitReplies (disableQuotes is a
  *                         postgate and stays)
- *   available             whether cocoon can hold a timer at all
+ *   available             whether the server can hold a timer at all
  */
 export function fitTimerToPost(
   timer,
@@ -701,7 +701,7 @@ export function parseDeleteAt(value) {
 }
 
 // How long a picked time may have passed and still mean "as soon as allowed"
-// rather than be refused. Must match PAST_DEADLINE_GRACE_MS in cocoon.
+// rather than be refused. Must match PAST_DEADLINE_GRACE_MS in the server.
 export const PAST_DEADLINE_GRACE_SECONDS = 60;
 
 /**
@@ -745,7 +745,7 @@ export function immediateTimerProblem(timer, now = Date.now()) {
  * The timer a just-published post actually gets. Runs after
  * immediateTimerProblem cleared the pin, so any staleness is publish latency:
  * a 'tooSoon'/'passed' pin becomes the MIN_LIFESPAN floor (never the duration
- * behind it). A pin past the ceiling is left for cocoon to refuse.
+ * behind it). A pin past the ceiling is left for the server to refuse.
  *
  * @returns {{ timer: Object, adjusted: null | 'floor' }}
  */
@@ -796,7 +796,7 @@ export function scheduledTimerToSend(rule, { fit = {} } = {}, publishAt) {
   return { problem, spec: problem ? null : toWireSpec(timer, publishAt) };
 }
 
-/** Why moving a scheduled row to `whenISO` would break its pinned delete time, or ''. Catches reorders cocoon would refuse. */
+/** Why moving a scheduled row to `whenISO` would break its pinned delete time, or ''. Catches reorders the server would refuse. */
 export function scheduledRowTimerProblem(row, whenISO) {
   const spec = row?.payload?.selfDestruct;
   if (!spec || !spec.deleteAt) return '';
@@ -822,11 +822,11 @@ export function scheduledRowDeadlineStatus(row, whenISO) {
  *
  *   reply            the post is a reply (Bluesky honours a threadgate only on
  *                    a thread's root)
- *   unavailable      cocoon said it cannot hold a timer, or the account isn't
+ *   unavailable      the server said it cannot hold a timer, or the account isn't
  *                    signed in through it
  *   editingExisting  no timer: changing an existing post isn't publishing one
  *
- * `available` means "can this post carry a timer", not just "is cocoon up";
+ * `available` means "can this post carry a timer", not just "is the server up";
  * otherwise a hidden, stale pin would still block a publish.
  */
 export function composerTimerFit({
@@ -866,13 +866,13 @@ export function scheduledTimerProblem(timer, publishAt) {
  *
  * The normalizers are lenient in a harsh direction: an unrecognised clause is
  * dropped (turning a conditional timer into an unconditional delete) and an
- * unrecognised effect falls back to delete. cocoon's validateArm refuses
+ * unrecognised effect falls back to delete. The server's validateArm refuses
  * unknown parts, but it only ever sees the normalized rule, so the check has to
  * happen here. Happens when an open tab of an older build reads posting
  * defaults written by a newer one.
  *
  * Not flagged: a threshold of 0, the stored encoding for "not part of the
- * test"; toWireSpec drops those clauses before cocoon sees them.
+ * test"; toWireSpec drops those clauses before the server sees them.
  *
  * @returns {string[]} empty when the whole rule was understood
  */
@@ -983,7 +983,7 @@ export function sessionDraftTimer(timer, touched) {
   return { timer: normalizeTimer(timer), touched: !!touched };
 }
 
-/** Said when cocoon reports timers unavailable while the writer has one set for the post. */
+/** Said when the server reports timers unavailable while the writer has one set for the post. */
 export const TIMERS_UNAVAILABLE_NOTE =
   'Post timers aren’t available right now, so this post will go out without the lifespan you set.';
 
@@ -1029,8 +1029,8 @@ export function normalizeTimer(raw) {
 
 /**
  * The window a spared post gets again under `onSpare: 'extend'`: the duration,
- * or for a pinned instant, now → the pin. Mirrors what cocoon stores in
- * lifespan_seconds (cocoon's lib/self-destruct.js, validateArm).
+ * or for a pinned instant, now → the pin. Mirrors what the server stores in
+ * lifespan_seconds (server/timers/selfDestruct.js, validateArm).
  */
 export function extendWindowSeconds(timer, now = Date.now()) {
   const t = normalizeTimer(timer);
@@ -1041,9 +1041,9 @@ export function extendWindowSeconds(timer, now = Date.now()) {
 }
 
 /**
- * The wire shape cocoon expects, or null when disarmed. `lifespanSeconds` is the
+ * The wire shape the server expects, or null when disarmed. `lifespanSeconds` is the
  * extend window measured client-side (server-side derivation would include
- * publish latency); cocoon uses it as given and `deleteAt` only as the deadline.
+ * publish latency); the server uses it as given and `deleteAt` only as the deadline.
  * `now` is the publish moment (the scheduled time for a scheduled post).
  */
 export function toWireSpec(timer, now = Date.now()) {
@@ -1178,7 +1178,7 @@ export function timerChipLabel(timer, now = Date.now()) {
   return `${does} · ${lead} ${describeClauses(t.conditions)}`;
 }
 
-// Evaluation: preview only (e.g. "2 of 5 likes" in the timer list). cocoon
+// Evaluation: preview only (e.g. "2 of 5 likes" in the timer list). The server
 // makes the real decision against counts it reads itself.
 
 export function evaluateConditions(conditions, counts) {
@@ -1238,7 +1238,7 @@ export function timeUntil(iso, now = Date.now()) {
  *   live     still counting down (or mid-check)
  *   failed   gave up; the post is still up
  *   settled  default view: rules that fired without deleting in the last week
- *            (cocoon sends those after the live rows); with history, everything
+ *            (the server sends those after the live rows); with history, everything
  *            that has settled
  */
 export function groupTimers(rows, { history = false } = {}) {
@@ -1264,7 +1264,7 @@ export function groupTimers(rows, { history = false } = {}) {
 /**
  * Which of an account's two timer slots a timer takes: 'conditional' when
  * it reads counts before acting or does anything other than delete, else
- * 'plain'. Mirrors cocoon's lib/timer-limits.js timerBucket, which decides.
+ * 'plain'. Mirrors server/timers/timerUsage.js timerBucket, which decides.
  */
 export function timerBucket(timer) {
   const hasClauses = normalizeConditions(timer?.conditions).clauses.length > 0;
@@ -1274,20 +1274,20 @@ export function timerBucket(timer) {
   return hasClauses || !onlyDeletes ? 'conditional' : 'plain';
 }
 
-/** cocoon's limit feature behind each bucket (`/api/limits/status`, a 402's `feature`). */
+/** The server's limit feature behind each bucket (`/api/limits/status`, a 402's `feature`). */
 export const TIMER_BUCKET_FEATURE = {
   plain: 'postTimers',
   conditional: 'conditionalTimers',
 };
 
-/** The bucket behind each of cocoon's refusal features (a 402's `feature`). */
+/** The bucket behind each of the server's refusal features (a 402's `feature`). */
 export const TIMER_SLOT_FEATURE_BUCKET = {
   postTimers: 'plain',
   conditionalTimers: 'conditional',
 };
 
 /**
- * What an account's timer slots hold, per bucket: live timers (cocoon's list)
+ * What an account's timer slots hold, per bucket: live timers (the server's list)
  * plus scheduled and queued posts waiting with one, which hold theirs from
  * the moment they are scheduled. `exceptScheduledId` leaves out the row an
  * edit is rewriting.
@@ -1325,17 +1325,17 @@ export function timerSlotProblem({ bucket, limit, usage }) {
 
 /**
  * "This account can keep one … at a time …": the slot sentence on its own.
- * Plain, with no offer attached: the limit is cocoon's, shared with Anisota.
+ * Plain, with no offer attached: the limit is set by Virga's server.
  */
 export function timerSlotSentence(bucket, limit = 1) {
   const kind = bucket === 'conditional' ? 'conditional timer' : 'plain timer';
   const count = limit === 1 ? `one ${kind}` : `${limit} ${kind}s`;
   const taken = limit === 1 ? 'it’s in use' : 'all of them are in use';
-  return `This account can keep ${count} at a time, counting scheduled posts, and ${taken}. Limits are shared with Anisota.`;
+  return `This account can keep ${count} at a time, counting scheduled posts, and ${taken}.`;
 }
 
 /**
- * The slot sentence for a cocoon refusal (`err.payload` of a 402/409 naming
+ * The slot sentence for a refusal from the server (`err.payload` of a 402/409 naming
  * `postTimers` or `conditionalTimers`), or '' for any other refusal.
  */
 export function timerSlotRefusal(payload) {
@@ -1345,7 +1345,7 @@ export function timerSlotRefusal(payload) {
 
 /**
  * Why `rule` can't be armed right now under the account's limits, or '' when
- * it can (or when nothing is known: cocoon decides). `limits` is getLimits'
+ * it can (or when nothing is known: the server decides). `limits` is getLimits'
  * answer (`features[feature].limit`, `usage[feature]`). `holds` is the timer
  * a write already holds a slot for (the scheduled row being edited: its
  * `payload.selfDestruct`), which frees that slot for this one.
@@ -1366,7 +1366,7 @@ export function timerRoomProblem(rule, limits, { holds = null } = {}) {
 
 /**
  * Scheduled and queued posts that carry a lifespan and haven't gone out yet,
- * soonest first. Their timer is armed when they publish, so cocoon's timer
+ * soonest first. Their timer is armed when they publish, so the server's timer
  * list doesn't hold them until then. Takes listScheduled's `rows`.
  */
 export function waitingTimerRows(rows = []) {

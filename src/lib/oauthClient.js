@@ -143,6 +143,9 @@ export function signInErrorMessage(err) {
   if (code === 'NETWORK_ERROR') {
     return 'Couldn’t reach Virga’s server. Check your connection and try again.';
   }
+  if (code === 'REDIRECT_NOT_ALLOWED') {
+    return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';
+  }
   const message = String(err?.message || '');
   if (/redirect_uri|allowed frontend/i.test(message)) {
     return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';

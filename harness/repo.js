@@ -1,6 +1,6 @@
 // The account's repo as the harness changes it. The fixtures in a world
 // (harness/world.js) are the repo as it was when the page opened; writes from
-// the fake agent and from the fake cocoon's publisher land here, in memory,
+// the fake agent and from the fake server's publisher land here, in memory,
 // and every reader (listRecords, getRecord, the author feed, the repo CAR, the
 // public post views) goes through these functions, so a post written in the
 // composer shows up everywhere a real one would.

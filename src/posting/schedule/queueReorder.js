@@ -1,5 +1,5 @@
 // Re-packing the weekly queue after a drag. The order is drawn from the rows
-// this app may move; every other queued row keeps its minute and the re-pack
+// that may move; every other queued row keeps its minute and the re-pack
 // steps around it (recomputeQueueAssignment's `occupied`). Pure.
 
 import { MIN_LEAD_MS, recomputeQueueAssignment } from './postingQueue.js';
@@ -8,27 +8,22 @@ import {
   scheduledRowTimerProblem,
 } from '../timers/selfDestruct.js';
 
-/** The client Virga's rows carry in cocoon's `clientKey`. */
-export const VIRGA_CLIENT_KEY = 'virga';
-
 const instant = (value) => (value ? new Date(value).getTime() : NaN);
 
 /**
- * The account's queued rows, split into what this app may move (its own,
- * pending, none of a thread out yet, its time still ahead; soonest first) and
- * what it may not (every other queued row, whatever its client or state,
- * which still holds its minute). Rows without a `clientKey` are never moved:
- * a row this app can't show it owns is someone else's.
+ * The account's queued rows, split into what may move (pending, none of a
+ * thread out yet, its time still ahead; soonest first) and what may not
+ * (every other queued row, whatever its state, which still holds its minute).
  *
  * A pending row whose time is no later than the first slot a re-pack can
  * hand out (`now` + MIN_LEAD_MS) is due, or waiting out a retry after a
  * failed attempt. It stays where it is: re-packing would give it the next
  * future slot, delaying it by a slot and pushing every row behind it back
- * one, and cocoon's reorder would also clear its retry time.
+ * one, and the server's reorder would also clear its retry time.
  */
 export function splitQueueRows(
   rows = [],
-  { clientKey = VIRGA_CLIENT_KEY, now = Date.now() } = {},
+  { now = Date.now() } = {},
 ) {
   const nowMs = now instanceof Date ? now.getTime() : Number(now);
   const movable = [];
@@ -37,12 +32,8 @@ export function splitQueueRows(
     if (!row?.queued) continue;
     const at = instant(row.scheduledFor);
     const due = Number.isFinite(nowMs) && at <= nowMs + MIN_LEAD_MS;
-    const mine =
-      row.clientKey === clientKey &&
-      row.status === 'pending' &&
-      !row.partial &&
-      !due;
-    (mine ? movable : occupied).push(row);
+    const moves = row.status === 'pending' && !row.partial && !due;
+    (moves ? movable : occupied).push(row);
   }
   movable.sort((a, b) => instant(a.scheduledFor) - instant(b.scheduledFor));
   return { movable, occupied };
@@ -50,7 +41,7 @@ export function splitQueueRows(
 
 /**
  * The moves an assignment makes: only rows whose instant changed, compared
- * as instants (cocoon writes `+00:00`, toISOString writes `Z`). A row pushed
+ * as instants (the server writes `+00:00`, toISOString writes `Z`). A row pushed
  * past the horizon (null) isn't moved.
  */
 export function pendingMoves(assignment) {
@@ -74,7 +65,7 @@ function nameOf(row) {
 
 /**
  * The first row an assignment would move past its pinned delete time (or
- * more than 30 days before it, which cocoon can't hold), with what to say;
+ * more than 30 days before it, which the server can't hold), with what to say;
  * else null. Checked before the new order is drawn, so an order that can't be
  * saved is never shown.
  *

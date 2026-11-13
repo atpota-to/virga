@@ -1,11 +1,11 @@
 /*
  * Translating what went wrong with a scheduled post: nothing machine-shaped
- * reaches the writer, the fallback is never an empty line, and cocoon's own
+ * reaches the writer, the fallback is never an empty line, and the server's own
  * voice is replaced by Virga's.
  *
- * Two paths for a failed row: cocoon's classified `lastErrorCode`, and prose
- * matching for rows with no code (written by an older cocoon). The pinned
- * strings come from cocoon, the only writer of `last_error`
+ * Two paths for a failed row: the server's classified `lastErrorCode`, and prose
+ * matching for rows with no code (written by an older server). The pinned
+ * strings come from the server, the only writer of `last_error`
  * (lib/scheduled-posts.js, api/schedule/run.js and the reclaim migration), so
  * a reworded message there fails here.
  */
@@ -28,7 +28,7 @@ const REFUSED = 'Bluesky refused the post.';
 const NOPE = 'This one didn’t go out.';
 
 describe('friendlyScheduleError', () => {
-  describe('reading the code cocoon stored', () => {
+  describe('reading the code the server stored', () => {
     const bySentence = {
       MEDIA_MISSING: LOST,
       SESSION_UNAVAILABLE: SESSION,
@@ -107,7 +107,7 @@ describe('friendlyScheduleError', () => {
     ).toBe(RAN_OUT);
   });
 
-  it('reads the session failure cocoon actually writes', () => {
+  it('reads the session failure the server actually writes', () => {
     expect(
       friendlyScheduleError(
         "couldn't reach your account session. reconnect your account if this keeps happening.",
@@ -172,7 +172,7 @@ describe('scheduleErrorMessage', () => {
         },
       });
       expect(scheduleErrorMessage(err)).toBe(
-        'This account can keep 3 scheduled posts at a time, and they’re all in use. Limits are shared with Anisota.',
+        'This account can keep 3 scheduled posts at a time, and they’re all in use.',
       );
     }
     expect(
@@ -220,7 +220,7 @@ describe('scheduleErrorMessage', () => {
     ).toMatch(/didn’t answer in time/);
   });
 
-  it('turns a coded-less 400 sentence from cocoon into one of Virga’s', () => {
+  it('turns a coded-less 400 sentence from the server into one of Virga’s', () => {
     expect(
       scheduleErrorMessage(
         thrown({

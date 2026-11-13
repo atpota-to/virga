@@ -235,7 +235,7 @@ export function curateLists(lists = []) {
 /**
  * When a timer started at `startedAt` would first act: its pinned time, else
  * the start plus its length, and never sooner than five minutes from now
- * (cocoon's floor). Null when the rule is off.
+ * (the server's floor). Null when the rule is off.
  */
 export function firstActAt(
   rule,
@@ -250,7 +250,7 @@ export function firstActAt(
 }
 
 /**
- * Where a timer on a post that's already out starts counting, as cocoon will
+ * Where a timer on a post that's already out starts counting, as the server will
  * count it (validateArm): from when the post went up only while that's
  * inside the rule's length, otherwise from now. A start in the future (a
  * clock off) or one that can't be read also counts from now.
@@ -259,8 +259,8 @@ export function firstActAt(
  *   from       'wentUp' or 'now', the start that will actually be used
  *   passed     '' or, when 'posted' was asked for:
  *              'floor'    its time comes within five minutes, so it acts at
- *                         cocoon's five-minute floor
- *              'elapsed'  the whole length has already gone by, so cocoon
+ *                         the server's five-minute floor
+ *              'elapsed'  the whole length has already gone by, so the server
  *                         counts it again from now
  *
  * A pinned time doesn't depend on the start; it counts from now.

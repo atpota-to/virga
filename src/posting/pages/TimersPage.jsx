@@ -41,7 +41,6 @@ import { postingPath } from '../routes.js';
 import PostingHeader from '../ui/PostingHeader.jsx';
 import { LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import {
-  clientName,
   deletedPostUris,
   formatInZone,
   fullTimerBuckets,
@@ -98,9 +97,6 @@ function TimerRow({ row, now, busy, onCancel }) {
           <span>
             {m.bucket === 'conditional' ? 'Conditional timer' : 'Plain timer'}
           </span>
-          {m.client && (
-            <span className="badge badge--outline">Set in {m.client}</span>
-          )}
           {m.extensions && <span>{m.extensions}</span>}
         </p>
         <p className="sched-rule">{m.rule}</p>
@@ -150,7 +146,6 @@ function WaitingRow({ row, tz, now, onEdit }) {
     enabled: true,
   }).timer;
   const actions = rowActions(row);
-  const other = clientName(row);
   return (
     <li className="hub-row sched-timer">
       <span className="sched-timer-icon" aria-hidden="true">
@@ -168,7 +163,6 @@ function WaitingRow({ row, tz, now, onEdit }) {
           </span>
           <span>{row.queued ? 'From the queue' : 'At a set time'}</span>
           {facts.posts > 1 && <span>Thread of {facts.posts}</span>}
-          {other && <span className="badge badge--outline">From {other}</span>}
         </p>
         <p className="sched-rule">{describeTimer(timer, now)}</p>
         <p className="hub-row-why">
@@ -488,9 +482,6 @@ export default function TimersPage({ did }) {
           {confirm?.row?.status === 'failed'
             ? 'It goes from this list. The post stays up.'
             : 'The post stays up, as it is now, and its timer slot is freed.'}
-          {confirm?.row && clientName(confirm.row)
-            ? ` It was set in ${clientName(confirm.row)}.`
-            : ''}
         </p>
         {confirm?.row?.snippet && (
           <blockquote className="hub-quote">

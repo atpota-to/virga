@@ -1,17 +1,19 @@
-// Talking to Virga's server (cocoon) for an account with a long session.
-// Pure apart from `fetch`, which every function takes (or defaults to the
-// global), so the tests can stand in for the server.
+// Talking to Virga's server for an account with a long session. Pure apart
+// from `fetch`, which every function takes (or defaults to the global), so
+// the tests can stand in for the server.
 //
 // The server is a confidential OAuth client: it holds the account's atproto
 // session, and the browser holds an opaque token (`vg_…`) for it. Signed-in
 // calls go to the server, which makes them as the account:
 //
-//   XRPC     /oauth/proxy         (the Agent's calls, through createBackendFetchHandler)
-//   blobs    /oauth/upload-blob
-//   cocoon   /api/*               (scheduling, timers, the adviser, through createBackendRequester)
+//   XRPC       /api/oauth/proxy         (the Agent's calls, through createBackendFetchHandler)
+//   blobs      /api/oauth/upload-blob
+//   the rest   /api/*                   (scheduling, timers, the adviser, through createBackendRequester)
 //
-// Every request header has to be one the server's CORS preflight allows,
-// or the browser never sends the request at all, hence the exact header sets.
+// The server is normally this site's own /api/* (backendUrl ''). When
+// VITE_BACKEND_URL names another deployment, every request is cross-origin,
+// and every header has to be one that server's CORS preflight allows, or the
+// browser never sends the request at all, hence the exact header sets.
 
 const PROXY_TIMEOUT_MS = 60_000;
 // An upload's deadline is its caller's, which grows with the file's size
@@ -22,6 +24,26 @@ const LITE_TIMEOUT_MS = 8_000;
 const SESSION_TIMEOUT_MS = 20_000;
 
 export const SIGNIN_PENDING_KEY = 'virga:signin-pending';
+
+/** Where each sign-in endpoint lives on Virga's server. */
+export const BACKEND_PATHS = Object.freeze({
+  login: '/api/oauth/login',
+  session: '/api/oauth/session',
+  proxy: '/api/oauth/proxy',
+  uploadBlob: '/api/oauth/upload-blob',
+  logout: '/api/oauth/logout',
+});
+
+/**
+ * `path` on Virga's server: under `backendUrl`, or this page's origin when it
+ * is '' (same origin). Appended rather than resolved, so a `backendUrl` with
+ * a path prefix keeps it.
+ */
+export function backendAddress(backendUrl, path) {
+  const base = String(backendUrl || globalThis.location?.origin || '').replace(/\/+$/, '');
+  if (!base) throw new TypeError('Virga’s server has no address here (pass backendUrl)');
+  return new URL(`${base}${path.startsWith('/') ? '' : '/'}${path}`);
+}
 
 // Outputs that are bytes, not JSON. The proxy answers in a JSON envelope, so
 // these can't go through it; Virga reads repos and blobs from the PDS
@@ -86,7 +108,7 @@ export function clearSigninPending(storage) {
 export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce }) {
   const returnUrl = new URL(returnPath, origin);
   returnUrl.search = new URLSearchParams({ n: nonce }).toString();
-  const url = new URL(`${backendUrl}/virga/oauth/login`);
+  const url = backendAddress(backendUrl, BACKEND_PATHS.login);
   url.searchParams.set('handle', handle);
   url.searchParams.set('redirect_uri', returnUrl.href);
   return { url: url.href, returnUrl: returnUrl.href };
@@ -284,7 +306,9 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
       if (!mime || mime === 'application/octet-stream') {
         throw new TypeError('uploadBlob needs the blob’s real type (pass an encoding such as image/jpeg)');
       }
-      const res = await fetch(`${backendUrl}/oauth/upload-blob?encoding=${encodeURIComponent(mime)}`, {
+      const address = backendAddress(backendUrl, BACKEND_PATHS.uploadBlob);
+      address.searchParams.set('encoding', mime);
+      const res = await fetch(address.href, {
         method: 'POST',
         headers: { Authorization: `Bearer ${bearer}`, 'Content-Type': 'application/octet-stream' },
         body: init.body,
@@ -304,7 +328,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
     if (labelers && labelers.trim()) headers['Atproto-Accept-Labelers'] = labelers;
 
     const method = (init.method || 'GET').toUpperCase();
-    const res = await fetch(`${backendUrl}/oauth/proxy${u.search}`, {
+    const res = await fetch(`${backendAddress(backendUrl, BACKEND_PATHS.proxy).href}${u.search}`, {
       method,
       headers,
       body: method === 'GET' || method === 'HEAD' ? undefined : init.body,
@@ -314,7 +338,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
   };
 }
 
-/* ---- cocoon's own API ------------------------------------------------ */
+/* ---- the server's own API -------------------------------------------- */
 
 function appendQuery(url, query) {
   for (const [k, v] of Object.entries(query || {})) {
@@ -325,8 +349,8 @@ function appendQuery(url, query) {
 }
 
 /**
- * The error a failed cocoon call throws. cocoon's endpoints don't share one
- * shape: some put a code in `code`, the AI ones put it in `error`
+ * The error a failed call to Virga's server throws. Its endpoints don't share
+ * one shape: some put a code in `code`, the AI ones put it in `error`
  * (`monthly_limit`), most put a sentence in `error`.
  */
 export function requestError(status, body) {
@@ -337,7 +361,7 @@ export function requestError(status, body) {
 }
 
 /**
- * A requester for cocoon's `/api/*` endpoints, as one account (the token's;
+ * A requester for the server's `/api/*` endpoints, as one account (the token's;
  * `token` may be a reader, as for createBackendFetchHandler).
  * `request` resolves to the whole parsed body: the services read `.data`,
  * `.moved` or `.unavailable` themselves, and the AI endpoints answer bare.
@@ -349,7 +373,7 @@ export function createBackendRequester({ backendUrl, token, did, fetch = globalT
   return {
     did,
     async request(path, { method = 'GET', query, body, signal, timeoutMs = 30_000 } = {}) {
-      const url = new URL(`${backendUrl}${path.startsWith('/') ? '' : '/'}${path}`);
+      const url = backendAddress(backendUrl, path);
       appendQuery(url, query);
       const bearer = tokenNow(token);
       if (!bearer) {
@@ -397,8 +421,8 @@ export function createBackendRequester({ backendUrl, token, did, fetch = globalT
 /* ---- session checks and sign-out -------------------------------------- */
 
 async function sessionRead({ backendUrl, token, fetch, signal, lite, timeoutMs }) {
-  const url = `${backendUrl}/oauth/session${lite ? '?lite=1' : ''}`;
   try {
+    const url = `${backendAddress(backendUrl, BACKEND_PATHS.session).href}${lite ? '?lite=1' : ''}`;
     const res = await fetch(url, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
@@ -430,9 +454,9 @@ export function fetchBackendSession({ backendUrl, token, fetch = globalThis.fetc
 }
 
 /**
- * Sign this browser's token out. Per device: other browsers, and Anisota,
- * stay signed in; the server ends the account's grant only when no token is
- * left. Never throws; true when the server confirmed.
+ * Sign this browser's token out. Per device: other browsers stay signed in;
+ * the server ends the account's grant only when no token is left. Never
+ * throws; true when the server confirmed.
  */
 // Virga's server answers 503 with one of these when it couldn't finish the
 // sign-out yet (its store didn't answer) and has left the token in place.
@@ -442,7 +466,7 @@ const LOGOUT_RETRY_MS = 1500;
 export async function backendSignOut({ backendUrl, token, fetch = globalThis.fetch, retryDelayMs = LOGOUT_RETRY_MS }) {
   if (!token) return false;
   const attempt = async () => {
-    const res = await fetch(`${backendUrl}/oauth/logout`, {
+    const res = await fetch(backendAddress(backendUrl, BACKEND_PATHS.logout).href, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: '{}',

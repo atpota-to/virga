@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Agent } from '@atproto/api';
+import { CORS_HEADERS } from '../../server/http.js';
 import {
+  BACKEND_PATHS,
   SIGNIN_PENDING_KEY,
+  backendAddress,
   backendSignOut,
   buildLoginRequest,
   checkBackendSession,
@@ -17,13 +20,14 @@ import {
   writeSigninPending,
 } from './backendClient.js';
 
-const COCOON = 'https://cocoon.example';
+const SERVER = 'https://server.example';
 const DID = 'did:plc:virgaharnessmira2zq4x';
 const TOKEN = `vg_${'0f'.repeat(32)}`;
 
-// The headers cocoon's preflight allows, per endpoint. Anything else and the
-// browser never sends the request.
-const PROXY_ALLOWED = ['content-type', 'authorization', 'x-xrpc-method', 'x-pds-url', 'x-atproto-proxy', 'atproto-accept-labelers', 'accept-language', 'x-bsky-topics'];
+// The headers the server's preflight allows (read from the server itself, so
+// the two can't drift). Anything else and a cross-origin browser never sends
+// the request.
+const PROXY_ALLOWED = CORS_HEADERS.split(',').map((h) => h.trim().toLowerCase());
 
 function memoryStorage(initial = {}) {
   const map = new Map(Object.entries(initial));
@@ -57,22 +61,65 @@ afterEach(() => {
 describe('the login request', () => {
   it('asks Virga’s server for the login address, coming back to the return path with the nonce', () => {
     const { url, returnUrl } = buildLoginRequest({
-      backendUrl: COCOON,
+      backendUrl: SERVER,
       handle: 'mira.example.com',
       origin: 'https://virga.example',
       returnPath: '/oauth/return',
       nonce: 'abc123',
     });
     const u = new URL(url);
-    expect(u.origin + u.pathname).toBe(`${COCOON}/virga/oauth/login`);
+    expect(u.origin + u.pathname).toBe(`${SERVER}/api/oauth/login`);
     expect(u.searchParams.get('handle')).toBe('mira.example.com');
     expect(u.searchParams.get('redirect_uri')).toBe('https://virga.example/oauth/return?n=abc123');
     expect(returnUrl).toBe('https://virga.example/oauth/return?n=abc123');
   });
 });
 
+describe('where the server is', () => {
+  it('puts every sign-in endpoint under /api/oauth', () => {
+    expect(BACKEND_PATHS).toEqual({
+      login: '/api/oauth/login',
+      session: '/api/oauth/session',
+      proxy: '/api/oauth/proxy',
+      uploadBlob: '/api/oauth/upload-blob',
+      logout: '/api/oauth/logout',
+    });
+  });
+
+  it('is this page’s own origin when no address is given', () => {
+    vi.stubGlobal('location', { origin: 'https://virga.test' });
+    expect(backendAddress('', '/api/schedule/list').href).toBe('https://virga.test/api/schedule/list');
+    const { url } = buildLoginRequest({ backendUrl: '', handle: 'mira.example.com', origin: 'https://virga.test', returnPath: '/oauth/return', nonce: 'n1' });
+    const u = new URL(url);
+    expect(u.origin + u.pathname).toBe('https://virga.test/api/oauth/login');
+    expect(u.searchParams.get('redirect_uri')).toBe('https://virga.test/oauth/return?n=n1');
+  });
+
+  it('keeps a path prefix on another deployment’s address', () => {
+    expect(backendAddress('https://other.example/prefix/', '/api/oauth/session').href).toBe('https://other.example/prefix/api/oauth/session');
+    expect(backendAddress('https://other.example', 'api/limits/status').href).toBe('https://other.example/api/limits/status');
+  });
+
+  it('says so when there is no address at all', () => {
+    vi.stubGlobal('location', undefined);
+    expect(() => backendAddress('', '/api/oauth/session')).toThrow(/no address/);
+  });
+
+  it('sends a same-origin requester’s calls to this page’s /api', async () => {
+    vi.stubGlobal('location', { origin: 'https://virga.test' });
+    const fetch = recorder(() => json({ success: true, data: [] }));
+    const req = createBackendRequester({ backendUrl: '', token: TOKEN, did: DID, fetch });
+    await req.request('/api/schedule/list');
+    expect(fetch.calls[0].url).toBe('https://virga.test/api/schedule/list');
+    await checkBackendSession({ backendUrl: '', token: TOKEN, fetch });
+    expect(fetch.calls[1].url).toBe('https://virga.test/api/oauth/session?lite=1');
+    await backendSignOut({ backendUrl: '', token: TOKEN, fetch });
+    expect(fetch.calls[2].url).toBe('https://virga.test/api/oauth/logout');
+  });
+});
+
 describe('startBackendSignIn', () => {
-  const base = { backendUrl: COCOON, handle: 'mira.example.com', origin: 'https://virga.example', returnPath: '/oauth/return' };
+  const base = { backendUrl: SERVER, handle: 'mira.example.com', origin: 'https://virga.example', returnPath: '/oauth/return' };
 
   it('fetches the address as JSON, notes the nonce for this tab, then goes there', async () => {
     const fetch = recorder(() => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?request_uri=x' }));
@@ -200,13 +247,13 @@ describe('stripReturnFromAddress', () => {
 describe('the fetch handler', () => {
   it('sends an Agent’s query through the proxy with only the headers the preflight allows', async () => {
     const fetch = recorder(() => json({ success: true, data: { followers: [], subject: { did: DID, handle: 'mira.example.com' } } }));
-    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, did: DID, fetch }) });
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, did: DID, fetch }) });
     const res = await agent.withProxy('bsky_appview', 'did:web:api.bsky.app').app.bsky.graph.getFollowers({ actor: DID, limit: 50 });
     expect(res.data.followers).toEqual([]);
 
     const call = fetch.calls[0];
     const u = new URL(call.url);
-    expect(u.origin + u.pathname).toBe(`${COCOON}/oauth/proxy`);
+    expect(u.origin + u.pathname).toBe(`${SERVER}/api/oauth/proxy`);
     expect(u.searchParams.get('actor')).toBe(DID);
     expect(u.searchParams.get('limit')).toBe('50');
     expect(call.init.method).toBe('GET');
@@ -221,7 +268,7 @@ describe('the fetch handler', () => {
 
   it('sends a procedure’s body through and reads its answer', async () => {
     const fetch = recorder(() => json({ success: true, data: { uri: `at://${DID}/app.bsky.graph.follow/3k`, cid: 'bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' } }));
-    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, did: DID, fetch }) });
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, did: DID, fetch }) });
     const res = await agent.com.atproto.repo.createRecord({
       repo: DID,
       collection: 'app.bsky.graph.follow',
@@ -237,14 +284,14 @@ describe('the fetch handler', () => {
 
   it('drops every header the Agent adds that the preflight doesn’t allow', async () => {
     const fetch = recorder(() => json({ success: true, data: {} }));
-    const handler = createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch });
+    const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch });
     await handler('/xrpc/app.bsky.actor.getPreferences', { method: 'GET', headers: { 'X-Custom': 'no', 'accept-language': 'en', 'atproto-accept-labelers': ' ' } });
     expect(Object.keys(fetch.calls[0].headers).sort()).toEqual(['authorization', 'content-type', 'x-xrpc-method']);
   });
 
   it('turns the envelope’s error into an XRPC error with the upstream status', async () => {
     const fetch = recorder(() => json({ success: false, error: 'Could not locate record', code: 'RecordNotFound' }, 400));
-    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch }) });
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch }) });
     const err = await agent.com.atproto.repo.getRecord({ repo: DID, collection: 'app.bsky.feed.post', rkey: 'x' }).catch((e) => e);
     expect(err.status).toBe(400);
     expect(err.error).toBe('RecordNotFound');
@@ -253,7 +300,7 @@ describe('the fetch handler', () => {
 
   it('passes the rate limit back as headers', async () => {
     const fetch = recorder(() => json({ success: false, error: 'Slow down', code: 'RateLimitExceeded', ratelimit: { 'ratelimit-reset': 1763000000 } }, 429));
-    const handler = createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch });
+    const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch });
     const res = await handler('/xrpc/com.atproto.repo.createRecord', { method: 'POST', body: '{}' });
     expect(res.status).toBe(429);
     expect(res.headers.get('ratelimit-reset')).toBe('1763000000');
@@ -262,21 +309,21 @@ describe('the fetch handler', () => {
 
   it('never answers a failure with a 200', async () => {
     const fetch = recorder(() => json({ success: false, error: 'odd' }, 200));
-    const res = await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch })('/xrpc/app.bsky.actor.getPreferences', {});
+    const res = await createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch })('/xrpc/app.bsky.actor.getPreferences', {});
     expect(res.status).toBe(502);
   });
 
   it('hands a 401 to the recovery rules, with the server’s code', async () => {
     const onUnauthorized = vi.fn();
     const fetch = recorder(() => json({ success: false, error: 'gone', code: 'FRONTEND_SESSION_INVALID' }, 401));
-    const res = await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, did: DID, fetch, onUnauthorized })('/xrpc/app.bsky.actor.getPreferences', {});
+    const res = await createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, did: DID, fetch, onUnauthorized })('/xrpc/app.bsky.actor.getPreferences', {});
     expect(res.status).toBe(401);
     expect(onUnauthorized).toHaveBeenCalledWith(DID, 'FRONTEND_SESSION_INVALID');
   });
 
   it('refuses the outputs that are bytes', async () => {
     const fetch = recorder(() => json({}));
-    const handler = createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch });
+    const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch });
     await expect(handler(`/xrpc/com.atproto.sync.getRepo?did=${DID}`, {})).rejects.toThrow(/bytes/);
     await expect(handler('/xrpc/com.atproto.sync.getBlob?did=x&cid=y', {})).rejects.toThrow(/bytes/);
     expect(fetch).not.toHaveBeenCalled();
@@ -288,14 +335,14 @@ describe('uploadBlob through the fetch handler', () => {
 
   it('posts the bytes to upload-blob with exactly two headers and the type in the query', async () => {
     const fetch = recorder(() => json({ success: true, data: { blob } }));
-    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch }) });
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch }) });
     const bytes = new Uint8Array([1, 2, 3, 4]);
     const res = await agent.com.atproto.repo.uploadBlob(bytes, { encoding: 'image/png' });
     expect(res.data.blob.mimeType).toBe('image/png');
     expect(res.data.blob.size).toBe(4);
 
     const call = fetch.calls[0];
-    expect(call.url).toBe(`${COCOON}/oauth/upload-blob?encoding=image%2Fpng`);
+    expect(call.url).toBe(`${SERVER}/api/oauth/upload-blob?encoding=image%2Fpng`);
     expect(call.init.method).toBe('POST');
     expect(call.headers).toEqual({ authorization: `Bearer ${TOKEN}`, 'content-type': 'application/octet-stream' });
     expect(call.init.body).toBe(bytes);
@@ -303,7 +350,7 @@ describe('uploadBlob through the fetch handler', () => {
 
   it('refuses to send a blob with no real type', async () => {
     const fetch = recorder(() => json({ success: true, data: { blob } }));
-    const handler = createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch });
+    const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch });
     await expect(handler('/xrpc/com.atproto.repo.uploadBlob', { method: 'POST', body: new Uint8Array(1) })).rejects.toThrow(/real type/);
     await expect(
       handler('/xrpc/com.atproto.repo.uploadBlob', { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: new Uint8Array(1) }),
@@ -314,7 +361,7 @@ describe('uploadBlob through the fetch handler', () => {
   it('leaves an upload’s deadline to its caller, not the 60 s one for other calls', async () => {
     const fetch = recorder(() => json({ success: true, data: { blob } }));
     const caller = new AbortController();
-    await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch, timeoutMs: 5 })('/xrpc/com.atproto.repo.uploadBlob', {
+    await createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch, timeoutMs: 5 })('/xrpc/com.atproto.repo.uploadBlob', {
       method: 'POST',
       headers: { 'content-type': 'image/png' },
       body: new Uint8Array(1),
@@ -325,7 +372,7 @@ describe('uploadBlob through the fetch handler', () => {
 
   it('turns an upload failure into an XRPC error', async () => {
     const fetch = recorder(() => json({ success: false, error: 'Forward timed out', code: 'PDS_UPLOAD_TIMEOUT' }, 504));
-    const res = await createBackendFetchHandler({ backendUrl: COCOON, token: TOKEN, fetch })('/xrpc/com.atproto.repo.uploadBlob', {
+    const res = await createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch })('/xrpc/com.atproto.repo.uploadBlob', {
       method: 'POST',
       headers: { 'content-type': 'video/mp4' },
       body: new Uint8Array(1),
@@ -338,32 +385,32 @@ describe('uploadBlob through the fetch handler', () => {
 describe('the requester', () => {
   it('resolves to the whole body, sending only the token and a JSON type', async () => {
     const fetch = recorder(() => json({ success: true, moved: 2 }));
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch });
     expect(req.did).toBe(DID);
     const body = await req.request('/api/schedule/reorder', { method: 'POST', body: { moves: [] } });
     expect(body).toEqual({ success: true, moved: 2 });
-    expect(fetch.calls[0].url).toBe(`${COCOON}/api/schedule/reorder`);
+    expect(fetch.calls[0].url).toBe(`${SERVER}/api/schedule/reorder`);
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json' });
     expect(fetch.calls[0].init.body).toBe('{"moves":[]}');
   });
 
   it('leaves the type off a request with no body, and puts the query in the address', async () => {
     const fetch = recorder(() => json({ data: [], unavailable: true }));
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch });
     expect(await req.request('/api/self-destruct/list', { query: { history: true, ids: ['a', 'b'], skip: null } })).toEqual({ data: [], unavailable: true });
-    expect(fetch.calls[0].url).toBe(`${COCOON}/api/self-destruct/list?history=true&ids=a&ids=b`);
+    expect(fetch.calls[0].url).toBe(`${SERVER}/api/self-destruct/list?history=true&ids=a&ids=b`);
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}` });
   });
 
   it('reads a bare AI body as it is', async () => {
     const fetch = recorder(() => json({ read: 'fine', monthly_limit: 30 }));
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch });
     expect(await req.request('/api/ai/analyze-post', { method: 'POST', body: {} })).toEqual({ read: 'fine', monthly_limit: 30 });
   });
 
   it('throws with status, code, detail and payload', async () => {
     const quota = { success: false, code: 'QUOTA_EXCEEDED', feature: 'scheduledPosts', error: 'You have 3 of 3' };
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch: recorder(() => json(quota, 403)) });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch: recorder(() => json(quota, 403)) });
     const err = await req.request('/api/schedule/create', { method: 'POST', body: {} }).catch((e) => e);
     expect(err).toBeInstanceOf(Error);
     expect(err).toMatchObject({ status: 403, code: 'QUOTA_EXCEEDED', detail: 'You have 3 of 3', payload: quota, message: 'You have 3 of 3' });
@@ -376,20 +423,20 @@ describe('the requester', () => {
   });
 
   it('throws on success: false even with a 200', async () => {
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch: recorder(() => json({ success: false, error: 'nope' })) });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch: recorder(() => json({ success: false, error: 'nope' })) });
     await expect(req.request('/api/x')).rejects.toMatchObject({ status: 200, detail: 'nope' });
   });
 
   it('hands any 401 to the recovery rules', async () => {
     const onUnauthorized = vi.fn();
-    const req = createBackendRequester({ backendUrl: COCOON, token: TOKEN, did: DID, fetch: recorder(() => json({ error: 'Unauthorized' }, 401)), onUnauthorized });
+    const req = createBackendRequester({ backendUrl: SERVER, token: TOKEN, did: DID, fetch: recorder(() => json({ error: 'Unauthorized' }, 401)), onUnauthorized });
     await expect(req.request('/api/schedule/list')).rejects.toMatchObject({ status: 401 });
     expect(onUnauthorized).toHaveBeenCalledWith(DID, null);
   });
 
   it('says so when the server can’t be reached, and lets a caller’s abort through', async () => {
     const req = createBackendRequester({
-      backendUrl: COCOON,
+      backendUrl: SERVER,
       token: TOKEN,
       did: DID,
       fetch: vi.fn(async () => {
@@ -400,7 +447,7 @@ describe('the requester', () => {
 
     const controller = new AbortController();
     const aborting = createBackendRequester({
-      backendUrl: COCOON,
+      backendUrl: SERVER,
       token: TOKEN,
       did: DID,
       fetch: vi.fn(async (_u, init) => {
@@ -416,22 +463,22 @@ describe('the requester', () => {
 describe('session checks and sign-out', () => {
   it('probes the lite session with only the token, and reports what came back', async () => {
     const fetch = recorder(() => json({ success: true, authenticated: true, lite: true, oauthSessionMissing: false, user: { did: DID } }));
-    const res = await checkBackendSession({ backendUrl: COCOON, token: TOKEN, fetch });
-    expect(fetch.calls[0].url).toBe(`${COCOON}/oauth/session?lite=1`);
+    const res = await checkBackendSession({ backendUrl: SERVER, token: TOKEN, fetch });
+    expect(fetch.calls[0].url).toBe(`${SERVER}/api/oauth/session?lite=1`);
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}` });
     expect(res).toMatchObject({ ok: true, status: 200, data: { authenticated: true } });
   });
 
   it('reads the full session for the grant', async () => {
     const fetch = recorder(() => json({ success: true, authenticated: true, scope: 'atproto', client: 'virga', pds: 'https://pds.example' }));
-    const res = await fetchBackendSession({ backendUrl: COCOON, token: TOKEN, fetch });
-    expect(fetch.calls[0].url).toBe(`${COCOON}/oauth/session`);
+    const res = await fetchBackendSession({ backendUrl: SERVER, token: TOKEN, fetch });
+    expect(fetch.calls[0].url).toBe(`${SERVER}/api/oauth/session`);
     expect(res.data.scope).toBe('atproto');
   });
 
   it('turns an unreachable server into a status-0 answer, never a throw', async () => {
     const res = await checkBackendSession({
-      backendUrl: COCOON,
+      backendUrl: SERVER,
       token: TOKEN,
       fetch: vi.fn(async () => {
         throw new TypeError('Failed to fetch');
@@ -442,8 +489,8 @@ describe('session checks and sign-out', () => {
 
   it('signs this browser’s token out, with the token and a JSON type only', async () => {
     const fetch = recorder(() => json({ success: true }));
-    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch })).toBe(true);
-    expect(fetch.calls[0].url).toBe(`${COCOON}/oauth/logout`);
+    expect(await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch })).toBe(true);
+    expect(fetch.calls[0].url).toBe(`${SERVER}/api/oauth/logout`);
     expect(fetch.calls[0].init.method).toBe('POST');
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json' });
   });
@@ -451,15 +498,15 @@ describe('session checks and sign-out', () => {
   it('tries a sign-out the server couldn’t finish once more, and only that kind', async () => {
     let n = 0;
     const flaky = recorder(() => (++n === 1 ? json({ success: false, code: 'LOGOUT_TRANSIENT_ERROR' }, 503) : json({ success: true })));
-    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: flaky, retryDelayMs: 0 })).toBe(true);
+    expect(await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch: flaky, retryDelayMs: 0 })).toBe(true);
     expect(flaky.calls).toHaveLength(2);
 
     const down = recorder(() => json({ success: false, code: 'VALIDATION_TRANSIENT_ERROR' }, 503));
-    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: down, retryDelayMs: 0 })).toBe(false);
+    expect(await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch: down, retryDelayMs: 0 })).toBe(false);
     expect(down.calls).toHaveLength(2);
 
     const refused = recorder(() => json({ success: false, code: 'FRONTEND_SESSION_INVALID' }, 401));
-    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch: refused, retryDelayMs: 0 })).toBe(false);
+    expect(await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch: refused, retryDelayMs: 0 })).toBe(false);
     expect(refused.calls).toHaveLength(1);
   });
 
@@ -467,9 +514,9 @@ describe('session checks and sign-out', () => {
     const fetch = vi.fn(async () => {
       throw new TypeError('Failed to fetch');
     });
-    expect(await backendSignOut({ backendUrl: COCOON, token: TOKEN, fetch })).toBe(false);
+    expect(await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch })).toBe(false);
     const idle = vi.fn();
-    expect(await backendSignOut({ backendUrl: COCOON, token: null, fetch: idle })).toBe(false);
+    expect(await backendSignOut({ backendUrl: SERVER, token: null, fetch: idle })).toBe(false);
     expect(idle).not.toHaveBeenCalled();
   });
 });
@@ -478,8 +525,8 @@ describe('a token read at each request', () => {
   it('sends whatever the reader holds now, through the Agent and the requester', async () => {
     let current = TOKEN;
     const fetch = vi.fn(async () => json({ success: true, data: { preferences: [] } }));
-    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: COCOON, token: () => current, did: DID, fetch }) });
-    const req = createBackendRequester({ backendUrl: COCOON, token: () => current, did: DID, fetch });
+    const agent = new Agent({ did: DID, fetchHandler: createBackendFetchHandler({ backendUrl: SERVER, token: () => current, did: DID, fetch }) });
+    const req = createBackendRequester({ backendUrl: SERVER, token: () => current, did: DID, fetch });
     await agent.app.bsky.actor.getPreferences();
     await req.request('/api/schedule/list');
     current = `vg_${'cd'.repeat(32)}`;
@@ -496,9 +543,9 @@ describe('a token read at each request', () => {
   it('answers 401 without asking the server once the token has gone', async () => {
     const fetch = vi.fn();
     const onUnauthorized = vi.fn();
-    const res = await createBackendFetchHandler({ backendUrl: COCOON, token: () => null, did: DID, fetch, onUnauthorized })('/xrpc/app.bsky.actor.getPreferences', {});
+    const res = await createBackendFetchHandler({ backendUrl: SERVER, token: () => null, did: DID, fetch, onUnauthorized })('/xrpc/app.bsky.actor.getPreferences', {});
     expect(res.status).toBe(401);
-    const req = createBackendRequester({ backendUrl: COCOON, token: () => null, did: DID, fetch, onUnauthorized });
+    const req = createBackendRequester({ backendUrl: SERVER, token: () => null, did: DID, fetch, onUnauthorized });
     await expect(req.request('/api/schedule/list')).rejects.toMatchObject({ status: 401, code: 'FRONTEND_SESSION_INVALID' });
     expect(fetch).not.toHaveBeenCalled();
     expect(onUnauthorized).toHaveBeenCalledWith(DID, 'FRONTEND_SESSION_INVALID');

@@ -4,7 +4,6 @@ import {
   addSlot,
   applyAssignment,
   clearDay,
-  clientName,
   copyDay,
   deletedPostUris,
   formatInZone,
@@ -169,31 +168,22 @@ describe('a row’s facts and state', () => {
     ).toBe('wait');
   });
 
-  it('lets another app’s row be cancelled and nothing else', () => {
-    const theirs = rowActions(
-      row('a', '2026-11-13T09:00:00Z', { clientKey: 'anisota' }),
-    );
-    expect(theirs).toMatchObject({
-      edit: false,
-      postNow: false,
-      retry: false,
-      cancel: true,
-    });
-    expect(theirs.note).toBe(
-      'Scheduled in Anisota. You can cancel it here; to change it, open Anisota.',
-    );
-    expect(clientName({ clientKey: 'anisota' })).toBe('Anisota');
-    expect(clientName({})).toBe('another app');
-    expect(clientName({ clientKey: 'virga' })).toBeNull();
-  });
-
-  it('offers Virga’s own rows everything that fits their state', () => {
-    expect(rowActions(row('a', 'x'))).toMatchObject({
+  it('reads a row without a client as one of the account’s own', () => {
+    const unkeyed = { ...row('a', 'x'), clientKey: undefined };
+    expect(rowActions(unkeyed)).toMatchObject({
       edit: true,
       postNow: true,
       retry: false,
       cancel: true,
-      note: '',
+    });
+  });
+
+  it('offers a row everything that fits its state', () => {
+    expect(rowActions(row('a', 'x'))).toEqual({
+      edit: true,
+      postNow: true,
+      retry: false,
+      cancel: true,
     });
     expect(rowActions(row('a', 'x', { status: 'failed' }))).toMatchObject({
       edit: true,
@@ -251,7 +241,7 @@ describe('Post now near a row’s time', () => {
   });
 });
 
-describe('a timer note from Virga or another app', () => {
+describe('a timer note', () => {
   const note = (extra = {}) => ({
     id: 'n1',
     status: 'published',
@@ -263,7 +253,7 @@ describe('a timer note from Virga or another app', () => {
     ...extra,
   });
 
-  it('offers a timer on a Bluesky post, thread and all, and Dismiss on Virga’s own', () => {
+  it('offers a timer on a Bluesky post, thread and all, and Dismiss', () => {
     const out = timerNoteActions(note());
     expect(out.arm).toMatchObject({
       uri: 'at://did:plc:me/app.bsky.feed.post/r1',
@@ -274,29 +264,23 @@ describe('a timer note from Virga or another app', () => {
     expect(out).toMatchObject({ dismiss: true, note: '' });
   });
 
-  it('sends an Anisota post’s timer back to Anisota', () => {
-    const out = timerNoteActions(
-      note({
-        clientKey: 'anisota',
-        resultUri: 'at://did:plc:me/net.anisota.feed.post/r1',
-      }),
-    );
-    expect(out).toEqual({
+  it('offers only Dismiss where there is no Bluesky post to put a timer on', () => {
+    expect(timerNoteActions(note({ resultUri: null }))).toEqual({
       arm: null,
-      dismiss: false,
-      note: 'Set its timer in Anisota.',
+      dismiss: true,
+      note: '',
     });
+    expect(
+      timerNoteActions(
+        note({ resultUri: 'at://did:plc:me/app.bsky.feed.repost/r1' }),
+      ),
+    ).toEqual({ arm: null, dismiss: true, note: '' });
   });
 
-  it('stops offering a timer on another app’s note once one is set', () => {
-    const theirs = note({ clientKey: 'anisota' });
-    expect(timerNoteActions(theirs).arm).not.toBeNull();
-    expect(timerNoteActions(theirs).dismiss).toBe(false);
-    expect(timerNoteActions(theirs, { armed: new Set(['n1']) })).toEqual({
-      arm: null,
-      dismiss: false,
-      note: 'Timer set. Dismiss this note in Anisota.',
-    });
+  it('offers Dismiss on a note that doesn’t say whose it is', () => {
+    const unkeyed = { ...note(), clientKey: undefined };
+    expect(timerNoteActions(unkeyed)).toMatchObject({ dismiss: true });
+    expect(timerNoteActions(unkeyed).arm).not.toBeNull();
   });
 });
 
@@ -336,12 +320,12 @@ describe('times in the queue’s zone', () => {
 describe('reordering the queue', () => {
   const rows = [
     row('a', '2026-11-13T09:00:00Z'),
-    row('x', '2026-11-13T17:00:00Z', { clientKey: 'anisota' }),
+    row('x', '2026-11-13T17:00:00Z', { status: 'failed' }),
     row('b', '2026-11-16T09:00:00Z'),
     row('c', '2026-11-16T17:00:00Z'),
   ];
 
-  it('moves only this app’s rows, and other rows keep their places', () => {
+  it('moves only the rows that can move, and the rest keep their places', () => {
     expect(movableIds(rows, NOW)).toEqual(['a', 'b', 'c']);
     expect(previewOrder(rows, ['c', 'a', 'b']).map((r) => r.id)).toEqual([
       'c',
@@ -386,23 +370,23 @@ describe('limits lines', () => {
   it('states a free account’s usage neutrally', () => {
     const limits = normalizeLimits(base);
     expect(scheduledLimitsLine(limits)).toBe(
-      '2 of 3 scheduled posts in use. Limits are shared with Anisota.',
+      '2 of 3 scheduled posts in use.',
     );
     expect(timerLimitsLine(limits)).toBe(
-      'In use: 0 of 1 plain timer and 1 of 1 conditional timer, counting scheduled posts with a timer. Limits are shared with Anisota.',
+      'In use: 0 of 1 plain timer and 1 of 1 conditional timer, counting scheduled posts with a timer.',
     );
     expect(fullTimerBuckets(limits)).toEqual([
-      'This account can keep one conditional timer at a time, counting scheduled posts, and it’s in use. Limits are shared with Anisota.',
+      'This account can keep one conditional timer at a time, counting scheduled posts, and it’s in use.',
     ]);
   });
 
-  it('fills a count cocoon didn’t send from what the page counted', () => {
+  it('fills a count the server didn’t send from what the page counted', () => {
     const limits = normalizeLimits({ ...base, usage: {} });
     expect(timerLimitsLine(limits, { plain: 1, conditional: 0 })).toMatch(
       /1 of 1 plain timer and 0 of 1 conditional timer/,
     );
     expect(scheduledLimitsLine(limits)).toBe(
-      'This account can keep 3 scheduled posts at a time. Limits are shared with Anisota.',
+      'This account can keep 3 scheduled posts at a time.',
     );
   });
 
@@ -448,7 +432,7 @@ describe('timer rows', () => {
     },
     effects: [{ action: 'delete' }],
     extensions: 2,
-    clientKey: 'anisota',
+    clientKey: 'virga',
   };
 
   it('describes a live timer', () => {
@@ -458,7 +442,6 @@ describe('timer rows', () => {
       when: 'Acts in 4 hours',
       extensions: 'Kept 2 times so far',
       bucket: 'conditional',
-      client: 'Anisota',
       canCancel: true,
       cancelLabel: 'Call off',
     });
@@ -607,11 +590,11 @@ describe('the weekly schedule', () => {
     });
   });
 
-  it('finds the next open times, stepping around queued posts of any app', () => {
+  it('finds the next open times, stepping around queued posts that can’t move', () => {
     const schedule = week({ thu: ['09:00', '17:00'], fri: ['09:00'] });
     const slots = nextOpenSlots(
       schedule,
-      [row('x', '2026-11-12T17:00:00Z', { clientKey: 'anisota' })],
+      [row('x', '2026-11-12T17:00:00Z', { status: 'failed' })],
       NOW,
       3,
     );
@@ -623,12 +606,12 @@ describe('the weekly schedule', () => {
     expect(nextOpenSlots(week({}), [], NOW)).toEqual([]);
   });
 
-  it('finds this app’s queued posts that sit off the week’s times', () => {
+  it('finds the movable queued posts that sit off the week’s times', () => {
     const schedule = week({ fri: ['09:00'] });
     const rows = [
       row('on', '2026-11-13T09:00:00Z'),
       row('off', '2026-11-13T10:00:00Z'),
-      row('theirs', '2026-11-13T11:00:00Z', { clientKey: 'anisota' }),
+      row('stuck', '2026-11-13T11:00:00Z', { status: 'failed' }),
     ];
     expect(offScheduleRows(schedule, rows, NOW).map((r) => r.id)).toEqual([
       'off',
@@ -776,15 +759,7 @@ describe('posting a scheduled row now', () => {
     expect(d.publish).not.toHaveBeenCalled();
   });
 
-  it('refuses another app’s row and a thread part way out', async () => {
-    await expect(
-      postNow(
-        { ...scheduled, clientKey: 'anisota' },
-        { did: 'd', deps: deps() },
-      ),
-    ).rejects.toMatchObject({
-      code: 'NOT_YOUR_CLIENT',
-    });
+  it('refuses a thread part way out', async () => {
     await expect(
       postNow({ ...scheduled, partial: true }, { did: 'd', deps: deps() }),
     ).rejects.toMatchObject({

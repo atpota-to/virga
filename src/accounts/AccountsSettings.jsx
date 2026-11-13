@@ -6,7 +6,7 @@ import { ExternalLink, LogIn, LogOut, Timer, Trash2, UserPlus } from 'lucide-rea
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
-import { COCOON_URL } from '../config.js';
+import { backendHost } from '../config.js';
 import { Link } from '../lib/router.jsx';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { modeLabel, offersLongerSession, requestReauth, statusLabel } from './accountCopy.js';
@@ -14,14 +14,6 @@ import { PendingWorkWarnings, SignOutAllDialog, accountName, useAccountActions, 
 import { usePendingWork } from './pendingWork.js';
 import AddAccountDialog from './AddAccountDialog.jsx';
 import './accounts.css';
-
-const COCOON_HOST = (() => {
-  try {
-    return new URL(COCOON_URL).host;
-  } catch {
-    return COCOON_URL;
-  }
-})();
 
 function rowName(account) {
   return accountName({ displayName: account.displayName, handle: account.handle }, account.did);
@@ -199,7 +191,7 @@ export default function AccountsSettings() {
             long as that server allows an app that runs only in a browser, which is usually up to two weeks.
           </li>
           <li>
-            <strong>Long session through Virga’s server.</strong> The sign-in is held by Virga’s server ({COCOON_HOST}), which passes your
+            <strong>Long session through Virga’s server.</strong> The sign-in is held by Virga’s server ({backendHost()}), which passes your
             requests on to your account and stays signed in for as long as you keep using it. Scheduled posts, post timers and the post
             adviser need one, because they run while this browser is closed.
           </li>

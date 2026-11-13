@@ -1830,7 +1830,7 @@ export default function Composer({ open, intent, onClose }) {
         model={model}
         busy={!!busy || adviserReading}
         onAction={runAction}
-        footnote={usageLine ? `${usageLine}. Limits are shared with Anisota.` : ''}
+        footnote={usageLine ? `${usageLine}.` : ''}
       />
     </div>
   );

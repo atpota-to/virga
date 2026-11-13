@@ -62,7 +62,7 @@ export function getPublishActionLabel(action) {
 /**
  * Why this post can't be scheduled or queued at all, or null when it can:
  * the account has no long session, or the post is a reply (or continues a
- * thread) or carries a video, which cocoon can't hold. `authMode` is the
+ * thread) or carries a video, which the server can't hold. `authMode` is the
  * session's, which picks the long-session wording (needsBackendHint).
  */
 export function scheduleBlockReason({

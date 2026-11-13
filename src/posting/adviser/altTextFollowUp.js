@@ -4,10 +4,10 @@
  * (ui/AltTextDialog.jsx).
  *
  * A quick note travels two ways. Its sentence goes into the follow-up note, so
- * the request is in words; its id goes alongside, so cocoon can drop the rule
+ * the request is in words; its id goes alongside, so the server can drop the rule
  * the sentence would otherwise argue with (a "describe" note against the rule
  * that transcribes text-heavy screenshots verbatim). The ids must match
- * ALT_TEXT_PRESETS and ALT_TEXT_KINDS in cocoon's lib/alt-text-prompt.js, which
+ * ALT_TEXT_PRESETS and ALT_TEXT_KINDS in server/ai/altTextPrompt.js, which
  * ignores any it doesn't know.
  */
 
@@ -51,7 +51,7 @@ const OPPOSITES = {
 // The "It's a…" chip starts a correction in the author's own words.
 export const ITS_A = "It's a ";
 
-// cocoon caps the whole note at 500 characters. The longest set of quick
+// The server caps the whole note at 500 characters. The longest set of quick
 // notes that can be on together comes to under 150, so the author's own words
 // get 300 and nothing they type is cut off on the way.
 export const ALT_TEXT_NOTE_MAX = 300;
@@ -101,7 +101,7 @@ export function quickNoteIds(selected) {
 }
 
 /**
- * The follow-up note sent to cocoon: each chosen quick note's sentence, in list
+ * The follow-up note sent to the server: each chosen quick note's sentence, in list
  * order, then the author's own words. Empty when there's nothing to send.
  */
 export function composeFollowUp(selected, note) {

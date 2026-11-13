@@ -18,7 +18,7 @@
 // "Check this post" button: it ignores the scope and always shows the sheet,
 // including when there's nothing to check. It asks even when this browser
 // thinks the month is used up, because that hint can be stale (the account
-// became unlimited, or its count was reset): cocoon refuses an over-limit
+// became unlimited, or its count was reset): the server refuses an over-limit
 // request with monthly_limit before spending anything, and that refusal is
 // the limit sheet.
 //
@@ -171,7 +171,7 @@ export function createAdviserGateController({
     set({ usageVersion: view.usageVersion + 1 });
   }
 
-  /** The read itself: context first (bounded), then cocoon. */
+  /** The read itself: context first (bounded), then the server. */
   function startRead(plan, state, { gate }) {
     const requester = config.requester;
     const found = { context: null };

@@ -12,17 +12,10 @@ import { useEffect, useMemo, useState } from 'react';
 const CHECK_TIMEOUT_MS = 8_000;
 
 /** How many of `scheduled` (listScheduled's rows) and `timers` (listTimers's rows) Virga's grant carries. */
-export function countPendingWork({ scheduled = [], timers = [] } = {}, { isActiveScheduledRow, rowClientKey, isLiveTimer }) {
-  // A row another app set runs on that app's grant, which this sign-out
-  // leaves alone. One without a key is counted: a warning too many is
-  // better than a queue that stops unannounced.
-  const ours = (row) => {
-    const key = rowClientKey(row);
-    return key == null || key === 'virga';
-  };
+export function countPendingWork({ scheduled = [], timers = [] } = {}, { isActiveScheduledRow, isLiveTimer }) {
   return {
-    posts: (scheduled || []).filter((row) => ours(row) && isActiveScheduledRow(row)).length,
-    timers: (timers || []).filter((row) => ours(row) && isLiveTimer(row)).length,
+    posts: (scheduled || []).filter((row) => isActiveScheduledRow(row)).length,
+    timers: (timers || []).filter((row) => isLiveTimer(row)).length,
   };
 }
 
@@ -43,7 +36,7 @@ export async function readPendingWork(requester, { signal, timeoutMs = CHECK_TIM
   const [queue, live] = await Promise.all([schedule.listScheduled(requester, { signal: combined }), timers.listTimers(requester, { signal: combined })]);
   return countPendingWork(
     { scheduled: queue.rows, timers: live.rows },
-    { isActiveScheduledRow: schedule.isActiveScheduledRow, rowClientKey: schedule.rowClientKey, isLiveTimer: timers.isLiveTimer },
+    { isActiveScheduledRow: schedule.isActiveScheduledRow, isLiveTimer: timers.isLiveTimer },
   );
 }
 

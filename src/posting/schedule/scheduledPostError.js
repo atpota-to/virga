@@ -1,6 +1,6 @@
 // Sentences for what went wrong with a scheduled post, in Virga's words.
-// cocoon's own messages are written for Anisota and in its voice, so the UI
-// branches on codes and uses cocoon's prose only as a last resort.
+// The server's own messages are short notes rather than Virga's sentences, so
+// the UI branches on codes and uses the server's prose only as a last resort.
 //
 // Two readers: friendlyScheduleError for what the publish worker stored on a
 // failed row (`lastError`, `lastErrorCode`), and scheduleErrorMessage for an
@@ -41,7 +41,7 @@ const BY_CODE = {
  * @param {string} raw   what the worker stored in `lastError`
  * @param {string} [code] the worker's own verdict, `lastErrorCode`
  *
- * The code wins: prose matching breaks quietly when cocoon rewords a message.
+ * The code wins: prose matching breaks quietly when the server rewords a message.
  * Rows from an older worker have no code and fall back to the prose.
  */
 export function friendlyScheduleError(raw, code) {
@@ -53,7 +53,7 @@ export function friendlyScheduleError(raw, code) {
     ];
   if (known) return known;
 
-  // Some stored messages are cocoon's own sentences (its media guard and the
+  // Some stored messages are the server's own sentences (its media guard and the
   // time-out retirement); match those first on fragments no PDS or Postgres
   // error could collide with. Not bare 'image': 'InvalidRequest: image file
   // size too large' is a refusal.
@@ -75,9 +75,7 @@ export function friendlyScheduleError(raw, code) {
   return NO_IDEA;
 }
 
-const LIMITS_SHARED = 'Limits are shared with Anisota.';
-
-/** cocoon's own sentence, made to read as one of Virga's: a capital and a stop. */
+/** The server's own sentence, made to read as one of Virga's: a capital and a stop. */
 function asSentence(text) {
   const t = String(text || '').trim();
   if (!t) return '';
@@ -93,8 +91,8 @@ export function quotaMessage(payload) {
   if (payload?.feature === 'scheduledPosts') {
     const n = Number.isFinite(limit) && limit > 0 ? limit : null;
     return n
-      ? `This account can keep ${n} scheduled ${n === 1 ? 'post' : 'posts'} at a time, and ${n === 1 ? 'it’s' : 'they’re all'} in use. ${LIMITS_SHARED}`
-      : `This account’s scheduled posts are all in use. ${LIMITS_SHARED}`;
+      ? `This account can keep ${n} scheduled ${n === 1 ? 'post' : 'posts'} at a time, and ${n === 1 ? 'it’s' : 'they’re all'} in use.`
+      : `This account’s scheduled posts are all in use.`;
   }
   // No feature: the flat cap everyone has.
   return 'This account has as many posts scheduled and on timers as Virga’s server holds. Let some go out, or cancel a few.';
@@ -160,7 +158,7 @@ export function scheduleErrorMessage(err) {
     return 'That was too large to send. Use fewer or smaller images.';
   if (err.status >= 500)
     return 'Virga’s server couldn’t do that just now. Try again.';
-  // A 400 from cocoon carries a sentence and no code: the one place its prose
+  // A 400 from the server carries a sentence and no code: the one place its prose
   // is the most precise thing there is to say.
   if (typeof err.detail === 'string' && err.detail)
     return asSentence(err.detail);
@@ -170,7 +168,7 @@ export function scheduleErrorMessage(err) {
 }
 
 /**
- * What to tell the writer when cocoon refuses a reorder (it wrote nothing),
+ * What to tell the writer when the server refuses a reorder (it wrote nothing),
  * or null when the failure isn't a refusal: a missing endpoint, which falls
  * back to row-by-row writes.
  */

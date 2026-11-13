@@ -284,10 +284,10 @@ describe('nextOpenSlot', () => {
     );
   });
 
-  it('counts every queued row, whoever placed it', () => {
+  it('counts every queued row, whatever its state', () => {
     const taken = [
-      { scheduledFor: '2026-08-17T09:00:00.000Z', clientKey: 'anisota' },
-      { scheduledFor: '2026-08-17T17:00:00.000Z', clientKey: 'virga' },
+      { scheduledFor: '2026-08-17T09:00:00.000Z', status: 'failed' },
+      { scheduledFor: '2026-08-17T17:00:00.000Z', status: 'pending' },
     ];
     expect(nextOpenSlot(schedule, taken, now).toISOString()).toBe(
       '2026-08-18T09:00:00.000Z',
@@ -330,12 +330,12 @@ describe('recomputeQueueAssignment around rows it may not move', () => {
   };
   const now = new Date('2026-08-16T12:00:00Z');
 
-  it('steps around minutes held by another client’s rows', () => {
+  it('steps around minutes held by rows that can’t move', () => {
     const occupied = [
       {
-        id: 'theirs',
+        id: 'stuck',
         scheduledFor: '2026-08-18T09:00:00+00:00',
-        clientKey: 'anisota',
+        status: 'failed',
       },
     ];
     const out = recomputeQueueAssignment(
@@ -418,7 +418,7 @@ describe('small readers', () => {
     ]);
   });
 
-  it('keeps the horizon in step with cocoon’s', () => {
+  it('keeps the horizon in step with the server’s', () => {
     expect(QUEUE_HORIZON_DAYS).toBe(90);
   });
 });

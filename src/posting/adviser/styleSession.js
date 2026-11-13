@@ -4,7 +4,7 @@
 // kept until the dialog saves; closing it drops the posts.
 //
 // Stages while working: 'gather' (reading posts from the AppView, with a
-// running count), 'read' (cocoon has them), 'write' (shown a few seconds in,
+// running count), 'read' (the server has them), 'write' (shown a few seconds in,
 // since the reading is one request and its second half is the writing).
 
 import { fetchStylePostTexts, synthesizeStyleFromTexts } from './style.js';

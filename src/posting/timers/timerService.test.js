@@ -1,10 +1,10 @@
 /*
  * The timer transport. Held here: the wire shape (effects always sent, since
- * cocoon reads absent effects as delete); which failures count as a lost
+ * the server reads absent effects as delete); which failures count as a lost
  * answer; a lost one is retried once (create is idempotent per post) and the
  * timers list is asked before anything definite is said; "unconfirmed" is
  * what's left when nothing answers; a timer is only ever set as the account
- * that wrote the post; and only cocoon's explicit word hides the feature.
+ * that wrote the post; and only the server's explicit word hides the feature.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -219,7 +219,7 @@ describe('isDefiniteArmRefusal', () => {
 });
 
 describe('createTimer and confirming a lost answer', () => {
-  it('is armed when cocoon answers', async () => {
+  it('is armed when the server answers', async () => {
     const req = fakeRequester().answer('/api/self-destruct/create', {
       success: true,
       data: { id: 't1' },
@@ -266,7 +266,7 @@ describe('createTimer and confirming a lost answer', () => {
     expect(final.row.id).toBe('t1');
   });
 
-  it('fails on a definite refusal of the retry — cocoon read it and said no', async () => {
+  it('fails on a definite refusal of the retry — the server read it and said no', async () => {
     const no = refused(400, null, 'a timer can run for at most 30 days');
     const req = fakeRequester().answer(
       '/api/self-destruct/create',
@@ -342,7 +342,7 @@ describe('createTimer and confirming a lost answer', () => {
     expect(req.calls).toHaveLength(0);
   });
 
-  it('marks the feature unavailable on cocoon’s explicit word', async () => {
+  it('marks the feature unavailable on the server’s explicit word', async () => {
     const req = fakeRequester().answer(
       '/api/self-destruct/create',
       refused(503, 'UNAVAILABLE'),
@@ -486,7 +486,7 @@ describe('listing timers', () => {
     expect(timerAvailability()).toBe('unavailable');
   });
 
-  it("reads cocoon's explicit 503 UNAVAILABLE as unavailable", async () => {
+  it("reads the server's explicit 503 UNAVAILABLE as unavailable", async () => {
     const req = fakeRequester().answer(
       '/api/self-destruct/list',
       refused(503, 'UNAVAILABLE'),
@@ -498,7 +498,7 @@ describe('listing timers', () => {
     expect(timerAvailability()).toBe('unavailable');
   });
 
-  it("does not read a 404 or 405 as unavailable — only cocoon's own word does", async () => {
+  it("does not read a 404 or 405 as unavailable — only the server's own word does", async () => {
     const req = fakeRequester().answer(
       '/api/self-destruct/list',
       refused(404),

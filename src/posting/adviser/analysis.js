@@ -2,7 +2,7 @@
  * Pure decisions around one adviser read: which drafts the pre-publish check
  * covers, the draft scenario, which writing checks are on, and applying
  * suggested fixes. Shapes mirror the account's adviser setup (./setup.js) and
- * cocoon's /api/ai/analyze-post payload.
+ * the server's /api/ai/analyze-post payload.
  */
 
 export const ADVISER_CHECK_SCOPES = ['all', 'topLevel', 'replies'];

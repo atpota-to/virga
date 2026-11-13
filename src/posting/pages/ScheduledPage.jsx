@@ -56,7 +56,6 @@ import TimerDialog from '../ui/TimerDialog.jsx';
 import { LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import {
   applyAssignment,
-  clientName,
   formatInZone,
   groupByZonedDay,
   moveId,
@@ -99,7 +98,6 @@ function ScheduledRow({
   const status = rowStatus(row, now);
   const actions = rowActions(row, now);
   const tags = rowTags(facts);
-  const other = clientName(row);
   const menu = [];
   if (actions.postNow)
     menu.push({
@@ -142,12 +140,10 @@ function ScheduledRow({
       ) : drag ? (
         <span
           className="sched-handle sched-handle--fixed"
-          title={other ? `From ${other}: keeps its time` : 'Keeps its time'}
+          title="Keeps its time"
         >
           <Lock size={14} aria-hidden="true" />
-          <span className="visually-hidden">
-            {other ? `From ${other}: keeps its time` : 'Keeps its time'}
-          </span>
+          <span className="visually-hidden">Keeps its time</span>
         </span>
       ) : null}
       <div className="sched-when-cell">
@@ -175,7 +171,6 @@ function ScheduledRow({
               {status.label}
             </span>
           )}
-          {other && <span className="badge badge--outline">From {other}</span>}
           {row.queued && row.status !== 'pending' && (
             <span className="badge">From the queue</span>
           )}
@@ -191,7 +186,6 @@ function ScheduledRow({
           )}
         </p>
         {status.detail && <p className="sched-row-why">{status.detail}</p>}
-        {actions.note && <p className="hub-row-why">{actions.note}</p>}
       </div>
       <div className="hub-row-actions sched-row-actions">
         {drag?.movable && (
@@ -262,8 +256,8 @@ function Section({ title, sub, actions = null, children, id }) {
 }
 
 /**
- * Scheduled posts: what's waiting to go out for this account, from Virga and
- * from other apps, in the weekly queue or at a time of its own. The week
+ * Scheduled posts: what's waiting to go out for this account, in the weekly
+ * queue or at a time of its own. The week
  * ahead as a calendar; the queue in order, which can be changed by dragging
  * or with the keys; and each post's state, with what can be done about it.
  */
@@ -302,7 +296,6 @@ export default function ScheduledPage({ did }) {
   const [announce, setAnnounce] = useState('');
   const [confirm, setConfirm] = useState(null);
   const [timerFor, setTimerFor] = useState(null);
-  const [armedNotes, setArmedNotes] = useState(() => new Set());
   const listRef = useRef(null);
   const busyRef = useRef(false);
   busyRef.current = Object.keys(busy).length > 0 || Boolean(drag);
@@ -696,7 +689,7 @@ export default function ScheduledPage({ did }) {
             <ul className="hub-list hub-list--rows">
               {timerNotes.map((row) => {
                 const facts = rowFacts(row);
-                const note = timerNoteActions(row, { armed: armedNotes });
+                const note = timerNoteActions(row);
                 return (
                   <li
                     key={row.id}
@@ -713,11 +706,6 @@ export default function ScheduledPage({ did }) {
                         <span>
                           Went out {formatInZone(row.scheduledFor, tz, now)}
                         </span>
-                        {clientName(row) && (
-                          <span className="badge badge--outline">
-                            From {clientName(row)}
-                          </span>
-                        )}
                       </p>
                       {note.note && <p className="field-hint">{note.note}</p>}
                     </div>
@@ -906,9 +894,6 @@ export default function ScheduledPage({ did }) {
         <p>
           It won’t go out, and Virga’s server deletes its copy, images included.
           This can’t be undone.
-          {confirm?.row && clientName(confirm.row)
-            ? ` It was scheduled in ${clientName(confirm.row)}, and goes from there too.`
-            : ''}
         </p>
         {confirm?.row && rowFacts(confirm.row).text && (
           <blockquote className="hub-quote">
@@ -948,10 +933,7 @@ export default function ScheduledPage({ did }) {
             setTimerFor(null);
             toast?.('The timer is set. Posting › Timers shows it.');
             if (!row) return;
-            if (row.clientKey === 'virga') await acknowledge(row);
-            // Another app's note can only be cleared in that app, so it
-            // stays listed; remember it's done so it stops offering a timer.
-            else setArmedNotes((set) => new Set(set).add(row.id));
+            await acknowledge(row);
           }}
         />
       )}

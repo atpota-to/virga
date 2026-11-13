@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import handler from '../../api/client-metadata.js';
-import { AUTH_MODE, COCOON_URL, OAUTH_SCOPE, PERMISSION_GROUPS } from '../config.js';
+import { AUTH_MODE, BACKEND_URL, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost } from '../config.js';
 import { isValidScopeToken } from '../session/scopes.js';
 import {
   buildClientMetadata,
@@ -94,7 +94,21 @@ describe('the scope a sign-in asks for', () => {
 describe('the build flags', () => {
   it('sign new accounts in through the browser unless told otherwise', () => {
     expect(['browser', 'backend']).toContain(AUTH_MODE);
-    expect(COCOON_URL).toMatch(/^https?:\/\/[^/]+$/);
+    expect(BACKEND_URL).toMatch(/^(https?:\/\/[^/]+)?$/);
+  });
+
+  it('name the server by its host: this site’s own unless another deployment is given', () => {
+    expect(backendHost('https://virga-git-x.vercel.app')).toBe('virga-git-x.vercel.app');
+    expect(backendHost('not a url')).toBe('not a url');
+    const before = globalThis.window;
+    try {
+      globalThis.window = { location: { host: 'virga.example' } };
+      expect(backendHost('')).toBe('virga.example');
+    } finally {
+      if (before === undefined) delete globalThis.window;
+      else globalThis.window = before;
+    }
+    if (typeof window === 'undefined') expect(backendHost('')).toBe('');
   });
 });
 
@@ -175,6 +189,8 @@ describe('signInErrorMessage', () => {
     expect(signInErrorMessage(coded('VIRGA_CLIENT_UNAVAILABLE', 503))).toMatch(/Virga’s server isn’t taking sign-ins/);
     expect(signInErrorMessage(Object.assign(new TypeError('Failed to fetch'), { code: 'NETWORK_ERROR' }))).toMatch(/Couldn’t reach Virga’s server/);
     expect(signInErrorMessage(new Error('Invalid redirect_uri. Must be an allowed frontend URL.'))).toMatch(/doesn’t take sign-ins from this address/);
+    // The code alone is enough, whatever the server's sentence says.
+    expect(signInErrorMessage(coded('REDIRECT_NOT_ALLOWED'))).toMatch(/doesn’t take sign-ins from this address/);
   });
 
   it('never shows the library’s own text for anything else', () => {
@@ -217,15 +233,24 @@ describe('callbackErrorMessage', () => {
 describe('the deployment’s rewrites', () => {
   const { rewrites } = JSON.parse(readFileSync(new URL('../../vercel.json', import.meta.url), 'utf8'));
 
-  it('passes /backend to Virga’s server, ahead of the app’s catch-all', () => {
-    const backend = rewrites.findIndex((r) => r.source === '/backend/:path*');
-    const catchAll = rewrites.findIndex((r) => r.destination === '/index.html');
-    expect(backend).toBeGreaterThanOrEqual(0);
-    expect(rewrites[backend].destination).toBe('https://cocoon.anisota.net/virga/:path*');
-    expect(backend).toBeLessThan(catchAll);
+  const catchAll = () => rewrites.findIndex((r) => r.destination === '/index.html');
+  const servesApp = (path) => new RegExp(`^${rewrites[catchAll()].source}$`).test(path);
+  const destinationOf = (source) => rewrites.find((r) => r.source === source)?.destination;
+
+  it('sends every page to the app, last, and leaves the server’s paths alone', () => {
+    expect(catchAll()).toBe(rewrites.length - 1);
+    for (const page of ['/settings/account', '/oauth/return', '/oauth/callback', '/']) expect(servesApp(page)).toBe(true);
     // The authorization server reads the long-session client's metadata and
-    // keys from /backend for as long as any session lasts.
-    expect(new RegExp(`^${rewrites[catchAll].source}$`).test('/backend/jwks.json')).toBe(false);
-    expect(new RegExp(`^${rewrites[catchAll].source}$`).test('/settings/account')).toBe(true);
+    // keys for as long as any session lasts.
+    for (const path of ['/api/oauth/jwks.json', '/api/oauth/client-metadata.json', '/api/schedule/list', '/assets/x.js']) {
+      expect(servesApp(path)).toBe(false);
+    }
+  });
+
+  it('serves both clients’ metadata from this deployment', () => {
+    expect(destinationOf('/oauth-client-metadata.json')).toBe('/api/client-metadata');
+    expect(destinationOf('/api/oauth/client-metadata.json')).toBe('/api/oauth/client-metadata');
+    expect(destinationOf('/api/oauth/jwks.json')).toBe('/api/oauth/jwks');
+    for (const r of rewrites) expect(r.destination).not.toMatch(/^https?:\/\//);
   });
 });

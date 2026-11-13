@@ -55,7 +55,7 @@ const typo = (found, replacement) => ({
 });
 
 /**
- * A controller with everything stood in: `answer` is what cocoon says (an
+ * A controller with everything stood in: `answer` is what the server says (an
  * object, an Error to throw, or a function of the payload), the hold is
  * immediate unless `sleep` says otherwise.
  */
@@ -386,7 +386,7 @@ describe('the "Check this post" button (manual)', () => {
     expect(ctl.getView().sheet?.status).toBe('ready');
   });
 
-  it('shows the limit when cocoon refuses a check the hint already expected', async () => {
+  it('shows the limit when the server refuses a check the hint already expected', async () => {
     const { ctl, analyzePost } = setup({
       atLimit: true,
       answer: Object.assign(new Error('used up'), {
@@ -598,7 +598,7 @@ describe('adviserUsageLineFor', () => {
         readUsage: () => ({ month: '2026-11', used: 12, limit: 30 }),
         now,
       }),
-    ).toBe('18 of 30 free checks left this month. Shared with Anisota.');
+    ).toBe('18 of 30 free checks left this month.');
     expect(adviserUsageLineFor(ME, { readUsage: () => null })).toBe('');
     expect(adviserUsageLineFor(null)).toBe('');
   });

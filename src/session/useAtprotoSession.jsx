@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { AUTH_MODE, COCOON_URL, OAUTH_CALLBACK_PATH, OAUTH_RETURN_PATH } from '../config.js';
+import { AUTH_MODE, BACKEND_URL, OAUTH_CALLBACK_PATH, OAUTH_RETURN_PATH } from '../config.js';
 import { getProfile } from '../lib/atproto.js';
 import { resetAnalyticsStore } from '../lib/analyticsStore.js';
 import { readSessionHint, restoresAtStartup } from '../lib/sessionHint.js';
@@ -93,7 +93,7 @@ function browserEnv() {
     storage: local(),
     tabStorage: perTab(),
     browser: createBrowserDriver(),
-    backendUrl: COCOON_URL,
+    backendUrl: BACKEND_URL,
     fetch: undefined,
     loadAgent: loadAgentClass,
     backendReturn: BACKEND_RETURN,

@@ -2,19 +2,11 @@ import { LogIn, Server, Timer } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { useAccountActions } from '../../accounts/AccountMenu.jsx';
 import { requestReauth } from '../../accounts/accountCopy.js';
-import { COCOON_URL } from '../../config.js';
+import { backendHost } from '../../config.js';
 import { accountName } from '../../session/accounts.js';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { backendAccess } from './backendAccess.js';
 import '../posting.css';
-
-const SERVER_HOST = (() => {
-  try {
-    return new URL(COCOON_URL).host;
-  } catch {
-    return COCOON_URL;
-  }
-})();
 
 /**
  * Where a page or setting needs Virga's server and `did` isn't signed in
@@ -40,12 +32,12 @@ export default function NeedsBackend({ did }) {
         </h2>
         {action === 'signBackIn' ? (
           <p className="card-sub">
-            Scheduled posts, timers and the post adviser run on Virga’s server ({SERVER_HOST}). Sign {name} back in to see and change them.
+            Scheduled posts, timers and the post adviser run on Virga’s server ({backendHost()}). Sign {name} back in to see and change them.
             Anything already scheduled still goes out.
           </p>
         ) : (
           <p className="card-sub">
-            Scheduled posts, timers and the post adviser run on Virga’s server ({SERVER_HOST}), so they keep working while this browser is
+            Scheduled posts, timers and the post adviser run on Virga’s server ({backendHost()}), so they keep working while this browser is
             closed. {name} is signed in with a browser session, which only lasts while Virga is open here.
           </p>
         )}

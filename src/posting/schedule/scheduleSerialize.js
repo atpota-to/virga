@@ -1,8 +1,8 @@
-// The composer's state as cocoon's scheduling body, and a scheduled row back
-// as composer state. The two are a pair: whatever a row holds must come back
+// The composer's state as Virga's server's scheduling body, and a scheduled
+// row back as composer state. The two are a pair: whatever a row holds must come back
 // into the composer so that saving it again writes the same row.
 //
-// cocoon stores the body and its worker writes each post later, as the
+// The server stores the body and its worker writes each post later, as the
 // account, with no one at the keyboard. So everything the worker can't do is
 // refused here: replies (its payload has no reply field) and video (it can't
 // upload one). Images travel as base64 and are uploaded only when the post
@@ -38,7 +38,7 @@ import { QUEUE_HORIZON_DAYS } from './postingQueue.js';
 
 /**
  * Most base64 characters one body may carry. Vercel refuses a request body
- * over 4.5 MB before cocoon sees it; base64 is 4/3 of the bytes, and the rest
+ * over 4.5 MB before the server sees it; base64 is 4/3 of the bytes, and the rest
  * is room for the records.
  */
 export const MAX_MEDIA_BASE64_CHARS = 4_000_000;
@@ -122,7 +122,7 @@ function scheduledTime(state, scheduledFor, now) {
   return ms;
 }
 
-/** An https address cocoon's worker may fetch a card's image from. */
+/** An https address the server's worker may fetch a card's image from. */
 function fetchableThumbUrl(url) {
   if (typeof url !== 'string') return null;
   try {
@@ -140,7 +140,7 @@ async function imageBytes(image, loadImage) {
 }
 
 /**
- * One post's attachments as cocoon's media: each image's bytes, and the
+ * One post's attachments as the server's media: each image's bytes, and the
  * card's own image when the writer chose one. `mediaBytes` is filled in.
  */
 async function postMedia(post, index, mediaBytes, options) {
@@ -203,7 +203,7 @@ async function postMedia(post, index, mediaBytes, options) {
   return markers;
 }
 
-/** buildPostEmbed's lexicon embed, over media markers, as cocoon's EmbedSpec. */
+/** buildPostEmbed's lexicon embed, over media markers, as the server's EmbedSpec. */
 function toEmbedSpec(embed) {
   if (!embed) return undefined;
   switch (embed.$type) {
@@ -375,7 +375,7 @@ export async function serializeForSchedule(state, options = {}) {
       selfDestruct,
     },
   };
-  // For the composer, not for cocoon: not enumerable, so neither JSON nor a
+  // For the composer, not for the server: not enumerable, so neither JSON nor a
   // spread carries it into the request.
   Object.defineProperty(body, 'warnings', { value: warnings });
   return body;
@@ -523,7 +523,7 @@ export function reconstructFromScheduled(row, media = {}, { asDid } = {}) {
     source: {
       kind: 'scheduled',
       id: row?.id ?? null,
-      clientKey: typeof row?.clientKey === 'string' ? row.clientKey : null,
+      clientKey: typeof row?.clientKey === 'string' && row.clientKey ? row.clientKey : 'virga',
     },
   });
 }

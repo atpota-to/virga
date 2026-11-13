@@ -230,8 +230,8 @@ describe('putting a post that’s out on a timer', () => {
     expect(firstActAt(normalizeTimer({}), { now: NOW })).toBeNull();
   });
 
-  it('counts from the post only while cocoon would, and says when it can’t', () => {
-    // on() is a one-hour delete; cocoon (validateArm) keeps a postedAt only
+  it('counts from the post only while the server would, and says when it can’t', () => {
+    // on() is a one-hour delete; the server (validateArm) keeps a postedAt only
     // while it's inside that hour, and otherwise counts from now.
     expect(
       timerStart(on(), {
@@ -278,7 +278,7 @@ describe('putting a post that’s out on a timer', () => {
         now: NOW,
       }).toISOString(),
     ).toBe('2026-11-12T13:00:00.000Z');
-    // Exactly the length ago is out of cocoon's window too.
+    // Exactly the length ago is out of the server's window too.
     expect(
       timerStart(on(), {
         start: 'posted',

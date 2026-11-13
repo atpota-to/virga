@@ -1,20 +1,22 @@
-// Virga's server (cocoon), in memory: the endpoints the posting pages call,
-// answered in cocoon's own request and response shapes (anisota-cocoon
-// api/schedule/*, api/self-destruct/*, api/limits/status, api/ai/* and
-// api/oauth/session, logout), with the rules that matter to a reader of those
-// pages: rows belong to a client (`clientKey`), a Virga token sees every row
-// of its account and may cancel another client's, but changes only its own
-// (403 NOT_YOUR_CLIENT); limits are counted across clients; a scheduled post
-// can't carry a reply or a video. A couple of Anisota rows are seeded so the
-// cross-client rules can be seen.
+// Virga's server, in memory: the endpoints the posting pages call, answered
+// in the server's own request and response shapes (server/schedule,
+// server/timers, server/limits, server/ai and server/oauth's session and
+// logout), with the rules that matter to a reader of those pages: an account
+// sees and changes only its own rows, and every row says it is Virga's
+// (`clientKey: 'virga'`); the limits are flat, unlimited unless set, with the
+// caps always reported; a scheduled post can't carry a reply or a video; a
+// 401 for a token the server doesn't know carries FRONTEND_SESSION_INVALID.
 //
-// `runCron()` stands in for cocoon's two workers: due scheduled posts are
+// It answers at SERVER_ORIGIN, not the dev server's own origin, so the
+// harness's fetch can route it without touching Vite's own paths.
+//
+// `runCron()` stands in for the server's two workers: due scheduled posts are
 // written into the account's world (harness/repo.js), as putRecord at the
 // record keys reserved when they were scheduled, and due timers read the
 // post's counts and delete it, limit its replies or turn off its quotes.
 //
 // It is a stand-in, not a port: validation is the shape checks a writer can
-// trip over, not every check cocoon makes.
+// trip over, not every check the server makes.
 
 import {
   parseAtUri,
@@ -29,26 +31,21 @@ import { hashOf, tidAt } from './world.js';
 const DAY = 86_400_000;
 const MINUTE = 60_000;
 
+/** Where the fake server answers. Never the dev server's own origin. */
+export const SERVER_ORIGIN = 'https://server.harness.invalid';
+
+// The server's defaults (SCHEDULE_MAX_PENDING, TIMER_MAX_ACTIVE_PER_USER).
 export const MAX_PENDING_SCHEDULED = 50;
 export const MAX_LIVE_TIMERS = 200;
 export const MAX_HORIZON_DAYS = 90;
 export const MIN_LIFESPAN_SECONDS = 5 * 60;
 export const MAX_LIFESPAN_SECONDS = 30 * 24 * 60 * 60;
 
-/** Free accounts' limits, as cocoon's FEATURE_LIMITS has them. */
-export const FREE_LIMITS = Object.freeze({
-  scheduledPosts: 3,
-  postTimers: 1,
-  conditionalTimers: 1,
-});
-const FEATURE_LABELS = {
-  scheduledPosts: 'posts scheduled at a time',
-  postTimers: 'post on a timer at a time',
-  conditionalTimers: 'conditional timer at a time',
-};
+/** The per-feature limits the server reads from its env; none is set by default. */
+export const FEATURES = Object.freeze(['scheduledPosts', 'postTimers', 'conditionalTimers']);
 
-/** The AI trials, per account per month (cocoon lib/*-usage.js). */
-export const AI_LIMITS = Object.freeze({ adviser: 30, style: 3, altText: 15 });
+/** The AI allowances per account per month, as the server's env defaults them. */
+export const DEFAULT_AI_LIMITS = Object.freeze({ adviser: 30, style: 3, altText: 15 });
 
 const METRICS = ['likes', 'replies', 'reposts', 'quotes', 'selfReplies'];
 const EFFECT_ORDER = ['limitReplies', 'disableQuotes', 'delete'];
@@ -102,7 +99,7 @@ function normalizeAllow(allow) {
   return out.slice(0, 5);
 }
 
-/** cocoon's parseEffects: absent means delete; anything unreadable is refused, never read as delete. */
+/** The server's parseEffects: absent means delete; anything unreadable is refused, never read as delete. */
 export function parseEffects(raw) {
   if (raw == null || (Array.isArray(raw) && raw.length === 0))
     return { value: [{ action: 'delete' }] };
@@ -132,7 +129,7 @@ export function parseEffects(raw) {
   };
 }
 
-/** cocoon's parseConditions, with legacy `mode` / `minLikes` keys read the same way. */
+/** The server's parseConditions, with legacy `mode` / `minLikes` keys read the same way. */
 export function parseConditions(raw) {
   const src = raw && typeof raw === 'object' ? raw : {};
   const clauses = [];
@@ -199,6 +196,17 @@ const BUCKET_FEATURE = {
   conditional: 'conditionalTimers',
 };
 
+/** A positive whole number, or null (unlimited), as the server reads its env. */
+function limitValue(value) {
+  return Number.isSafeInteger(value) && value > 0 ? value : null;
+}
+
+/** The AI allowance: null is unlimited, 0 refuses everything, absent is the default. */
+function aiLimitValue(value, fallback) {
+  if (value === null) return null;
+  return Number.isSafeInteger(value) && value >= 0 ? value : fallback;
+}
+
 function describeCounts(c) {
   const n = (v, one, many) => `${v} ${v === 1 ? one : many}`;
   return `${n(c.likes, 'like', 'likes')}, ${n(c.replies, 'reply', 'replies')}, ${n(c.reposts, 'repost', 'reposts')}`;
@@ -228,17 +236,20 @@ export function evaluateConditions(conditions, counts) {
 /**
  * @param {object} options
  * @param {object[]} options.worlds - every account's world
- * @param {'membership'|'flat'} [options.policy] - VIRGA_FEATURE_LIMITS
- * @param {Record<string, string|null>} [options.tiers] - DID → membership tier ('member', or null for free)
- * @param {boolean} [options.seed] - seed a few rows, some of them Anisota's
+ * @param {{ scheduledPosts?: number, postTimers?: number, conditionalTimers?: number }} [options.limits]
+ *   the per-feature limits (SCHEDULED_POSTS_LIMIT, POST_TIMERS_LIMIT,
+ *   CONDITIONAL_TIMERS_LIMIT); absent means unlimited
+ * @param {{ adviser?: number|null, altText?: number|null, style?: number|null }} [options.aiLimits]
+ *   the monthly AI allowances; null is unlimited, absent is 30 / 15 / 3
+ * @param {boolean} [options.seed] - seed a few rows
  * @param {number} [options.aiDelayMs] - how long an AI answer takes
  * @param {'ok'|'slow'|'down'} [options.ai] - slow takes longer than the adviser waits; down answers 503
  * @param {() => number} [options.now]
  */
-export function createCocoon({
+export function createServer({
   worlds,
-  policy = 'membership',
-  tiers = {},
+  limits = {},
+  aiLimits = {},
   seed = true,
   aiDelayMs = 900,
   ai = 'ok',
@@ -247,9 +258,13 @@ export function createCocoon({
   const list = Array.isArray(worlds) ? worlds : [worlds];
   const views = createViews(list);
   const worldOf = (did) => views.byDid.get(did) || null;
+  const featureLimits = Object.fromEntries(FEATURES.map((f) => [f, limitValue(limits?.[f])]));
+  const aiAllowance = Object.fromEntries(
+    Object.entries(DEFAULT_AI_LIMITS).map(([k, fallback]) => [k, aiLimitValue(aiLimits?.[k], fallback)]),
+  );
 
-  const tokens = new Map(); // token → { did, client }
-  const grants = new Set(); // `${client}:${did}`: the OAuth grant the workers act with
+  const tokens = new Map(); // token → { did }
+  const grants = new Set(); // DIDs with the OAuth grant the workers act with
   const scheduled = []; // snake_case rows, as the table holds them
   const timers = [];
   const media = new Map(); // `${rowId}/${mediaId}` → { base64, encoding }
@@ -263,10 +278,10 @@ export function createCocoon({
 
   /* ---- sessions ---- */
 
-  function mintToken(did, client = 'virga') {
-    const token = client === 'virga' ? `vg_${hex(32)}` : hex(32);
-    tokens.set(token, { did, client });
-    grants.add(`${client}:${did}`);
+  function mintToken(did) {
+    const token = `vg_${hex(32)}`;
+    tokens.set(token, { did });
+    grants.add(did);
     return token;
   }
 
@@ -275,17 +290,15 @@ export function createCocoon({
     if (!found) return { found: false, grantRevoked: false };
     tokens.delete(token);
     // Per device (D3): the grant goes only with the account's last token.
-    const left = [...tokens.values()].some(
-      (t) => t.did === found.did && t.client === found.client,
-    );
-    if (!left) grants.delete(`${found.client}:${found.did}`);
+    const left = [...tokens.values()].some((t) => t.did === found.did);
+    if (!left) grants.delete(found.did);
     return { found: true, grantRevoked: !left };
   }
 
   /** Make every token of an account stop working, as an expired session would. */
   function expireAccount(did) {
     for (const [token, t] of tokens) if (t.did === did) tokens.delete(token);
-    grants.delete(`virga:${did}`);
+    grants.delete(did);
   }
 
   function authOf(headers) {
@@ -295,25 +308,21 @@ export function createCocoon({
       throw codedError(401, {
         success: false,
         error: 'Missing or invalid authorization header',
+        code: 'FRONTEND_SESSION_INVALID',
       });
     const found = tokens.get(m[1]);
     if (!found)
       throw codedError(401, {
         success: false,
         error: 'Invalid or expired session',
+        code: 'FRONTEND_SESSION_INVALID',
       });
     return { ...found, token: m[1] };
   }
 
   /* ---- limits ---- */
 
-  const isMember = (did) => tiers[did] === 'member';
-  const policyFor = (client) => (client === 'virga' ? policy : 'membership');
-
-  function limitFor(did, client, feature) {
-    if (policyFor(client) === 'flat' || isMember(did)) return null;
-    return FREE_LIMITS[feature];
-  }
+  const limitFor = (feature) => featureLimits[feature];
 
   const activeScheduled = (did, exceptId = null) =>
     scheduled.filter(
@@ -343,14 +352,15 @@ export function createCocoon({
     return used;
   }
 
-  function enforceTimerLimit(did, client, rule, except) {
+  function enforceTimerLimit(did, rule, except) {
     const bucket = timerBucket(rule);
     const feature = BUCKET_FEATURE[bucket];
-    const limit = limitFor(did, client, feature);
+    const limit = limitFor(feature);
     if (limit != null && timerUsage(did, except)[bucket] >= limit) {
-      throw codedError(402, {
+      const kind = bucket === 'conditional' ? 'conditional timer' : 'plain timer';
+      throw codedError(409, {
         success: false,
-        error: `free accounts are limited to ${limit} ${FEATURE_LABELS[feature]}`,
+        error: `this account can keep ${limit === 1 ? `one ${kind}` : `${limit} ${kind}s`} at a time, counting scheduled posts.`,
         code: 'QUOTA_EXCEEDED',
         feature,
         limit,
@@ -359,31 +369,25 @@ export function createCocoon({
     if (liveTimers(did).length >= MAX_LIVE_TIMERS) {
       throw codedError(409, {
         success: false,
-        error: `you can have at most ${MAX_LIVE_TIMERS} timers running`,
+        error: `you can have at most ${MAX_LIVE_TIMERS} posts on a timer`,
         code: 'QUOTA_EXCEEDED',
+        limit: MAX_LIVE_TIMERS,
       });
     }
   }
 
-  function enforceScheduledLimit(did, client, exceptId = null) {
+  /** The cap, or a lower scheduledPosts limit: the server refuses both as the feature. */
+  function enforceScheduledLimit(did, exceptId = null) {
     const count = activeScheduled(did, exceptId).length;
-    if (count >= MAX_PENDING_SCHEDULED) {
+    const limit = limitFor('scheduledPosts');
+    const ceiling = limit == null ? MAX_PENDING_SCHEDULED : Math.min(limit, MAX_PENDING_SCHEDULED);
+    if (count >= ceiling) {
       throw codedError(409, {
         success: false,
-        error: `you can have at most ${MAX_PENDING_SCHEDULED} scheduled posts`,
+        error: `you can have at most ${ceiling} scheduled posts`,
         code: 'QUOTA_EXCEEDED',
         feature: 'scheduledPosts',
-        limit: MAX_PENDING_SCHEDULED,
-      });
-    }
-    const limit = limitFor(did, client, 'scheduledPosts');
-    if (limit != null && count >= limit) {
-      throw codedError(409, {
-        success: false,
-        error: `free accounts are limited to ${limit} ${FEATURE_LABELS.scheduledPosts}`,
-        code: 'QUOTA_EXCEEDED',
-        feature: 'scheduledPosts',
-        limit,
+        limit: ceiling,
       });
     }
   }
@@ -473,15 +477,10 @@ export function createCocoon({
     };
   }
 
-  function validateCreate(
-    client,
-    { scheduledFor, target = 'bluesky', payload, queued },
-  ) {
+  function validateCreate({ scheduledFor, target = 'bluesky', payload, queued }) {
     const timeError = validateTime(scheduledFor);
     if (timeError) return { error: timeError };
-    const allowed = client === 'virga' ? ['bluesky'] : ['bluesky', 'anisota'];
-    if (!allowed.includes(target))
-      return { error: `target must be one of: ${allowed.join(', ')}` };
+    if (target !== 'bluesky') return { error: 'target must be one of: bluesky' };
     if (!payload || typeof payload !== 'object')
       return { error: 'payload is required' };
     const posts = payload.posts;
@@ -497,7 +496,7 @@ export function createCocoon({
         return { error: `posts[${i}] text exceeds 3000 characters` };
       if (!text.trim() && !p.embed)
         return { error: `posts[${i}] needs text or an embed` };
-      // cocoon's payload has no reply and no video: the composer refuses both first.
+      // The server's payload has no reply and no video: the composer refuses both first.
       if (p.record.reply)
         return { error: `posts[${i}]: a scheduled post can't be a reply` };
       if (p.embed?.type === 'video')
@@ -580,7 +579,7 @@ export function createCocoon({
       target: row.target,
       queued: !!row.queued,
       payload: row.payload,
-      clientKey: row.client_key,
+      clientKey: 'virga',
       createdAt: row.created_at,
     };
     if (list) out.partial = row.progress.length > 0;
@@ -594,31 +593,17 @@ export function createCocoon({
     return out;
   }
 
-  /** The rows a caller can see: Anisota sees only its own, Virga every row of the account. */
+  /** The account's rows: a token sees nobody else's. */
   function visibleRows(auth) {
-    return scheduled.filter(
-      (r) =>
-        r.user_did === auth.did &&
-        (auth.client === 'virga' || r.client_key === auth.client),
-    );
+    return scheduled.filter((r) => r.user_did === auth.did);
   }
 
   function ownedRow(auth, id) {
-    const row = visibleRows(auth).find((r) => r.id === id) || null;
-    if (row && row.client_key !== auth.client) {
-      throw codedError(403, {
-        success: false,
-        error:
-          'this post was scheduled from another app, so it can only be changed there.',
-        code: 'NOT_YOUR_CLIENT',
-      });
-    }
-    return row;
+    return visibleRows(auth).find((r) => r.id === id) || null;
   }
 
   function insertScheduled({
     did,
-    client,
     value,
     mediaBytes,
     id = uuid(),
@@ -629,7 +614,6 @@ export function createCocoon({
     const row = {
       id,
       user_did: did,
-      client_key: client,
       scheduled_for: value.scheduledFor,
       status,
       target: value.target,
@@ -662,18 +646,16 @@ export function createCocoon({
   const api = {};
 
   api['POST /api/schedule/create'] = (auth, { body }) => {
-    const v = validateCreate(auth.client, body || {});
+    const v = validateCreate(body || {});
     if (v.error) throw codedError(400, { success: false, error: v.error });
-    if (v.value.selfDestruct)
-      enforceTimerLimit(auth.did, auth.client, v.value.selfDestruct, {});
-    enforceScheduledLimit(auth.did, auth.client);
+    if (v.value.selfDestruct) enforceTimerLimit(auth.did, v.value.selfDestruct, {});
+    enforceScheduledLimit(auth.did);
     const row = insertScheduled({
       did: auth.did,
-      client: auth.client,
       value: v.value,
       mediaBytes: body.payload.mediaBytes,
     });
-    note(`scheduled ${row.id} for ${row.scheduled_for} (${auth.client})`);
+    note(`scheduled ${row.id} for ${row.scheduled_for}`);
     return [201, { success: true, data: rowShape(row) }];
   };
 
@@ -741,10 +723,10 @@ export function createCocoon({
         );
       }
       if (row.payload.selfDestruct)
-        enforceTimerLimit(auth.did, auth.client, row.payload.selfDestruct, {
+        enforceTimerLimit(auth.did, row.payload.selfDestruct, {
           exceptScheduledId: id,
         });
-      enforceScheduledLimit(auth.did, auth.client, id);
+      enforceScheduledLimit(auth.did, id);
       Object.assign(row, {
         status: 'pending',
         attempts: 0,
@@ -752,7 +734,7 @@ export function createCocoon({
         updated_at: iso(now()),
       });
     } else if (payload) {
-      const v = validateCreate(auth.client, body);
+      const v = validateCreate(body);
       if (v.error) throw codedError(400, { success: false, error: v.error });
       if (!row || !['pending', 'failed'].includes(row.status)) {
         throw refuse(
@@ -766,11 +748,10 @@ export function createCocoon({
           'PARTIALLY_PUBLISHED',
         );
       if (v.value.selfDestruct)
-        enforceTimerLimit(auth.did, auth.client, v.value.selfDestruct, {
+        enforceTimerLimit(auth.did, v.value.selfDestruct, {
           exceptScheduledId: id,
         });
-      if (row.status === 'failed')
-        enforceScheduledLimit(auth.did, auth.client, id);
+      if (row.status === 'failed') enforceScheduledLimit(auth.did, id);
       dropMedia(row);
       const fresh = stashMedia(row.id, v.value.posts, payload.mediaBytes || {});
       Object.assign(row, {
@@ -865,14 +846,6 @@ export function createCocoon({
     const rows = [...wanted.keys()].map((id) =>
       visibleRows(auth).find((r) => r.id === id),
     );
-    if (rows.some((r) => r && r.client_key !== auth.client)) {
-      throw codedError(403, {
-        success: false,
-        error:
-          'one of these posts was scheduled from another app, so it can only be moved there. your queue is unchanged.',
-        code: 'NOT_YOUR_CLIENT',
-      });
-    }
     if (rows.some((r) => !r || r.status !== 'pending' || r.progress.length)) {
       throw codedError(409, {
         success: false,
@@ -913,7 +886,6 @@ export function createCocoon({
   api['POST /api/schedule/cancel'] = (auth, { body = {}, query }) => {
     const id = body.id || query.get('id');
     if (!id) throw codedError(400, { success: false, error: 'Missing id' });
-    // Virga may cancel any row of the account; Anisota only sees its own.
     const row = visibleRows(auth).find((r) => r.id === id);
     if (!row || !['pending', 'failed'].includes(row.status)) {
       throw codedError(409, {
@@ -946,7 +918,7 @@ export function createCocoon({
       extensions: t.extensions || 0,
       effects: t.effects || null,
       acted: t.acted || null,
-      clientKey: t.client_key,
+      clientKey: 'virga',
       createdAt: t.created_at,
     };
     if (list) {
@@ -963,7 +935,7 @@ export function createCocoon({
     return out;
   }
 
-  /** cocoon's validateArm, for the parts a writer can get wrong. */
+  /** The server's validateArm, for the parts a writer can get wrong. */
   function validateArm(
     did,
     body,
@@ -1049,13 +1021,12 @@ export function createCocoon({
     };
   }
 
-  function armTimer(did, client, v, { id = uuid(), extra = {} } = {}) {
+  function armTimer(did, v, { id = uuid(), extra = {} } = {}) {
     const existing = liveTimers(did).find((t) => t.post_uri === v.uri);
     if (existing) {
-      // cocoon's armSelfDestruct: a re-arm is the author changing the rule, so
-      // an armed row takes the new one and becomes the arming client's (the
-      // grant that carries it out must be). Nothing the old rule decided or
-      // spent carries over. A 'checking' row is mid-evaluation and stands.
+      // The server's armSelfDestruct: a re-arm is the author changing the
+      // rule, so an armed row takes the new one. Nothing the old rule decided
+      // or spent carries over. A 'checking' row is mid-evaluation and stands.
       if (existing.status === 'armed') {
         Object.assign(existing, {
           conditions: v.conditions,
@@ -1065,7 +1036,6 @@ export function createCocoon({
           snippet: v.snippet,
           post_cid: v.cid,
           extra_uris: v.extra,
-          client_key: client,
           acted: null,
           resolution: v.resolution || null,
           attempts: 0,
@@ -1078,7 +1048,6 @@ export function createCocoon({
     const row = {
       id,
       user_did: did,
-      client_key: client,
       post_uri: v.uri,
       post_cid: v.cid,
       collection: v.collection,
@@ -1110,10 +1079,10 @@ export function createCocoon({
   api['POST /api/self-destruct/create'] = (auth, { body = {} }) => {
     const v = validateArm(auth.did, body, { refusePastDeadline: true });
     if (v.error) throw codedError(400, { success: false, error: v.error });
-    enforceTimerLimit(auth.did, auth.client, v.value, {
+    enforceTimerLimit(auth.did, v.value, {
       exceptPostUri: v.value.uri,
     });
-    const { row, existing } = armTimer(auth.did, auth.client, v.value);
+    const { row, existing } = armTimer(auth.did, v.value);
     if (!existing)
       note(`timer ${row.id} on ${row.post_uri} for ${row.check_at}`);
     return [existing ? 200 : 201, { success: true, data: timerShape(row) }];
@@ -1122,11 +1091,7 @@ export function createCocoon({
   api['GET /api/self-destruct/list'] = (auth, { query }) => {
     const history =
       query.get('history') === '1' || query.get('history') === 'true';
-    const mine = timers.filter(
-      (t) =>
-        t.user_did === auth.did &&
-        (auth.client === 'virga' || t.client_key === auth.client),
-    );
+    const mine = timers.filter((t) => t.user_did === auth.did);
     const by = (key, dir) => (a, b) =>
       dir * String(a[key] || '').localeCompare(String(b[key] || ''));
     const live = mine
@@ -1160,12 +1125,7 @@ export function createCocoon({
   api['POST /api/self-destruct/cancel'] = (auth, { body = {}, query }) => {
     const id = body.id || query.get('id');
     if (!id) throw codedError(400, { success: false, error: 'Missing id' });
-    const row = timers.find(
-      (t) =>
-        t.id === id &&
-        t.user_did === auth.did &&
-        (auth.client === 'virga' || t.client_key === auth.client),
-    );
+    const row = timers.find((t) => t.id === id && t.user_did === auth.did);
     if (!row || !['armed', 'failed'].includes(row.status)) {
       throw codedError(409, {
         success: false,
@@ -1186,40 +1146,29 @@ export function createCocoon({
   /* ---- limits ---- */
 
   api['GET /api/limits/status'] = (auth) => {
-    const member = isMember(auth.did);
     const features = {};
-    for (const key of Object.keys(FREE_LIMITS)) {
-      const limit = limitFor(auth.did, auth.client, key);
-      features[key] = {
-        isUnlimited: limit == null,
-        limit,
-        freeLimit: FREE_LIMITS[key],
-        countSource: 'cocoon',
-      };
+    for (const key of FEATURES) {
+      const limit = limitFor(key);
+      features[key] = limit == null ? { isUnlimited: true, limit: null } : { isUnlimited: false, limit };
     }
     const usage = timerUsage(auth.did);
     return [
       200,
       {
         success: true,
-        tier: member ? 'member' : null,
-        isMember: member,
-        policy: policyFor(auth.client),
+        policy: 'flat',
+        tier: null,
+        isMember: false,
         features,
         usage: {
           scheduledPosts: activeScheduled(auth.did).length,
           postTimers: usage.plain,
           conditionalTimers: usage.conditional,
         },
-        // cocoon reports the flat ceilings to Virga callers beside the policy.
-        ...(auth.client === 'virga'
-          ? {
-              caps: {
-                scheduledPosts: MAX_PENDING_SCHEDULED,
-                timers: MAX_LIVE_TIMERS,
-              },
-            }
-          : {}),
+        caps: {
+          scheduledPosts: MAX_PENDING_SCHEDULED,
+          timers: MAX_LIVE_TIMERS,
+        },
       },
     ];
   };
@@ -1227,20 +1176,22 @@ export function createCocoon({
   /* ---- the adviser and alt text ---- */
 
   const month = () => iso(now()).slice(0, 7);
+  /** The month's count for `kind`, or null when it is unlimited (and nothing is counted or reported). */
   function takeTrial(did, kind) {
-    if (isMember(did)) return null;
+    const limit = aiAllowance[kind];
+    if (limit == null) return null;
     const key = `${did}:${kind}:${month()}`;
     const used = aiUsage.get(key) || 0;
-    if (used >= AI_LIMITS[kind])
+    if (used >= limit)
       throw codedError(429, {
         error: 'monthly_limit',
-        limit: AI_LIMITS[kind],
+        limit,
         used,
       });
     return {
       commit() {
         aiUsage.set(key, used + 1);
-        return { used: used + 1, limit: AI_LIMITS[kind] };
+        return { used: used + 1, limit };
       },
     };
   }
@@ -1298,7 +1249,7 @@ export function createCocoon({
       throw codedError(400, { error: 'Missing "imageBase64"' });
     if (!/^image\/(jpeg|png|webp|gif)$/.test(body.mimeType || ''))
       throw codedError(400, { error: 'Missing or unsupported "mimeType"' });
-    if (body.imageBase64.length > 7_000_000)
+    if (body.imageBase64.length > 4 * 1024 * 1024)
       throw codedError(413, { error: 'Image is too large to analyze' });
     const trial = takeTrial(auth.did, 'altText');
     await aiPause();
@@ -1322,12 +1273,12 @@ export function createCocoon({
           code: 'FRONTEND_SESSION_INVALID',
         },
       ];
-    const granted = grants.has(`${found.client}:${found.did}`);
+    const granted = grants.has(found.did);
     const world = worldOf(found.did);
     const body = {
       success: true,
       authenticated: true,
-      client: found.client,
+      client: 'virga',
       oauthSessionMissing: !granted,
       ...(granted && world?.scope ? { scope: world.scope } : {}),
       user: { did: found.did },
@@ -1415,7 +1366,7 @@ export function createCocoon({
 
   async function publishRow(row) {
     const world = worldOf(row.user_did);
-    if (!world || !grants.has(`${row.client_key}:${row.user_did}`)) {
+    if (!world || !grants.has(row.user_did)) {
       throw Object.assign(new Error(SESSION_UNAVAILABLE), {
         code: 'SESSION_UNAVAILABLE',
       });
@@ -1517,7 +1468,7 @@ export function createCocoon({
           if (v.error) {
             row.last_error = `this post published, but its self-destruct timer could not be set: ${v.error}. set a timer by hand from the posted page.`;
             row.last_error_code = 'TIMER_NOT_ARMED';
-          } else armTimer(row.user_did, row.client_key, v.value);
+          } else armTimer(row.user_did, v.value);
         }
       } catch (err) {
         const exhausted = err.terminal || row.attempts >= row.max_attempts;
@@ -1568,7 +1519,7 @@ export function createCocoon({
       resolve('deleted', 'the post was already gone');
       return;
     }
-    if (!grants.has(`${row.client_key}:${row.user_did}`)) {
+    if (!grants.has(row.user_did)) {
       Object.assign(row, {
         attempts: row.attempts + 1,
         check_at: iso(t + 2 * MINUTE),
@@ -1727,9 +1678,9 @@ export function createCocoon({
 
   async function handle({ method, path, query, headers, body }) {
     try {
-      if (method === 'OPTIONS') return [200, {}];
-      if (path === '/oauth/session') return sessionRoute(headers, query);
-      if (path === '/oauth/logout' && method === 'POST') {
+      if (method === 'OPTIONS') return [204, null];
+      if (path === '/api/oauth/session') return sessionRoute(headers, query);
+      if (path === '/api/oauth/logout' && method === 'POST') {
         const m = /^Bearer\s+(\S+)$/i.exec(headers.authorization || '');
         const out = m ? signOutToken(m[1]) : { found: false };
         if (!out.found)
@@ -1754,7 +1705,7 @@ export function createCocoon({
       return await fn(auth, { query, body });
     } catch (err) {
       if (err.httpStatus) return [err.httpStatus, err.body];
-      console.error('[harness] fake cocoon failed:', err);
+      console.error('[harness] the fake server failed:', err);
       return [
         500,
         {
@@ -1789,12 +1740,10 @@ export function createCocoon({
       tz: 'Europe/London',
       ...extra,
     });
-    grants.add(`anisota:${did}`);
-    // Scheduled from Anisota: listed here, cancellable, not editable.
+    // At a time of its own, outside the weekly queue.
     insertScheduled({
       did,
-      client: 'anisota',
-      id: seededUuid('anisota-seed-swap'),
+      id: seededUuid('virga-seed-swap'),
       value: value(at(1, 10), [
         text(
           'Seed swap at the library on Saturday morning. Bring envelopes and labels.',
@@ -1803,7 +1752,6 @@ export function createCocoon({
     });
     insertScheduled({
       did,
-      client: 'virga',
       id: seededUuid('virga-queued'),
       value: value(
         at(2, 9),
@@ -1817,7 +1765,6 @@ export function createCocoon({
     });
     insertScheduled({
       did,
-      client: 'virga',
       id: seededUuid('virga-failed'),
       value: value(at(-3, 18), [
         text('A thread on what the tool library lent out this year.'),
@@ -1837,7 +1784,6 @@ export function createCocoon({
     if (recent[0]) {
       insertScheduled({
         did,
-        client: 'virga',
         id: seededUuid('virga-timer-note'),
         value: value(at(-1, 8), [text(recent[0].text || 'Morning.')]),
         status: 'published',
@@ -1845,7 +1791,7 @@ export function createCocoon({
           result_uri: `at://${did}/app.bsky.feed.post/${recent[0].rkey}`,
           result_cid: 'bafyharness',
           last_error:
-            'this post published, but its self-destruct timer could not be set: a free account keeps one timer of this kind at a time. set a timer by hand from the posted page.',
+            'this post published, but its self-destruct timer could not be set: this account can keep one plain timer at a time, counting scheduled posts. set a timer by hand from the posted page.',
           last_error_code: 'TIMER_NOT_ARMED',
         },
       });
@@ -1857,7 +1803,6 @@ export function createCocoon({
       }).value;
       armTimer(
         did,
-        'anisota',
         {
           uri: `at://${did}/app.bsky.feed.post/${recent[1].rkey}`,
           collection: 'app.bsky.feed.post',
@@ -1872,13 +1817,12 @@ export function createCocoon({
           effects: [{ action: 'delete' }],
           resolution: null,
         },
-        { id: seededUuid('anisota-timer') },
+        { id: seededUuid('virga-timer-live') },
       );
     }
     timers.push({
       id: seededUuid('virga-timer-done'),
       user_did: did,
-      client_key: 'virga',
       post_uri: `at://${did}/app.bsky.feed.post/${tidAt(t - 4 * DAY, 77)}`,
       post_cid: null,
       collection: 'app.bsky.feed.post',
@@ -1939,7 +1883,7 @@ const WARM = /\b(thank|thanks|love|glad|great|lovely|welcome|happy)\b/i;
  * to ease off, their own goals (always fine here), and the writing checks
  * (a doubled word is a typo, a lone lowercase "i" is grammar, a sentence over
  * forty words is unclear). Null when there's nothing to check against, which
- * cocoon answers with an "ok" and doesn't count.
+ * the server answers with an "ok" and doesn't count.
  */
 export function analyzePost({ text, goals = {}, writingChecks }) {
   const presets = goals?.presets || {};
@@ -2108,10 +2052,11 @@ function altTextFor({ imageBase64, kind, followUp, previousAltText, context }) {
 }
 
 /**
- * The router for the fake cocoon, given its origin: `route(url, init)`
- * answers a Response for requests to that host, or null for any other.
+ * The router for the fake server, at `origin` (SERVER_ORIGIN unless a test
+ * says otherwise): `route(url, init)` answers a Response for requests to that
+ * origin, or null for any other.
  */
-export function createCocoonRouter(cocoon, origin) {
+export function createServerRouter(server, origin = SERVER_ORIGIN) {
   return async function route(url, init = {}) {
     if (url.origin !== origin) return null;
     const headers = {};
@@ -2127,7 +2072,7 @@ export function createCocoonRouter(cocoon, origin) {
         });
       }
     }
-    const [status, payload] = await cocoon.handle({
+    const [status, payload] = await server.handle({
       method: (init.method || 'GET').toUpperCase(),
       path: url.pathname.replace(/\/+$/, ''),
       query: url.searchParams,
@@ -2139,6 +2084,8 @@ export function createCocoonRouter(cocoon, origin) {
 }
 
 function jsonResponse(status, body) {
+  // A 204 (the answer to a preflight) can't carry a body.
+  if (status === 204) return new Response(null, { status, headers: { 'Access-Control-Allow-Origin': '*' } });
   return new Response(JSON.stringify(body), {
     status,
     headers: {

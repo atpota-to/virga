@@ -1,23 +1,27 @@
 // The fake server answers the real posting services (scheduleService,
 // timerService, scheduleSerialize) through the real requester, so these check
-// it in their terms: the shapes they read, the cross-client rules (D4), the
-// limits (D5), and the workers writing into the account's world.
+// it in their terms: the shapes they read, one client (every row is Virga's,
+// and an account sees only its own), the flat limits, the sign-in paths under
+// /api/oauth, and the workers writing into the account's world.
 
 import { describe, expect, it } from 'vitest';
 import {
-  createCocoon,
-  createCocoonRouter,
+  DEFAULT_AI_LIMITS,
+  MAX_PENDING_SCHEDULED,
+  SERVER_ORIGIN,
   analyzePost,
-  FREE_LIMITS,
-} from './fakeCocoon.js';
+  createServer,
+  createServerRouter,
+} from './fakeServer.js';
 import { createRouter } from './fakeNetwork.js';
+import { readFlags } from './harness.js';
 import { listCollection } from './repo.js';
 import { LAB, ME, buildWorld } from './world.js';
-import { COCOON_URL } from '../src/config.js';
 import {
-  createBackendRequester,
-  checkBackendSession,
+  BACKEND_PATHS,
   backendSignOut,
+  checkBackendSession,
+  createBackendRequester,
 } from '../src/session/backendClient.js';
 import { interpretLiteSessionResponse } from '../src/session/sessionHealth.js';
 import {
@@ -38,33 +42,33 @@ import { emptyComposerState } from '../src/posting/lib/composerModel.js';
 const NOW = Date.parse('2026-11-12T12:00:00.000Z');
 const HOUR = 3_600_000;
 
-function setup({ policy, tiers, seed = true } = {}) {
+function setup({ limits, aiLimits, seed = true } = {}) {
   let clock = NOW;
   const mira = buildWorld({ now: NOW });
   const lab = buildWorld({ now: NOW, account: LAB });
   const worlds = [mira, lab];
   for (const w of worlds) w.scope = 'atproto';
-  const cocoon = createCocoon({
+  const server = createServer({
     worlds,
-    policy,
-    tiers,
+    limits,
+    aiLimits,
     seed,
     aiDelayMs: 0,
     now: () => clock,
   });
-  const route = createCocoonRouter(cocoon, new URL(COCOON_URL).origin);
+  const route = createServerRouter(server);
   const fetch = (href, init) => route(new URL(href), init);
-  const requester = (did, client = 'virga') =>
+  const requester = (did) =>
     createBackendRequester({
-      backendUrl: COCOON_URL,
-      token: cocoon.mintToken(did, client),
+      backendUrl: SERVER_ORIGIN,
+      token: server.mintToken(did),
       did,
       fetch,
     });
   return {
     mira,
     lab,
-    cocoon,
+    server,
     fetch,
     req: requester(ME.did),
     requester,
@@ -96,24 +100,33 @@ async function scheduleBody(texts, { at, now = NOW, extra } = {}) {
 }
 
 describe('scheduled posts', () => {
-  it('lists every row of the account to Virga, each with its client', async () => {
+  it('lists the account’s rows, every one of them Virga’s', async () => {
     const { req } = setup();
     const { rows, timerNotes } = await listScheduled(req);
-    expect(new Set(rows.map((r) => r.clientKey))).toEqual(
-      new Set(['anisota', 'virga']),
-    );
+    expect(rows.length).toBeGreaterThan(0);
+    expect(new Set(rows.map((r) => r.clientKey))).toEqual(new Set(['virga']));
     expect(rows.find((r) => r.status === 'failed').lastErrorCode).toBe(
       'SESSION_UNAVAILABLE',
     );
     expect(timerNotes).toHaveLength(1);
-    expect(timerNotes[0].lastErrorCode).toBe('TIMER_NOT_ARMED');
+    expect(timerNotes[0]).toMatchObject({
+      lastErrorCode: 'TIMER_NOT_ARMED',
+      clientKey: 'virga',
+    });
   });
 
-  it('shows Anisota only its own rows', async () => {
-    const { requester } = setup();
-    const anisota = requester(ME.did, 'anisota');
-    const { rows } = await listScheduled(anisota);
-    expect(rows.every((r) => r.clientKey === 'anisota')).toBe(true);
+  it('never shows one account another’s rows, or lets it touch them', async () => {
+    const { req, requester } = setup();
+    const { rows } = await listScheduled(req);
+    const lab = requester(LAB.did);
+    expect((await listScheduled(lab)).rows).toEqual([]);
+    const mine = rows.find((r) => r.status === 'pending');
+    await expect(getScheduled(lab, mine.id)).rejects.toMatchObject({
+      status: 404,
+    });
+    await expect(cancelScheduled(lab, mine.id)).rejects.toMatchObject({
+      code: 'NOT_CANCELLABLE',
+    });
   });
 
   it('takes what scheduleSerialize builds, and gives back the row with its record keys', async () => {
@@ -136,47 +149,38 @@ describe('scheduled posts', () => {
     expect(await getScheduledMedia(req, row.id)).toEqual({});
   });
 
-  it('refuses changes to another client’s row but lets Virga cancel it', async () => {
+  it('refuses any target but Bluesky', async () => {
     const { req } = setup();
-    const { rows } = await listScheduled(req);
-    const theirs = rows.find((r) => r.clientKey === 'anisota');
+    const body = await scheduleBody(['elsewhere'], { at: NOW + HOUR });
     await expect(
-      updateScheduled(req, theirs.id, {
-        scheduledFor: new Date(NOW + 30 * HOUR),
-      }),
-    ).rejects.toMatchObject({
-      status: 403,
-      code: 'NOT_YOUR_CLIENT',
-    });
-    await expect(
-      reorderScheduled(req, [
-        { id: theirs.id, scheduledFor: new Date(NOW + 30 * HOUR) },
-      ]),
-    ).rejects.toMatchObject({ code: 'NOT_YOUR_CLIENT' });
-    await expect(cancelScheduled(req, theirs.id)).resolves.toMatchObject({
-      status: 'cancelled',
-    });
+      createScheduled(req, { ...body, target: 'elsewhere' }),
+    ).rejects.toMatchObject({ status: 400 });
   });
 
-  it('moves, reorders and retries Virga’s own rows', async () => {
-    const { req } = setup({ tiers: { [ME.did]: 'member' } });
+  it('moves, reorders, retries and cancels the account’s rows', async () => {
+    const { req } = setup();
     const { rows } = await listScheduled(req);
-    const queued = rows.find(
-      (r) => r.clientKey === 'virga' && r.status === 'pending',
-    );
+    const queued = rows.find((r) => r.queued && r.status === 'pending');
     const moved = await updateScheduled(req, queued.id, {
       scheduledFor: new Date(NOW + 40 * HOUR),
     });
-    expect(moved.scheduledFor).toBe(new Date(NOW + 40 * HOUR).toISOString());
+    expect(moved).toMatchObject({
+      scheduledFor: new Date(NOW + 40 * HOUR).toISOString(),
+      clientKey: 'virga',
+    });
     const result = await reorderScheduled(req, [
       { id: queued.id, scheduledFor: new Date(NOW + 41 * HOUR) },
     ]);
     expect(result).toMatchObject({ moved: 1, fallback: false });
     const failed = rows.find((r) => r.status === 'failed');
     expect((await retryScheduled(req, failed.id)).status).toBe('pending');
+    const atTime = rows.find((r) => !r.queued && r.status === 'pending');
+    await expect(cancelScheduled(req, atTime.id)).resolves.toMatchObject({
+      status: 'cancelled',
+    });
   });
 
-  it('refuses a reply or a video, which cocoon’s payload can’t carry', async () => {
+  it('refuses a reply or a video, which the server’s payload can’t carry', async () => {
     const { req } = setup();
     const body = await scheduleBody(['hello'], { at: NOW + HOUR });
     body.payload.posts[0].record.reply = {
@@ -188,15 +192,29 @@ describe('scheduled posts', () => {
     });
   });
 
-  it('counts the scheduled-post limit across clients, and says which limit was hit', async () => {
-    const { req } = setup();
+  it('is unlimited by default, and always reports the caps', async () => {
+    const { req, server, fetch } = setup();
+    const raw = await (
+      await fetch(`${SERVER_ORIGIN}/api/limits/status`, {
+        headers: { Authorization: `Bearer ${server.mintToken(ME.did)}` },
+      })
+    ).json();
+    expect(raw).toMatchObject({ success: true, policy: 'flat', tier: null, isMember: false });
+    for (const feature of ['scheduledPosts', 'postTimers', 'conditionalTimers'])
+      expect(raw.features[feature]).toEqual({ isUnlimited: true, limit: null });
     const limits = await getLimits(req);
-    expect(limits.policy).toBe('membership');
-    expect(limits.features.scheduledPosts.limit).toBe(
-      FREE_LIMITS.scheduledPosts,
-    );
-    // One of Anisota's and one of Virga's are waiting.
+    expect(limits).toMatchObject({ policy: 'flat', isMember: false });
+    for (const feature of ['scheduledPosts', 'postTimers', 'conditionalTimers'])
+      expect(limits.features[feature].limit).toBeNull();
+    // The seeded one at a time of its own, and the queued one.
     expect(limits.usage.scheduledPosts).toBe(2);
+    expect(limits.caps).toEqual({ scheduledPosts: 50, timers: 200 });
+  });
+
+  it('keeps to a scheduled-posts limit set as the server’s env would, and says which limit was hit', async () => {
+    const { req } = setup({ limits: { scheduledPosts: 3 } });
+    const limits = await getLimits(req);
+    expect(limits.features.scheduledPosts.limit).toBe(3);
     await createScheduled(
       req,
       await scheduleBody(['third'], { at: NOW + 3 * HOUR }),
@@ -207,27 +225,33 @@ describe('scheduled posts', () => {
         await scheduleBody(['fourth'], { at: NOW + 4 * HOUR }),
       ),
     ).rejects.toMatchObject({
+      status: 409,
       code: 'QUOTA_EXCEEDED',
       payload: { feature: 'scheduledPosts', limit: 3 },
     });
   });
 
-  it('has no free limits under the flat policy', async () => {
-    const { req } = setup({ policy: 'flat' });
-    const limits = await getLimits(req);
-    expect(limits.policy).toBe('flat');
-    expect(limits.features.scheduledPosts.limit).toBeNull();
-    for (let i = 0; i < 3; i++)
+  it('stops at the flat cap with no limit set', async () => {
+    const { req } = setup({ seed: false });
+    for (let i = 0; i < MAX_PENDING_SCHEDULED; i++)
       await createScheduled(
         req,
-        await scheduleBody([`post ${i}`], { at: NOW + (i + 2) * HOUR }),
+        await scheduleBody([`post ${i}`], { at: NOW + (i + 1) * HOUR }),
       );
+    await expect(
+      createScheduled(
+        req,
+        await scheduleBody(['one too many'], { at: NOW + 99 * HOUR }),
+      ),
+    ).rejects.toMatchObject({
+      status: 409,
+      code: 'QUOTA_EXCEEDED',
+      payload: { feature: 'scheduledPosts', limit: MAX_PENDING_SCHEDULED },
+    });
   });
 
   it('publishes a due row into the world at its reserved key, with its gates, and arms its timer', async () => {
-    const { req, mira, cocoon, advance, now } = setup({
-      tiers: { [ME.did]: 'member' },
-    });
+    const { req, mira, server, advance, now } = setup();
     const body = await scheduleBody(['Out at noon', 'with a reply'], {
       at: NOW + HOUR,
       extra: {
@@ -243,7 +267,7 @@ describe('scheduled posts', () => {
     const row = await createScheduled(req, body);
     expect(row.payload.selfDestruct).toBeTruthy();
     advance(HOUR + 1000);
-    const { published } = await cocoon.runCron();
+    const { published } = await server.runCron();
     expect(published.map((r) => r.id)).toEqual([row.id]);
     const posts = listCollection(mira, 'app.bsky.feed.post');
     const root = posts.find((p) => p.uri.endsWith(`/${row.payload.rkeys[0]}`));
@@ -266,7 +290,7 @@ describe('scheduled posts', () => {
     // Three hours on, the timer takes the thread down.
     advance(3 * HOUR + 1000);
     expect(now()).toBeGreaterThan(Date.parse(armed.checkAt));
-    await cocoon.runCron();
+    await server.runCron();
     const left = listCollection(mira, 'app.bsky.feed.post').map((p) => p.uri);
     expect(left).not.toContain(root.uri);
     expect(left).not.toContain(reply.uri);
@@ -275,10 +299,10 @@ describe('scheduled posts', () => {
   });
 
   it('fails a row whose account has signed out of the server everywhere', async () => {
-    const { cocoon, advance, fetch, requester } = setup();
-    const token = cocoon.mintToken(ME.did);
+    const { server, advance, fetch, requester } = setup();
+    const token = server.mintToken(ME.did);
     const req = createBackendRequester({
-      backendUrl: COCOON_URL,
+      backendUrl: SERVER_ORIGIN,
       token,
       did: ME.did,
       fetch,
@@ -287,12 +311,11 @@ describe('scheduled posts', () => {
       req,
       await scheduleBody(['nobody home'], { at: NOW + HOUR }),
     );
-    // Every Virga token for the account goes, so the grant does too.
-    for (const [t, info] of cocoon.inspect().tokens)
-      if (info.did === ME.did && info.client === 'virga')
-        cocoon.signOutToken(t);
+    // Every token for the account goes, so the grant does too.
+    for (const [t, info] of server.inspect().tokens)
+      if (info.did === ME.did) server.signOutToken(t);
     advance(HOUR + 1000);
-    await cocoon.runCron();
+    await server.runCron();
     const again = await listScheduled(requester(ME.did));
     expect(again.rows.find((r) => r.id === row.id)).toMatchObject({
       status: 'pending',
@@ -311,33 +334,49 @@ describe('timers', () => {
     ...extra,
   });
 
-  it('arms a timer once per post, and keeps a free account to one of each kind', async () => {
-    const { req, mira } = setup();
+  it('arms a timer once per post: 201 for a new one, 200 for the same one again', async () => {
+    const { server, fetch, mira } = setup();
+    const token = server.mintToken(ME.did);
+    const uri = `at://${ME.did}/app.bsky.feed.post/${mira.posts[5].rkey}`;
+    const arm = () =>
+      fetch(`${SERVER_ORIGIN}/api/self-destruct/create`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body(uri)),
+      });
+    const first = await arm();
+    expect(first.status).toBe(201);
+    const firstBody = await first.json();
+    expect(firstBody.data).toMatchObject({ status: 'armed', clientKey: 'virga' });
+    const again = await arm();
+    expect(again.status).toBe(200);
+    expect((await again.json()).data.id).toBe(firstBody.data.id);
+  });
+
+  it('keeps to a plain-timer limit when one is set, and counts what is live', async () => {
+    const { req, mira } = setup({ limits: { postTimers: 1 } });
     const [a, b] = mira.posts
       .slice(5, 7)
       .map((p) => `at://${ME.did}/app.bsky.feed.post/${p.rkey}`);
-    const first = await req.request('/api/self-destruct/create', {
+    await req.request('/api/self-destruct/create', {
       method: 'POST',
       body: body(a),
     });
-    expect(first.data).toMatchObject({ status: 'armed', clientKey: 'virga' });
-    const again = await req.request('/api/self-destruct/create', {
-      method: 'POST',
-      body: body(a),
-    });
-    expect(again.data.id).toBe(first.data.id);
     await expect(
       req.request('/api/self-destruct/create', {
         method: 'POST',
         body: body(b),
       }),
     ).rejects.toMatchObject({
-      status: 402,
+      status: 409,
       code: 'QUOTA_EXCEEDED',
-      payload: { feature: 'postTimers' },
+      payload: { feature: 'postTimers', limit: 1 },
     });
     const limits = await getLimits(req);
+    // The seeded live timer is a conditional one.
     expect(limits.usage).toMatchObject({ postTimers: 1, conditionalTimers: 1 });
+    expect(limits.features.postTimers.limit).toBe(1);
+    expect(limits.features.conditionalTimers.limit).toBeNull();
   });
 
   it('refuses a timer on someone else’s post', async () => {
@@ -352,9 +391,7 @@ describe('timers', () => {
   });
 
   it('spares a post whose rule it meets, and limits replies without deleting', async () => {
-    const { req, mira, cocoon, advance } = setup({
-      tiers: { [ME.did]: 'member' },
-    });
+    const { req, mira, server, advance } = setup();
     const [kept, gated] = mira.posts.filter((p) => p.likes >= 3).slice(0, 2);
     const uriOf = (p) => `at://${ME.did}/app.bsky.feed.post/${p.rkey}`;
     await req.request('/api/self-destruct/create', {
@@ -373,7 +410,7 @@ describe('timers', () => {
       }),
     });
     advance(2 * HOUR);
-    await cocoon.runCron();
+    await server.runCron();
     const { rows } = await listTimers(req, { history: true });
     expect(rows.find((t) => t.postUri === uriOf(kept)).status).toBe('spared');
     expect(rows.find((t) => t.postUri === uriOf(gated)).status).toBe('acted');
@@ -389,29 +426,40 @@ describe('timers', () => {
     ).toEqual([{ $type: 'app.bsky.feed.threadgate#followingRule' }]);
   });
 
-  it('lets Virga call off Anisota’s timer', async () => {
+  it('lists every timer as Virga’s, and calls one off', async () => {
     const { req } = setup();
-    const { rows } = await listTimers(req);
-    const theirs = rows.find((t) => t.clientKey === 'anisota');
-    expect(theirs).toBeTruthy();
-    await cancelTimer(req, theirs.id);
+    const { rows } = await listTimers(req, { history: true });
+    expect(rows.length).toBeGreaterThan(0);
+    expect(new Set(rows.map((t) => t.clientKey))).toEqual(new Set(['virga']));
+    const live = (await listTimers(req)).rows.find((t) => t.status === 'armed');
+    await cancelTimer(req, live.id);
     const after = await listTimers(req);
-    expect(after.rows.some((t) => t.id === theirs.id)).toBe(false);
+    expect(after.rows.some((t) => t.id === live.id)).toBe(false);
   });
 
-  it('rewrites an armed timer on re-arm and moves it to the arming client', async () => {
-    const { req } = setup({ tiers: { [ME.did]: 'member' } });
+  it('keeps one account’s timers from another', async () => {
+    const { req, requester } = setup();
+    const live = (await listTimers(req)).rows.find((t) => t.status === 'armed');
+    const lab = requester(LAB.did);
+    expect((await listTimers(lab)).rows).toEqual([]);
+    await expect(cancelTimer(lab, live.id)).rejects.toMatchObject({
+      code: 'NOT_CANCELLABLE',
+    });
+  });
+
+  it('rewrites an armed timer on re-arm', async () => {
+    const { req } = setup();
     const { rows } = await listTimers(req);
-    const theirs = rows.find((t) => t.clientKey === 'anisota');
+    const live = rows.find((t) => t.status === 'armed');
     const res = await req.request('/api/self-destruct/create', {
       method: 'POST',
-      body: body(theirs.postUri, {
+      body: body(live.postUri, {
         lifespanSeconds: 7200,
         effects: [{ action: 'limitReplies', allow: ['following'] }],
       }),
     });
     expect(res.data).toMatchObject({
-      id: theirs.id,
+      id: live.id,
       clientKey: 'virga',
       conditions: {},
       lifespanSeconds: 7200,
@@ -419,8 +467,7 @@ describe('timers', () => {
       checkAt: new Date(NOW + 2 * HOUR).toISOString(),
     });
     const after = await listTimers(req);
-    expect(after.rows.find((t) => t.id === theirs.id)).toMatchObject({
-      clientKey: 'virga',
+    expect(after.rows.find((t) => t.id === live.id)).toMatchObject({
       lifespanSeconds: 7200,
       attempts: 0,
       lastError: null,
@@ -428,40 +475,90 @@ describe('timers', () => {
   });
 
   it('leaves a timer that is mid-check alone on re-arm', async () => {
-    const { req, cocoon } = setup({ tiers: { [ME.did]: 'member' } });
+    const { req, server } = setup();
     const { rows } = await listTimers(req);
-    const theirs = rows.find((t) => t.clientKey === 'anisota');
-    cocoon.inspect().timers.find((t) => t.id === theirs.id).status = 'checking';
+    const live = rows.find((t) => t.status === 'armed');
+    server.inspect().timers.find((t) => t.id === live.id).status = 'checking';
     const res = await req.request('/api/self-destruct/create', {
       method: 'POST',
-      body: body(theirs.postUri, { lifespanSeconds: 7200 }),
+      body: body(live.postUri, { lifespanSeconds: 7200 }),
     });
     expect(res.data).toMatchObject({
-      id: theirs.id,
-      clientKey: 'anisota',
-      lifespanSeconds: theirs.lifespanSeconds,
-      checkAt: theirs.checkAt,
+      id: live.id,
+      clientKey: 'virga',
+      lifespanSeconds: live.lifespanSeconds,
+      checkAt: live.checkAt,
     });
   });
 });
 
-describe('sessions and the adviser', () => {
-  it('answers the session check, and signs out per device', async () => {
-    const { cocoon, fetch } = setup();
-    const one = cocoon.mintToken(LAB.did);
-    const two = cocoon.mintToken(LAB.did);
+describe('sessions', () => {
+  it('answers the session check at /api/oauth/session, and signs out per device', async () => {
+    const { server, fetch } = setup();
+    const one = server.mintToken(LAB.did);
+    const two = server.mintToken(LAB.did);
+    expect(one).toMatch(/^vg_[0-9a-f]{64}$/);
     const check = async (token) =>
       interpretLiteSessionResponse(
-        await checkBackendSession({ backendUrl: COCOON_URL, token, fetch }),
+        await checkBackendSession({ backendUrl: SERVER_ORIGIN, token, fetch }),
       );
     expect((await check(one)).status).toBe('valid');
     expect(
-      await backendSignOut({ backendUrl: COCOON_URL, token: one, fetch }),
+      await backendSignOut({ backendUrl: SERVER_ORIGIN, token: one, fetch }),
     ).toBe(true);
     expect(await check(one)).toEqual({ status: 'expired', definitive: true });
     expect((await check(two)).status).toBe('valid');
   });
 
+  it('ends the grant only with the account’s last token', async () => {
+    const { server } = setup();
+    const one = server.mintToken(LAB.did);
+    const two = server.mintToken(LAB.did);
+    expect(server.signOutToken(one)).toEqual({ found: true, grantRevoked: false });
+    expect(server.signOutToken(two)).toEqual({ found: true, grantRevoked: true });
+    expect(server.signOutToken(two)).toEqual({ found: false, grantRevoked: false });
+  });
+
+  it('answers an unknown token with FRONTEND_SESSION_INVALID everywhere', async () => {
+    const { fetch } = setup();
+    const ghost = createBackendRequester({
+      backendUrl: SERVER_ORIGIN,
+      token: `vg_${'0'.repeat(64)}`,
+      did: ME.did,
+      fetch,
+    });
+    await expect(listScheduled(ghost)).rejects.toMatchObject({
+      status: 401,
+      code: 'FRONTEND_SESSION_INVALID',
+    });
+    const res = await fetch(`${SERVER_ORIGIN}/api/limits/status`, {});
+    expect(res.status).toBe(401);
+    expect((await res.json()).code).toBe('FRONTEND_SESSION_INVALID');
+    const out = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.logout}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer vg_${'1'.repeat(64)}` },
+    });
+    expect(out.status).toBe(401);
+    expect((await out.json()).code).toBe('FRONTEND_SESSION_INVALID');
+  });
+
+  it('answers a preflight with no content, and the old paths not at all', async () => {
+    const { server, fetch } = setup();
+    const preflight = await fetch(`${SERVER_ORIGIN}/api/schedule/list`, {
+      method: 'OPTIONS',
+    });
+    expect(preflight.status).toBe(204);
+    const token = server.mintToken(ME.did);
+    for (const old of ['/oauth/session', '/virga/oauth/login']) {
+      const res = await fetch(`${SERVER_ORIGIN}${old}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(res.status).toBe(404);
+    }
+  });
+});
+
+describe('the adviser and alt text', () => {
   it('reads a draft against the writer’s goals and checks its writing', async () => {
     const { req } = setup();
     const res = await req.request('/api/ai/analyze-post', {
@@ -489,17 +586,19 @@ describe('sessions and the adviser', () => {
     expect(analyzePost({ text: 'hello', goals: {} })).toBeNull();
   });
 
-  it('stops a free account at the monthly trial', async () => {
+  it('stops at the monthly allowance', async () => {
     const { req } = setup();
     const send = () =>
       req.request('/api/ai/synthesize-style', {
         method: 'POST',
         body: { posts: ['a', 'b', 'c', 'd', 'e'] },
       });
-    for (let i = 0; i < 3; i++) expect((await send()).summary).toBeTruthy();
+    for (let i = 0; i < DEFAULT_AI_LIMITS.style; i++)
+      expect((await send()).summary).toBeTruthy();
     await expect(send()).rejects.toMatchObject({
       status: 429,
       code: 'monthly_limit',
+      payload: { limit: 3, used: 3 },
     });
     await expect(
       req.request('/api/ai/synthesize-style', {
@@ -511,6 +610,21 @@ describe('sessions and the adviser', () => {
     });
   });
 
+  it('counts nothing and reports no usage when an allowance is unlimited, and refuses all at 0', async () => {
+    const { req } = setup({ aiLimits: { adviser: null, altText: 0 } });
+    const read = await req.request('/api/ai/analyze-post', {
+      method: 'POST',
+      body: { text: 'I hate this', goals: { presets: { reduceNegativity: true } } },
+    });
+    expect(read).not.toHaveProperty('usage');
+    await expect(
+      req.request('/api/ai/alt-text', {
+        method: 'POST',
+        body: { imageBase64: 'iVBORw0KGgo=', mimeType: 'image/png' },
+      }),
+    ).rejects.toMatchObject({ status: 429, code: 'monthly_limit' });
+  });
+
   it('writes alt text and revises it from a note', async () => {
     const { req } = setup();
     const first = await req.request('/api/ai/alt-text', {
@@ -518,6 +632,7 @@ describe('sessions and the adviser', () => {
       body: { imageBase64: 'iVBORw0KGgo=', mimeType: 'image/png' },
     });
     expect(first.altText).toBeTruthy();
+    expect(first.usage).toEqual({ used: 1, limit: 15 });
     const second = await req.request('/api/ai/alt-text', {
       method: 'POST',
       body: {
@@ -529,20 +644,43 @@ describe('sessions and the adviser', () => {
     });
     expect(second.altText).toMatch(/mention the rain/);
   });
+});
 
-  it('is reachable through the whole fake network at Virga’s server address', async () => {
-    const { mira, lab, cocoon } = setup();
-    const route = createRouter([mira, lab], { cocoon });
-    const token = cocoon.mintToken(ME.did);
-    const res = await route(`${COCOON_URL}/api/limits/status`, {
+describe('the fake network', () => {
+  it('reaches the server at SERVER_ORIGIN, and only there', async () => {
+    const { mira, lab, server } = setup({ limits: { postTimers: 1 } });
+    const route = createRouter([mira, lab], { server });
+    const token = server.mintToken(ME.did);
+    const res = await route(`${SERVER_ORIGIN}/api/limits/status`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const status = await res.json();
     expect(status.features.postTimers.limit).toBe(1);
     expect(status.caps).toEqual({ scheduledPosts: 50, timers: 200 });
-    expect(await route(`${COCOON_URL}/api/nothing-here`, {})).toHaveProperty(
+    expect(await route(`${SERVER_ORIGIN}/api/nothing-here`, {})).toHaveProperty(
       'status',
       404,
     );
+    // The dev server's own /api is Vite's, never the fake's.
+    expect(await createServerRouter(server)(new URL('http://127.0.0.1:5701/api/limits/status'), {})).toBeNull();
+  });
+});
+
+describe('the address flags', () => {
+  it('start unlimited, with the server’s default AI allowances', () => {
+    const flags = readFlags('');
+    expect(flags.limits).toEqual({ scheduledPosts: undefined, postTimers: undefined, conditionalTimers: undefined });
+    expect(flags.aiLimits).toEqual({ adviser: 30, altText: 15, style: 3 });
+  });
+
+  it('read per-feature limits, a blank or 0 leaving one unlimited', () => {
+    expect(readFlags('?limits=3,1,1').limits).toEqual({ scheduledPosts: 3, postTimers: 1, conditionalTimers: 1 });
+    expect(readFlags('?limits=,2,0').limits).toEqual({ scheduledPosts: undefined, postTimers: 2, conditionalTimers: undefined });
+  });
+
+  it('read the AI allowances, or none at all', () => {
+    expect(readFlags('?ailimits=5,2,1').aiLimits).toEqual({ adviser: 5, altText: 2, style: 1 });
+    expect(readFlags('?ailimits=unlimited').aiLimits).toEqual({ adviser: null, altText: null, style: null });
+    expect(readFlags('?ailimits=0').aiLimits).toEqual({ adviser: 0, altText: 15, style: 3 });
   });
 });

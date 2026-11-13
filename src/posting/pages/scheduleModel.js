@@ -1,5 +1,5 @@
 // What the Scheduled, Weekly schedule and Timers pages (and the time picker)
-// show, worked out from cocoon's rows and the account's weekly schedule.
+// show, worked out from the server's rows and the account's weekly schedule.
 // Pure: every clock is passed in, and nothing here reads storage or the
 // network.
 
@@ -17,7 +17,6 @@ import {
 import {
   canCancelScheduledRow,
   canEditScheduledRow,
-  rowClientKey,
 } from '../schedule/scheduleService.js';
 import { friendlyScheduleError } from '../schedule/scheduledPostError.js';
 import { splitQueueRows } from '../schedule/queueReorder.js';
@@ -33,17 +32,6 @@ import {
 
 const instant = (value) => (value ? new Date(value).getTime() : NaN);
 const byTime = (a, b) => instant(a.scheduledFor) - instant(b.scheduledFor);
-
-/** Names for the other apps that schedule into the same account. */
-const CLIENT_NAMES = { anisota: 'Anisota' };
-
-/** The app a row was scheduled from, for a badge: 'Anisota', or null for Virga's own. */
-export function clientName(row) {
-  const key = rowClientKey(row);
-  if (key === 'virga') return null;
-  if (!key) return 'another app';
-  return CLIENT_NAMES[key] || key[0].toUpperCase() + key.slice(1);
-}
 
 /* ---- the scheduled list ---------------------------------------------- */
 
@@ -183,64 +171,38 @@ export function rowIsDueSoon(row, now = Date.now()) {
 
 /**
  * What can be done to a row from this page:
- *   edit     open it in the composer (Virga's own rows, waiting or failed)
- *   postNow  post it now and drop the scheduled copy (Virga's own, whole,
- *            and not about to go out at its time: rowIsDueSoon)
- *   retry    send a failed one again as it is (Virga's own)
- *   cancel   take it off the schedule (any app's: cocoon allows that)
- *   note     why another app's row can only be cancelled
+ *   edit     open it in the composer (waiting or failed)
+ *   postNow  post it now and drop the scheduled copy (whole, and not about
+ *            to go out at its time: rowIsDueSoon)
+ *   retry    send a failed one again as it is
+ *   cancel   take it off the schedule
  */
 export function rowActions(row, now = Date.now()) {
-  const mine = rowClientKey(row) === 'virga';
   const waitingOrFailed = row?.status === 'pending' || row?.status === 'failed';
   return {
     edit: canEditScheduledRow(row),
-    postNow:
-      mine && waitingOrFailed && !row?.partial && !rowIsDueSoon(row, now),
-    retry: mine && row?.status === 'failed',
+    postNow: waitingOrFailed && !row?.partial && !rowIsDueSoon(row, now),
+    retry: row?.status === 'failed',
     cancel: canCancelScheduledRow(row),
-    note: mine
-      ? ''
-      : `Scheduled in ${clientName(row)}. You can cancel it here; to change it, open ${clientName(row) === 'another app' ? 'the app it came from' : clientName(row)}.`,
   };
 }
 
-/** The collection Virga can put a timer on (cocoon refuses any other from Virga). */
+/** The collection a timer can go on (the server refuses any other). */
 const BSKY_POST = 'app.bsky.feed.post';
 
 /**
  * What the "A timer couldn't be set" list offers for one note row:
  *
  *   arm      the post to hand TimerDialog (`{ uri, text, postedAt,
- *            extraUris, row }`), or null when Virga can't set it here
- *   dismiss  whether Dismiss is offered (Virga's own notes: cocoon won't
- *            take another app's acknowledgement)
+ *            extraUris, row }`), or null when there's no Bluesky post to
+ *            put a timer on
+ *   dismiss  whether Dismiss is offered (always: the note is the account's)
  *   note     a sentence in place of the button, or ''
- *
- * Another app's note can't be cleared from here, so once a timer is set on
- * it in this visit (`armed`, the row ids set so far) it says where to clear
- * it instead of offering the timer again. A post that went out somewhere
- * other than Bluesky (an Anisota post) can only take a timer in that app.
  */
-export function timerNoteActions(row, { armed = null } = {}) {
-  const mine = rowClientKey(row) === 'virga';
-  const app = clientName(row) || 'the app it came from';
+export function timerNoteActions(row) {
   const uri = typeof row?.resultUri === 'string' ? row.resultUri : '';
   const [, , repo = '', collection = ''] = uri.split('/');
-  const isArmed = Boolean(armed && row?.id && armed.has(row.id));
-  if (!mine && isArmed)
-    return {
-      arm: null,
-      dismiss: false,
-      note: `Timer set. Dismiss this note in ${app}.`,
-    };
-  if (!uri) return { arm: null, dismiss: mine, note: '' };
-  if (collection !== BSKY_POST)
-    return {
-      arm: null,
-      dismiss: mine,
-      note: `Set its timer in ${app}.`,
-    };
+  if (!uri || collection !== BSKY_POST) return { arm: null, dismiss: true, note: '' };
   const rkeys = Array.isArray(row.payload?.rkeys) ? row.payload.rkeys : [];
   return {
     arm: {
@@ -253,7 +215,7 @@ export function timerNoteActions(row, { armed = null } = {}) {
         .map((k) => `at://${repo}/${collection}/${k}`),
       row,
     },
-    dismiss: mine,
+    dismiss: true,
     note: '',
   };
 }
@@ -391,7 +353,7 @@ export function moveIdTo(ids = [], id, index) {
   return moveId(ids, id, index - from);
 }
 
-/** The ids of the rows this app may move in the queue, soonest first. */
+/** The ids of the rows that may move in the queue, soonest first. */
 export function movableIds(rows = [], now = Date.now()) {
   return splitQueueRows(rows, { now }).movable.map((r) => r.id);
 }
@@ -410,11 +372,9 @@ export function applyAssignment(rows = [], assignment = []) {
 
 /* ---- limits ----------------------------------------------------------- */
 
-const SHARED = 'Limits are shared with Anisota.';
-
 /**
- * The scheduled-posts line under the list: '2 of 3 scheduled posts in use.
- * Limits are shared with Anisota.' for a limited account, the server's
+ * The scheduled-posts line under the list: '2 of 3 scheduled posts in use.'
+ * for a limited account, the server's
  * ceiling for one without a limit, '' when nothing is known.
  */
 export function scheduledLimitsLine(limits) {
@@ -423,8 +383,8 @@ export function scheduledLimitsLine(limits) {
   const used = limits.usage?.scheduledPosts;
   if (Number.isFinite(limit)) {
     if (!Number.isFinite(used))
-      return `This account can keep ${limit} scheduled ${limit === 1 ? 'post' : 'posts'} at a time. ${SHARED}`;
-    return `${Math.min(used, limit)} of ${limit} scheduled ${limit === 1 ? 'post' : 'posts'} in use. ${SHARED}`;
+      return `This account can keep ${limit} scheduled ${limit === 1 ? 'post' : 'posts'} at a time.`;
+    return `${Math.min(used, limit)} of ${limit} scheduled ${limit === 1 ? 'post' : 'posts'} in use.`;
   }
   const cap = limits.caps?.scheduledPosts;
   if (Number.isFinite(cap))
@@ -437,7 +397,7 @@ export function scheduledLimitsLine(limits) {
  * The timers line: what's in use in each limited bucket, counting scheduled
  * posts that carry a timer. '' when neither bucket is limited, or nothing is
  * known. `fallbackUsage` ({ plain, conditional }, from timerUsage) fills in a
- * count cocoon didn't send.
+ * count the server didn't send.
  */
 export function timerLimitsLine(limits, fallbackUsage = null) {
   if (!limits) return '';
@@ -464,7 +424,7 @@ export function timerLimitsLine(limits, fallbackUsage = null) {
       return `No limit on timers, beyond the ${cap} that can count down at a time.`;
     return limits.policy ? 'No limit on timers.' : '';
   }
-  return `In use: ${parts.join(' and ')}, counting scheduled posts with a timer. ${SHARED}`;
+  return `In use: ${parts.join(' and ')}, counting scheduled posts with a timer.`;
 }
 
 /** The slot sentence for each limited bucket that's full, for a callout. */
@@ -511,7 +471,7 @@ export function friendlyTimerError(code, raw) {
   return 'The timer gave up. The post is still up.';
 }
 
-/** A timer row's rule as the timer model holds it (cocoon's row has no `enabled`). */
+/** A timer row's rule as the timer model holds it (the server's row has no `enabled`). */
 export function ruleOfTimerRow(row) {
   return normalizeTimer({
     enabled: true,
@@ -561,7 +521,6 @@ export function timerRowModel(row, now = Date.now()) {
       row?.status === 'failed'
         ? friendlyTimerError(row.lastErrorCode, row.lastError)
         : '',
-    client: clientName(row),
     canCancel: row?.status === 'armed' || row?.status === 'failed',
     cancelLabel: row?.status === 'failed' ? 'Dismiss' : 'Call off',
   };
@@ -587,7 +546,7 @@ function actedText(entry) {
   ];
   const detail = String(entry.detail || '').trim();
   const verb = entry.ok === false ? skipped : done;
-  // cocoon's detail repeats the verb for a plain success ("deleted").
+  // The server's detail repeats the verb for a plain success ("deleted").
   const plain = detail.toLowerCase();
   if (
     !plain ||
@@ -850,7 +809,7 @@ export function quickPicks(
 }
 
 /**
- * Why a picked time can't be used, or ''. `min`/`max` default to cocoon's
+ * Why a picked time can't be used, or ''. `min`/`max` default to the server's
  * bounds: a minute from now, 90 days out.
  */
 export function whenProblem(
@@ -892,11 +851,6 @@ export async function postScheduledNow(row, { did, deps, now = Date.now() }) {
     throw coded(
       'BAD_ROW',
       'That post couldn’t be read. Reload the page and try again.',
-    );
-  if (rowClientKey(row) !== 'virga')
-    throw coded(
-      'NOT_YOUR_CLIENT',
-      'This post was scheduled in another app, so it can only be cancelled here.',
     );
   if (row.partial)
     throw coded(

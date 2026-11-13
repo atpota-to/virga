@@ -154,26 +154,22 @@ describe('pendingMoves', () => {
 });
 
 describe('splitQueueRows', () => {
-  it('moves only this app’s own pending rows, none of a thread out yet', () => {
+  it('moves only pending rows, none of a thread out yet', () => {
     const rows = [
       row('later', '2026-09-05T09:00:00Z'),
       row('sooner', '2026-09-04T09:00:00Z'),
-      row('theirs', '2026-09-04T17:00:00Z', { clientKey: 'anisota' }),
+      row('going', '2026-09-04T17:00:00Z', { status: 'publishing' }),
       row('partial', '2026-09-01T09:00:00Z', { partial: true }),
       row('failed', '2026-09-01T09:00:00Z', { status: 'failed' }),
-      row('unknown', '2026-09-06T09:00:00Z', { clientKey: undefined }),
+      row('unkeyed', '2026-09-06T09:00:00Z', { clientKey: undefined }),
       { ...row('oneoff', '2026-09-06T09:00:00Z'), queued: false },
     ];
     const { movable, occupied } = splitQueueRows(rows, {
       now: new Date('2026-08-30T12:00:00Z'),
     });
-    expect(movable.map((r) => r.id)).toEqual(['sooner', 'later']);
-    expect(occupied.map((r) => r.id)).toEqual([
-      'theirs',
-      'partial',
-      'failed',
-      'unknown',
-    ]);
+    // A row that doesn't say whose it is is the account's, and moves.
+    expect(movable.map((r) => r.id)).toEqual(['sooner', 'later', 'unkeyed']);
+    expect(occupied.map((r) => r.id)).toEqual(['going', 'partial', 'failed']);
   });
 });
 
@@ -199,10 +195,10 @@ describe('planQueueReorder', () => {
   };
   const now = new Date('2026-08-16T12:00:00Z');
 
-  it('re-packs the new order around another client’s row', () => {
+  it('re-packs the new order around a row that can’t move', () => {
     const rows = [
       row('a', '2026-08-17T09:00:00+00:00'),
-      row('theirs', '2026-08-18T09:00:00+00:00', { clientKey: 'anisota' }),
+      row('stuck', '2026-08-18T09:00:00+00:00', { status: 'failed' }),
       row('b', '2026-08-19T09:00:00+00:00'),
     ];
     const plan = planQueueReorder(schedule, rows, ['b', 'a'], now);
@@ -211,7 +207,7 @@ describe('planQueueReorder', () => {
       { id: 'a', scheduledFor: '2026-08-19T09:00:00.000Z' },
     ]);
     expect(plan.conflict).toBeNull();
-    // The other client's row never appears in the assignment.
+    // The row that can't move never appears in the assignment.
     expect(plan.assignment.map((a) => a.id)).toEqual(['b', 'a']);
   });
 
@@ -219,9 +215,9 @@ describe('planQueueReorder', () => {
     const rows = [
       row('a', '2026-08-17T09:00:00Z'),
       row('b', '2026-08-18T09:00:00Z'),
-      row('theirs', '2026-08-19T09:00:00Z', { clientKey: 'anisota' }),
+      row('stuck', '2026-08-19T09:00:00Z', { partial: true }),
     ];
-    const plan = planQueueReorder(schedule, rows, ['theirs', 'b'], now);
+    const plan = planQueueReorder(schedule, rows, ['stuck', 'b'], now);
     expect(plan.assignment.map((a) => a.id)).toEqual(['b', 'a']);
     expect(plan.moves).toEqual([
       { id: 'b', scheduledFor: '2026-08-17T09:00:00.000Z' },

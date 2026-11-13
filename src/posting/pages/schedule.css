@@ -253,12 +253,6 @@
   font-weight: 600;
 }
 
-.sched-cal-cell.is-other {
-  border-color: var(--line-2);
-  background: var(--surface-3);
-  color: var(--ink-2);
-}
-
 .sched-cal-cell.is-off {
   border-style: dashed;
 }

@@ -1,7 +1,7 @@
 // The adviser's setup for one account (posting settings `adviser`): its
 // defaults, a normalizer every reader runs, and turning it on from the
 // settings page or the posting hub, which must leave it in the same state.
-// The shape is the one cocoon's /api/ai/analyze-post reads from, so the
+// The shape is the one the server's /api/ai/analyze-post reads from, so the
 // request body needs no translation.
 
 import { normalizeAdviserScope } from './analysis.js';
@@ -12,7 +12,7 @@ export const REVIEW_MODES = Object.freeze(['significant', 'always']);
 export const STYLE_SAMPLE_SIZES = Object.freeze([100, 250, 500]);
 export const DEFAULT_STYLE_SAMPLE_SIZE = 100;
 
-// The input limits the settings controls set; cocoon clips some of these and
+// The input limits the settings controls set; the server clips some of these and
 // not others, so they are held here.
 export const ADVISER_TEXT_LIMITS = Object.freeze({
   topic: 200,

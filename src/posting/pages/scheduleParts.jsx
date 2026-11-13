@@ -168,8 +168,8 @@ export function QueueCalendar({
               {day.slots.map((slot) => {
                 const filled = Boolean(slot.row);
                 const cls = `sched-cal-cell${filled ? ' is-filled' : ''}${slot.offSchedule ? ' is-off' : ''}${
-                  filled && slot.row.clientKey !== 'virga' ? ' is-other' : ''
-                }${highlight && slot.row?.id === highlight ? ' is-lit' : ''}`;
+                  highlight && slot.row?.id === highlight ? ' is-lit' : ''
+                }`;
                 return (
                   <li key={`${slot.minute}-${slot.row?.id || ''}`}>
                     {filled && onPick ? (

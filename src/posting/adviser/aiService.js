@@ -1,13 +1,12 @@
-// The AI help while posting, through cocoon's /api/ai/* endpoints: the
+// The AI help while posting, through Virga's server (/api/ai/*): the
 // adviser's read of a draft, the style reading it proofreads against, and
 // image descriptions.
 //
 // Each call takes the Requester of the posting account (`backendFor(asDid)`):
-// cocoon takes the account from the token, counts the request against that
+// the server takes the account from the token, counts the request against that
 // account's monthly allowance and rate limit, and passes the text on to the
 // AI gateway. Nothing is sent for an account signed in only in the browser.
-// The body never names the account or claims a membership; cocoon works both
-// out itself, and tags Virga's requests by the client the token belongs to.
+// The body never names the account; the server works it out from the token.
 //
 // Every function rejects with an Error whose message can be shown as it is,
 // keeping `status`, `code` (`monthly_limit`, `rate_limited`,
@@ -20,10 +19,10 @@ import {
   recordAdviserUsage,
 } from './usage.js';
 
-/** cocoon's gateway gives up at 25 s; this leaves room for the trip there. */
+/** The server's gateway gives up at 25 s; this leaves room for the trip there. */
 export const AI_REQUEST_TIMEOUT_MS = 30_000;
 
-/** Image types cocoon's describer takes. */
+/** Image types the server's describer takes. */
 export const ALT_TEXT_MIME_TYPES = Object.freeze([
   'image/jpeg',
   'image/png',
@@ -31,8 +30,12 @@ export const ALT_TEXT_MIME_TYPES = Object.freeze([
   'image/gif',
 ]);
 
-/** cocoon's ceiling on one image's base64. */
-export const MAX_ALT_TEXT_BASE64 = 8 * 1024 * 1024;
+/**
+ * The most base64 one description request carries. The server would take
+ * more, but Vercel refuses a request body over 4.5 MB before the server sees
+ * it, so this keeps Virga's own sentence in front of a bare 413.
+ */
+export const MAX_ALT_TEXT_BASE64 = 4_000_000;
 
 function aiError(message, extra = {}) {
   return Object.assign(new Error(message), {
@@ -83,7 +86,7 @@ export function aiErrorMessage(err) {
 /**
  * POST `body` to `path` as the requester's account. A `signal` already
  * aborted sends nothing: a read the composer has moved past must not send the
- * draft. Once sent, the request runs to its end (cocoon counts it whatever
+ * draft. Once sent, the request runs to its end (the server counts it whatever
  * happens here), and the caller drops an answer it no longer wants.
  */
 async function postAi(req, path, body, { signal, feature, store } = {}) {
@@ -119,7 +122,7 @@ async function postAi(req, path, body, { signal, feature, store } = {}) {
   }
   if (feature && req.did) {
     const opts = { feature, ...(store ? { store } : {}) };
-    // No `usage` on a 2xx means cocoon didn't count it: the allowance is
+    // No `usage` on a 2xx means the server didn't count it: the allowance is
     // unlimited now, so a used-up count kept from before must not stand.
     if (!recordAdviserUsage(req.did, data?.usage, opts))
       clearAdviserUsage(req.did, opts);

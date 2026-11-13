@@ -1,7 +1,7 @@
 // What this browser has seen of an account's free AI allowance this month.
 //
-// cocoon counts and enforces it (per account, per calendar month in UTC, and
-// shared with Anisota). It answers each counted request with
+// Virga's server counts and enforces it (per account, per calendar month in
+// UTC). It answers each counted request with
 // `usage: { used, limit }`, and a request over the allowance with
 // `{ error: 'monthly_limit', limit }`. Accounts whose allowance is unlimited
 // get no `usage` at all, so an answer without it clears what was kept: an
@@ -10,7 +10,7 @@
 //
 // This copy is a hint, never a gate on its own: it lets the composer skip the
 // automatic check once the month's reads are used up, and lets a page say how
-// many are left. A request the writer asks for is always sent (cocoon refuses
+// many are left. A request the writer asks for is always sent (the server refuses
 // it before spending anything), so a stale hint costs one refused request.
 //
 // Stored at localStorage `virga:adviser-usage:<did>` as `{ month, used, limit }`
@@ -22,8 +22,8 @@ export const ADVISER_USAGE_KEY_PREFIX = 'virga:adviser-usage:';
 export const USAGE_FEATURES = Object.freeze(['adviser', 'altText', 'style']);
 
 /**
- * What cocoon allows each free account a month. Shown only until cocoon has
- * said; its own `limit` replaces it.
+ * What Virga's server allows each account a month by default. Shown only
+ * until the server has said; its own `limit` replaces it.
  */
 export const FREE_MONTHLY_LIMITS = Object.freeze({
   adviser: 30,
@@ -43,7 +43,7 @@ function localStore() {
   }
 }
 
-/** The month cocoon counts in: `YYYY-MM`, UTC. */
+/** The month the server counts in: `YYYY-MM`, UTC. */
 export function currentMonthKey(now = new Date()) {
   const d = new Date(now);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -102,7 +102,7 @@ export function readAdviserUsage(
 }
 
 /**
- * Keep the count cocoon answered with (`{ used, limit }`). Ignores anything
+ * Keep the count the server answered with (`{ used, limit }`). Ignores anything
  * else, so an answer without usage changes nothing.
  *
  * @returns {{ month: string, used: number, limit: number } | null} what is stored now
@@ -129,7 +129,7 @@ export function recordAdviserUsage(
 }
 
 /**
- * Forget `feature`'s count for the account: cocoon answered a request for it
+ * Forget `feature`'s count for the account: the server answered a request for it
  * without `usage`, which it does only for an unlimited allowance.
  */
 export function clearAdviserUsage(
@@ -160,7 +160,7 @@ export function clearAdviserUsage(
 }
 
 /**
- * cocoon refused a request as over the month's allowance: remember it as
+ * The server refused a request as over the month's allowance: remember it as
  * used up. `limit` is what it said, else the last one seen, else the free one.
  */
 export function markAdviserLimitReached(
@@ -202,7 +202,7 @@ const RESET_FORMAT = { month: 'long', day: 'numeric', timeZone: 'UTC' };
 
 /**
  * The allowance in a sentence, or '' when nothing is known:
- * "12 of 30 free checks left this month. Shared with Anisota." or
+ * "12 of 30 free checks left this month." or
  * "No free checks left this month. They start again on December 1."
  */
 export function adviserUsageLine(
@@ -217,5 +217,5 @@ export function adviserUsageLine(
     const resets = usageResetsAt(now).toLocaleDateString('en-US', RESET_FORMAT);
     return `No free ${many} left this month. They start again on ${resets}.`;
   }
-  return `${left} of ${usage.limit} free ${usage.limit === 1 ? one : many} left this month. Shared with Anisota.`;
+  return `${left} of ${usage.limit} free ${usage.limit === 1 ? one : many} left this month.`;
 }

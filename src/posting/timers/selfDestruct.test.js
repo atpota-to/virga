@@ -64,7 +64,7 @@ import {
   unreadableRuleParts,
 } from './selfDestruct.js';
 
-// Cocoon evaluates the rule composed here, and the sentence the writer agreed
+// The server evaluates the rule composed here, and the sentence the writer agreed
 // to is written here too; a rule that reads one way and behaves another costs
 // someone a post they meant to keep.
 
@@ -72,7 +72,7 @@ const HOUR = 3600;
 const DAY_SECONDS = 24 * HOUR;
 
 describe('normalizeLifespan', () => {
-  it('clamps to the range cocoon will accept', () => {
+  it('clamps to the range the server will accept', () => {
     expect(normalizeLifespan(1)).toBe(MIN_LIFESPAN_SECONDS);
     expect(normalizeLifespan(MAX_LIFESPAN_SECONDS * 4)).toBe(
       MAX_LIFESPAN_SECONDS,
@@ -292,7 +292,7 @@ describe('toWireSpec', () => {
         onSpare: 'keep',
         maxExtensions: 0,
       },
-      // Always name an action; cocoon reads an absent list as delete, but
+      // Always name an action; the server reads an absent list as delete, but
       // saying so is clearer than relying on it.
       effects: [{ action: 'delete' }],
     });
@@ -475,7 +475,7 @@ describe('compareTimers', () => {
   });
 });
 
-// A pinned deadline: an instant rather than a length. It must reach cocoon
+// A pinned deadline: an instant rather than a length. It must reach the server
 // without ever producing a post that is due the moment it exists.
 
 describe('the preset list', () => {
@@ -649,7 +649,7 @@ describe('a picked time that goes stale before the post goes out', () => {
   it('goes out as the five-minute floor, never the 24-hour default behind it', () => {
     const spec = toWireSpec(timer, published);
     expect(spec.lifespanSeconds).toBe(MIN_LIFESPAN_SECONDS);
-    // Never a deadline in the past — cocoon refuses those.
+    // Never a deadline in the past — the server refuses those.
     expect(spec).not.toHaveProperty('deleteAt');
   });
 
@@ -782,7 +782,7 @@ describe('toWireSpec with a deadline', () => {
       now,
     );
     expect(spec.deleteAt).toBe(new Date(now + 3 * HOUR * 1000).toISOString());
-    // Measured here, while the author is looking; cocoon stores it as given
+    // Measured here, while the author is looking; the server stores it as given
     // rather than re-deriving it after publishing took its time.
     expect(spec.lifespanSeconds).toBe(3 * HOUR);
   });
@@ -864,7 +864,7 @@ describe('describeWhen and the sentences, with a deadline', () => {
 
 describe('normalizeEffects', () => {
   it('reads an absent list as delete', () => {
-    // cocoon's fallback, and what older timers meant.
+    // The server's fallback, and what older timers meant.
     expect(normalizeEffects(undefined)).toEqual([{ action: 'delete' }]);
     expect(normalizeEffects([])).toEqual([{ action: 'delete' }]);
     expect(normalizeEffects([{ action: 'somethingElse' }])).toEqual([
@@ -982,7 +982,7 @@ describe('actor filters', () => {
   });
 
   it('keeps a filter on quotes and drops it anywhere else', () => {
-    // cocoon reads the quoting posts with their authors. A like count is a
+    // The server reads the quoting posts with their authors. A like count is a
     // number with nobody attached, so "likes from strangers" would be a promise
     // the app could not keep.
     const quotes = normalizeConditions({
@@ -1073,7 +1073,7 @@ describe('toWireSpec with effects', () => {
 /*
  * Only an app.bsky.feed.post carries a threadgate and postgate, so a rule that
  * only limits replies or turns off quotes can do nothing to a record without
- * them. Stripping those effects keeps the chip, the summary and what cocoon is
+ * them. Stripping those effects keeps the chip, the summary and what the server is
  * sent in agreement.
  */
 describe('withoutGateEffects', () => {
@@ -1144,7 +1144,7 @@ describe('withoutGateEffects', () => {
  * normalizers are lenient so display paths keep rendering legacy records, but
  * an unrecognised clause is dropped ("delete in an hour unless five likes"
  * becomes "delete in an hour") and an unrecognised effect falls through to
- * delete. cocoon's validateArm guard can't catch it, since the client flattens
+ * delete. The server's validateArm guard can't catch it, since the client flattens
  * the rule first. A cached older PWA build meeting newer posting defaults (from
  * the author's PDS) is ordinary.
  */
@@ -1221,7 +1221,7 @@ describe('unreadableRuleParts', () => {
   });
 
   it('says nothing about a threshold of zero', () => {
-    // 0 encodes "not part of the test". cocoon would reject it but never sees
+    // 0 encodes "not part of the test". The server would reject it but never sees
     // one: toWireSpec drops those clauses.
     expect(
       unreadableRuleParts({
@@ -1345,7 +1345,7 @@ describe('fitting a timer to the post it is on', () => {
     },
   };
 
-  it('takes "unless" conditions off a record without counts, leaving the plain timer cocoon would run', () => {
+  it('takes "unless" conditions off a record without counts, leaving the plain timer the server would run', () => {
     const t = withoutConditions(unless);
     expect(t.enabled).toBe(true);
     expect(t.conditions.clauses).toEqual([]);
@@ -1590,7 +1590,7 @@ describe('a picked time that has long passed', () => {
     );
   });
 
-  it('reads one that passed within the minute as "as soon as allowed", like cocoon does', () => {
+  it('reads one that passed within the minute as "as soon as allowed", like the server does', () => {
     expect(pinnedDeadlineStatus(at(-30), now)).toBe('tooSoon');
     expect(immediateTimerProblem(at(-30), now)).toBe('');
     expect(immediateTimerToSend(at(-30), {}, now)).toEqual(
@@ -1647,7 +1647,7 @@ describe('what each publish path sends', () => {
     expect(bare.effects).toEqual([{ action: 'delete' }]);
   });
 
-  it('sends nothing where cocoon cannot hold a timer', () => {
+  it('sends nothing where the server cannot hold a timer', () => {
     expect(
       immediateTimerToSend(rule, { ...BLUESKY, available: false }).spec,
     ).toBeNull();
@@ -1962,7 +1962,7 @@ describe('the posting default as a rule', () => {
 });
 
 describe('what a post in the composer can carry', () => {
-  it('can carry nothing on an edit, or where cocoon cannot hold a timer', () => {
+  it('can carry nothing on an edit, or where the server cannot hold a timer', () => {
     expect(composerTimerFit({}).available).toBe(true);
     expect(composerTimerFit({ editingExisting: true }).available).toBe(false);
     expect(composerTimerFit({ unavailable: true }).available).toBe(false);
@@ -2040,7 +2040,7 @@ describe("an account's timer slots", () => {
     effects: [{ action: 'disableQuotes' }],
   };
 
-  it('sorts a timer the way cocoon does: reading counts, or doing anything but delete, is conditional', () => {
+  it('sorts a timer the way the server does: reading counts, or doing anything but delete, is conditional', () => {
     expect(timerBucket(PLAIN)).toBe('plain');
     expect(timerBucket({ ...PLAIN, effects: [{ action: 'delete' }] })).toBe(
       'plain',
@@ -2096,7 +2096,7 @@ describe("an account's timer slots", () => {
         usage: { plain: 1, conditional: 0 },
       }),
     ).toBe(
-      'This account can keep one plain timer at a time, counting scheduled posts, and it’s in use. Limits are shared with Anisota.',
+      'This account can keep one plain timer at a time, counting scheduled posts, and it’s in use.',
     );
     expect(
       timerSlotProblem({
@@ -2105,7 +2105,7 @@ describe("an account's timer slots", () => {
         usage: { plain: 9, conditional: 9 },
       }),
     ).toBe('');
-    // An unread count lets cocoon decide.
+    // An unread count lets the server decide.
     expect(timerSlotProblem({ bucket: 'plain', limit: 1, usage: null })).toBe(
       '',
     );
@@ -2122,7 +2122,7 @@ describe("an account's timer slots", () => {
     expect(sentence).not.toMatch(/member|upgrade|free account/i);
   });
 
-  it('reads a cocoon refusal naming a timer slot, and nothing else', () => {
+  it('reads a refusal from the server naming a timer slot, and nothing else', () => {
     expect(
       timerSlotRefusal({
         code: 'QUOTA_EXCEEDED',
@@ -2157,7 +2157,7 @@ describe('room for a timer under the account limits', () => {
     usage,
   });
 
-  it('maps each bucket to the feature cocoon counts', () => {
+  it('maps each bucket to the feature the server counts', () => {
     expect(TIMER_BUCKET_FEATURE).toEqual({
       plain: 'postTimers',
       conditional: 'conditionalTimers',
@@ -2217,7 +2217,7 @@ describe('room for a timer under the account limits', () => {
     ).toMatch(/conditional/);
   });
 
-  it('leaves it to cocoon when the limits are unknown, unlimited or unread', () => {
+  it('leaves it to the server when the limits are unknown, unlimited or unread', () => {
     expect(timerRoomProblem(PLAIN_RULE, null)).toBe('');
     expect(timerRoomProblem(PLAIN_RULE, limits({ postTimers: 5 }, null))).toBe(
       '',

@@ -27,7 +27,7 @@ function memoryStore() {
 }
 
 describe('months', () => {
-  it('counts in UTC months, as cocoon does', () => {
+  it('counts in UTC months, as the server does', () => {
     expect(currentMonthKey(NOW)).toBe('2026-11');
     // Late on the last evening in New York is already December in UTC.
     expect(currentMonthKey(new Date('2026-12-01T03:00:00Z'))).toBe('2026-12');
@@ -138,7 +138,7 @@ describe('recording and reading', () => {
 });
 
 describe('the limit', () => {
-  it('is reached when cocoon says so', () => {
+  it('is reached when the server says so', () => {
     const store = memoryStore();
     markAdviserLimitReached(DID, 30, { now: NOW, store });
     expect(isAdviserAtLimit(DID, { now: NOW, store })).toBe(true);
@@ -174,16 +174,16 @@ describe('the limit', () => {
 });
 
 describe('adviserUsageLine', () => {
-  it('says what is left and that it is shared', () => {
+  it('says what is left', () => {
     expect(adviserUsageLine({ used: 12, limit: 30 }, { now: NOW })).toBe(
-      '18 of 30 free checks left this month. Shared with Anisota.',
+      '18 of 30 free checks left this month.',
     );
     expect(
       adviserUsageLine(
         { used: 1, limit: 15 },
         { feature: 'altText', now: NOW },
       ),
-    ).toBe('14 of 15 free descriptions left this month. Shared with Anisota.');
+    ).toBe('14 of 15 free descriptions left this month.');
   });
 
   it('says when they start again once used up', () => {

@@ -197,7 +197,7 @@ export function takeOpenAtSignIn(tabStorage) {
   return isDid(did) ? did : null;
 }
 
-// A long session's token is `vg_` and 64 hex digits (cocoon's Virga client).
+// A long session's token is `vg_` and 64 hex digits, as Virga's server mints it.
 const TOKEN = /^vg_[0-9a-f]{64}$/;
 
 export function isBackendToken(token) {

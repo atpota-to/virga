@@ -30,7 +30,7 @@ const LAB = 'did:plc:virgaharnesslab7k2pq';
 const THIRD = 'did:plc:virgaharnessthird2kq';
 const TOKEN = `vg_${'ab'.repeat(32)}`;
 const TOKEN2 = `vg_${'cd'.repeat(32)}`;
-const COCOON = 'https://cocoon.example';
+const SERVER = 'https://server.example';
 
 function memoryStorage(initial = {}) {
   const map = new Map(Object.entries(initial));
@@ -102,7 +102,7 @@ function setup({ storage = memoryStorage(), tabStorage = memoryStorage(), browse
     storage,
     tabStorage,
     browser,
-    backendUrl: COCOON,
+    backendUrl: SERVER,
     fetch,
     loadAgent: async () => Agent,
     backendReturn,
@@ -343,7 +343,7 @@ describe('signing out', () => {
     const { ctrl, state, fetch } = setup({ storage });
     await ctrl.startOnce();
     await ctrl.signOutAccount(MIRA);
-    const logout = fetch.mock.calls.find(([url]) => String(url).endsWith('/oauth/logout'));
+    const logout = fetch.mock.calls.find(([url]) => String(url).endsWith('/api/oauth/logout'));
     expect(logout[1].headers.Authorization).toBe(`Bearer ${TOKEN}`);
     expect(storage.getItem(backendTokenKey(MIRA))).toBeNull();
     expect(readAccounts(storage).find((a) => a.did === MIRA).signedOut).toBe(true);
@@ -416,9 +416,9 @@ describe('noticing that a sign-in has ended', () => {
   }
 
   it('marks a long session dead only after three definitive answers', async () => {
-    const { ctrl, log, storage, fetch, env } = await openBackend((url) => (url.includes('/oauth/session') ? invalid() : json({ success: true })));
+    const { ctrl, log, storage, fetch, env } = await openBackend((url) => (url.includes('/api/oauth/session') ? invalid() : json({ success: true })));
     expect(await ctrl.checkAccount(MIRA)).toBe('expired');
-    const probes = fetch.mock.calls.filter(([url]) => String(url).endsWith('/oauth/session?lite=1'));
+    const probes = fetch.mock.calls.filter(([url]) => String(url).endsWith('/api/oauth/session?lite=1'));
     expect(probes).toHaveLength(3);
     expect(env.sleep).toHaveBeenCalledWith(2_500);
     expect(ctrl.statusOf(MIRA)).toBe('needsSignIn');
@@ -432,7 +432,7 @@ describe('noticing that a sign-in has ended', () => {
       () => json({ success: false, code: 'VALIDATION_TRANSIENT_ERROR' }, 503),
       () => json({ success: false, code: 'OAUTH_SESSION_MISSING' }, 401),
     ]) {
-      const { ctrl, log, storage } = await openBackend((url) => (url.includes('/oauth/session') ? answer() : json({ success: true })));
+      const { ctrl, log, storage } = await openBackend((url) => (url.includes('/api/oauth/session') ? answer() : json({ success: true })));
       await ctrl.checkAccount(MIRA);
       expect(ctrl.statusOf(MIRA)).not.toBe('needsSignIn');
       expect(storage.getItem(backendTokenKey(MIRA))).toBe(TOKEN);
@@ -442,8 +442,8 @@ describe('noticing that a sign-in has ended', () => {
 
   it('runs the same rules when a request is refused with a 401', async () => {
     const { ctrl, log, state } = await openBackend((url) => {
-      if (url.includes('/oauth/session?lite=1')) return invalid();
-      if (url.includes('/oauth/proxy')) return json({ success: false, code: 'FRONTEND_SESSION_INVALID', error: 'gone' }, 401);
+      if (url.includes('/api/oauth/session?lite=1')) return invalid();
+      if (url.includes('/api/oauth/proxy')) return json({ success: false, code: 'FRONTEND_SESSION_INVALID', error: 'gone' }, 401);
       return json({ success: true });
     });
     await state.active.agent.app.bsky.actor.getPreferences().catch(() => {});
@@ -467,7 +467,7 @@ describe('noticing that a sign-in has ended', () => {
 
   it('learns a long session’s grant and its repo from the server', async () => {
     const { ctrl, storage, env } = await openBackend((url) =>
-      url.endsWith('/oauth/session') ? json({ success: true, authenticated: true, scope: 'atproto', pds: 'https://pds.example' }) : json({ success: true }),
+      url.endsWith('/api/oauth/session') ? json({ success: true, authenticated: true, scope: 'atproto', pds: 'https://pds.example' }) : json({ success: true }),
     );
     await vi.waitFor(() => expect(readAccounts(storage)[0].scope).toBe('atproto'));
     expect(env.rememberPdsUrl).toHaveBeenCalledWith(MIRA, 'https://pds.example');
@@ -481,7 +481,7 @@ describe('signing in', () => {
     ctrl.signIn('@mira.example.com', { mode: 'backend', intent: 'add' });
     await vi.waitFor(() => expect(env.assign).toHaveBeenCalledWith('https://bsky.social/oauth/authorize?x=1'));
     const url = new URL(fetch.mock.calls[0][0]);
-    expect(url.pathname).toBe('/virga/oauth/login');
+    expect(url.pathname).toBe('/api/oauth/login');
     expect(url.searchParams.get('handle')).toBe('mira.example.com');
     expect(url.searchParams.get('redirect_uri')).toMatch(/^https:\/\/virga\.example\/oauth\/return\?n=[0-9a-f]+$/);
   });
@@ -515,7 +515,7 @@ describe('capabilitiesFrom', () => {
 
 /** The tokens Virga's server was asked to sign out, in order. */
 function loggedOut(fetch) {
-  return fetch.mock.calls.filter(([url]) => String(url).endsWith('/oauth/logout')).map(([, init]) => init.headers.Authorization);
+  return fetch.mock.calls.filter(([url]) => String(url).endsWith('/api/oauth/logout')).map(([, init]) => init.headers.Authorization);
 }
 
 describe('following another tab', () => {
@@ -527,8 +527,8 @@ describe('following another tab', () => {
       storage,
       answer: (url, init) => {
         const auth = new Headers(init?.headers).get('authorization');
-        if (url.includes('/oauth/proxy')) seen.push(auth);
-        if (url.includes('/oauth/session')) return json({ success: true, authenticated: true, scope: OAUTH_SCOPE });
+        if (url.includes('/api/oauth/proxy')) seen.push(auth);
+        if (url.includes('/api/oauth/session')) return json({ success: true, authenticated: true, scope: OAUTH_SCOPE });
         if (auth === `Bearer ${TOKEN}`) return json({ success: false, code: 'FRONTEND_SESSION_INVALID', error: 'gone' }, 401);
         return json({ success: true, data: { did: MIRA, handle: 'mira.example.com', didDoc: {}, collections: [], handleIsCorrect: true } });
       },
@@ -775,7 +775,7 @@ describe('checking an account', () => {
     const { ctrl } = setup({
       storage,
       answer: (url) =>
-        url.includes('/oauth/session?lite=1') ? json({ success: true, authenticated: true, oauthSessionMissing: true }) : json({ success: true }),
+        url.includes('/api/oauth/session?lite=1') ? json({ success: true, authenticated: true, oauthSessionMissing: true }) : json({ success: true }),
     });
     await ctrl.startOnce();
     expect(await ctrl.checkAccount(MIRA)).toBe('unknown');

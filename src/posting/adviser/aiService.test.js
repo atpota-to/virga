@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  MAX_ALT_TEXT_BASE64,
   aiErrorMessage,
   analyzePost,
   generateAltText,
@@ -44,7 +45,7 @@ function requester(answer) {
 
 const req0 = () => requester({ overallStatus: 'ok', checks: [] });
 
-function cocoonError(status, body) {
+function serverError(status, body) {
   const code =
     body?.code ??
     (typeof body?.error === 'string' && /^[a-z_]+$/.test(body.error)
@@ -59,7 +60,7 @@ function cocoonError(status, body) {
 }
 
 describe('analyzePost', () => {
-  it('posts the read to cocoon as the posting account, naming no account or membership', async () => {
+  it('posts the read to the server as the posting account, naming no account or membership', async () => {
     const req = requester({ overallStatus: 'ok', checks: [] });
     const store = memoryStore();
     const result = await analyzePost(
@@ -96,7 +97,7 @@ describe('analyzePost', () => {
     expect(req.calls[0].body).toEqual({ text: 'hi' });
   });
 
-  it('keeps the month’s count cocoon answers with', async () => {
+  it('keeps the month’s count the server answers with', async () => {
     const store = memoryStore();
     const req = requester({
       overallStatus: 'ok',
@@ -109,10 +110,10 @@ describe('analyzePost', () => {
     });
   });
 
-  it('remembers the month is used up when cocoon refuses with monthly_limit', async () => {
+  it('remembers the month is used up when the server refuses with monthly_limit', async () => {
     const store = memoryStore();
     const req = requester(
-      cocoonError(429, { error: 'monthly_limit', limit: 30, used: 30 }),
+      serverError(429, { error: 'monthly_limit', limit: 30, used: 30 }),
     );
     const err = await analyzePost(req, { text: 'hi' }, { store }).catch(
       (e) => e,
@@ -124,7 +125,7 @@ describe('analyzePost', () => {
     expect(isAdviserAtLimit(DID, { store })).toBe(true);
   });
 
-  it('forgets a used-up count once cocoon answers without usage (now unlimited)', async () => {
+  it('forgets a used-up count once the server answers without usage (now unlimited)', async () => {
     const store = memoryStore();
     markAdviserLimitReached(DID, 30, { store });
     recordAdviserUsage(DID, { used: 2, limit: 3 }, { feature: 'style', store });
@@ -142,7 +143,7 @@ describe('analyzePost', () => {
   it('keeps the count when the request fails for another reason', async () => {
     const store = memoryStore();
     markAdviserLimitReached(DID, 30, { store });
-    const req = requester(cocoonError(503, { error: 'AI unavailable' }));
+    const req = requester(serverError(503, { error: 'AI unavailable' }));
     await analyzePost(req, { text: 'hi' }, { store }).catch(() => {});
     expect(isAdviserAtLimit(DID, { store })).toBe(true);
   });
@@ -205,9 +206,9 @@ describe('synthesizeStyle', () => {
     expect(readAdviserUsage(DID, { feature: 'style', store }).used).toBe(1);
   });
 
-  it('passes cocoon’s not_enough_posts through with its code', async () => {
+  it('passes the server’s not_enough_posts through with its code', async () => {
     const req = requester(
-      cocoonError(400, { error: 'not_enough_posts', minimum: 5 }),
+      serverError(400, { error: 'not_enough_posts', minimum: 5 }),
     );
     const err = await synthesizeStyle(req, { posts: [] }).catch((e) => e);
     expect(err.code).toBe('not_enough_posts');
@@ -252,7 +253,7 @@ describe('generateAltText', () => {
     expect(req.calls[0].body).not.toHaveProperty('kind');
   });
 
-  it('reports the month’s count when cocoon sends one, and keeps it', async () => {
+  it('reports the month’s count when the server sends one, and keeps it', async () => {
     const store = memoryStore();
     const req = requester({
       altText: ' A settings screen. ',
@@ -273,7 +274,7 @@ describe('generateAltText', () => {
     expect(onUsage).not.toHaveBeenCalled();
   });
 
-  it('refuses an image cocoon can’t take, before sending it', async () => {
+  it('refuses an image the server can’t take, before sending it', async () => {
     const req = requester({ altText: 'x' });
     await expect(
       generateAltText(req, { imageBase64: 'AAAA', mimeType: 'image/heic' }),
@@ -284,6 +285,16 @@ describe('generateAltText', () => {
       code: 'NO_IMAGE',
     });
     expect(req.request).not.toHaveBeenCalled();
+  });
+
+  it('refuses an image too big for one request, before sending it', async () => {
+    const req = requester({ altText: 'x' });
+    await expect(
+      generateAltText(req, { imageBase64: 'A'.repeat(MAX_ALT_TEXT_BASE64 + 4), mimeType: 'image/png' }),
+    ).rejects.toMatchObject({ code: 'IMAGE_TOO_LARGE' });
+    expect(req.request).not.toHaveBeenCalled();
+    // Under Vercel's 4.5 MB request limit, with room for the rest of the body.
+    expect(MAX_ALT_TEXT_BASE64).toBeLessThanOrEqual(4_000_000);
   });
 });
 
@@ -314,7 +325,7 @@ describe('generateAltTextForFile', () => {
 });
 
 describe('aiErrorMessage', () => {
-  it('turns cocoon’s answers into sentences', () => {
+  it('turns the server’s answers into sentences', () => {
     expect(aiErrorMessage({ code: 'rate_limited', status: 429 })).toMatch(
       /limit on AI requests/,
     );

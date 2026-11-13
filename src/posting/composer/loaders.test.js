@@ -211,10 +211,12 @@ describe('loadScheduledTarget', () => {
     });
   });
 
-  it('refuses Anisota’s rows, part-published rows and rows going out', async () => {
-    await expect(
-      loadScheduledTarget(deps({ ...base, clientKey: 'anisota' })),
-    ).rejects.toMatchObject({ code: 'NOT_YOURS' });
+  it('opens a row that doesn’t say whose it is', async () => {
+    const unkeyed = { ...base, clientKey: undefined };
+    await expect(loadScheduledTarget(deps(unkeyed))).resolves.toMatchObject({ state: expect.any(Object) });
+  });
+
+  it('refuses part-published rows and rows going out', async () => {
     await expect(
       loadScheduledTarget(deps({ ...base, partial: true })),
     ).rejects.toMatchObject({ code: 'PARTIAL' });

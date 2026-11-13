@@ -1,5 +1,5 @@
 // Learning the writer's style for the adviser's proofread: their recent posts
-// (replies included) are read from the public AppView and sent to cocoon,
+// (replies included) are read from the public AppView and sent to the server,
 // which answers with a short description of their deliberate habits
 // (all-lowercase, "gonna", no full stops) so the proofread leaves them alone.
 // The description is kept in the account's adviser setup
@@ -10,7 +10,7 @@ import { publicXrpc } from '../library/sources.js';
 import { synthesizeStyle } from './aiService.js';
 import { ADVISER_TEXT_LIMITS, normalizeStyleSampleSize } from './setup.js';
 
-/** cocoon won't read a style from fewer posts than this. */
+/** The server won't read a style from fewer posts than this. */
 export const MIN_STYLE_POSTS = 5;
 
 /** Nor from more than this. */
@@ -60,8 +60,8 @@ export function extractStyleTexts(feed, did) {
  * Up to `sampleSize` of the account's recent post texts, newest first.
  * `onPage({ posts })` hears the running total after each page. Rejects with
  * `code: 'STYLE_FETCH_FAILED'` when the AppView can't be read, and
- * `code: 'not_enough_posts'` (cocoon's own) when there are fewer than
- * MIN_STYLE_POSTS, before anything is sent to cocoon.
+ * `code: 'not_enough_posts'` (the server's own) when there are fewer than
+ * MIN_STYLE_POSTS, before anything is sent to the server.
  *
  * @param {string} did
  * @param {{ sampleSize?: number, onPage?: Function, fetch?: typeof fetch, signal?: AbortSignal }} [options]

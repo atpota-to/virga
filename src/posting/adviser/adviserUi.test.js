@@ -257,7 +257,7 @@ describe('altTextModel', () => {
   it('says how many descriptions are left', () => {
     const now = new Date('2026-11-12T00:00:00Z');
     expect(altTextUsageLine({ used: 5, limit: 15 }, { now })).toBe(
-      '10 of 15 free descriptions left this month. Shared with Anisota. Each revision uses one.',
+      '10 of 15 free descriptions left this month. Each revision uses one.',
     );
     expect(altTextUsageLine({ used: 15, limit: 15 }, { now })).toBe(
       'No free descriptions left this month. They start again on December 1.',
