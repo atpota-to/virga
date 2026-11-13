@@ -9,8 +9,8 @@ The numbers are worked out in the browser. The app reads from the signed-in acco
 Bluesky's public API and Constellation, and keeps what it gathers in that browser's
 IndexedDB; the archive is never sent anywhere. What has to happen while the browser is
 closed (long sessions, scheduled posts, post timers) and the optional post adviser go
-through Virga's server, which is Anisota's backend, cocoon, hosting Virga as a second
-OAuth client.
+through Virga's server: Vercel functions in this repo (`api/`, `server/`) with their own
+Supabase database (`supabase/migrations/`).
 
 ## Status
 
@@ -26,12 +26,14 @@ What has been checked, as of 2026-11-12:
   phone and desktop widths, in the light and dark themes.
 - That a real browser sign-in starts: from a local dev server, bsky.social accepted the
   request with the original permissions and showed its sign-in page.
-- Cocoon's side (the Virga client, scheduling, timers, limits and the AI endpoints) by its
-  own tests, including the SQL against a real Postgres.
+- Virga's server (sign-in, the XRPC proxy, scheduling, timers, limits and the AI
+  endpoints) by its own tests, with the SQL run on PGlite (Postgres in WebAssembly), and the
+  real client modules talking to the real server handlers in-process.
 
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
-real long session through a deployed cocoon, and the adviser against the real AI gateway.
-That needs the cocoon change deployed and someone to sign in.
+real long session against a deployed server and Supabase project, the crons firing on
+Vercel, and the adviser against the real AI gateway. That needs a deployment (below) and
+someone to sign in.
 
 The copy on every screen is a draft.
 
@@ -53,7 +55,16 @@ Two build settings (in `.env.local` or the host's environment):
 | Variable | Default | What |
 | --- | --- | --- |
 | `VITE_AUTH_MODE` | `browser` | How a new sign-in is held: `browser` (OAuth in this browser, as before) or `backend` (a long session held by Virga's server) |
-| `VITE_COCOON_URL` | `https://cocoon.anisota.net` | Virga's server, for long sessions, scheduling, timers and the adviser |
+| `VITE_BACKEND_URL` | `''` (this site) | Where Virga's server is. Leave it empty in a deployment; set it only to point a local dev server at a deployed one |
+
+The server's own settings are in `.env.example` and under Deploying below.
+
+`npm run dev` is plain Vite and runs none of the server's functions. To work on the
+server locally, either run `vercel dev` (the Vercel CLI runs Vite and the functions on
+one origin), or point `VITE_BACKEND_URL` at a deployment that lists
+`http://127.0.0.1:5173` in its `OAUTH_EXTRA_RETURN_ORIGINS`. A real long-session sign-in
+needs the server on a public https origin, because the account's server fetches its
+client metadata; the harness needs no server at all.
 
 Open the dev server at `127.0.0.1`, not `localhost`. A local sign-in comes back to
 `127.0.0.1` (the OAuth spec doesn't allow `localhost` there), and the session belongs to
@@ -105,7 +116,7 @@ manager. The list manager would need a permission Virga doesn't ask for.
 | --- | --- |
 | Overview | What goes out next, the latest drafts, recent posts, live timers, and New post |
 | Drafts | Bluesky's private drafts (so they're in any app that reads them), with Open, Post now, Schedule and Delete. Pictures and video in a draft stay on the device that saved them |
-| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; reorder the queue by dragging or with the keyboard. Another app's rows (Anisota shares the server) are shown read-only |
+| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; reorder the queue by dragging or with the keyboard |
 | Weekly schedule | The times each week that a queued post goes out, in a time zone, with suggestions from the archive's best times |
 | Timers | Posts set to delete themselves, limit replies or turn off quotes after a while or when something happens (a number of likes, replies, quotes, …), counting down and settled |
 | Posted | Your posts from the archive: reply, quote, change who can reply or quote, put on a timer, save as a template, delete. Published posts aren't edited in place |
@@ -151,14 +162,16 @@ Sign-in is atproto OAuth, held one of two ways (`VITE_AUTH_MODE`):
 - **In the browser** (`browser`, the default): `@atproto/oauth-client-browser`, as
   before. Sessions last as long as the account's server allows a public client, often a
   week or two.
-- **By Virga's server** (`backend`): cocoon signs in as a confidential client and holds
-  the session; the browser keeps a `vg_` token that it sends with each request, which
-  cocoon passes on to the PDS. Sessions last much longer. The client metadata lives
-  under Virga's own address (`/backend/*`, rewritten to cocoon's `/virga/*` by
-  `vercel.json`), so the sign-in page names Virga.
+- **By Virga's server** (`backend`): the server (`server/oauth/`) signs in as a
+  confidential client, keeps the session in Supabase (encrypted with
+  `SESSION_ENCRYPTION_KEY`), and hands the browser a `vg_` token that it sends with each
+  request; `/api/oauth/proxy` passes the account's calls on to its PDS. Sessions last much
+  longer. The client's metadata, keys and callback are at
+  `/api/oauth/client-metadata.json`, `/api/oauth/jwks.json` and `/api/oauth/callback` on
+  `OAUTH_PUBLIC_URL`, so the sign-in page names Virga.
 
 Each account keeps the way it signed in, so the two live side by side. To cut over,
-deploy the cocoon side (below) and set `VITE_AUTH_MODE=backend`: new sign-ins get long
+deploy the server (below) and set `VITE_AUTH_MODE=backend`: new sign-ins get long
 sessions, and existing browser sessions carry on until they end, with Reconnect for a
 longer session in the account menu and Settings › Account.
 
@@ -225,13 +238,14 @@ it.
 Requests go from the browser to: the account's PDS; `public.api.bsky.app`, `plc.directory`
 and `constellation.microcosm.blue`, as before; `cardyb.bsky.app` for link cards;
 `video.bsky.app` for video; and, for long sessions, scheduling, timers and the adviser,
-Virga's server (`VITE_COCOON_URL`). A scheduled post's text and pictures wait on Virga's
-server until it goes out. The adviser sends the post, your goals and notes, your style
+Virga's server (this site's `/api/*`). A scheduled post's text and pictures wait in
+Virga's Supabase project until it goes out (the pictures in a private Storage bucket,
+removed after publishing). The adviser sends the post, your goals and notes, your style
 reading and, if you ask it to read replies in their conversation, other people's public
 posts, to Virga's server, which passes them to an AI model through an AI gateway; alt
-text sends the image. The allowance (30 adviser reads, 3 style readings and 15
-descriptions a month, more for Anisota members) is counted per account and shared with
-Anisota.
+text sends the image. The allowance (by default 30 adviser reads, 3 style readings and
+15 descriptions a month; the server's `AI_*_MONTHLY_LIMIT` settings change it) is counted
+per account.
 
 ## The look
 
@@ -266,34 +280,79 @@ accounts are signed in, every network request is answered from fixtures, and a f
 Virga server schedules, publishes and runs timers in memory, so the whole app can be
 looked at and clicked through offline. Flags in the address show other states: one
 account (`?accounts=1`), browser sessions (`?mode=browser`), an ended session
-(`?expired=lab`), a session from before posting (`?scope=read`), membership limits,
-the adviser slow or down. See `harness/README.md`.
+(`?expired=lab`), a session from before posting (`?scope=read`), limits
+(`?limits=3,1,1`, `?ailimits=…`), the adviser slow or down. See `harness/README.md`.
 
 ## Deploying
 
-Built for Vercel, and static apart from one small function. An authorization server has
-to fetch the app's client metadata from the same origin the app is served from, so
-`api/client-metadata.js` answers `/oauth-client-metadata.json` for whichever host it was
-asked at (the production domain, or a preview). `vercel.json` routes it, rewrites
-`/backend/*` to cocoon's `/virga/*`, and sends every other path to `index.html`.
+Built for Vercel with a Supabase project. The front end is static; the server is six
+functions: `api/client-metadata.js` (the browser client's metadata, per host, as before)
+and one function per area, `api/{oauth,schedule,self-destruct,ai,limits}/[action].js`,
+each dispatching to the handlers in `server/`. `vercel.json` sets their time limits,
+rewrites the two OAuth `.json` addresses, sends every other path to `index.html`, and
+runs two crons every minute: `/api/schedule/run` (scheduled posts) and
+`/api/self-destruct/run` (post timers).
 
-On another host, serve that JSON yourself (it is the object `buildClientMetadata(origin)`
-returns in `src/lib/oauthClient.js`) and proxy `/backend/*` the same way.
+Without the server settings below, the app still works with browser sign-ins; the
+server's routes answer 503 and the posting pages that need it say so.
 
-Long sessions, scheduling, timers and the adviser need cocoon's Virga client deployed
-(`docs/VIRGA_CLIENT.md` in the cocoon repo), in this order:
+1. **Supabase.** Make a project and apply `supabase/migrations/` in order (`supabase link`
+   then `supabase db push`, or paste each file into the SQL editor). They create the
+   sign-in, scheduled-post, timer and AI-usage tables (row-level security on, nothing for
+   the `anon` or `authenticated` roles; only the server's service-role key reads them) and
+   a private Storage bucket, `scheduled-media`.
+2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
+   `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
+3. **Vercel settings** (Production only; see `.env.example` for every option and its
+   default):
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+   - `OAUTH_PUBLIC_URL`: the production origin, e.g. `https://virga.example`. The
+     client_id hangs off it, so it must not change once anyone has signed in, and one
+     Supabase project serves one public URL.
+   - `OAUTH_PRIVATE_KEY_1`, and `SESSION_ENCRYPTION_KEY` (`openssl rand -hex 32`), which
+     encrypts the stored sessions
+   - `CRON_SECRET` (a long random string): Vercel sends it to the crons, and the run
+     endpoints refuse anything without it in production
+   - `AI_GATEWAY_API_KEY`, for the adviser and alt text (optional; without it they answer
+     503)
+   - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
+4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
+   can fetch the client metadata and keys for the life of every sign-in. After deploying,
+   `curl https://<origin>/api/oauth/client-metadata.json` should show a `client_id` that
+   is exactly that URL.
 
-1. Apply cocoon's migration `039_virga_oauth_client.sql`.
-2. Set cocoon's `VIRGA_OAUTH_PRIVATE_KEY_1` (an ES256 JWK as JSON; `_2` and `_3` are
-   optional, for rotating keys; cocoon's `docs/VIRGA_CLIENT.md` says how to make one),
-   `VIRGA_FRONTEND_URL` (Virga's origin, plus `VIRGA_EXTRA_FRONTEND_URLS` for any other
-   exact origin) and
-   `VIRGA_OAUTH_PUBLIC_BASE=https://<virga origin>/backend`. The base is the client_id's
-   home, so it must not change once anyone has signed in. Optionally
-   `VIRGA_FEATURE_LIMITS=flat`.
-3. Keep `/backend/*` on Virga's deployment free of deployment protection, so the
-   authorization server can fetch the metadata.
-4. Set Virga's `VITE_AUTH_MODE=backend` (and `VITE_COCOON_URL` if cocoon lives elsewhere).
+Preview deployments get no OAuth key (keep the server settings to Production), so they
+answer 503 on the sign-in routes and stay on browser sign-ins.
+
+**Crons.** Scheduled posts and timers go out within about a minute of their time because
+the crons run every minute. If the Vercel plan runs crons less often, call the two run
+paths from somewhere else instead, for example Supabase's `pg_cron` and `pg_net`:
+
+```sql
+select cron.schedule('virga-schedule', '* * * * *', $$
+  select net.http_get(
+    url := 'https://<origin>/api/schedule/run',
+    headers := jsonb_build_object('Authorization', 'Bearer <CRON_SECRET>'),
+    timeout_milliseconds := 60000)
+$$);
+select cron.schedule('virga-timers', '* * * * *', $$
+  select net.http_get(
+    url := 'https://<origin>/api/self-destruct/run',
+    headers := jsonb_build_object('Authorization', 'Bearer <CRON_SECRET>'),
+    timeout_milliseconds := 60000)
+$$);
+```
+
+**Limits.** By default an account can hold 50 scheduled posts and 200 live timers at once
+(`SCHEDULE_MAX_PENDING`, `TIMER_MAX_ACTIVE_PER_USER`), with no finer caps; set
+`SCHEDULED_POSTS_LIMIT`, `POST_TIMERS_LIMIT` or `CONDITIONAL_TIMERS_LIMIT` to add them.
+The AI allowances are `AI_ADVISER_MONTHLY_LIMIT`, `AI_STYLE_MONTHLY_LIMIT` and
+`AI_ALT_TEXT_MONTHLY_LIMIT` (a number, or `unlimited`), with `AI_DAILY_LIMIT` as a
+per-account daily ceiling.
+
+On another host than Vercel, serve the browser client's metadata yourself (the object
+`buildClientMetadata(origin)` returns in `src/lib/oauthClient.js`), run the `api/`
+handlers as Node functions with the same paths, and call the two run paths every minute.
 
 ## How the code is laid out
 
@@ -305,6 +364,11 @@ Long sessions, scheduling, timers and the adviser need cocoon's Virga client dep
 | `src/posting/lib/` | Rich text and facets, the composer model, images, video, link cards, gates, `publish()` |
 | `src/posting/{drafts,templates,library,schedule,timers,adviser}/` | Each posting feature's logic, without UI |
 | `src/posting/composer/`, `pages/`, `ui/` | The composer, the posting pages and the shared posting components |
+| `api/` | The server's Vercel functions: one per area, each a thin router |
+| `server/oauth/` | The long-session sign-in: client metadata, keys, tokens, the XRPC proxy, uploads |
+| `server/schedule/`, `server/timers/`, `server/ai/`, `server/limits/` | Scheduled posts and their worker, post timers and their worker, the adviser and alt text, limits |
+| `server/` | Shared server pieces (Supabase, HTTP helpers, cron auth, safe fetching) and test helpers (`server/test/`) |
+| `supabase/migrations/` | The server's database |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
@@ -328,6 +392,7 @@ Long sessions, scheduling, timers and the adviser need cocoon's Virga client dep
   tests, the archive hook in `src/archive/` and the report models: dame.is, adjusted for
   many accounts.
 - `src/hillside/`: the Open Social site, converted from TypeScript.
+- `server/`: Anisota's backend (cocoon), cut down to one app.
 - `src/session/`, `src/accounts/` and `src/posting/`: Anisota (its backend sign-in, account
   switcher, composer, drafts, templates, library, scheduling, self-destructing posts and
   post adviser), rebuilt for Virga's look and many accounts; the pure modules and their
