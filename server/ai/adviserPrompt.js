@@ -31,6 +31,12 @@ const CHECK_STATUSES = new Set(['ok', 'caution', 'conflict']);
 const ADVISER_TOKENS = 1600;
 const ADVISER_PROOFREAD_TOKENS = 2400;
 
+// The writer's posting goals: the topics to ease off of and their own goals in
+// their own words. The same caps as the settings inputs (ADVISER_TEXT_LIMITS in
+// src/posting/adviser/setup.js), held here too because the body comes from the
+// client and the prompt is paid for on the deployment's key.
+const MAX_LIMIT_TOPIC = 200;
+const MAX_GOALS_CUSTOM = 500;
 // The writer's own guidance for the proofread (matches the settings textarea)
 // and their learned style profile (produced by buildStylePrompt, but accepted
 // from the client, so it gets its own inbound cap).
@@ -125,21 +131,26 @@ function buildContextBlock(context = {}) {
   return { kind, transcript: lines.join('\n') };
 }
 
-function buildGoalsList(goals = {}) {
+function buildGoalsList(goals) {
   const lines = [];
-  const presets = (goals && goals.presets) || {};
+  const src = goals && typeof goals === 'object' ? goals : {};
+  const presets =
+    src.presets && typeof src.presets === 'object' ? src.presets : {};
 
   for (const [key, description] of Object.entries(PRESET_DESCRIPTIONS)) {
     if (presets[key]) lines.push({ id: key, label: description });
   }
 
+  const limitTopic = presets.limitTopic;
   if (
-    presets.limitTopic &&
-    presets.limitTopic.enabled &&
-    presets.limitTopic.topic
+    limitTopic &&
+    limitTopic.enabled &&
+    typeof limitTopic.topic === 'string'
   ) {
     // The topic field may hold a comma-separated list of topics to ease off of.
-    const topics = String(presets.limitTopic.topic)
+    // Clipped before splitting, so the cap bounds the whole list.
+    const topics = limitTopic.topic
+      .slice(0, MAX_LIMIT_TOPIC)
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
@@ -157,10 +168,14 @@ function buildGoalsList(goals = {}) {
     }
   }
 
-  if (goals && goals.customText && goals.customText.trim()) {
+  const customText =
+    typeof src.customText === 'string'
+      ? src.customText.trim().slice(0, MAX_GOALS_CUSTOM)
+      : '';
+  if (customText) {
     lines.push({
       id: 'custom',
-      label: `Custom goals (in the user's own words): ${goals.customText.trim()}`,
+      label: `Custom goals (in the user's own words): ${customText}`,
     });
   }
 

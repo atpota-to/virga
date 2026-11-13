@@ -37,9 +37,11 @@ CREATE TABLE IF NOT EXISTS oauth_state (
 );
 
 -- frontend_sessions: the browser's opaque `vg_` tokens, one per sign-in per
--- device. expires_at slides forward while the token is in use.
+-- device. expires_at slides forward while the token is in use. Only the
+-- token's SHA-256 (hex) is stored, so a dump or a backup holds nothing a
+-- request could present (FrontendSessionStore, tokenKey).
 CREATE TABLE IF NOT EXISTS frontend_sessions (
-  token      TEXT PRIMARY KEY,
+  token_hash TEXT PRIMARY KEY,
   user_did   TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'

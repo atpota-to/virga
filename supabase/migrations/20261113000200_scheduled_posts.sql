@@ -31,7 +31,10 @@ CREATE TABLE IF NOT EXISTS scheduled_posts (
   -- without a migration: SESSION_UNAVAILABLE, MEDIA_MISSING, TIMED_OUT,
   -- RATE_LIMITED, REFUSED, TIMER_NOT_ARMED (rides on a published row), UNKNOWN.
   last_error_code    TEXT,
-  media_reclaimed_at TIMESTAMPTZ,                    -- a failed row's stashed images were swept
+  -- The row's stashed images are gone: removed when it published or was
+  -- cancelled, or swept later (a failed row after 30 days, or one whose
+  -- inline delete failed). Unset means bytes may still be in Storage.
+  media_reclaimed_at TIMESTAMPTZ,
   locked_at          TIMESTAMPTZ,                    -- set by the claim; powers the stuck-row reclaim
   locked_by          TEXT,                           -- the claiming run's id
   created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -51,14 +54,21 @@ CREATE INDEX IF NOT EXISTS scheduled_posts_due_idx
 CREATE INDEX IF NOT EXISTS scheduled_posts_user_idx
   ON scheduled_posts (user_did, scheduled_for);
 
--- The failed-media sweep.
-CREATE INDEX IF NOT EXISTS scheduled_posts_media_reclaim_idx
+-- The media sweep. A published or cancelled row is stamped when its inline
+-- delete succeeds, so only the rows the sweep still owes anything sit here.
+-- Dropped first so a re-apply picks up a changed predicate.
+DROP INDEX IF EXISTS scheduled_posts_media_reclaim_idx;
+CREATE INDEX scheduled_posts_media_reclaim_idx
   ON scheduled_posts (updated_at)
-  WHERE status = 'failed' AND media_reclaimed_at IS NULL;
+  WHERE status IN ('failed', 'published', 'cancelled') AND media_reclaimed_at IS NULL;
 
--- No policies: every role but the service role is refused.
+-- No policies: every role but the service role is refused. The service role
+-- is granted explicitly: Supabase is retiring the automatic grants on new
+-- public tables, and the RPCs below are SECURITY INVOKER, so they need these
+-- privileges too.
 ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE scheduled_posts FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE scheduled_posts TO service_role;
 
 -- ─── Claim ──────────────────────────────────────────────────────────────────
 -- Flip a batch of due rows to 'publishing' in one statement. FOR UPDATE SKIP
@@ -131,10 +141,14 @@ BEGIN
 END;
 $$;
 
--- ─── Failed-media sweep ─────────────────────────────────────────────────────
--- Failed rows nobody came back to within p_older_than_days whose stashed
--- images are still in Storage. Read-only: the worker deletes the objects and
--- only then stamps media_reclaimed_at, so a failed delete is retried later.
+-- ─── Media sweep ────────────────────────────────────────────────────────────
+-- Rows whose stashed images may still be in Storage and no longer need to be:
+-- failed rows nobody came back to within p_older_than_days, and published or
+-- cancelled rows whose inline delete failed (or that a create killed mid-stash
+-- left behind), after an hour so the inline delete goes first. A row with no
+-- media map is still returned: its folder may hold objects the map never
+-- learned about. Read-only: the worker deletes the objects and only then
+-- stamps media_reclaimed_at, so a failed delete is retried later.
 CREATE OR REPLACE FUNCTION reclaim_failed_scheduled_media(
   p_older_than_days INTEGER DEFAULT 30
 ) RETURNS TABLE (id UUID, payload JSONB)
@@ -144,11 +158,14 @@ SET search_path = public, pg_temp
 AS $$
   SELECT s.id, s.payload
     FROM scheduled_posts s
-   WHERE s.status = 'failed'
-     AND s.media_reclaimed_at IS NULL
-     AND s.updated_at < NOW() - make_interval(days => GREATEST(COALESCE(p_older_than_days, 30), 1))
-     AND jsonb_typeof(s.payload -> 'media') = 'object'
-     AND s.payload -> 'media' <> '{}'::jsonb
+   WHERE s.media_reclaimed_at IS NULL
+     AND (
+       (s.status = 'failed'
+         AND s.updated_at < NOW() - make_interval(days => GREATEST(COALESCE(p_older_than_days, 30), 1)))
+       OR
+       (s.status IN ('published', 'cancelled')
+         AND s.updated_at < NOW() - INTERVAL '1 hour')
+     )
    ORDER BY s.updated_at
    LIMIT 100;
 $$;

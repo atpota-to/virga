@@ -20,13 +20,14 @@
 // Idempotent per live post: arming a post that already has a live timer
 // answers that timer (200, rewritten to the new rule while it is still armed)
 // rather than racing two deletes, so a retry after a lost answer is safe. A new
-// timer answers 201.
+// timer answers 201. A timer being checked can't be rewritten: a different rule
+// for it answers 409 NOT_REARMABLE, the same rule 200.
 
 import { envInt } from '../../env.js';
 import { methodGuard, readJson, sendJson } from '../../http.js';
 import { createRateLimiter } from '../../rateLimit.js';
 import { resolveUserDid } from '../../oauth/auth.js';
-import { armSelfDestruct, validateArm } from '../selfDestruct.js';
+import { armSelfDestruct, sameTimerRule, validateArm } from '../selfDestruct.js';
 import { enforceTimerLimit, settleArmedTimer } from '../timerUsage.js';
 import { timerShape } from '../shape.js';
 
@@ -83,7 +84,17 @@ export default async function handler(req, res) {
       exceptPostUri: validation.value.postUri,
     });
 
-    const { row, existing } = await armSelfDestruct({ userDid: auth.userDid, ...validation.value });
+    const { row, existing, updated } = await armSelfDestruct({ userDid: auth.userDid, ...validation.value });
+    // The timer there is being checked, so the new rule was not written. A 200
+    // would tell the author their change was taken while the old rule runs. A
+    // retry carrying the rule the row already has is still answered 200.
+    if (existing && updated === false && !sameTimerRule(row, validation.value)) {
+      return sendJson(res, 409, {
+        success: false,
+        error: "that timer is being checked right now, so it wasn't changed. try again in a minute.",
+        code: 'NOT_REARMABLE',
+      });
+    }
     if (!existing) await settleArmedTimer({ userDid: auth.userDid, row, verdict });
 
     return sendJson(res, existing ? 200 : 201, { success: true, data: timerShape(row) });

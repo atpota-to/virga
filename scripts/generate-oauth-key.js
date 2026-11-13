@@ -8,8 +8,15 @@
 // JWK has no `use`: the library warns that it will refuse one. Set the value
 // in Vercel for Production only: a preview without a key answers 503 and the
 // app stays in browser mode, which keeps previews from becoming separate
-// OAuth clients. To rotate, add the new key as OAUTH_PRIVATE_KEY_2, deploy,
-// and remove the old one once no session signs with it.
+// OAuth clients.
+//
+// Rotating: new sign-ins sign with the key in slot 1, and a session signs its
+// refreshes with the key it signed in with for as long as it lives. So move
+// the current key, unchanged, to OAUTH_PRIVATE_KEY_2 and put the new one in
+// OAUTH_PRIVATE_KEY_1, then deploy. The old key can go only once every
+// account that signed in with it has signed in again; removing it sooner signs
+// those accounts out of the server and stops their scheduled posts and timers.
+// The kid printed here is what sessions store, so never edit it.
 
 import crypto from 'node:crypto';
 

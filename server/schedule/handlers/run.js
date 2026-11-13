@@ -13,6 +13,10 @@ import { methodGuard, sendJson } from '../../http.js';
 import { envInt } from '../../env.js';
 import { requireCron } from '../../cron.js';
 import { isSupabaseConfigured } from '../../supabase.js';
+import {
+  sendUnavailable as sendClientUnavailable,
+  unavailableReason,
+} from '../../oauth/config.js';
 import { armForPublishedSchedule } from '../../timers/selfDestruct.js';
 import * as scheduled from '../scheduledPosts.js';
 import { sendUnavailable } from '../respond.js';
@@ -173,6 +177,12 @@ export default async function handler(req, res) {
   if (!methodGuard(req, res, ['GET', 'POST'])) return;
   if (!requireCron(req, res)) return;
   if (!isSupabaseConfigured()) return sendUnavailable(res);
+  // Without a working OAuth client no session can be restored, and every
+  // claim would spend one of the row's attempts on SESSION_UNAVAILABLE: half
+  // an hour of a missing key would fail every post due in it for good. The
+  // rows stay pending and go out on the first tick after it is fixed.
+  const clientUnavailable = unavailableReason();
+  if (clientUnavailable) return sendClientUnavailable(res, clientUnavailable);
 
   const runId = crypto.randomUUID();
   const startedAt = Date.now();

@@ -2,7 +2,7 @@
 //
 //   oauth_sessions     the library's session per DID (tokens, DPoP key)
 //   oauth_state        the library's in-flight authorization state, for 1 h
-//   frontend_sessions  the browser's opaque `vg_` tokens, one per sign-in per device
+//   frontend_sessions  the browser's opaque `vg_` tokens (as SHA-256), one per sign-in per device
 //   oauth_locks        the cross-instance refresh lock (acquire/release RPCs)
 //
 // Every operation asks getSupabaseClient() afresh, so the test seam works and
@@ -24,6 +24,7 @@ export const TABLES = Object.freeze({
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const STATE_TTL_MS = 60 * 60 * 1000;
+const STATE_SWEEP_EVERY_MS = 60 * 1000;
 const TOKEN_DAYS = 30;
 // A validated token with fewer than this many days left is renewed to
 // SLIDE_TO_MS from now, at most once a day per token per instance.
@@ -150,6 +151,34 @@ export class SessionStore {
   }
 
   /**
+   * Whether a row is stored for `sub`, without reading or decrypting it.
+   * @returns {Promise<boolean|null>} null when the store can't say
+   */
+  async exists(sub) {
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) return null;
+      const { data, error } = await supabase
+        .from(this.table)
+        .select('sub')
+        .eq('sub', sub)
+        .maybeSingle();
+      if (error) {
+        console.error(
+          `[oauth] could not look up the session for ${sub}: ${errorText(error)}`,
+        );
+        return null;
+      }
+      return !!data;
+    } catch (error) {
+      console.error(
+        `[oauth] could not look up the session for ${sub}: ${errorText(error)}`,
+      );
+      return null;
+    }
+  }
+
+  /**
    * Deliberately a no-op. The library deletes a session when a refresh
    * fails, but on serverless many of those failures are transient (another
    * instance may have just refreshed it), and deleting the row would end a
@@ -186,16 +215,25 @@ export class SessionStore {
   }
 }
 
-/** The library's state store: one row per authorization in flight, for an hour. */
+/**
+ * The library's state store: one row per authorization in flight, for an hour.
+ *
+ * A row is deleted when its callback reads it, but a sign-in that is never
+ * finished leaves its row (a DPoP key and a PKCE verifier) behind, and there
+ * is no scheduled sweep. So a write also clears expired rows, at most once per
+ * SWEEP_EVERY_MS on an instance.
+ */
 export class StateStore {
-  constructor({ table = TABLES.state } = {}) {
+  constructor({ table = TABLES.state, now = () => Date.now() } = {}) {
     this.table = table;
+    this.now = now;
+    this.sweptAt = 0;
   }
 
   async set(key, state) {
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase is not configured');
-    const expiresAt = new Date(Date.now() + STATE_TTL_MS).toISOString();
+    const expiresAt = new Date(this.now() + STATE_TTL_MS).toISOString();
     const { error } = await supabase
       .from(this.table)
       .upsert(
@@ -207,6 +245,28 @@ export class StateStore {
         `[oauth] could not save sign-in state: ${errorText(error)}`,
       );
       throw error;
+    }
+    await this.sweepIfDue(supabase);
+  }
+
+  /** Delete expired rows; best effort, never throws. */
+  async sweepIfDue(supabase) {
+    const now = this.now();
+    if (now - this.sweptAt < STATE_SWEEP_EVERY_MS) return;
+    this.sweptAt = now;
+    try {
+      const { error } = await supabase
+        .from(this.table)
+        .delete()
+        .lt('expires_at', new Date(now).toISOString());
+      if (error)
+        console.warn(
+          `[oauth] could not clear expired sign-in state: ${errorText(error)}`,
+        );
+    } catch (error) {
+      console.warn(
+        `[oauth] could not clear expired sign-in state: ${errorText(error)}`,
+      );
     }
   }
 
@@ -257,10 +317,21 @@ export class StateStore {
 }
 
 /**
+ * The key a token is stored and looked up under: its SHA-256, in hex. Only the
+ * browser ever holds the token itself, so a dump, a backup or a leaked
+ * service-role key yields nothing that /api/oauth/proxy would accept. A plain
+ * hash is enough: the token is 256 random bits, not something to guess.
+ */
+export function tokenKey(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+/**
  * The browser's session tokens: `vg_` + 64 hex, each naming a DID for 30
  * days, renewed while in use. A token is opaque and maps to one DID for its
- * whole life, so validated tokens are cached per instance; a sign-out on
- * another instance is honoured within FRONTEND_SESSION_CACHE_TTL_MS.
+ * whole life, so validated tokens are cached per instance (by tokenKey, like
+ * the table); a sign-out on another instance is honoured within
+ * FRONTEND_SESSION_CACHE_TTL_MS.
  */
 export class FrontendSessionStore {
   constructor({
@@ -269,7 +340,7 @@ export class FrontendSessionStore {
   } = {}) {
     this.table = table;
     this.tokenDidCache = new TtlCache({ ttlMs: cacheTtlMs, max: 10000 });
-    // token -> when this instance last renewed it
+    // tokenKey -> when this instance last renewed it
     this.slidAt = new TtlCache({ ttlMs: DAY_MS, max: 10000 });
   }
 
@@ -290,9 +361,11 @@ export class FrontendSessionStore {
     const expiresAt = new Date(
       Date.now() + expiresInDays * DAY_MS,
     ).toISOString();
-    const { error } = await supabase
-      .from(this.table)
-      .insert({ token, user_did: userDid, expires_at: expiresAt });
+    const { error } = await supabase.from(this.table).insert({
+      token_hash: tokenKey(token),
+      user_did: userDid,
+      expires_at: expiresAt,
+    });
     if (error) {
       console.error(
         `[oauth] could not create a session token for ${userDid}: ${errorText(error)}`,
@@ -312,15 +385,16 @@ export class FrontendSessionStore {
    */
   async validateWithDetails(token) {
     if (!this.ownsToken(token)) return { userDid: null, error: null };
+    const key = tokenKey(token);
 
-    const cached = this.tokenDidCache.get(token);
+    const cached = this.tokenDidCache.get(key);
     if (cached) {
       if (cached.expiresAt > Date.now()) {
-        await this.slideIfDue(token, cached.userDid, cached.expiresAt);
+        await this.slideIfDue(key, cached.userDid, cached.expiresAt);
         return { userDid: cached.userDid, error: null };
       }
       // Expired: fall through to a definitive read.
-      this.tokenDidCache.delete(token);
+      this.tokenDidCache.delete(key);
     }
 
     for (let attempt = 0; attempt <= VALIDATE_RETRIES; attempt++) {
@@ -334,7 +408,7 @@ export class FrontendSessionStore {
         const { data, error } = await supabase
           .from(this.table)
           .select('user_did, expires_at')
-          .eq('token', token)
+          .eq('token_hash', key)
           .single();
         if (error) {
           if (error.code === 'PGRST116') return { userDid: null, error: null };
@@ -349,8 +423,8 @@ export class FrontendSessionStore {
           await this.deleteToken(token);
           return { userDid: null, error: null };
         }
-        this.tokenDidCache.set(token, { userDid: data.user_did, expiresAt });
-        await this.slideIfDue(token, data.user_did, expiresAt);
+        this.tokenDidCache.set(key, { userDid: data.user_did, expiresAt });
+        await this.slideIfDue(key, data.user_did, expiresAt);
         return { userDid: data.user_did, error: null };
       } catch (error) {
         console.error(
@@ -367,12 +441,14 @@ export class FrontendSessionStore {
    * Renew a token with fewer than seven days left to thirty days from now, at
    * most once a day per token on this instance. Best effort: a failed renewal
    * leaves the token valid until its old expiry.
+   *
+   * @param {string} key - the token's tokenKey
    */
-  async slideIfDue(token, userDid, expiresAt) {
+  async slideIfDue(key, userDid, expiresAt) {
     const now = Date.now();
     if (expiresAt - now >= SLIDE_WHEN_LEFT_MS) return;
-    if (this.slidAt.get(token)) return;
-    this.slidAt.set(token, now);
+    if (this.slidAt.get(key)) return;
+    this.slidAt.set(key, now);
     try {
       const supabase = getSupabaseClient();
       if (!supabase) return;
@@ -380,7 +456,7 @@ export class FrontendSessionStore {
       const { error } = await supabase
         .from(this.table)
         .update({ expires_at: new Date(renewed).toISOString() })
-        .eq('token', token)
+        .eq('token_hash', key)
         .eq('user_did', userDid);
       if (error) {
         console.warn(
@@ -388,7 +464,7 @@ export class FrontendSessionStore {
         );
         return;
       }
-      this.tokenDidCache.set(token, { userDid, expiresAt: renewed });
+      this.tokenDidCache.set(key, { userDid, expiresAt: renewed });
     } catch (error) {
       console.warn(
         `[oauth] could not renew a session token: ${errorText(error)}`,
@@ -401,16 +477,17 @@ export class FrontendSessionStore {
    * @returns {Promise<boolean>} whether the delete went through (a token of the wrong shape counts as gone)
    */
   async deleteToken(token) {
-    this.tokenDidCache.delete(token);
-    this.slidAt.delete(token);
     if (!this.ownsToken(token)) return true;
+    const key = tokenKey(token);
+    this.tokenDidCache.delete(key);
+    this.slidAt.delete(key);
     try {
       const supabase = getSupabaseClient();
       if (!supabase) return false;
       const { error } = await supabase
         .from(this.table)
         .delete()
-        .eq('token', token);
+        .eq('token_hash', key);
       if (error) {
         console.error(
           `[oauth] could not delete a session token: ${errorText(error)}`,
@@ -436,7 +513,7 @@ export class FrontendSessionStore {
       if (!supabase) return null;
       const { count, error } = await supabase
         .from(this.table)
-        .select('token', { count: 'exact', head: true })
+        .select('token_hash', { count: 'exact', head: true })
         .eq('user_did', userDid)
         .gt('expires_at', new Date().toISOString());
       if (error) {
@@ -556,6 +633,17 @@ export class SupabaseLock {
       }
     }
   }
+}
+
+/**
+ * The lock a sign-out of a DID's last device and a sign-in for that DID take,
+ * so the sign-out never deletes a grant a sign-in has just stored and handed
+ * a token for. Not the library's own key ('@atproto-oauth-client-<did>'):
+ * revoking restores the session, which takes that one, and the in-process
+ * lock is not reentrant.
+ */
+export function grantLockKey(did) {
+  return `virga-grant-${did}`;
 }
 
 /**

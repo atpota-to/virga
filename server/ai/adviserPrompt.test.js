@@ -107,6 +107,69 @@ describe('buildAdviserPrompt scenario framing', () => {
   });
 });
 
+describe('buildGoalsList', () => {
+  it('reads the presets, the topics and the writer’s own goals', () => {
+    expect(
+      buildGoalsList({
+        presets: {
+          lessConfrontational: true,
+          limitTopic: { enabled: true, topic: 'work, , politics' },
+        },
+        customText: '  stay kind  ',
+      }),
+    ).toEqual([
+      { id: 'lessConfrontational', label: expect.stringMatching(/^Less/) },
+      {
+        id: 'limitTopic',
+        label: expect.stringContaining('"work", "politics"'),
+      },
+      {
+        id: 'custom',
+        label: "Custom goals (in the user's own words): stay kind",
+      },
+    ]);
+  });
+
+  it('caps the topics and the goals at the settings’ input limits', () => {
+    const goals = buildGoalsList({
+      presets: {
+        limitTopic: { enabled: true, topic: 'm'.repeat(1_000_000) },
+      },
+      customText: 'k'.repeat(3_000_000),
+    });
+    const topic = goals.find((g) => g.id === 'limitTopic').label;
+    const custom = goals.find((g) => g.id === 'custom').label;
+    expect(topic).toContain(`"${'m'.repeat(200)}"`);
+    expect(topic).not.toContain('m'.repeat(201));
+    expect(custom.endsWith('k'.repeat(500))).toBe(true);
+    expect(custom).not.toContain('k'.repeat(501));
+    const { user, system } = buildAdviserPrompt({
+      text: 'hi',
+      goalsList: goals,
+      contextBlock: null,
+      scenario: 'post',
+      writingChecks: null,
+    });
+    expect(user.length + system.length).toBeLessThan(20_000);
+  });
+
+  it('passes over goals of the wrong kind instead of throwing', () => {
+    for (const goals of [
+      undefined,
+      null,
+      'stay kind',
+      5,
+      { customText: 5 },
+      { customText: { text: 'x' } },
+      { presets: 'reduceNegativity' },
+      { presets: { limitTopic: { enabled: true, topic: 42 } } },
+      { presets: { limitTopic: { enabled: true, topic: ['a'] } } },
+    ]) {
+      expect(buildGoalsList(goals)).toEqual([]);
+    }
+  });
+});
+
 describe('buildContextBlock', () => {
   it('accepts selfReply alongside reply and quote', () => {
     for (const kind of ['reply', 'quote', 'selfReply']) {

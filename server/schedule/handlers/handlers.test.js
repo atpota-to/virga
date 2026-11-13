@@ -278,7 +278,7 @@ describe('POST /api/schedule/create', () => {
     expect(await countRows()).toBe(0);
   });
 
-  it('answers a validation failure as a 400 sentence without a code', async () => {
+  it('answers a time that passed in transit as 400 SCHEDULE_PAST, so the client words it', async () => {
     const res = await post(
       create,
       createBody({ scheduledFor: iso(Date.now() - MINUTE) }),
@@ -287,6 +287,23 @@ describe('POST /api/schedule/create', () => {
     expect(res.body).toEqual({
       success: false,
       error: 'scheduledFor must be in the future',
+      code: 'SCHEDULE_PAST',
+    });
+    const far = await post(
+      create,
+      createBody({ scheduledFor: iso(Date.now() + 100 * DAY) }),
+    );
+    expect(far.body.code).toBe('SCHEDULE_TOO_FAR');
+  });
+
+  it('answers any other validation failure as a 400 sentence without a code', async () => {
+    const body = createBody();
+    body.payload.posts = [];
+    const res = await post(create, body);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      success: false,
+      error: 'payload.posts must be a non-empty array',
     });
   });
 
@@ -372,6 +389,41 @@ describe('POST /api/schedule/create', () => {
       lifespanSeconds: 3600,
       deleteAt: null,
     });
+  });
+
+  it('keeps the keys the create settled when it records the images', async () => {
+    const body = createBody({ images: 1 });
+    // A concurrent create already holds these keys at the same time; this
+    // one minted them too before it could see that row.
+    const scheduled = await import('../scheduledPosts.js');
+    const keys = await scheduled.assignRkeys({
+      userDid: DID,
+      scheduledFor: body.scheduledFor,
+      postCount: 1,
+    });
+    await t.query(
+      `INSERT INTO scheduled_posts (user_did, scheduled_for, payload, created_at)
+       VALUES ($1, $2, $3::jsonb, NOW() - INTERVAL '1 second')`,
+      [
+        DID,
+        body.scheduledFor,
+        JSON.stringify({
+          posts: [{ record: { text: 'first' } }],
+          gates: {},
+          media: {},
+          rkeys: keys,
+        }),
+      ],
+    );
+    vi.spyOn(scheduled, 'assignRkeys').mockResolvedValueOnce(keys);
+    const res = await post(create, body);
+    expect(res.statusCode).toBe(201);
+    expect(Object.keys(res.body.data.payload.media)).toEqual(['p0-img0']);
+    expect(res.body.data.payload.rkeys).not.toEqual(keys);
+    const { rows } = await t.query(
+      `SELECT payload->'rkeys' AS k FROM scheduled_posts ORDER BY created_at`,
+    );
+    expect(rows.map((r) => r.k)).toEqual([keys, res.body.data.payload.rkeys]);
   });
 
   it('retires the row and removes stored bytes when stashing fails partway', async () => {
@@ -552,7 +604,7 @@ describe('POST /api/schedule/update', () => {
     expect(res.body.data.clientKey).toBe('virga');
   });
 
-  it('refuses a move into the past as a 400 sentence', async () => {
+  it('refuses a move into the past as 400 SCHEDULE_PAST', async () => {
     const row = await insertRow();
     const res = await post(update, {
       id: row.id,
@@ -562,6 +614,7 @@ describe('POST /api/schedule/update', () => {
     expect(res.body).toEqual({
       success: false,
       error: 'scheduledFor must be in the future',
+      code: 'SCHEDULE_PAST',
     });
   });
 
@@ -694,6 +747,37 @@ describe('POST /api/schedule/update', () => {
         'this post can no longer be retried — it may have been dismissed, or already be back in the queue.',
       code: 'NOT_RETRIABLE',
     });
+  });
+
+  it('refuses a retry the media sweep left without images: 409 MEDIA_MISSING', async () => {
+    const failed = await insertRow({
+      status: 'failed',
+      attempts: 5,
+      payload: {
+        posts: [
+          {
+            record: { text: 'pictures' },
+            embed: { type: 'images', images: [{ mediaId: 'p0-img0' }] },
+          },
+        ],
+        gates: {},
+        media: { 'p0-img0': { storagePath: 'x/p0-img0.png' } },
+        rkeys: ['3kaaaaaaaaaa2'],
+      },
+    });
+    await t.query(
+      'UPDATE scheduled_posts SET media_reclaimed_at = NOW() WHERE id = $1',
+      [failed.id],
+    );
+    const res = await post(update, { id: failed.id, retry: true });
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      success: false,
+      error:
+        'the images for this post were cleared after 30 days. edit it and add them again.',
+      code: 'MEDIA_MISSING',
+    });
+    expect((await readRow(failed.id)).status).toBe('failed');
   });
 
   it('refuses a retry whose timer has no slot', async () => {

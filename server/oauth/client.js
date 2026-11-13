@@ -9,6 +9,7 @@
 // So both are wired: the hooks are passed, and addEventListener is called only
 // when the client has it.
 
+import crypto from 'node:crypto';
 import { NodeOAuthClient } from '@atproto/oauth-client-node';
 import { JoseKey } from '@atproto/jwk-jose';
 import { AtprotoDohHandleResolver } from '@atproto-labs/handle-resolver';
@@ -17,6 +18,7 @@ import { TtlCache } from '../ttlCache.js';
 import { envInt } from '../env.js';
 import { SCOPE, clientMetadata, loadPrivateKeys } from './config.js';
 import { getStorage, resetStorageForTests } from './storage.js';
+import { createSafeFetch } from './safeFetch.js';
 import {
   fastPathRequested,
   installClientHooks,
@@ -26,6 +28,34 @@ import {
 const DOH_ENDPOINT = 'https://dns.google/resolve';
 
 const errorText = (error) => (error && error.message) || String(error);
+
+// What the library itself treats as the end of a session (its SessionGetter's
+// deleteOnError): the refresh was refused, the grant revoked or invalid, or no
+// loaded key can sign for it. Matched by name, because the classes come from
+// the copy of @atproto/oauth-client that oauth-client-node bundles.
+const TERMINAL_RESTORE_ERRORS = new Set([
+  'TokenRefreshError',
+  'TokenRevokedError',
+  'TokenInvalidError',
+  'AuthMethodUnsatisfiableError',
+]);
+
+/** Whether a failed restore is the grant itself being dead, as opposed to the network or a store. */
+export function isTerminalRestoreError(error) {
+  for (let e = error, depth = 0; e && depth < 5; e = e.cause, depth++) {
+    if (TERMINAL_RESTORE_ERRORS.has(e.constructor?.name)) return true;
+  }
+  return false;
+}
+
+/** What identifies a stored grant: changes on every refresh and every sign-in. */
+function grantFingerprint(session) {
+  if (!session) return 'none';
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify(session.tokenSet ?? session))
+    .digest('hex');
+}
 
 /**
  * A handle resolver that tries DNS over HTTPS (TXT, then the library's own
@@ -73,15 +103,18 @@ export class OAuthClientWrapper {
    * @param {object} [options.storage] - createStorage()'s result
    * @param {object} [options.env]
    * @param {object} [options.handleResolver]
+   * @param {typeof fetch} [options.fetch] - every request the client makes; SSRF-checked by default
    */
   constructor({
     storage = getStorage(),
     env = process.env,
     handleResolver,
+    fetch = createSafeFetch(),
   } = {}) {
     this.storage = storage;
     this.env = env;
     this.handleResolver = handleResolver;
+    this.fetch = fetch;
     // DID -> restored OAuthSession. Reusing a still-valid session on a warm
     // instance skips restore()'s own store read and lock; each request it
     // signs still looks its token up under requestLock. A stale cached token
@@ -90,6 +123,17 @@ export class OAuthClientWrapper {
     this.oauthSessionCache = new TtlCache({
       ttlMs: envInt(env, 'OAUTH_SESSION_CACHE_TTL_MS', 60000),
       max: 2000,
+    });
+    // DID -> how its last restore failed: 'terminal', 'other' or 'dead'.
+    this.restoreFailures = new TtlCache({ ttlMs: 60000, max: 5000 });
+    // DID -> the fingerprint of a grant restoreWithRetry gave up on. Without
+    // it every call for a dead grant spends the whole retry budget (~2.4 s)
+    // and sends the authorization server three more refreshes it will refuse.
+    // The stored row is still read each time, so a new sign-in (here or on
+    // another instance) or a refresh that went through is seen at once.
+    this.deadGrants = new TtlCache({
+      ttlMs: envInt(env, 'OAUTH_DEAD_GRANT_TTL_MS', 10 * 60 * 1000),
+      max: 5000,
     });
     this.client = null;
     this.initPromise = this.initialize();
@@ -123,7 +167,11 @@ export class OAuthClientWrapper {
       stateStore: this.storage.stateStore,
       sessionStore: this.storage.sessionStore,
       requestLock: this.storage.requestLock,
-      handleResolver: this.handleResolver || createHandleResolver(),
+      // Identity, metadata, PAR, token and PDS requests alike: what they reach
+      // is named by whoever calls /api/oauth/login (safeFetch.js).
+      fetch: this.fetch,
+      handleResolver:
+        this.handleResolver || createHandleResolver({ fetch: this.fetch }),
       onUpdate: (sub) => this.onSessionUpdated(sub),
       onDelete: (sub, cause) => this.onSessionDeleted(sub, cause),
     };
@@ -220,6 +268,8 @@ export class OAuthClientWrapper {
     const client = await this.ensureInitialized();
     try {
       const { session, state } = await client.callback(params);
+      this.deadGrants.delete(session.did);
+      this.restoreFailures.delete(session.did);
       return { userDID: session.did, session, state };
     } catch (error) {
       const failure = new Error(`Authentication failed: ${errorText(error)}`);
@@ -242,23 +292,70 @@ export class OAuthClientWrapper {
       if (cached) return cached;
     }
     const client = await this.ensureInitialized();
+    if (await this.isKnownDeadGrant(did)) {
+      this.restoreFailures.set(did, 'dead');
+      return null;
+    }
     try {
       const session = await client.restore(did);
       if (session) {
         if (this.fastPathArmed) trackTokenUse(session);
         this.oauthSessionCache.set(did, session);
+        this.restoreFailures.delete(did);
         return session;
       }
       this.oauthSessionCache.delete(did);
+      this.restoreFailures.set(did, 'other');
       console.log(`[oauth] no session to restore for ${did}`);
       return null;
     } catch (error) {
       this.oauthSessionCache.delete(did);
+      this.restoreFailures.set(
+        did,
+        isTerminalRestoreError(error) ? 'terminal' : 'other',
+      );
       console.warn(
         `[oauth] could not restore the session for ${did}: ${errorText(error)}`,
       );
       return null;
     }
+  }
+
+  /** How the DID's last restore on this instance failed ('terminal', 'other', 'dead'), or undefined. */
+  lastRestoreFailure(did) {
+    return this.restoreFailures.get(did);
+  }
+
+  /**
+   * After a whole retry budget failed: if the last try was the grant itself
+   * refusing (not a network or store failure, and not a lost refresh race,
+   * which a later try would have won), remember the stored grant as dead.
+   * Returns whether it did.
+   */
+  async noteDeadGrant(did) {
+    if (this.restoreFailures.get(did) !== 'terminal') return false;
+    const stored = await this.storage.sessionStore.read(did);
+    this.deadGrants.set(did, grantFingerprint(stored));
+    console.warn(
+      `[oauth] the grant for ${did} is refused; answering without a restore until it changes`,
+    );
+    return true;
+  }
+
+  /** Whether the grant stored for `did` is one already found dead. Reads the row only when one was. */
+  async isKnownDeadGrant(did) {
+    const dead = this.deadGrants.get(did);
+    if (dead === undefined) return false;
+    const stored = await this.storage.sessionStore.read(did);
+    if (grantFingerprint(stored) === dead) return true;
+    this.deadGrants.delete(did);
+    return false;
+  }
+
+  /** The same, for a row the caller has already read (the lite session check). */
+  isDeadGrantSession(did, session) {
+    const dead = this.deadGrants.get(did);
+    return dead !== undefined && grantFingerprint(session) === dead;
   }
 
   /** Forget a DID's cached session (after a terminal "Invalid token" or a sign-out). */

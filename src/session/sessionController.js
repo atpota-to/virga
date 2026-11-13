@@ -14,6 +14,10 @@ import * as H from './sessionHealth.js';
 
 export const NO_ACTIVE = { did: null, agent: null, session: null, mode: null };
 
+// The 401 codes the server gives when the token is good but the account's
+// grant couldn't be restored (revoked at the PDS, or a refresh that died).
+const GRANT_GONE_CODES = new Set(['OAUTH_SESSION_MISSING', 'SESSION_EXPIRED']);
+
 /**
  * What an account can do here, from its row and its status:
  * `{ mode, canPost, canSchedule, canUseAi, missing }`. `missing` lists the
@@ -58,6 +62,12 @@ export function createSessionController(set, env) {
   const requesters = new Map(); // did -> { token, requester }
   const signingOut = new Set(); // dids whose session this tab is ending on purpose
   const lastRecovery = new Map(); // did -> ms of the last forced check
+  // Long sessions whose grant the server last said it couldn't restore. The
+  // lite check only reads the grant's row, which outlives a refresh token
+  // that has died, so its "valid" can't clear this: only a full check or an
+  // answer that came back through the grant can.
+  const grantGone = new Set();
+  const learning = new Map(); // did -> the full check under way
   let active = NO_ACTIVE;
   let statuses = {};
   let switchSeq = 0;
@@ -99,6 +109,7 @@ export function createSessionController(set, env) {
     agents.delete(did);
     requesters.delete(did);
     browserSessions.delete(did);
+    grantGone.delete(did);
     backendChecker.forget(did);
     browserChecker.forget(did);
   }
@@ -124,19 +135,37 @@ export function createSessionController(set, env) {
     if (discovered) env.dispatch(A.SESSION_EXPIRED_EVENT, { did });
   }
 
-  // A 401 from the server: maybe dead, maybe a cold start. Confirm before
-  // acting (sessionHealth.js), and not more than once every ten seconds.
-  function onUnauthorized(did) {
+  /**
+   * A 401 from the server: maybe dead, maybe a cold start. Confirm before
+   * acting (sessionHealth.js), and not more than once every ten seconds.
+   * One that says the grant couldn't be restored is about the grant, not the
+   * token, which the lite check can't see into: that one is asked of the full
+   * check, and the account is shown as unknown (which offers a sign-in) until
+   * something says the grant holds again.
+   */
+  function onUnauthorized(did, code = null) {
+    if (GRANT_GONE_CODES.has(code) && usable(did)) {
+      grantGone.add(did);
+      setStatus(did, 'unknown');
+    }
     const at = lastRecovery.get(did) || 0;
     if (Date.now() - at < 10_000) return;
     lastRecovery.set(did, Date.now());
-    backendChecker.check(did, { force: true }).catch(() => {});
+    if (GRANT_GONE_CODES.has(code)) learnBackendSession(did).catch(() => {});
+    else backendChecker.check(did, { force: true }).catch(() => {});
+  }
+
+  // An answer that came back through the grant: it holds after all.
+  function onAuthorized(did) {
+    if (grantGone.delete(did) && statuses[did] === 'unknown') setStatus(did, 'ready');
   }
 
   function settleCheck(did, result) {
     const status = H.statusFromCheck(result);
     if (status === 'needsSignIn') {
       if (!find(did)?.signedOut) markNeedsSignIn(did);
+    } else if (status === 'ready' && grantGone.has(did)) {
+      setStatus(did, 'unknown');
     } else setStatus(did, status);
   }
 
@@ -177,7 +206,7 @@ export function createSessionController(set, env) {
   function backendAgent(Agent, did) {
     return new Agent({
       did,
-      fetchHandler: B.createBackendFetchHandler({ backendUrl: env.backendUrl, fetch: env.fetch, token: tokenReader(did), did, onUnauthorized }),
+      fetchHandler: B.createBackendFetchHandler({ backendUrl: env.backendUrl, fetch: env.fetch, token: tokenReader(did), did, onUnauthorized, onAuthorized }),
     });
   }
 
@@ -211,20 +240,37 @@ export function createSessionController(set, env) {
     return { did, agent: new Agent(oauth), session: { sub: did, did, mode: 'browser', oauth }, mode: 'browser' };
   }
 
-  /** Ask the server what this long session was granted, and where the repo is. */
-  async function learnBackendSession(did) {
+  /**
+   * Ask the server what this long session was granted, and where the repo
+   * is. This is the check that restores the grant, so it is the one that can
+   * tell a grant that has died from one that holds.
+   */
+  function learnBackendSession(did) {
+    if (learning.has(did)) return learning.get(did);
+    const p = learnOnce(did).finally(() => learning.delete(did));
+    learning.set(did, p);
+    return p;
+  }
+
+  async function learnOnce(did) {
     const token = A.readBackendToken(env.storage, did);
     if (!token) return;
     const res = await B.fetchBackendSession({ backendUrl: env.backendUrl, fetch: env.fetch, token });
+    // Signed in again (or out) while it ran: the answer was about another token.
+    if (A.readBackendToken(env.storage, did) !== token) return;
     if (res.ok && res.data?.success) {
       if (typeof res.data.scope === 'string' && find(did)?.scope !== res.data.scope) {
         A.updateAccount(env.storage, did, { scope: res.data.scope });
         refreshRows();
       }
       if (typeof res.data.pds === 'string') env.rememberPdsUrl(did, res.data.pds);
+      if (res.data.oauthSessionMissing) grantGone.add(did);
+      else grantGone.delete(did);
       setStatus(did, res.data.oauthSessionMissing ? 'unknown' : 'ready');
     } else if (res.status === 401) {
-      onUnauthorized(did);
+      // About the token (the full check answers a lost grant with a 200):
+      // the lite check's rules decide whether it has gone.
+      backendChecker.check(did, { force: true }).catch(() => {});
     }
   }
 
@@ -311,13 +357,16 @@ export function createSessionController(set, env) {
   }
 
   /**
-   * End a long-session token this browser no longer holds. While it lives,
-   * the server counts the account as signed in somewhere, so a later sign-out
-   * would leave Virga's grant (and the scheduled posts and timers that run on
-   * it) in place.
+   * End a long-session token this browser no longer holds, keeping the
+   * account's grant. While the token lives the server counts the account as
+   * signed in somewhere, so a later sign-out elsewhere wouldn't end the grant;
+   * but ending the grant here would be worse: the token may come from a
+   * sign-in this browser never asked for (another site can start one), and
+   * the grant is what the account's scheduled posts and timers run on. Only
+   * a sign-out the reader asks for ends the grant.
    */
   function dropToken(token) {
-    if (token) B.backendSignOut({ backendUrl: env.backendUrl, fetch: env.fetch, token }).catch(() => {});
+    if (token) B.backendSignOut({ backendUrl: env.backendUrl, fetch: env.fetch, token, keepGrant: true }).catch(() => {});
   }
 
   async function start() {
@@ -485,6 +534,7 @@ export function createSessionController(set, env) {
         built.set(did, { mode: 'backend', token });
         backendChecker.forget(did);
         lastRecovery.delete(did);
+        grantGone.delete(did);
         clearStatus(did);
       }
     }
@@ -638,8 +688,11 @@ export function createSessionController(set, env) {
       const result = await checker.check(did);
       // The same reading settleCheck gives the account's status: an
       // "expired" the server didn't confirm (a cold start, a missing
-      // session row) is unknown, not signed out.
-      return result.status === H.SESSION_CHECK_STATUS.EXPIRED && !result.definitive ? H.SESSION_CHECK_STATUS.UNKNOWN : result.status;
+      // session row) is unknown, not signed out, and so is a grant the
+      // server couldn't restore, whatever the lite check says of its row.
+      if (result.status === H.SESSION_CHECK_STATUS.EXPIRED && !result.definitive) return H.SESSION_CHECK_STATUS.UNKNOWN;
+      if (result.status === H.SESSION_CHECK_STATUS.VALID && grantGone.has(did)) return H.SESSION_CHECK_STATUS.UNKNOWN;
+      return result.status;
     },
 
     /** Another tab changed the account list: read it again, and follow it. */

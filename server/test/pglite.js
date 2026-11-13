@@ -4,8 +4,9 @@
 // Before the migrations run, the database is made to look like a Supabase
 // project in the ways they depend on: the anon / authenticated / service_role
 // roles, Supabase's default privileges (new tables and functions in public are
-// granted to all three, which is exactly why every migration has to REVOKE),
-// and a `storage` schema with the `buckets` and `objects` tables. PGlite has
+// granted to all three, which is exactly why every migration has to REVOKE;
+// defaultGrants: false leaves them out, as on newer projects), and a `storage`
+// schema with the `buckets` and `objects` tables. PGlite has
 // no pg_cron, so a migration that schedules a job must guard on it.
 //
 // supabaseAdapter(db) is a small stand-in for the supabase-js client over the
@@ -34,6 +35,13 @@ BEGIN
 END
 $$;
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+`;
+
+// The automatic grants older Supabase projects have. Projects made after
+// Supabase retires them have none, not even for service_role, so a migration
+// must GRANT service_role what it uses; createTestDatabase({ defaultGrants:
+// false }) builds that kind of project.
+export const DEFAULT_GRANTS_SQL = `
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO anon, authenticated, service_role;
@@ -102,14 +110,23 @@ export function selectMigrations({ upTo, dir = MIGRATIONS_DIR } = {}) {
  * @param {string[]} [options.files]  exactly these migration file names instead
  * @param {string} [options.dir]  the migrations folder (supabase/migrations by default)
  * @param {boolean} [options.storage]  false leaves the storage schema out, to test a migration's guard
+ * @param {boolean} [options.defaultGrants]  false leaves out Supabase's automatic grants on new objects
  * @param {object} [options.extensions]  PGlite extensions to load
  * @returns {Promise<{ db, query, exec, close, supabase, applied: string[] }>}
  */
-export async function createTestDatabase({ upTo, files, dir = MIGRATIONS_DIR, storage = true, extensions } = {}) {
+export async function createTestDatabase({
+  upTo,
+  files,
+  dir = MIGRATIONS_DIR,
+  storage = true,
+  defaultGrants = true,
+  extensions,
+} = {}) {
   const applied = files ? [...files] : selectMigrations({ upTo, dir });
   const { PGlite } = await import('@electric-sql/pglite');
   const db = await PGlite.create(extensions ? { extensions } : undefined);
   await db.exec(ROLES_SQL);
+  if (defaultGrants) await db.exec(DEFAULT_GRANTS_SQL);
   if (storage) await db.exec(STORAGE_SQL);
   for (const name of applied) {
     try {

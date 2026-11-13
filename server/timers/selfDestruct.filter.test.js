@@ -315,6 +315,29 @@ describe('readFollowSet', () => {
     expect(set.truncated).toBe(false);
   });
 
+  it('marks the list partial when a page comes back empty with a cursor still on it', async () => {
+    // The AppView drops follows it won't describe, so a whole page can be
+    // empty with more behind it. The follows after it were never read.
+    const row = freshRow();
+    deps.safeFetchJson = vi.fn(async (raw) => {
+      const page = Number(new URL(raw).searchParams.get('cursor') || 0);
+      if (page === 0) return { follows: [{ did: friend(1) }], cursor: '1' };
+      if (page === 1) return { follows: [], cursor: '2' };
+      return { follows: [{ did: friend(2) }] };
+    });
+
+    const set = await readFollowSet(row.user_did);
+    expect(set.dids.has(friend(1))).toBe(true);
+    expect(set.truncated).toBe(true);
+  });
+
+  it('treats an empty last page with no cursor as the end of a complete list', async () => {
+    const row = freshRow();
+    deps.safeFetchJson = vi.fn(async () => ({ follows: [] }));
+    const set = await readFollowSet(row.user_did);
+    expect(set.truncated).toBe(false);
+  });
+
   it('reads it once and holds on to it', async () => {
     const row = freshRow();
     stubAppView({ follows: [friend(1)] });

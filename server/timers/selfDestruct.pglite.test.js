@@ -139,12 +139,30 @@ describe('the store over real Postgres', () => {
       expect(await live()).toEqual([{ lifespan_seconds: 7200, status: 'armed' }]);
     });
 
-    it('hands back a checking timer as it is', async () => {
+    it('gives a re-armed rule its own extensions, not the old rule’s', async () => {
+      const extendOnce = {
+        logic: 'any', sense: 'unless', onSpare: 'extend', maxExtensions: 1,
+        clauses: [{ metric: 'likes', op: 'gte', value: 5 }],
+      };
+      const { row } = await arm('p1', { conditions: extendOnce });
+      // The old rule spared the post once and handed it the window again.
+      await selfDestruct.extendTimer(row, { counts: { likes: 6 }, reason: 'kept for now' });
+      expect((await rowOf(row.id)).extensions).toBe(1);
+
+      const again = await arm('p1', {
+        conditions: { ...extendOnce, clauses: [{ metric: 'likes', op: 'gte', value: 10 }] },
+      });
+      expect(again.updated).toBe(true);
+      expect(again.row.extensions).toBe(0);
+      expect((await rowOf(row.id)).extensions).toBe(0);
+    });
+
+    it('hands back a checking timer as it is, and says it was not rewritten', async () => {
       const { row } = await arm();
       await t.query(`UPDATE self_destruct_posts SET status = 'checking' WHERE id = $1`, [row.id]);
       const again = await arm('p1', { lifespanSeconds: 7200 });
       expect(again.existing).toBe(true);
-      expect(again.updated).toBeUndefined();
+      expect(again.updated).toBe(false);
       expect(await live()).toEqual([{ lifespan_seconds: 3600, status: 'checking' }]);
     });
 

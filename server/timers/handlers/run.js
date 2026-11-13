@@ -22,6 +22,7 @@
 import { randomUUID } from 'node:crypto';
 import { requireCron } from '../../cron.js';
 import { methodGuard, sendJson } from '../../http.js';
+import { sendUnavailable as sendClientUnavailable, unavailableReason } from '../../oauth/config.js';
 import {
   claimDueSelfDestructs,
   classifyFailure,
@@ -108,6 +109,12 @@ export default async function handler(req, res) {
   const startedAt = Date.now();
   if (!methodGuard(req, res, ['GET', 'POST'])) return;
   if (!requireCron(req, res)) return;
+  // Without a working OAuth client no author's session can be restored, so
+  // every claimed row would spend an attempt on SESSION_UNAVAILABLE until it
+  // ended 'failed' with its post still up, for good. The rows stay armed and
+  // are acted on at the first run after the client is fixed.
+  const clientUnavailable = unavailableReason();
+  if (clientUnavailable) return sendClientUnavailable(res, clientUnavailable);
 
   const runId = randomUUID();
   const summary = {

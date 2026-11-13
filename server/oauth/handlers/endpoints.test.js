@@ -20,7 +20,7 @@ import {
   setSupabaseClientForTests,
 } from '../../supabase.js';
 import { getOAuthClient, resetOAuthForTests } from '../client.js';
-import { getStorage } from '../storage.js';
+import { getStorage, tokenKey } from '../storage.js';
 import { TOKEN, installOAuthEnv, tokenOf } from '../testing/env.js';
 import sessionHandler from './session.js';
 import proxyHandler, { forwardedQuery } from './proxy.js';
@@ -102,7 +102,7 @@ beforeEach(() => {
   virga.initPromise.catch(() => {});
 
   db.rowsOf('frontend_sessions').push({
-    token: TOKEN,
+    token_hash: tokenKey(TOKEN),
     user_did: DID,
     expires_at: new Date(Date.now() + 20 * DAY).toISOString(),
   });
@@ -628,13 +628,13 @@ describe('/api/oauth/upload-blob', () => {
 });
 
 describe('/api/oauth/logout', () => {
-  async function call(token) {
+  async function call(token, body = {}) {
     const res = createRes();
     await logoutHandler(
       createReq({
         method: 'POST',
         headers: token ? auth(token) : {},
-        body: {},
+        body,
       }),
       res,
     );
@@ -647,7 +647,7 @@ describe('/api/oauth/logout', () => {
   it('signs out only this device while the DID has another live token', async () => {
     const other = tokenOf(7);
     db.rowsOf('frontend_sessions').push({
-      token: other,
+      token_hash: tokenKey(other),
       user_did: DID,
       expires_at: new Date(Date.now() + DAY).toISOString(),
     });
@@ -657,7 +657,9 @@ describe('/api/oauth/logout', () => {
       message: 'Logged out successfully',
       grantRevoked: false,
     });
-    expect(db.rowsOf('frontend_sessions').map((r) => r.token)).toEqual([other]);
+    expect(db.rowsOf('frontend_sessions').map((r) => r.token_hash)).toEqual([
+      tokenKey(other),
+    ]);
     expect(db.rowsOf('oauth_sessions')).toHaveLength(1);
     expect(virga.revokeSession).not.toHaveBeenCalled();
   });
@@ -665,7 +667,7 @@ describe('/api/oauth/logout', () => {
   it("revokes the grant with the DID's last live token", async () => {
     // An expired token doesn't keep the grant alive.
     db.rowsOf('frontend_sessions').push({
-      token: tokenOf(6),
+      token_hash: tokenKey(tokenOf(6)),
       user_did: DID,
       expires_at: new Date(Date.now() - DAY).toISOString(),
     });
@@ -678,6 +680,45 @@ describe('/api/oauth/logout', () => {
     expect(virga.revokeSession).toHaveBeenCalledWith(DID);
     expect(db.rowsOf('oauth_sessions')).toEqual([]);
     expect(writesTo('oauth_sessions')).toHaveLength(1);
+  });
+
+  it('drops only the token with keepGrant, even on the last device', async () => {
+    // A token from a sign-in the app never started: anyone can start one for
+    // anyone, so dropping it must not end the grant the workers run on.
+    const res = await call(TOKEN, { keepGrant: true });
+    expect(res.body).toEqual({
+      success: true,
+      message: 'Logged out successfully',
+      grantRevoked: false,
+    });
+    expect(db.rowsOf('frontend_sessions')).toEqual([]);
+    expect(db.rowsOf('oauth_sessions')).toHaveLength(1);
+    expect(virga.revokeSession).not.toHaveBeenCalled();
+  });
+
+  it('reads keepGrant only as true', async () => {
+    const res = await call(TOKEN, { keepGrant: 'yes' });
+    expect(res.body.grantRevoked).toBe(true);
+  });
+
+  it('counts, revokes and deletes under the grant lock a sign-in takes', async () => {
+    await call(TOKEN);
+    expect(db.rpcs.map((r) => [r.name, r.args.p_key])).toEqual([
+      ['acquire_oauth_lock', `virga-grant-${DID}`],
+      ['release_oauth_lock', `virga-grant-${DID}`],
+    ]);
+  });
+
+  it('keeps the row when a sign-in minted a token while the grant was revoked', async () => {
+    const count = vi
+      .spyOn(getStorage().frontendSessionStore, 'countForUser')
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(1);
+    const res = await call(TOKEN);
+    expect(count).toHaveBeenCalledTimes(2);
+    expect(virga.revokeSession).toHaveBeenCalledWith(DID);
+    expect(res.body.grantRevoked).toBe(false);
+    expect(db.rowsOf('oauth_sessions')).toHaveLength(1);
   });
 
   it('keeps the grant when the count cannot be read', async () => {
@@ -706,7 +747,9 @@ describe('/api/oauth/logout', () => {
       error: 'Signing out could not finish. Try again in a moment.',
     });
     expect(writesTo('frontend_sessions')).toEqual([]);
-    expect(db.rowsOf('frontend_sessions').map((r) => r.token)).toEqual([TOKEN]);
+    expect(db.rowsOf('frontend_sessions').map((r) => r.token_hash)).toEqual([
+      tokenKey(TOKEN),
+    ]);
     expect(virga.revokeSession).not.toHaveBeenCalled();
 
     // Once the store answers again, the same call finishes the job.

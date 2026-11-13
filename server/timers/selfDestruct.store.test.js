@@ -222,6 +222,12 @@ describe('armSelfDestruct re-arming an armed timer', () => {
     });
   });
 
+  it("clears the old rule's spent extensions", async () => {
+    await arm();
+    const [write] = reArms();
+    expect(write.payload).toHaveProperty('extensions', 0);
+  });
+
   it('only rewrites a row that is still armed', async () => {
     await arm();
     const [write] = reArms();
@@ -416,7 +422,7 @@ describe('armSelfDestruct calls create_self_destruct_capped with every argument'
     const checking = { id: 'row-2', status: 'checking' };
     onRpc = async () => ({ data: { ok: true, row: checking, existing: true }, error: null });
     const result = await arm();
-    expect(result).toEqual({ row: checking, existing: true });
+    expect(result).toEqual({ row: checking, existing: true, updated: false });
     expect(queries.filter((q) => q.op === 'update')).toEqual([]);
   });
 
@@ -425,7 +431,7 @@ describe('armSelfDestruct calls create_self_destruct_capped with every argument'
     onRpc = async () => ({ data: { ok: true, row: armed, existing: true }, error: null });
     onQuery = () => ({ data: null, error: { code: 'PGRST116', message: 'JSON object requested, multiple (or no) rows returned' } });
     const result = await arm();
-    expect(result).toEqual({ row: armed, existing: true });
+    expect(result).toEqual({ row: armed, existing: true, updated: false });
   });
 });
 
@@ -594,5 +600,34 @@ describe('armForPublishedSchedule', () => {
     await expect(selfDestruct.armForPublishedSchedule(row({ lifespanSeconds: 3600 }), [{ uri: uriFor('root') }]))
       .rejects.toMatchObject({ code: 'UNAVAILABLE' });
     expect(rpcCalls).toHaveLength(1);
+  });
+});
+
+// ─── Telling a re-arm that was taken from one that was not ──────────────────
+
+describe('sameTimerRule', () => {
+  const rule = {
+    conditions: { logic: 'any', sense: 'unless', onSpare: 'keep', maxExtensions: 0, clauses: [{ metric: 'likes', op: 'gte', value: 5 }] },
+    effects: [{ action: 'delete' }],
+    lifespanSeconds: 3600,
+  };
+  const stored = (extra = {}) => ({
+    conditions: rule.conditions, effects: null, lifespan_seconds: 3600, check_at: '2026-11-13T00:00:00.000Z', ...extra,
+  });
+
+  it('reads a stored plain delete (NULL effects) and its rule as the same rule, whatever the deadline', () => {
+    expect(selfDestruct.sameTimerRule(stored(), rule)).toBe(true);
+    // A JSONB round trip may hand keys back in another order.
+    const reordered = { clauses: rule.conditions.clauses, maxExtensions: 0, onSpare: 'keep', sense: 'unless', logic: 'any' };
+    expect(selfDestruct.sameTimerRule(stored({ conditions: reordered }), rule)).toBe(true);
+  });
+
+  it('tells a different effect, condition or window apart', () => {
+    expect(selfDestruct.sameTimerRule(stored(), { ...rule, effects: [{ action: 'disableQuotes' }] })).toBe(false);
+    expect(selfDestruct.sameTimerRule(stored(), {
+      ...rule, conditions: { ...rule.conditions, clauses: [{ metric: 'likes', op: 'gte', value: 10 }] },
+    })).toBe(false);
+    expect(selfDestruct.sameTimerRule(stored(), { ...rule, lifespanSeconds: 7200 })).toBe(false);
+    expect(selfDestruct.sameTimerRule(null, rule)).toBe(false);
   });
 });

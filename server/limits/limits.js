@@ -53,11 +53,20 @@ export function featureLimit(feature, env = process.env) {
   return name ? envInt(env, name, null) : null;
 }
 
-/** Every feature as the limits endpoint reports it. */
+/**
+ * Every feature as the limits endpoint reports it. A scheduled-posts limit is
+ * reported as the number actually enforced: one set above the flat cap still
+ * stops at the cap, and the client words its count line and its room check
+ * from this.
+ */
 export function featureStatus(env = process.env) {
   const out = {};
   for (const key of LIMIT_FEATURES) {
-    const limit = featureLimit(key, env);
+    const configured = featureLimit(key, env);
+    const limit =
+      configured != null && key === 'scheduledPosts'
+        ? scheduledPostsCeiling(env)
+        : configured;
     out[key] =
       limit == null
         ? { isUnlimited: true, limit: null }

@@ -65,6 +65,16 @@ export function publicRow(row, { partial = false } = {}) {
 }
 
 /**
+ * 400 for a refused validation: its sentence, and its code when it has one
+ * (the time guards), so the client can say it in its own words.
+ */
+export function sendInvalid(res, validation) {
+  const body = { success: false, error: validation.error };
+  if (validation.code) body.code = validation.code;
+  return sendJson(res, 400, body);
+}
+
+/**
  * Answer an error a handler didn't expect to handle itself. A quota refusal
  * keeps its wording and fields; a missing schema is 503 UNAVAILABLE;
  * anything else is a fixed sentence, because the raw message is a Supabase

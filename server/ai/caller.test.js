@@ -9,7 +9,7 @@ import {
   resetSupabaseClientForTests,
   setSupabaseClientForTests,
 } from '../supabase.js';
-import { resetStorageForTests } from '../oauth/storage.js';
+import { resetStorageForTests, tokenKey } from '../oauth/storage.js';
 import { resolveAiCaller } from './caller.js';
 
 const DID = 'did:plc:callerfixture';
@@ -22,7 +22,7 @@ beforeEach(() => {
   fake = createFakeSupabase();
   setSupabaseClientForTests(fake);
   fake.rowsOf('frontend_sessions').push({
-    token: TOKEN,
+    token_hash: tokenKey(TOKEN),
     user_did: DID,
     expires_at: new Date(Date.now() + 20 * 86400000).toISOString(),
   });

@@ -7,15 +7,20 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_AI_LIMITS,
+  MAX_ANALYZE_TEXT,
+  MAX_LIVE_TIMERS,
   MAX_PENDING_SCHEDULED,
   SERVER_ORIGIN,
   analyzePost,
   createServer,
   createServerRouter,
+  narrowAllow,
 } from './fakeServer.js';
 import { createRouter } from './fakeNetwork.js';
 import { readFlags } from './harness.js';
-import { listCollection } from './repo.js';
+import { listCollection, readRecord, writeRecord } from './repo.js';
+import { narrowAllow as serverNarrowAllow } from '../server/timers/selfDestruct.js';
+import { MAX_TEXT_LENGTH } from '../server/ai/handlers/analyzePost.js';
 import { LAB, ME, buildWorld } from './world.js';
 import {
   BACKEND_PATHS,
@@ -324,6 +329,11 @@ describe('scheduled posts', () => {
   });
 });
 
+const GATE = 'app.bsky.feed.threadgate';
+/** The account's own first posts with no gate of their own yet. */
+const rootsOf = (world) =>
+  world.posts.filter((p) => !p.replyTo && !readRecord(world, GATE, p.rkey));
+
 describe('timers', () => {
   const body = (uri, extra = {}) => ({
     postUri: uri,
@@ -392,7 +402,9 @@ describe('timers', () => {
 
   it('spares a post whose rule it meets, and limits replies without deleting', async () => {
     const { req, mira, server, advance } = setup();
-    const [kept, gated] = mira.posts.filter((p) => p.likes >= 3).slice(0, 2);
+    const [kept, gated] = mira.posts
+      .filter((p) => p.likes >= 3 && !p.replyTo)
+      .slice(0, 2);
     const uriOf = (p) => `at://${ME.did}/app.bsky.feed.post/${p.rkey}`;
     await req.request('/api/self-destruct/create', {
       method: 'POST',
@@ -490,6 +502,98 @@ describe('timers', () => {
       checkAt: live.checkAt,
     });
   });
+  const timerFor = (server, uri) =>
+    server.inspect().timers.find((t) => t.post_uri === uri);
+
+  it('narrows a gate the author set, never opens it, and leaves a reply alone', async () => {
+    const { req, mira, server, advance } = setup();
+    const [mentioned, both] = rootsOf(mira);
+    const reply = mira.posts.find((p) => p.replyTo === ME.did);
+    const uriOf = (p) => `at://${ME.did}/app.bsky.feed.post/${p.rkey}`;
+    const gate = (p, allow) =>
+      writeRecord(mira, {
+        collection: GATE,
+        rkey: p.rkey,
+        record: { $type: GATE, post: uriOf(p), createdAt: new Date(NOW).toISOString(), allow },
+      });
+    await gate(mentioned, [{ $type: `${GATE}#mentionRule` }]);
+    await gate(both, [{ $type: `${GATE}#followerRule` }, { $type: `${GATE}#mentionRule` }]);
+    for (const p of [mentioned, both, reply])
+      await req.request('/api/self-destruct/create', {
+        method: 'POST',
+        body: body(uriOf(p), {
+          effects: [{ action: 'limitReplies', allow: ['follower'] }],
+        }),
+      });
+    advance(2 * HOUR);
+    await server.runCron();
+
+    expect(readRecord(mira, GATE, mentioned.rkey).value.allow).toEqual([
+      { $type: `${GATE}#mentionRule` },
+    ]);
+    expect((await timerFor(server, uriOf(mentioned))).acted).toEqual([
+      {
+        action: 'limitReplies',
+        ok: false,
+        detail: 'left the reply settings alone; the rule would have opened them up',
+      },
+    ]);
+    expect(readRecord(mira, GATE, both.rkey).value.allow).toEqual([
+      { $type: `${GATE}#followerRule` },
+    ]);
+    expect((await timerFor(server, uriOf(both))).acted).toEqual([
+      { action: 'limitReplies', ok: true, detail: 'replies limited to your followers' },
+    ]);
+    expect(readRecord(mira, GATE, reply.rkey)).toBeNull();
+    expect((await timerFor(server, uriOf(reply))).acted[0]).toMatchObject({
+      action: 'limitReplies',
+      ok: false,
+      detail: expect.stringContaining('this post is a reply'),
+    });
+  });
+
+  it('narrows as the server does', () => {
+    const LIST = 'at://did:plc:x/app.bsky.graph.list/moots';
+    const cases = [
+      [['follower'], undefined],
+      [['follower', { list: LIST }], undefined],
+      [['follower'], [{ $type: `${GATE}#mentionRule` }]],
+      [['follower'], [{ $type: `${GATE}#followerRule` }, { $type: `${GATE}#followingRule` }]],
+      [['follower'], [{ $type: `${GATE}#followerRule` }]],
+      [['follower'], []],
+      [[], [{ $type: `${GATE}#followerRule` }]],
+      [[{ list: LIST }], [{ $type: `${GATE}#listRule`, list: LIST }, { $type: `${GATE}#mentionRule` }]],
+      [[{ list: LIST }], [{ $type: `${GATE}#listRule`, list: `${LIST}2` }]],
+    ];
+    for (const [wanted, existing] of cases)
+      expect(narrowAllow(wanted, existing)).toEqual(serverNarrowAllow(wanted, existing));
+  });
+
+  it('holds the flat cap where a timer is armed, and lets a post at the cap change its rule', async () => {
+    const { req, server, mira } = setup();
+    const { timers } = server.inspect();
+    const live = timers.find((t) => t.user_did === ME.did && t.status === 'armed');
+    const count = timers.filter(
+      (t) => t.user_did === ME.did && ['armed', 'checking'].includes(t.status),
+    ).length;
+    for (let i = count; i < MAX_LIVE_TIMERS; i++)
+      timers.push({ ...live, id: `filler-${i}`, post_uri: `${live.post_uri}-filler-${i}` });
+
+    const res = await req.request('/api/self-destruct/create', {
+      method: 'POST',
+      body: body(live.post_uri, { lifespanSeconds: 7200 }),
+    });
+    expect(res.data).toMatchObject({ id: live.id, lifespanSeconds: 7200 });
+
+    const fresh = `at://${ME.did}/app.bsky.feed.post/${rootsOf(mira).find((p) => !timers.some((t) => t.rkey === p.rkey)).rkey}`;
+    await expect(
+      req.request('/api/self-destruct/create', { method: 'POST', body: body(fresh) }),
+    ).rejects.toMatchObject({
+      status: 409,
+      code: 'QUOTA_EXCEEDED',
+      payload: { limit: MAX_LIVE_TIMERS },
+    });
+  });
 });
 
 describe('sessions', () => {
@@ -534,12 +638,86 @@ describe('sessions', () => {
     const res = await fetch(`${SERVER_ORIGIN}/api/limits/status`, {});
     expect(res.status).toBe(401);
     expect((await res.json()).code).toBe('FRONTEND_SESSION_INVALID');
-    const out = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.logout}`, {
-      method: 'POST',
+    const session = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.session}`, {
       headers: { Authorization: `Bearer vg_${'1'.repeat(64)}` },
     });
-    expect(out.status).toBe(401);
-    expect((await out.json()).code).toBe('FRONTEND_SESSION_INVALID');
+    expect(session.status).toBe(401);
+    expect((await session.json()).code).toBe('FRONTEND_SESSION_INVALID');
+  });
+
+  it('signs out an unknown token, or none, with a 200, as the server does', async () => {
+    const { fetch } = setup();
+    const logout = (headers) =>
+      fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.logout}`, { method: 'POST', headers, body: '{}' });
+    const unknown = await logout({ Authorization: `Bearer vg_${'1'.repeat(64)}` });
+    expect(unknown.status).toBe(200);
+    expect(await unknown.json()).toEqual({
+      success: true,
+      message: 'Logged out successfully',
+      grantRevoked: false,
+    });
+    const none = await logout({});
+    expect(none.status).toBe(200);
+    expect(await none.json()).toEqual({ success: true, message: 'No session to logout' });
+    expect(
+      await backendSignOut({ backendUrl: SERVER_ORIGIN, token: `vg_${'2'.repeat(64)}`, fetch }),
+    ).toBe(true);
+    // The session check's missing-header 401 carries no code, as session.js.
+    const bare = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.session}`, {});
+    expect(bare.status).toBe(401);
+    expect(await bare.json()).not.toHaveProperty('code');
+  });
+
+  it('keeps the grant for a token dropped with keepGrant', async () => {
+    const { server, fetch } = setup();
+    const token = server.mintToken(LAB.did);
+    const out = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.logout}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ keepGrant: true }),
+    });
+    expect((await out.json()).grantRevoked).toBe(false);
+  });
+
+  it('reads a refused grant as there on the lite check until something has tried it', async () => {
+    const { server, fetch, req, mira, advance } = setup();
+    const token = server.mintToken(ME.did);
+    const auth = { Authorization: `Bearer ${token}` };
+    const lite = async () =>
+      interpretLiteSessionResponse(
+        await checkBackendSession({ backendUrl: SERVER_ORIGIN, token, fetch }),
+      );
+    const uri = `at://${ME.did}/app.bsky.feed.post/${rootsOf(mira)[0].rkey}`;
+    await req.request('/api/self-destruct/create', {
+      method: 'POST',
+      body: { postUri: uri, postedAt: new Date(NOW).toISOString(), lifespanSeconds: 3600 },
+    });
+
+    server.refuseGrant(ME.did);
+    expect(await lite()).toEqual({ status: 'valid', definitive: false });
+
+    const proxied = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.proxy}`, {
+      headers: { ...auth, 'X-XRPC-Method': 'com.atproto.repo.getRecord' },
+    });
+    expect(proxied.status).toBe(401);
+    expect((await proxied.json()).code).toBe('OAUTH_SESSION_MISSING');
+    expect(await lite()).toEqual({ status: 'expired', definitive: false });
+    const full = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.session}`, { headers: auth });
+    expect(await full.json()).toMatchObject({ oauthSessionMissing: true });
+
+    advance(2 * HOUR);
+    await server.runCron();
+    expect(server.inspect().timers.find((t) => t.post_uri === uri)).toMatchObject({
+      status: 'armed',
+      last_error_code: 'SESSION_UNAVAILABLE',
+    });
+
+    // A new sign-in writes a new grant.
+    const again = server.mintToken(ME.did);
+    const fresh = await fetch(`${SERVER_ORIGIN}${BACKEND_PATHS.session}?lite=1`, {
+      headers: { Authorization: `Bearer ${again}` },
+    });
+    expect(await fresh.json()).toMatchObject({ oauthSessionMissing: false });
   });
 
   it('answers a preflight with no content, and the old paths not at all', async () => {
@@ -580,6 +758,25 @@ describe('the adviser and alt text', () => {
       replacement: 'the',
     });
     expect(res.usage).toEqual({ used: 1, limit: 30 });
+  });
+
+  it('reads a text as long as the server does: a long thread, not one post', async () => {
+    expect(MAX_ANALYZE_TEXT).toBe(MAX_TEXT_LENGTH);
+    const { req } = setup();
+    // Eleven posts of about 290 characters, joined as the adviser sends a thread.
+    const thread = Array.from({ length: 11 }, (_, i) => `Post ${i} `.padEnd(290, 'x')).join('\n\n');
+    expect(thread.length).toBeGreaterThan(3000);
+    const read = await req.request('/api/ai/analyze-post', {
+      method: 'POST',
+      body: { text: thread, writingChecks: { typos: true } },
+    });
+    expect(read).toHaveProperty('overallStatus');
+    await expect(
+      req.request('/api/ai/analyze-post', {
+        method: 'POST',
+        body: { text: 'x'.repeat(MAX_TEXT_LENGTH + 1) },
+      }),
+    ).rejects.toMatchObject({ status: 413 });
   });
 
   it('answers ok without counting when there is nothing to check', () => {

@@ -8,8 +8,14 @@
 // With `Accept: application/json` (what the app sends) the answer is
 // { success, authUrl } for the page to navigate to, so a failure stays in the
 // app's own UI; otherwise a 302.
+//
+// Unauthenticated, and each call stores an oauth_state row (for up to an
+// hour) and sends a pushed authorization request signed as Virga to the
+// account's host, so it is limited per address.
 
 import { methodGuard, sendJson } from '../../http.js';
+import { envInt } from '../../env.js';
+import { createRateLimiter } from '../../rateLimit.js';
 import { getOAuthClient } from '../client.js';
 import {
   SCOPE,
@@ -21,14 +27,53 @@ import {
 } from '../config.js';
 import { queryParam, redirect302 } from '../respond.js';
 
-// OIDC prompt values the authorization server understands.
-const PROMPTS = new Set([
-  'login',
-  'none',
-  'consent',
-  'select_account',
-  'create',
-]);
+// OIDC prompt values passed on. Not 'none': nothing in the app asks for a
+// sign-in that can't show the reader anything, and a silent one is only ever
+// someone else's doing.
+const PROMPTS = new Set(['login', 'consent', 'select_account', 'create']);
+
+const LOGIN_LIMIT_PER_MINUTE = 20;
+let limiter = null;
+let limiterLimit = null;
+
+/** The per-address limiter, rebuilt when OAUTH_LOGIN_RATE_LIMIT changes (tests). */
+function loginLimiter() {
+  const limit = envInt(
+    process.env,
+    'OAUTH_LOGIN_RATE_LIMIT',
+    LOGIN_LIMIT_PER_MINUTE,
+  );
+  if (!limiter || limiterLimit !== limit) {
+    limiter = createRateLimiter({ limit, windowMs: 60 * 1000 });
+    limiterLimit = limit;
+  }
+  return limiter;
+}
+
+/** Tests only: start every window afresh. */
+export function resetLoginLimiterForTests() {
+  limiter = null;
+}
+
+const firstHeader = (req, name) => {
+  const value = req.headers?.[name];
+  const text = Array.isArray(value) ? value[0] : value;
+  return typeof text === 'string' ? text.split(',')[0].trim() : '';
+};
+
+/**
+ * The caller's address. Vercel's edge sets x-real-ip and x-forwarded-for
+ * itself, replacing whatever the caller sent, so neither can be chosen to
+ * dodge the limit there.
+ */
+function callerAddress(req) {
+  return (
+    firstHeader(req, 'x-real-ip') ||
+    firstHeader(req, 'x-forwarded-for') ||
+    req.socket?.remoteAddress ||
+    'unknown'
+  );
+}
 
 const ERROR_TEXT = {
   HANDLE_NOT_FOUND: 'That handle could not be found.',
@@ -52,6 +97,17 @@ export default async function handler(req, res) {
 
   const unavailable = unavailableReason();
   if (unavailable) return sendUnavailable(res, unavailable);
+
+  const limit = loginLimiter().check(`login:${callerAddress(req)}`);
+  if (!limit.allowed) {
+    res.setHeader('Retry-After', String(limit.retryAfterSec));
+    return sendJson(res, 429, {
+      success: false,
+      code: 'RATE_LIMITED',
+      error: 'Too many sign-ins at once. Wait a minute and try again.',
+      retryAfter: limit.retryAfterSec,
+    });
+  }
 
   const handle = (queryParam(req, 'handle') || '').trim();
   if (!handle) {

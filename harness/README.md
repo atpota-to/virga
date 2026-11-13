@@ -118,6 +118,10 @@ come from a few word lists, so the same draft always gets the same read.
 From the browser console, `__harness.cron()` runs the workers now,
 `__harness.expire('lab')` ends Field Lab's long session on the server (the next request
 finds out, and after three checks the account shows as signed out),
+`__harness.refuse('lab')` keeps its tokens and stored grant but has the grant refused, as
+a failed refresh does (the workers stop, the proxy and the full session check say the
+OAuth session is missing, and the lite check says it's there until one of them has
+tried it),
 `__harness.agentFor(did)` is the agent the page uses, and
 `__harness.server.inspect()` shows what the server holds.
 

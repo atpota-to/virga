@@ -320,6 +320,27 @@ describe('publishScheduledPost media', () => {
     expect(pds.writes).toEqual([]);
   });
 
+  it('fails terminally with MEDIA_MISSING when a stashed object is gone, and retriably on other Storage errors', async () => {
+    const r = row(['pictures']);
+    r.payload.posts[0].embed = {
+      type: 'images',
+      images: [{ mediaId: 'p0-img0' }],
+    };
+    // Named in the map, but swept from Storage.
+    r.payload.media = {
+      'p0-img0': { storagePath: `${r.id}/p0-img0.png`, encoding: 'image/png' },
+    };
+    const gone = await publishScheduledPost(r).catch((e) => e);
+    expect(gone).toMatchObject({ code: 'MEDIA_MISSING', nonRetryable: true });
+
+    r.payload.media = await stash(r.id, ['p0-img0']);
+    supabase.storage.failNext(MEDIA_BUCKET, 'download');
+    const flaky = await publishScheduledPost(r).catch((e) => e);
+    expect(flaky.nonRetryable).toBeUndefined();
+    expect(flaky.message).toMatch(/media download failed/);
+    expect(pds.writes).toEqual([]);
+  });
+
   it('reads a stashed card thumbnail, or fetches a remote one safely', async () => {
     const r = row(['card']);
     r.payload.media = await stash(r.id, ['p0-thumb']);

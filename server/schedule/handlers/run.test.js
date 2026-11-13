@@ -30,6 +30,14 @@ import {
 const oauth = vi.hoisted(() => ({ restoreSession: vi.fn() }));
 vi.mock('../../oauth/client.js', () => ({ getOAuthClient: () => oauth }));
 
+// The worker refuses to run without a usable OAuth client; these tests give
+// it one unless a test says otherwise.
+const oauthConfig = vi.hoisted(() => ({ unavailableReason: vi.fn() }));
+vi.mock('../../oauth/config.js', async (importOriginal) => ({
+  ...(await importOriginal()),
+  unavailableReason: oauthConfig.unavailableReason,
+}));
+
 const timers = vi.hoisted(() => ({ armForPublishedSchedule: vi.fn() }));
 vi.mock('../../timers/selfDestruct.js', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -57,6 +65,8 @@ beforeEach(async () => {
   pds = fakePds();
   oauth.restoreSession.mockReset();
   oauth.restoreSession.mockResolvedValue(pds.session);
+  oauthConfig.unavailableReason.mockReset();
+  oauthConfig.unavailableReason.mockReturnValue(null);
   timers.armForPublishedSchedule.mockReset();
   timers.armForPublishedSchedule.mockResolvedValue({ id: 'timer-1' });
 });
@@ -143,6 +153,25 @@ describe('who may run the worker', () => {
     const res = await tick();
     expect(res.statusCode).toBe(503);
     expect(res.body.code).toBe('UNAVAILABLE');
+  });
+
+  it('claims nothing while the OAuth client cannot start, so due posts keep their attempts', async () => {
+    const row = await insertDue();
+    oauthConfig.unavailableReason.mockReturnValue(
+      'OAUTH_PRIVATE_KEY_1 is not set',
+    );
+    const res = await tick();
+    expect(res.statusCode).toBe(503);
+    expect(res.body.code).toBe('VIRGA_CLIENT_UNAVAILABLE');
+    expect(await readRow(row.id)).toMatchObject({
+      status: 'pending',
+      attempts: 0,
+      locked_at: null,
+    });
+    expect(oauth.restoreSession).not.toHaveBeenCalled();
+
+    oauthConfig.unavailableReason.mockReturnValue(null);
+    expect((await tick()).body.published).toBe(1);
   });
 });
 

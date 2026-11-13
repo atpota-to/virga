@@ -129,6 +129,22 @@ describe('createTestDatabase', () => {
     }
   });
 
+  it('leaves the automatic grants out on request, so service_role gets only what a migration GRANTs', async () => {
+    const t = await createTestDatabase({ dir, defaultGrants: false });
+    try {
+      const { rows } = await t.query(
+        `SELECT has_table_privilege('service_role', 'public.later', 'SELECT') AS service_table,
+                has_table_privilege('anon', 'public.later', 'SELECT') AS anon_table,
+                has_function_privilege('service_role', 'public.count_things(text)', 'EXECUTE') AS service_revoked_fn,
+                has_function_privilege('service_role', 'public.echo_json(jsonb)', 'EXECUTE') AS service_open_fn`,
+      );
+      // echo_json is still open through Postgres's own EXECUTE-to-PUBLIC default.
+      expect(rows[0]).toEqual({ service_table: false, anon_table: false, service_revoked_fn: false, service_open_fn: true });
+    } finally {
+      await t.close();
+    }
+  });
+
   it('applies up to a migration, and a guarded bucket insert runs or skips', async () => {
     const first = await createTestDatabase({ dir, upTo: '20260101000100' });
     try {

@@ -33,7 +33,8 @@ import { OAUTH_SCOPE } from '../../../src/config.js';
 import { getOAuthClient, resetOAuthForTests } from '../client.js';
 import { clientMetadata } from '../config.js';
 import { installOAuthEnv } from '../testing/env.js';
-import loginHandler from './login.js';
+import { tokenKey } from '../storage.js';
+import loginHandler, { resetLoginLimiterForTests } from './login.js';
 import callbackHandler from './callback.js';
 import metadataHandler from './clientMetadata.js';
 import jwksHandler from './jwks.js';
@@ -68,6 +69,7 @@ afterAll(() => {
 beforeEach(async () => {
   db.reset();
   resetOAuthForTests();
+  resetLoginLimiterForTests();
   virga = getOAuthClient();
   await virga.initPromise;
   realGenerate = virga.generateLoginUrl.bind(virga);
@@ -161,10 +163,44 @@ describe('GET /api/oauth/login', () => {
       redirect_uri: RETURN,
       prompt: 'whatever',
     });
+    // A silent sign-in is never the reader's own doing.
+    await login({
+      handle: 'reader.example.com',
+      redirect_uri: RETURN,
+      prompt: 'none',
+    });
     expect(virga.generateLoginUrl.mock.calls[0][1].prompt).toBe('login');
     expect(virga.generateLoginUrl.mock.calls[1][1]).not.toHaveProperty(
       'prompt',
     );
+    expect(virga.generateLoginUrl.mock.calls[2][1]).not.toHaveProperty(
+      'prompt',
+    );
+  });
+
+  it('limits sign-ins per address, answering 429 with Retry-After', async () => {
+    const saved = process.env.OAUTH_LOGIN_RATE_LIMIT;
+    process.env.OAUTH_LOGIN_RATE_LIMIT = '2';
+    try {
+      const from = (ip) => ({ accept: 'application/json', 'x-real-ip': ip });
+      const query = { handle: 'reader.example.com', redirect_uri: RETURN };
+      expect((await login(query, from('203.0.113.7'))).statusCode).toBe(200);
+      expect((await login(query, from('203.0.113.7'))).statusCode).toBe(200);
+      const refused = await login(query, from('203.0.113.7'));
+      expect(refused.statusCode).toBe(429);
+      expect(refused.headers['retry-after']).toBe('60');
+      expect(refused.body).toMatchObject({
+        success: false,
+        code: 'RATE_LIMITED',
+      });
+      // Refused before anything is resolved or stored.
+      expect(virga.generateLoginUrl).toHaveBeenCalledTimes(2);
+      // Another address has its own window.
+      expect((await login(query, from('198.51.100.4'))).statusCode).toBe(200);
+    } finally {
+      if (saved === undefined) delete process.env.OAUTH_LOGIN_RATE_LIMIT;
+      else process.env.OAUTH_LOGIN_RATE_LIMIT = saved;
+    }
   });
 
   it("defaults the return page to OAUTH_PUBLIC_URL's /oauth/return", async () => {
@@ -297,13 +333,20 @@ describe('GET /api/oauth/login', () => {
 describe('GET /api/oauth/callback', () => {
   const okState = (redirect = RETURN) =>
     JSON.stringify({ redirect_uri: redirect, timestamp: 1 });
+  // A finished callback, with the session row the library saves on the way.
+  const stored = (result) => {
+    db.rowsOf('oauth_sessions').push({ sub: result.userDID, session_data: {} });
+    return result;
+  };
 
   it('hands a vg_ token to the page in the fragment only, keeping its query', async () => {
-    virga.handleCallback = vi.fn(async () => ({
-      userDID: DID,
-      session: {},
-      state: okState(),
-    }));
+    virga.handleCallback = vi.fn(async () =>
+      stored({
+        userDID: DID,
+        session: {},
+        state: okState(),
+      }),
+    );
     const res = await callback(
       'code=abc&state=s1&iss=https%3A%2F%2Fbsky.social',
     );
@@ -322,13 +365,15 @@ describe('GET /api/oauth/callback', () => {
 
     expect(db.rowsOf('frontend_sessions')).toEqual([
       expect.objectContaining({
-        token: fragment.get('session'),
+        token_hash: tokenKey(fragment.get('session')),
         user_did: DID,
       }),
     ]);
-    // The library has already saved the session and cleared the state: one write.
+    // The library has already saved the session and cleared the state: one
+    // write, then a look that a sign-out hasn't taken the grant meanwhile.
     expect(db.ops.map((o) => `${o.table}:${o.verb}`)).toEqual([
       'frontend_sessions:insert',
+      'oauth_sessions:select',
     ]);
     const [params] = virga.handleCallback.mock.calls[0];
     expect(params.get('code')).toBe('abc');
@@ -414,11 +459,13 @@ describe('GET /api/oauth/callback', () => {
   });
 
   it('never returns to a page off the allowlist, whatever the state says', async () => {
-    virga.handleCallback = vi.fn(async () => ({
-      userDID: DID,
-      session: {},
-      state: okState('https://evil.example/steal'),
-    }));
+    virga.handleCallback = vi.fn(async () =>
+      stored({
+        userDID: DID,
+        session: {},
+        state: okState('https://evil.example/steal'),
+      }),
+    );
     const res = await callback('code=abc&state=s1');
     expect(new URL(res.redirectedTo).origin).toBe('https://virga.example.com');
   });
@@ -428,17 +475,50 @@ describe('GET /api/oauth/callback', () => {
     // attacker's authorization server with the token still in the fragment.
     const bounce =
       'https://virga.example.com/api/oauth/login?handle=evil.example&redirect_uri=https%3A%2F%2Fvirga.example.com%2Foauth%2Freturn';
-    virga.handleCallback = vi.fn(async () => ({
-      userDID: DID,
-      session: {},
-      state: okState(bounce),
-    }));
+    virga.handleCallback = vi.fn(async () =>
+      stored({
+        userDID: DID,
+        session: {},
+        state: okState(bounce),
+      }),
+    );
     const res = await callback('code=abc&state=s1');
     const url = new URL(res.redirectedTo);
     expect(`${url.origin}${url.pathname}`).toBe(
       'https://virga.example.com/oauth/return',
     );
     expect(url.search).toBe('');
+  });
+
+  it('hands out no token when a sign-out ended the grant as it was stored', async () => {
+    // The library saved the grant, then the DID's last device signed out and
+    // deleted it before the token was minted.
+    virga.handleCallback = vi.fn(async () => ({
+      userDID: DID,
+      session: {},
+      state: okState(),
+    }));
+    const res = await callback('code=abc&state=s1');
+    expect(res.statusCode).toBe(302);
+    const url = new URL(res.redirectedTo);
+    expect(url.searchParams.get('error')).toBe('callback_failed');
+    expect(res.redirectedTo).not.toMatch(/session=/);
+    expect(db.rowsOf('frontend_sessions')).toEqual([]);
+  });
+
+  it('mints the token under the grant lock a last-device sign-out takes', async () => {
+    virga.handleCallback = vi.fn(async () =>
+      stored({
+        userDID: DID,
+        session: {},
+        state: okState(),
+      }),
+    );
+    await callback('code=abc&state=s1');
+    expect(db.rpcs.map((r) => [r.name, r.args.p_key])).toEqual([
+      ['acquire_oauth_lock', `virga-grant-${DID}`],
+      ['release_oauth_lock', `virga-grant-${DID}`],
+    ]);
   });
 
   it('sends a failure for another page on an allowed origin to the return page', async () => {
@@ -468,11 +548,13 @@ describe('GET /api/oauth/callback', () => {
   });
 
   it('fails a token that cannot be stored back to the page, with no token', async () => {
-    virga.handleCallback = vi.fn(async () => ({
-      userDID: DID,
-      session: {},
-      state: okState(),
-    }));
+    virga.handleCallback = vi.fn(async () =>
+      stored({
+        userDID: DID,
+        session: {},
+        state: okState(),
+      }),
+    );
     db.failNext('frontend_sessions', 'insert');
     const res = await callback('code=abc&state=s1');
     const url = new URL(res.redirectedTo);

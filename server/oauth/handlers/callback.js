@@ -11,7 +11,10 @@
 // used state) it goes to OAUTH_PUBLIC_URL's return page.
 //
 // Nothing else happens here: the library has already saved the OAuth session
-// and cleared the state, so the one write is the token.
+// and cleared the state, so the one write is the token. It is minted under
+// the DID's grant lock, which a sign-out of the DID's last device holds while
+// it revokes and deletes the grant; a grant that sign-out took away first is
+// answered as a failed sign-in, never as a token with nothing behind it.
 
 import { methodGuard, sendJson } from '../../http.js';
 import { getOAuthClient } from '../client.js';
@@ -21,7 +24,7 @@ import {
   sendUnavailable,
   unavailableReason,
 } from '../config.js';
-import { getStorage } from '../storage.js';
+import { getStorage, grantLockKey } from '../storage.js';
 import {
   buildCodedErrorRedirectUrl,
   buildFragmentRedirectUrl,
@@ -93,8 +96,26 @@ export default async function handler(req, res) {
       });
     }
 
-    const sessionToken =
-      await getStorage().frontendSessionStore.create(userDID);
+    const storage = getStorage();
+    const sessionToken = await storage.lock(grantLockKey(userDID), async () => {
+      const token = await storage.frontendSessionStore.create(userDID);
+      // null is "the store can't say": the grant was just saved, so go on.
+      if ((await storage.sessionStore.exists(userDID)) === false) {
+        await storage.frontendSessionStore.deleteToken(token);
+        return null;
+      }
+      return token;
+    });
+    if (!sessionToken) {
+      console.warn(
+        `[oauth/callback] a sign-out ended the grant for ${userDID} as it was stored`,
+      );
+      return fail(
+        state,
+        'callback_failed',
+        'Signing in was interrupted by a sign-out. Try again.',
+      );
+    }
     console.log(`[oauth/callback] signed in ${userDID}`);
     return redirect302(
       res,

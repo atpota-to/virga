@@ -17,7 +17,7 @@ import {
   resetSupabaseClientForTests,
   setSupabaseClientForTests,
 } from '../supabase.js';
-import { FrontendSessionStore } from './storage.js';
+import { FrontendSessionStore, tokenKey } from './storage.js';
 import { resetOAuthForTests } from './client.js';
 import { resolveUserDid } from './auth.js';
 import { TOKEN, tokenOf } from './testing/env.js';
@@ -61,10 +61,38 @@ describe('tokens', () => {
     const b = await s.create(DID);
     expect(a).toMatch(/^vg_[0-9a-f]{64}$/);
     expect(b).not.toBe(a);
-    expect(db.rowsOf('frontend_sessions').map((r) => r.token)).toEqual([a, b]);
+    // Only the hash is stored; the token itself goes to the browser alone.
+    expect(db.rowsOf('frontend_sessions').map((r) => r.token_hash)).toEqual([
+      tokenKey(a),
+      tokenKey(b),
+    ]);
+    expect(JSON.stringify(db.rowsOf('frontend_sessions'))).not.toContain(
+      a.slice(3),
+    );
     expect(db.rowsOf('frontend_sessions')[0]).toMatchObject({
       user_did: DID,
       expires_at: iso(NOW + 30 * DAY),
+    });
+  });
+
+  it('refuses what a dump of the table holds, presented as a token', async () => {
+    db.rowsOf('frontend_sessions').push({
+      token_hash: tokenKey(TOKEN),
+      user_did: DID,
+      expires_at: iso(NOW + 20 * DAY),
+    });
+    const dumped = db.rowsOf('frontend_sessions')[0].token_hash;
+    expect(await store().validateWithDetails(dumped)).toEqual({
+      userDid: null,
+      error: null,
+    });
+    expect(await store().validateWithDetails(`vg_${dumped}`)).toEqual({
+      userDid: null,
+      error: null,
+    });
+    expect(await store().validateWithDetails(TOKEN)).toEqual({
+      userDid: DID,
+      error: null,
     });
   });
 
@@ -91,7 +119,7 @@ describe('tokens', () => {
 
   it('reads a token once, then answers from the cache', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 20 * DAY),
     });
@@ -113,7 +141,7 @@ describe('tokens', () => {
 
   it('reads again once the cached expiry has passed, and refuses then', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 30 * 1000),
     });
@@ -132,7 +160,7 @@ describe('tokens', () => {
 describe('sliding expiry', () => {
   it('renews a token with under seven days left to thirty days from now', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 3 * DAY),
     });
@@ -145,14 +173,14 @@ describe('sliding expiry', () => {
     );
     expect(verbs()).toEqual(['select', 'update']);
     expect(db.ops[1].filters).toEqual([
-      `token eq ${TOKEN}`,
+      `token_hash eq ${tokenKey(TOKEN)}`,
       `user_did eq ${DID}`,
     ]);
   });
 
   it('leaves a token with a week or more alone', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 8 * DAY),
     });
@@ -162,7 +190,7 @@ describe('sliding expiry', () => {
 
   it('tries at most once a day per token', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 3 * DAY),
     });
@@ -188,7 +216,7 @@ describe('sliding expiry', () => {
 
   it('refuses an expired token and deletes it', async () => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW - 1000),
     });
@@ -230,7 +258,7 @@ describe('transient failures', () => {
   it('recovers when a later read succeeds', async () => {
     vi.useRealTimers();
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(Date.now() + 20 * DAY),
     });
@@ -246,10 +274,18 @@ describe('transient failures', () => {
 describe('countForUser and deleteToken', () => {
   it('counts only live tokens of the DID, with exactly those filters', async () => {
     const rows = db.rowsOf('frontend_sessions');
-    rows.push({ token: tokenOf(1), user_did: DID, expires_at: iso(NOW + DAY) });
-    rows.push({ token: tokenOf(2), user_did: DID, expires_at: iso(NOW - DAY) });
     rows.push({
-      token: tokenOf(3),
+      token_hash: tokenKey(tokenOf(1)),
+      user_did: DID,
+      expires_at: iso(NOW + DAY),
+    });
+    rows.push({
+      token_hash: tokenKey(tokenOf(2)),
+      user_did: DID,
+      expires_at: iso(NOW - DAY),
+    });
+    rows.push({
+      token_hash: tokenKey(tokenOf(3)),
       user_did: 'did:plc:someoneelse',
       expires_at: iso(NOW + DAY),
     });
@@ -268,13 +304,23 @@ describe('countForUser and deleteToken', () => {
   it('deletes just the one token and forgets it', async () => {
     const other = tokenOf(4);
     db.rowsOf('frontend_sessions').push(
-      { token: TOKEN, user_did: DID, expires_at: iso(NOW + 20 * DAY) },
-      { token: other, user_did: DID, expires_at: iso(NOW + 20 * DAY) },
+      {
+        token_hash: tokenKey(TOKEN),
+        user_did: DID,
+        expires_at: iso(NOW + 20 * DAY),
+      },
+      {
+        token_hash: tokenKey(other),
+        user_did: DID,
+        expires_at: iso(NOW + 20 * DAY),
+      },
     );
     const s = store();
     await s.validateWithDetails(TOKEN);
     expect(await s.deleteToken(TOKEN)).toBe(true);
-    expect(db.rowsOf('frontend_sessions').map((r) => r.token)).toEqual([other]);
+    expect(db.rowsOf('frontend_sessions').map((r) => r.token_hash)).toEqual([
+      tokenKey(other),
+    ]);
     expect(await s.validateWithDetails(TOKEN)).toEqual({
       userDid: null,
       error: null,
@@ -293,7 +339,7 @@ describe('resolveUserDid', () => {
 
   beforeEach(() => {
     db.rowsOf('frontend_sessions').push({
-      token: TOKEN,
+      token_hash: tokenKey(TOKEN),
       user_did: DID,
       expires_at: iso(NOW + 20 * DAY),
     });

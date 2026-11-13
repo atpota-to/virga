@@ -22,6 +22,10 @@ vi.mock('../selfDestruct.js', async (importOriginal) => {
     fetchEngagement: vi.fn(),
   };
 });
+vi.mock('../../oauth/config.js', async (importOriginal) => {
+  const real = await importOriginal();
+  return { ...real, unavailableReason: vi.fn(() => null) };
+});
 vi.mock('../timerUsage.js', async (importOriginal) => {
   const real = await importOriginal();
   return { ...real, enforceTimerLimit: vi.fn(), settleArmedTimer: vi.fn() };
@@ -30,6 +34,7 @@ vi.mock('../timerUsage.js', async (importOriginal) => {
 const { resolveUserDid } = await import('../../oauth/auth.js');
 const selfDestruct = await import('../selfDestruct.js');
 const timerUsage = await import('../timerUsage.js');
+const oauthConfig = await import('../../oauth/config.js');
 const { default: createHandler } = await import('./create.js');
 const { default: listHandler } = await import('./list.js');
 const { default: cancelHandler } = await import('./cancel.js');
@@ -56,6 +61,7 @@ let errorSpy;
 beforeEach(() => {
   vi.clearAllMocks();
   resolveUserDid.mockResolvedValue({ userDid: DID, status: 200, error: null, code: null });
+  oauthConfig.unavailableReason.mockImplementation(() => null);
   selfDestruct.armSelfDestruct.mockImplementation(async (value) => ({ row: storedRow(value), existing: false }));
   timerUsage.enforceTimerLimit.mockResolvedValue({ bucket: 'plain', limit: null });
   timerUsage.settleArmedTimer.mockResolvedValue(undefined);
@@ -144,6 +150,37 @@ describe('POST /api/self-destruct/create', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.data.clientKey).toBe('virga');
     expect(timerUsage.settleArmedTimer).not.toHaveBeenCalled();
+  });
+
+  it('refuses to answer a changed rule as set while the timer there is being checked', async () => {
+    // The row is mid-check, so the store left the old rule (a delete) on it.
+    selfDestruct.armSelfDestruct.mockImplementation(async (value) => ({
+      row: storedRow(value, { status: 'checking', effects: null }), existing: true, updated: false,
+    }));
+    const res = await call(createHandler, {
+      body: body({ effects: [{ action: 'limitReplies', allow: [] }] }),
+    });
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toMatchObject({ success: false, code: 'NOT_REARMABLE' });
+    expect(res.body.error).toMatch(/being checked/);
+    expect(timerUsage.settleArmedTimer).not.toHaveBeenCalled();
+  });
+
+  it('still answers 200 to a retry carrying the rule a checking timer already has', async () => {
+    selfDestruct.armSelfDestruct.mockImplementation(async (value) => ({
+      row: storedRow(value, { status: 'checking', check_at: '2026-11-13T00:00:00.000Z' }), existing: true, updated: false,
+    }));
+    const res = await call(createHandler, { body: body() });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.status).toBe('checking');
+  });
+
+  it('refuses a changed window on a checking timer too', async () => {
+    selfDestruct.armSelfDestruct.mockImplementation(async (value) => ({
+      row: storedRow(value, { status: 'checking', lifespan_seconds: 3600 }), existing: true, updated: false,
+    }));
+    const res = await call(createHandler, { body: body({ lifespanSeconds: 7200 }) });
+    expect(res.statusCode).toBe(409);
   });
 
   it('reads a body that arrives as a string', async () => {
@@ -367,6 +404,16 @@ describe('GET /api/self-destruct/run', () => {
       expect(res.statusCode).toBe(401);
       expect(res.body).toEqual({ success: false, error: 'Unauthorized' });
     }
+    expect(selfDestruct.reclaimStuck).not.toHaveBeenCalled();
+    expect(selfDestruct.claimDueSelfDestructs).not.toHaveBeenCalled();
+  });
+
+  it('touches no timer while the OAuth client is unavailable, so no attempt is spent', async () => {
+    oauthConfig.unavailableReason.mockImplementation(() => 'OAUTH_PRIVATE_KEY_1 is not set');
+    const res = await call(runHandler, cron());
+    expect(res.statusCode).toBe(503);
+    expect(res.body).toMatchObject({ success: false, code: 'VIRGA_CLIENT_UNAVAILABLE' });
+    expect(JSON.stringify(res.body)).not.toMatch(/OAUTH_PRIVATE_KEY/);
     expect(selfDestruct.reclaimStuck).not.toHaveBeenCalled();
     expect(selfDestruct.claimDueSelfDestructs).not.toHaveBeenCalled();
   });

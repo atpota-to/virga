@@ -21,8 +21,10 @@ import {
   OAuthClientWrapper,
   createHandleResolver,
   getOAuthClient,
+  isTerminalRestoreError,
   resetOAuthForTests,
 } from './client.js';
+import { restoreWithRetry } from './restore.js';
 import { clientMetadata } from './config.js';
 import { createStorage } from './storage.js';
 import { installClientHooks } from './lockFastPath.js';
@@ -217,5 +219,111 @@ describe('createHandleResolver', () => {
     expect(calls.find((u) => u.startsWith('https://appview.example/'))).toBe(
       'https://appview.example/xrpc/com.atproto.identity.resolveHandle?handle=a%26b%3Dc',
     );
+  });
+});
+
+describe('a grant the authorization server refuses', () => {
+  // Named like the library's own, which is how the wrapper tells them apart.
+  class TokenRefreshError extends Error {}
+  const DID = 'did:plc:deadgrant000000000000000';
+  const row = (refresh) => ({
+    sub: DID,
+    session_data: {
+      dpopJwk: {},
+      authMethod: { method: 'private_key_jwt', kid: 'virga-test-key' },
+      tokenSet: { sub: DID, refresh_token: refresh, access_token: 'a' },
+    },
+  });
+
+  async function wrapperWith(restore) {
+    const wrapper = new OAuthClientWrapper({ storage: createStorage() });
+    await wrapper.initPromise;
+    wrapper.client.restore = vi.fn(restore);
+    return wrapper;
+  }
+  const retry = (wrapper) =>
+    restoreWithRetry(wrapper, DID, { delayStepMs: 0, tag: 'test' });
+
+  it('is tried for one whole budget, then answered at once until the stored grant changes', async () => {
+    db.rowsOf('oauth_sessions').push(row('rt-1'));
+    const wrapper = await wrapperWith(async () => {
+      throw new TokenRefreshError('The session was revoked');
+    });
+    expect(await retry(wrapper)).toBeNull();
+    expect(wrapper.client.restore).toHaveBeenCalledTimes(3);
+
+    expect(await retry(wrapper)).toBeNull();
+    expect(await wrapper.restoreSession(DID)).toBeNull();
+    // No more refreshes sent for it.
+    expect(wrapper.client.restore).toHaveBeenCalledTimes(3);
+
+    // A sign-in elsewhere stores a new grant: tried again straight away.
+    db.rowsOf('oauth_sessions')[0] = row('rt-2');
+    const session = { did: DID };
+    wrapper.client.restore.mockResolvedValue(session);
+    expect(await retry(wrapper)).toBe(session);
+  });
+
+  it('is never remembered for a failure that is not the grant itself', async () => {
+    db.rowsOf('oauth_sessions').push(row('rt-1'));
+    const wrapper = await wrapperWith(async () => {
+      throw new TypeError('fetch failed');
+    });
+    await retry(wrapper);
+    await retry(wrapper);
+    expect(wrapper.client.restore).toHaveBeenCalledTimes(6);
+  });
+
+  it('is not remembered when a later try in the budget wins a refresh race', async () => {
+    db.rowsOf('oauth_sessions').push(row('rt-1'));
+    const session = { did: DID };
+    const wrapper = await wrapperWith(async () => session);
+    wrapper.client.restore.mockRejectedValueOnce(
+      new TokenRefreshError('invalid_grant'),
+    );
+    expect(await retry(wrapper)).toBe(session);
+    expect(wrapper.deadGrants.get(DID)).toBeUndefined();
+  });
+
+  it('reads as missing to the lite check while it is the grant stored', async () => {
+    db.rowsOf('oauth_sessions').push(row('rt-1'));
+    const wrapper = await wrapperWith(async () => {
+      throw new TokenRefreshError('The session was revoked');
+    });
+    await retry(wrapper);
+    const stored = await wrapper.storage.sessionStore.read(DID);
+    expect(wrapper.isDeadGrantSession(DID, stored)).toBe(true);
+    expect(wrapper.isDeadGrantSession(DID, row('rt-2').session_data)).toBe(
+      false,
+    );
+  });
+
+  it('is forgotten when the account signs in again on this instance', async () => {
+    db.rowsOf('oauth_sessions').push(row('rt-1'));
+    const wrapper = await wrapperWith(async () => {
+      throw new TokenRefreshError('The session was revoked');
+    });
+    await retry(wrapper);
+    wrapper.client.callback = vi.fn(async () => ({
+      session: { did: DID },
+      state: '{}',
+    }));
+    await wrapper.handleCallback(new URLSearchParams('code=c&state=s'));
+    expect(wrapper.deadGrants.get(DID)).toBeUndefined();
+  });
+});
+
+describe('isTerminalRestoreError', () => {
+  it("reads the library's terminal errors by name, through a cause chain", () => {
+    class TokenRevokedError extends Error {}
+    class AuthMethodUnsatisfiableError extends Error {}
+    expect(isTerminalRestoreError(new TokenRevokedError('x'))).toBe(true);
+    expect(
+      isTerminalRestoreError(
+        new Error('wrapped', { cause: new AuthMethodUnsatisfiableError('k') }),
+      ),
+    ).toBe(true);
+    expect(isTerminalRestoreError(new TypeError('fetch failed'))).toBe(false);
+    expect(isTerminalRestoreError(undefined)).toBe(false);
   });
 });

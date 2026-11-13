@@ -149,6 +149,20 @@ describe('flat limits from env', () => {
       postTimers: { isUnlimited: false, limit: 3 },
       conditionalTimers: { isUnlimited: false, limit: 1 },
     });
+    // A limit above the cap is reported as the cap, which is what is enforced.
+    expect(
+      featureStatus({ SCHEDULED_POSTS_LIMIT: '80', SCHEDULE_MAX_PENDING: '50' })
+        .scheduledPosts,
+    ).toEqual({ isUnlimited: false, limit: 50 });
+    expect(
+      featureStatus({ SCHEDULED_POSTS_LIMIT: '80', SCHEDULE_MAX_PENDING: '50' })
+        .scheduledPosts.limit,
+    ).toBe(
+      scheduledPostsCeiling({
+        SCHEDULED_POSTS_LIMIT: '80',
+        SCHEDULE_MAX_PENDING: '50',
+      }),
+    );
     expect(
       featureLimit('scheduledPosts', { SCHEDULED_POSTS_LIMIT: '' }),
     ).toBeNull();

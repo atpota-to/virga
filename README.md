@@ -325,8 +325,11 @@ Preview deployments get no OAuth key (keep the server settings to Production), s
 answer 503 on the sign-in routes and stay on browser sign-ins.
 
 **Crons.** Scheduled posts and timers go out within about a minute of their time because
-the crons run every minute. If the Vercel plan runs crons less often, call the two run
-paths from somewhere else instead, for example Supabase's `pg_cron` and `pg_net`:
+the crons run every minute. That needs a paid Vercel plan: on Hobby, Vercel refuses to
+deploy a cron that runs more than once a day, so the whole site fails to deploy, browser
+sign-ins included. On Hobby, delete the `crons` entries from `vercel.json`, then call the
+two run paths every minute from somewhere else, for example Supabase's `pg_cron` and
+`pg_net`:
 
 ```sql
 select cron.schedule('virga-schedule', '* * * * *', $$

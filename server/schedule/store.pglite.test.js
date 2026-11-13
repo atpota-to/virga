@@ -259,13 +259,16 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
   });
 
   it('re-mints the later row’s keys when two rows share one', async () => {
+    // Keys are minted from the time, so a clash is two rows at one time.
+    const when = inHours(3);
     const earlier = await insertRow({
+      scheduled_for: when,
       payload: payload(['a'], { rkeys: ['3kshared00002'] }),
       created_at: iso(Date.now() - MINUTE),
     });
     const later = await scheduled.createScheduledPost({
       userDid: DID,
-      scheduledFor: inHours(3),
+      scheduledFor: when,
       payload: payload(['b'], { rkeys: ['3kshared00002'] }),
     });
     expect(later.payload.rkeys).toHaveLength(1);
@@ -295,6 +298,63 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
 });
 
 describe('assignRkeys', () => {
+  it('re-rolls past a neighbour’s keys and the batch’s own, reading only rows near the time', async () => {
+    const when = inHours(5);
+    const first = await scheduled.assignRkeys({
+      userDid: DID,
+      scheduledFor: when,
+      postCount: 2,
+    });
+    await insertRow({
+      scheduled_for: when,
+      payload: payload(['a', 'b'], { rkeys: first }),
+    });
+    // Record the range the read asks for: a TID encodes its time, so a row a
+    // day away can't share a key and its payload shouldn't be read at all.
+    const ranges = [];
+    const realFrom = t.supabase.from;
+    const fromSpy = vi.spyOn(t.supabase, 'from').mockImplementation((table) => {
+      const builder = realFrom(table);
+      for (const op of ['gte', 'lte']) {
+        const real = builder[op];
+        builder[op] = (column, value) => {
+          ranges.push([op, column, value]);
+          return real(column, value);
+        };
+      }
+      return builder;
+    });
+    const second = await scheduled.assignRkeys({
+      userDid: DID,
+      scheduledFor: when,
+      postCount: 2,
+    });
+    fromSpy.mockRestore();
+    expect(second.some((k) => first.includes(k))).toBe(false);
+    const ms = new Date(when).getTime();
+    expect(ranges).toEqual([
+      ['gte', 'scheduled_for', iso(ms - 1000)],
+      ['lte', 'scheduled_for', iso(ms + 1000)],
+    ]);
+  });
+
+  it('keeps clear of keys handed out earlier in the same batch', async () => {
+    const when = inHours(6);
+    const minted = new Set();
+    for (let i = 0; i < 20; i++) {
+      const keys = await scheduled.assignRkeys({
+        userDid: DID,
+        scheduledFor: when,
+        postCount: 3,
+        avoid: minted,
+      });
+      for (const k of keys) {
+        expect(minted.has(k)).toBe(false);
+        minted.add(k);
+      }
+    }
+  });
+
   it('mints one TID per post from the scheduled time, clear of the account’s keys', async () => {
     const when = inHours(5);
     const keys = await scheduled.assignRkeys({
@@ -652,7 +712,82 @@ describe('rescheduleScheduledPost', () => {
 });
 
 describe('retryFailedScheduledPost', () => {
-  it('puts a failed row back as it stands, keeping keys and progress', async () => {
+  it('sends a row that wrote nothing out now, with keys minted for now', async () => {
+    const monday = iso(Date.now() - 2 * DAY);
+    const a = await insertRow({
+      status: 'failed',
+      attempts: 5,
+      scheduled_for: monday,
+      payload: payload(['a', 'b'], {
+        rkeys: ['3kold00000002', '3kold00000003'],
+        tz: 'Europe/Paris',
+      }),
+      last_error_code: 'SESSION_UNAVAILABLE',
+    });
+    const before = Date.now();
+    const row = await scheduled.retryFailedScheduledPost({
+      id: a.id,
+      userDid: DID,
+    });
+    expect(row).toMatchObject({ status: 'pending', attempts: 0, progress: [] });
+    const when = new Date(row.scheduled_for).getTime();
+    expect(when).toBeGreaterThanOrEqual(before - 1000);
+    expect(when).toBeLessThanOrEqual(Date.now() + 1000);
+    expect(row.payload.rkeys).toHaveLength(2);
+    expect(row.payload.rkeys).not.toContain('3kold00000002');
+    // Fresh keys come from the new time, as every other mint does.
+    const fresh = await scheduled.assignRkeys({
+      userDid: OTHER_DID,
+      scheduledFor: row.scheduled_for,
+      postCount: 2,
+    });
+    expect(row.payload.rkeys[0].slice(0, 11)).toBe(fresh[0].slice(0, 11));
+    expect(row.payload).toMatchObject({ tz: 'Europe/Paris' });
+    expect(row.payload.posts).toHaveLength(2);
+  });
+
+  it('refuses a retry the sweep left without its images: MEDIA_MISSING', async () => {
+    const posts = [
+      { record: { text: 'a' } },
+      {
+        record: { text: 'b' },
+        embed: { type: 'images', images: [{ mediaId: 'p1-img0' }] },
+      },
+    ];
+    const media = { 'p1-img0': { storagePath: 'x/p1-img0.png' } };
+    const whole = await insertRow({
+      status: 'failed',
+      payload: payload([], { posts, media }),
+    });
+    const part = await insertRow({
+      status: 'failed',
+      payload: payload([], { posts, media }),
+      progress: [{ uri: 'at://x/app.bsky.feed.post/1', cid: 'c' }],
+    });
+    // Its only image was on the post already out, so the tail can still go.
+    const done = await insertRow({
+      status: 'failed',
+      payload: payload([], { posts: [...posts].reverse(), media }),
+      progress: [{ uri: 'at://x/app.bsky.feed.post/1', cid: 'c' }],
+    });
+    await t.query(
+      `UPDATE scheduled_posts SET media_reclaimed_at = NOW() WHERE id = ANY($1::uuid[])`,
+      [[whole.id, part.id, done.id]],
+    );
+    expect(
+      await scheduled.retryFailedScheduledPost({ id: whole.id, userDid: DID }),
+    ).toEqual({ blocked: 'MEDIA_MISSING', partial: false });
+    expect(
+      await scheduled.retryFailedScheduledPost({ id: part.id, userDid: DID }),
+    ).toEqual({ blocked: 'MEDIA_MISSING', partial: true });
+    expect((await readRow(whole.id)).status).toBe('failed');
+    expect(
+      (await scheduled.retryFailedScheduledPost({ id: done.id, userDid: DID }))
+        .status,
+    ).toBe('pending');
+  });
+
+  it('puts a part-published thread back as it stands, keeping keys, progress and time', async () => {
     const progress = [{ uri: 'at://x/app.bsky.feed.post/1', cid: 'c' }];
     const a = await insertRow({
       status: 'failed',
@@ -674,6 +809,9 @@ describe('retryFailedScheduledPost', () => {
       progress,
     });
     expect(row.payload.rkeys).toEqual(['3kkeep0000002', '3kkeep0000003']);
+    expect(new Date(row.scheduled_for).toISOString()).toBe(
+      new Date(a.scheduled_for).toISOString(),
+    );
   });
 
   it('answers null for a row that is not failed or not the account’s', async () => {
@@ -819,10 +957,34 @@ describe('media', () => {
     });
     expect(await scheduled.getScheduledMediaMap(a.id, OTHER_DID)).toBeNull();
 
+    // An object under the row's folder that the map never learned about.
+    const stray = await scheduled.storeMedia(
+      a.id,
+      'stray',
+      PNG_BASE64,
+      'image/png',
+      'e-2',
+    );
     const cancelled = await scheduled.cancelScheduledPost(a.id, DID);
     expect(cancelled.status).toBe('cancelled');
     expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('scheduled-media', stray)).toBeUndefined();
+    expect((await readRow(a.id)).media_reclaimed_at).not.toBeNull();
     expect(await scheduled.cancelScheduledPost(a.id, DID)).toBeNull();
+  });
+
+  it('leaves a cancelled row for the sweep when its media delete fails', async () => {
+    const a = await insertRow();
+    const path = await scheduled.storeMedia(a.id, 'm', PNG_BASE64, 'image/png');
+    await scheduled.updatePayload(
+      a.id,
+      payload(['a'], { media: { m: { storagePath: path } } }),
+    );
+    t.supabase.storage.failNext('scheduled-media', 'remove');
+    expect((await scheduled.cancelScheduledPost(a.id, DID)).status).toBe(
+      'cancelled',
+    );
+    expect((await readRow(a.id)).media_reclaimed_at).toBeNull();
   });
 
   it('leaves out an image whose bytes are gone', async () => {
@@ -1066,6 +1228,24 @@ describe('bookkeeping', () => {
       last_error_code: null,
     });
     expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect((await readRow(a.id)).media_reclaimed_at).not.toBeNull();
+  });
+
+  it('leaves a published row for the sweep when its media delete fails, without throwing', async () => {
+    const a = await insertRow({ status: 'publishing' });
+    const path = await scheduled.storeMedia(a.id, 'm', PNG_BASE64, 'image/png');
+    t.supabase.storage.failNext('scheduled-media', 'remove');
+    await expect(
+      scheduled.markPublished(
+        a.id,
+        { uri: 'at://x/app.bsky.feed.post/1', cid: 'c' },
+        { m: { storagePath: path } },
+      ),
+    ).resolves.toBeUndefined();
+    const row = await readRow(a.id);
+    expect(row.status).toBe('published');
+    expect(row.media_reclaimed_at).toBeNull();
+    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
   });
 
   it('saves progress', async () => {
@@ -1077,7 +1257,7 @@ describe('bookkeeping', () => {
 });
 
 describe('reclaimFailedMedia', () => {
-  it('sweeps only failed rows past the window that still have media, and stamps them', async () => {
+  it('sweeps failed rows past the window, and stamps them', async () => {
     const old = iso(Date.now() - 40 * DAY);
     const sweep = await insertRow({ status: 'failed', updated_at: old });
     const path = await scheduled.storeMedia(
@@ -1108,14 +1288,24 @@ describe('reclaimFailedMedia', () => {
       payload: payload(['c'], { media: { m: { storagePath: 'p/m.png' } } }),
     });
 
+    // A failed row with no media map is swept too: its folder may hold bytes
+    // from a create that died before recording them.
+    const orphan = await scheduled.storeMedia(
+      noMedia.id,
+      'lost',
+      PNG_BASE64,
+      'image/png',
+    );
     expect(await scheduled.reclaimFailedMedia()).toEqual({
-      swept: 1,
+      swept: 2,
       failed: 0,
       unavailable: false,
     });
-    expect((await readRow(sweep.id)).media_reclaimed_at).not.toBeNull();
+    for (const r of [sweep, noMedia])
+      expect((await readRow(r.id)).media_reclaimed_at).not.toBeNull();
     expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
-    for (const r of [recent, noMedia, pending])
+    expect(t.supabase.storage.read('scheduled-media', orphan)).toBeUndefined();
+    for (const r of [recent, pending])
       expect((await readRow(r.id)).media_reclaimed_at).toBeNull();
     // Stamped rows aren't handed out again.
     expect(await scheduled.reclaimFailedMedia()).toEqual({
@@ -1123,6 +1313,44 @@ describe('reclaimFailedMedia', () => {
       failed: 0,
       unavailable: false,
     });
+  });
+
+  it('sweeps a published or cancelled row whose own cleanup failed, after an hour', async () => {
+    const hourAgo = iso(Date.now() - 2 * HOUR);
+    const rows = {};
+    for (const status of ['published', 'cancelled']) {
+      const r = await insertRow({ status, updated_at: hourAgo });
+      const p = await scheduled.storeMedia(r.id, 'm', PNG_BASE64, 'image/png');
+      await t.query(
+        `UPDATE scheduled_posts SET payload = $2::jsonb, updated_at = $3 WHERE id = $1`,
+        [
+          r.id,
+          JSON.stringify(payload(['x'], { media: { m: { storagePath: p } } })),
+          hourAgo,
+        ],
+      );
+      rows[status] = { id: r.id, path: p };
+    }
+    const fresh = await insertRow({ status: 'published' });
+    const stamped = await insertRow({
+      status: 'cancelled',
+      updated_at: hourAgo,
+    });
+    await t.query(
+      `UPDATE scheduled_posts SET media_reclaimed_at = NOW(), updated_at = $2 WHERE id = $1`,
+      [stamped.id, hourAgo],
+    );
+
+    expect(await scheduled.reclaimFailedMedia()).toEqual({
+      swept: 2,
+      failed: 0,
+      unavailable: false,
+    });
+    for (const { id, path } of Object.values(rows)) {
+      expect((await readRow(id)).media_reclaimed_at).not.toBeNull();
+      expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    }
+    expect((await readRow(fresh.id)).media_reclaimed_at).toBeNull();
   });
 
   it('leaves a row unstamped when its delete fails', async () => {

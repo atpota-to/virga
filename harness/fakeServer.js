@@ -5,7 +5,10 @@
 // sees and changes only its own rows, and every row says it is Virga's
 // (`clientKey: 'virga'`); the limits are flat, unlimited unless set, with the
 // caps always reported; a scheduled post can't carry a reply or a video; a
-// 401 for a token the server doesn't know carries FRONTEND_SESSION_INVALID.
+// 401 for a token the server doesn't know carries FRONTEND_SESSION_INVALID
+// (sign-out answers 200 either way); a grant can be refused while its row
+// stays, which the lite session check doesn't see until something has tried
+// to use it.
 //
 // It answers at SERVER_ORIGIN, not the dev server's own origin, so the
 // harness's fetch can route it without touching Vite's own paths.
@@ -43,6 +46,14 @@ export const MAX_LIFESPAN_SECONDS = 30 * 24 * 60 * 60;
 
 /** The per-feature limits the server reads from its env; none is set by default. */
 export const FEATURES = Object.freeze(['scheduledPosts', 'postTimers', 'conditionalTimers']);
+
+/**
+ * The longest text /api/ai/analyze-post reads (MAX_TEXT_LENGTH in
+ * server/ai/handlers/analyzePost.js). A thread arrives as one text, its posts
+ * joined, so this is well past one post's 3000. fakeServer.test.js holds it
+ * to the server's.
+ */
+export const MAX_ANALYZE_TEXT = 8000;
 
 /** The AI allowances per account per month, as the server's env defaults them. */
 export const DEFAULT_AI_LIMITS = Object.freeze({ adviser: 30, style: 3, altText: 15 });
@@ -82,21 +93,106 @@ const iso = (ms) => new Date(ms).toISOString();
 
 /* ---- timer rules ----------------------------------------------------- */
 
+/** One allow entry, a word or `{ list }`, or null when it isn't one. */
+function normalizeAllowEntry(a) {
+  if (typeof a === 'string' && ALLOW_WORDS[a]) return a;
+  if (
+    a &&
+    typeof a === 'object' &&
+    typeof a.list === 'string' &&
+    a.list.startsWith('at://')
+  )
+    return { list: a.list };
+  return null;
+}
+
 function normalizeAllow(allow) {
   if (!Array.isArray(allow)) return ['follower'];
   const out = [];
   for (const a of allow) {
-    if (typeof a === 'string' && ALLOW_WORDS[a]) out.push(a);
-    else if (
-      a &&
-      typeof a === 'object' &&
-      typeof a.list === 'string' &&
-      a.list.startsWith('at://')
-    )
-      out.push({ list: a.list });
-    else return null;
+    const entry = normalizeAllowEntry(a);
+    if (!entry) return null;
+    out.push(entry);
   }
   return out.slice(0, 5);
+}
+
+const GATE = 'app.bsky.feed.threadgate';
+
+/** The threadgate rule record one allow entry stands for. */
+const allowRuleRecord = (entry) =>
+  typeof entry === 'string'
+    ? { $type: `${GATE}#${ALLOW_WORDS[entry]}` }
+    : { $type: `${GATE}#listRule`, list: entry.list };
+
+/** Identity of a rule on a gate: two listRules match only on the same list. */
+const allowRecordKey = (record) => {
+  if (!record || typeof record.$type !== 'string') return null;
+  return record.$type === `${GATE}#listRule` ? `list:${record.list}` : record.$type;
+};
+
+/** allowRuleRecord read backwards, or null for a rule with no word here. */
+function allowEntryFromRecord(record) {
+  if (!record || typeof record.$type !== 'string') return null;
+  if (record.$type === `${GATE}#listRule`)
+    return typeof record.list === 'string' ? { list: record.list } : null;
+  return (
+    Object.keys(ALLOW_WORDS).find(
+      (k) => record.$type === `${GATE}#${ALLOW_WORDS[k]}`,
+    ) || null
+  );
+}
+
+/**
+ * The server's narrowAllow (server/timers/selfDestruct.js), ported rather than
+ * imported because that module brings the server's whole stack into the page.
+ * Writing a threadgate replaces it, so a rule may only intersect with the gate
+ * already there; when they share nothing the gate is left as the author set
+ * it. fakeServer.test.js holds the two to the same answers.
+ *
+ * @returns {{allow: object[]}} to write, or {skip, ok, detail} to leave it be.
+ */
+export function narrowAllow(wantedEntries, existingAllow) {
+  const wanted = (wantedEntries || [])
+    .map(normalizeAllowEntry)
+    .filter(Boolean)
+    .map(allowRuleRecord);
+  if (!Array.isArray(existingAllow)) return { allow: wanted };
+  if (existingAllow.length === 0)
+    return { skip: true, ok: true, detail: 'replies were already closed to everyone' };
+  if (wanted.length === 0) return { allow: [] };
+  const had = new Set(existingAllow.map(allowRecordKey).filter(Boolean));
+  const allow = wanted.filter((record) => had.has(allowRecordKey(record)));
+  if (allow.length === 0)
+    return {
+      skip: true,
+      ok: false,
+      detail: 'left the reply settings alone; the rule would have opened them up',
+    };
+  if (allow.length === existingAllow.length)
+    return { skip: true, ok: true, detail: 'replies were already limited this way' };
+  return { allow };
+}
+
+/** The server's describeAllow: what a written gate lets reply, in words. */
+export function describeAllow(entries) {
+  const words = {
+    follower: 'your followers',
+    following: 'people you follow',
+    mention: 'people you mentioned',
+  };
+  const parts = [];
+  let lists = 0;
+  for (const entry of entries || []) {
+    if (typeof entry === 'string') {
+      if (words[entry]) parts.push(words[entry]);
+    } else if (entry && entry.list) lists += 1;
+  }
+  if (lists === 1) parts.push('people in a list you chose');
+  else if (lists > 1) parts.push(`people in ${lists} lists you chose`);
+  if (parts.length === 0) return 'replies limited to nobody';
+  if (parts.length === 1) return `replies limited to ${parts[0]}`;
+  return `replies limited to ${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
 }
 
 /** The server's parseEffects: absent means delete; anything unreadable is refused, never read as delete. */
@@ -265,6 +361,13 @@ export function createServer({
 
   const tokens = new Map(); // token → { did }
   const grants = new Set(); // DIDs with the OAuth grant the workers act with
+  // Grants whose row is still stored but which the authorization server
+  // refuses: a refresh that failed leaves the row in place.
+  const refusedGrants = new Set();
+  // Refused grants this server has found refused, by a full session check or
+  // a proxy call, as the server's in-memory deadGrants does. Until then the
+  // lite check, which only reads the row, says the grant is there.
+  const knownRefused = new Set();
   const scheduled = []; // snake_case rows, as the table holds them
   const timers = [];
   const media = new Map(); // `${rowId}/${mediaId}` → { base64, encoding }
@@ -278,27 +381,56 @@ export function createServer({
 
   /* ---- sessions ---- */
 
+  function dropGrant(did) {
+    grants.delete(did);
+    refusedGrants.delete(did);
+    knownRefused.delete(did);
+  }
+
   function mintToken(did) {
     const token = `vg_${hex(32)}`;
     tokens.set(token, { did });
+    // A sign-in writes a new grant, which a refusal of the old one says nothing about.
+    dropGrant(did);
     grants.add(did);
     return token;
   }
 
-  function signOutToken(token) {
+  /** `keepGrant` drops only the token, as the server's logout does with it. */
+  function signOutToken(token, { keepGrant = false } = {}) {
     const found = tokens.get(token);
     if (!found) return { found: false, grantRevoked: false };
     tokens.delete(token);
+    if (keepGrant) return { found: true, grantRevoked: false };
     // Per device (D3): the grant goes only with the account's last token.
     const left = [...tokens.values()].some((t) => t.did === found.did);
-    if (!left) grants.delete(found.did);
+    if (!left) dropGrant(found.did);
     return { found: true, grantRevoked: !left };
   }
 
   /** Make every token of an account stop working, as an expired session would. */
   function expireAccount(did) {
     for (const [token, t] of tokens) if (t.did === did) tokens.delete(token);
-    grants.delete(did);
+    dropGrant(did);
+  }
+
+  /**
+   * Keep the account's tokens and its stored grant, but have the grant
+   * refused, as when a refresh fails: the proxy and the full session check
+   * say the OAuth session is missing, the lite check says it's there until
+   * one of them has found it refused, and the workers can't act.
+   */
+  function refuseGrant(did) {
+    if (grants.has(did)) refusedGrants.add(did);
+  }
+
+  /** Whether the server can act for the account: a grant, and not a refused one. */
+  const grantUsable = (did) => grants.has(did) && !refusedGrants.has(did);
+
+  /** A restore of the grant, as restoreWithRetry: a refused one is remembered. */
+  function restoreGrant(did) {
+    if (refusedGrants.has(did)) knownRefused.add(did);
+    return grantUsable(did);
   }
 
   function authOf(headers) {
@@ -366,7 +498,18 @@ export function createServer({
         limit,
       });
     }
-    if (liveTimers(did).length >= MAX_LIVE_TIMERS) {
+  }
+
+  /**
+   * The flat cap, held where a timer is armed as the server's arming RPC
+   * (create_self_destruct_capped) holds it. A post that already has a live
+   * timer gets its own row back before anything is counted, so changing a
+   * rule at the cap works; scheduling a post doesn't count against it.
+   */
+  function enforceFlatTimerCap(did, postUri) {
+    const live = liveTimers(did);
+    if (live.some((t) => t.post_uri === postUri)) return;
+    if (live.length >= MAX_LIVE_TIMERS) {
       throw codedError(409, {
         success: false,
         error: `you can have at most ${MAX_LIVE_TIMERS} posts on a timer`,
@@ -1082,6 +1225,7 @@ export function createServer({
     enforceTimerLimit(auth.did, v.value, {
       exceptPostUri: v.value.uri,
     });
+    enforceFlatTimerCap(auth.did, v.value.uri);
     const { row, existing } = armTimer(auth.did, v.value);
     if (!existing)
       note(`timer ${row.id} on ${row.post_uri} for ${row.check_at}`);
@@ -1208,7 +1352,7 @@ export function createServer({
   api['POST /api/ai/analyze-post'] = async (auth, { body = {} }) => {
     if (typeof body.text !== 'string' || !body.text.trim())
       throw codedError(400, { error: 'Missing or empty "text"' });
-    if (body.text.length > 3000)
+    if (body.text.length > MAX_ANALYZE_TEXT)
       throw codedError(413, { error: 'Post text is too long to analyze' });
     const result = analyzePost(body);
     if (!result)
@@ -1260,9 +1404,22 @@ export function createServer({
 
   /* ---- sessions ---- */
 
+  // The server's session.js: a missing header carries no code, an unknown
+  // token carries FRONTEND_SESSION_INVALID. Lite reads only whether the grant
+  // row is there (and whether this server already found it refused); full
+  // restores it.
   function sessionRoute(headers, query) {
     const m = /^Bearer\s+(\S+)$/i.exec(headers.authorization || '');
-    const found = m ? tokens.get(m[1]) : null;
+    if (!m)
+      return [
+        401,
+        {
+          success: false,
+          error: 'Missing or invalid authorization header',
+          authenticated: false,
+        },
+      ];
+    const found = tokens.get(m[1]);
     if (!found)
       return [
         401,
@@ -1273,20 +1430,82 @@ export function createServer({
           code: 'FRONTEND_SESSION_INVALID',
         },
       ];
-    const granted = grants.has(found.did);
-    const world = worldOf(found.did);
-    const body = {
-      success: true,
-      authenticated: true,
-      client: 'virga',
-      oauthSessionMissing: !granted,
-      ...(granted && world?.scope ? { scope: world.scope } : {}),
-      user: { did: found.did },
-    };
-    if (query.get('lite') === '1' || query.get('lite') === 'true')
-      body.lite = true;
-    else if (granted && world?.pdsUrl) body.pds = world.pdsUrl;
-    return [200, body];
+    const did = found.did;
+    const lite = query.get('lite') === '1' || query.get('lite') === 'true';
+    const granted = lite
+      ? grants.has(did) && !knownRefused.has(did)
+      : restoreGrant(did);
+    const world = worldOf(did);
+    return [
+      200,
+      {
+        success: true,
+        authenticated: true,
+        ...(lite ? { lite: true } : {}),
+        client: 'virga',
+        oauthSessionMissing: !granted,
+        ...(granted && world?.scope ? { scope: world.scope } : {}),
+        ...(!lite && granted && world?.pdsUrl ? { pds: world.pdsUrl } : {}),
+        user: { did },
+      },
+    ];
+  }
+
+  /**
+   * /api/oauth/proxy and /api/oauth/upload-blob, as far as the session goes.
+   * The harness's agents read and write the worlds themselves, so a usable
+   * grant gets no XRPC answer here; what this gives is the refusals the app
+   * reads, OAUTH_SESSION_MISSING above all.
+   */
+  function proxyRoute(headers) {
+    const m = /^Bearer\s+(\S+)$/i.exec(headers.authorization || '');
+    if (!m)
+      return [
+        401,
+        { success: false, error: 'Missing or invalid authorization header' },
+      ];
+    const found = tokens.get(m[1]);
+    if (!found)
+      return [
+        401,
+        {
+          success: false,
+          error: 'Invalid or expired session',
+          code: 'FRONTEND_SESSION_INVALID',
+        },
+      ];
+    if (!restoreGrant(found.did))
+      return [
+        401,
+        {
+          success: false,
+          error: 'OAuth session missing. Automatic re-authentication required.',
+          code: 'OAUTH_SESSION_MISSING',
+        },
+      ];
+    return [
+      501,
+      {
+        success: false,
+        error: "the harness answers XRPC through its fake agents, not through this proxy",
+      },
+    ];
+  }
+
+  // The server's logout.js: 200 whether or not the token was known, since
+  // there's nothing left to sign out either way.
+  function logoutRoute(headers, body) {
+    const m = /^Bearer\s+(\S+)$/i.exec(headers.authorization || '');
+    if (!m) return [200, { success: true, message: 'No session to logout' }];
+    const out = signOutToken(m[1], { keepGrant: body?.keepGrant === true });
+    return [
+      200,
+      {
+        success: true,
+        message: 'Logged out successfully',
+        grantRevoked: out.grantRevoked,
+      },
+    ];
   }
 
   /* ---- the workers ---- */
@@ -1366,7 +1585,7 @@ export function createServer({
 
   async function publishRow(row) {
     const world = worldOf(row.user_did);
-    if (!world || !grants.has(row.user_did)) {
+    if (!world || !grantUsable(row.user_did)) {
       throw Object.assign(new Error(SESSION_UNAVAILABLE), {
         code: 'SESSION_UNAVAILABLE',
       });
@@ -1503,6 +1722,39 @@ export function createServer({
     return out;
   }
 
+  /**
+   * The server's applyLimitReplies: a gate governs a thread from its root, so
+   * a reply is left alone, and the rule only narrows the gate already there.
+   */
+  async function limitReplies(world, row, post, effect, t) {
+    if (post.value?.reply)
+      return {
+        ok: false,
+        detail:
+          'replies can only be limited on the first post of a thread, and this post is a reply, so its replies were left as they were',
+      };
+    const existing = readRecord(world, GATE, row.rkey);
+    const narrowed = narrowAllow(effect.allow || [], existing?.value?.allow);
+    if (narrowed.skip) return { ok: narrowed.ok, detail: narrowed.detail };
+    await writeRecord(world, {
+      collection: GATE,
+      rkey: row.rkey,
+      record: {
+        $type: GATE,
+        post: row.post_uri,
+        createdAt: iso(t),
+        allow: narrowed.allow,
+        hiddenReplies: existing?.value?.hiddenReplies || [],
+      },
+    });
+    return {
+      ok: true,
+      detail: describeAllow(
+        narrowed.allow.map(allowEntryFromRecord).filter(Boolean),
+      ),
+    };
+  }
+
   async function settleTimer(row) {
     const world = worldOf(row.user_did);
     const t = now();
@@ -1519,7 +1771,7 @@ export function createServer({
       resolve('deleted', 'the post was already gone');
       return;
     }
-    if (!grants.has(row.user_did)) {
+    if (!grantUsable(row.user_did)) {
       Object.assign(row, {
         attempts: row.attempts + 1,
         check_at: iso(t + 2 * MINUTE),
@@ -1568,49 +1820,32 @@ export function createServer({
       ? row.effects
       : [{ action: 'delete' }]) {
       if (effect.action === 'limitReplies') {
-        const allow = (effect.allow || ['follower']).map((a) =>
-          typeof a === 'string'
-            ? { $type: `app.bsky.feed.threadgate#${ALLOW_WORDS[a]}` }
-            : { $type: 'app.bsky.feed.threadgate#listRule', list: a.list },
-        );
-        const existing = readRecord(
-          world,
-          'app.bsky.feed.threadgate',
-          row.rkey,
-        );
-        await writeRecord(world, {
-          collection: 'app.bsky.feed.threadgate',
-          rkey: row.rkey,
-          record: {
-            $type: 'app.bsky.feed.threadgate',
-            post: row.post_uri,
-            createdAt: iso(t),
-            allow,
-            hiddenReplies: existing?.value?.hiddenReplies || [],
-          },
-        });
         acted.push({
           action: 'limitReplies',
-          ok: true,
-          detail: allow.length ? 'replies limited' : 'replies turned off',
+          ...(await limitReplies(world, row, post, effect, t)),
         });
       } else if (effect.action === 'disableQuotes') {
         const existing = readRecord(world, 'app.bsky.feed.postgate', row.rkey);
-        await writeRecord(world, {
-          collection: 'app.bsky.feed.postgate',
-          rkey: row.rkey,
-          record: {
-            $type: 'app.bsky.feed.postgate',
-            post: row.post_uri,
-            createdAt: iso(t),
-            detachedEmbeddingUris: existing?.value?.detachedEmbeddingUris || [],
-            embeddingRules: [{ $type: 'app.bsky.feed.postgate#disableRule' }],
-          },
-        });
+        const already = (existing?.value?.embeddingRules || []).some(
+          (r) => r?.$type === 'app.bsky.feed.postgate#disableRule',
+        );
+        if (!already)
+          await writeRecord(world, {
+            collection: 'app.bsky.feed.postgate',
+            rkey: row.rkey,
+            record: {
+              $type: 'app.bsky.feed.postgate',
+              post: row.post_uri,
+              createdAt: iso(t),
+              detachedEmbeddingUris:
+                existing?.value?.detachedEmbeddingUris || [],
+              embeddingRules: [{ $type: 'app.bsky.feed.postgate#disableRule' }],
+            },
+          });
         acted.push({
           action: 'disableQuotes',
           ok: true,
-          detail: 'quotes turned off',
+          detail: already ? 'quoting was already off' : 'quoting turned off',
         });
       } else {
         const chain = [
@@ -1635,13 +1870,9 @@ export function createServer({
       }
     }
     const deleted = acted.some((a) => a.action === 'delete');
-    resolve(
-      deleted ? 'deleted' : 'acted',
-      deleted
-        ? `deleted, ${why}`
-        : `${acted.map((a) => a.detail).join(', ')}, ${why}`,
-      acted,
-    );
+    // As the server's markActed: an acted row's resolution is just the
+    // counts, since `acted` already says what was done.
+    resolve(deleted ? 'deleted' : 'acted', deleted ? `deleted, ${why}` : why, acted);
     note(`timer ${row.id} ${row.resolution}`);
   }
 
@@ -1680,20 +1911,13 @@ export function createServer({
     try {
       if (method === 'OPTIONS') return [204, null];
       if (path === '/api/oauth/session') return sessionRoute(headers, query);
-      if (path === '/api/oauth/logout' && method === 'POST') {
-        const m = /^Bearer\s+(\S+)$/i.exec(headers.authorization || '');
-        const out = m ? signOutToken(m[1]) : { found: false };
-        if (!out.found)
-          return [
-            401,
-            {
-              success: false,
-              error: 'Invalid or expired session',
-              code: 'FRONTEND_SESSION_INVALID',
-            },
-          ];
-        return [200, { success: true, grantRevoked: out.grantRevoked }];
-      }
+      if (path === '/api/oauth/logout' && method === 'POST')
+        return logoutRoute(headers, body);
+      if (
+        (path === '/api/oauth/proxy' && (method === 'GET' || method === 'POST')) ||
+        (path === '/api/oauth/upload-blob' && method === 'POST')
+      )
+        return proxyRoute(headers);
       const fn = api[`${method} ${path}`];
       if (!fn) {
         const known = Object.keys(api).some((k) => k.endsWith(` ${path}`));
@@ -1860,6 +2084,7 @@ export function createServer({
     mintToken,
     signOutToken,
     expireAccount,
+    refuseGrant,
     handle,
     runCron,
     runSchedule,

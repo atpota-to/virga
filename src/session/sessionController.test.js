@@ -465,6 +465,72 @@ describe('noticing that a sign-in has ended', () => {
     expect(log.events).toEqual([[SESSION_EXPIRED_EVENT, { did: MIRA }]]);
   });
 
+  describe('a grant the server can’t restore', () => {
+    // The grant's row outlives a refresh token that has died, so the lite
+    // check (which reads only the row) still answers valid. The full check
+    // and the proxy both restore it, and say it's missing.
+    const deadGrant = (url) => {
+      if (url.endsWith('/api/oauth/session?lite=1')) return json({ success: true, authenticated: true, lite: true, oauthSessionMissing: false });
+      if (url.endsWith('/api/oauth/session')) return json({ success: true, authenticated: true, oauthSessionMissing: true });
+      if (url.includes('/api/oauth/proxy')) return json({ success: false, code: 'OAUTH_SESSION_MISSING', error: 'Please sign in again' }, 401);
+      return json({ success: true });
+    };
+    const sessionCalls = (fetch, suffix) => fetch.mock.calls.filter(([url]) => String(url).endsWith(suffix)).length;
+
+    it('stays unknown (which offers a sign-in) after a 401, whatever the lite check says', async () => {
+      const { ctrl, state, fetch, log } = await openBackend(deadGrant);
+      await vi.waitFor(() => expect(ctrl.statusOf(MIRA)).toBe('unknown'));
+      await state.active.agent.app.bsky.actor.getPreferences().catch(() => {});
+      // The 401 is about the grant, so it is asked of the full check.
+      await vi.waitFor(() => expect(sessionCalls(fetch, '/api/oauth/session')).toBe(2));
+      expect(sessionCalls(fetch, '/api/oauth/session?lite=1')).toBe(0);
+      expect(await ctrl.checkAccount(MIRA)).toBe('unknown');
+      expect(sessionCalls(fetch, '/api/oauth/session?lite=1')).toBe(1);
+      expect(ctrl.statusOf(MIRA)).toBe('unknown');
+      expect(log.events).toEqual([]);
+    });
+
+    it('goes unknown on the 401 even when the full check at opening said it held', async () => {
+      let grantDied = false;
+      const { ctrl, state } = await openBackend((url) =>
+        !grantDied && url.endsWith('/api/oauth/session') ? json({ success: true, authenticated: true, oauthSessionMissing: false }) : deadGrant(url),
+      );
+      await vi.waitFor(() => expect(ctrl.statusOf(MIRA)).toBe('ready'));
+      grantDied = true;
+      await state.active.agent.app.bsky.actor.getPreferences().catch(() => {});
+      expect(ctrl.statusOf(MIRA)).toBe('unknown');
+      expect(await ctrl.checkAccount(MIRA)).toBe('unknown');
+      expect(ctrl.statusOf(MIRA)).toBe('unknown');
+    });
+
+    it('is ready again once an answer comes back through the grant', async () => {
+      let alive = false;
+      const { ctrl, state } = await openBackend((url) =>
+        alive && url.includes('/api/oauth/proxy') ? json({ success: true, data: { preferences: [] } }) : deadGrant(url),
+      );
+      await state.active.agent.app.bsky.actor.getPreferences().catch(() => {});
+      await vi.waitFor(() => expect(ctrl.statusOf(MIRA)).toBe('unknown'));
+      alive = true;
+      await state.active.agent.app.bsky.actor.getPreferences();
+      expect(ctrl.statusOf(MIRA)).toBe('ready');
+      expect(await ctrl.checkAccount(MIRA)).toBe('valid');
+    });
+
+    it('is ready again once the full check finds the grant', async () => {
+      let alive = false;
+      const { ctrl, state, fetch } = await openBackend((url) =>
+        alive && url.endsWith('/api/oauth/session') ? json({ success: true, authenticated: true, oauthSessionMissing: false }) : deadGrant(url),
+      );
+      await vi.waitFor(() => expect(ctrl.statusOf(MIRA)).toBe('unknown'));
+      alive = true;
+      // The proxy still refuses, so the 401 asks the full check, which now finds it.
+      await state.active.agent.app.bsky.actor.getPreferences().catch(() => {});
+      await vi.waitFor(() => expect(sessionCalls(fetch, '/api/oauth/session')).toBe(2));
+      await vi.waitFor(() => expect(ctrl.statusOf(MIRA)).toBe('ready'));
+      expect(await ctrl.checkAccount(MIRA)).toBe('valid');
+    });
+  });
+
   it('learns a long session’s grant and its repo from the server', async () => {
     const { ctrl, storage, env } = await openBackend((url) =>
       url.endsWith('/api/oauth/session') ? json({ success: true, authenticated: true, scope: 'atproto', pds: 'https://pds.example' }) : json({ success: true }),
@@ -516,6 +582,13 @@ describe('capabilitiesFrom', () => {
 /** The tokens Virga's server was asked to sign out, in order. */
 function loggedOut(fetch) {
   return fetch.mock.calls.filter(([url]) => String(url).endsWith('/api/oauth/logout')).map(([, init]) => init.headers.Authorization);
+}
+
+/** Whether each of those sign-outs asked the server to keep the account's grant. */
+function keptGrants(fetch) {
+  return fetch.mock.calls
+    .filter(([url]) => String(url).endsWith('/api/oauth/logout'))
+    .map(([, init]) => JSON.parse(init.body || '{}').keepGrant === true);
 }
 
 describe('following another tab', () => {
@@ -685,6 +758,7 @@ describe('signing an account in again', () => {
     await ctrl.startOnce();
     expect(storage.getItem(backendTokenKey(MIRA))).toBe(TOKEN2);
     await vi.waitFor(() => expect(loggedOut(fetch)).toEqual([`Bearer ${TOKEN}`]));
+    expect(keptGrants(fetch)).toEqual([true]);
   });
 
   it('leaves the token alone when the same one comes back', async () => {
@@ -700,6 +774,9 @@ describe('signing an account in again', () => {
     const { ctrl, fetch, storage } = setup({ backendReturn: { kind: 'error', error, orphanToken: TOKEN } });
     await ctrl.startOnce();
     expect(loggedOut(fetch)).toEqual([`Bearer ${TOKEN}`]);
+    // A sign-in this browser didn't start may be someone else's doing: ending
+    // its token must not end the account's grant.
+    expect(keptGrants(fetch)).toEqual([true]);
     expect(storage.getItem(backendTokenKey(MIRA))).toBeNull();
   });
 

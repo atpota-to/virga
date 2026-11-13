@@ -30,7 +30,8 @@ import { enforce } from '../rateLimit.js';
 import {
   beginAiRequest,
   checkAllowance,
-  countUse,
+  keepUse,
+  releaseUse,
   sendAiError,
 } from '../respond.js';
 import {
@@ -49,6 +50,7 @@ const FEATURE = 'posting-adviser';
 const ALLOWANCE = 'style';
 
 export default async function synthesizeStyle(req, res) {
+  let allowance = null;
   try {
     const started = await beginAiRequest(req, res);
     if (!started) return undefined;
@@ -67,12 +69,15 @@ export default async function synthesizeStyle(req, res) {
       MAX_STYLE_SUMMARY,
     );
 
-    const allowance = await checkAllowance(res, ALLOWANCE, did);
+    allowance = await checkAllowance(res, ALLOWANCE, did);
     if (!allowance) return undefined;
 
     // The per-account cost ceiling across every AI feature.
     const rl = await enforce(did);
-    if (!rl.allowed) return sendJson(res, rl.status, rl.body);
+    if (!rl.allowed) {
+      await releaseUse(allowance);
+      return sendJson(res, rl.status, rl.body);
+    }
 
     const { system, user } = buildStylePrompt(texts, {
       guidance,
@@ -107,6 +112,7 @@ export default async function synthesizeStyle(req, res) {
     if (!summary) {
       // Storing an empty profile would quietly disable nothing and confuse the
       // settings UI, so fail loudly and let the writer retry. Not counted.
+      await releaseUse(allowance);
       return sendJson(res, 502, {
         error: 'Could not synthesize a style profile — try again.',
       });
@@ -114,11 +120,12 @@ export default async function synthesizeStyle(req, res) {
 
     const responseBody = { summary, analyzedCount: texts.length };
 
-    const usage = await countUse(ALLOWANCE, did, allowance);
+    const usage = keepUse(allowance);
     if (usage) responseBody.usage = usage;
 
     return sendJson(res, 200, responseBody);
   } catch (error) {
+    await releaseUse(allowance);
     return sendAiError(res, error, {
       tag: 'synthesize-style',
       fallback: 'Style synthesis failed',

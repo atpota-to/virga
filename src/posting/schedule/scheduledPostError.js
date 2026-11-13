@@ -79,7 +79,9 @@ export function friendlyScheduleError(raw, code) {
 function asSentence(text) {
   const t = String(text || '').trim();
   if (!t) return '';
-  const capped = t[0].toUpperCase() + t.slice(1);
+  // The server writes its notes in lower case; each sentence starts upper case
+  // here, not just the first.
+  const capped = t.replace(/(^|[.!?]\s+)([a-z])/g, (m, lead, letter) => lead + letter.toUpperCase());
   return /[.!?…]$/.test(capped) ? capped : `${capped}.`;
 }
 
@@ -129,6 +131,8 @@ const BY_THROWN_CODE = {
     'One of these posts is already on its way out, so the new order wasn’t saved.',
   DELETE_TIME_TOO_EARLY:
     'This post’s delete time would come before it goes out, or within five minutes of it. Pick an earlier slot, or change its lifespan first.',
+  NOT_REARMABLE:
+    'This post’s timer is being checked right now, so it wasn’t changed. Try again in a minute.',
   NOT_YOUR_CLIENT:
     'This post was scheduled in another app. Open it there to change it.',
   UNAVAILABLE: 'Scheduling isn’t available on Virga’s server right now.',
@@ -150,6 +154,12 @@ export function scheduleErrorMessage(err) {
   if (err.code === 'QUOTA_EXCEEDED') return quotaMessage(err.payload || err);
   if (err.code === 'TIMER_PROBLEM' || err.code === 'LIFESPAN')
     return String(err.message || '');
+  // A retry refused because the images were cleared: the server's note says
+  // whether part of the thread is already out, which decides what to do next.
+  if (err.code === 'MEDIA_MISSING')
+    return err.detail
+      ? asSentence(err.detail)
+      : 'The images for this post were cleared after 30 days. Edit it and add them again.';
   const known = BY_THROWN_CODE[err.code];
   if (known) return known;
   if (err.status === 401)

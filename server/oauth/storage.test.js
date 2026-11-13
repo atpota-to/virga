@@ -158,11 +158,23 @@ describe('SessionStore', () => {
     expect(store.pdsFor(DID)).toBeNull();
   });
 
+  it('says whether a row exists without reading it, and null when it cannot say', async () => {
+    const store = new SessionStore();
+    expect(await store.exists(DID)).toBe(false);
+    db.rowsOf('oauth_sessions').push({ sub: DID, session_data: saved() });
+    expect(await store.exists(DID)).toBe(true);
+    db.failNext('oauth_sessions', 'select');
+    expect(await store.exists(DID)).toBeNull();
+  });
+
   it('stores an envelope when SESSION_ENCRYPTION_KEY is set, and reads it back', async () => {
     process.env.SESSION_ENCRYPTION_KEY = crypto.randomBytes(32).toString('hex');
     const store = new SessionStore();
     // Tokens long and distinctive enough that random ciphertext can't contain them.
-    const secret = { access_token: 'access-token-that-must-not-be-stored-in-clear', refresh_token: 'refresh-token-that-must-not-be-stored-in-clear' };
+    const secret = {
+      access_token: 'access-token-that-must-not-be-stored-in-clear',
+      refresh_token: 'refresh-token-that-must-not-be-stored-in-clear',
+    };
     await store.set(DID, saved(secret));
     const stored = db.rowsOf('oauth_sessions')[0].session_data;
     expect(isEncrypted(stored)).toBe(true);
@@ -203,6 +215,42 @@ describe('StateStore', () => {
     });
     expect(await new StateStore().get('old')).toBeUndefined();
     expect(db.rowsOf('oauth_state')).toEqual([]);
+  });
+
+  it('clears expired rows as it writes, at most once a minute', async () => {
+    let now = Date.parse('2026-11-13T12:00:00Z');
+    const iso = (ms) => new Date(ms).toISOString();
+    // Sign-ins started and never finished.
+    db.rowsOf('oauth_state').push(
+      { key: 'abandoned', state_data: {}, expires_at: iso(now - 1000) },
+      { key: 'in-flight', state_data: {}, expires_at: iso(now + 1000) },
+    );
+    const store = new StateStore({ now: () => now });
+    await store.set('k1', {});
+    expect(
+      db
+        .rowsOf('oauth_state')
+        .map((r) => r.key)
+        .sort(),
+    ).toEqual(['in-flight', 'k1']);
+
+    db.rowsOf('oauth_state').push({
+      key: 'later',
+      state_data: {},
+      expires_at: iso(now - 1),
+    });
+    now += 30 * 1000;
+    await store.set('k2', {});
+    expect(db.rowsOf('oauth_state').map((r) => r.key)).toContain('later');
+    now += 31 * 1000;
+    await store.set('k3', {});
+    expect(db.rowsOf('oauth_state').map((r) => r.key)).not.toContain('later');
+  });
+
+  it('still saves when the sweep fails', async () => {
+    db.failNext('oauth_state', 'delete');
+    await new StateStore().set('k', {});
+    expect(db.rowsOf('oauth_state').map((r) => r.key)).toEqual(['k']);
   });
 
   it('answers undefined for an unknown key, and throws when a save fails', async () => {

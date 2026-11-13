@@ -3,7 +3,8 @@
 // carry `usage`, the 429 bodies it branches on, and that a request is counted
 // only once it has a usable answer. The caller, the gateway's chat calls and
 // the rate limit are stubbed; the monthly counters run for real over the
-// Supabase fake, whose bump_ai_usage counts in its own tables.
+// Supabase fake, whose reserve_ai_usage and release_ai_usage count in its own
+// tables.
 
 import {
   describe,
@@ -67,18 +68,25 @@ const ENV_KEYS = [
 ];
 const SAVED_ENV = Object.fromEntries(ENV_KEYS.map((k) => [k, process.env[k]]));
 
-// bump_ai_usage as the fake plays it: one more in the allowance's column.
+// reserve_ai_usage and release_ai_usage as the fake plays them: one more in
+// the allowance's column while it is under the limit, one less on a release.
 const PLACES = {
   adviser: ['posting_adviser_usage', 'count'],
   style: ['posting_adviser_usage', 'style_count'],
   altText: ['alt_text_usage', 'count'],
 };
 let fake;
+// Set to make the next monthly-allowance call fail as a database error would.
+let failNextRpc = false;
 
 function makeFake() {
   const f = createFakeSupabase({
     rpcAnswer: (name, args) => {
-      if (name !== 'bump_ai_usage')
+      if (failNextRpc) {
+        failNextRpc = false;
+        return { data: null, error: { code: 'XX000', message: 'boom' } };
+      }
+      if (name !== 'reserve_ai_usage' && name !== 'release_ai_usage')
         return {
           data: null,
           error: { code: 'PGRST202', message: 'no such function' },
@@ -88,6 +96,10 @@ function makeFake() {
       let row = rows.find(
         (r) => r.did === args.p_did && r.month === args.p_month,
       );
+      if (name === 'release_ai_usage') {
+        if (row) row[column] = Math.max(0, row[column] - 1);
+        return { data: row?.[column] ?? 0, error: null };
+      }
       if (!row) {
         row = {
           did: args.p_did,
@@ -97,8 +109,10 @@ function makeFake() {
         };
         rows.push(row);
       }
+      if (row[column] >= args.p_limit)
+        return { data: [{ allowed: false, used: row[column] }], error: null };
       row[column] += 1;
-      return { data: row[column], error: null };
+      return { data: [{ allowed: true, used: row[column] }], error: null };
     },
   });
   return f;
@@ -160,6 +174,7 @@ beforeEach(() => {
   for (const k of ENV_KEYS) delete process.env[k];
   process.env.AI_GATEWAY_API_KEY = 'test-key';
   for (const fn of Object.values(mocks)) fn.mockReset();
+  failNextRpc = false;
   fake = makeFake();
   setSupabaseClientForTests(fake);
   mocks.resolveAiCaller.mockResolvedValue({ ok: true, did: DID });
@@ -245,8 +260,13 @@ describe.each(ENDPOINTS)(
       expect(usedOf(allowance)).toBe(1);
       expect(fake.rpcs).toEqual([
         {
-          name: 'bump_ai_usage',
-          args: { p_allowance: allowance, p_did: DID, p_month: MONTH },
+          name: 'reserve_ai_usage',
+          args: {
+            p_allowance: allowance,
+            p_did: DID,
+            p_month: MONTH,
+            p_limit: limit,
+          },
         },
       ]);
       expect(mocks.enforce).toHaveBeenCalledWith(DID);
@@ -292,10 +312,69 @@ describe.each(ENDPOINTS)(
       expect(res.body).toEqual({ error: 'monthly_limit', limit: 0, used: 0 });
     });
 
-    it('lets the request through when the count cannot be read', async () => {
-      fake.failNext(PLACES[allowance][0], 'select');
+    it('refuses everything with a limit of 0, even with no usage store', async () => {
+      process.env[
+        {
+          adviser: 'AI_ADVISER_MONTHLY_LIMIT',
+          style: 'AI_STYLE_MONTHLY_LIMIT',
+          altText: 'AI_ALT_TEXT_MONTHLY_LIMIT',
+        }[allowance]
+      ] = '0';
+      setSupabaseClientForTests(null);
+      const res = await call(handlerOf(), body);
+      expect(res.statusCode).toBe(429);
+      expect(res.body).toEqual({ error: 'monthly_limit', limit: 0, used: 0 });
+      expect(mocks.enforce).not.toHaveBeenCalled();
+      expect(gatewayCalls()).toBe(0);
+    });
+
+    it('lets the request through when the count cannot be taken, and gives nothing back', async () => {
+      failNextRpc = true;
       seed(allowance, 1000);
+      mocks.enforce.mockResolvedValue({
+        allowed: false,
+        status: 429,
+        body: { error: 'rate_limited', scope: 'daily', limit: 200 },
+      });
+      expect((await call(handlerOf(), body)).body.scope).toBe('daily');
+      expect(fake.rpcs.map((r) => r.name)).toEqual(['reserve_ai_usage']);
+      expect(usedOf(allowance)).toBe(1000);
+
+      failNextRpc = true;
+      mocks.enforce.mockResolvedValue({ allowed: true });
       expect((await call(handlerOf(), body)).statusCode).toBe(200);
+    });
+
+    it('lets only the last use through when requests at the limit arrive together', async () => {
+      const limit = { adviser: 30, style: 3, altText: 15 }[allowance];
+      seed(allowance, limit - 1);
+      // The model answers slowly, so every request has taken its use (or been
+      // refused one) before the first answer comes back.
+      const later = (answer) =>
+        new Promise((resolve) => setTimeout(() => resolve(answer), 20));
+      mocks.chatJSON.mockImplementation((opts) =>
+        later(
+          opts.maxTokens === 3000
+            ? { summary: 'short, warm, lowercase' }
+            : ADVISER_ANSWER,
+        ),
+      );
+      mocks.chatDetailed.mockImplementation(() =>
+        later({ content: 'A porch light at night.', finishReason: 'stop' }),
+      );
+      const answers = await Promise.all(
+        Array.from({ length: 30 }, () => call(handlerOf(), body)),
+      );
+      const ok = answers.filter((a) => a.statusCode === 200);
+      expect(ok).toHaveLength(1);
+      expect(ok[0].body.usage).toEqual({ used: limit, limit });
+      expect(
+        answers.filter(
+          (a) => a.statusCode === 429 && a.body.error === 'monthly_limit',
+        ),
+      ).toHaveLength(29);
+      expect(gatewayCalls()).toBe(1);
+      expect(usedOf(allowance)).toBe(limit);
     });
 
     it('passes a rate-limit refusal on as it came, without calling the model or counting', async () => {
@@ -324,6 +403,12 @@ describe.each(ENDPOINTS)(
       });
       expect(gatewayCalls()).toBe(0);
       expect(usedOf(allowance)).toBe(0);
+      expect(fake.rpcs.map((r) => r.name)).toEqual([
+        'reserve_ai_usage',
+        'release_ai_usage',
+        'reserve_ai_usage',
+        'release_ai_usage',
+      ]);
     });
 
     it('does not count a failed model call, and keeps the gateway’s detail out of the answer', async () => {
@@ -424,7 +509,7 @@ describe('/api/ai/analyze-post', () => {
     expect(mocks.enforce).toHaveBeenCalledTimes(1);
   });
 
-  it('answers "ok" with nothing to check against, uncounted and unlimited', async () => {
+  it('answers "ok" with nothing to check against, uncounted and not rate limited', async () => {
     const res = await call(analyzePost, { text: 'a draft' });
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
@@ -432,10 +517,65 @@ describe('/api/ai/analyze-post', () => {
       checks: [],
       suggestion: null,
       overallStatus: 'ok',
+      usage: { used: 0, limit: 30 },
     });
     expect(mocks.enforce).not.toHaveBeenCalled();
-    expect(fake.ops).toHaveLength(0);
     expect(fake.rpcs).toHaveLength(0);
+    expect(gatewayCalls()).toBe(0);
+  });
+
+  it('keeps the count on the free "ok", so the client keeps its hint', async () => {
+    seed('adviser', 30);
+    // A reply to an image-only post: the context has no text to read.
+    const res = await call(analyzePost, {
+      text: 'love this',
+      context: { kind: 'reply', target: { author: 'sam', text: '' } },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.overallStatus).toBe('ok');
+    expect(res.body.usage).toEqual({ used: 30, limit: 30 });
+    expect(usedOf('adviser')).toBe(30);
+    expect(fake.rpcs).toHaveLength(0);
+  });
+
+  it('carries no count on the free "ok" when it is unlimited or cannot be read', async () => {
+    process.env.AI_ADVISER_MONTHLY_LIMIT = 'unlimited';
+    let res = await call(analyzePost, { text: 'a draft' });
+    expect(res.body).not.toHaveProperty('usage');
+    expect(fake.ops).toHaveLength(0);
+    delete process.env.AI_ADVISER_MONTHLY_LIMIT;
+    fake.failNext('posting_adviser_usage', 'select');
+    res = await call(analyzePost, { text: 'a draft' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).not.toHaveProperty('usage');
+  });
+
+  it('reads goals of the wrong kind as no goals, never a 500', async () => {
+    for (const goals of [{ customText: 5 }, { customText: {} }, 'kind', 7]) {
+      const res = await call(analyzePost, { text: 'a draft', goals });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.checks).toEqual([]);
+    }
+    expect(gatewayCalls()).toBe(0);
+  });
+
+  it('caps the writer’s goals and topics before they reach the prompt', async () => {
+    const res = await call(analyzePost, {
+      text: 'hi',
+      goals: {
+        customText: 'k'.repeat(3_000_000),
+        presets: {
+          limitTopic: { enabled: true, topic: 'm'.repeat(1_000_000) },
+        },
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const { messages } = mocks.chatJSON.mock.calls[0][0];
+    const prompt = messages.map((m) => m.content).join('');
+    expect(prompt).toContain('k'.repeat(500));
+    expect(prompt).not.toContain('k'.repeat(501));
+    expect(prompt).not.toContain('m'.repeat(201));
+    expect(prompt.length).toBeLessThan(20_000);
   });
 
   it('asks for the read on the adviser’s budget, keeping the answer out of the logs', async () => {

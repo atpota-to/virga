@@ -321,6 +321,21 @@ describe('the fetch handler', () => {
     expect(onUnauthorized).toHaveBeenCalledWith(DID, 'FRONTEND_SESSION_INVALID');
   });
 
+  it('says when an answer came back through the grant, and only then', async () => {
+    const onAuthorized = vi.fn();
+    let answer = () => json({ success: true, data: { preferences: [] } });
+    const fetch = recorder(() => answer());
+    const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, did: DID, fetch, onAuthorized });
+    await handler('/xrpc/app.bsky.actor.getPreferences', {});
+    expect(onAuthorized).toHaveBeenCalledWith(DID);
+    onAuthorized.mockClear();
+    answer = () => json({ success: false, error: 'gone', code: 'OAUTH_SESSION_MISSING' }, 401);
+    await handler('/xrpc/app.bsky.actor.getPreferences', {});
+    answer = () => json({ success: false, error: 'odd' }, 200);
+    await handler('/xrpc/app.bsky.actor.getPreferences', {});
+    expect(onAuthorized).not.toHaveBeenCalled();
+  });
+
   it('refuses the outputs that are bytes', async () => {
     const fetch = recorder(() => json({}));
     const handler = createBackendFetchHandler({ backendUrl: SERVER, token: TOKEN, fetch });
@@ -493,6 +508,13 @@ describe('session checks and sign-out', () => {
     expect(fetch.calls[0].url).toBe(`${SERVER}/api/oauth/logout`);
     expect(fetch.calls[0].init.method).toBe('POST');
     expect(fetch.calls[0].headers).toEqual({ authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json' });
+  });
+
+  it('asks the server to keep the grant only when told to', async () => {
+    const fetch = recorder(() => json({ success: true }));
+    await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch });
+    await backendSignOut({ backendUrl: SERVER, token: TOKEN, fetch, keepGrant: true });
+    expect(fetch.calls.map((c) => c.init.body)).toEqual(['{}', '{"keepGrant":true}']);
   });
 
   it('tries a sign-out the server couldn’t finish once more, and only that kind', async () => {

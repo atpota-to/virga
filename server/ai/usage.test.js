@@ -1,7 +1,8 @@
 // The monthly allowance counters, against the in-memory Supabase fake: which
 // table and column each allowance reads, how a count is written, and that
-// every failure leaves the request going (tracked: false) rather than failing
-// it. The SQL behind bump_ai_usage is tested on PGlite in ai.pglite.test.js.
+// every failure leaves the request going rather than failing it. The SQL
+// behind reserve_ai_usage and release_ai_usage is tested on PGlite in
+// ai.pglite.test.js.
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createFakeSupabase } from '../test/fakeSupabase.js';
@@ -9,7 +10,12 @@ import {
   resetSupabaseClientForTests,
   setSupabaseClientForTests,
 } from '../supabase.js';
-import { currentMonthKey, getUsage, incrementUsage } from './usage.js';
+import {
+  currentMonthKey,
+  getUsage,
+  releaseUsage,
+  reserveUsage,
+} from './usage.js';
 
 const DID = 'did:plc:usagefixture';
 const NOW = new Date('2026-11-13T12:00:00Z');
@@ -146,60 +152,137 @@ describe('getUsage', () => {
   });
 });
 
-describe('incrementUsage', () => {
-  it('counts through bump_ai_usage with the allowance, the DID and the UTC month', async () => {
-    fake = createFakeSupabase({ rpcAnswer: () => ({ data: 7, error: null }) });
+describe('reserveUsage', () => {
+  const answering = (answer) => {
+    fake = createFakeSupabase({ rpcAnswer: () => answer });
     setSupabaseClientForTests(fake);
-    expect(
-      await incrementUsage('style', DID, { env: {}, now: NOW, usedBefore: 6 }),
-    ).toBe(7);
+  };
+
+  it('takes a use through reserve_ai_usage with the allowance, the DID, the UTC month and the limit', async () => {
+    answering({ data: [{ allowed: true, used: 3 }], error: null });
+    expect(await reserveUsage('style', DID, { env: {}, now: NOW })).toEqual({
+      allowed: true,
+      used: 3,
+      limit: 3,
+      held: true,
+      month: '2026-11',
+    });
     expect(fake.rpcs).toEqual([
       {
-        name: 'bump_ai_usage',
-        args: { p_allowance: 'style', p_did: DID, p_month: '2026-11' },
+        name: 'reserve_ai_usage',
+        args: {
+          p_allowance: 'style',
+          p_did: DID,
+          p_month: '2026-11',
+          p_limit: 3,
+        },
       },
     ]);
     expect(fake.ops).toHaveLength(0);
   });
 
-  it('answers the count it meant to write when the write fails', async () => {
-    fake = createFakeSupabase({
-      rpcAnswer: () => ({
-        data: null,
-        error: { code: 'XX000', message: 'boom' },
-      }),
-    });
-    setSupabaseClientForTests(fake);
+  it('passes a refusal on with the count as it stands, holding nothing', async () => {
+    answering({ data: [{ allowed: false, used: 15 }], error: null });
     expect(
-      await incrementUsage('adviser', DID, { env: {}, usedBefore: 3 }),
-    ).toBe(4);
-    expect(await incrementUsage('adviser', DID, { env: {} })).toBe(0);
-    expect(warn.mock.calls.flat().join(' ')).toContain(
-      '[ai-usage] adviser increment failed: boom',
-    );
+      await reserveUsage('altText', DID, { env: {}, now: NOW }),
+    ).toMatchObject({ allowed: false, used: 15, limit: 15, held: false });
   });
 
-  it('never throws', async () => {
+  it('refuses a limit of 0 without asking the store, so it holds while the store is down', async () => {
+    setSupabaseClientForTests(null);
+    expect(
+      await reserveUsage('adviser', DID, {
+        env: { AI_ADVISER_MONTHLY_LIMIT: '0' },
+        now: NOW,
+      }),
+    ).toMatchObject({ allowed: false, used: 0, limit: 0, held: false });
+  });
+
+  it('takes nothing for an unlimited allowance', async () => {
+    expect(
+      await reserveUsage('adviser', DID, {
+        env: { AI_ADVISER_MONTHLY_LIMIT: 'unlimited' },
+      }),
+    ).toMatchObject({ allowed: true, limit: null, held: false });
+    expect(fake.rpcs).toHaveLength(0);
+  });
+
+  it('lets the request through, holding nothing, when the store fails', async () => {
+    answering({ data: null, error: { code: 'XX000', message: 'boom' } });
+    expect(await reserveUsage('adviser', DID, { env: {} })).toMatchObject({
+      allowed: true,
+      used: 0,
+      limit: 30,
+      held: false,
+    });
+    expect(warn.mock.calls.flat().join(' ')).toContain(
+      '[ai-usage] adviser reserve failed: boom',
+    );
+    answering({ data: [], error: null });
+    expect((await reserveUsage('adviser', DID, { env: {} })).allowed).toBe(
+      true,
+    );
     setSupabaseClientForTests({
       rpc: async () => {
         throw new Error('socket closed');
       },
     });
-    expect(
-      await incrementUsage('altText', DID, { env: {}, usedBefore: 1 }),
-    ).toBe(2);
+    expect((await reserveUsage('altText', DID, { env: {} })).held).toBe(false);
+    setSupabaseClientForTests(null);
+    expect((await reserveUsage('altText', DID, { env: {} })).allowed).toBe(
+      true,
+    );
   });
 
-  it('writes nothing with no Supabase or no DID', async () => {
-    expect(await incrementUsage('altText', '', { env: {} })).toBe(0);
+  it('holds nothing with no DID', async () => {
+    expect((await reserveUsage('altText', '', { env: {} })).held).toBe(false);
     expect(fake.rpcs).toHaveLength(0);
-    setSupabaseClientForTests(null);
-    expect(await incrementUsage('altText', DID, { env: {} })).toBe(0);
   });
 
   it('refuses an allowance it does not know', async () => {
+    await expect(reserveUsage('reflection', DID, { env: {} })).rejects.toThrow(
+      /Unknown AI allowance/,
+    );
+  });
+});
+
+describe('releaseUsage', () => {
+  it('gives the use back for the month it was taken in', async () => {
+    await releaseUsage('altText', DID, { env: {}, month: '2026-10' });
+    expect(fake.rpcs).toEqual([
+      {
+        name: 'release_ai_usage',
+        args: { p_allowance: 'altText', p_did: DID, p_month: '2026-10' },
+      },
+    ]);
+  });
+
+  it('never throws, and says so in the log when it fails', async () => {
+    fake = createFakeSupabase({
+      rpcAnswer: () => ({ data: null, error: { message: 'boom' } }),
+    });
+    setSupabaseClientForTests(fake);
     await expect(
-      incrementUsage('reflection', DID, { env: {} }),
-    ).rejects.toThrow(/Unknown AI allowance/);
+      releaseUsage('adviser', DID, { env: {}, month: '2026-11' }),
+    ).resolves.toBeUndefined();
+    expect(warn.mock.calls.flat().join(' ')).toContain(
+      '[ai-usage] adviser release failed: boom',
+    );
+    setSupabaseClientForTests({
+      rpc: async () => {
+        throw new Error('socket closed');
+      },
+    });
+    await expect(
+      releaseUsage('adviser', DID, { env: {}, month: '2026-11' }),
+    ).resolves.toBeUndefined();
+  });
+
+  it('writes nothing with no Supabase, no DID or no month', async () => {
+    await releaseUsage('altText', '', { env: {}, month: '2026-11' });
+    await releaseUsage('altText', DID, { env: {} });
+    expect(fake.rpcs).toHaveLength(0);
+    setSupabaseClientForTests(null);
+    await releaseUsage('altText', DID, { env: {}, month: '2026-11' });
   });
 });

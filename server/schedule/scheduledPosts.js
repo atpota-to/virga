@@ -330,23 +330,38 @@ function validateEmbedSpec(embed, { allowRecordWithMedia = true } = {}) {
   }
 }
 
-/** The four time guards a create, an edit, a move and a reorder all apply. */
+/**
+ * The four time guards a create, an edit, a move and a reorder all apply.
+ * Each refusal carries the code the client's serializer throws for the same
+ * mistake, so the writer reads the client's sentence rather than this prose:
+ * a time can pass in transit (a slow image upload, a fast device clock).
+ */
 function checkTime(scheduledFor) {
-  if (!scheduledFor) return { error: 'scheduledFor is required' };
+  if (!scheduledFor)
+    return { error: 'scheduledFor is required', code: 'SCHEDULE_INVALID' };
   const when = new Date(scheduledFor);
   if (Number.isNaN(when.getTime()))
-    return { error: 'scheduledFor is not a valid datetime' };
+    return {
+      error: 'scheduledFor is not a valid datetime',
+      code: 'SCHEDULE_INVALID',
+    };
   if (when.getTime() <= Date.now())
-    return { error: 'scheduledFor must be in the future' };
+    return {
+      error: 'scheduledFor must be in the future',
+      code: 'SCHEDULE_PAST',
+    };
   if (when.getTime() > Date.now() + MAX_HORIZON_DAYS * DAY_MS) {
-    return { error: `scheduledFor must be within ${MAX_HORIZON_DAYS} days` };
+    return {
+      error: `scheduledFor must be within ${MAX_HORIZON_DAYS} days`,
+      code: 'SCHEDULE_TOO_FAR',
+    };
   }
   return { when };
 }
 
 /**
  * Validate a create (or a full edit). Returns { ok: true, value } or
- * { ok: false, error }. The endpoint stashes the media and fills in
+ * { ok: false, error, code? } (a code only on the time guards). The endpoint stashes the media and fills in
  * payload.media afterwards.
  */
 export function validateCreate({
@@ -356,7 +371,7 @@ export function validateCreate({
   queued = false,
 } = {}) {
   const time = checkTime(scheduledFor);
-  if (time.error) return { ok: false, error: time.error };
+  if (time.error) return { ok: false, error: time.error, code: time.code };
   const { when } = time;
 
   if (target !== TARGET)
@@ -487,7 +502,7 @@ export function validateSelfDestructSpec(raw, scheduledForMs = null) {
 /** Validate a time-only move: the same time guards as a create. */
 export function validateReschedule({ scheduledFor } = {}) {
   const time = checkTime(scheduledFor);
-  if (time.error) return { ok: false, error: time.error };
+  if (time.error) return { ok: false, error: time.error, code: time.code };
   return { ok: true, value: { scheduledFor: time.when.toISOString() } };
 }
 
@@ -563,12 +578,24 @@ export async function storeMedia(
   return path;
 }
 
+// The images-gone sentence, shared by the publish guard and a retry refused
+// after the sweep.
+export const MEDIA_MISSING_ERROR =
+  'the images for this scheduled post are missing. edit it and re-attach them.';
+
 async function fetchMediaBytes(storagePath) {
   const supabase = requireSupabase();
   const { data, error } = await supabase.storage
     .from(MEDIA_BUCKET)
     .download(storagePath);
-  if (error) throw new Error(`media download failed: ${error.message}`);
+  if (error) {
+    // An object that is gone stays gone (the sweep removed it, or a stash
+    // never finished), so retrying would only spend the attempts. Any other
+    // Storage error may pass.
+    if (/object not found/i.test(String(error.message || '')))
+      throw new NonRetryableError(MEDIA_MISSING_ERROR, 'MEDIA_MISSING');
+    throw new Error(`media download failed: ${error.message}`);
+  }
   return new Uint8Array(await data.arrayBuffer());
 }
 
@@ -590,13 +617,70 @@ async function removeQuietly(paths) {
   }
 }
 
-/** Remove every stashed object a media map names (best-effort). */
-async function deleteMedia(mediaMap) {
-  return removeQuietly(
-    Object.values(mediaMap || {})
-      .map((m) => m?.storagePath)
-      .filter(Boolean),
-  );
+/** The Storage paths a media map names. */
+function mediaPaths(mediaMap) {
+  return Object.values(mediaMap || {})
+    .map((m) => m?.storagePath)
+    .filter(Boolean);
+}
+
+// Well over what one row can hold (25 posts of 10 images, plus an edit's copy).
+const LIST_LIMIT = 1000;
+
+/**
+ * Every object under a row's folder, or null when Storage can't say. Real
+ * Storage lists one level at a time (a folder comes back with a null id), and
+ * an edit stashes into one subfolder of the row's, so two levels cover it.
+ */
+async function listRowObjects(rowId) {
+  const out = [];
+  try {
+    const bucket = requireSupabase().storage.from(MEDIA_BUCKET);
+    const walk = async (prefix, depth) => {
+      const { data, error } = await bucket.list(prefix, { limit: LIST_LIMIT });
+      if (error) throw new Error(error.message);
+      for (const entry of data || []) {
+        if (!entry?.name) continue;
+        const path = `${prefix}/${entry.name}`;
+        if (entry.id === null && depth > 0) await walk(path, depth - 1);
+        else if (entry.id !== null) out.push(path);
+      }
+    };
+    await walk(String(rowId), 1);
+    return out;
+  } catch (err) {
+    console.warn(`[schedule] media listing failed: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Remove a finished row's stashed objects: those its media map names, and
+ * anything else under its folder (a create killed mid-stash uploads bytes
+ * the map never learns about). True only when the bytes are really gone, so
+ * the caller may stamp the row reclaimed.
+ */
+async function deleteRowMedia(rowId, mediaMap) {
+  const listed = rowId ? await listRowObjects(rowId) : [];
+  const paths = [...new Set([...mediaPaths(mediaMap), ...(listed || [])])];
+  const removed = await removeQuietly(paths);
+  return removed && listed !== null;
+}
+
+/** Stamp a row's stashed media gone. Best-effort: the sweep comes back for it. */
+async function stampMediaReclaimed(id) {
+  try {
+    const supabase = requireSupabase();
+    const { error } = await supabase
+      .from(TABLE)
+      .update({ media_reclaimed_at: nowIso() })
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+    return true;
+  } catch (err) {
+    console.warn(`[schedule] media stamp failed for ${id}: ${err.message}`);
+    return false;
+  }
 }
 
 // ─── Queue ──────────────────────────────────────────────────────────────────
@@ -670,12 +754,12 @@ async function settleRkeyCollisions(row, userDid) {
     const mine = new Set(row?.payload?.rkeys || []);
     if (mine.size === 0) return row;
     const supabase = requireSupabase();
-    const { data, error } = await supabase
-      .from(TABLE)
-      .select('id, created_at, payload')
-      .eq('user_did', userDid)
-      .in('status', ['pending', 'publishing', 'failed', 'published'])
-      .neq('id', row.id);
+    const { data, error } = await rkeyNeighbours(
+      supabase,
+      userDid,
+      row.scheduled_for,
+      'id, created_at, payload',
+    );
     if (error) return row;
 
     const isEarlier = (other) => {
@@ -686,6 +770,7 @@ async function settleRkeyCollisions(row, userDid) {
     };
     const clashes = (data || []).some(
       (other) =>
+        other.id !== row.id &&
         isEarlier(other) &&
         (other.payload?.rkeys || []).some((k) => mine.has(k)),
     );
@@ -842,7 +927,9 @@ export async function cancelScheduledPost(id, userDid) {
     if (error.code === 'PGRST116') return null;
     throw dbError(error);
   }
-  await deleteMedia(data?.payload?.media);
+  // A delete that fails leaves the row unstamped for the media sweep.
+  if (await deleteRowMedia(id, data?.payload?.media))
+    await stampMediaReclaimed(id);
   return data;
 }
 
@@ -900,15 +987,32 @@ export async function rescheduleScheduledPost({ id, userDid, scheduledFor }) {
   return data;
 }
 
+/** The mediaIds the posts from index `from` on still have to upload. */
+function mediaIdsFrom(posts, from) {
+  const ids = [];
+  for (const p of (Array.isArray(posts) ? posts : []).slice(from))
+    collectMediaIds(p?.embed, ids);
+  return ids;
+}
+
 /**
- * Put a failed row back in the queue exactly as it stands (same rkeys, same
- * progress, same content) for another run of attempts.
+ * Put a failed row back in the queue for another run of attempts. Returns
+ * the row, null when it isn't a failed row of the account's, or { blocked }.
  *
- * The only recovery a thread that failed partway has: editing, moving and
- * reordering all refuse a row with progress, and the claim never picks up
- * 'failed'. Keeping the keys and the progress lets the resume loop finish the
- * tail at the original addresses. A revival is a create in all but name, so
- * it takes the same ceiling. Returns the row, or null.
+ * A row that wrote nothing goes out as a post made now: its time and keys
+ * are re-minted from the moment of the retry, because createdAt and the TID
+ * come from the scheduled time, and a post stamped days ago would land that
+ * far down every follower's feed.
+ *
+ * A thread that failed partway is kept exactly as it stands (same keys, same
+ * progress, same time), so the resume loop finishes the tail at the original
+ * addresses beside the posts already out. It is the only recovery such a
+ * thread has: editing, moving and reordering all refuse a row with progress,
+ * and the claim never picks up 'failed'.
+ *
+ * Refused as MEDIA_MISSING when the sweep has already removed images the
+ * remaining posts need: the retry could only fail again. A revival is a
+ * create in all but name, so it takes the same ceiling.
  */
 export async function retryFailedScheduledPost({ id, userDid }) {
   const supabase = requireSupabase();
@@ -916,27 +1020,56 @@ export async function retryFailedScheduledPost({ id, userDid }) {
   if (!existing) return null;
   if (existing.status !== 'failed') return null;
 
+  const progress = Array.isArray(existing.progress) ? existing.progress : [];
+  const posts = existing.payload?.posts;
+  if (existing.media_reclaimed_at) {
+    const media = existing.payload?.media || {};
+    if (mediaIdsFrom(posts, progress.length).some((mid) => media[mid]))
+      return { blocked: 'MEDIA_MISSING', partial: progress.length > 0 };
+  }
+
   // Counted outside the create's advisory lock, so a revival racing a create
   // can pass the ceiling by one.
   const ceiling = scheduledPostsCeiling();
   if ((await countActive(supabase, userDid)) >= ceiling)
     throw quotaError(ceiling);
 
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'pending',
-      attempts: 0,
-      next_attempt_at: null,
-      locked_at: null,
-      locked_by: null,
-      updated_at: nowIso(),
-    })
-    .eq('id', id)
-    .eq('user_did', userDid)
-    .eq('status', 'failed')
-    .select()
-    .single();
+  const patch = {
+    status: 'pending',
+    attempts: 0,
+    next_attempt_at: null,
+    locked_at: null,
+    locked_by: null,
+    updated_at: nowIso(),
+  };
+  let query;
+  if (progress.length === 0) {
+    const now = nowIso();
+    const rkeys = await assignRkeys({
+      userDid,
+      scheduledFor: now,
+      postCount: Array.isArray(posts) ? posts.length : 0,
+    });
+    patch.scheduled_for = now;
+    patch.payload = { ...(existing.payload || {}), rkeys };
+    // Progress in the predicate keeps the fresh keys off a row that has
+    // written anything, whatever this read saw.
+    query = supabase
+      .from(TABLE)
+      .update(patch)
+      .eq('id', id)
+      .eq('user_did', userDid)
+      .eq('status', 'failed')
+      .eq('progress', '[]');
+  } else {
+    query = supabase
+      .from(TABLE)
+      .update(patch)
+      .eq('id', id)
+      .eq('user_did', userDid)
+      .eq('status', 'failed');
+  }
+  const { data, error } = await query.select().single();
   if (error) {
     if (error.code === 'PGRST116') return null;
     throw dbError(error);
@@ -1039,14 +1172,12 @@ export async function reorderScheduledPosts({ userDid, moves }) {
     const postCount = Array.isArray(posts) ? posts.length : 0;
     const move = { id, scheduledFor };
     if (postCount > 0) {
-      let rkeys = await assignRkeys({ userDid, scheduledFor, postCount });
-      for (
-        let attempt = 1;
-        attempt < 8 && rkeys.some((k) => minted.has(k));
-        attempt++
-      ) {
-        rkeys = await assignRkeys({ userDid, scheduledFor, postCount });
-      }
+      const rkeys = await assignRkeys({
+        userDid,
+        scheduledFor,
+        postCount,
+        avoid: minted,
+      });
       rkeys.forEach((k) => minted.add(k));
       move.rkeys = rkeys;
     }
@@ -1234,9 +1365,10 @@ export async function reclaimStuck(olderThanSeconds = 600) {
 export const MEDIA_RECLAIM_AFTER_DAYS = 30;
 
 /**
- * Delete the stashed images of failed rows nobody came back to, and stamp
- * them reclaimed. The row and its text survive, so the post can still be read
- * and dismissed. A row whose delete fails is left unstamped for a later sweep
+ * Delete the stashed images of failed rows nobody came back to, and of
+ * published or cancelled rows whose own cleanup didn't finish, and stamp them
+ * reclaimed. The row and its text survive, so the post can still be read and
+ * dismissed. A row whose delete fails is left unstamped for a later sweep
  * (removing an already-gone path is harmless).
  *
  * @returns {Promise<{ swept: number, failed: number, unavailable: boolean }>}
@@ -1261,7 +1393,7 @@ export async function reclaimFailedMedia(
     try {
       // Stamped only after the delete really happened: stamping first would
       // tell later sweeps to forget bytes still in the bucket.
-      const gone = await deleteMedia(row.payload?.media);
+      const gone = await deleteRowMedia(row.id, row.payload?.media);
       if (!gone) {
         failed += 1;
         continue;
@@ -1325,7 +1457,10 @@ export async function markPublished(id, { uri, cid }, mediaMap) {
     last_error_code: null,
     updated_at: nowIso(),
   });
-  await deleteMedia(mediaMap);
+  // Never throws past here: the post is out, and the worker would otherwise
+  // read a cleanup hiccup as a failed publish. A failed delete leaves the row
+  // unstamped for the media sweep.
+  if (await deleteRowMedia(id, mediaMap)) await stampMediaReclaimed(id);
 }
 
 /**
@@ -1436,10 +1571,7 @@ export async function buildEmbed(userDid, sessionRef, spec, mediaMap) {
         // A payload naming media that never reached Storage can only ever
         // fail; say so once, terminally, rather than burning every attempt.
         if (!item || !item.storagePath) {
-          throw new NonRetryableError(
-            'the images for this scheduled post are missing. edit it and re-attach them.',
-            'MEDIA_MISSING',
-          );
+          throw new NonRetryableError(MEDIA_MISSING_ERROR, 'MEDIA_MISSING');
         }
         const blob = await uploadStashedBlob(userDid, sessionRef, item);
         images.push({
@@ -1539,21 +1671,52 @@ function rkeysFor(baseMicros, clockid, count) {
   return out;
 }
 
+// A row's keys are minted from its own scheduled_for (every write that moves
+// the time re-mints them), and a TID encodes its time, so only rows scheduled
+// within a thread's length of each other can share one. The window is far
+// wider than that, to stay clear of any rounding between ms and µs.
+const RKEY_NEIGHBOUR_MS = 1000;
+
 /**
- * One rkey per post for a row at `scheduledFor`, clashing with none of the
- * account's other reserved or published keys. A TID can only clash within
- * one repo, so the 10-bit clockid is re-rolled until nothing overlaps.
+ * The account's rows whose keys could clash with keys minted at
+ * `scheduledFor`: those scheduled close to it, in every status that holds
+ * keys. A read bounded by time, so its cost doesn't grow with history.
  */
-export async function assignRkeys({ userDid, scheduledFor, postCount }) {
-  const supabase = requireSupabase();
-  const baseMicros = scheduledMicros(scheduledFor);
+async function rkeyNeighbours(supabase, userDid, scheduledFor, columns) {
+  const ms = scheduledMicros(scheduledFor) / 1000;
   const { data, error } = await supabase
     .from(TABLE)
-    .select('payload')
+    .select(columns)
     .eq('user_did', userDid)
-    .in('status', ['pending', 'publishing', 'failed', 'published']);
+    .in('status', ['pending', 'publishing', 'failed', 'published'])
+    .gte('scheduled_for', new Date(ms - RKEY_NEIGHBOUR_MS).toISOString())
+    .lte('scheduled_for', new Date(ms + RKEY_NEIGHBOUR_MS).toISOString());
+  return { data, error };
+}
+
+/**
+ * One rkey per post for a row at `scheduledFor`, clashing with none of the
+ * account's other reserved or published keys, nor any in `avoid` (keys
+ * handed out earlier in the same batch, not stored yet). A TID can only
+ * clash within one repo, so the 10-bit clockid is re-rolled until nothing
+ * overlaps.
+ */
+export async function assignRkeys({
+  userDid,
+  scheduledFor,
+  postCount,
+  avoid = null,
+}) {
+  const supabase = requireSupabase();
+  const baseMicros = scheduledMicros(scheduledFor);
+  const { data, error } = await rkeyNeighbours(
+    supabase,
+    userDid,
+    scheduledFor,
+    'payload',
+  );
   if (error) throw dbError(error);
-  const taken = new Set();
+  const taken = new Set(avoid || []);
   for (const r of data || [])
     for (const k of r.payload?.rkeys || []) taken.add(k);
 

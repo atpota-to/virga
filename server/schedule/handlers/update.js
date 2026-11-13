@@ -2,7 +2,9 @@
 // one of four ways, checked in this order:
 //
 //   { acknowledgeTimer: true }   clear a published row's TIMER_NOT_ARMED note
-//   { retry: true }              put a failed row back in the queue as it is
+//   { retry: true }              put a failed row back in the queue: one that
+//                                wrote nothing goes out now, a part-published
+//                                thread resumes as it stands
 //   { payload, scheduledFor, … } rewrite it from the composer (the create
 //                                body); a failed row comes back pending
 //   { scheduledFor }             move a pending row to a new time
@@ -22,6 +24,7 @@ import {
   refuseOversizedMedia,
   requireScheduling,
   sendFailure,
+  sendInvalid,
 } from '../respond.js';
 
 const NOT_RESCHEDULABLE = {
@@ -87,8 +90,7 @@ export default async function handler(req, res) {
         payload,
         queued,
       });
-      if (!validation.ok)
-        return sendJson(res, 400, { success: false, error: validation.error });
+      if (!validation.ok) return sendInvalid(res, validation);
 
       const mediaBytes = payload.mediaBytes || {};
       if (refuseOversizedMedia(res, mediaBytes)) return;
@@ -128,8 +130,7 @@ export default async function handler(req, res) {
       });
     } else {
       const validation = scheduled.validateReschedule({ scheduledFor });
-      if (!validation.ok)
-        return sendJson(res, 400, { success: false, error: validation.error });
+      if (!validation.ok) return sendInvalid(res, validation);
       row = await scheduled.rescheduleScheduledPost({
         id,
         userDid,
@@ -143,6 +144,17 @@ export default async function handler(req, res) {
         error: scheduled.DELETE_TIME_TOO_EARLY_ERROR,
         code: 'DELETE_TIME_TOO_EARLY',
         deleteAt: row.deleteAt,
+      });
+    }
+    if (row?.blocked === 'MEDIA_MISSING') {
+      // Only a retry answers this: the 30-day sweep already removed images
+      // the post still needs, so another run could only fail again.
+      return sendJson(res, 409, {
+        success: false,
+        error: row.partial
+          ? 'part of this thread posted, but the images for the rest were cleared after 30 days. cancel it here and finish the thread by hand.'
+          : 'the images for this post were cleared after 30 days. edit it and add them again.',
+        code: 'MEDIA_MISSING',
       });
     }
     if (row?.blocked === 'PARTIALLY_PUBLISHED') {

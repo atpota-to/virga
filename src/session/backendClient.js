@@ -257,9 +257,16 @@ function jsonResponse(body, status, extraHeaders = {}) {
 }
 
 /** The proxy's envelope, as an XRPC response the Agent can read. */
-async function unwrapEnvelope(res, { did, onUnauthorized, pick = (data) => data }) {
+async function unwrapEnvelope(res, { did, onUnauthorized, onAuthorized = null, pick = (data) => data }) {
   const env = await res.json().catch(() => null);
-  if (res.ok && env?.success) return jsonResponse(pick(env.data) ?? {}, 200);
+  if (res.ok && env?.success) {
+    try {
+      onAuthorized?.(did);
+    } catch {
+      // As below: the caller still gets its answer.
+    }
+    return jsonResponse(pick(env.data) ?? {}, 200);
+  }
   if (res.status === 401) {
     try {
       onUnauthorized?.(did, env?.code || null);
@@ -283,8 +290,21 @@ async function unwrapEnvelope(res, { did, onUnauthorized, pick = (data) => data 
  * `/xrpc/<nsid>?<query>` and an init; the answer is an ordinary XRPC
  * response, so every SDK method (and every error's `.error` name) works as
  * it does against a PDS.
+ *
+ * `onUnauthorized(did, code)` hears every 401; `onAuthorized(did)` every
+ * answer that came back through the account's grant, which proves the server
+ * could still restore it (both the proxy and the upload restore the session
+ * before they call the PDS).
  */
-export function createBackendFetchHandler({ backendUrl, token, did = null, fetch = globalThis.fetch, onUnauthorized = null, timeoutMs = PROXY_TIMEOUT_MS }) {
+export function createBackendFetchHandler({
+  backendUrl,
+  token,
+  did = null,
+  fetch = globalThis.fetch,
+  onUnauthorized = null,
+  onAuthorized = null,
+  timeoutMs = PROXY_TIMEOUT_MS,
+}) {
   return async function backendFetchHandler(url, init = {}) {
     const u = new URL(url, 'https://xrpc.invalid');
     const nsid = u.pathname.replace(/^\/xrpc\//, '');
@@ -314,7 +334,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
         body: init.body,
         signal,
       });
-      return unwrapEnvelope(res, { did, onUnauthorized, pick: (data) => (data?.blob ? { blob: data.blob } : data) });
+      return unwrapEnvelope(res, { did, onUnauthorized, onAuthorized, pick: (data) => (data?.blob ? { blob: data.blob } : data) });
     }
 
     const headers = {
@@ -334,7 +354,7 @@ export function createBackendFetchHandler({ backendUrl, token, did = null, fetch
       body: method === 'GET' || method === 'HEAD' ? undefined : init.body,
       signal,
     });
-    return unwrapEnvelope(res, { did, onUnauthorized });
+    return unwrapEnvelope(res, { did, onUnauthorized, onAuthorized });
   };
 }
 
@@ -463,13 +483,17 @@ export function fetchBackendSession({ backendUrl, token, fetch = globalThis.fetc
 const TRANSIENT_LOGOUT_CODES = new Set(['VALIDATION_TRANSIENT_ERROR', 'LOGOUT_TRANSIENT_ERROR']);
 const LOGOUT_RETRY_MS = 1500;
 
-export async function backendSignOut({ backendUrl, token, fetch = globalThis.fetch, retryDelayMs = LOGOUT_RETRY_MS }) {
+export async function backendSignOut({ backendUrl, token, fetch = globalThis.fetch, retryDelayMs = LOGOUT_RETRY_MS, keepGrant = false }) {
   if (!token) return false;
+  // keepGrant ends only this token and never the account's grant, even when
+  // it was the last token: for a token this browser didn't ask for (another
+  // site could have started that sign-in) or no longer holds.
+  const requestBody = keepGrant ? '{"keepGrant":true}' : '{}';
   const attempt = async () => {
     const res = await fetch(backendAddress(backendUrl, BACKEND_PATHS.logout).href, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: '{}',
+      body: requestBody,
       signal: withDeadline(null, SESSION_TIMEOUT_MS),
     });
     if (res.ok) return 'done';

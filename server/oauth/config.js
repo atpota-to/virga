@@ -10,6 +10,7 @@
 // sign-in and never changed: a new value is a new client, and every stored
 // grant stops refreshing.
 
+import crypto from 'node:crypto';
 import { APP_NAME, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
 import { sendJson } from '../http.js';
@@ -119,21 +120,63 @@ export function clientMetadata(env = process.env) {
 }
 
 /**
- * OAUTH_PRIVATE_KEY_1..3: ES256 private JWKs as JSON. More than one only while
- * rotating: add the new key, deploy, and remove the old one once nothing signs
- * with it. A value that isn't JSON is skipped with a warning (never logged).
+ * A kid for a key that came without one: its RFC 7638 thumbprint, so the kid
+ * is the key's own and survives the key moving to another slot. Null for a
+ * JWK that isn't an EC key.
+ */
+export function jwkThumbprint(jwk) {
+  if (jwk?.kty !== 'EC' || !jwk.crv || !jwk.x || !jwk.y) return null;
+  const canonical = JSON.stringify({
+    crv: jwk.crv,
+    kty: jwk.kty,
+    x: jwk.x,
+    y: jwk.y,
+  });
+  return crypto.createHash('sha256').update(canonical).digest('base64url');
+}
+
+/**
+ * OAUTH_PRIVATE_KEY_1..3: ES256 private JWKs as JSON, in slot order.
+ *
+ * The library signs every new sign-in with the first key, and a session keeps
+ * the kid it signed in with for good: its refreshes must be signed by that
+ * same key, and the authorization server refuses any other. So slot 1 is the
+ * current key and slots 2 and 3 hold retired keys only for the sessions that
+ * still name them. To rotate, move the current key to slot 2 and put the new
+ * one in slot 1. A retired key can go once every account that signed in with
+ * it has signed in again; until then removing it signs those accounts out of
+ * the server and stops their scheduled posts and timers.
+ *
+ * A key's kid is what sessions store, so it must not depend on the slot: a key
+ * without one is named by its thumbprint. A value that isn't JSON, or a second
+ * key with a kid already loaded, is skipped with a warning (never logged).
  */
 export function loadPrivateKeys(env = process.env) {
   const keys = [];
   for (let i = 1; i <= MAX_KEYS; i++) {
     const raw = env[`OAUTH_PRIVATE_KEY_${i}`];
     if (!raw) continue;
+    let jwk;
     try {
-      const jwk = JSON.parse(raw);
-      keys.push({ ...jwk, kid: jwk.kid || `virga-key${i}` });
+      jwk = JSON.parse(raw);
     } catch {
       console.warn(`[oauth] OAUTH_PRIVATE_KEY_${i} is not valid JSON; skipped`);
+      continue;
     }
+    const kid = jwk?.kid || jwkThumbprint(jwk);
+    if (!kid) {
+      console.warn(
+        `[oauth] OAUTH_PRIVATE_KEY_${i} is not an EC key with a kid; skipped`,
+      );
+      continue;
+    }
+    if (keys.some((key) => key.kid === kid)) {
+      console.warn(
+        `[oauth] OAUTH_PRIVATE_KEY_${i} has the kid of a key in an earlier slot; skipped`,
+      );
+      continue;
+    }
+    keys.push({ ...jwk, kid });
   }
   return keys;
 }

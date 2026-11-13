@@ -282,3 +282,20 @@ describe('reorderRefusal', () => {
     expect(reorderRefusal(null)).toBeNull();
   });
 });
+
+describe('codes the server added', () => {
+  it('words a timer that was being checked', () => {
+    expect(scheduleErrorMessage({ status: 409, code: 'NOT_REARMABLE', detail: 'x' })).toMatch(/being checked right now/);
+  });
+
+  it('passes on the server’s note for cleared images, each sentence capitalised', () => {
+    expect(
+      scheduleErrorMessage({
+        status: 409,
+        code: 'MEDIA_MISSING',
+        detail: 'part of this thread posted, but the images for the rest were cleared after 30 days. cancel it here and finish the thread by hand.',
+      }),
+    ).toBe('Part of this thread posted, but the images for the rest were cleared after 30 days. Cancel it here and finish the thread by hand.');
+    expect(scheduleErrorMessage({ status: 409, code: 'MEDIA_MISSING' })).toMatch(/cleared after 30 days/);
+  });
+});

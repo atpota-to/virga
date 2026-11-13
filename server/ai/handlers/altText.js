@@ -35,7 +35,8 @@ import { enforce } from '../rateLimit.js';
 import {
   beginAiRequest,
   checkAllowance,
-  countUse,
+  keepUse,
+  releaseUse,
   sendAiError,
 } from '../respond.js';
 import {
@@ -66,6 +67,7 @@ function altTextFrom({ content, finishReason }) {
 
 export default async function altText(req, res) {
   const deadline = Date.now() + ALT_TEXT_BUDGET_MS;
+  let allowance = null;
   try {
     const started = await beginAiRequest(req, res);
     if (!started) return undefined;
@@ -91,12 +93,15 @@ export default async function altText(req, res) {
       return sendJson(res, 413, { error: 'Image is too large to analyze' });
     }
 
-    const allowance = await checkAllowance(res, ALLOWANCE, did);
+    allowance = await checkAllowance(res, ALLOWANCE, did);
     if (!allowance) return undefined;
 
     // The per-account cost ceiling across every AI feature.
     const rl = await enforce(did);
-    if (!rl.allowed) return sendJson(res, rl.status, rl.body);
+    if (!rl.allowed) {
+      await releaseUse(allowance);
+      return sendJson(res, rl.status, rl.body);
+    }
 
     const { instruction, maxTokens, temperature } = buildAltTextInstruction({
       context,
@@ -153,6 +158,7 @@ export default async function altText(req, res) {
     }
 
     if (!description) {
+      await releaseUse(allowance);
       return sendJson(res, 502, {
         error:
           'Could not describe this image. Please try again, or write your own.',
@@ -160,11 +166,12 @@ export default async function altText(req, res) {
     }
 
     const responseBody = { altText: description };
-    const usage = await countUse(ALLOWANCE, did, allowance);
+    const usage = keepUse(allowance);
     if (usage) responseBody.usage = usage;
 
     return sendJson(res, 200, responseBody);
   } catch (error) {
+    await releaseUse(allowance);
     return sendAiError(res, error, {
       tag: 'alt-text',
       fallback: 'Alt text generation failed',

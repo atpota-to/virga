@@ -40,7 +40,9 @@ import { enforce } from '../rateLimit.js';
 import {
   beginAiRequest,
   checkAllowance,
-  countUse,
+  currentUse,
+  keepUse,
+  releaseUse,
   sendAiError,
 } from '../respond.js';
 import {
@@ -65,6 +67,7 @@ export const MAX_TEXT_LENGTH = 8000;
 const VALID_STATUSES = new Set(['ok', 'caution', 'conflict']);
 
 export default async function analyzePost(req, res) {
+  let allowance = null;
   try {
     const started = await beginAiRequest(req, res);
     if (!started) return undefined;
@@ -85,21 +88,28 @@ export default async function analyzePost(req, res) {
 
     if (goalsList.length === 0 && !contextBlock && !writingChecks) {
       // Nothing to check against: an "ok" read so the composer proceeds,
-      // neither counted nor rate limited.
+      // neither counted nor rate limited. It still carries the count as it
+      // stands, because an answer without `usage` tells the client the
+      // allowance is unlimited and it would drop the count it keeps.
+      const usage = await currentUse(ALLOWANCE, did);
       return sendJson(res, 200, {
         sentiment: { label: 'neutral', score: 0 },
         checks: [],
         suggestion: null,
         overallStatus: 'ok',
+        ...(usage ? { usage } : {}),
       });
     }
 
-    const allowance = await checkAllowance(res, ALLOWANCE, did);
+    allowance = await checkAllowance(res, ALLOWANCE, did);
     if (!allowance) return undefined;
 
     // The per-account cost ceiling across every AI feature.
     const rl = await enforce(did);
-    if (!rl.allowed) return sendJson(res, rl.status, rl.body);
+    if (!rl.allowed) {
+      await releaseUse(allowance);
+      return sendJson(res, rl.status, rl.body);
+    }
 
     const { system, user } = buildAdviserPrompt({
       text,
@@ -164,11 +174,12 @@ export default async function analyzePost(req, res) {
       );
     }
 
-    const usage = await countUse(ALLOWANCE, did, allowance);
+    const usage = keepUse(allowance);
     if (usage) responseBody.usage = usage;
 
     return sendJson(res, 200, responseBody);
   } catch (error) {
+    await releaseUse(allowance);
     return sendAiError(res, error, {
       tag: 'analyze-post',
       fallback: 'Analysis failed',

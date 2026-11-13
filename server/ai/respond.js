@@ -1,19 +1,21 @@
 // What the three AI handlers share: the opening checks every request goes
-// through, the monthly allowance read and count, and the one catch.
+// through, the monthly allowance, and the one catch.
 //
-// Order matters, and the trial is counted only on success: sign-in, the
-// gateway being configured, the handler's own validation (400/413), the
-// monthly allowance read (429 monthly_limit), the rate limit (which takes a
-// daily slot before anything is spent), the model call, and only then, for a
-// usable answer, the monthly count. A failed model call costs a daily slot but
-// not a monthly one.
+// Order matters: sign-in, the gateway being configured, the handler's own
+// validation (400/413), a use taken from the monthly allowance (429
+// monthly_limit), the rate limit (which takes a daily slot before anything is
+// spent), the model call. The monthly use is taken before the call, so
+// requests sent together can't all pass at the last one, and given back when
+// the request ends without a usable answer: a refused daily slot, a failed
+// model call or an empty answer costs no monthly use. A failed model call
+// still costs its daily slot.
 
 import { methodGuard, readJson, sendJson } from '../http.js';
 import { resolveAiCaller } from './caller.js';
 import { monthlyLimitFor } from './allowances.js';
 import { AIGatewayError, isConfigured } from './gateway.js';
 import { logResolvedModelsOnce } from './models.js';
-import { getUsage, incrementUsage } from './usage.js';
+import { getUsage, releaseUsage, reserveUsage } from './usage.js';
 
 export const UNAVAILABLE = Object.freeze({
   error: 'AI help isn’t available right now.',
@@ -50,10 +52,15 @@ export async function beginAiRequest(req, res, { env = process.env } = {}) {
 }
 
 /**
- * Check `allowance` for this month. Returns `{ limit, used }` to go on with
- * (limit null = unlimited, nothing read), or null once it has answered 429
- * `{ error: 'monthly_limit', limit, used }`. An untracked count (Supabase
- * unavailable) lets the request through.
+ * Take one use of `allowance` for this month. Returns the reservation to go on
+ * with, or null once it has answered 429 `{ error: 'monthly_limit', limit,
+ * used }`. A limit of null (unlimited) reads and writes nothing; a limit of 0
+ * refuses without a read. An untracked count (Supabase unavailable) lets the
+ * request through.
+ *
+ * Every way out after this either keeps the use (`keepUse`, on a usable
+ * answer) or gives it back (`releaseUse`), before the response is sent: the
+ * function may be frozen once it has answered.
  */
 export async function checkAllowance(
   res,
@@ -61,37 +68,64 @@ export async function checkAllowance(
   did,
   { env = process.env } = {},
 ) {
-  if (monthlyLimitFor(allowance, env) === null) return { limit: null, used: 0 };
-  const usage = await getUsage(allowance, did, { env });
-  if (usage.limit === null) return { limit: null, used: 0 };
-  if (usage.tracked && usage.used >= usage.limit) {
+  const taken = await reserveUsage(allowance, did, { env });
+  if (!taken.allowed) {
     sendJson(res, 429, {
       error: 'monthly_limit',
-      limit: usage.limit,
-      used: usage.used,
+      limit: taken.limit,
+      used: taken.used,
     });
     return null;
   }
-  return { limit: usage.limit, used: usage.used };
+  return {
+    allowance,
+    did,
+    env,
+    limit: taken.limit,
+    used: taken.used,
+    month: taken.month,
+    held: taken.held,
+  };
 }
 
 /**
- * Count one successful use. Returns the `usage` to put in the answer, or
- * undefined when the allowance is unlimited (the answer then carries none,
- * which tells the client to drop any count it kept).
+ * Keep the use a reservation took: the request has a usable answer. Returns
+ * the `usage` to put in the answer, or undefined when the allowance is
+ * unlimited (the answer then carries none, which tells the client to drop any
+ * count it kept).
  */
-export async function countUse(
-  allowance,
-  did,
-  allowanceState,
-  { env = process.env } = {},
-) {
-  if (!allowanceState || allowanceState.limit === null) return undefined;
-  const used = await incrementUsage(allowance, did, {
-    env,
-    usedBefore: allowanceState.used,
+export function keepUse(reservation) {
+  if (!reservation) return undefined;
+  reservation.held = false;
+  if (reservation.limit === null) return undefined;
+  return { used: reservation.used, limit: reservation.limit };
+}
+
+/**
+ * Give back the use a reservation took, if it still holds one. Safe to call
+ * on any way out, more than once, and with no reservation. Never throws.
+ */
+export async function releaseUse(reservation) {
+  if (!reservation?.held) return;
+  reservation.held = false;
+  await releaseUsage(reservation.allowance, reservation.did, {
+    env: reservation.env,
+    month: reservation.month,
   });
-  return { used, limit: allowanceState.limit };
+}
+
+/**
+ * The allowance as it stands, without taking a use, for an answer that costs
+ * nothing (analyze-post with nothing to check). Returns the `usage` to put in
+ * it, or undefined when the allowance is unlimited or the count can't be read:
+ * an answer without `usage` is read as unlimited, so only a count that was
+ * read goes out.
+ */
+export async function currentUse(allowance, did, { env = process.env } = {}) {
+  if (monthlyLimitFor(allowance, env) === null) return undefined;
+  const usage = await getUsage(allowance, did, { env });
+  if (usage.limit === null || !usage.tracked) return undefined;
+  return { used: usage.used, limit: usage.limit };
 }
 
 // What the writer is told for each gateway failure. The gateway's own error

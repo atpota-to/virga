@@ -20,6 +20,7 @@ import {
   refuseOversizedMedia,
   requireScheduling,
   sendFailure,
+  sendInvalid,
 } from '../respond.js';
 
 // A per-DID burst guard, not a quota (the ceilings are counted in the
@@ -67,8 +68,7 @@ export default async function handler(req, res) {
       payload,
       queued,
     });
-    if (!validation.ok)
-      return sendJson(res, 400, { success: false, error: validation.error });
+    if (!validation.ok) return sendInvalid(res, validation);
 
     const { posts, gates, selfDestruct } = validation.value;
     const mediaBytes = (payload && payload.mediaBytes) || {};
@@ -110,6 +110,11 @@ export default async function handler(req, res) {
       queued: validation.value.queued,
     });
 
+    // Built from the row as stored, never from the local `rkeys`: the create
+    // may have re-minted them to settle a clash with a concurrent create, and
+    // writing the old ones back would put two posts at one address.
+    const withMedia = (media) => ({ ...row.payload, media });
+
     let finalRow = row;
     if (referencedIds.length > 0) {
       const media = {};
@@ -124,14 +129,7 @@ export default async function handler(req, res) {
           );
           media[id] = { storagePath, encoding };
         }
-        finalRow = await scheduled.updatePayload(row.id, {
-          posts,
-          gates,
-          media,
-          rkeys,
-          tz,
-          selfDestruct,
-        });
+        finalRow = await scheduled.updatePayload(row.id, withMedia(media));
       } catch (stashErr) {
         // Never leave a pending row whose embeds name media that was never
         // stored: it could only fail at publish, holding a slot meanwhile
@@ -139,16 +137,7 @@ export default async function handler(req, res) {
         // what did reach Storage first so cancelling removes those objects,
         // then retire the row. Both best-effort: the stash failure is what the
         // caller needs to hear about.
-        await scheduled
-          .updatePayload(row.id, {
-            posts,
-            gates,
-            media,
-            rkeys,
-            tz,
-            selfDestruct,
-          })
-          .catch(() => {});
+        await scheduled.updatePayload(row.id, withMedia(media)).catch(() => {});
         await scheduled.cancelScheduledPost(row.id, userDid).catch(() => {});
         throw stashErr;
       }

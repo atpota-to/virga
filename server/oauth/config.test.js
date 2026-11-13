@@ -8,8 +8,10 @@
 // off the same origin.
 
 import fs from 'node:fs';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { NodeOAuthClient } from '@atproto/oauth-client-node';
+import { JoseKey } from '@atproto/jwk-jose';
 import { OAUTH_SCOPE } from '../../src/config.js';
 import {
   RETURN_PATH,
@@ -18,6 +20,7 @@ import {
   clientMetadata,
   defaultReturnUrl,
   isAllowedReturnUrl,
+  jwkThumbprint,
   loadPrivateKeys,
   returnOrigins,
   unavailableReason,
@@ -30,6 +33,49 @@ const store = {
   del: async () => {},
 };
 const repoFile = (rel) => new URL(`../../${rel}`, import.meta.url);
+
+// The library's own negotiation, from the oauth-client NodeOAuthClient runs on.
+const nodeClientRequire = createRequire(
+  createRequire(import.meta.url).resolve('@atproto/oauth-client-node'),
+);
+const { Keyset } = nodeClientRequire('@atproto/jwk');
+const clientAuth = nodeClientRequire(
+  nodeClientRequire
+    .resolve('@atproto/oauth-client')
+    .replace(/index\.js$/, 'oauth-client-auth.js'),
+);
+const AS_METADATA = {
+  issuer: 'https://as.example',
+  token_endpoint_auth_methods_supported: ['none', 'private_key_jwt'],
+  token_endpoint_auth_signing_alg_values_supported: ['ES256'],
+};
+async function keysetOf(env) {
+  const keys = [];
+  for (const jwk of loadPrivateKeys(env))
+    keys.push(await JoseKey.fromImportable(jwk, jwk.kid));
+  return new Keyset(keys);
+}
+const signInKid = async (env) =>
+  clientAuth.negotiateClientAuthMethod(
+    AS_METADATA,
+    { token_endpoint_auth_method: 'private_key_jwt' },
+    await keysetOf(env),
+  ).kid;
+/** Whether a session stored with `kid` can still sign its refreshes. */
+const canRefresh = async (env, kid) => {
+  try {
+    clientAuth.createClientCredentialsFactory(
+      { method: 'private_key_jwt', kid },
+      AS_METADATA,
+      { client_id: 'https://virga.example.com/api/oauth/client-metadata.json' },
+      { generateNonce: async () => 'n' },
+      await keysetOf(env),
+    );
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 let env;
 
@@ -177,14 +223,63 @@ describe('availability and keys', () => {
     expect(keys.map((k) => k.kid)).toEqual(['virga-test-key', 'virga-second']);
   });
 
-  it('names a key without a kid by its slot', () => {
+  it('names a key without a kid by its thumbprint, the same in any slot', () => {
     const anonymous = JSON.parse(process.env.OAUTH_PRIVATE_KEY_1);
     delete anonymous.kid;
+    const value = JSON.stringify(anonymous);
+    const inSlot = (i) =>
+      loadPrivateKeys({ [`OAUTH_PRIVATE_KEY_${i}`]: value }).map((k) => k.kid);
+    expect(inSlot(1)).toEqual([jwkThumbprint(anonymous)]);
+    expect(inSlot(2)).toEqual(inSlot(1));
+    expect(inSlot(3)).toEqual(inSlot(1));
+    // RFC 7638: SHA-256 of the required members in order, base64url.
+    expect(jwkThumbprint(anonymous)).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  });
+
+  it('skips a key with no kid that is not an EC key, and a repeated kid', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const keys = loadPrivateKeys({
+      OAUTH_PRIVATE_KEY_1: process.env.OAUTH_PRIVATE_KEY_1,
+      OAUTH_PRIVATE_KEY_2: process.env.OAUTH_PRIVATE_KEY_1,
+      OAUTH_PRIVATE_KEY_3: JSON.stringify({ kty: 'oct', k: 'abc' }),
+    });
+    expect(keys.map((k) => k.kid)).toEqual(['virga-test-key']);
+    vi.restoreAllMocks();
+  });
+
+  it('rotates as documented: new sign-ins take the new key, old sessions keep refreshing', async () => {
+    const old = await generateKey('virga-2026-a');
+    const next = await generateKey('virga-2026-b');
+    const before = { OAUTH_PRIVATE_KEY_1: old.json };
+    expect(await signInKid(before)).toBe('virga-2026-a');
+
+    // Move the current key to slot 2, put the new one in slot 1.
+    const rotated = {
+      OAUTH_PRIVATE_KEY_1: next.json,
+      OAUTH_PRIVATE_KEY_2: old.json,
+    };
+    expect(await signInKid(rotated)).toBe('virga-2026-b');
+    expect(await canRefresh(rotated, 'virga-2026-a')).toBe(true);
+    expect(await canRefresh(rotated, 'virga-2026-b')).toBe(true);
+
+    // Removing the retired key ends the sessions still on it, which is why it
+    // stays until they have signed in again.
+    const retired = { OAUTH_PRIVATE_KEY_1: next.json };
+    expect(await canRefresh(retired, 'virga-2026-a')).toBe(false);
+  });
+
+  it('keeps a kid-less key usable by its old sessions after it moves slot', async () => {
+    const anonymous = JSON.parse((await generateKey('x')).json);
+    delete anonymous.kid;
+    const value = JSON.stringify(anonymous);
+    const signedInWith = await signInKid({ OAUTH_PRIVATE_KEY_1: value });
+    const next = await generateKey('virga-next');
     expect(
-      loadPrivateKeys({ OAUTH_PRIVATE_KEY_2: JSON.stringify(anonymous) }).map(
-        (k) => k.kid,
+      await canRefresh(
+        { OAUTH_PRIVATE_KEY_1: next.json, OAUTH_PRIVATE_KEY_2: value },
+        signedInWith,
       ),
-    ).toEqual(['virga-key2']);
+    ).toBe(true);
   });
 });
 

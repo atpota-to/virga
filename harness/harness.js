@@ -125,6 +125,7 @@ export function createHarness(flags, { now = Date.now() } = {}) {
      * Replace `window.fetch` and start the server's workers. Also puts
      * `window.__harness` on the page: `cron()` runs the workers now,
      * `expire(handle)` ends an account's long session on the server,
+     * `refuse(handle)` has its grant refused while the row stays,
      * `agentFor(did)` is the agent the page uses, and `server.inspect()`
      * shows what the server holds.
      */
@@ -152,6 +153,11 @@ export function createHarness(flags, { now = Date.now() } = {}) {
         expire(handle) {
           const world = worlds.find((w) => w.me.handle.startsWith(handle));
           if (world) server.expireAccount(world.me.did);
+          return Boolean(world);
+        },
+        refuse(handle) {
+          const world = worlds.find((w) => w.me.handle.startsWith(handle));
+          if (world) server.refuseGrant(world.me.did);
           return Boolean(world);
         },
         stopCron: () => clearInterval(timer),

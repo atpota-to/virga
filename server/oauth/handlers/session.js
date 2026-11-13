@@ -56,7 +56,11 @@ export default async function handler(req, res) {
     const lite = queryParam(req, 'lite');
 
     if (lite === '1' || lite === 'true') {
-      const exists = !!(await sessionStore.get(userDid));
+      const stored = await sessionStore.get(userDid);
+      // A grant this instance already found refused reads as missing here
+      // too, so the app asks for a sign-in instead of failing every call.
+      const exists =
+        !!stored && !getOAuthClient().isDeadGrantSession?.(userDid, stored);
       const scope = exists ? sessionStore.scopeFor(userDid) : null;
       return sendJson(res, 200, {
         success: true,

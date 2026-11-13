@@ -7,7 +7,8 @@ import { envInt } from '../env.js';
 /**
  * The monthly allowances. The ids match the client's (USAGE_FEATURES in
  * src/posting/adviser/usage.js). `table` / `column` are where usage.js reads
- * the month's count; the writes go through bump_ai_usage, keyed by the id.
+ * the month's count; the writes go through reserve_ai_usage and
+ * release_ai_usage, keyed by the id.
  */
 export const ALLOWANCES = Object.freeze({
   adviser: {

@@ -1013,6 +1013,9 @@ const LIST_COLUMNS = [
  * the time that was picked, and resolveSelfDestruct carries it into the
  * sentence the row settles with.
  *
+ * An existing timer comes back with `updated`: true when it was rewritten to
+ * the new rule, false when it was left as it was (it is being checked).
+ *
  * @returns {Promise<{ row: object, existing: boolean, updated?: boolean }>}
  */
 async function armSelfDestruct({ userDid, postUri, postCid, collection, rkey, snippet, extraUris, lifespanSeconds, checkAt, conditions, effects, note = null }) {
@@ -1091,6 +1094,9 @@ async function armSelfDestruct({ userDid, postUri, postCid, collection, rkey, sn
         next_attempt_at: null,
         last_error: null,
         last_error_code: null,
+        // Extensions spent under the old rule would come off the new rule's
+        // maxExtensions, so a new "extend once" could be spent before it ran.
+        extensions: 0,
         updated_at: new Date().toISOString(),
       })
       .eq('id', data.row.id).eq('status', 'armed')
@@ -1099,6 +1105,11 @@ async function armSelfDestruct({ userDid, postUri, postCid, collection, rkey, sn
     // hiccup: the timer that is there stands, which is what `existing` means.
     if (!updErr && updated) return { row: updated, existing: true, updated: true };
   }
+
+  // An existing timer that was not rewritten: mid-check, or claimed under the
+  // rewrite. `updated: false` lets the caller tell "this is already your rule"
+  // from "your new rule was not taken" (sameTimerRule).
+  if (data.existing) return { row: data.row, existing: true, updated: false };
 
   if (note && !data.existing && data.row.id) {
     // The insert RPC takes no resolution, so the note is a second, best-effort
@@ -1117,7 +1128,33 @@ async function armSelfDestruct({ userDid, postUri, postCid, collection, rkey, sn
     }
   }
 
-  return { row: data.row, existing: !!data.existing };
+  return { row: data.row, existing: false };
+}
+
+/** JSON with object keys sorted, so two readings of one rule compare equal. */
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort()
+      .filter((k) => value[k] !== undefined)
+      .map((k) => `${JSON.stringify(k)}:${canonicalJson(value[k])}`).join(',')}}`;
+  }
+  return JSON.stringify(value ?? null);
+}
+
+/**
+ * Whether a stored timer already carries the rule a re-arm asks for: what
+ * spares or dooms the post, what it does, and the window. The deadline is left
+ * out on purpose. This is asked of a row armSelfDestruct could not rewrite
+ * (one being checked), whose deadline has by definition arrived, so it never
+ * equals a new one, and comparing it would refuse the retry of an arm that
+ * already landed.
+ */
+function sameTimerRule(row, { conditions, effects, lifespanSeconds }) {
+  if (!row) return false;
+  if (Number(row.lifespan_seconds) !== Number(lifespanSeconds)) return false;
+  if (canonicalJson(normalizeEffects(row.effects)) !== canonicalJson(normalizeEffects(effects))) return false;
+  return canonicalJson(normalizeConditions(row.conditions)) === canonicalJson(normalizeConditions(conditions));
 }
 
 // Statuses whose post is still waiting on its timer. Read first and given the
@@ -1647,7 +1684,11 @@ async function readFollowSet(userDid) {
       if (follow?.did) dids.add(follow.did);
     }
     cursor = data?.cursor || null;
-    if (!cursor || (data?.follows || []).length === 0) { cursor = null; break; }
+    // An empty page that still carries a cursor is the AppView hiding a page
+    // of follows it won't describe, with more behind it (as on getQuotes). The
+    // walk stops, but the cursor survives so the list is marked partial: a
+    // list read as complete when it isn't counts followed people as strangers.
+    if (!cursor || (data?.follows || []).length === 0) break;
   }
   if (cursor) truncated = true;
 
@@ -2750,6 +2791,7 @@ export {
   collectThreadRecords,
   validateArm,
   armSelfDestruct,
+  sameTimerRule,
   listSelfDestructs,
   cancelSelfDestruct,
   claimDueSelfDestructs,

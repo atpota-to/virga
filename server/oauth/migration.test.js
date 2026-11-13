@@ -22,6 +22,7 @@ import {
   SessionStore,
   StateStore,
   SupabaseLock,
+  tokenKey,
 } from './storage.js';
 
 const FILE = '20261113000100_oauth.sql';
@@ -53,7 +54,7 @@ describe('the migration as text', () => {
       );
     }
     expect(sql).toContain('sub text primary key');
-    expect(sql).toContain('token text primary key');
+    expect(sql).toContain('token_hash text primary key');
     expect(sql).not.toMatch(/create policy/);
     expect(sql).not.toMatch(/security definer/);
     expect(sql).not.toMatch(/drop table|truncate/);
@@ -271,7 +272,7 @@ describe('the migration, run', () => {
       });
       expect(await store.countForUser(DID)).toBe(2);
       await t.exec(
-        `UPDATE frontend_sessions SET expires_at = NOW() - INTERVAL '1 minute' WHERE token = '${b}'`,
+        `UPDATE frontend_sessions SET expires_at = NOW() - INTERVAL '1 minute' WHERE token_hash = '${tokenKey(b)}'`,
       );
       expect(await store.countForUser(DID)).toBe(1);
       expect(await new FrontendSessionStore().validateWithDetails(b)).toEqual({
@@ -291,8 +292,8 @@ describe('the migration, run', () => {
       const token = await store.create(DID, 2);
       await new FrontendSessionStore().validateWithDetails(token);
       const { rows } = await t.query(
-        `SELECT expires_at FROM frontend_sessions WHERE token = $1`,
-        [token],
+        `SELECT expires_at FROM frontend_sessions WHERE token_hash = $1`,
+        [tokenKey(token)],
       );
       expect(rows[0].expires_at.getTime() - Date.now()).toBeGreaterThan(
         29 * 24 * 60 * 60 * 1000,
