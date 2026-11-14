@@ -32,8 +32,9 @@ async function tablePrivileges(db) {
             c.relrowsecurity AS rls,
             has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE') AS anon,
             has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE') AS authed,
-            has_table_privilege('service_role', c.oid, 'SELECT') AND has_table_privilege('service_role', c.oid, 'INSERT')
-              AND has_table_privilege('service_role', c.oid, 'UPDATE') AND has_table_privilege('service_role', c.oid, 'DELETE') AS service
+            has_table_privilege('service_role', c.oid, 'SELECT') AND has_table_privilege('service_role', c.oid, 'INSERT') AS service_add,
+            has_table_privilege('service_role', c.oid, 'UPDATE') AND has_table_privilege('service_role', c.oid, 'DELETE') AS service_change,
+            has_table_privilege('service_role', c.oid, 'UPDATE,DELETE,TRUNCATE') AS service_any_change
        FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
       ORDER BY 1`,
@@ -55,6 +56,10 @@ async function functionPrivileges(db) {
   );
   return rows;
 }
+
+// A record that is only ever added to: the service role reads and inserts,
+// and holds no way to rewrite or remove a row.
+const APPEND_ONLY = ['terms_acceptance'];
 
 const projects = [
   ['with Supabase’s automatic grants', () => t],
@@ -97,7 +102,16 @@ describe('supabase/migrations', () => {
 describe.each(projects)('supabase/migrations on a project %s', (_label, db) => {
   it('turns on RLS for every table, gives anon and authenticated nothing and service_role read and write', async () => {
     for (const table of await tablePrivileges(db())) {
-      expect(table, table.name).toMatchObject({ rls: true, anon: false, authed: false, service: true });
+      expect(table, table.name).toMatchObject({ rls: true, anon: false, authed: false, service_add: true });
+      if (!APPEND_ONLY.includes(table.name)) expect(table.service_change, table.name).toBe(true);
+    }
+  });
+
+  it('leaves service_role no way to change or remove a row of an append-only table', async () => {
+    const tables = await tablePrivileges(db());
+    for (const name of APPEND_ONLY) {
+      const table = tables.find((row) => row.name === name);
+      expect(table, name).toMatchObject({ service_add: true, service_any_change: false });
     }
   });
 

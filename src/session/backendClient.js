@@ -104,13 +104,29 @@ export function clearSigninPending(storage) {
   }
 }
 
-/** The login request: the address the server is asked for, and where it should send the person back. */
-export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce }) {
+// What a sign-in may ask the account's host to show first. 'create' opens
+// its page for making an account; the server takes the same four and no
+// others (server/oauth/handlers/login.js).
+export const SIGNIN_PROMPTS = Object.freeze(['login', 'consent', 'select_account', 'create']);
+
+/** `prompt` if it is one a sign-in may send, else null. */
+export function signInPrompt(prompt) {
+  return SIGNIN_PROMPTS.includes(prompt) ? prompt : null;
+}
+
+/**
+ * The login request: the address the server is asked for, and where it
+ * should send the person back. `handle` is a handle, a DID, or the address of
+ * a host (to sign in there without naming an account, or with `prompt:
+ * 'create'` to make one).
+ */
+export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt = null }) {
   const returnUrl = new URL(returnPath, origin);
   returnUrl.search = new URLSearchParams({ n: nonce }).toString();
   const url = backendAddress(backendUrl, BACKEND_PATHS.login);
   url.searchParams.set('handle', handle);
   url.searchParams.set('redirect_uri', returnUrl.href);
+  if (signInPrompt(prompt)) url.searchParams.set('prompt', prompt);
   return { url: url.href, returnUrl: returnUrl.href };
 }
 
@@ -135,12 +151,13 @@ export async function startBackendSignIn({
   mode = 'backend',
   intent = 'add',
   did = null,
+  prompt = null,
   fetch = globalThis.fetch,
   sessionStorage,
   assign,
 }) {
   const nonce = randomNonce();
-  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce });
+  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt });
   let res;
   let body = null;
   try {

@@ -80,6 +80,37 @@ export function applyCors(req, res, env = process.env) {
   return true;
 }
 
+/**
+ * True for a request a page on some other site sent: it names an Origin
+ * that is neither this server's own nor one of the frontend origins. A request
+ * with no Origin (curl, a server, a same-origin GET) isn't one. For a route
+ * that takes no session token, where CORS alone only hides the answer and the
+ * write would still happen.
+ */
+export function isForeignOrigin(req, env = process.env) {
+  const origin = header(req, 'origin');
+  if (!origin) return false;
+  if (origin === 'null') return true;
+  return origin !== ownOrigin(req) && !isAllowedFrontendOrigin(origin, env);
+}
+
+const firstOf = (value) => (typeof value === 'string' ? value.split(',')[0].trim() : '');
+
+/**
+ * The caller's address. Vercel's edge sets x-real-ip and x-forwarded-for
+ * itself, replacing whatever the caller sent, so neither can be chosen to
+ * dodge a limit there. 'unknown' when there is nothing to read.
+ */
+export function callerAddress(req) {
+  return firstOf(header(req, 'x-real-ip')) || firstOf(header(req, 'x-forwarded-for')) || req?.socket?.remoteAddress || 'unknown';
+}
+
+/** The caller's User-Agent as sent, or '' when there is none. */
+export function callerUserAgent(req) {
+  const value = header(req, 'user-agent');
+  return typeof value === 'string' ? value : '';
+}
+
 /** The bearer token in the Authorization header, or null. */
 export function bearerToken(req) {
   const value = header(req, 'authorization');

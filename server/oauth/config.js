@@ -12,6 +12,7 @@
 
 import crypto from 'node:crypto';
 import { APP_NAME, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
+import { PRIVACY_PATH, TERMS_PATH } from '../../src/legal/version.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
 import { sendJson } from '../http.js';
 
@@ -95,17 +96,21 @@ export function clientMetadata(env = process.env) {
   const origin = httpsPublicUrl(env);
   if (!origin)
     throw new Error('OAUTH_PUBLIC_URL is not set to an https origin');
-  const tos = httpsUrlOrNull(env.OAUTH_TOS_URL);
-  const policy = httpsUrlOrNull(env.OAUTH_POLICY_URL);
+  // The site's own pages, unless the environment names others. An http link
+  // would stop NodeOAuthClient from starting, so one that isn't https is
+  // passed over for the page here.
+  const tos = httpsUrlOrNull(env.OAUTH_TOS_URL) || `${origin}${TERMS_PATH}`;
+  const policy =
+    httpsUrlOrNull(env.OAUTH_POLICY_URL) || `${origin}${PRIVACY_PATH}`;
   return {
     client_id: `${origin}${CLIENT_METADATA_PATH}`,
     client_name: APP_NAME,
     // Must share the client_id's host.
     client_uri: origin,
     logo_uri: `${origin}/icon.svg`,
-    // An http link would stop NodeOAuthClient from starting; it is left out.
-    ...(tos ? { tos_uri: tos } : {}),
-    ...(policy ? { policy_uri: policy } : {}),
+    // Shown on the host's consent screen, beside what Virga asks for.
+    tos_uri: tos,
+    policy_uri: policy,
     redirect_uris: [`${origin}${CALLBACK_PATH}`],
     grant_types: ['authorization_code', 'refresh_token'],
     scope: SCOPE,

@@ -14,6 +14,7 @@
 // lazily-fetched chunk: the session provider only awaits it when a session
 // may exist or a sign-in starts.
 import { APP_NAME, OAUTH_CALLBACK_PATH, OAUTH_SCOPE } from '../config.js';
+import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 
 let _clientPromise = null;
 
@@ -64,6 +65,9 @@ export function buildClientMetadata(origin) {
     client_name: APP_NAME,
     client_uri: origin,
     logo_uri: `${origin}/icon.svg`,
+    // Shown on the host's consent screen, beside what Virga asks for.
+    tos_uri: `${origin}${TERMS_PATH}`,
+    policy_uri: `${origin}${PRIVACY_PATH}`,
     redirect_uris: [`${origin}${OAUTH_CALLBACK_PATH}`],
     scope: OAUTH_SCOPE,
     grant_types: ['authorization_code', 'refresh_token'],
@@ -142,6 +146,9 @@ export function signInErrorMessage(err) {
   }
   if (code === 'NETWORK_ERROR') {
     return 'Couldn’t reach Virga’s server. Check your connection and try again.';
+  }
+  if (code === 'RATE_LIMITED') {
+    return 'Too many sign-ins were started from here in the last minute. Wait a minute and try again.';
   }
   if (code === 'REDIRECT_NOT_ALLOWED') {
     return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';

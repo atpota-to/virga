@@ -138,6 +138,24 @@ describe('startBackendSignIn', () => {
     expect(settled).toBe('pending');
   });
 
+  it('asks for the host’s make-an-account page when told to, and for nothing it doesn’t know', async () => {
+    const fetch = recorder(() => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?request_uri=y' }));
+    const assign = vi.fn();
+    startBackendSignIn({ ...base, handle: 'https://bsky.social', prompt: 'create', fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalled());
+    const asked = new URL(fetch.calls[0].url).searchParams;
+    expect(asked.get('handle')).toBe('https://bsky.social');
+    expect(asked.get('prompt')).toBe('create');
+
+    startBackendSignIn({ ...base, prompt: 'none', fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(2));
+    expect(new URL(fetch.calls[1].url).searchParams.has('prompt')).toBe(false);
+    // An ordinary sign-in sends none at all.
+    startBackendSignIn({ ...base, fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(3));
+    expect(new URL(fetch.calls[2].url).searchParams.has('prompt')).toBe(false);
+  });
+
   it('throws the server’s code for a handle that doesn’t resolve, and stays put', async () => {
     const fetch = recorder(() => json({ success: false, code: 'HANDLE_NOT_FOUND', error: 'Could not resolve handle' }, 400));
     const assign = vi.fn();

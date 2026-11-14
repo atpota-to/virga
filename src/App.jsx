@@ -2,6 +2,12 @@
 // from a sign-in that failed, and signed in (the shell around the archive).
 // Nothing moves behind any of it unless the live sky has been asked for.
 //
+// Two things stand in front of those. The Terms of Service and the Privacy
+// Policy are pages of their own (/terms, /privacy), read the same whatever
+// the session is doing. And a signed-in account that hasn't agreed to the
+// current ones gets the agreement screen in the shell's place: nothing of
+// the app is mounted, and nothing read for the account, until it agrees.
+//
 // Switching accounts happens in place: the shell stays up while the next
 // account's agent is built, then everything below the per-account key
 // remounts for it. Only the app's start shows the loading line. Toasts, the
@@ -12,6 +18,10 @@ import { useEffect, useState } from 'react';
 import { ArchiveProvider } from './archive/ArchiveContext.jsx';
 import { DashboardsProvider } from './dashboards/DashboardsContext.jsx';
 import SessionNotices from './accounts/SessionNotices.jsx';
+import { documentFor } from './legal/documents.js';
+import LegalPage from './legal/LegalPage.jsx';
+import TermsGate from './legal/TermsGate.jsx';
+import { useTermsAcceptance } from './legal/useTermsAcceptance.js';
 import Landing from './pages/Landing.jsx';
 import SignInReturn from './pages/SignInReturn.jsx';
 import Shell from './shell/Shell.jsx';
@@ -35,10 +45,12 @@ export default function App() {
 }
 
 function AppInner() {
-  const { session, agent, did, loading, error, signOut, accounts } = useAtprotoSession();
+  const { session, agent, did, mode, loading, error, signOut, accounts, backendFor } = useAtprotoSession();
   const path = usePath();
   const remembered = accounts.find((a) => a.did === did) || null;
   const profile = useProfile(did, remembered);
+  const legalDocument = documentFor(path);
+  const terms = useTermsAcceptance({ did: session && agent ? did : null, mode, backendFor });
 
   const returning = path.startsWith(OAUTH_CALLBACK_PATH) || path.startsWith(OAUTH_RETURN_PATH);
 
@@ -67,6 +79,7 @@ function AppInner() {
     if (composeLink) rememberPendingCompose(window.location.pathname, window.location.search);
   }, [composeLink]);
 
+  if (legalDocument) return <LegalPage docKey={legalDocument} />;
   if (view === 'loading') {
     return (
       <p className="app-status" role="status">
@@ -76,6 +89,16 @@ function AppInner() {
   }
   if (view === 'landing') return <Landing composing={composeLink} />;
   if (view === 'returned') return <SignInReturn error={error} />;
+  // Asking the server whether this account agreed somewhere else: the same
+  // line as the app starting, so nothing flashes before the answer.
+  if (terms.status === 'checking') {
+    return (
+      <p className="app-status" role="status">
+        Opening Virga…
+      </p>
+    );
+  }
+  if (terms.status === 'needs') return <TermsGate did={did} profile={profile} mode={mode} onAccept={terms.accept} onSignOut={signOut} />;
   return (
     <ComposerProvider>
       <SessionNotices />

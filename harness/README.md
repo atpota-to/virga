@@ -38,7 +38,8 @@ Clear the site's data to start over.
 | `/` | signed in as Mira, with Field Lab beside her, both on long sessions |
 | `?accounts=1` | only Mira |
 | `?mode=browser` | both accounts on browser sessions: the pages that need Virga's server say so |
-| `?signedout` | the front page, with both accounts remembered. Signing in as anyone lands in the dashboard (as Field Lab for `lab.example.org`); `nobody` fails, to show the error |
+| `?signedout` | the front page, with both accounts remembered. Type a handle and the sign-in looks it up (`mira.example.com`, `lab.example.org` and anyone in the cast are found; anything else isn't), asks "Is this you?" and takes you to the host; here that lands in the dashboard (as Field Lab for `lab.example.org`, as Mira for anyone else or for a new account). `nobody` is found by nobody, to show the error |
+| `?terms=ask` | nobody has agreed to the Terms of Service and Privacy Policy, so the agreement screen stands in front of the app until you agree (it comes back on every load). `?terms=down` is the same with a server that can't record the agreement, to show the error. Combine with `?mode=browser` for a browser session, whose agreement is kept in the browser and reported |
 | `?expired=lab` | that account (by handle) starts signed out; the other is open |
 | `?scope=read` | the sessions were granted what Virga asked for before it could post: posts, gates, templates, drafts and uploads are refused for a missing scope (following still works) |
 | `?limits=3,1,1` | limits on scheduled posts, plain timers and conditional timers per account, as the server's `SCHEDULED_POSTS_LIMIT`, `POST_TIMERS_LIMIT` and `CONDITIONAL_TIMERS_LIMIT` would set them; a blank or `0` leaves one unlimited. By default there are none, as on the server, only its flat caps (50 scheduled posts, 200 timers) |

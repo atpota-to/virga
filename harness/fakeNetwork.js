@@ -291,6 +291,11 @@ export function createRouter(worlds, { server = null, now = () => Date.now(), vi
     }
 
     if (url.origin === PDS) {
+      // What a sign-in reads to name the page an account signs in on: this
+      // PDS is its own authorization server.
+      if (url.pathname === '/.well-known/oauth-protected-resource') {
+        return json({ resource: PDS, authorization_servers: [PDS] });
+      }
       if (method === 'com.atproto.sync.getRepo') {
         const world = views.byDid.get(q.get('did'));
         if (!world) return xrpcError(400, 'RepoNotFound', `Could not find repo for DID: ${q.get('did')}`);
@@ -376,8 +381,14 @@ export function installFakeNetwork(worlds, { latency = 60, server = null } = {})
   const route = createRouter(worlds, { server });
   window.fetch = async (input, init) => {
     const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-    const url = new URL(href, window.location.href);
-    if (url.origin === window.location.origin) return real(input, init);
+    let url = new URL(href, window.location.href);
+    if (url.origin === window.location.origin) {
+      // The app's own files come from the dev server. Its /api is Virga's
+      // server, which here is the fake one: a browser session has no
+      // requester of its own and calls it at this site's address.
+      if (!server || !url.pathname.startsWith('/api/')) return real(input, init);
+      url = new URL(`${url.pathname}${url.search}`, SERVER_ORIGIN);
+    }
     const request = typeof input === 'object' && !(input instanceof URL) ? input : null;
     const options = { ...(request ? { method: request.method, headers: request.headers } : {}), ...init };
     if (request && !init?.body && request.method !== 'GET' && request.method !== 'HEAD') options.body = await request.clone().arrayBuffer();

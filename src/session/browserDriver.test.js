@@ -111,6 +111,13 @@ describe('the browser driver', () => {
     const client = fakeClient();
     await driverWith(client).signIn('mira.example.com', { scope: 'atproto', intent: 'reauth' });
     expect(client.signIn).toHaveBeenCalledWith('mira.example.com', { scope: 'atproto', state: 'reauth' });
+    expect(Object.keys(client.signIn.mock.calls[0][1])).toEqual(['scope', 'state']);
+  });
+
+  it('asks a host for its make-an-account page when told to', async () => {
+    const client = fakeClient();
+    await driverWith(client).signIn('https://bsky.social', { scope: 'atproto', prompt: 'create' });
+    expect(client.signIn).toHaveBeenCalledWith('https://bsky.social', { scope: 'atproto', state: 'add', prompt: 'create' });
   });
 
   it('tells a sign-out from an expiry when the library drops a session', async () => {

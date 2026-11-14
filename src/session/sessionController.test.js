@@ -556,7 +556,28 @@ describe('signing in', () => {
     const { ctrl, browser, storage } = setup();
     await ctrl.signIn('mira.example.com', { mode: 'browser', intent: 'reauth' });
     expect(browser.signIn).toHaveBeenCalledWith('mira.example.com', { scope: OAUTH_SCOPE, intent: 'reauth' });
+    expect(Object.keys(browser.signIn.mock.calls[0][1])).toEqual(['scope', 'intent']);
     expect(storage.getItem(SESSION_HINT_KEY)).toBe('1');
+  });
+
+  it('sends someone to a host to make an account, either way of signing in', async () => {
+    const backend = setup({ answer: () => json({ success: true, authUrl: 'https://eurosky.social/oauth/authorize?x=2' }) });
+    backend.ctrl.signIn('https://eurosky.social', { mode: 'backend', prompt: 'create' });
+    await vi.waitFor(() => expect(backend.env.assign).toHaveBeenCalledWith('https://eurosky.social/oauth/authorize?x=2'));
+    const asked = new URL(backend.fetch.mock.calls[0][0]).searchParams;
+    expect(asked.get('handle')).toBe('https://eurosky.social');
+    expect(asked.get('prompt')).toBe('create');
+
+    const { ctrl, browser } = setup();
+    await ctrl.signIn('https://eurosky.social', { mode: 'browser', prompt: 'create' });
+    expect(browser.signIn).toHaveBeenCalledWith('https://eurosky.social', { scope: OAUTH_SCOPE, intent: 'add', prompt: 'create' });
+  });
+
+  it('drops a prompt a sign-in has no business sending', async () => {
+    const { ctrl, browser } = setup();
+    await ctrl.signIn('mira.example.com', { mode: 'browser', prompt: 'none' });
+    expect(browser.signIn).toHaveBeenCalledWith('mira.example.com', { scope: OAUTH_SCOPE, intent: 'add' });
+    expect(browser.signIn.mock.calls[0][1]).not.toHaveProperty('prompt');
   });
 });
 

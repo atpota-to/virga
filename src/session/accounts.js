@@ -330,6 +330,7 @@ const LOCAL_KEYS = [
   (did) => `virga:templates:${did}`, // src/posting/templates
   (did) => `virga:template-usage:${did}`,
   (did) => `virga:adviser-usage:${did}`, // src/posting/adviser/usage.js
+  (did) => `virga:terms-accepted:${did}`, // src/legal/acceptance.js
 ];
 
 /**

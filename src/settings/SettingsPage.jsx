@@ -10,6 +10,9 @@ import Dialog from '../components/Dialog.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
+import { coversCurrent, readAcceptance } from '../legal/acceptance.js';
+import { DOCUMENTS } from '../legal/documents.js';
+import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
@@ -594,17 +597,43 @@ function PermissionsSection() {
 
 /* ---- about --------------------------------------------------------- */
 
+/** When this browser noted that the account agreed to the current documents, or null. */
+function agreementNote(did) {
+  try {
+    const entry = readAcceptance(typeof localStorage === 'undefined' ? null : localStorage, did);
+    return coversCurrent(entry) ? entry : null;
+  } catch {
+    return null;
+  }
+}
+
 function AboutSection() {
   const archive = useArchive();
+  const { did } = useAtprotoSession();
+  const agreed = agreementNote(did);
   return (
     <>
       <Section title="About Virga">
         <p className="settings-text">
           Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data, and a place to
-          write and schedule posts. There is no database: the archive is read from your PDS, Bluesky’s public API, the PLC directory and
-          Constellation, and kept in this browser. Virga’s server is used only for long sessions and the features that run while the browser
-          is closed.
+          write and schedule posts. The archive is read from your PDS, Bluesky’s public API, the PLC directory and Constellation, and kept in
+          this browser; it is never sent to Virga’s server. That server and its database are used only for long sessions, for the features
+          that run while the browser is closed, and for the record that an account agreed to the terms.
         </p>
+      </Section>
+      <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
+        {Object.values(DOCUMENTS).map((doc) => (
+          <Row key={doc.key} label={doc.title}>
+            <Link className="btn" to={doc.path}>
+              Read
+            </Link>
+          </Row>
+        ))}
+        {agreed && (
+          <p className="settings-text muted">
+            This account agreed to version {agreed.version} of both{agreed.at ? ` on ${formatDateShort(agreed.at)}` : ''}.
+          </p>
+        )}
       </Section>
       <Section title="Where the data comes from">
         <ul className="perm-list">
@@ -619,7 +648,8 @@ function AboutSection() {
           </li>
           <li>
             <strong>Virga’s server ({backendHost()})</strong>, for an account with a long session: the sign-in, and the signed-in requests,
-            which it passes on to your account. Scheduled posts and post timers are kept there until they run.
+            which it passes on to your account. Scheduled posts and post timers are kept there, and stay on record after they run; a
+            scheduled post’s pictures are deleted once it goes out.
           </li>
           <li>
             <strong>Bluesky’s link card service (cardyb.bsky.app)</strong>, while you write a post with a link: the page’s title,
@@ -635,6 +665,10 @@ function AboutSection() {
           </li>
           <li>
             <strong>Constellation</strong>: who blocks you, and which lists you’re on.
+          </li>
+          <li>
+            <strong>Signing in</strong>: the handle you type goes to Bluesky’s public API, to suggest accounts and to find yours and where
+            it signs in.
           </li>
           <li>
             <strong>The PLC directory</strong>: your DID document and its history.

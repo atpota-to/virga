@@ -17,6 +17,7 @@ import { createHarness, readFlags } from './harness.js';
 import { SERVER_ORIGIN } from './fakeServer.js';
 import { LAB, ME } from './world.js';
 import { OAUTH_CALLBACK_PATH } from '../src/config.js';
+import { coversCurrent, readAcceptance, termsKey, writeAcceptance } from '../src/legal/acceptance.js';
 import { makeReauthRequiredError } from '../src/session/accounts.js';
 import { backendSignOut, checkBackendSession, createBackendRequester } from '../src/session/backendClient.js';
 import { resolvePdsUrl } from '../src/session/pds.js';
@@ -39,6 +40,19 @@ const expiredAtStart = (id) => Boolean(flags.expired) && id.handle.startsWith(fl
 const tokens = new Map();
 if (flags.mode === 'backend' && !flags.signedOut) {
   for (const id of flags.accounts) if (!expiredAtStart(id)) tokens.set(id.did, harness.server.mintToken(id.did));
+}
+
+// The note this browser keeps that an account agreed to the terms
+// (src/legal/acceptance.js). By default the made-up accounts have agreed, so
+// the app opens as it always has; with ?terms= any note is taken away at
+// each load, so the agreement screen is there to look at every time.
+for (const id of flags.accounts) {
+  try {
+    if (flags.terms !== 'agreed') localStorage.removeItem(termsKey(id.did));
+    else if (!coversCurrent(readAcceptance(localStorage, id.did))) writeAcceptance(localStorage, id.did, { at: new Date().toISOString(), recorded: true });
+  } catch {
+    // Without storage the app asks, as it would anywhere.
+  }
 }
 
 export function AtprotoSessionProvider({ children }) {
@@ -66,6 +80,9 @@ export function AtprotoSessionProvider({ children }) {
   const setStatus = (did, status) =>
     setRows((list) => list.map((r) => (r.did === did ? { ...r, status, lastUsed: status === 'ready' ? Date.now() : r.lastUsed } : r)));
 
+  // `input` is a handle, a DID, or a host's address (to make an account
+  // there, which here lands as Mira). The real one's options (mode, intent,
+  // prompt) change where the browser goes, and there is nowhere to go.
   const signIn = useCallback(async (input) => {
     await sleep(500);
     if (/^nobody/i.test(String(input))) throw new Error(`Failed to resolve identity: ${input}`);

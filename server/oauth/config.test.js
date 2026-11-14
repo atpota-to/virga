@@ -147,19 +147,20 @@ describe('client metadata', () => {
     expect(SCOPE).toBe(OAUTH_SCOPE);
   });
 
-  it('links terms and privacy only when they are set, and only over https', () => {
+  it('links the site’s own terms and privacy pages, or the https ones the environment names', () => {
     const plain = clientMetadata();
-    expect(plain).not.toHaveProperty('tos_uri');
-    expect(plain).not.toHaveProperty('policy_uri');
+    expect(plain.tos_uri).toBe('https://virga.example.com/terms');
+    expect(plain.policy_uri).toBe('https://virga.example.com/privacy');
 
     const linked = clientMetadata({
       ...process.env,
-      OAUTH_TOS_URL: 'https://virga.example.com/terms',
-      OAUTH_POLICY_URL: 'http://virga.example.com/privacy',
+      OAUTH_TOS_URL: 'https://legal.example.org/virga/terms',
+      OAUTH_POLICY_URL: 'http://legal.example.org/virga/privacy',
     });
-    expect(linked.tos_uri).toBe('https://virga.example.com/terms');
-    // A plain-http policy would stop the client from starting; it is left out.
-    expect(linked).not.toHaveProperty('policy_uri');
+    expect(linked.tos_uri).toBe('https://legal.example.org/virga/terms');
+    // A plain-http policy would stop the client from starting; the site's
+    // own page stands in for it.
+    expect(linked.policy_uri).toBe('https://virga.example.com/privacy');
     expect(
       () =>
         new NodeOAuthClient({

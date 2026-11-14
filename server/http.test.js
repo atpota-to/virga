@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyCors, bearerToken, CORS_HEADERS, methodGuard, readJson, readRaw, sendJson } from './http.js';
+import { applyCors, bearerToken, callerAddress, callerUserAgent, CORS_HEADERS, isForeignOrigin, methodGuard, readJson, readRaw, sendJson } from './http.js';
 import { createReq, createRes } from './test/http.js';
 
 describe('sendJson', () => {
@@ -93,6 +93,51 @@ describe('applyCors', () => {
       expect(applyCors(createReq({ headers: { origin, host: 'virga.example.com' } }), res, env)).toBe(false);
       expect(accessHeaders(res)).toEqual([]);
     }
+  });
+});
+
+describe('isForeignOrigin', () => {
+  const env = {
+    OAUTH_PUBLIC_URL: 'https://virga.example.com',
+    OAUTH_EXTRA_RETURN_ORIGINS: 'http://127.0.0.1:5173',
+  };
+  const from = (headers) => isForeignOrigin(createReq({ headers }), env);
+
+  it('is a page on a site that is neither this server nor one of its frontends', () => {
+    expect(from({ origin: 'https://evil.example', host: 'virga.example.com' })).toBe(true);
+    expect(from({ origin: 'https://virga.example.com.evil.test', host: 'virga.example.com' })).toBe(true);
+    // A sandboxed frame or a file: page.
+    expect(from({ origin: 'null', host: 'virga.example.com' })).toBe(true);
+  });
+
+  it('isn’t this server’s own pages, a listed frontend, or a request that names no origin', () => {
+    expect(from({ origin: 'https://virga.example.com', host: 'virga.example.com' })).toBe(false);
+    expect(from({ origin: 'https://preview.example', host: 'preview.example' })).toBe(false);
+    expect(from({ origin: 'http://127.0.0.1:5173', host: 'virga.example.com' })).toBe(false);
+    expect(from({ origin: 'https://virga.example.com', host: 'virga-git-x.vercel.app' })).toBe(false);
+    expect(from({ host: 'virga.example.com' })).toBe(false);
+  });
+});
+
+describe('callerAddress', () => {
+  it('is the address Vercel’s edge wrote, the first of a list', () => {
+    expect(callerAddress(createReq({ headers: { 'x-real-ip': '203.0.113.7', 'x-forwarded-for': '198.51.100.1' } }))).toBe('203.0.113.7');
+    expect(callerAddress(createReq({ headers: { 'x-forwarded-for': ' 198.51.100.1 , 10.0.0.1' } }))).toBe('198.51.100.1');
+    expect(callerAddress(createReq({ headers: { 'x-forwarded-for': ['198.51.100.2', '10.0.0.1'] } }))).toBe('198.51.100.2');
+  });
+
+  it('falls back to the socket, then to “unknown”', () => {
+    expect(callerAddress({ headers: {}, socket: { remoteAddress: '::1' } })).toBe('::1');
+    expect(callerAddress(createReq())).toBe('unknown');
+    expect(callerAddress(undefined)).toBe('unknown');
+  });
+});
+
+describe('callerUserAgent', () => {
+  it('is the header as sent, or empty', () => {
+    expect(callerUserAgent(createReq({ headers: { 'User-Agent': 'Mozilla/5.0 (X11)' } }))).toBe('Mozilla/5.0 (X11)');
+    expect(callerUserAgent(createReq())).toBe('');
+    expect(callerUserAgent(createReq({ headers: { 'user-agent': 42 } }))).toBe('');
   });
 });
 

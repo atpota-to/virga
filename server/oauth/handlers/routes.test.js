@@ -178,6 +178,19 @@ describe('GET /api/oauth/login', () => {
     );
   });
 
+  it('takes a host’s address in place of a handle, to make an account there', async () => {
+    const res = await login({
+      handle: 'https://eurosky.social',
+      redirect_uri: RETURN,
+      prompt: 'create',
+    });
+    expect(res.statusCode).toBe(200);
+    const [input, options] = virga.generateLoginUrl.mock.calls[0];
+    expect(input).toBe('https://eurosky.social');
+    expect(options.prompt).toBe('create');
+    expect(Object.keys(options).sort()).toEqual(['prompt', 'scope', 'state']);
+  });
+
   it('limits sign-ins per address, answering 429 with Retry-After', async () => {
     const saved = process.env.OAUTH_LOGIN_RATE_LIMIT;
     process.env.OAUTH_LOGIN_RATE_LIMIT = '2';
