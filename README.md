@@ -79,18 +79,24 @@ phone.
 (Overview, Growth, Content); make more, rename, duplicate, reorder or delete them.
 Customize turns a dashboard's cards into things to arrange: drag a card by its handle (or
 move it with the arrow buttons), pick a size (a quarter, a third, half, two thirds or the
-whole row), remove it, or add any of 26 cards from the report library beside the grid.
-Every card answers for the period picked in the header (7 days to all time), and links to
-its full report. The cards are listed in `src/dashboards/catalog.js`.
+whole row), remove it, or add any of 36 cards from the report library beside the grid.
+Every card answers for the period picked in the header (7 days to all time, or a range of
+dates you pick), and links to its full report. A card's settings, the gear in Customize,
+can give it a title, a period of its own (it then says which, and stays put when the
+header changes), one kind of engagement to count, and a number of rows. Besides the
+numbers there are Posting cards (what goes out next, the latest drafts, timers counting
+down), so a dashboard can hold both halves of Virga. The cards are listed in
+`src/dashboards/catalog.js`.
 
 **Reports**, one page each, with every chart's numbers also available as a table, a
-note on how they're counted, an export, and Add to dashboard:
+note on how they're counted, an export, Add to dashboard, and Post this chart:
 
 | Report | What | Where it comes from |
 | --- | --- | --- |
 | Followers | Growth over time, new per day or week, the newest followers and the biggest days | `app.bsky.graph.getFollowers`, signed in. Each follower's follow record has a key that dates it |
 | Blocks | Who blocks the account directly or through a moderation list, over time | Constellation backlinks, then the lists' own records from the public API |
 | Posts | Posts per day, week or month, share of replies, quotes and media | `app.bsky.feed.getAuthorFeed` on the public API |
+| Content | What your posts are made of and what each kind typically earns: by format (text, images, video, link card, GIF, quote), length, place in a thread, tag and linked site, and how much of your media has alt text | Each post's own record: its facets, embed, tags and languages |
 | Engagement | Likes, reposts, replies and quotes received, the rate per post, top posts; and the same given | Post counts from the public API; likes and reposts given from the repo |
 | People | Who engages with the account and who it engages with, with Follow buttons | Notifications, signed in; the repo; follow records |
 | Atmosphere | Every record in every collection, by day and by collection | The whole repo in one download, `com.atproto.sync.getRepo` |
@@ -104,11 +110,25 @@ note on how they're counted, an export, and Add to dashboard:
 | Follow-back queue | Followers who engage with you that you don't follow yet | Follow records |
 | Best time to post | What a typical post (the median) earns by weekday and hour, in your time zone | Read only |
 | Lists you're on | Every list that includes you, moderation lists and their subscribers flagged | Read only |
-| Archive search and export | Search every post, filter by kind and window, export CSV or JSON | Read only |
+| Archive search and export | Search every post by its words, its tags (`#bees`) and the sites it links to, filter by kind and window, export CSV or JSON | Read only |
 | Identity inspector | DID, handle, PDS, the DID's handle and server history, what's in the repo | Read only, plus the PLC directory's audit log |
 
-Two more are listed under Later and aren't built: an interaction lookup and a list
-manager. The list manager would need a permission Virga doesn't ask for.
+One more is listed under Later and isn't built: a list manager, which would need a
+permission Virga doesn't ask for.
+
+**Notes and milestones.** Followers, Posts and Engagement each end with a notes card: a
+day and a few words ("Changed my handle", "The zine went out"), marked on every chart
+over time, on the reports and the dashboards. The follower charts also mark the round
+numbers the count has passed (1,000, 2,500, 5,000, …) on the day the follower who made
+each one arrived. Those are counted from the followers the account has today, so the
+real count got there on that day or a little before.
+
+**Post this chart** (on a report, or the picture button on a dashboard card) draws the
+card as a 1200 by 675 picture in the theme on screen, and writes its alt text from the
+chart's own numbers: what it shows, whose, over what window, where it starts and ends,
+its highest and lowest point, anything marked on it, and every value while the chart is
+short enough to list. The description can be edited; the picture can be saved, or opened
+in the composer already attached and described. Nothing is posted from the dialog.
 
 **Posting**: write, schedule and look after posts, for any signed-in account.
 
@@ -216,6 +236,13 @@ In IndexedDB, in a database per account (`virga-analytics:<did>`), so two accoun
 browser never share rows. Signing out leaves the archive in place for next time; Settings
 › Data and sync deletes it. The unfollow log and the last-activity checks live there too.
 
+A post's row keeps its whole text, its counts, and what it is made of: its length, tags,
+link hosts, mentions, media kind and how much of it is described, languages, and the
+thread it belongs to (`POST_ROW_VERSION` 2 in `src/lib/analytics.js`). An archive built
+before that has shorter rows; its next sync brings them up from the repo's own post
+records, in the one download it already makes, keeping every count. Until then the
+Content report says it needs a sync, and the archive search says what it can't see yet.
+
 In IndexedDB too, per account (`virga-posting:<did>`): the pictures and video of drafts,
 which Bluesky's drafts can't hold.
 
@@ -223,8 +250,10 @@ In localStorage: the accounts (`virga:accounts`, `virga:account`), each long ses
 token (`virga:backend-token:<did>`), each account's dashboards (`virga:dashboards:<did>`),
 posting settings (`virga:posting:<did>`), an unsent post (`virga:composer-autosave:<did>`,
 for a day), a copy of its templates and how often each is used, this month's adviser
-allowance, the tools' Keep lists, and the preferences for whoever is at the browser
-(`virga:preferences`: theme, density, the live sky, the period, the sidebar). A long
+allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), and the
+preferences for whoever is at the browser (`virga:preferences`: theme, density, the live
+sky, the period or range of dates, the sidebar, and how numbers, dates and the week are
+written). A long
 session's token sits where any script running on the page could read it, like the
 browser client's own session; Remove from this browser deletes it. sessionStorage holds a
 sign-in in progress (`virga:signin-pending`), a guard against sign-in loops
@@ -374,6 +403,9 @@ handlers as Node functions with the same paths, and call the two run paths every
 | `supabase/migrations/` | The server's database |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
+| `src/reports/annotations.js` | Chart notes and follower milestones, and where they land on a chart |
+| `src/lib/periods.js`, `src/lib/locale.js` | What a period means (presets and custom ranges) and the words for it; how numbers, dates, the clock and the week are written |
+| `src/share/` | A card as a picture: what it shows, its alt text, the canvas that draws it, the dialog |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
 | `src/reports/`, `src/tools/`, `src/settings/` | The pages |
 | `src/charts/` | The time series, sparklines, heatmaps and bar lists |
@@ -388,6 +420,10 @@ handlers as Node functions with the same paths, and call the two run paths every
   own.
 - **Very large accounts.** A sync reads up to 100,000 followers and 20,000 block records
   per walk, and says so when it stops short.
+- **How a post grew.** A post's counts are as of the sync that last fetched it, so there
+  is no curve of its first hours. A browser only syncs while it is open; doing it on
+  Virga's server would mean the archive leaving the browser, which it doesn't today.
+- **Dashboards and notes on other devices.** They are kept in this browser only.
 
 ## Where things came from
 

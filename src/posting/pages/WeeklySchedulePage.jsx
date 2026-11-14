@@ -66,6 +66,13 @@ import {
 } from './scheduleParts.jsx';
 import './hub.css';
 import './schedule.css';
+import { weekOrder } from '../../lib/locale.js';
+
+/** The weekdays in the order the reader's week runs (Settings › Appearance). */
+function orderedWeekdays() {
+  // weekOrder counts from Sunday as 0; WEEKDAYS starts on Monday.
+  return weekOrder().map((day) => WEEKDAYS[(day + 6) % 7]);
+}
 
 const YEAR = { key: '1y', days: 365, label: 'Year' };
 const LONG_DAY = {
@@ -96,7 +103,7 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
       onSelect: () => onCopy(t.days),
     })),
     { separator: true, key: 'sep-days' },
-    ...WEEKDAYS.filter((d) => d.key !== day.key).map((d) => ({
+    ...orderedWeekdays().filter((d) => d.key !== day.key).map((d) => ({
       key: d.key,
       label: `Copy to ${d.label}`,
       onSelect: () => onCopy([d.key]),
@@ -365,8 +372,8 @@ export default function WeeklySchedulePage({ did }) {
                 {[...suggestions.items]
                   .sort(
                     (a, b) =>
-                      WEEKDAYS.findIndex((d) => d.key === a.dayKey) -
-                        WEEKDAYS.findIndex((d) => d.key === b.dayKey) ||
+                      orderedWeekdays().findIndex((d) => d.key === a.dayKey) -
+                        orderedWeekdays().findIndex((d) => d.key === b.dayKey) ||
                       a.time.localeCompare(b.time),
                   )
                   .map(
@@ -441,7 +448,7 @@ export default function WeeklySchedulePage({ did }) {
               </span>
             </div>
             <ul className="sched-days">
-              {WEEKDAYS.map((day) => (
+              {orderedWeekdays().map((day) => (
                 <DayRow
                   key={day.key}
                   day={day}

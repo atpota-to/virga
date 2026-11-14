@@ -21,7 +21,7 @@ import {
   countComposerGraphemes,
   findInlineLinks,
 } from './inlineLinks.js';
-import { findUrlsAndMentions } from './urlMatching.js';
+import { findUrlsAndMentions, isValidDomain } from './urlMatching.js';
 import { findHashtags } from './hashtags.js';
 import { countGraphemes } from './graphemes.js';
 import { utf8Length } from './richText.js';
@@ -30,14 +30,25 @@ import { MAX_POST_BYTES } from './composerModel.js';
 const squash = (text) => text.replace(/\s+/g, '');
 const words = (text) => text.split(/\s+/).filter(Boolean);
 
-/** What a reader would be linked to, mentioned by or tagged with. */
+/**
+ * What a reader would be linked to, mentioned by or tagged with. As in the
+ * composer, anything found inside an inline link belongs to the link.
+ */
 function marks(text) {
+  const links = findInlineLinks(text);
+  const free = (start, end) => !links.some((l) => start < l.end && l.start < end);
   const { urls, mentions } = findUrlsAndMentions(text);
   return {
-    links: findInlineLinks(text).map((l) => `${l.label} -> ${l.uri}`),
-    urls: urls.map((u) => u.matchText),
-    mentions: mentions.map((m) => `${m.email ? 'email' : '@'}${m.handle}`),
-    tags: findHashtags(text).map((h) => h.tag),
+    links: links.map((l) => `${l.label} -> ${l.uri}`),
+    urls: urls
+      .filter((u) => free(u.charStart, u.charEnd) && isValidDomain(u.matchText))
+      .map((u) => u.matchText),
+    mentions: mentions
+      .filter((m) => free(m.start, m.end))
+      .map((m) => `${m.email ? 'email' : '@'}${m.handle}`),
+    tags: findHashtags(text)
+      .filter((h) => free(h.start, h.end))
+      .map((h) => h.tag),
   };
 }
 
@@ -64,7 +75,9 @@ function expectSound(text, posts, { limit = 300 } = {}) {
   for (const post of posts) {
     expect(post).toBe(post.trim());
     expect(post).not.toBe('');
-    expect(countComposerGraphemes(post)).toBeLessThanOrEqual(limit);
+    // Only one thing may stay over: a link, alone, longer than a post.
+    const oneLink = !/\s/.test(post) && marks(post).urls.length === 1;
+    if (!oneLink) expect(countComposerGraphemes(post)).toBeLessThanOrEqual(limit);
     expect(utf8Length(composerCountText(post))).toBeLessThanOrEqual(
       MAX_POST_BYTES,
     );

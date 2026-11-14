@@ -51,7 +51,7 @@ import {
   countComposerGraphemes,
   findInlineLinks,
 } from './inlineLinks.js';
-import { findUrlsAndMentions } from './urlMatching.js';
+import { findUrlsAndMentions, isValidDomain } from './urlMatching.js';
 import { findHashtags } from './hashtags.js';
 import { countGraphemes } from './graphemes.js';
 import { utf8Length } from './richText.js';
@@ -135,6 +135,8 @@ function marksOf(text) {
     const quoted = (start) => start > 0 && QUOTE_BEFORE.test(word[start - 1]);
     const { urls, mentions } = findUrlsAndMentions(word);
     for (const u of urls) {
+      // "v1.2.3" and "notes.txt" match the pattern and are never linked.
+      if (!isValidDomain(u.matchText)) continue;
       found.push({
         kind: quoted(u.charStart) ? 'quoted-url' : 'url',
         start: at + u.charStart,
