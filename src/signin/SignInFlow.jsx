@@ -29,6 +29,8 @@ import {
 import { SIGNUP_HOSTS, signUpAt } from './hosts.js';
 import { IdentityNotFoundError, classifySignInInput, hostnameOf, normalizeSignInInput, resolveSignInHost, resolveSignInIdentity } from './identity.js';
 import { IdentityBones, IdentityRow } from './parts.jsx';
+// The remembered accounts are drawn with the account list's own classes.
+import '../accounts/accounts.css';
 import './signin.css';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

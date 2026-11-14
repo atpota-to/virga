@@ -266,6 +266,71 @@ a.brand {
     font-size: var(--text-base);
   }
 
+  /* Three columns of sentences don't fit a phone. Each row becomes a card:
+     its first cell is the card's name, and the rest sit under it with the
+     column's heading above each. */
+  .legal-table {
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  .legal-table table {
+    display: block;
+    min-width: 0;
+  }
+
+  .legal-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .legal-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legal-table tr {
+    display: block;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .legal-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .legal-table td + td {
+    margin-top: 10px;
+  }
+
+  .legal-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    font-weight: 620;
+  }
+
+  .legal-table td:first-child {
+    color: var(--ink);
+    font-weight: 620;
+  }
+
+  .legal-table td:first-child::before {
+    display: none;
+  }
+
   /* A full-height sheet, as the app's other long dialogs are on a phone. */
   .legal-dialog {
     width: 100vw;

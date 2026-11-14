@@ -624,7 +624,7 @@ function AboutSection() {
       <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
         {Object.values(DOCUMENTS).map((doc) => (
           <Row key={doc.key} label={doc.title}>
-            <Link className="btn" to={doc.path}>
+            <Link className="btn" to={doc.path} aria-label={`Read the ${doc.title}`}>
               Read
             </Link>
           </Row>

@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Link } from '../lib/router.jsx';
 import { resolveDocumentLink } from './documents.js';
-import { outlineOf } from './markdown.js';
+import { inlineText, outlineOf } from './markdown.js';
 
 /**
  * A legal document, drawn from the blocks markdown.js read out of its
@@ -89,24 +89,31 @@ export default function LegalDocument({ document: doc, onOpenDocument = null, co
     if (block.type === 'list') return list(block, index);
     if (block.type === 'rule') return <hr key={index} />;
     if (block.type === 'table') {
+      const labels = block.head.map(inlineText);
       return (
-        // A wide table scrolls inside its own box, so the page never does.
-        <div key={index} className="legal-table" role="region" aria-label="Table" tabIndex={0}>
-          <table>
-            <thead>
-              <tr>
+        // On a wide screen a table that doesn't fit scrolls inside its own
+        // box, so the page never does. On a narrow one each row is drawn as
+        // a card, its cells under one another with their headings (the
+        // data-label), which is why the roles are spelled out: a table laid
+        // out as blocks is otherwise no longer announced as one.
+        <div key={index} className="legal-table" role="region" aria-label={`Table: ${labels.join(', ')}`} tabIndex={0}>
+          <table role="table">
+            <thead role="rowgroup">
+              <tr role="row">
                 {block.head.map((cell, i) => (
-                  <th key={i} scope="col">
+                  <th key={i} scope="col" role="columnheader">
                     {inline(cell)}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup">
               {block.rows.map((row, r) => (
-                <tr key={r}>
+                <tr key={r} role="row">
                   {row.map((cell, c) => (
-                    <td key={c}>{inline(cell)}</td>
+                    <td key={c} role="cell" data-label={labels[c] || undefined}>
+                      {inline(cell)}
+                    </td>
                   ))}
                 </tr>
               ))}
