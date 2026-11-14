@@ -88,7 +88,9 @@
   overflow-wrap: anywhere;
 }
 
-.btn[aria-disabled='true'] {
+/* The button waits where it stands while the account is looked up: it can
+   hold focus, which a disabled one can't. */
+.signin-action[aria-disabled='true'] {
   opacity: 0.5;
   cursor: progress;
 }
