@@ -37,7 +37,8 @@ const NOTES = Object.freeze({
     'Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.',
   blocks: 'Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.',
   inbound:
-    'Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs).',
+    'Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). ' +
+    'subject is the post an event was about, on events archived since that was kept.',
   outbound:
     'Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.',
   atmosphere: 'Every record in every collection of your repo: its URI, collection and date. Record contents are not included.',

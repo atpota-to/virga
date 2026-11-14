@@ -612,12 +612,16 @@ const INBOUND_REASONS = new Set(['like', 'repost', 'reply', 'quote', 'mention'])
  *
  * `uri` is the record that CAUSED the notification (their like record, their
  * reply post…), which is unique per event and therefore the archive key.
+ * `subject` is what it was about, when the notification says (`reasonSubject`:
+ * the post that was liked, reposted, replied to or quoted). Events archived
+ * before this was kept have none, and nothing goes back for them.
  */
 export function inboundFromNotification(n) {
   if (!n?.uri || !n?.author?.did || !INBOUND_REASONS.has(n.reason)) return null;
   const at = n.record?.createdAt || n.indexedAt || null;
   if (!at || !Number.isFinite(Date.parse(at))) return null;
-  return { uri: n.uri, did: n.author.did, kind: n.reason, at };
+  const subject = typeof n.reasonSubject === 'string' && n.reasonSubject.startsWith('at://') ? n.reasonSubject : null;
+  return subject ? { uri: n.uri, did: n.author.did, kind: n.reason, at, subject } : { uri: n.uri, did: n.author.did, kind: n.reason, at };
 }
 
 /**

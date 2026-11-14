@@ -347,9 +347,12 @@ export function buildWorld({ now = Date.now(), seed, account = ME } = {}) {
     const at = now - rand() ** 1.6 * 150 * DAY;
     const who = castPick();
     const reason = pick(REASONS);
+    // What it was about: one of the account's posts, the recent ones more often.
+    const about = ['like', 'repost', 'reply', 'quote'].includes(reason) ? posts[Math.floor(made() ** 2 * posts.length)] : null;
     return {
       uri: `at://${who.did}/app.bsky.harness.${reason}/${tidAt(at, i)}`,
       reason,
+      ...(about ? { reasonSubject: `at://${ME.did}/app.bsky.feed.post/${about.rkey}` } : {}),
       author: { did: who.did, handle: who.handle, displayName: who.displayName, avatar: who.avatar },
       record: { createdAt: new Date(at).toISOString() },
       indexedAt: new Date(at + 900).toISOString(),

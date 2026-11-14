@@ -130,8 +130,13 @@ const stringList = (v) =>
 function normalizeSchedule(raw) {
   if (!plainObject(raw)) return null;
   if (raw.mode === 'queue') return { mode: 'queue' };
-  if (raw.mode === 'at' && typeof raw.at === 'string')
-    return { mode: 'at', at: raw.at };
+  if (raw.mode === 'at' && typeof raw.at === 'string') {
+    // A post at a set time may repeat; the rule rides with the time, and the
+    // schedule module reads it (schedule/repeat.js). The queue has none.
+    return plainObject(raw.repeat)
+      ? { mode: 'at', at: raw.at, repeat: raw.repeat }
+      : { mode: 'at', at: raw.at };
+  }
   return null;
 }
 
@@ -317,6 +322,53 @@ export function composerReducer(state, action) {
       const [moved] = posts.splice(from, 1);
       posts.splice(to, 0, moved);
       return { ...state, posts };
+    }
+
+    // One post becomes several, in place: it keeps what it holds (media, a
+    // quote, a card) and takes the first text; `rest` follow it. Posts are
+    // named by id, so a split can be taken back after the thread has moved.
+    case 'splitPost': {
+      const at = state.posts.findIndex((p) => p.id === action.id);
+      const rest = (Array.isArray(action.rest) ? action.rest : [])
+        .map(normalizePost)
+        .slice(0, MAX_POSTS - state.posts.length);
+      if (at === -1 || rest.length === 0) return state;
+      const posts = state.posts.slice();
+      posts.splice(
+        at,
+        1,
+        { ...posts[at], text: String(action.text ?? '') },
+        ...rest,
+      );
+      return { ...state, posts };
+    }
+
+    // The way back: the posts in `remove` go and the first has its text again.
+    case 'unsplitPost': {
+      if (!state.posts.some((p) => p.id === action.id)) return state;
+      const gone = new Set(Array.isArray(action.remove) ? action.remove : []);
+      gone.delete(action.id);
+      return {
+        ...state,
+        posts: state.posts
+          .filter((p) => !gone.has(p.id))
+          .map((p) =>
+            p.id === action.id ? { ...p, text: String(action.text ?? '') } : p,
+          ),
+      };
+    }
+
+    // Several posts' texts at once, by id (renumbering a thread).
+    case 'setTexts': {
+      const texts = plainObject(action.texts) ? action.texts : {};
+      if (!state.posts.some((p) => typeof texts[p.id] === 'string'))
+        return state;
+      return {
+        ...state,
+        posts: state.posts.map((p) =>
+          typeof texts[p.id] === 'string' ? { ...p, text: texts[p.id] } : p,
+        ),
+      };
     }
 
     case 'addImages':

@@ -111,6 +111,7 @@ note on how they're counted, an export, Add to dashboard, and Post this chart:
 | Best time to post | What a typical post (the median) earns by weekday and hour, in your time zone | Read only |
 | Lists you're on | Every list that includes you, moderation lists and their subscribers flagged | Read only |
 | Archive search and export | Search every post by its words, its tags (`#bees`) and the sites it links to, filter by kind and window, export CSV or JSON | Read only |
+| Interaction lookup | Your whole history with one account, each way: who follows whom and since when, likes, reposts, replies, quotes and mentions by kind and by month, and every event as a dated list with links, filters and a CSV export | Read only. Them to you comes from notifications, which reach back a year at most; you to them from the repo and your posts |
 | Identity inspector | DID, handle, PDS, the DID's handle and server history, what's in the repo | Read only, plus the PLC directory's audit log |
 
 One more is listed under Later and isn't built: a list manager, which would need a

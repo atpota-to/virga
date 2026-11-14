@@ -403,6 +403,13 @@ describe('event shapers', () => {
     expect(inboundFromNotification(n('starterpack-joined'))).toBeNull();
   });
 
+  it('keeps what the event was about, when the notification says', () => {
+    const base = { uri: 'at://did:plc:them/app.bsky.feed.like/1', reason: 'like', author: { did: 'did:plc:them' }, indexedAt: '2026-06-10T12:00:00.000Z' };
+    expect(inboundFromNotification({ ...base, reasonSubject: 'at://did:plc:me/app.bsky.feed.post/3abc' }).subject).toBe('at://did:plc:me/app.bsky.feed.post/3abc');
+    expect('subject' in inboundFromNotification(base)).toBe(false);
+    expect('subject' in inboundFromNotification({ ...base, reasonSubject: 'not a uri' })).toBe(false);
+  });
+
   it('prefers the record createdAt over indexedAt for the event time', () => {
     const ev = inboundFromNotification({
       uri: 'at://did:plc:them/app.bsky.feed.like/1',
