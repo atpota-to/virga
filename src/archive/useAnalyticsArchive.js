@@ -36,6 +36,8 @@ import {
   walkFraction,
 } from '../lib/syncProgress.js';
 import { formatDateShort } from '../lib/time.js';
+import { onPostingEvent, POSTS_CHANGED_EVENT } from '../posting/events.js';
+import { applyPostChanges, isOwnPostUri, postRowsFor } from './postChanges.js';
 
 const DAY_MS = 86_400_000;
 
@@ -80,6 +82,7 @@ export function useAnalyticsArchive(agent, did, handle) {
   const abortRef = useRef(null);
   const autoRanRef = useRef(false);
   const attemptedActorsRef = useRef(new Set());
+  const latestRef = useRef(EMPTY);
 
   async function reload(store) {
     const [posts, followers, following, blocks, inbound, outbound, atmosphere, actorRows, pm, fm, gm, bm, im, om, rm, logm, lm] =
@@ -596,6 +599,62 @@ export function useAnalyticsArchive(agent, did, handle) {
     setData((prev) => ({ ...prev, following: prev.following.filter((f) => f.did !== subject), followRev: (prev.followRev || 0) + 1 }));
   }
 
+  /**
+   * A post this account just made in Virga, added to the archive with zero
+   * counts so it shows before the next sync, which fills the counts in.
+   * Takes one `{ uri, cid, record }` or a list of them (a thread). Does
+   * nothing before the first build: that build reads every post anyway.
+   */
+  async function notePosted(posted) {
+    await applyPosts({ added: Array.isArray(posted) ? posted : [posted] });
+  }
+
+  /**
+   * A post this account deleted (by hand, or a timer), taken out of the
+   * archive at once instead of at the next rebuild. Takes a URI or a list.
+   */
+  async function noteDeleted(uris) {
+    await applyPosts({ removed: Array.isArray(uris) ? uris : [uris] });
+  }
+
+  async function applyPosts({ added = [], removed = [] }) {
+    const store = storeRef.current;
+    if (!store || !latestRef.current.meta.posts) return;
+    const rows = postRowsFor(did, added);
+    const gone = removed.filter((uri) => isOwnPostUri(did, uri));
+    if (!rows.length && !gone.length) return;
+    const held = latestRef.current.posts;
+    const posts = applyPostChanges(held, { rows, removed: gone });
+    if (posts === held) return;
+    // The rows as they now stand, with any counts the archive already had,
+    // so the store and the state agree.
+    const fresh = new Set(rows.map((r) => r.uri));
+    if (gone.length) await store.remove('posts', gone);
+    const kept = posts.filter((p) => fresh.has(p.uri));
+    if (kept.length) await store.putAll('posts', kept);
+    setData((prev) => {
+      const next = applyPostChanges(prev.posts, { rows, removed: gone });
+      return next === prev.posts ? prev : { ...prev, posts: next, rev: prev.rev + 1 };
+    });
+  }
+
+  // The posting section says when a post was made or deleted; only this
+  // account's own posts reach its archive. Another account's archive isn't
+  // mounted, and catches up at its next sync.
+  latestRef.current = data;
+  const applyPostsRef = useRef(applyPosts);
+  applyPostsRef.current = applyPosts;
+  useEffect(() => {
+    if (!did) return undefined;
+    return onPostingEvent(
+      POSTS_CHANGED_EVENT,
+      (detail) => {
+        applyPostsRef.current({ added: detail.added || [], removed: detail.removed || [] }).catch(() => {});
+      },
+      { did },
+    );
+  }, [did]);
+
   /* Pick incomplete builds back up, and top up a stale archive, quietly. */
   useEffect(() => {
     if (!data.loaded || !agent || autoRanRef.current) return;
@@ -687,6 +746,8 @@ export function useAnalyticsArchive(agent, did, handle) {
     syncError,
     runSync,
     setFollow,
+    notePosted,
+    noteDeleted,
     wantActors,
     checkActivity,
     deleteArchive,

@@ -4,8 +4,21 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "trailingSlash": false,
+  "functions": {
+    "api/oauth/[action].js": { "maxDuration": 60 },
+    "api/schedule/[action].js": { "maxDuration": 60 },
+    "api/self-destruct/[action].js": { "maxDuration": 60 },
+    "api/ai/[action].js": { "maxDuration": 60 },
+    "api/limits/[action].js": { "maxDuration": 30 }
+  },
+  "crons": [
+    { "path": "/api/schedule/run", "schedule": "* * * * *" },
+    { "path": "/api/self-destruct/run", "schedule": "* * * * *" }
+  ],
   "rewrites": [
     { "source": "/oauth-client-metadata.json", "destination": "/api/client-metadata" },
+    { "source": "/api/oauth/client-metadata.json", "destination": "/api/oauth/client-metadata" },
+    { "source": "/api/oauth/jwks.json", "destination": "/api/oauth/jwks" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ],
   "headers": [

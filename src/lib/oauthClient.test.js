@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import handler from '../../api/client-metadata.js';
-import { OAUTH_SCOPE } from '../config.js';
+import { AUTH_MODE, BACKEND_URL, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost } from '../config.js';
+import { isValidScopeToken } from '../session/scopes.js';
 import {
   buildClientMetadata,
   buildLoopbackClientId,
@@ -37,18 +39,76 @@ function serve(host) {
 describe('the scope a sign-in asks for', () => {
   const tokens = OAUTH_SCOPE.split(' ');
 
-  it('is the two signed-in reads and the follow record, and nothing broader', () => {
+  it('is the signed-in reads, follows, posting and its media, drafts and templates, and nothing broader', () => {
+    const appview = 'did:web:api.bsky.app%23bsky_appview';
     expect(tokens).toEqual([
       'atproto',
-      'rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview',
-      'rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview',
+      `rpc:app.bsky.graph.getFollowers?aud=${appview}`,
+      `rpc:app.bsky.notification.listNotifications?aud=${appview}`,
       'repo:app.bsky.graph.follow?action=create&action=delete',
+      'repo:app.bsky.feed.post',
+      'repo:app.bsky.feed.threadgate',
+      'repo:app.bsky.feed.postgate',
+      'repo:net.anisota.feed.template',
+      'blob:image/*',
+      'blob:video/*',
+      `rpc:app.bsky.draft.getDrafts?aud=${appview}`,
+      `rpc:app.bsky.draft.createDraft?aud=${appview}`,
+      `rpc:app.bsky.draft.updateDraft?aud=${appview}`,
+      `rpc:app.bsky.draft.deleteDraft?aud=${appview}`,
+      `rpc:app.bsky.actor.getPreferences?aud=${appview}`,
+      `rpc:app.bsky.bookmark.getBookmarks?aud=${appview}`,
+      `rpc:app.bsky.feed.searchPosts?aud=${appview}`,
+      'rpc:com.atproto.repo.uploadBlob?aud=*',
+      'rpc:app.bsky.video.getUploadLimits?aud=*',
+      'rpc:app.bsky.video.getJobStatus?aud=*',
     ]);
   });
 
   it('never asks for the transitional scopes that reach the whole account', () => {
     for (const token of tokens) expect(token).not.toMatch(/^transition:/);
     expect(tokens).not.toContain('repo:*');
+    for (const token of tokens) expect(token).not.toMatch(/^(repo|rpc|blob):\*/);
+  });
+
+  it('writes every token in the permission grammar', () => {
+    // Read 2026-11-12 from https://atproto.com/specs/permission.
+    for (const token of tokens) expect(isValidScopeToken(token), token).toBe(true);
+  });
+
+  it('asks once for each token', () => {
+    expect(new Set(tokens).size).toBe(tokens.length);
+  });
+
+  it('explains every token it asks for, once', () => {
+    // Settings › Permissions is written from PERMISSION_GROUPS.
+    const explained = PERMISSION_GROUPS.flatMap((g) => g.tokens);
+    expect([...explained].sort()).toEqual([...tokens].sort());
+    for (const group of PERMISSION_GROUPS) {
+      expect(group.title).toMatch(/\S/);
+      expect(group.text).toMatch(/\S/);
+    }
+  });
+});
+
+describe('the build flags', () => {
+  it('sign new accounts in through the browser unless told otherwise', () => {
+    expect(['browser', 'backend']).toContain(AUTH_MODE);
+    expect(BACKEND_URL).toMatch(/^(https?:\/\/[^/]+)?$/);
+  });
+
+  it('name the server by its host: this site’s own unless another deployment is given', () => {
+    expect(backendHost('https://virga-git-x.vercel.app')).toBe('virga-git-x.vercel.app');
+    expect(backendHost('not a url')).toBe('not a url');
+    const before = globalThis.window;
+    try {
+      globalThis.window = { location: { host: 'virga.example' } };
+      expect(backendHost('')).toBe('virga.example');
+    } finally {
+      if (before === undefined) delete globalThis.window;
+      else globalThis.window = before;
+    }
+    if (typeof window === 'undefined') expect(backendHost('')).toBe('');
   });
 });
 
@@ -122,6 +182,17 @@ describe('signInErrorMessage', () => {
     );
   });
 
+  it('words the errors Virga’s server answers a sign-in with', () => {
+    const coded = (code, status = 400) => Object.assign(new Error('x'), { code, status });
+    expect(signInErrorMessage(coded('HANDLE_NOT_FOUND'))).toMatch(/Couldn’t find that account/);
+    expect(signInErrorMessage(coded('AUTHORIZE_FAILED', 502))).toMatch(/isn’t accepting sign-ins/);
+    expect(signInErrorMessage(coded('VIRGA_CLIENT_UNAVAILABLE', 503))).toMatch(/Virga’s server isn’t taking sign-ins/);
+    expect(signInErrorMessage(Object.assign(new TypeError('Failed to fetch'), { code: 'NETWORK_ERROR' }))).toMatch(/Couldn’t reach Virga’s server/);
+    expect(signInErrorMessage(new Error('Invalid redirect_uri. Must be an allowed frontend URL.'))).toMatch(/doesn’t take sign-ins from this address/);
+    // The code alone is enough, whatever the server's sentence says.
+    expect(signInErrorMessage(coded('REDIRECT_NOT_ALLOWED'))).toMatch(/doesn’t take sign-ins from this address/);
+  });
+
   it('never shows the library’s own text for anything else', () => {
     const zod = new Error(
       '[{"code":"invalid_type","expected":"object","received":"string"}]',
@@ -143,10 +214,43 @@ describe('callbackErrorMessage', () => {
     expect(callbackErrorMessage(err)).toMatch(/Access wasn’t granted/);
   });
 
+  it('words the returns from Virga’s server', () => {
+    const back = (error) => Object.assign(new Error(error), { params: new URLSearchParams({ error }) });
+    expect(callbackErrorMessage(back('unexpected_return'))).toMatch(/wasn’t started from this tab/);
+    expect(callbackErrorMessage(back('invalid_scope'))).toMatch(/didn’t accept the permissions/);
+    expect(callbackErrorMessage(back('VIRGA_CLIENT_UNAVAILABLE'))).toMatch(/isn’t taking sign-ins/);
+    expect(callbackErrorMessage(back('callback_failed'))).toMatch(/didn’t finish/);
+  });
+
   it('falls back to a general sentence', () => {
     expect(
       callbackErrorMessage(new Error('Unknown authorization session "x"')),
     ).toMatch(/didn’t finish/);
     expect(callbackErrorMessage(null)).toMatch(/didn’t finish/);
+  });
+});
+
+describe('the deployment’s rewrites', () => {
+  const { rewrites } = JSON.parse(readFileSync(new URL('../../vercel.json', import.meta.url), 'utf8'));
+
+  const catchAll = () => rewrites.findIndex((r) => r.destination === '/index.html');
+  const servesApp = (path) => new RegExp(`^${rewrites[catchAll()].source}$`).test(path);
+  const destinationOf = (source) => rewrites.find((r) => r.source === source)?.destination;
+
+  it('sends every page to the app, last, and leaves the server’s paths alone', () => {
+    expect(catchAll()).toBe(rewrites.length - 1);
+    for (const page of ['/settings/account', '/oauth/return', '/oauth/callback', '/']) expect(servesApp(page)).toBe(true);
+    // The authorization server reads the long-session client's metadata and
+    // keys for as long as any session lasts.
+    for (const path of ['/api/oauth/jwks.json', '/api/oauth/client-metadata.json', '/api/schedule/list', '/assets/x.js']) {
+      expect(servesApp(path)).toBe(false);
+    }
+  });
+
+  it('serves both clients’ metadata from this deployment', () => {
+    expect(destinationOf('/oauth-client-metadata.json')).toBe('/api/client-metadata');
+    expect(destinationOf('/api/oauth/client-metadata.json')).toBe('/api/oauth/client-metadata');
+    expect(destinationOf('/api/oauth/jwks.json')).toBe('/api/oauth/jwks');
+    for (const r of rewrites) expect(r.destination).not.toMatch(/^https?:\/\//);
   });
 });

@@ -7,14 +7,42 @@ import { buttonClass } from './Button.jsx';
  * teach the arrow keys. Escape and a press anywhere else close it, and
  * Escape puts focus back on the button.
  *
- * `items` are `{ label, hint?, icon?, tone?, className?, onSelect }`, where
+ * `items` are `{ key?, label, hint?, icon?, tone?, className?, onSelect }`, where
  * `icon` is a component drawn before the label and `tone: 'danger'` marks an
- * action that can't be taken back; `{ separator: true }` draws a rule. `label` is the button's words; pass
- * `children` to draw something else in it (an avatar and a handle, or an icon
- * alone) and `label` becomes its accessible name. `placement` is 'down' or
+ * action that can't be taken back; `{ separator: true }` draws a rule. Give
+ * `key` when two items could share a label (two accounts with one name).
+ * `label` is the button's words; pass `children` to draw something else in it
+ * (an avatar and a handle, or an icon alone) and `label` becomes its
+ * accessible name. `placement` is 'down' or
  * 'up' (for a button at the foot of the screen); the list hangs from the
  * button's right edge, or its left with `align="start"`.
  */
+/**
+ * Escape closes the open list and nothing else. A menu inside a modal
+ * <dialog> (the composer's) would otherwise let the dialog take the same
+ * key as a cancel and close too. Returns whether it was Escape.
+ */
+export function closeOnEscape(event, close) {
+  if (event.key !== 'Escape') return false;
+  event.preventDefault();
+  event.stopPropagation();
+  close();
+  return true;
+}
+
+/**
+ * Taking an item: focus goes back to the menu button before the list
+ * unmounts and before the item runs. A dialog the item opens remembers
+ * whatever had focus when it opened and returns focus there when it closes;
+ * if that were the item's own button, already gone, focus would fall to
+ * <body>.
+ */
+export function chooseItem(item, { focusButton, close }) {
+  focusButton();
+  close();
+  item.onSelect?.();
+}
+
 export default function Menu({
   label,
   items,
@@ -36,16 +64,17 @@ export default function Menu({
     const onPointer = (event) => {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
-    const onKey = (event) => {
-      if (event.key !== 'Escape') return;
-      setOpen(false);
-      buttonRef.current?.focus();
-    };
+    const onKey = (event) =>
+      closeOnEscape(event, () => {
+        setOpen(false);
+        buttonRef.current?.focus();
+      });
+    // Captured, so the list hears Escape before anything inside it does.
     document.addEventListener('pointerdown', onPointer);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);
     return () => {
       document.removeEventListener('pointerdown', onPointer);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey, true);
     };
   }, [open]);
 
@@ -79,15 +108,17 @@ export default function Menu({
             if (item.separator) return <li key={`sep-${index}`} className="menu-sep" role="separator" />;
             const Icon = item.icon;
             return (
-              <li key={item.label} className={item.className}>
+              <li key={item.key ?? item.label} className={item.className}>
                 <button
                   type="button"
                   className="menu-item"
                   data-tone={item.tone}
-                  onClick={() => {
-                    setOpen(false);
-                    item.onSelect?.();
-                  }}
+                  onClick={() =>
+                    chooseItem(item, {
+                      focusButton: () => buttonRef.current?.focus(),
+                      close: () => setOpen(false),
+                    })
+                  }
                 >
                   {Icon && <Icon className="menu-item-icon" size={16} aria-hidden="true" />}
                   <span className="menu-item-text">

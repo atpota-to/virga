@@ -125,10 +125,31 @@ async function createOauthClient() {
  * authorization server didn't answer), in words a visitor can act on. The
  * library's own messages are written for developers (an unresolvable handle
  * surfaces as "Failed to resolve identity: …", a bad config as a zod issue
- * dump), so the sign-in form shows this and logs the original.
+ * dump), so the sign-in form shows this and logs the original. A sign-in
+ * through Virga's server fails with the server's `code` instead, which is
+ * read first.
  */
 export function signInErrorMessage(err) {
+  const code = typeof err?.code === 'string' ? err.code : null;
+  if (code === 'HANDLE_NOT_FOUND') {
+    return 'Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID.';
+  }
+  if (code === 'AUTHORIZE_FAILED') {
+    return 'Found the account, but its server isn’t accepting sign-ins from here right now.';
+  }
+  if (code === 'VIRGA_CLIENT_UNAVAILABLE' || (code == null && err?.status === 503)) {
+    return 'Virga’s server isn’t taking sign-ins right now. Try again in a little while.';
+  }
+  if (code === 'NETWORK_ERROR') {
+    return 'Couldn’t reach Virga’s server. Check your connection and try again.';
+  }
+  if (code === 'REDIRECT_NOT_ALLOWED') {
+    return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';
+  }
   const message = String(err?.message || '');
+  if (/redirect_uri|allowed frontend/i.test(message)) {
+    return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';
+  }
   if (/resolve identity|invalid (handle|did)|handle must be/i.test(message)) {
     return 'Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID.';
   }
@@ -149,15 +170,25 @@ export function signInErrorMessage(err) {
 }
 
 /**
- * The same for a sign-in that came back from the authorization server without
- * a session: declined at the consent screen, or the callback couldn't be
- * matched to the request that started it (an old tab, a reload).
+ * The same for a sign-in that came back without a session: declined at the
+ * consent screen, or the return couldn't be matched to the request that
+ * started it (an old tab, a reload, a link from somewhere else). Both kinds
+ * of sign-in put the code in `err.params`.
  */
 export function callbackErrorMessage(err) {
   const code =
     typeof err?.params?.get === 'function' ? err.params.get('error') : null;
   if (code === 'access_denied') {
     return 'Access wasn’t granted, so you’re not signed in.';
+  }
+  if (code === 'unexpected_return') {
+    return 'That sign-in wasn’t started from this tab, so Virga ignored it. Nothing was changed.';
+  }
+  if (code === 'invalid_scope') {
+    return 'The account’s server didn’t accept the permissions Virga asks for, so you’re not signed in.';
+  }
+  if (code === 'VIRGA_CLIENT_UNAVAILABLE') {
+    return 'Virga’s server isn’t taking sign-ins right now, so you’re not signed in. Try again in a little while.';
   }
   return 'Sign-in didn’t finish, so you’re not signed in. Nothing was changed.';
 }

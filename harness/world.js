@@ -16,6 +16,17 @@ export const ME = {
   displayName: 'Mira Okafor',
 };
 
+/**
+ * A second account on the same browser, for switching and posting as
+ * someone else: a small, quiet one with a few followers and nothing posted.
+ */
+export const LAB = {
+  did: 'did:plc:virgaharnesslab7k2pq',
+  handle: 'lab.example.org',
+  displayName: 'Field Lab',
+  avatar: avatarFor('F', 146),
+};
+
 export const PDS = 'https://pds.harness.example';
 
 /** Tiny deterministic RNG, so two runs draw the same account. */
@@ -83,6 +94,26 @@ function followedOnlyPeople() {
       handle: `${first.toLowerCase()}.${last.toLowerCase().replace(/[^a-z]/g, '')}.example.net`,
       displayName: i % 7 === 3 ? '' : `${first} ${last}`,
       avatar: i % 4 === 1 ? '' : avatarFor(first[0], HUES[(i + 3) % HUES.length]),
+    };
+  });
+}
+
+/**
+ * The 64 people around the accounts. Built without the RNG, so both accounts
+ * share them and the rest of each world draws the same as before.
+ */
+export function buildCast() {
+  return Array.from({ length: 64 }, (_, i) => {
+    const first = FIRST[i % FIRST.length];
+    const last = LAST[(i * 7 + 3) % LAST.length];
+    const hue = HUES[i % HUES.length];
+    const handle = `${first}${i > FIRST.length ? i : ''}.example.com`.toLowerCase();
+    return {
+      did: `did:plc:virgaharnesscast${String(i).padStart(4, '0')}`,
+      handle,
+      // Some people never set a name, and some never set a picture.
+      displayName: i % 9 === 4 ? '' : `${first} ${last}`,
+      avatar: i % 6 === 5 ? '' : avatarFor(first[0], hue),
     };
   });
 }
@@ -169,29 +200,23 @@ const OTHER_COLLECTIONS = [
 ];
 
 /**
- * Build the account. `now` anchors every date; the same `now` and seed give
- * the same world.
+ * Build an account and what's around it. `now` anchors every date; the same
+ * `now`, seed and account give the same world. `account` is ME (the default:
+ * the busy account with three years of history) or LAB (a small, quiet one).
+ *
+ * Besides the fixtures, a world carries what the harness changes as the page
+ * is used (see harness/repo.js): records written and deleted, uploaded blobs,
+ * Bluesky drafts, bookmarks and preferences, all in memory.
  */
-export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
-  const rand = mulberry(seed);
+export function buildWorld({ now = Date.now(), seed, account = ME } = {}) {
+  if (account.did !== ME.did) return buildQuietWorld({ now, seed: seed ?? 20261113, account });
+  const rand = mulberry(seed ?? 20261112);
   const pick = (list) => list[Math.floor(rand() * list.length)];
   // A long tail: mostly small, now and then large.
   const tail = (scale) => Math.floor(scale * (1 / (1 - rand() * 0.985) - 1));
 
   /* ---- the people around the account ---------------------------- */
-  const cast = Array.from({ length: 64 }, (_, i) => {
-    const first = FIRST[i % FIRST.length];
-    const last = LAST[(i * 7 + 3) % LAST.length];
-    const hue = HUES[i % HUES.length];
-    const handle = `${first}${i > FIRST.length ? i : ''}.example.com`.toLowerCase();
-    return {
-      did: `did:plc:virgaharnesscast${String(i).padStart(4, '0')}`,
-      handle,
-      // Some people never set a name, and some never set a picture.
-      displayName: i % 9 === 4 ? '' : `${first} ${last}`,
-      avatar: i % 6 === 5 ? '' : avatarFor(first[0], hue),
-    };
-  });
+  const cast = buildCast();
   // A few people do most of the engaging: weight toward the front of the cast.
   const castPick = () => cast[Math.min(cast.length - 1, Math.floor(cast.length * rand() ** 2.4))];
 
@@ -360,11 +385,214 @@ export function buildWorld({ now = Date.now(), seed = 20261112 } = {}) {
     createdAt: new Date(start).toISOString(),
   };
 
-  return { now, start, profile, cast, followedOnly, posts, followers, follows, notifications, likes, reposts, blockers, lists, others };
+  const world = { me: ME, now, start, profile, cast, followedOnly, posts, followers, follows, notifications, likes, reposts, blockers, lists, others };
+  return withPostingFixtures(world, MIRA_POSTING);
+}
+
+/**
+ * The second account: five months old, a handful of posts, a few dozen
+ * followers drawn from the same cast, nothing pointing at it. Enough for the
+ * dashboard to draw something and for posting as it to show up somewhere.
+ */
+function buildQuietWorld({ now, seed, account }) {
+  const rand = mulberry(seed);
+  const cast = buildCast();
+  const span = 140 * DAY;
+  const start = now - span;
+  const posts = Array.from({ length: 9 }, (_, i) => {
+    const at = start + ((i + 1) / 10) * span + rand() * DAY;
+    const likes = Math.floor(rand() * 14);
+    return {
+      rkey: tidAt(at, i),
+      at: new Date(at).toISOString(),
+      text: LAB_POST_TEXT[i % LAB_POST_TEXT.length],
+      replyTo: null,
+      quoteOf: null,
+      media: false,
+      likes,
+      reposts: Math.floor(likes / 4),
+      replies: Math.floor(likes / 5),
+      quotes: 0,
+    };
+  }).reverse();
+  const followers = cast.slice(0, 40).map((p, i) => ({
+    ...p,
+    viewer: { followedBy: `at://${p.did}/app.bsky.graph.follow/${tidAt(now - (i * 3 + 2) * DAY, 700 + i)}` },
+  }));
+  const follows = cast.slice(0, 12).map((person, i) => {
+    const at = start + (i + 1) * 9 * DAY;
+    return {
+      uri: `at://${account.did}/app.bsky.graph.follow/${tidAt(at, i)}`,
+      value: { $type: 'app.bsky.graph.follow', subject: person.did, createdAt: new Date(at).toISOString() },
+    };
+  }).sort((a, b) => (a.uri < b.uri ? 1 : -1));
+  const notifications = Array.from({ length: 120 }, (_, i) => {
+    const at = now - rand() ** 1.4 * span;
+    const who = cast[Math.floor(rand() * 40)];
+    const reason = ['like', 'like', 'repost', 'reply', 'follow'][i % 5];
+    return {
+      uri: `at://${who.did}/app.bsky.harness.${reason}/${tidAt(at, i)}`,
+      reason,
+      author: { did: who.did, handle: who.handle, displayName: who.displayName, avatar: who.avatar },
+      record: { createdAt: new Date(at).toISOString() },
+      indexedAt: new Date(at + 900).toISOString(),
+    };
+  }).sort((a, b) => (a.indexedAt < b.indexedAt ? 1 : -1));
+  const given = (collection, count) =>
+    Array.from({ length: count }, (_, i) => {
+      const at = now - rand() * span;
+      const who = cast[Math.floor(rand() * cast.length)];
+      return {
+        uri: `at://${account.did}/${collection}/${tidAt(at, i)}`,
+        value: {
+          $type: collection,
+          subject: { uri: `at://${who.did}/app.bsky.feed.post/${tidAt(at - 3_600_000, i)}`, cid: 'bafyharness' },
+          createdAt: new Date(at).toISOString(),
+        },
+      };
+    }).sort((a, b) => (a.uri < b.uri ? 1 : -1));
+  const profile = {
+    did: account.did,
+    handle: account.handle,
+    displayName: account.displayName,
+    avatar: account.avatar,
+    followersCount: followers.length + 4,
+    followsCount: follows.length,
+    postsCount: posts.length,
+    createdAt: new Date(start).toISOString(),
+  };
+  const world = {
+    me: account,
+    now,
+    start,
+    profile,
+    cast,
+    followedOnly: [],
+    posts,
+    followers,
+    follows,
+    notifications,
+    likes: given('app.bsky.feed.like', 150),
+    reposts: given('app.bsky.feed.repost', 12),
+    blockers: [],
+    lists: [],
+    others: [],
+  };
+  return withPostingFixtures(world, LAB_POSTING);
+}
+
+const LAB_POST_TEXT = [
+  'Field Lab is open on Thursdays from four. Bring a sample, leave with a label.',
+  'This week: soil pH kits, and a long table of jars nobody has claimed.',
+  'We have a new microscope on loan. It is older than all of us and works better.',
+  'Notes from the river survey are up. Fewer snails than last year, more mayflies.',
+  'Thank you to everyone who came to the open evening.',
+];
+
+/**
+ * What an account has on the posting side when the page opens: drafts kept by
+ * Bluesky, bookmarks, Bluesky preferences (saved feeds and the default reply
+ * and quote settings), feeds and lists it made, and templates in its repo.
+ * `drafts` and `templates` are written as the services would read them back.
+ */
+const MIRA_POSTING = {
+  feeds: [
+    { name: 'Allotment people', description: 'Posts about allotments, seed swaps and sheds.', likeCount: 212 },
+    { name: 'Street trees', description: 'Every post that mentions a street tree.', likeCount: 48 },
+  ],
+  lists: [
+    { name: 'Neighbourhood', description: 'People on the street and nearby.', purpose: 'app.bsky.graph.defs#curatelist' },
+    { name: 'Tool library volunteers', description: '', purpose: 'app.bsky.graph.defs#curatelist' },
+  ],
+  // Replies from people followed and people mentioned; quotes allowed.
+  postInteraction: {
+    threadgateAllowRules: [{ $type: 'app.bsky.feed.threadgate#followingRule' }, { $type: 'app.bsky.feed.threadgate#mentionRule' }],
+    postgateEmbeddingRules: [],
+  },
+  drafts: [
+    { text: 'Half-finished thought about bus shelters and who they are really for.', daysAgo: 2 },
+    {
+      text: 'A short thread on the repair café numbers from this year.',
+      thread: ['412 things came in. 301 went home working.', 'Lamps were the most common. Toasters were the most stubborn.'],
+      daysAgo: 6,
+    },
+  ],
+  templates: [
+    { name: 'Thanks for the follow', text: 'Thanks for the follow, {{their.firstName}}!', use: 'reply', shortcut: 'thanks' },
+    {
+      name: 'Event reminder',
+      text: 'Reminder: {{event}} is on {{day}}. Everyone welcome.',
+      use: 'post',
+      shortcut: 'remind',
+      variables: [
+        { key: 'event', label: 'What is on' },
+        { key: 'day', label: 'Which day', kind: 'choice', choices: ['Saturday', 'Sunday'] },
+      ],
+    },
+  ],
+  bookmarks: 6,
+};
+
+const LAB_POSTING = { feeds: [], lists: [], postInteraction: null, drafts: [], templates: [], bookmarks: 0 };
+
+function withPostingFixtures(world, fixtures) {
+  const { me, now, cast } = world;
+  const at = (ms) => new Date(ms).toISOString();
+  world.feeds = fixtures.feeds.map((f, i) => ({
+    ...f,
+    uri: `at://${me.did}/app.bsky.feed.generator/${['allotments', 'street-trees'][i] || `feed-${i}`}`,
+    createdAt: at(now - (300 - i * 40) * DAY),
+  }));
+  world.ownLists = fixtures.lists.map((l, i) => ({
+    ...l,
+    uri: `at://${me.did}/app.bsky.graph.list/${tidAt(now - (200 - i * 30) * DAY, i)}`,
+    members: cast.slice(i * 7, i * 7 + 9).map((p) => p.did),
+    createdAt: at(now - (200 - i * 30) * DAY),
+  }));
+  world.preferences = [
+    {
+      $type: 'app.bsky.actor.defs#savedFeedsPrefV2',
+      items: [
+        { id: 'following', type: 'timeline', value: 'following', pinned: true },
+        ...world.feeds.map((f, i) => ({ id: `saved-${i}`, type: 'feed', value: f.uri, pinned: i === 0 })),
+      ],
+    },
+    ...(fixtures.postInteraction ? [{ $type: 'app.bsky.actor.defs#postInteractionSettingsPref', ...fixtures.postInteraction }] : []),
+  ];
+  world.drafts = fixtures.drafts.map((d, i) => {
+    const when = at(now - d.daysAgo * DAY);
+    const texts = [d.text, ...(d.thread || [])];
+    return {
+      id: tidAt(now - d.daysAgo * DAY, 40 + i),
+      draft: { posts: texts.map((text) => ({ text })), langs: ['en'] },
+      createdAt: when,
+      updatedAt: when,
+    };
+  });
+  // Posts by people in the cast, saved for later: the synthetic posts
+  // harness/views.js answers for any cast URI.
+  world.bookmarks = Array.from({ length: fixtures.bookmarks }, (_, i) => ({
+    uri: `at://${cast[i * 3].did}/app.bsky.feed.post/${tidAt(now - (i * 2 + 1) * DAY, 60 + i)}`,
+    createdAt: at(now - (i * 2 + 1) * DAY + 3_600_000),
+  }));
+  // What the page writes and deletes, over the fixtures (harness/repo.js).
+  world.written = new Map();
+  world.removed = new Set();
+  world.blobs = new Map();
+  world.revision = 0;
+  for (const [i, t] of fixtures.templates.entries()) {
+    const created = at(now - (90 - i * 20) * DAY);
+    world.written.set(`net.anisota.feed.template/${tidAt(Date.parse(created), 80 + i)}`, {
+      value: { $type: 'net.anisota.feed.template', ...t, createdAt: created },
+      cid: 'bafyharness',
+    });
+  }
+  return world;
 }
 
 /** One post as its repo record, the shape both the feed and the CAR carry. */
 export function postRecord(post) {
+  if (post.record) return post.record;
   const record = { $type: 'app.bsky.feed.post', text: post.text, createdAt: post.at };
   if (post.replyTo) {
     const parent = { uri: `at://${post.replyTo}/app.bsky.feed.post/${post.rkey}`, cid: 'bafyharness' };
@@ -385,14 +613,18 @@ export function postRecord(post) {
  * a repo's tree holds them in.
  */
 export function repoRecords(world) {
+  // What the page wrote comes first, so it wins over a fixture at the same key.
   const rows = [
+    ...[...(world.written || new Map())].map(([key, r]) => [key, r.value]),
     ['app.bsky.actor.profile/self', { $type: 'app.bsky.actor.profile', displayName: world.profile.displayName }],
     ...world.posts.map((p) => [`app.bsky.feed.post/${p.rkey}`, postRecord(p)]),
     ...[...world.likes, ...world.reposts, ...world.follows].map((r) => [r.uri.split('/').slice(3).join('/'), r.value]),
     ...world.others.map((r) => [`${r.collection}/${r.rkey}`, r.value]),
   ];
+  const removed = world.removed || new Set();
   const seen = new Set();
   return rows
+    .filter(([key]) => !removed.has(key))
     .filter(([key]) => (seen.has(key) ? false : seen.add(key)))
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
 }

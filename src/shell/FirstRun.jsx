@@ -47,7 +47,7 @@ export default function FirstRun({ archive }) {
           <li>
             <Cloud size={16} aria-hidden="true" />
             <span>
-              It all stays <strong>in this browser</strong>. Virga has no server to send it to.
+              It’s kept <strong>in this browser</strong>. Virga’s server never keeps a copy.
             </span>
           </li>
         </ul>

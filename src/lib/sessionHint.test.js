@@ -4,6 +4,7 @@ import {
   clearSessionHint,
   readSessionHint,
   restoresAtStartup,
+  syncSessionHint,
   writeSessionHint,
 } from './sessionHint.js';
 
@@ -58,5 +59,27 @@ describe('restoresAtStartup', () => {
     expect(restoresAtStartup({ hint: false, onCallback: false })).toBe(false);
     expect(restoresAtStartup({ hint: true, onCallback: false })).toBe(true);
     expect(restoresAtStartup({ hint: false, onCallback: true })).toBe(true);
+  });
+
+  it('also restores on a return from Virga’s server, and for a remembered account that is signed in', () => {
+    expect(restoresAtStartup({ hint: false, onCallback: false, onReturn: true })).toBe(true);
+    expect(restoresAtStartup({ hint: false, onCallback: false, hasAccounts: true })).toBe(true);
+    expect(restoresAtStartup({ hint: false, onCallback: false, onReturn: false, hasAccounts: false })).toBe(false);
+  });
+});
+
+describe('syncSessionHint', () => {
+  it('keeps the hint while any account is signed in, and clears it when none is', () => {
+    const storage = memoryStorage();
+    syncSessionHint(storage, [{ did: 'did:plc:a', signedOut: true }, { did: 'did:plc:b' }]);
+    expect(readSessionHint(storage)).toBe(true);
+    // One account signing out leaves the other's restore in place.
+    syncSessionHint(storage, [{ did: 'did:plc:a', signedOut: true }, { did: 'did:plc:b' }]);
+    expect(readSessionHint(storage)).toBe(true);
+    syncSessionHint(storage, [{ did: 'did:plc:a', signedOut: true }]);
+    expect(readSessionHint(storage)).toBe(false);
+    syncSessionHint(storage, []);
+    expect(readSessionHint(storage)).toBe(false);
+    expect(() => syncSessionHint(throwingStorage, [{ did: 'x' }])).not.toThrow();
   });
 });

@@ -6,12 +6,16 @@
 import { describe, expect, it } from 'vitest';
 import { buildRepoCar } from './buildCar.js';
 import { createRouter } from './fakeNetwork.js';
-import { ME, PDS, buildWorld, repoRecords, tidAt } from './world.js';
+import { LAB, ME, PDS, buildWorld, repoRecords, tidAt } from './world.js';
+import { createFakeAgent } from './fakeXrpc.js';
 import { compactPostFromFeedItem, inboundFromNotification, outboundFromRecord } from '../src/lib/analytics.js';
 import { followFromRecord } from '../src/lib/analyticsSync.js';
 import { feedItemTime } from '../src/lib/activity.js';
 import { rkeyFromAtUri, tidToTimestamp } from '../src/lib/atproto.js';
 import { readRepoCar } from '../src/lib/carRepo.js';
+import { fetchLinkCard, fetchCardThumbnail } from '../src/posting/lib/linkCard.js';
+import { uploadVideo } from '../src/posting/lib/video.js';
+import { pdsFromDidDocument } from '../src/session/pds.js';
 
 const NOW = Date.parse('2026-11-12T12:00:00.000Z');
 const world = buildWorld({ now: NOW });
@@ -121,5 +125,89 @@ describe('the fake network', () => {
 
   it('leaves every other host alone', async () => {
     expect(await route('https://example.com/anything')).toBeNull();
+  });
+});
+
+describe('the second account', () => {
+  const lab = buildWorld({ now: NOW, account: LAB });
+  const route = createRouter([world, lab]);
+  const get = async (url) => (await route(url)).json();
+
+  it('is small, and the same every time', () => {
+    expect(lab.me.did).toBe(LAB.did);
+    expect(lab.posts.length).toBeLessThan(20);
+    expect(buildWorld({ now: NOW, account: LAB }).posts).toEqual(lab.posts);
+    // Building it leaves the first account as it was.
+    expect(buildWorld({ now: NOW }).posts).toEqual(world.posts);
+  });
+
+  it('has its own profile, DID document, feed and repo', async () => {
+    expect((await get(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${LAB.handle}`)).did).toBe(LAB.did);
+    expect(pdsFromDidDocument(await get(`https://plc.directory/${LAB.did}`), LAB.did)).toBe(PDS);
+    const feed = await get(`https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${LAB.did}&limit=100`);
+    expect(feed.feed.map(compactPostFromFeedItem).filter(Boolean)).toHaveLength(lab.posts.length);
+    const car = new Uint8Array(await (await route(`${PDS}/xrpc/com.atproto.sync.getRepo?did=${LAB.did}`)).arrayBuffer());
+    expect((await readRepoCar(car)).did).toBe(LAB.did);
+  });
+
+  it('resolves handles for both accounts and the people around them', async () => {
+    expect((await get(`https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${LAB.handle}`)).did).toBe(LAB.did);
+    const typeahead = await get('https://public.api.bsky.app/xrpc/app.bsky.actor.searchActorsTypeahead?q=mir');
+    expect(typeahead.actors.map((a) => a.handle)).toContain(ME.handle);
+  });
+});
+
+describe('what posting reads from the network', () => {
+  const route = createRouter(world, { videoProcessingMs: 150 });
+  const fetch = (url, init) => route(url, init);
+  const get = async (url) => (await route(url)).json();
+
+  it('answers the feeds and lists the account made', async () => {
+    const feeds = await get(`https://public.api.bsky.app/xrpc/app.bsky.feed.getActorFeeds?actor=${ME.did}`);
+    expect(feeds.feeds).toHaveLength(world.feeds.length);
+    const one = await get(`https://public.api.bsky.app/xrpc/app.bsky.feed.getFeedGenerator?feed=${encodeURIComponent(world.feeds[0].uri)}`);
+    expect(one.view.displayName).toBe(world.feeds[0].name);
+    const lists = await get(`https://public.api.bsky.app/xrpc/app.bsky.graph.getLists?actor=${ME.did}`);
+    const list = await get(`https://public.api.bsky.app/xrpc/app.bsky.graph.getList?list=${encodeURIComponent(lists.lists[0].uri)}`);
+    expect(list.items.length).toBeGreaterThan(0);
+  });
+
+  it('hydrates other people’s posts by URI', async () => {
+    const uri = `at://${world.cast[3].did}/app.bsky.feed.post/${tidAt(NOW - 86_400_000)}`;
+    const res = await get(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=${encodeURIComponent(uri)}`);
+    expect(res.posts[0]).toMatchObject({ uri, author: { did: world.cast[3].did } });
+    expect(Date.parse(res.posts[0].record.createdAt)).toBe(NOW - 86_400_000);
+  });
+
+  it('gives a link card whose image is a real picture', async () => {
+    const card = await fetchLinkCard('https://www.example.org/repair-cafes', { fetch });
+    expect(card.title).toBe('Repair cafés near you');
+    const res = await route(card.thumb);
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    expect(res.headers.get('content-type')).toBe('image/png');
+    expect([...bytes.slice(1, 4)].map((b) => String.fromCharCode(b)).join('')).toBe('PNG');
+    // In a browser the thumbnail is shrunk; here the decode step is stood in for.
+    const file = await fetchCardThumbnail(card.thumb, { fetch, decode: async () => ({ width: 600, height: 315 }), compress: async (f) => f });
+    expect(file.size).toBe(bytes.length);
+    expect(await fetchLinkCard('https://nowhere.invalid/', { fetch })).toBeNull();
+  });
+
+  it('takes a video upload with the right tokens, and hands back its blob once processed', async () => {
+    const agent = createFakeAgent(world, { worlds: [world] });
+    const file = new File([new Uint8Array(2048).fill(7)], 'clip.mp4', { type: 'video/mp4' });
+    const out = await uploadVideo({ did: ME.did, agent, pdsUrl: PDS }, file, { fetch, poll: { pollIntervalMs: 50, failureIntervalMs: 50 } });
+    expect(out.blob).toMatchObject({ $type: 'blob', mimeType: 'video/mp4', size: 2048 });
+    expect(world.blobs.has(out.blob.ref.$link)).toBe(true);
+  }, 15_000);
+
+  it('refuses a video upload token addressed to the wrong service', async () => {
+    const agent = createFakeAgent(world, { worlds: [world] });
+    const { data } = await agent.com.atproto.server.getServiceAuth({ aud: 'did:web:video.bsky.app', lxm: 'com.atproto.repo.uploadBlob' });
+    const res = await route(`https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=${ME.did}&name=a.mp4`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${data.token}`, 'Content-Type': 'video/mp4' },
+      body: new Uint8Array(10),
+    });
+    expect(res.status).toBe(401);
   });
 });

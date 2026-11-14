@@ -1,13 +1,13 @@
 // The tools: small utilities for looking after an account, each saying what
 // it can touch. The hub lists them; each has a page of its own.
 
-import { Eye, Lock, UserCheck } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { Link, navigate } from '../lib/router.jsx';
 import { followBackModel, followerLogModel, listsModel } from '../reports/models.js';
 import { PageHeader } from '../shell/bits.jsx';
-import { ACCESS, TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
+import Badge from '../components/AccessBadge.jsx';
+import { TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
 import FollowCleanup from './FollowCleanup.jsx';
 import UnfollowTracker from './UnfollowTracker.jsx';
 import FollowBack from './FollowBack.jsx';
@@ -16,8 +16,6 @@ import ListsYoureOn from './ListsYoureOn.jsx';
 import ArchiveSearch from './ArchiveSearch.jsx';
 import Identity from './Identity.jsx';
 import './tools.css';
-
-const ACCESS_ICON = { read: Eye, follow: UserCheck, ask: Lock };
 
 const PAGES = {
   'follow-cleanup': FollowCleanup,
@@ -30,14 +28,7 @@ const PAGES = {
 };
 
 export function AccessBadge({ access }) {
-  const a = ACCESS[access];
-  const Icon = ACCESS_ICON[access];
-  return (
-    <span className={`badge${a.tone ? ` badge--${a.tone}` : ''}`}>
-      <Icon aria-hidden="true" />
-      {a.label}
-    </span>
-  );
+  return <Badge kind={access} />;
 }
 
 /** The header every tool page shares: where it is, what it does, what it touches. */

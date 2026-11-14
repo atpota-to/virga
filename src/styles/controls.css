@@ -541,6 +541,43 @@
   font-size: var(--text-md);
 }
 
+/* A text area: the field's look, with room for lines. The writer can
+   make it taller, never wider than its column. */
+textarea.input {
+  display: block;
+  min-height: calc(var(--control-h) * 2.5);
+  padding: 8px 10px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.input:disabled {
+  background: var(--surface-2);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+/* A count against a limit ("280 of 300"); past it, the word says so too. */
+.field-hint.is-over {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* A checkbox or radio with its words, in a row. */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-base);
+  cursor: pointer;
+}
+
+input[type='datetime-local'].input,
+input[type='date'].input,
+input[type='time'].input {
+  padding-right: 6px;
+}
+
 /* A search field: the glass sits inside the left edge. */
 .search {
   position: relative;
