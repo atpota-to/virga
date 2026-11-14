@@ -150,8 +150,8 @@ export default function Landing({ composing = false }) {
       <footer className="landing-foot">
         <span>
           Your archive is worked out and kept in this browser. Requests go to your account’s server, Bluesky’s public API, the PLC directory
-          and Constellation, and, for long sessions and scheduled posts, to Virga’s server. The <Link to={PRIVACY_PATH}>Privacy Policy</Link>{' '}
-          has the whole list.
+          and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The{' '}
+          <Link to={PRIVACY_PATH}>Privacy Policy</Link> has the whole list.
         </span>
         <nav className="landing-foot-links" aria-label="Legal">
           <Link to={TERMS_PATH}>Terms</Link>

@@ -4,7 +4,7 @@
 
 These terms are the agreement between you and **atpotato, LLC**, a Delaware limited liability company, for your use of Virga. In them, “we”, “us” and “our” mean atpotato, LLC, and “Virga” means the website, its server and the software behind them.
 
-You agree to these terms, and to the [Privacy Policy](PRIVACY_POLICY.md), on a screen that Virga shows after you sign in and before your account opens. We keep a record that your account agreed, as the Privacy Policy describes. If you don’t agree, sign out on that screen and don’t use Virga.
+You agree to these terms, and to the [Privacy Policy](PRIVACY_POLICY.md), on a screen that Virga shows after you sign in and before your account opens. A record that your account agreed is kept, as the Privacy Policy describes. If you don’t agree, sign out on that screen and don’t use Virga.
 
 Two parts of these terms change how a dispute with us would be handled: the limit on our liability, and the section on disputes, which sends most claims to individual arbitration and gives you 30 days to opt out of that. Please read both.
 
@@ -30,11 +30,12 @@ You sign in on your account’s host, on that host’s own page. Virga never see
 - follow and unfollow accounts, when you press the button for it;
 - write, reply with and delete posts, and set who can reply to or quote them, when you ask it to;
 - upload the pictures and video in your posts;
+- read your saved posts and your reply settings, and search posts, for the composer;
 - keep your drafts with Bluesky and your post templates in your own repository.
 
 It does not let Virga like or repost, read your direct messages, change your handle, email or profile, or delete your account. Settings › Permissions lists every permission with the reason for it.
 
-A sign-in is held one of two ways. A **browser session** stays in your browser. A **long session** is held by Virga’s server, which is what lets a scheduled post go out while your browser is closed. Signing out ends the session. You can also withdraw Virga’s permission at your account’s host at any time.
+A sign-in is held one of two ways. A **browser session** stays in your browser. A **long session** is held by Virga’s server, which is what lets a scheduled post go out while your browser is closed. Signing out ends the session in that browser. You can also withdraw Virga’s permission at your account’s host at any time.
 
 You are responsible for what is done through your accounts in Virga, and for keeping your devices and your host’s credentials secure. If you think someone else has used your account, sign out everywhere you can and tell your host.
 
@@ -44,7 +45,7 @@ Some of what Virga does changes your account, and some of it can’t be undone.
 
 - **Posts.** A post you publish through Virga is public on the network, like a post made anywhere else. Deleting it afterwards asks your host to remove the record. It doesn’t recall copies that other services already hold.
 - **Scheduled posts.** A scheduled or queued post is published by Virga’s server at the time you picked, whether or not you are there. Check what you schedule. We aim to publish within about a minute of the time, and we don’t promise that a post goes out on time or at all.
-- **Post timers.** A timer deletes a post, or changes who can reply to or quote it, when its time comes or its condition is met. A deleted post is gone, and Virga can’t bring it back.
+- **Post timers.** A timer acts when its time comes: it deletes the post, or changes who can reply to or quote it, unless a condition you set says to leave the post as it is. A deleted post is gone, and Virga can’t bring it back.
 - **Follows and unfollows.** The tools that tidy up who you follow act on the accounts you select. Look at the selection before you confirm.
 
 You decide what Virga does with your account, and you are responsible for the result.
@@ -139,7 +140,7 @@ If someone brings a claim against us because of your content, your use of Virga 
 
 ## Ending this agreement
 
-You can stop using Virga at any time. Sign out, and use Remove from this browser in Settings › Account to delete what Virga keeps in that browser. To remove what our server holds, see [Your choices](PRIVACY_POLICY.md#your-choices-and-rights) in the Privacy Policy.
+You can stop using Virga at any time. Sign out, and use Remove from this browser in Settings › Account, ticking the box there to delete what the account keeps in that browser. To remove what our server holds, see [Your choices and rights](PRIVACY_POLICY.md#your-choices-and-rights) in the Privacy Policy.
 
 We may suspend or end your access if you break these terms, if the law requires it, or if we stop offering Virga. The sections that by their nature should continue after that do continue, including those on your content, the disclaimers, the limit on our liability, your responsibility to us and disputes.
 

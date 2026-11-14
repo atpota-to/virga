@@ -146,7 +146,7 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
         <p className="note">
           {mode === 'backend'
             ? `${APP_NAME}’s server keeps a record that this account agreed, and when, with the address and browser the agreement came from.`
-            : `${APP_NAME} notes in this browser that this account agreed, and reports it to its server, with the address and browser the agreement came from.`}
+            : `${APP_NAME} notes in this browser that this account agreed, and sends its server a report of it, with the address and browser the agreement came from.`}
         </p>
       </main>
       <LegalDialog docKey={reading} onClose={() => setReading(null)} />

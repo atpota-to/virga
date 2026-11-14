@@ -218,6 +218,37 @@ describe('availability and keys', () => {
     expect(unavailableReason(process.env)).toBeNull();
   });
 
+  it('is unavailable in production without a key to encrypt sessions with', () => {
+    const ready = { ...process.env, SESSION_ENCRYPTION_KEY: '' };
+    // Development and tests run without one.
+    expect(unavailableReason({ ...ready, VERCEL_ENV: 'preview' })).toBeNull();
+    expect(unavailableReason(ready)).toBeNull();
+    // Production doesn't, however it is told it is production.
+    for (const production of [
+      { VERCEL_ENV: 'production' },
+      { NODE_ENV: 'production' },
+    ]) {
+      expect(unavailableReason({ ...ready, ...production })).toMatch(
+        /SESSION_ENCRYPTION_KEY/,
+      );
+      // A key that isn't 32 bytes encrypts nothing.
+      expect(
+        unavailableReason({
+          ...ready,
+          ...production,
+          SESSION_ENCRYPTION_KEY: 'too-short',
+        }),
+      ).toMatch(/SESSION_ENCRYPTION_KEY/);
+      expect(
+        unavailableReason({
+          ...ready,
+          ...production,
+          SESSION_ENCRYPTION_KEY: 'ab'.repeat(32),
+        }),
+      ).toBeNull();
+    }
+  });
+
   it('is unavailable without an https OAUTH_PUBLIC_URL', () => {
     const key = process.env.OAUTH_PRIVATE_KEY_1;
     expect(unavailableReason({ OAUTH_PRIVATE_KEY_1: key })).toMatch(

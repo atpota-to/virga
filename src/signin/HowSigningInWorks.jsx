@@ -5,12 +5,15 @@ import { LogoMark } from '../shell/bits.jsx';
 
 // What a sign-in lets Virga do, in a line each. Settings › Permissions has
 // every permission with its reason (PERMISSION_GROUPS, src/config.js); these
-// are the same things, said shorter.
+// are the same things, said shorter, and none is left out: the sentence
+// above the list says there is nothing else.
 const CAN = [
   'Read your follower list and your notifications',
   'Follow or unfollow, when you press the button',
-  'Post, reply and delete posts, when you ask it to',
+  'Post, reply and delete posts, and set who can reply or quote, when you ask it to',
+  'Upload the pictures and video in your posts',
   'Keep your drafts and post templates',
+  'Read your saved posts and reply settings, and search posts, for the composer',
 ];
 
 const CANNOT = ['See your password', 'Like, repost or read your messages', 'Change your handle, email or profile', 'Delete your account'];
@@ -81,7 +84,7 @@ export default function HowSigningInWorks({ open, onClose, longSession = false }
         </div>
         <p className="note">
           {longSession
-            ? `${APP_NAME}’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while this browser is closed. Signing out ends it.`
+            ? `${APP_NAME}’s server keeps the pass, so you stay signed in for longer and scheduled posts can go out while this browser is closed. Signing out of the last browser you use it in ends it.`
             : 'The pass is kept in this browser. Signing out ends it.'}{' '}
           Your posts and everything else in your account stay with your host.
         </p>

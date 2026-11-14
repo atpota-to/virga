@@ -117,7 +117,7 @@ describe('the agreement screen', () => {
 
   it('says what is recorded, for the kind of session it is', () => {
     expect(draw()).toContain('Virga’s server keeps a record that this account agreed, and when');
-    expect(draw({ mode: 'browser' })).toContain('Virga notes in this browser that this account agreed, and reports it to its server');
+    expect(draw({ mode: 'browser' })).toContain('Virga notes in this browser that this account agreed, and sends its server a report of it');
   });
 
   it('holds the account’s place until it has a name to show', () => {

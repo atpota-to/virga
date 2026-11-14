@@ -218,9 +218,10 @@ longer session in the account menu and Settings › Account.
 
 An account that signs in is shown the agreement screen before the app: its name, the
 two documents (each opens in place), a box to tick and one button. Nothing of the app is
-mounted, and nothing is read for the account, until it agrees; the other way on is Sign
-out. The screen comes back for an account that hasn't agreed to the current version,
-which means a first sign-in, another browser, or a change to the documents.
+mounted, and nothing of the archive is read, until it agrees (the screen itself reads the
+account's public profile, for its name); the other way on is Sign out. The screen comes
+back for an account that hasn't agreed to the current version, which means a first
+sign-in, another browser on a browser session, or a change to the documents.
 
 - **Which documents.** `src/legal/version.js` holds `TERMS_VERSION` and the date both
   documents carry. The browser's gate and the server's ledger both read it from there.
@@ -240,7 +241,8 @@ which means a first sign-in, another browser, or a change to the documents.
   a long session is asked once more), it is kept once per account, version and address,
   the answer says nothing about what was already there, and one address can file 50 new
   ones a day (`TERMS_CLAIMS_PER_ADDRESS_PER_DAY`), counted in the database. The report is
-  tried again on later visits until it lands. `TERMS_ACCEPT_CLAIMED=false` turns claims
+  tried again on up to five later visits; after that the note in the browser is the only
+  record. `TERMS_ACCEPT_CLAIMED=false` turns claims
   off.
 
 The documents are `TERMS_OF_SERVICE.md` and `PRIVACY_POLICY.md` at the repo's root. The
@@ -397,7 +399,8 @@ server's routes answer 503 and the posting pages that need it say so.
      client_id hangs off it, so it must not change once anyone has signed in, and one
      Supabase project serves one public URL.
    - `OAUTH_PRIVATE_KEY_1`, and `SESSION_ENCRYPTION_KEY` (`openssl rand -hex 32`), which
-     encrypts the stored sessions
+     encrypts the stored sessions. In production long sessions stay off until it is set:
+     the Privacy Policy says sessions are encrypted, so they aren't stored any other way
    - `CRON_SECRET` (a long random string): Vercel sends it to the crons, and the run
      endpoints refuse anything without it in production
    - `AI_GATEWAY_API_KEY`, for the adviser and alt text (optional; without it they answer

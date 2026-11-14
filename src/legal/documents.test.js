@@ -16,8 +16,8 @@ import { PRIVACY_PATH, TERMS_EFFECTIVE_DATE, TERMS_PATH, TERMS_VERSION, formatLe
 // Either way, put the new fingerprint here.
 const FINGERPRINTS = {
   version: 1,
-  terms: '2669f3e5de8fa40ce4c1a416f373cbe194b9a862fd6e784f646a36d71c969a0b',
-  privacy: '2f62aea65d052214763e41c27d68ebd3b8e5b5bef25ce2c984e066fd7f227238',
+  terms: '76d4b1c59711227f1ac37ade34f6fb4c1683c1a4e55bf41f2570ae5b455ccc76',
+  privacy: 'f6c0fdcbbc8a9959cb0b5375bccc53248c2525f608225e3dc404840667e77b35',
 };
 
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex');

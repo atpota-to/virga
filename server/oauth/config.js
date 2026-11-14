@@ -13,8 +13,10 @@
 import crypto from 'node:crypto';
 import { APP_NAME, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
 import { PRIVACY_PATH, TERMS_PATH } from '../../src/legal/version.js';
+import { isProduction } from '../env.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
 import { sendJson } from '../http.js';
+import { sessionEncryptionEnabled } from './sessionCrypto.js';
 
 /** Every frontend session token is this plus 64 lowercase hex (the client checks the shape). */
 export const TOKEN_PREFIX = 'vg_';
@@ -205,13 +207,31 @@ export function loadPrivateKeys(env = process.env) {
 /**
  * Why the client can't run here, or null when it can. Previews are given no
  * key on purpose: they answer 503 and the app stays in browser mode.
+ *
+ * On the production deployment a session's tokens are stored encrypted or
+ * not at all: with no usable SESSION_ENCRYPTION_KEY, long sessions are off
+ * there, rather than left to write refresh tokens to the database as they
+ * are. The Privacy Policy says they are encrypted, and this is what makes
+ * that true whatever was forgotten at deploy time. Development keeps working
+ * without a key.
  */
 export function unavailableReason(env = process.env) {
   if (loadPrivateKeys(env).length === 0)
     return 'OAUTH_PRIVATE_KEY_1 is not set';
   if (!httpsPublicUrl(env))
     return 'OAUTH_PUBLIC_URL is not set to an https origin';
+  if (isProduction(env) && !sessionsEncrypted(env))
+    return 'SESSION_ENCRYPTION_KEY is not set to a 32-byte key';
   return null;
+}
+
+/** Whether there is a key that encrypts. One of the wrong length throws when read. */
+function sessionsEncrypted(env) {
+  try {
+    return sessionEncryptionEnabled(env);
+  } catch {
+    return false;
+  }
 }
 
 /** The 503 every OAuth route answers while the client is unavailable. */

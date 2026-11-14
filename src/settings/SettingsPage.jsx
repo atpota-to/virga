@@ -588,7 +588,8 @@ function PermissionsSection() {
         <p className="settings-text">
           A browser session stays in this browser and goes straight to your account’s server. A long session is held by Virga’s server at{' '}
           {backendHost()}, which makes the same requests on your behalf, and is what lets a scheduled post go out while the browser is closed.
-          Virga’s server is used only for long sessions and the features that need one; your archive never goes there. Settings ›{' '}
+          Virga’s server is used only for long sessions and the features that need one, and for the record that an account agreed to the
+          terms, which either kind of session sends it; your archive never goes there. Settings ›{' '}
           <Link to="/settings/account">Account</Link> says which kind each account has.
         </p>
       </Section>
@@ -672,8 +673,8 @@ function AboutSection() {
             <strong>Constellation</strong>: who blocks you, and which lists you’re on.
           </li>
           <li>
-            <strong>Signing in</strong>: the handle you type goes to Bluesky’s public API, to suggest accounts and to find yours and where
-            it signs in.
+            <strong>Signing in</strong>: the handle you type goes to Bluesky’s public API, to suggest accounts and to find yours. Where the
+            account signs in is read from the PLC directory and its own server. The Privacy Policy lists every lookup a sign-in makes.
           </li>
           <li>
             <strong>The PLC directory</strong>: your DID document and its history.
