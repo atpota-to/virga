@@ -19,11 +19,14 @@ import {
   resetSupabaseClientForTests,
 } from '../../supabase.js';
 import {
+  CIDS,
   DID,
   MINUTE,
+  HOUR,
   DAY,
   iso,
   fakePds,
+  json,
   PNG_BASE64,
 } from '../testing/fixtures.js';
 
@@ -46,13 +49,15 @@ vi.mock('../../timers/selfDestruct.js', async (importOriginal) => ({
 
 const { default: run, TIMED_OUT_ERROR } = await import('./run.js');
 const scheduled = await import('../scheduledPosts.js');
+const { deps: replyDeps } = await import('../replyTarget.js');
+const realReplyDeps = { ...replyDeps };
 
 const SECRET = 'cron-secret-for-tests';
 
 let t;
 let pds;
 beforeAll(async () => {
-  t = await createTestDatabase({ upTo: '20261113000200' });
+  t = await createTestDatabase({ upTo: '20261114000100' });
 });
 afterAll(async () => {
   await t?.close();
@@ -72,6 +77,7 @@ beforeEach(async () => {
 });
 afterEach(() => {
   resetSupabaseClientForTests();
+  Object.assign(replyDeps, realReplyDeps);
   vi.unstubAllEnvs();
   vi.useRealTimers();
   vi.restoreAllMocks();
@@ -108,8 +114,8 @@ async function insertDue(fields = {}) {
     ...fields,
   };
   const { rows } = await t.query(
-    `INSERT INTO scheduled_posts (user_did, scheduled_for, status, payload, progress, attempts, created_at, updated_at)
-     VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6, $7, COALESCE($8, NOW())) RETURNING *`,
+    `INSERT INTO scheduled_posts (user_did, scheduled_for, status, payload, progress, attempts, created_at, updated_at, series_id, occurrence)
+     VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6, $7, COALESCE($8, NOW()), $9, $10) RETURNING *`,
     [
       DID,
       row.scheduled_for,
@@ -119,6 +125,8 @@ async function insertDue(fields = {}) {
       row.attempts,
       row.created_at,
       row.updated_at ?? null,
+      row.series_id ?? null,
+      row.series_id ? (row.occurrence ?? 1) : null,
     ],
   );
   return rows[0];
@@ -528,5 +536,361 @@ describe('the failed-media sweep', () => {
     at(18);
     expect((await tick()).body.mediaReclaimed).toBeNull();
     expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+  });
+});
+
+describe('a scheduled reply', () => {
+  const PARENT = {
+    uri: 'at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/app.bsky.feed.post/3lwcs2m4ock2z',
+    cid: CIDS[3],
+  };
+  const ROOT = {
+    uri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lwcrzq3bbc2y',
+    cid: CIDS[4],
+  };
+  const replyPayload = (texts = ['a reply']) => ({
+    posts: posts(texts),
+    gates: { threadgate: null, postgate: null },
+    media: {},
+    rkeys: texts.map((_, i) => `3kreply00000${i + 2}`),
+    reply: { root: ROOT, parent: PARENT },
+    replyTo: { handle: 'ada.example.com', displayName: 'Ada', text: 'the post' },
+  });
+  /** What the parent's PDS says about the post being replied to. */
+  function parentPds(answer) {
+    replyDeps.resolvePdsEndpoint = vi.fn(async (did) => ({
+      did,
+      pdsEndpoint: 'https://their-pds.example',
+    }));
+    replyDeps.safeFetch = vi.fn(async () => answer());
+  }
+  const there = () => json({ uri: PARENT.uri, cid: PARENT.cid, value: {} });
+  const gone = () => json({ error: 'RecordNotFound', message: 'Could not locate record' }, 400);
+  const down = () => json({ error: 'InternalServerError', message: 'boom' }, 500);
+
+  it('goes out as a reply to its parent, under the parent’s root', async () => {
+    parentPds(there);
+    const row = await insertDue({ payload: replyPayload(['first', 'second']) });
+    const res = await tick();
+    expect(res.body).toMatchObject({ claimed: 1, published: 1, failed: 0 });
+    const [first, second] = pds.posts();
+    expect(first.record.reply).toEqual({ root: ROOT, parent: PARENT });
+    expect(second.record.reply).toEqual({
+      root: ROOT,
+      parent: { uri: `at://${DID}/app.bsky.feed.post/${first.rkey}`, cid: CIDS[0] },
+    });
+    expect(pds.writes.every((w) => w.collection === 'app.bsky.feed.post')).toBe(true);
+    expect(await readRow(row.id)).toMatchObject({
+      status: 'published',
+      result_uri: `at://${DID}/app.bsky.feed.post/3kreply000002`,
+    });
+  });
+
+  it('is not posted when the parent is gone: the row fails at once, saying why', async () => {
+    parentPds(gone);
+    const row = await insertDue({ payload: replyPayload() });
+    const res = await tick();
+    expect(res.body).toMatchObject({ claimed: 1, published: 0, retried: 0, failed: 1 });
+    expect(res.body.errors).toEqual([
+      {
+        id: row.id,
+        error:
+          'the post this replies to has been deleted, so the reply was not posted.',
+        terminal: true,
+      },
+    ]);
+    expect(pds.writes).toEqual([]);
+    expect(await readRow(row.id)).toMatchObject({
+      status: 'failed',
+      attempts: 1,
+      last_error:
+        'the post this replies to has been deleted, so the reply was not posted.',
+      last_error_code: 'REPLY_TARGET_GONE',
+    });
+    // It stays in the list, to be read and dismissed.
+    expect((await scheduled.listScheduledPosts(DID)).map((r) => r.id)).toEqual([row.id]);
+  });
+
+  it('is held back, not posted blind, when the parent can’t be checked, and retried with backoff', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    parentPds(down);
+    const row = await insertDue({ payload: replyPayload() });
+    const res = await tick();
+    expect(res.body).toMatchObject({ claimed: 1, published: 0, retried: 1, failed: 0 });
+    expect(pds.writes).toEqual([]);
+    const after = await readRow(row.id);
+    expect(after).toMatchObject({
+      status: 'pending',
+      attempts: 1,
+      last_error_code: 'REPLY_TARGET_UNCHECKED',
+      last_error:
+        "couldn't check that the post this replies to is still there, so the reply was held back.",
+    });
+    expect(after.next_attempt_at.getTime()).toBeGreaterThan(Date.now() + MINUTE);
+
+    // The PDS is back by the next attempt: the reply goes out then.
+    parentPds(there);
+    await t.query(`UPDATE scheduled_posts SET next_attempt_at = NOW() - INTERVAL '1 second' WHERE id = $1`, [row.id]);
+    expect((await tick()).body.published).toBe(1);
+    expect(pds.posts()[0].record.reply).toEqual({ root: ROOT, parent: PARENT });
+    expect(await readRow(row.id)).toMatchObject({
+      status: 'published',
+      attempts: 2,
+      last_error: null,
+      last_error_code: null,
+    });
+  });
+
+  it('fails for good once its attempts are spent without ever being able to check', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    parentPds(down);
+    const row = await insertDue({ payload: replyPayload(), attempts: 4 });
+    expect((await tick()).body).toMatchObject({ failed: 1, retried: 0 });
+    expect(pds.writes).toEqual([]);
+    expect(await readRow(row.id)).toMatchObject({
+      status: 'failed',
+      attempts: 5,
+      last_error_code: 'REPLY_TARGET_UNCHECKED',
+    });
+  });
+
+  it('finishes a thread that was part-way out without asking again', async () => {
+    parentPds(gone);
+    const first = { uri: `at://${DID}/app.bsky.feed.post/3kreply000002`, cid: CIDS[2] };
+    await insertDue({
+      payload: replyPayload(['first', 'second']),
+      progress: [first],
+      attempts: 1,
+    });
+    expect((await tick()).body.published).toBe(1);
+    expect(replyDeps.safeFetch).not.toHaveBeenCalled();
+    expect(pds.posts()).toHaveLength(1);
+    expect(pds.posts()[0].record.reply).toEqual({ root: ROOT, parent: first });
+  });
+});
+
+describe('a repeating post', () => {
+  const SERIES = '11111111-1111-4111-8111-111111111111';
+  const minute = (ms) => Math.floor(ms / MINUTE) * MINUTE;
+  const pad = (v) => String(v).padStart(2, '0');
+  /** A weekly rule in UTC whose first occurrence is at `at`. */
+  const weekly = (at, extra = {}) => {
+    const d = new Date(at);
+    return {
+      every: 'week',
+      tz: 'UTC',
+      until: null,
+      count: null,
+      anchor: {
+        date: `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+        time: `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`,
+        occurrence: 1,
+      },
+      ...extra,
+    };
+  };
+  async function insertRepeating({ at = minute(Date.now() - MINUTE), rule = {}, payload = {}, ...fields } = {}) {
+    return insertDue({
+      scheduled_for: iso(at),
+      series_id: SERIES,
+      occurrence: 1,
+      ...fields,
+      payload: {
+        posts: posts(['every Monday']),
+        gates: {},
+        media: {},
+        rkeys: ['3kweekly00002'],
+        repeat: weekly(at, rule),
+        ...payload,
+      },
+    });
+  }
+  const series = async () =>
+    (await t.query('SELECT * FROM scheduled_posts WHERE series_id = $1 ORDER BY occurrence', [SERIES])).rows;
+
+  it('publishes the occurrence that is due and leaves the next one waiting, a week on', async () => {
+    const at = minute(Date.now() - MINUTE);
+    const row = await insertRepeating({ at });
+    const res = await tick();
+    expect(res.body).toMatchObject({ claimed: 1, published: 1, failed: 0, errors: [] });
+    const [first, second] = await series();
+    expect(first).toMatchObject({ id: row.id, status: 'published', occurrence: 1 });
+    expect(second).toMatchObject({ status: 'pending', occurrence: 2, attempts: 0 });
+    expect(second.scheduled_for.getTime()).toBe(at + 7 * DAY);
+    expect(second.payload.repeat).toEqual(row.payload.repeat);
+    expect(second.payload.posts).toEqual(row.payload.posts);
+    expect(second.payload.rkeys).toHaveLength(1);
+    expect(second.payload.rkeys[0]).not.toBe('3kweekly00002');
+    // Not due for a week: the next tick leaves it where it is.
+    expect((await tick()).body.claimed).toBe(0);
+    expect(pds.posts()).toHaveLength(1);
+  });
+
+  it('gives every occurrence its own record, at its own key and time', async () => {
+    const at = minute(Date.now() - MINUTE);
+    await insertRepeating({ at, rule: { count: 3 } });
+    for (let n = 0; n < 5; n++) {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(at + n * 7 * DAY + 2 * MINUTE));
+      await tick();
+    }
+    vi.useRealTimers();
+    const written = pds.posts();
+    expect(written).toHaveLength(3);
+    expect(new Set(written.map((w) => w.rkey)).size).toBe(3);
+    expect(written.map((w) => w.record.createdAt)).toEqual(
+      [0, 1, 2].map((n) => iso(at + n * 7 * DAY)),
+    );
+    expect(written.every((w) => w.record.text === 'every Monday')).toBe(true);
+    // "After 3 times": the series is over, with nothing left waiting.
+    expect((await series()).map((r) => r.status)).toEqual(['published', 'published', 'published']);
+  });
+
+  it('never posts twice or forks the series when two runs overlap', async () => {
+    // A first run claimed the row and is slow, not dead: long enough for
+    // the row to be reclaimed and a second run to take it up.
+    const row = await insertRepeating({ status: 'publishing', attempts: 1 });
+    await t.query(
+      `UPDATE scheduled_posts SET locked_at = NOW() - INTERVAL '10 minutes' WHERE id = $1`,
+      [row.id],
+    );
+    const held = await readRow(row.id);
+    const res = await tick();
+    expect(res.body).toMatchObject({ reclaimed: 1, claimed: 1, published: 1 });
+    // Then the first run finishes after all, with the row as it claimed it.
+    const result = await scheduled.publishScheduledPost(held);
+    await scheduled.markPublished(held.id, result, held.payload.media, held);
+
+    // putRecord at the reserved key both times: one record, written over
+    // itself, never a second post.
+    expect(pds.posts().map((w) => w.rkey)).toEqual([
+      '3kweekly00002',
+      '3kweekly00002',
+    ]);
+    const rows = await series();
+    expect(rows.map((r) => [r.occurrence, r.status])).toEqual([
+      [1, 'published'],
+      [2, 'pending'],
+    ]);
+  });
+
+  it('loses nothing to a run that died between writing the post and recording it', async () => {
+    const at = minute(Date.now() - MINUTE);
+    const ref = { uri: `at://${DID}/app.bsky.feed.post/3kweekly00002`, cid: CIDS[0] };
+    const row = await insertRepeating({
+      at,
+      status: 'publishing',
+      attempts: 1,
+      progress: [ref],
+    });
+    await t.query(`UPDATE scheduled_posts SET locked_at = NOW() - INTERVAL '10 minutes' WHERE id = $1`, [row.id]);
+    const res = await tick();
+    expect(res.body).toMatchObject({ reclaimed: 1, claimed: 1, published: 1 });
+    // Nothing is written again; the series picks up where the run left it.
+    expect(pds.writes).toEqual([]);
+    const rows = await series();
+    expect(rows.map((r) => [r.occurrence, r.status])).toEqual([
+      [1, 'published'],
+      [2, 'pending'],
+    ]);
+    expect(rows[1].scheduled_for.getTime()).toBe(at + 7 * DAY);
+  });
+
+  it('carries the series past a spent row whose thread is all out', async () => {
+    const ref = { uri: `at://${DID}/app.bsky.feed.post/3kweekly00002`, cid: CIDS[0] };
+    await insertRepeating({ attempts: 5, progress: [ref] });
+    expect((await tick()).body).toMatchObject({ claimed: 1, published: 1 });
+    expect((await series()).map((r) => r.status)).toEqual(['published', 'pending']);
+  });
+
+  it('goes on from its schedule when an occurrence fails for good, keeping the failure to retry', async () => {
+    oauth.restoreSession.mockResolvedValue(null);
+    const at = minute(Date.now() - MINUTE);
+    const row = await insertRepeating({ at, attempts: 4 });
+    const res = await tick();
+    expect(res.body).toMatchObject({ claimed: 1, published: 0, failed: 1 });
+    const [first, second] = await series();
+    expect(first).toMatchObject({
+      id: row.id,
+      status: 'failed',
+      last_error_code: 'SESSION_UNAVAILABLE',
+    });
+    expect(second).toMatchObject({ status: 'pending', occurrence: 2 });
+    expect(second.scheduled_for.getTime()).toBe(at + 7 * DAY);
+
+    // Retried once the account is back, it goes out; the series still has
+    // exactly one occurrence waiting.
+    oauth.restoreSession.mockResolvedValue(pds.session);
+    await scheduled.retryFailedScheduledPost({ id: row.id, userDid: DID });
+    expect((await tick()).body.published).toBe(1);
+    expect((await series()).map((r) => [r.occurrence, r.status])).toEqual([
+      [1, 'published'],
+      [2, 'pending'],
+    ]);
+  });
+
+  it('does not let failures pile up while the account can’t post', async () => {
+    oauth.restoreSession.mockResolvedValue(null);
+    const at = minute(Date.now() - MINUTE);
+    await insertRepeating({ at, attempts: 4 });
+    for (let n = 0; n < 4; n++) {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(at + n * 7 * DAY + 2 * MINUTE));
+      await t.query(`UPDATE scheduled_posts SET attempts = 4 WHERE status = 'pending'`);
+      await tick();
+    }
+    vi.useRealTimers();
+    const listed = await scheduled.listScheduledPosts(DID);
+    expect(listed.map((r) => r.status).sort()).toEqual(['failed', 'pending']);
+    expect(listed.find((r) => r.status === 'failed').occurrence).toBe(4);
+  });
+
+  it('uploads its picture again for each occurrence, and keeps the stashed copy between them', async () => {
+    const at = minute(Date.now() - MINUTE);
+    const row = await insertRepeating({ at, rule: { count: 2 } });
+    const path = await scheduled.storeMedia(row.id, 'p0-img0', PNG_BASE64, 'image/png');
+    await scheduled.updatePayload(row.id, {
+      ...row.payload,
+      posts: [
+        {
+          record: { text: 'pic' },
+          embed: { type: 'images', images: [{ mediaId: 'p0-img0' }] },
+        },
+      ],
+      media: { 'p0-img0': { storagePath: path, encoding: 'image/png' } },
+    });
+    expect((await tick()).body.published).toBe(1);
+    expect(pds.blobs).toHaveLength(1);
+    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(at + 7 * DAY + 2 * MINUTE));
+    expect((await tick()).body.published).toBe(1);
+    vi.useRealTimers();
+    expect(pds.blobs).toHaveLength(2);
+    expect(pds.posts().map((w) => w.record.embed.$type)).toEqual([
+      'app.bsky.embed.images',
+      'app.bsky.embed.images',
+    ]);
+    // The series is over ("after 2 times"): the stashed copy goes with it.
+    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+  });
+
+  it('arms each occurrence’s timer on the records that occurrence wrote', async () => {
+    const selfDestruct = {
+      lifespanSeconds: HOUR / 1000,
+      deleteAt: null,
+      conditions: { sense: 'any', clauses: [] },
+      effects: null,
+    };
+    const at = minute(Date.now() - MINUTE);
+    await insertRepeating({ at, payload: { selfDestruct } });
+    expect((await tick()).body).toMatchObject({ published: 1, armed: 1 });
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(at + 7 * DAY + 2 * MINUTE));
+    expect((await tick()).body).toMatchObject({ published: 1, armed: 1 });
+    vi.useRealTimers();
+    const armed = timers.armForPublishedSchedule.mock.calls.map(([, refs]) => refs[0].uri);
+    expect(new Set(armed).size).toBe(2);
   });
 });

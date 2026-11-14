@@ -1,10 +1,12 @@
 // The checks a scheduled post passes before anything is stored: shapes, times,
 // gates, card refs, timers, and the failure vocabulary the client reads.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   normalizeAssociatedRefs,
   buildEmbed,
+  buildPayload,
+  isMissingColumn,
   validateCreate,
   validateReschedule,
   validateSelfDestructSpec,
@@ -24,7 +26,7 @@ import {
   isMissingTable,
   isUndefinedFunction,
 } from './scheduledPosts.js';
-import { HOUR, DAY, MINUTE, iso, inHours } from './testing/fixtures.js';
+import { CIDS, HOUR, DAY, MINUTE, iso, inHours } from './testing/fixtures.js';
 
 const DOC = {
   $type: 'com.atproto.repo.strongRef',
@@ -266,6 +268,184 @@ describe('validateCreate gates', () => {
       threadgate: null,
       postgate,
     });
+  });
+});
+
+describe('validateCreate replies', () => {
+  const PARENT = {
+    uri: 'at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/app.bsky.feed.post/3lwcs2m4ock2z',
+    cid: CIDS[0],
+  };
+  const ROOT = {
+    uri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lwcrzq3bbc2y',
+    cid: CIDS[1],
+  };
+  const reply = { root: ROOT, parent: PARENT };
+
+  it('carries the root and parent strong refs, and nothing for a plain post', () => {
+    const res = validateCreate(spec({ reply }));
+    expect(res.ok).toBe(true);
+    expect(res.value.reply).toEqual({ root: ROOT, parent: PARENT });
+    expect(validateCreate(spec()).value).toMatchObject({
+      reply: null,
+      replyTo: null,
+      repeat: null,
+    });
+  });
+
+  it('refuses refs that aren’t well-formed post addresses and CIDs', () => {
+    expect(
+      validateCreate(spec({ reply: { root: ROOT, parent: { uri: 'at://x', cid: CIDS[0] } } })),
+    ).toEqual({
+      ok: false,
+      error: 'reply.parent.uri must be the at:// address of a post',
+    });
+    expect(
+      validateCreate(spec({ reply: { root: { ...ROOT, cid: 'nope' }, parent: PARENT } }))
+        .error,
+    ).toBe('reply.root.cid must be a CID');
+    expect(validateCreate(spec({ reply: { parent: PARENT } })).error).toBe(
+      'reply.root needs a uri and a cid',
+    );
+  });
+
+  it('keeps who it answers for the list, only on a reply, bounded', () => {
+    const replyTo = {
+      handle: 'ada.example.com',
+      displayName: 'Ada',
+      text: 'y'.repeat(400),
+      avatar: 'https://cdn.example/a.jpg',
+    };
+    expect(validateCreate(spec({ reply, replyTo })).value.replyTo).toEqual({
+      handle: 'ada.example.com',
+      displayName: 'Ada',
+      text: 'y'.repeat(300),
+    });
+    expect(validateCreate(spec({ replyTo })).value.replyTo).toBeNull();
+  });
+
+  it('writes no gates for a reply, whatever was sent', () => {
+    const res = validateCreate(
+      spec({
+        reply,
+        gates: {
+          threadgate: [],
+          postgate: [{ $type: 'app.bsky.feed.postgate#disableRule' }],
+        },
+      }),
+    );
+    expect(res.value.gates).toEqual({ threadgate: null, postgate: null });
+  });
+
+  it('refuses a reply in the queue, with the client’s code', () => {
+    expect(validateCreate(spec({ reply }, { queued: true }))).toEqual({
+      ok: false,
+      error: "a reply can't wait in the queue. schedule it for a set time instead.",
+      code: 'QUEUE_REPLY',
+    });
+  });
+
+  it('refuses a reply that repeats', () => {
+    expect(
+      validateCreate(spec({ reply, repeat: { every: 'week', tz: 'UTC' } })),
+    ).toEqual({
+      ok: false,
+      error: "a reply can't repeat: it would answer the same post again each time.",
+      code: 'REPEAT_REPLY',
+    });
+  });
+});
+
+describe('validateCreate repeats', () => {
+  it('normalizes the rule and anchors it at the scheduled time', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2027-01-10T00:00:00Z'));
+    try {
+      const res = validateCreate({
+        ...spec({ repeat: { every: 'week', tz: 'Europe/Paris', count: 10 } }),
+        scheduledFor: '2027-01-11T09:00:00.000Z',
+      });
+      expect(res.value.repeat).toEqual({
+        every: 'week',
+        tz: 'Europe/Paris',
+        until: null,
+        count: 10,
+        anchor: { date: '2027-01-11', time: '10:00', occurrence: 1 },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('reads the rule in the scheduling device’s zone when it names none', () => {
+    const res = validateCreate(
+      spec({ repeat: { every: 'day' }, tz: 'America/Chicago' }),
+    );
+    expect(res.value.repeat.tz).toBe('America/Chicago');
+  });
+
+  it('passes the rule’s own refusals through', () => {
+    expect(validateCreate(spec({ repeat: { every: 'hour', tz: 'UTC' } })).error).toMatch(
+      /repeat\.every must be one of/,
+    );
+    expect(
+      validateCreate(spec({ repeat: { every: 'day', tz: 'UTC', count: 1 } })).error,
+    ).toMatch(/at least twice/);
+  });
+
+  it('anchors an edit at the occurrence it is given', () => {
+    const res = validateCreate({
+      ...spec({ repeat: { every: 'day', tz: 'UTC', count: 9 } }),
+      occurrence: 6,
+    });
+    expect(res.value.repeat.anchor.occurrence).toBe(6);
+    expect(
+      validateCreate({
+        ...spec({ repeat: { every: 'day', tz: 'UTC', count: 5 } }),
+        occurrence: 6,
+      }).error,
+    ).toMatch(/already gone out 5 times/);
+  });
+
+  it('refuses a repeating post in the queue, with the client’s code', () => {
+    expect(
+      validateCreate(spec({ repeat: { every: 'day', tz: 'UTC' } }, { queued: true })),
+    ).toEqual({
+      ok: false,
+      error: "a post in the queue can't repeat. schedule it for a set time instead.",
+      code: 'QUEUE_REPEAT',
+    });
+  });
+});
+
+describe('buildPayload', () => {
+  const base = {
+    posts: [{ record: { text: 'x' } }],
+    gates: { threadgate: null, postgate: null },
+    rkeys: ['3kaaaaaaaaaa2'],
+    tz: 'UTC',
+    selfDestruct: null,
+  };
+
+  it('leaves a plain post’s payload the shape it always was', () => {
+    expect(Object.keys(buildPayload(base)).sort()).toEqual([
+      'gates',
+      'media',
+      'posts',
+      'rkeys',
+      'selfDestruct',
+      'tz',
+    ]);
+  });
+
+  it('adds the reply, who it answers, and the rule only when there is one', () => {
+    const reply = { root: { uri: 'r', cid: 'c' }, parent: { uri: 'p', cid: 'c' } };
+    const replyTo = { handle: 'ada.example.com', displayName: '', text: '' };
+    expect(buildPayload({ ...base, reply, replyTo })).toMatchObject({ reply, replyTo });
+    // Who it answers means nothing without the reply.
+    expect(buildPayload({ ...base, replyTo })).not.toHaveProperty('replyTo');
+    const repeat = { every: 'day' };
+    expect(buildPayload({ ...base, repeat }).repeat).toBe(repeat);
   });
 });
 
@@ -527,6 +707,8 @@ describe('classifyFailure', () => {
       'TIMED_OUT',
       'RATE_LIMITED',
       'REFUSED',
+      'REPLY_TARGET_GONE',
+      'REPLY_TARGET_UNCHECKED',
       'TIMER_NOT_ARMED',
       'UNKNOWN',
     ]);
@@ -675,6 +857,17 @@ describe('buildEmbed without media', () => {
     }).catch((e) => e);
     expect(err).toBeInstanceOf(NonRetryableError);
     expect(err).toMatchObject({ code: 'MEDIA_MISSING', nonRetryable: true });
+  });
+});
+
+describe('isMissingColumn', () => {
+  it('reads PostgREST and Postgres answers for a column a later migration adds', () => {
+    expect(isMissingColumn({ code: 'PGRST204', message: "Could not find the 'series_id' column of 'scheduled_posts' in the schema cache" })).toBe(true);
+    expect(isMissingColumn({ code: '42703', message: 'column scheduled_posts.series_id does not exist' })).toBe(true);
+    expect(isMissingColumn({ message: 'column "series_id" of relation "scheduled_posts" does not exist' })).toBe(true);
+    expect(isMissingColumn({ message: 'column t.series_id does not exist' })).toBe(true);
+    expect(isMissingColumn({ code: '23505', message: 'duplicate key value violates unique constraint' })).toBe(false);
+    expect(isMissingColumn(null)).toBe(false);
   });
 });
 

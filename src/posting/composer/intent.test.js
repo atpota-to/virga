@@ -197,3 +197,22 @@ describe('seedFromIntent', () => {
     expect(seeded.tags).toEqual(['a']);
   });
 });
+
+describe('pictures an intent brings', () => {
+  const file = new Blob(['png'], { type: 'image/png' });
+
+  it('are kept with their descriptions, and count as something to open with', () => {
+    const plan = normalizeIntent({ images: [{ file, alt: 'A chart of followers' }] }, { activeDid: 'did:plc:me' });
+    expect(plan.images).toEqual([{ file, alt: 'A chart of followers' }]);
+    expect(plan.hasContent).toBe(true);
+  });
+
+  it('leave out anything that isn’t a file, and stop at what a post can hold', () => {
+    const plan = normalizeIntent({ images: [{ file: 'a path' }, null, { alt: 'no file' }, ...Array.from({ length: 6 }, () => ({ file }))] });
+    expect(plan.images).toHaveLength(4);
+    expect(plan.images[0].alt).toBe('');
+    expect(normalizeIntent({ images: 'nope' }).images).toEqual([]);
+    expect(normalizeIntent({}).hasContent).toBe(false);
+  });
+});
+

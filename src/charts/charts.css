@@ -181,14 +181,11 @@
   color: #101828;
 }
 
+/* The second colour's step for this ground, which is dark in the light
+   theme and light in the dark one. It comes with the accent (theme.css). */
 .an-chart-tip .an-chart-tip-secondary,
 .an-chart-tip-trend {
-  color: #ffb7a6;
-}
-
-:root[data-theme='dark'] .an-chart-tip .an-chart-tip-secondary,
-:root[data-theme='dark'] .an-chart-tip-trend {
-  color: #b13a1f;
+  color: var(--second-tip);
 }
 
 .an-chart-xaxis {
@@ -397,4 +394,59 @@
 
 .stacked-seg + .stacked-seg {
   border-bottom: 2px solid var(--surface);
+}
+
+/* ---- marks: notes and milestones ----------------------------------- */
+
+/* A rule through the bucket and a diamond over it. A note is in ink, since
+   someone wrote it; a milestone is in the data's own colour. */
+.an-chart-mark line {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.an-chart-mark path {
+  fill: var(--ink-2);
+}
+
+.an-chart-mark.is-milestone path {
+  fill: var(--chart-1);
+}
+
+.an-chart-tip-mark {
+  font-weight: 600;
+}
+
+.an-chart-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+}
+
+.an-chart-marks li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  background: var(--ink-2);
+  transform: rotate(45deg) translateY(-1px);
+}
+
+.an-chart-marks li.is-milestone::before {
+  background: var(--chart-1);
+}
+
+.an-chart-marks li.an-chart-marks-more {
+  color: var(--muted);
+}
+
+.an-chart-marks li.an-chart-marks-more::before {
+  display: none;
 }

@@ -463,15 +463,38 @@ export default function Composer({ open, intent, onClose }) {
     const keptId = setAsideKept(plan.asDid, { base });
     if (!aside && keptId) aside = { did: plan.asDid, id: keptId };
     if (aside) notes.push(asideNotice(aside, 'The post you were writing is set aside.'));
-    loadState(seedFromIntent(base, plan, { emptyPost }));
+    const seeded = seedFromIntent(base, plan, { emptyPost });
+    loadState(seeded);
     seedRef.current = { texts: plan.texts };
     for (const n of plan.notes) notes.push({ key: `mode-${n}`, tone: 'info', text: n });
     if (plan.fromLink) notes.push({ key: 'link', tone: 'info', text: 'From a link. Nothing is posted until you send it.' });
     setNotices(notes);
     setWhenOpen(plan.mode === 'schedule' && !plan.reply);
     if (plan.mode === 'schedule' && !plan.reply) dispatch({ type: 'setSchedule', schedule: { mode: 'at', at: nextHour() } });
+    if (plan.images.length) pendingImages.current = { images: plan.images, token, postId: seeded.posts[0]?.id };
     runLoads(plan, token);
   }
+
+  // Pictures the intent brought (a chart, from a report or a dashboard):
+  // attached to the intent's first post once that post is on screen, each
+  // with the description it came with. The post is named by its id, and the
+  // pictures wait until it is there: this effect can run once before the
+  // state the intent loaded has rendered, and the post on screen then is
+  // still the one it replaced.
+  const pendingImages = useRef(null);
+  useEffect(() => {
+    const pending = pendingImages.current;
+    if (!pending) return;
+    if (pending.token !== loadToken.current) {
+      pendingImages.current = null;
+      return;
+    }
+    if (indexOfPost(pending.postId) < 0) return;
+    pendingImages.current = null;
+    addDescribedImages(pending.postId, pending.images);
+    // addDescribedImages reads the state through a ref.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generation]);
 
   /* ---- what's kept, and what's set aside ---------------------------------- */
 
@@ -850,6 +873,25 @@ export default function Composer({ open, intent, onClose }) {
       );
     }
     setMediaNote(notes.join(' '));
+  }
+
+  /** Pictures that arrive with their alt text already written (an intent's). */
+  async function addDescribedImages(postId, images) {
+    bump(postId, images.length);
+    const notes = [];
+    for (const { file, alt } of images) {
+      try {
+        const prepared = await prepareImage(file);
+        const at = indexOfPost(postId);
+        if (at < 0) break;
+        dispatch({ type: 'addImages', index: at, images: [{ ...prepared, previewUrl: URL.createObjectURL(prepared.file), alt: alt || '' }] });
+      } catch (err) {
+        notes.push(err?.message || 'A picture couldn’t be added.');
+      } finally {
+        bump(postId, -1);
+      }
+    }
+    if (notes.length) setMediaNote(notes.join(' '));
   }
 
   async function addVideo(postId, file, notes) {

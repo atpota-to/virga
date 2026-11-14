@@ -11,6 +11,7 @@ import {
   AtSign,
   Download,
   Heart,
+  ImageUp,
   LayoutDashboard,
   MessageCircle,
   MessagesSquare,
@@ -20,9 +21,8 @@ import {
 import BarList from '../charts/BarList.jsx';
 import ChartTable from '../charts/ChartTable.jsx';
 import SeriesChart from '../charts/SeriesChart.jsx';
-import { fmtFigure, fmtRate, unitLabel, unitNoun } from '../charts/format.js';
+import { fmtFigure, fmtRate, unitNoun } from '../charts/format.js';
 import Button from '../components/Button.jsx';
-import Delta from '../components/Delta.jsx';
 import Figures from '../components/Figures.jsx';
 import { FollowerCountTip } from '../components/InfoTip.jsx';
 import Menu from '../components/Menu.jsx';
@@ -31,6 +31,8 @@ import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportPosts, exportRows } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import { WIDGETS } from '../dashboards/catalog.js';
+import ShareDialog from '../share/ShareDialog.jsx';
+import { canShare } from '../share/shareSpec.js';
 import { ENGAGEMENT_KINDS, EVENT_KINDS, bucketLabel, engagementOf } from '../lib/analytics.js';
 import { Link, navigate, usePath } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
@@ -40,6 +42,8 @@ import {
   GIVEN_NOUN,
   atmosphereModel,
   blocksModel,
+  contentModel,
+  contentReady,
   engagementModel,
   followerLogModel,
   followersModel,
@@ -48,10 +52,15 @@ import {
   postsModel,
   relationSets,
 } from './models.js';
+import ChartNotes from './ChartNotes.jsx';
+import ContentReport from './ContentReport.jsx';
 import PostRow, { postText } from './PostRow.jsx';
+import { Card, HowCounted, ModeToggle, fig, unitOptions } from './parts.jsx';
 import { REPORTS, REPORT_BY_KEY } from './registry.js';
+import { useChartMarks } from './useAnnotations.js';
 import './reports.css';
 import { activeLocale } from '../lib/locale.js';
+import { periodBefore } from '../lib/periods.js';
 
 const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Quote, mention: AtSign };
 
@@ -60,6 +69,7 @@ const REPORT_WIDGET = {
   followers: 'follower-growth',
   blocks: 'blocks-over-time',
   posts: 'posting-cadence',
+  content: 'content-formats',
   engagement: 'engagement-over-time',
   people: 'top-engagers',
   atmosphere: 'repo-collections',
@@ -79,60 +89,6 @@ function useSearchParam(name, fallback) {
   return [value ?? fallback, set];
 }
 
-/** One figure for the strip: the label, the number, and a note under it. */
-function fig(label, value, { sub = null, delta, deltaTitle = null, decimals = false, unit = null } = {}) {
-  const shown = typeof value === 'number' ? fmtFigure(value, { decimals }) : value;
-  return {
-    key: label,
-    label,
-    value: (
-      <>
-        {shown}
-        {unit && <span className="fig-unit">{unit}</span>}
-      </>
-    ),
-    note:
-      sub || delta !== undefined ? (
-        <span className="fig-note">
-          {delta !== undefined && <Delta pct={delta} title={deltaTitle} />}
-          {sub && <span>{sub}</span>}
-        </span>
-      ) : null,
-  };
-}
-
-function ModeToggle({ value, onChange, options, label = 'Chart' }) {
-  return <Segmented size="sm" label={label} value={value} onChange={onChange} options={options.map((o) => ({ value: o.key, label: o.label, title: o.title }))} />;
-}
-
-function unitOptions(units, noun) {
-  return units.map((u) => ({ key: u, label: unitLabel(u), title: `${noun} per ${unitNoun(u)}` }));
-}
-
-function Card({ title, sub = null, tools = null, children, className = '' }) {
-  return (
-    <section className={`card ${className}`.trim()} aria-label={typeof title === 'string' ? title : undefined}>
-      <div className="card-head">
-        <div>
-          <h2 className="card-title">{title}</h2>
-          {sub && <p className="card-sub">{sub}</p>}
-        </div>
-        {tools}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function HowCounted({ children }) {
-  return (
-    <details className="card disclosure how-counted">
-      <summary>How this is counted</summary>
-      <div className="how-counted-body">{children}</div>
-    </details>
-  );
-}
-
 /* ================================================================== */
 /* The page and the index                                               */
 /* ================================================================== */
@@ -146,6 +102,7 @@ export default function ReportPage({ reportKey }) {
   const [direction, setDirection] = useSearchParam('direction', 'received');
   const [kind, setKind] = useState('all');
   const [relation, setRelation] = useState('all');
+  const [share, setShare] = useState(null);
 
   if (!report) {
     return (
@@ -215,6 +172,12 @@ export default function ReportPage({ reportKey }) {
               <Download size={15} aria-hidden="true" />
               Export
             </Button>
+            {widget && canShare(widget.type) && direction !== 'given' && (
+              <Button onClick={() => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} })} title={`${widget.name}, as a picture with its description`}>
+                <ImageUp size={15} aria-hidden="true" />
+                Post this chart
+              </Button>
+            )}
             {widget && (
               <Menu
                 label="Add to dashboard"
@@ -242,6 +205,7 @@ export default function ReportPage({ reportKey }) {
         {reportKey === 'followers' && <FollowersReport archive={archive} period={period} nowMs={nowMs} />}
         {reportKey === 'blocks' && <BlocksReport archive={archive} period={period} nowMs={nowMs} />}
         {reportKey === 'posts' && <PostsReport archive={archive} period={period} nowMs={nowMs} />}
+        {reportKey === 'content' && <ContentReport archive={archive} period={period} nowMs={nowMs} />}
         {reportKey === 'engagement' && direction !== 'given' && (
           <EngagementReport archive={archive} period={period} nowMs={nowMs} kind={kind === 'mention' ? 'all' : kind} />
         )}
@@ -253,6 +217,7 @@ export default function ReportPage({ reportKey }) {
         )}
         {reportKey === 'atmosphere' && <AtmosphereReport archive={archive} period={period} nowMs={nowMs} />}
       </div>
+      <ShareDialog share={share} archive={archive} period={period} nowMs={nowMs} onClose={() => setShare(null)} />
     </>
   );
 }
@@ -274,6 +239,7 @@ export function ReportsIndex() {
       followers: [fmtFigure(f.profileCount ?? f.total), `+${f.gained.toLocaleString(activeLocale())} in ${periodPhrase(period)}`],
       blocks: b ? [fmtFigure(b.total), `blocked by, +${b.received.toLocaleString(activeLocale())} in ${periodPhrase(period)}`] : ['—', 'read at the next sync'],
       posts: [fmtFigure(p.count), `posts in ${periodPhrase(period)}`],
+      content: contentReady(archive) ? contentHeadline(contentModel(archive, period, nowMs)) : ['—', 'read at the next sync'],
       engagement: [fmtFigure(e.total), `received in ${periodPhrase(period)}`],
       people: [fmtFigure(pe.inbound.length), `people engaged with you in ${periodPhrase(period)}`],
       atmosphere: a ? [fmtFigure(a.allTime), `records in ${a.collections ? `${a.collections} collections` : 'your repo'}`] : ['—', 'read at the next sync'],
@@ -309,8 +275,18 @@ export function ReportsIndex() {
   );
 }
 
+/** The Reports index's line for Content: the format that stands out, or how many are described. */
+function contentHeadline(m) {
+  const withTypical = m.formats.filter((f) => f.typical != null);
+  if (withTypical.length > 1) {
+    const best = withTypical.reduce((a, b) => (b.typical > a.typical ? b : a));
+    return [fmtRate(best.typical), `a typical ${best.label.toLowerCase()} post earns`];
+  }
+  return [m.typical == null ? '—' : fmtRate(m.typical), 'a typical post earns'];
+}
+
 function exportReport(archive, key, period, nowMs) {
-  if (key === 'posts' || key === 'engagement') return exportPosts(archive);
+  if (key === 'posts' || key === 'engagement' || key === 'content') return exportPosts(archive);
   if (key === 'followers') {
     return exportRows(archive, 'followers', [
       ['did', 'handle', 'display_name', 'followed_at'],
@@ -351,14 +327,15 @@ function FollowersReport({ archive, period, nowMs }) {
   const follow = useFollow(archive);
   const newest = m.newest.slice(0, 8);
   useWantActors(archive, newest.map((f) => f.did));
+  const together = mode === 'together';
+  const cumulative = mode === 'cumulative' || together;
+  const series = cumulative ? m.cumulative : m.counts;
+  const marks = useChartMarks(archive, series, m.unit, { milestones: true });
 
   if (!archive.followers.length) {
     return <p className="card empty">Your followers haven’t been read yet. Run a sync to gather the list.</p>;
   }
 
-  const together = mode === 'together';
-  const cumulative = mode === 'cumulative' || together;
-  const series = cumulative ? m.cumulative : m.counts;
   const postsByDay = new Map();
   for (const p of archive.posts) {
     const t = Date.parse(p.at);
@@ -385,8 +362,8 @@ function FollowersReport({ archive, period, nowMs }) {
           }),
           fig(period.days ? `New in ${periodPhrase(period)}` : 'Gained, all time', m.gained, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
-            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} the ${period.label.toLowerCase()} before` : null,
+            deltaTitle: period.days ? `${periodBefore(period, true)}: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} ${periodBefore(period)}` : null,
           }),
           fig('Per day', m.perDay, { decimals: true, sub: 'Averaged over the window' }),
           fig('Unfollows at the last sync', log.tracking ? log.latestLost.length : '—', {
@@ -417,6 +394,7 @@ function FollowersReport({ archive, period, nowMs }) {
           unit={m.unit}
           zeroBase={!cumulative}
           height={280}
+          marks={marks}
           ghost={!together && cumulative && m.counterGap > 0 ? { v: m.profileCount } : null}
           ariaLabel={together ? `Followers and block reach over ${periodPhrase(period)}` : cumulative ? `Followers over ${periodPhrase(period)}` : `New followers per ${m.unit} over ${periodPhrase(period)}`}
         />
@@ -459,10 +437,16 @@ function FollowersReport({ archive, period, nowMs }) {
           )}
         </Card>
       </div>
+      <ChartNotes did={archive.did} />
       <HowCounted>
         <p>
           Virga walks your follower list and dates each follower by their follow record, so the total is the followers whose accounts
           exist right now.
+        </p>
+        <p>
+          The diamonds on the chart mark the round numbers your count has passed, each on the day the follower who made it arrived.
+          They are counted from the followers you have today, so if people have left since, you reached that number on that day or
+          a little before it. Notes you add below are marked the same way.
         </p>
         {m.counterGap > 0 && (
           <p>
@@ -507,7 +491,7 @@ function BlocksReport({ archive, period, nowMs }) {
           fig('Through lists', m.listTotal, { sub: <Link to="/tools/lists">See the lists</Link> }),
           fig(period.days ? `New in ${periodPhrase(period)}` : 'All time', m.received, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            deltaTitle: period.days ? `${periodBefore(period, true)}: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
           }),
         ]}
       />
@@ -571,6 +555,7 @@ function BlocksReport({ archive, period, nowMs }) {
 function PostsReport({ archive, period, nowMs }) {
   const [unitPick, setUnitPick] = useState(null);
   const m = postsModel(archive, period, nowMs, { unit: unitPick });
+  const marks = useChartMarks(archive, m.counts, m.unit);
   if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
   const pct = (n) => (m.count ? Math.round((n / m.count) * 100) : 0);
   return (
@@ -580,8 +565,8 @@ function PostsReport({ archive, period, nowMs }) {
         items={[
           fig(period.days ? `Posts in ${periodPhrase(period)}` : 'Posts, all time', m.count, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
-            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} the ${period.label.toLowerCase()} before` : null,
+            deltaTitle: period.days ? `${periodBefore(period, true)}: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} ${periodBefore(period)}` : null,
           }),
           fig('Per day', m.perDay, { decimals: true }),
           fig('Replies', pct(m.replies), { unit: '%', sub: `${m.replies.toLocaleString(activeLocale())} posts` }),
@@ -594,7 +579,7 @@ function PostsReport({ archive, period, nowMs }) {
           sub="With the moving average"
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, 'Posts')} />}
         >
-          <SeriesChart series={m.counts} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`Posts per ${m.unit} over ${periodPhrase(period)}`} />
+          <SeriesChart series={m.counts} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`Posts per ${m.unit} over ${periodPhrase(period)}`} />
           <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" />
         </Card>
         <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString(activeLocale())} in the window`}>
@@ -611,6 +596,7 @@ function PostsReport({ archive, period, nowMs }) {
           />
         </Card>
       </div>
+      <ChartNotes did={archive.did} />
       <HowCounted>
         <p>
           Every post in your archive, dated by when it was written, in your time zone. Replies to other people and to yourself both
@@ -629,6 +615,8 @@ function EngagementReport({ archive, period, nowMs, kind }) {
   const [unitPick, setUnitPick] = useState(null);
   const [rateUnitPick, setRateUnitPick] = useState(null);
   const m = engagementModel(archive, period, nowMs, { kind, unit: unitPick, rateUnit: rateUnitPick });
+  const marks = useChartMarks(archive, m.series, m.unit);
+  const rateMarks = useChartMarks(archive, m.rate, m.rateUnit);
   if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label;
   const lower = (head || '').toLowerCase();
@@ -639,12 +627,12 @@ function EngagementReport({ archive, period, nowMs, kind }) {
         items={[
           fig(kind === 'all' ? 'Received' : `${head} received`, m.total, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `On posts from the ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            deltaTitle: period.days ? `On posts from ${periodBefore(period)}: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
             sub: `On ${m.posts.toLocaleString(activeLocale())} posts`,
           }),
           fig('Per post', m.ownRate == null ? '—' : fmtRate(m.ownRate), {
             delta: m.rateCompare ? m.rateCompare.pct : undefined,
-            deltaTitle: m.rateCompare ? `The ${period.label.toLowerCase()} before: ${fmtRate(m.rateCompare.previous)}` : null,
+            deltaTitle: m.rateCompare ? `${periodBefore(period, true)}: ${fmtRate(m.rateCompare.previous)}` : null,
             sub: 'Posts and threads',
           }),
           fig('Best post', m.top.length ? engagementOf(m.top[0], kind) : 0, {
@@ -658,7 +646,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
           sub={`What each ${unitNoun(m.unit)}’s posts have earned, as of the last sync`}
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, head)} />}
         >
-          <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`${head} on posts made each ${m.unit}, over ${periodPhrase(period)}`} />
+          <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`${head} on posts made each ${m.unit}, over ${periodPhrase(period)}`} />
           <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} />
         </Card>
         {kind === 'all' && (
@@ -672,7 +660,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
         sub="Per post, over your posts and threads only, so replies to other people don’t pull it down"
         tools={<ModeToggle value={m.rateUnit} onChange={setRateUnitPick} options={unitOptions(m.units, 'Per post')} />}
       >
-        <SeriesChart series={m.rate} trend={m.rateTrend} mode="bars" unit={m.rateUnit} format={fmtRate} height={240} ariaLabel={`${head} per post, by the ${m.rateUnit} each post was made`} />
+        <SeriesChart series={m.rate} trend={m.rateTrend} mode="bars" unit={m.rateUnit} format={fmtRate} height={240} marks={rateMarks} ariaLabel={`${head} per post, by the ${m.rateUnit} each post was made`} />
         <ChartTable
           series={m.rate}
           secondary={m.rate.map((b) => ({ t: b.t, v: b.posts }))}
@@ -686,7 +674,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
       <Card title="Top posts" sub={`Ranked by ${kind === 'all' ? 'all engagement' : lower}`} className="card--flush">
         {m.top.length ? (
           <ol className="widget-rows report-rows">
-            {m.top.map((p, i) => (
+            {m.top.slice(0, 10).map((p, i) => (
               <PostRow key={p.uri} post={p} did={archive.did} kind={kind} rank={i + 1} />
             ))}
           </ol>
@@ -724,7 +712,7 @@ function GivenReport({ archive, period, nowMs, kind }) {
         items={[
           fig(kind === 'all' ? 'Given' : `${head} given`, m.total, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            deltaTitle: period.days ? `${periodBefore(period, true)}: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
           }),
           fig('Per day', m.perDay, { decimals: true }),
           fig('Accounts', m.accounts, { sub: 'Engaged with' }),

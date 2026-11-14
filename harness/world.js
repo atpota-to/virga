@@ -186,6 +186,18 @@ const POST_TEXT = [
   'A question for people who keep bees in a city: how do your neighbours feel about it now, a few years in?',
 ];
 
+// What the posts are made of, for the Content report: a few tags used often
+// and a few once, a handful of sites linked to, and the odd GIF.
+const POST_TAGS = ['gardening', 'fieldnotes', 'atproto', 'zines', 'Cities', 'bees', 'repaircafe', 'swifts'];
+const POST_LINKS = [
+  'https://streettrees.example/essays/forty-years',
+  'https://library.example/events/repair-cafe',
+  'https://www.youtube.com/watch?v=harness',
+  'https://allotments.example/agm',
+  'https://streettrees.example/maps/benches',
+];
+const POST_GIF = 'https://media.tenor.com/harness/heron.gif';
+
 /** Other apps writing to the same repo, for the Atmosphere tab. */
 const OTHER_COLLECTIONS = [
   ['fm.teal.alpha.feed.play', 2600],
@@ -224,6 +236,12 @@ export function buildWorld({ now = Date.now(), seed, account = ME } = {}) {
   const span = 3.1 * 365 * DAY;
   const start = now - span;
   const posts = [];
+  // What each post is made of comes from a generator of its own, so adding
+  // to it never moves the numbers the rest of the world is drawn from.
+  const made = mulberry((seed ?? 20261112) + 97);
+  const madePick = (list) => list[Math.floor(made() * list.length)];
+  let opener = null; // the last top-level post, which a self-reply continues
+  let lastInThread = null;
   for (let t = start; t < now; ) {
     // Busier lately, with one month off in the middle of last year.
     const age = (now - t) / span;
@@ -239,13 +257,38 @@ export function buildWorld({ now = Date.now(), seed, account = ME } = {}) {
     // Engagement grows with the account, and one post in a few hundred runs away.
     const reach = (1.2 - age) * (reply ? 0.25 : 1) * (rand() < 0.006 ? 40 : 1);
     const likes = tail(9 * reach);
+    const rkey = tidAt(t, posts.length);
+    // Pictures mostly, a video now and then; one to four pictures, most of
+    // them described. Posts without either sometimes carry a link or a GIF.
+    const video = media && made() < 0.12;
+    const images = media && !video ? 1 + Math.floor(made() ** 2 * 4) : 0;
+    const described = made() < 0.7 ? images || 1 : made() < 0.5 ? Math.floor((images || 1) / 2) : 0;
+    const linkRoll = made();
+    const link = !media && !quote && !reply && linkRoll < 0.16 ? madePick(POST_LINKS) : null;
+    const gif = !media && !quote && !link && linkRoll > 0.97;
+    const tagRoll = made();
+    const tags = reply ? [] : tagRoll < 0.2 ? [POST_TAGS[Math.floor(made() ** 2 * POST_TAGS.length)]] : tagRoll < 0.26 ? [madePick(POST_TAGS), madePick(POST_TAGS)] : [];
+    // A self-reply continues the thread the last top-level post started.
+    const thread = self && opener ? { root: opener, parent: lastInThread || opener } : null;
+    if (!reply) {
+      opener = rkey;
+      lastInThread = null;
+    } else if (thread) lastInThread = rkey;
     posts.push({
-      rkey: tidAt(t, posts.length),
+      rkey,
       at: new Date(t).toISOString(),
       text: text || (media ? '' : 'Morning.'),
       replyTo: reply ? (self ? ME.did : castPick().did) : null,
       quoteOf: quote ? castPick().did : null,
       media,
+      video,
+      images,
+      described,
+      link,
+      gif,
+      tags: [...new Set(tags)],
+      thread,
+      langs: made() < 0.04 ? ['en', 'fr'] : ['en'],
       likes,
       reposts: Math.floor(likes * (0.08 + rand() * 0.2)),
       replies: Math.floor(likes * (0.04 + rand() * 0.12)),
@@ -593,18 +636,46 @@ function withPostingFixtures(world, fixtures) {
 /** One post as its repo record, the shape both the feed and the CAR carry. */
 export function postRecord(post) {
   if (post.record) return post.record;
-  const record = { $type: 'app.bsky.feed.post', text: post.text, createdAt: post.at };
-  if (post.replyTo) {
+  // Tags and a link sit at the end of the text, each with the facet that
+  // makes it one. Facets index the text in UTF-8 bytes.
+  const bytes = (s) => new TextEncoder().encode(s).length;
+  let text = post.text;
+  const facets = [];
+  const append = (word, feature) => {
+    text = text ? `${text} ` : text;
+    const byteStart = bytes(text);
+    text += word;
+    facets.push({ index: { byteStart, byteEnd: bytes(text) }, features: [feature] });
+  };
+  if (post.link) append(post.link.replace(/^https:\/\/(www\.)?/, ''), { $type: 'app.bsky.richtext.facet#link', uri: post.link });
+  for (const tag of post.tags || []) append(`#${tag}`, { $type: 'app.bsky.richtext.facet#tag', tag });
+  const record = { $type: 'app.bsky.feed.post', text, createdAt: post.at, langs: post.langs || ['en'] };
+  if (facets.length) record.facets = facets;
+  if (post.thread) {
+    const ref = (rkey) => ({ uri: `at://${post.replyTo}/app.bsky.feed.post/${rkey}`, cid: 'bafyharness' });
+    record.reply = { parent: ref(post.thread.parent), root: ref(post.thread.root) };
+  } else if (post.replyTo) {
     const parent = { uri: `at://${post.replyTo}/app.bsky.feed.post/${post.rkey}`, cid: 'bafyharness' };
     record.reply = { parent, root: parent };
   }
   const quoted = post.quoteOf
     ? { $type: 'app.bsky.embed.record', record: { uri: `at://${post.quoteOf}/app.bsky.feed.post/${post.rkey}`, cid: 'bafyharness' } }
     : null;
-  const images = post.media ? { $type: 'app.bsky.embed.images', images: [{ alt: 'A photo', image: {} }] } : null;
-  if (quoted && images) record.embed = { $type: 'app.bsky.embed.recordWithMedia', record: quoted, media: images };
+  const alt = (i) => (i < (post.described ?? 1) ? 'A photo' : '');
+  const media = !post.media
+    ? null
+    : post.video
+      ? { $type: 'app.bsky.embed.video', video: {}, ...(alt(0) ? { alt: alt(0) } : {}) }
+      : { $type: 'app.bsky.embed.images', images: Array.from({ length: post.images || 1 }, (_, i) => ({ alt: alt(i), image: {} })) };
+  const card = post.gif
+    ? { $type: 'app.bsky.embed.external', external: { uri: POST_GIF, title: 'A heron', description: '' } }
+    : post.link
+      ? { $type: 'app.bsky.embed.external', external: { uri: post.link, title: 'A page', description: '' } }
+      : null;
+  if (quoted && media) record.embed = { $type: 'app.bsky.embed.recordWithMedia', record: quoted, media };
   else if (quoted) record.embed = quoted;
-  else if (images) record.embed = images;
+  else if (media) record.embed = media;
+  else if (card) record.embed = card;
   return record;
 }
 

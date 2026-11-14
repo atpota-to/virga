@@ -1,4 +1,4 @@
-// The scheduled-posts migration on a project without Supabase's automatic
+// The scheduled-posts migrations on a project without Supabase's automatic
 // grants on new public tables (the default Supabase is moving to). The shared
 // PGlite helper applies the legacy grants, which would hide a missing GRANT,
 // so this database has the three roles and nothing else.
@@ -29,6 +29,7 @@ beforeAll(async () => {
   await db.exec(BARE_ROLES_SQL);
   await db.exec(STORAGE_SQL);
   await db.exec(readMigration('20261113000200_scheduled_posts.sql'));
+  await db.exec(readMigration('20261114000100_scheduled_repeats.sql'));
 });
 afterAll(async () => {
   await db?.close();
@@ -79,6 +80,30 @@ describe('scheduled_posts without default grants', () => {
     expect(moved.rows[0].r.code).toBe('BAD_REQUEST');
   });
 
+  it('lets the service role carry a series forward, and stop one', async () => {
+    const series = '11111111-1111-4111-8111-111111111111';
+    const created = await asRole(
+      'service_role',
+      `SELECT create_scheduled_post_capped('did:plc:series', NOW() + INTERVAL '1 hour', 'bluesky',
+         '{"posts":[],"media":{},"rkeys":[],"repeat":{"every":"day"}}'::jsonb, false, 50,
+         '${series}'::uuid, 1) AS r`,
+    );
+    const id = created.rows[0].r.post.id;
+    const settled = await asRole(
+      'service_role',
+      `SELECT settle_scheduled_occurrence('${id}'::uuid, 'published', '{}'::jsonb,
+         jsonb_build_object('scheduledFor', NOW() + INTERVAL '1 day', 'occurrence', 2)) AS r`,
+    );
+    expect(settled.rows[0].r.ok).toBe(true);
+    const nextId = settled.rows[0].r.next.id;
+    const stopped = await asRole(
+      'service_role',
+      `SELECT stop_scheduled_repeat('${nextId}'::uuid, 'did:plc:series') AS r`,
+    );
+    expect(stopped.rows[0].r.id).toBe(nextId);
+    expect(stopped.rows[0].r.payload).not.toHaveProperty('repeat');
+  });
+
   it('refuses the public roles the table and the RPCs', async () => {
     for (const role of ['anon', 'authenticated']) {
       await expect(
@@ -86,6 +111,18 @@ describe('scheduled_posts without default grants', () => {
       ).rejects.toThrow(/permission denied/);
       await expect(
         asRole(role, `SELECT * FROM claim_scheduled_posts('run', 5)`),
+      ).rejects.toThrow(/permission denied/);
+      await expect(
+        asRole(
+          role,
+          `SELECT settle_scheduled_occurrence('00000000-0000-4000-8000-000000000000'::uuid, 'published')`,
+        ),
+      ).rejects.toThrow(/permission denied/);
+      await expect(
+        asRole(
+          role,
+          `SELECT stop_scheduled_repeat('00000000-0000-4000-8000-000000000000'::uuid, 'did:plc:x')`,
+        ),
       ).rejects.toThrow(/permission denied/);
     }
   });

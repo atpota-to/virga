@@ -5,7 +5,7 @@
 
 import { parseRecordLink, parseRecordUri } from '../lib/postLink.js';
 import { normalizeTags } from '../lib/tags.js';
-import { MAX_POSTS, MAX_LANGS } from '../lib/composerModel.js';
+import { MAX_IMAGES, MAX_POSTS, MAX_LANGS } from '../lib/composerModel.js';
 import { REPLY_HINT } from '../schedule/publishActions.js';
 
 const str = (v) => (typeof v === 'string' ? v : '');
@@ -55,6 +55,9 @@ export function readTargetRef(input) {
  *   texts        each post's starting text ([] when the intent has none)
  *   reply, quote readTargetRef results, or null (a reply must name a post)
  *   attach       a LibraryPlan to apply once the composer is up, or null
+ *   images       pictures to attach to the first post once the composer is
+ *                up, each `{ file, alt }` (a chart made into a picture
+ *                arrives this way, with its description)
  *   tags, langs  normalized; langs null when the intent didn't say
  *   draftId, draftOwnerDid, scheduledId, templateId
  *   mode         'post' | 'schedule' | 'queue' (a reply can't be scheduled:
@@ -99,12 +102,18 @@ export function normalizeIntent(intent, { activeDid = '' } = {}) {
       )
     : null;
 
+  const images = (Array.isArray(i.images) ? i.images : [])
+    .filter((m) => isObject(m) && typeof Blob !== 'undefined' && m.file instanceof Blob)
+    .slice(0, MAX_IMAGES)
+    .map((m) => ({ file: m.file, alt: str(m.alt) }));
+
   const plan = {
     asDid,
     texts,
     reply,
     quote,
     attach: isObject(i.attach) ? i.attach : null,
+    images,
     tags,
     langs,
     draftId,
@@ -121,6 +130,7 @@ export function normalizeIntent(intent, { activeDid = '' } = {}) {
     plan.reply ||
     plan.quote ||
     plan.attach ||
+    plan.images.length ||
     plan.draftId ||
     plan.scheduledId ||
     plan.templateId ||

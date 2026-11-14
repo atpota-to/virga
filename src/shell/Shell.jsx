@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Hillside from '../hillside/Hillside.jsx';
+import { useSkyPhase } from '../hillside/useSkyPhase.js';
 import Button from '../components/Button.jsx';
 import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -57,7 +58,7 @@ export default function Shell({ profile, did, onSignOut }) {
 
   const built = isBuilt(archive);
   const needsArchive = routeNeedsArchive(route);
-  const dayFor = { archive: built ? 1 : 0, day: 1, dawn: 0 };
+  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built });
   const skyHere = prefs.sky && (prefs.skyScope === 'everywhere' || route.section === 'dashboard');
 
   let page;
@@ -100,7 +101,7 @@ export default function Shell({ profile, did, onSignOut }) {
       </a>
       {skyHere && (
         <div className="shell-sky" aria-hidden="true">
-          <Hillside day={dayFor[prefs.skyTime] ?? 1} depth={0.8} />
+          <Hillside phase={sky} depth={0.8} />
         </div>
       )}
       {!narrow && (

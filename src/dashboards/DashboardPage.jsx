@@ -1,8 +1,10 @@
-// A dashboard: its cards on a twelve-column grid, all answering for one
-// period. Customize turns the cards into things to arrange: drag a card by
-// its handle (or move it with the arrows, from the keyboard), pick a size,
-// take it off, or add reports from the library beside the grid. Changes are
-// saved as they're made.
+// A dashboard: its cards on a twelve-column grid, answering for the period
+// in the header unless a card has been given one of its own. Customize turns
+// the cards into things to arrange: drag a card by its handle (or move it
+// with the arrows, from the keyboard), pick a size, open its settings (a
+// title, its own period, one kind of engagement, how many rows), take it
+// off, or add reports from the library beside the grid. Changes are saved
+// as they're made.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -13,10 +15,12 @@ import {
   Copy,
   Ellipsis,
   GripVertical,
+  ImageUp,
   Pencil,
   Plus,
   RotateCcw,
   Search,
+  Settings2,
   SlidersHorizontal,
   Trash2,
   X,
@@ -25,13 +29,17 @@ import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
 import Menu from '../components/Menu.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
+import { ANALYTICS_PERIODS } from '../lib/analytics.js';
+import { periodWindowWord, presetPeriod } from '../lib/periods.js';
 import { Link, navigate } from '../lib/router.jsx';
 import { PageHeader, PeriodPicker, useIsNarrow, usePeriod, useToast } from '../shell/bits.jsx';
+import ShareDialog from '../share/ShareDialog.jsx';
+import { canShare } from '../share/shareSpec.js';
 import NewDashboardDialog from './NewDashboardDialog.jsx';
 import { CATEGORIES, WIDGETS, WIDGET_LIST } from './catalog.js';
 import { useDashboards } from './DashboardsContext.jsx';
-import { SIZES } from './layouts.js';
-import { WIDGET_COMPONENTS } from './widgets/index.jsx';
+import { CARD_KINDS, CARD_ROWS, CARD_TITLE_MAX, SIZES } from './layouts.js';
+import { KIND_NOUN, WIDGET_COMPONENTS } from './widgets/index.jsx';
 import './dashboards.css';
 
 export default function DashboardPage({ dashboard }) {
@@ -45,6 +53,8 @@ export default function DashboardPage({ dashboard }) {
   const [dragId, setDragId] = useState(null);
   const [dropIndex, setDropIndex] = useState(null);
   const [justAdded, setJustAdded] = useState(null);
+  const [settingsFor, setSettingsFor] = useState(null); // the id of the card whose settings are open
+  const [share, setShare] = useState(null); // the card being made into a picture: { type, options, period }
 
   // Arriving with ?edit=1 (a dashboard just made empty) opens it for editing;
   // the flag then leaves the address so a reload doesn't reopen it.
@@ -206,6 +216,8 @@ export default function DashboardPage({ dashboard }) {
               }}
               onMove={(to) => actions.moveWidget(id, w.id, to)}
               onResize={(size) => actions.resizeWidget(id, w.id, size)}
+              onSettings={() => setSettingsFor(w.id)}
+              onShare={(cardPeriod) => setShare({ type: w.type, options: w.options || {}, period: cardPeriod })}
               onRemove={() => {
                 actions.removeWidget(id, w.id);
                 toast?.(`${WIDGETS[w.type].name} removed.`);
@@ -218,6 +230,15 @@ export default function DashboardPage({ dashboard }) {
         {editing && <Library dashboard={dashboard} onAdd={addReport} />}
       </div>
 
+      <ShareDialog share={share} archive={archive} period={share?.period || period} nowMs={nowMs} onClose={() => setShare(null)} />
+      <CardSettingsDialog
+        card={widgets.find((w) => w.id === settingsFor) || null}
+        onClose={() => setSettingsFor(null)}
+        onSave={(card, options) => {
+          actions.setWidgetOptions(id, card.id, card.type, options);
+          setSettingsFor(null);
+        }}
+      />
       <RenameDialog
         open={dialog === 'rename'}
         name={dashboard.name}
@@ -278,6 +299,8 @@ function WidgetFrame({
   onDragOverCard,
   onMove,
   onResize,
+  onSettings,
+  onShare,
   onRemove,
 }) {
   const def = WIDGETS[card.type];
@@ -286,6 +309,11 @@ function WidgetFrame({
   if (!def || !Body) return null;
   const isStat = def.kind === 'stat';
   const headingId = `w-${card.id}`;
+  // The card's own settings: its title, a period that isn't the header's,
+  // one kind of engagement, a number of rows.
+  const options = card.options || {};
+  const ownPeriod = options.period ? presetPeriod(options.period) : null;
+  const name = options.title || def.name;
   return (
     <section
       className={`widget${isStat ? ' widget--stat' : ''}`}
@@ -295,7 +323,7 @@ function WidgetFrame({
       data-dragging={dragging || undefined}
       data-drop-before={dropBefore || undefined}
       aria-labelledby={isStat ? undefined : headingId}
-      aria-label={isStat ? def.name : undefined}
+      aria-label={isStat ? name : undefined}
       draggable={editing && handleDown}
       onDragStart={(e) => {
         e.dataTransfer.effectAllowed = 'move';
@@ -339,6 +367,11 @@ function WidgetFrame({
               </div>
             )}
             <span className="widget-edit-actions">
+            {def.options?.length > 0 && (
+              <Button variant="ghost" size="sm" icon aria-label={`Settings for ${name}`} title="Card settings" onClick={onSettings}>
+                <Settings2 size={15} aria-hidden="true" />
+              </Button>
+            )}
             <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} earlier`} title="Move earlier" disabled={index === 0} onClick={() => onMove(index - 1)}>
               <ChevronLeft size={15} aria-hidden="true" />
             </Button>
@@ -356,19 +389,51 @@ function WidgetFrame({
         <header className="widget-head">
           <div className="widget-titles">
             <h2 id={headingId} className="widget-title">
-              {def.name}
+              {name}
             </h2>
             <p className="widget-desc">{def.desc}</p>
+            {(ownPeriod || options.kind) && (
+              <p className="widget-own">
+                {ownPeriod && (
+                  <span className="badge badge--outline" title="This card keeps its own period">
+                    {periodWindowWord(ownPeriod)}
+                  </span>
+                )}
+                {options.kind && (
+                  <span className="badge badge--outline" title="This card counts one kind of engagement">
+                    {KIND_NOUN[options.kind]} only
+                  </span>
+                )}
+              </p>
+            )}
           </div>
-          {!editing && def.href && (
-            <Link to={def.href} className="btn btn--ghost btn--sm btn--icon widget-open" aria-label={`Open the full ${def.name} report`} title="Open the full report">
-              <ArrowUpRight size={15} aria-hidden="true" />
-            </Link>
+          {!editing && (
+            <span className="widget-open">
+              {canShare(card.type) && (
+                <Button variant="ghost" size="sm" icon aria-label={`Post ${name} as a picture`} title="Post this chart" onClick={() => onShare(ownPeriod || period)}>
+                  <ImageUp size={15} aria-hidden="true" />
+                </Button>
+              )}
+              {def.href && (
+                <Link to={def.href} className="btn btn--ghost btn--sm btn--icon" aria-label={`Open the full ${def.name} report`} title="Open the full report">
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </Link>
+              )}
+            </span>
           )}
         </header>
       )}
       <div className="widget-body">
-        <Body archive={archive} period={period} nowMs={nowMs} size={card.size} def={def} />
+        <Body
+          archive={archive}
+          period={ownPeriod || period}
+          nowMs={nowMs}
+          size={card.size}
+          def={def}
+          title={options.title || null}
+          kind={options.kind || 'all'}
+          rows={options.rows || null}
+        />
       </div>
     </section>
   );
@@ -433,6 +498,102 @@ function Library({ dashboard, onAdd }) {
         {shown.length === 0 && <li className="empty">No report matches “{query}”.</li>}
       </ul>
     </aside>
+  );
+}
+
+/**
+ * A card's own settings, for the options its type takes. Nothing is saved
+ * until Save; "Use the defaults" clears every one.
+ */
+function CardSettingsDialog({ card, onClose, onSave }) {
+  const def = card ? WIDGETS[card.type] : null;
+  const takes = def?.options || [];
+  const [draft, setDraft] = useState({});
+  useEffect(() => {
+    if (card) setDraft({ title: '', period: '', kind: '', rows: '', ...card.options });
+    // A different card, a different draft; edits in between are the draft's own.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card?.id]);
+  const set = (key) => (e) => setDraft((d) => ({ ...d, [key]: e.target.value }));
+  const hasAny = Boolean(card?.options && Object.keys(card.options).length);
+  return (
+    <Dialog
+      open={Boolean(card)}
+      onClose={onClose}
+      title={def ? `${def.name} settings` : 'Card settings'}
+      actions={
+        <>
+          {hasAny && (
+            <Button variant="ghost" className="dialog-action-start" onClick={() => onSave(card, {})}>
+              Use the defaults
+            </Button>
+          )}
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" form="card-settings-form">
+            Save
+          </Button>
+        </>
+      }
+    >
+      {def && (
+        <form
+          id="card-settings-form"
+          className="dialog-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSave(card, { ...draft, rows: draft.rows ? Number(draft.rows) : undefined });
+          }}
+        >
+          {takes.includes('title') && (
+            <label className="field">
+              <span className="field-label">Title</span>
+              <input className="input" value={draft.title || ''} maxLength={CARD_TITLE_MAX} placeholder={def.name} onChange={set('title')} data-autofocus />
+              <span className="field-hint">Leave it empty to keep “{def.name}”.</span>
+            </label>
+          )}
+          {takes.includes('period') && (
+            <label className="field">
+              <span className="field-label">Period</span>
+              <select className="input" value={draft.period || ''} onChange={set('period')}>
+                <option value="">The dashboard’s period</option>
+                {ANALYTICS_PERIODS.map((p) => (
+                  <option key={p.key} value={p.key}>
+                    {periodWindowWord(p)}
+                  </option>
+                ))}
+              </select>
+              <span className="field-hint">A card with its own period stays put when the period at the top changes, and says which it is.</span>
+            </label>
+          )}
+          {takes.includes('kind') && (
+            <label className="field">
+              <span className="field-label">Engagement counted</span>
+              <select className="input" value={draft.kind || ''} onChange={set('kind')}>
+                <option value="">Likes, reposts, replies and quotes</option>
+                {CARD_KINDS.map((k) => (
+                  <option key={k} value={k}>
+                    {KIND_NOUN[k]} only
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {takes.includes('rows') && (
+            <label className="field">
+              <span className="field-label">Rows</span>
+              <select className="input" value={draft.rows || ''} onChange={set('rows')}>
+                <option value="">What fits the card’s size</option>
+                {CARD_ROWS.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </form>
+      )}
+    </Dialog>
   );
 }
 

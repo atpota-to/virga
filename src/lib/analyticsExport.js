@@ -12,7 +12,7 @@
 //                 for a spreadsheet: sort by likes and the top posts are the
 //                 top rows.
 
-import { POST_TEXT_LIMIT, engagementOf } from './analytics.js';
+import { engagementOf } from './analytics.js';
 
 export const EXPORT_FORMAT = 'virga-analytics-export';
 export const EXPORT_VERSION = 1;
@@ -26,7 +26,9 @@ const STORE_KEYS = ['posts', 'followers', 'following', 'blocks', 'inbound', 'out
  */
 const NOTES = Object.freeze({
   posts:
-    `Your own posts and replies; reposts are not included. text keeps the first ${POST_TEXT_LIMIT} characters of each post. ` +
+    'Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; ' +
+    'media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; ' +
+    'threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. ' +
     'Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. ' +
     'Posts deleted since the last Rebuild may still be listed.',
   followers:
@@ -93,6 +95,15 @@ const CSV_COLUMNS = [
   ['quote_of', (p) => p.quoteOf || ''],
   ['url', (p, ctx) => postUrl(ctx.did || ctx.handle, p.rkey)],
   ['uri', (p) => p.uri],
+  // Added after the first export shipped, at the end so a spreadsheet built
+  // on the earlier columns still lines up.
+  ['media', (p) => p.media || ''],
+  ['media_count', (p) => p.mediaCount || 0],
+  ['alt_text_count', (p) => p.altCount || 0],
+  ['length', (p) => p.len ?? ''],
+  ['tags', (p) => (p.tags || []).join(' ')],
+  ['links', (p) => (p.links || []).join(' ')],
+  ['langs', (p) => (p.langs || []).join(' ')],
 ];
 
 /**

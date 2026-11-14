@@ -4,7 +4,10 @@
 //
 // The page says where the hill's crest goes by setting --crest on this or an
 // ancestor (a length from the top, so it can follow the page's own layout and
-// breakpoints). `day` eases between dawn (0) and day (1). While `active` is
+// breakpoints). `phase` is the sky: 'dawn', 'day', 'dusk' or 'night' (phase.js
+// chooses it from the settings); the scene eases from whichever it is showing
+// to the next. `day` is the older way to ask, kept for the front page: under
+// a half is dawn, the rest is day. While `active` is
 // false it keeps its last picture and stops drawing, for when the page has it
 // covered. `intro` brings the view down from the sky onto the hill when it
 // first appears. `depth` is how deep a blue the sky gets at the top: 1 is the
@@ -18,9 +21,11 @@
 // behind the Thread and Daylight directions.
 
 import { useEffect, useRef, useState } from 'react';
+import { SKY_PHASES } from './phase.js';
 import './hillside.css';
 
 export default function Hillside({
+  phase = null,
   day = 1,
   active = true,
   intro = false,
@@ -28,11 +33,12 @@ export default function Hillside({
   soft = true,
   className = '',
 }) {
+  const sky = SKY_PHASES.includes(phase) ? phase : day < 0.5 ? 'dawn' : 'day';
   const hostRef = useRef(null);
   const crestRef = useRef(null);
   const canvasRef = useRef(null);
   const sceneRef = useRef(null);
-  const want = useRef({ day, active, intro, depth, soft, inView: true });
+  const want = useRef({ sky, active, intro, depth, soft, inView: true });
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -52,7 +58,7 @@ export default function Hillside({
       if (gone) return;
       scene = createHillside(canvas, {
         calm,
-        day: want.current.day,
+        phase: want.current.sky,
         depth: want.current.depth,
         soft: want.current.soft,
         onReady: () => setReady(true),
@@ -106,9 +112,9 @@ export default function Hillside({
   }, []);
 
   useEffect(() => {
-    want.current.day = day;
-    sceneRef.current?.setDay(day);
-  }, [day]);
+    want.current.sky = sky;
+    sceneRef.current?.setPhase(sky);
+  }, [sky]);
 
   useEffect(() => {
     want.current.active = active;
@@ -121,7 +127,7 @@ export default function Hillside({
       className={`hillside ${className}`.trim()}
       data-ready={ready || undefined}
       data-soft={(soft && ready && active) || undefined}
-      data-dawn={day < 0.5 || undefined}
+      data-phase={sky}
       aria-hidden="true"
     >
       <div ref={crestRef} className="hillside-crest" />

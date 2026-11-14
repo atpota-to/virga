@@ -1,0 +1,40 @@
+/* The "Post this chart" dialog: the picture as it will be posted, and its
+   description under it. */
+
+.share-dialog {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.share-preview {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.share-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.share-alt {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .share-dialog {
+    width: 100%;
+  }
+}

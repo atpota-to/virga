@@ -28,6 +28,8 @@ vi.mock('../net/safeFetch.js', async (importOriginal) => ({
 
 const { publishScheduledPost, classifyFailure, storeMedia, MEDIA_BUCKET } =
   await import('./scheduledPosts.js');
+const { deps: replyDeps } = await import('./replyTarget.js');
+const realReplyDeps = { ...replyDeps };
 
 const SCHEDULED_FOR = '2026-11-06T17:00:00.000Z';
 // As assignRkeys mints them: from the scheduled time, one microsecond apart.
@@ -61,6 +63,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   resetSupabaseClientForTests();
+  Object.assign(replyDeps, realReplyDeps);
   vi.restoreAllMocks();
 });
 
@@ -386,6 +389,147 @@ describe('publishScheduledPost media', () => {
     };
     await publishScheduledPost(r);
     expect(pds.posts()[0].record.embed.external).not.toHaveProperty('thumb');
+  });
+});
+
+describe('publishScheduledPost replies', () => {
+  const PARENT = {
+    uri: 'at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/app.bsky.feed.post/3lwcs2m4ock2z',
+    cid: CIDS[3],
+  };
+  const ROOT = {
+    uri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lwcrzq3bbc2y',
+    cid: CIDS[4],
+  };
+  const replyRow = (texts, extra = {}) => {
+    const base = row(texts);
+    return {
+      ...base,
+      payload: { ...base.payload, reply: { root: ROOT, parent: PARENT } },
+      ...extra,
+    };
+  };
+  const pdsAnswers = (response) => {
+    replyDeps.resolvePdsEndpoint = vi.fn(async (did) => ({
+      did,
+      pdsEndpoint: 'https://their-pds.example',
+    }));
+    replyDeps.safeFetch = vi.fn(async () => response());
+  };
+  const there = () =>
+    new Response(JSON.stringify({ uri: PARENT.uri, cid: PARENT.cid, value: {} }), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    });
+  const xrpcError = (error, status = 400) => () =>
+    new Response(JSON.stringify({ error, message: 'no' }), {
+      status,
+      headers: { 'content-type': 'application/json' },
+    });
+
+  it('writes the first post as a reply to the parent, under the parent’s root', async () => {
+    pdsAnswers(there);
+    const ref = await publishScheduledPost(replyRow(['a reply']));
+    expect(pds.posts()).toHaveLength(1);
+    expect(pds.posts()[0].record.reply).toEqual({ root: ROOT, parent: PARENT });
+    // What it answers is the caller's row, not the thread's root.
+    expect(ref.uri).toBe(`at://${DID}/app.bsky.feed.post/${RKEYS[0]}`);
+    // The parent was looked for at its own PDS, as its own DID.
+    expect(replyDeps.resolvePdsEndpoint).toHaveBeenCalledWith(
+      'did:plc:ewvi7nxzyoun6zhxrhs64oiz',
+    );
+    expect(replyDeps.safeFetch.mock.calls[0][0]).toContain(
+      'https://their-pds.example/xrpc/com.atproto.repo.getRecord?',
+    );
+  });
+
+  it('threads later posts to the one before, under the same root, as a live threaded reply does', async () => {
+    pdsAnswers(there);
+    await publishScheduledPost(replyRow(['one', 'two', 'three']));
+    const [first, second, third] = pds.posts();
+    const mine = (w, n) => ({
+      uri: `at://${DID}/app.bsky.feed.post/${w.rkey}`,
+      cid: CIDS[n],
+    });
+    expect(first.record.reply).toEqual({ root: ROOT, parent: PARENT });
+    expect(second.record.reply).toEqual({ root: ROOT, parent: mine(first, 0) });
+    expect(third.record.reply).toEqual({ root: ROOT, parent: mine(second, 1) });
+  });
+
+  it('writes no threadgate or postgate for a reply, even if the row holds some', async () => {
+    pdsAnswers(there);
+    const base = replyRow(['a reply']);
+    await publishScheduledPost({
+      ...base,
+      payload: {
+        ...base.payload,
+        gates: {
+          threadgate: [],
+          postgate: [{ $type: 'app.bsky.feed.postgate#disableRule' }],
+        },
+      },
+    });
+    expect(pds.writes.map((w) => w.collection)).toEqual(['app.bsky.feed.post']);
+  });
+
+  it('does not post an orphan: a deleted parent fails the row terminally, before anything is written', async () => {
+    pdsAnswers(xrpcError('RecordNotFound'));
+    await expect(
+      publishScheduledPost(replyRow(['a reply'])),
+    ).rejects.toMatchObject({
+      nonRetryable: true,
+      code: 'REPLY_TARGET_GONE',
+      message:
+        'the post this replies to has been deleted, so the reply was not posted.',
+    });
+    expect(pds.writes).toEqual([]);
+    expect(pds.blobs).toEqual([]);
+  });
+
+  it('says so when it is the account that is gone', async () => {
+    pdsAnswers(xrpcError('RepoTakendown'));
+    await expect(
+      publishScheduledPost(replyRow(['a reply'])),
+    ).rejects.toMatchObject({
+      nonRetryable: true,
+      code: 'REPLY_TARGET_GONE',
+      message:
+        'the account this replies to is no longer available, so the reply was not posted.',
+    });
+  });
+
+  it('does not post blind: a parent it couldn’t check fails retriably, with its own code', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    pdsAnswers(xrpcError('InternalServerError', 500));
+    const attempt = publishScheduledPost(replyRow(['a reply']));
+    await expect(attempt).rejects.toMatchObject({
+      code: 'REPLY_TARGET_UNCHECKED',
+      message:
+        "couldn't check that the post this replies to is still there, so the reply was held back.",
+    });
+    await expect(attempt).rejects.not.toHaveProperty('nonRetryable', true);
+    expect(classifyFailure(await attempt.catch((e) => e))).toBe(
+      'REPLY_TARGET_UNCHECKED',
+    );
+    expect(pds.writes).toEqual([]);
+  });
+
+  it('asks once: a thread that is resuming has already answered', async () => {
+    pdsAnswers(xrpcError('RecordNotFound'));
+    const first = {
+      uri: `at://${DID}/app.bsky.feed.post/${RKEYS[0]}`,
+      cid: CIDS[2],
+    };
+    await publishScheduledPost(replyRow(['one', 'two'], { progress: [first] }));
+    expect(replyDeps.safeFetch).not.toHaveBeenCalled();
+    expect(pds.posts()).toHaveLength(1);
+    expect(pds.posts()[0].record.reply).toEqual({ root: ROOT, parent: first });
+  });
+
+  it('never looks for a parent a plain post doesn’t have', async () => {
+    pdsAnswers(xrpcError('RecordNotFound'));
+    await publishScheduledPost(row(['plain']));
+    expect(replyDeps.resolvePdsEndpoint).not.toHaveBeenCalled();
   });
 });
 

@@ -32,7 +32,7 @@ import {
 
 let t;
 beforeAll(async () => {
-  t = await createTestDatabase({ upTo: '20261113000200' });
+  t = await createTestDatabase({ upTo: '20261114000100' });
 });
 afterAll(async () => {
   await t?.close();
@@ -109,6 +109,15 @@ describe('the migration', () => {
     await expect(
       t.exec(readMigration('20261113000200_scheduled_posts.sql')),
     ).resolves.toBeDefined();
+    // The repeats migration after it, as `db push` orders them: it takes the
+    // six-argument create the first one brings back away again.
+    await expect(
+      t.exec(readMigration('20261114000100_scheduled_repeats.sql')),
+    ).resolves.toBeDefined();
+    const { rows } = await t.query(
+      `SELECT COUNT(*)::int AS n FROM pg_proc WHERE proname = 'create_scheduled_post_capped'`,
+    );
+    expect(rows[0].n).toBe(1);
   });
 
   it('creates the private scheduled-media bucket when Storage exists', async () => {
@@ -148,9 +157,17 @@ describe('the migration', () => {
     const { rows } = await t.query(
       `SELECT has_table_privilege('anon', 'scheduled_posts', 'SELECT') AS anon,
               has_function_privilege('authenticated', 'claim_scheduled_posts(text, integer)', 'EXECUTE') AS authed,
-              has_function_privilege('service_role', 'create_scheduled_post_capped(text, timestamptz, text, jsonb, boolean, integer)', 'EXECUTE') AS service`,
+              has_function_privilege('service_role', 'create_scheduled_post_capped(text, timestamptz, text, jsonb, boolean, integer, uuid, integer)', 'EXECUTE') AS service,
+              has_function_privilege('anon', 'settle_scheduled_occurrence(uuid, text, jsonb, jsonb, text, boolean)', 'EXECUTE') AS settle,
+              has_function_privilege('authenticated', 'stop_scheduled_repeat(uuid, text)', 'EXECUTE') AS stop`,
     );
-    expect(rows[0]).toEqual({ anon: false, authed: false, service: true });
+    expect(rows[0]).toEqual({
+      anon: false,
+      authed: false,
+      service: true,
+      settle: false,
+      stop: false,
+    });
   });
 });
 
@@ -230,6 +247,8 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
       p_payload: payload(),
       p_queued: false,
       p_max_active: 1,
+      p_series_id: null,
+      p_occurrence: null,
     });
     expect(data).toEqual({
       ok: false,
@@ -237,6 +256,26 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
       limit: 1,
       count: 1,
     });
+  });
+
+  it('still creates when an earlier migration, applied again alone, brings the old six-argument form back', async () => {
+    const { readMigration } = await import('../test/pglite.js');
+    await t.exec(readMigration('20261113000200_scheduled_posts.sql'));
+    try {
+      const { rows } = await t.query(
+        `SELECT COUNT(*)::int AS n FROM pg_proc WHERE proname = 'create_scheduled_post_capped'`,
+      );
+      expect(rows[0].n).toBe(2);
+      // The server names every argument, so only the new form can match.
+      const row = await scheduled.createScheduledPost({
+        userDid: DID,
+        scheduledFor: inHours(2),
+        payload: payload(),
+      });
+      expect(row.status).toBe('pending');
+    } finally {
+      await t.exec(readMigration('20261114000100_scheduled_repeats.sql'));
+    }
   });
 
   it('serializes parallel creates for one account under the cap', async () => {
@@ -280,7 +319,7 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
 
   it('says UNAVAILABLE when the function is missing', async () => {
     await t.exec(
-      'DROP FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER)',
+      'DROP FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER, UUID, INTEGER)',
     );
     try {
       await expect(
@@ -292,7 +331,7 @@ describe('create_scheduled_post_capped and createScheduledPost', () => {
       ).rejects.toMatchObject({ code: 'UNAVAILABLE' });
     } finally {
       const { readMigration } = await import('../test/pglite.js');
-      await t.exec(readMigration('20261113000200_scheduled_posts.sql'));
+      await t.exec(readMigration('20261114000100_scheduled_repeats.sql'));
     }
   });
 });

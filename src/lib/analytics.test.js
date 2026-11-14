@@ -19,6 +19,7 @@ import {
   compareRates,
   compactPostFromFeedItem,
   compactPostFromRecord,
+  upgradePostRows,
   cumulativeSeries,
   defaultUnitFor,
   didFromAtUri,
@@ -273,11 +274,93 @@ describe('compactPostFromFeedItem', () => {
     ).toBeNull();
   });
 
-  it('truncates the snippet', () => {
+  it('keeps the whole text and its length as Bluesky counts it', () => {
     const row = compactPostFromFeedItem({
-      post: { ...base.post, record: { ...base.post.record, text: 'y'.repeat(500) } },
+      post: { ...base.post, record: { ...base.post.record, text: 'y'.repeat(280) } },
     });
-    expect(row.text).toHaveLength(200);
+    expect(row.text).toHaveLength(280);
+    expect(row.len).toBe(280);
+    // A family emoji is several code points and one grapheme.
+    const emoji = compactPostFromFeedItem({ post: { ...base.post, record: { ...base.post.record, text: 'hi 👨‍👩‍👧' } } });
+    expect(emoji.len).toBe(4);
+  });
+
+  it('reads tags, link hosts and mentions from the facets and the tag list', () => {
+    const row = compactPostFromFeedItem({
+      post: {
+        ...base.post,
+        record: {
+          ...base.post.record,
+          text: 'see #Gardens and example.com with @someone',
+          tags: ['allotment', '#Gardens'],
+          facets: [
+            { features: [{ $type: 'app.bsky.richtext.facet#tag', tag: 'Gardens' }] },
+            { features: [{ $type: 'app.bsky.richtext.facet#link', uri: 'https://www.Example.com/a/b?c=1' }] },
+            { features: [{ $type: 'app.bsky.richtext.facet#link', uri: 'not a url' }] },
+            { features: [{ $type: 'app.bsky.richtext.facet#mention', did: 'did:plc:someone' }] },
+          ],
+        },
+      },
+    });
+    expect(row.tags).toEqual(['Gardens', 'allotment']);
+    expect(row.links).toEqual(['example.com']);
+    expect(row.mentions).toEqual(['did:plc:someone']);
+  });
+
+  it('says what a post carries, and how much of it is described', () => {
+    const withEmbed = (embed) => compactPostFromFeedItem({ post: { ...base.post, record: { ...base.post.record, embed } } });
+    const images = withEmbed({ $type: 'app.bsky.embed.images', images: [{ alt: 'A heron' }, { alt: '  ' }, {}] });
+    expect(images).toMatchObject({ media: 'image', mediaCount: 3, altCount: 1, hasMedia: true });
+    const video = withEmbed({ $type: 'app.bsky.embed.video', alt: 'A canal' });
+    expect(video).toMatchObject({ media: 'video', mediaCount: 1, altCount: 1, hasMedia: true });
+    const card = withEmbed({ $type: 'app.bsky.embed.external', external: { uri: 'https://news.example.org/story' } });
+    expect(card).toMatchObject({ media: 'link', hasMedia: false, links: ['news.example.org'] });
+    const gif = withEmbed({ $type: 'app.bsky.embed.external', external: { uri: 'https://media.tenor.com/abc/x.gif' } });
+    expect(gif).toMatchObject({ media: 'gif', hasMedia: false, links: [] });
+    const quoteWithPictures = withEmbed({
+      $type: 'app.bsky.embed.recordWithMedia',
+      record: { record: { uri: 'at://did:plc:other/app.bsky.feed.post/3q' } },
+      media: { $type: 'app.bsky.embed.images', images: [{ alt: 'x' }] },
+    });
+    expect(quoteWithPictures).toMatchObject({ media: 'image', mediaCount: 1, altCount: 1, quoteOf: 'did:plc:other' });
+    const plain = withEmbed(undefined);
+    expect(plain).toMatchObject({ media: null, mediaCount: 0, altCount: 0, tags: [], links: [], mentions: [], langs: [] });
+  });
+
+  it('names the thread a reply belongs to', () => {
+    const row = compactPostFromFeedItem({
+      post: {
+        ...base.post,
+        record: {
+          ...base.post.record,
+          langs: ['en', 'fr'],
+          reply: {
+            parent: { uri: 'at://did:plc:me/app.bsky.feed.post/3parent' },
+            root: { uri: 'at://did:plc:me/app.bsky.feed.post/3root' },
+          },
+        },
+      },
+    });
+    expect(row).toMatchObject({ replyTo: 'did:plc:me', threadOf: 'did:plc:me', threadKey: '3root', langs: ['en', 'fr'] });
+    expect(compactPostFromFeedItem(base)).toMatchObject({ threadOf: null, threadKey: null });
+  });
+});
+
+describe('upgradePostRows', () => {
+  const uri = 'at://did:plc:me/app.bsky.feed.post/3abc';
+  const old = { uri, rkey: '3abc', at: '2026-06-10T12:00:00.000Z', text: 'x'.repeat(200), replyTo: null, quoteOf: null, hasMedia: false, likes: 7, reposts: 2, replies: 1, quotes: 0 };
+
+  it('fills in what a newer row holds and keeps the counts', () => {
+    const record = { text: `${'x'.repeat(250)} #tag`, createdAt: old.at, facets: [{ features: [{ $type: 'app.bsky.richtext.facet#tag', tag: 'tag' }] }] };
+    const [row] = upgradePostRows([old], new Map([[uri, record]]));
+    expect(row).toMatchObject({ uri, rkey: '3abc', likes: 7, reposts: 2, replies: 1, quotes: 0, len: 255, tags: ['tag'], media: null });
+    expect(row.text).toHaveLength(255);
+  });
+
+  it('leaves out rows whose record is gone or unreadable', () => {
+    expect(upgradePostRows([old], new Map())).toEqual([]);
+    expect(upgradePostRows([old], new Map([[uri, { text: 'no date' }]]))).toEqual([]);
+    expect(upgradePostRows(null, null)).toEqual([]);
   });
 });
 
