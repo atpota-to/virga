@@ -297,7 +297,10 @@
   gap: 8px;
 }
 
-.post-count {
+/* The character count under a post. Named with its field-hint class, because
+   a post's engagement counts in the reports (PostRow) are .post-count too,
+   and this stylesheet is on the page with them once the composer has loaded. */
+.field-hint.post-count {
   margin-left: auto;
   white-space: nowrap;
 }
@@ -337,7 +340,7 @@
   white-space: nowrap;
 }
 
-.post-split-link + .post-count {
+.post-split-link + .field-hint.post-count {
   margin-left: 0;
 }
 

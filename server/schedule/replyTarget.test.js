@@ -166,6 +166,13 @@ describe('probeReplyParent', () => {
     }
   });
 
+  it('reads the reference PDS’s words for a repo it doesn’t hold', async () => {
+    deps.safeFetch.mockResolvedValue(
+      json({ error: 'InvalidRequest', message: `Could not find repo: ${DID}` }, 400),
+    );
+    expect(await probeReplyParent(POST)).toEqual({ state: 'gone', reason: 'account' });
+  });
+
   it('says gone when the PLC directory has no such DID, or a tombstone', async () => {
     for (const status of [404, 410]) {
       deps.resolvePdsEndpoint.mockRejectedValue(

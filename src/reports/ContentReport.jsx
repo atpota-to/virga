@@ -189,6 +189,12 @@ export default function ContentReport({ archive, period, nowMs }) {
           </Card>
         )}
       </div>
+      {m.unread > 0 && (
+        <p className="card-sub report-aside">
+          {postsWord(m.unread)} in this window {m.unread === 1 ? 'isn’t' : 'aren’t'} included: {m.unread === 1 ? 'it was' : 'they were'} archived
+          before Virga kept what a post is made of, and {m.unread === 1 ? 'is' : 'are'} no longer in your repo to read it from.
+        </p>
+      )}
       <HowCounted>
         <p>
           Your posts and your own threads in the window. Replies to other people are left out, as they are from the engagement rate: an

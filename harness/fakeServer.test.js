@@ -25,6 +25,7 @@ import {
   occurrenceTime as serverOccurrenceTime,
   validateRepeat as serverValidateRepeat,
 } from '../server/schedule/recurrence.js';
+import { validateCreate as serverValidateCreate } from '../server/schedule/scheduledPosts.js';
 import {
   anchoredRepeat,
   nextOccurrence,
@@ -1224,5 +1225,72 @@ describe('the client and the server on when a repeating post goes out', () => {
         );
       }
     }
+  });
+});
+
+describe('what the composer sends, as the real server reads it', () => {
+  // The fake server is lenient where the fixtures are (a short stand-in cid);
+  // the real one is not. These run the client's own body through the server's
+  // validation, with refs shaped as a PDS writes them.
+  const PARENT = {
+    uri: 'at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/app.bsky.feed.post/3lwcs2m4ock2z',
+    cid: 'bafyreidfzmkivfo3xsvnt4224jmalfujijjevs7htny75ekhfawnobkzc4',
+  };
+  const ROOT = {
+    uri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lwcrzq3bbc2y',
+    cid: 'bafyreiaru4nxx365jxznh5c3kkny6pbqpqdfeuzvnlaqigxia5tgowzgwe',
+  };
+  const soon = () => new Date(Date.now() + HOUR).toISOString();
+  const body = (extra, options = {}) =>
+    serializeForSchedule(stateWith(['hello'], extra), {
+      scheduledFor: soon(),
+      tz: 'Europe/Paris',
+      resolveMention: async () => null,
+      ...options,
+    });
+
+  it('takes a scheduled reply, refs and all', async () => {
+    const sent = await body({
+      reply: {
+        ...PARENT,
+        root: ROOT,
+        author: { did: 'did:plc:ewvi7nxzyoun6zhxrhs64oiz', handle: 'ada.example.com', displayName: 'Ada' },
+        text: 'what was said',
+      },
+    });
+    const read = serverValidateCreate(JSON.parse(JSON.stringify(sent)));
+    expect(read.ok).toBe(true);
+    expect(read.value.reply).toEqual({ root: ROOT, parent: PARENT });
+    expect(read.value.replyTo).toEqual({
+      handle: 'ada.example.com',
+      displayName: 'Ada',
+      text: 'what was said',
+    });
+    expect(read.value.gates).toEqual({ threadgate: null, postgate: null });
+  });
+
+  it('takes a repeating post, anchored as the client expects', async () => {
+    const at = soon();
+    const sent = await body(
+      { schedule: { mode: 'at', at, repeat: { every: '2weeks', ends: 'after', count: 6 } } },
+      { scheduledFor: at, repeatTz: 'America/New_York' },
+    );
+    expect(sent.payload.repeat).toEqual({ every: '2weeks', tz: 'America/New_York', count: 6 });
+    const read = serverValidateCreate(JSON.parse(JSON.stringify(sent)));
+    expect(read.ok).toBe(true);
+    expect(read.value.repeat).toEqual(
+      anchoredRepeat({ every: '2weeks', count: 6 }, at, 'America/New_York', 1),
+    );
+  });
+
+  it('refuses the same combinations the composer does, with the same codes', async () => {
+    const sent = await body({ reply: { ...PARENT, root: ROOT } });
+    expect(serverValidateCreate({ ...sent, queued: true }).code).toBe('QUEUE_REPLY');
+    expect(
+      serverValidateCreate({
+        ...sent,
+        payload: { ...sent.payload, repeat: { every: 'day', tz: 'UTC' } },
+      }).code,
+    ).toBe('REPEAT_REPLY');
   });
 });

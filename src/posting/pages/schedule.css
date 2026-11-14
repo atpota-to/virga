@@ -648,7 +648,8 @@ button.sched-cal-cell:focus-visible {
 
 .sched-repeat-fields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* The middle one holds the longest words ("After a number of times"). */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
   gap: 10px;
   align-items: end;
 }

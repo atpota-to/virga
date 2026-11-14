@@ -47,6 +47,7 @@ Clear the site's data to start over.
 | `?cron=20` | how often, in seconds, the server's workers run (20 by default); `0` stops them |
 | `/oauth/callback` | a sign-in that came back declined |
 | `?latency=0` | no simulated delay on requests (60ms each by default) |
+| `?now=1794700000000` | the moment the made-up accounts are dated back from, in milliseconds. A post's address comes from its date, so by default every reload is a fresh set of posts and a sync adds them to the last set; with the same `now`, a reload meets the same posts, which is what checking a second sync or an archive upgrade needs |
 
 Flags combine: `/posting/scheduled?mode=browser&accounts=1`.
 
@@ -94,8 +95,8 @@ PDS's "Missing required scope" wording). It doesn't check inputs against the lex
 ## Virga's server
 
 The fake server stands in for this repo's own (`api/`, `server/`), in its shapes:
-scheduled posts (`/api/schedule/create`, `list`, `get`, `media`, `update` with its four
-kinds, `reorder`, `cancel`), timers (`/api/self-destruct/create`, `list`, `cancel`),
+scheduled posts (`/api/schedule/create`, `list`, `get`, `media`, `update` with its six
+kinds, `reorder`, `cancel`), scheduled replies and repeating posts among them, timers (`/api/self-destruct/create`, `list`, `cancel`),
 `/api/limits/status` with what's in use, the adviser and alt text (`/api/ai/analyze-post`,
 `synthesize-style`, `alt-text`), and `/api/oauth/session` and `/api/oauth/logout`. It
 answers at a fixed address of its own (`SERVER_ORIGIN`, `https://server.harness.invalid`)
@@ -104,14 +105,15 @@ points the requester there.
 
 It serves one app: an account sees and changes only its own rows, every row and timer
 says it is Virga's (`clientKey: 'virga'`), and a request with a token the server doesn't
-know gets 401 `FRONTEND_SESSION_INVALID`. Mira starts with a post at a time of its own,
-one in the queue, one that failed, one that went out without its timer, a conditional
+know gets 401 `FRONTEND_SESSION_INVALID`. Mira starts with a post at a time of its own
+that repeats every month (the second of six), one in the queue, one that failed, one that went out without its timer, a conditional
 timer counting down and one that has already deleted its post. The limits are flat:
 unlimited unless `?limits=` sets some, with the caps always reported, and the AI
 allowances are 30 adviser reads, 15 descriptions and 3 style readings a month.
 
 Every 20 seconds the server's workers run: due posts are written into the account's
-world at the keys reserved when they were scheduled, and due timers read the post's
+world at the keys reserved when they were scheduled (a reply only if the post it answers
+is still there, and a repeating post's next occurrence is left waiting), and due timers read the post's
 counts and delete it, limit its replies or turn off its quotes. The adviser's verdicts
 come from a few word lists, so the same draft always gets the same read.
 

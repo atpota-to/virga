@@ -228,3 +228,8 @@
     width: 100%;
   }
 }
+
+/* A line under a report's cards that says what they leave out. */
+.report-aside {
+  margin: 0 2px;
+}

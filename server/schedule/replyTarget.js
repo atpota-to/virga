@@ -179,9 +179,17 @@ export async function probeReplyParent(uri) {
     }
     // The PDS is somebody else's and may be hostile: read at most a small,
     // capped error body.
-    const kind = (await deps.readXrpcErrorBody(res))?.error || '';
+    const body = await deps.readXrpcErrorBody(res);
+    const kind = body?.error || '';
     if (kind === 'RecordNotFound') return { state: 'gone', reason: 'post' };
-    if (ACCOUNT_UNAVAILABLE.has(kind))
+    // The reference PDS says a repo it doesn't hold as a plain InvalidRequest
+    // with these words (seen on a bsky.network PDS, 2026-11-14); the DID
+    // document named this PDS, so the account is gone from where it lives.
+    if (
+      ACCOUNT_UNAVAILABLE.has(kind) ||
+      (kind === 'InvalidRequest' &&
+        /^could not find repo\b/i.test(body?.message || ''))
+    )
       return { state: 'gone', reason: 'account' };
     return {
       state: 'unknown',

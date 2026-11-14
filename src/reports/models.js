@@ -561,13 +561,19 @@ function closed(group, all) {
  * Counts are every post in the window. What a group "typically earns" is the
  * median over its posts older than two days, since the newest are still
  * collecting, and is null for a group with fewer than CONTENT_MIN_POSTS.
+ *
+ * A row that doesn't hold what a post is made of is left out and counted in
+ * `unread`: it was archived before rows kept that, and its record has left
+ * the repo since (a deleted post), so there is nothing to read it from.
+ * Counting it as a short text post would be a guess.
  */
 export function contentModel(archive, period, nowMs) {
   nowMs = periodEnd(period, nowMs);
   return cached(archive, 'content', period, null, () => {
     const t0 = periodStart(period, nowMs) ?? -Infinity;
     const settledBefore = nowMs - 2 * DAY_MS;
-    const own = datedPosts(archive).filter((p) => p.atMs >= t0 && p.atMs <= nowMs && isOwnVoicePost(p, archive.did));
+    const inWindow = datedPosts(archive).filter((p) => p.atMs >= t0 && p.atMs <= nowMs && isOwnVoicePost(p, archive.did));
+    const own = inWindow.filter((p) => p.len != null);
     // The first post of a thread carries no reply; the posts after it name it.
     const openers = new Set();
     for (const p of datedPosts(archive)) {
@@ -622,6 +628,7 @@ export function contentModel(archive, period, nowMs) {
 
     return {
       ready: contentReady(archive),
+      unread: inWindow.length - own.length,
       posts: all.posts,
       typical: all.settled.length ? median(all.settled) : null,
       formats: grouped(CONTENT_FORMATS, formats),

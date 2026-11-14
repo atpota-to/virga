@@ -98,8 +98,19 @@ describe('what posts are made of', () => {
   });
 
   it('bands posts by length', () => {
-    const m = contentModel(made([p(1, { len: 0 }), p(1, { len: 80 }), p(1, { len: 81 }), p(1, { len: 240 }), p(1, { len: 300 }), p(1, { len: undefined })]), ALL, NOW);
-    expect(m.lengths.map((b) => b.posts)).toEqual([3, 1, 1, 1]);
+    const m = contentModel(made([p(1, { len: 0 }), p(1, { len: 80 }), p(1, { len: 81 }), p(1, { len: 240 }), p(1, { len: 300 })]), ALL, NOW);
+    expect(m.lengths.map((b) => b.posts)).toEqual([2, 1, 1, 1]);
+  });
+
+  it('leaves out rows that hold nothing to read, and says how many', () => {
+    // Archived before rows kept this, and gone from the repo since.
+    const old = { ...post(12, 9, 300), uri: `at://${DID}/app.bsky.feed.post/old`, rkey: 'old' };
+    const m = contentModel(made([p(2), p(4), p(6), old]), ALL, NOW);
+    expect(m.posts).toBe(3);
+    expect(m.unread).toBe(1);
+    expect(m.typical).toBe(4);
+    expect(m.formats[0].total).toBe(12);
+    expect(contentModel(made([p(1)]), ALL, NOW).unread).toBe(0);
   });
 
   it('groups tags whatever their case, and ranks tags and sites by use', () => {
