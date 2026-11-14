@@ -8,6 +8,7 @@ import { isMissingScopeError } from '../../session/scopes.js';
 import { isReauthRequiredError } from '../../session/accounts.js';
 import { bskyUrlFor } from '../lib/postLink.js';
 import { activeLocale } from '../../lib/locale.js';
+import { repeatClause } from '../schedule/repeat.js';
 
 export const SLOW_PUBLISH_MS = 60_000;
 export const HARD_PUBLISH_MS = 180_000;
@@ -161,7 +162,10 @@ function whenWords(iso, { now = new Date(), locale = activeLocale(), timeZone } 
   return `${date} at ${time}`;
 }
 
-/** "Scheduled for tomorrow at 9:00 AM as @x." and the queue's version. */
+/**
+ * "Scheduled for tomorrow at 9:00 AM as @x." and the queue's version. With a
+ * `repeat` rule it says so: "…as @x, repeating every week."
+ */
 export function scheduledMessage({
   at,
   queued = false,
@@ -171,12 +175,13 @@ export function scheduledMessage({
   now,
   locale,
   timeZone,
+  repeat = null,
 } = {}) {
   const when = whenWords(at, { now, locale, timeZone });
   const who = accountLabel(account, did);
   if (queued)
     return `${editing ? 'Moved in' : 'Added to'} the queue, going out ${when} as ${who}.`;
-  return `${editing ? 'Rescheduled' : 'Scheduled'} for ${when} as ${who}.`;
+  return `${editing ? 'Rescheduled' : 'Scheduled'} for ${when} as ${who}${repeatClause(repeat)}.`;
 }
 
 export { whenWords };

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ExternalLink, Heart, MessageSquare, MoreHorizontal, Quote, Repeat2, Reply, Search, SquarePen } from 'lucide-react';
+import { CopyPlus, ExternalLink, Heart, MessageSquare, MoreHorizontal, Quote, Repeat2, Reply, Search, SquarePen } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import Menu from '../../components/Menu.jsx';
@@ -24,14 +24,16 @@ import { countPhrase, mergePostRows, rowFromPostView } from './hubModel.js';
 import {
   POSTED_FILTERS,
   deletePost,
+  fetchPostImages,
   filterPostRows,
   gatesQuotesOnlyFor,
   isReplyRow,
+  postAgainIntent,
+  postAgainSeed,
   postRowActions,
   readPostGates,
   readPostNow,
   templateSeedFrom,
-  textForComposer,
 } from './postedModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import './hub.css';
@@ -59,15 +61,17 @@ function Count({ icon: Icon, value, label }) {
 /**
  * What the account has posted, from its archive plus a fresh read of its
  * latest posts that the archive hasn't synced yet. Each post can be replied
- * to, quoted, copied into a new post, saved as a template, given new reply
- * and quote settings, put on a timer (with a long session) or deleted.
- * Published posts aren't edited in place: copy one into a new post instead.
+ * to, quoted, posted again, saved as a template, given new reply and quote
+ * settings, put on a timer (with a long session) or deleted. Published posts
+ * aren't edited in place: Post again opens one in the composer, with its
+ * words, links, tags, languages, quote or link card and pictures, to change
+ * and post, schedule or queue.
  */
 export default function PostedPage({ did }) {
   const archive = useArchive();
   const composer = useComposer();
   const toast = useToast();
-  const { agentFor, capabilitiesFor } = useAtprotoSession();
+  const { agentFor, capabilitiesFor, targetFor } = useAtprotoSession();
   const caps = capabilitiesFor(did);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
@@ -138,6 +142,24 @@ export default function PostedPage({ did }) {
     }
   };
 
+  // The post as a new one in the composer: its words, links, tags, languages
+  // and quote or link card, and its pictures read back from the repo.
+  const postAgain = async (post) => {
+    const seed = postAgainSeed(post.record);
+    let fetched = { files: [], missing: 0 };
+    if (seed.images.length && !seed.labelled) {
+      const target = await targetFor(did).catch(() => null);
+      fetched = await fetchPostImages(seed.images, { did, pdsUrl: target?.pdsUrl });
+    }
+    const { intent, notes } = postAgainIntent(seed, { did, ...fetched });
+    if (!intent) {
+      setError('This post is only pictures or video, and they couldn’t be fetched. Start a new post and add them again.');
+      return;
+    }
+    composer.open(intent);
+    if (notes.length) toast?.(notes.join(' '), { ms: 10000 });
+  };
+
   const confirmDelete = async () => {
     const row = deleting;
     const agent = await agentFor(did);
@@ -160,12 +182,12 @@ export default function PostedPage({ did }) {
     const offer = postRowActions(row, { canPost: caps.canPost, canSchedule: caps.canSchedule });
     return [
       { key: 'open', label: 'Open on Bluesky', icon: ExternalLink, onSelect: () => window.open(bskyUrlFor(row.uri), '_blank', 'noopener') },
-      offer.copy && {
-        key: 'copy',
-        label: 'Copy into a new post',
-        hint: 'Posts can’t be edited once they’re out',
-        icon: SquarePen,
-        onSelect: () => act(row, 'The post couldn’t be read.', (post) => composer.open({ asDid: did, text: textForComposer(post.record) })),
+      offer.again && {
+        key: 'again',
+        label: 'Post again',
+        hint: 'Opens it as a new post, to change, post, schedule or queue',
+        icon: CopyPlus,
+        onSelect: () => act(row, 'The post couldn’t be read.', postAgain),
       },
       offer.gates && {
         key: 'gates',
@@ -235,7 +257,7 @@ export default function PostedPage({ did }) {
               <h2 id="posted-title" className="card-title">
                 {loading ? 'Your posts' : `${countPhrase(rows.length, 'post')}${rows.length !== total ? ` of ${total.toLocaleString(activeLocale())}` : ''}`}
               </h2>
-              <p className="card-sub">Newest first. Posts can’t be edited once they’re out; copy one into a new post instead.</p>
+              <p className="card-sub">Newest first. Posts can’t be edited once they’re out; Post again, in a post’s menu, opens it as a new one.</p>
             </div>
           </div>
           <div className="hub-toolbar">

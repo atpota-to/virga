@@ -4,7 +4,10 @@
 // logout), with the rules that matter to a reader of those pages: an account
 // sees and changes only its own rows, and every row says it is Virga's
 // (`clientKey: 'virga'`); the limits are flat, unlimited unless set, with the
-// caps always reported; a scheduled post can't carry a reply or a video; a
+// caps always reported; a scheduled post can't carry a video, a reply can be
+// scheduled for a set time but not queued or repeated, and a reply whose
+// parent is gone by its time isn't posted; a post at a set time can repeat,
+// one occurrence waiting at a time, with skip and stop; a
 // 401 for a token the server doesn't know carries FRONTEND_SESSION_INVALID
 // (sign-out answers 200 either way); a grant can be refused while its row
 // stays, which the lite session check doesn't see until something has tried
@@ -30,6 +33,12 @@ import {
 } from './repo.js';
 import { createViews } from './views.js';
 import { hashOf, tidAt } from './world.js';
+import {
+  MAX_REPEAT_COUNT,
+  REPEAT_EVERY,
+  anchoredRepeat,
+  nextOccurrence,
+} from '../src/posting/schedule/repeat.js';
 
 const DAY = 86_400_000;
 const MINUTE = 60_000;
@@ -620,7 +629,7 @@ export function createServer({
     };
   }
 
-  function validateCreate({ scheduledFor, target = 'bluesky', payload, queued }) {
+  function validateCreate({ scheduledFor, target = 'bluesky', payload, queued, occurrence = 1 }) {
     const timeError = validateTime(scheduledFor);
     if (timeError) return { error: timeError };
     if (target !== 'bluesky') return { error: 'target must be one of: bluesky' };
@@ -639,20 +648,42 @@ export function createServer({
         return { error: `posts[${i}] text exceeds 3000 characters` };
       if (!text.trim() && !p.embed)
         return { error: `posts[${i}] needs text or an embed` };
-      // The server's payload has no reply and no video: the composer refuses both first.
-      if (p.record.reply)
-        return { error: `posts[${i}]: a scheduled post can't be a reply` };
+      // The server's payload has no video: the composer refuses it first.
       if (p.embed?.type === 'video')
         return { error: `posts[${i}]: unknown embed type: video` };
       const embedError = validateEmbed(p.embed);
       if (embedError) return { error: `posts[${i}]: ${embedError}` };
     }
+    const reply = validateReply(payload.reply);
+    if (reply.error) return { error: reply.error };
+    if (reply.value && queued)
+      return {
+        error: "a reply can't wait in the queue. schedule it for a set time instead.",
+        code: 'QUEUE_REPLY',
+      };
+    const repeat = validateRepeat(payload.repeat, {
+      scheduledFor,
+      occurrence,
+      tz: payload.tz,
+    });
+    if (repeat.error) return { error: repeat.error };
+    if (repeat.value && queued)
+      return {
+        error: "a post in the queue can't repeat. schedule it for a set time instead.",
+        code: 'QUEUE_REPEAT',
+      };
+    if (repeat.value && reply.value)
+      return {
+        error: "a reply can't repeat: it would answer the same post again each time.",
+        code: 'REPEAT_REPLY',
+      };
     const sd = validateSelfDestructSpec(
       payload.selfDestruct,
       Date.parse(scheduledFor),
     );
     if (sd.error) return { error: sd.error };
-    const gates = payload.gates || {};
+    // A reply takes no gates.
+    const gates = reply.value ? {} : payload.gates || {};
     return {
       value: {
         scheduledFor: iso(Date.parse(scheduledFor)),
@@ -665,8 +696,98 @@ export function createServer({
         queued: !!queued,
         selfDestruct: sd.value,
         tz: typeof payload.tz === 'string' ? payload.tz : undefined,
+        reply: reply.value,
+        replyTo: reply.value ? replyHint(payload.replyTo) : null,
+        repeat: repeat.value,
       },
     };
+  }
+
+  /** The reply's two strong refs: post addresses and a cid each. */
+  function validateReply(raw) {
+    if (raw == null) return { value: null };
+    if (typeof raw !== 'object' || Array.isArray(raw))
+      return { error: 'reply must be an object' };
+    const out = {};
+    for (const name of ['root', 'parent']) {
+      const ref = raw[name];
+      if (!ref || typeof ref !== 'object')
+        return { error: `reply.${name} needs a uri and a cid` };
+      const at = parseAtUri(ref.uri);
+      if (!at || at.collection !== 'app.bsky.feed.post' || !at.did?.startsWith('did:'))
+        return { error: `reply.${name}.uri must be the at:// address of a post` };
+      // The fixtures' posts by other people carry a short stand-in cid, so
+      // only its presence is checked here; the server checks its shape.
+      if (typeof ref.cid !== 'string' || !ref.cid)
+        return { error: `reply.${name}.cid must be a CID` };
+      out[name] = { uri: ref.uri, cid: ref.cid };
+    }
+    return { value: out };
+  }
+
+  function replyHint(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    const clip = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+    const hint = {
+      handle: clip(raw.handle, 253),
+      displayName: clip(raw.displayName, 128),
+      text: clip(raw.text, 300),
+    };
+    return hint.handle || hint.displayName || hint.text ? hint : null;
+  }
+
+  /** The repeat rule as the server stores it, anchored at the row's time. */
+  function validateRepeat(raw, { scheduledFor, occurrence = 1, tz }) {
+    if (raw == null || raw === false) return { value: null };
+    if (typeof raw !== 'object' || Array.isArray(raw))
+      return { error: 'repeat must be an object' };
+    if (!REPEAT_EVERY.includes(raw.every))
+      return { error: `repeat.every must be one of: ${REPEAT_EVERY.join(', ')}` };
+    const zone = [raw.tz, tz].find((z) => {
+      try {
+        return Boolean(z) && Boolean(new Intl.DateTimeFormat('en-US', { timeZone: z }));
+      } catch {
+        return false;
+      }
+    });
+    if (!zone) return { error: 'repeat.tz must be a time zone this server knows' };
+    const blank = (v) => v === null || v === undefined || v === '';
+    if (!blank(raw.until) && !blank(raw.count))
+      return {
+        error: 'a repeating post ends on a date or after a number of times, not both.',
+      };
+    const value = anchoredRepeat(
+      { every: raw.every },
+      iso(Date.parse(scheduledFor)),
+      zone,
+      occurrence,
+    );
+    if (!blank(raw.until)) {
+      if (typeof raw.until !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.until))
+        return { error: 'repeat.until must be a date, as YYYY-MM-DD' };
+      if (raw.until < value.anchor.date)
+        return {
+          error: 'the date a repeating post ends on is before it next goes out.',
+        };
+      value.until = raw.until;
+    }
+    if (!blank(raw.count)) {
+      const count = Number(raw.count);
+      if (!Number.isInteger(count) || count < 2)
+        return {
+          error: 'a post that repeats a number of times goes out at least twice.',
+        };
+      if (count > MAX_REPEAT_COUNT)
+        return {
+          error: `a post can repeat at most ${MAX_REPEAT_COUNT} times. choose an end date, or no end, for more.`,
+        };
+      if (count < occurrence)
+        return {
+          error: `this post has already gone out ${occurrence - 1} times, so it can't end after ${count}.`,
+        };
+      value.count = count;
+    }
+    return { value };
   }
 
   /** Record keys for each post of a row, minted from its time and kept clear of every other row's. */
@@ -709,9 +830,83 @@ export function createServer({
     return map;
   }
 
+  /**
+   * Let go of a row's stashed images. A repeating post's occurrences all
+   * name the same bytes, so one that another row of the series could still
+   * publish (waiting, going out, or failed) is left for that row.
+   */
   function dropMedia(row) {
+    const held = new Set();
+    if (row.series_id) {
+      for (const r of scheduled) {
+        if (r === row || r.series_id !== row.series_id) continue;
+        if (!['pending', 'publishing', 'failed'].includes(r.status)) continue;
+        for (const m of Object.values(r.payload?.media || {})) held.add(m.storagePath);
+      }
+    }
     for (const m of Object.values(row.payload?.media || {}))
-      media.delete(m.storagePath);
+      if (!held.has(m.storagePath)) media.delete(m.storagePath);
+  }
+
+  /** Whether a row is the one its series goes on from. */
+  const carries = (row) => Boolean(row?.series_id && row.payload?.repeat);
+
+  /** The payload a row stores: the optional parts only when it has them. */
+  function payloadOf(value, { media: stash = {}, rkeys }) {
+    const payload = {
+      posts: value.posts,
+      gates: value.gates,
+      media: stash,
+      rkeys,
+      tz: value.tz,
+      selfDestruct: value.selfDestruct,
+    };
+    if (value.reply) payload.reply = value.reply;
+    if (value.reply && value.replyTo) payload.replyTo = value.replyTo;
+    if (value.repeat) payload.repeat = value.repeat;
+    return payload;
+  }
+
+  /**
+   * Settle a row that carries a series, as the server's
+   * settle_scheduled_occurrence: write the occurrence that follows it (the
+   * rule's next slot still ahead of now) and move the rule on to it. Answers
+   * the new row, or null when the row carries none or the series is over.
+   */
+  function spawnNext(row) {
+    if (!carries(row)) return null;
+    const next = nextOccurrence(row.payload.repeat, row.occurrence, now());
+    if (!next) return null;
+    if (scheduled.some((r) => r.series_id === row.series_id && r.occurrence === next.occurrence))
+      return null;
+    const sd = row.payload.selfDestruct;
+    const fresh = {
+      ...row,
+      id: uuid(),
+      scheduled_for: next.scheduledFor,
+      status: 'pending',
+      occurrence: next.occurrence,
+      payload: {
+        ...row.payload,
+        rkeys: assignRkeys(row.user_did, next.scheduledFor, row.payload.posts.length),
+        // A pinned delete time belonged to the occurrence it was set for.
+        ...(sd?.deleteAt ? { selfDestruct: { ...sd, deleteAt: null } } : {}),
+      },
+      progress: [],
+      result_uri: null,
+      result_cid: null,
+      attempts: 0,
+      next_attempt_at: null,
+      last_error: null,
+      last_error_code: null,
+      created_at: iso(now()),
+      updated_at: iso(now()),
+    };
+    const { repeat: _moved, ...rest } = row.payload; // eslint-disable-line no-unused-vars
+    row.payload = rest;
+    scheduled.push(fresh);
+    note(`occurrence ${fresh.occurrence} of ${row.series_id} waits for ${fresh.scheduled_for}`);
+    return fresh;
   }
 
   function rowShape(row, { list = false } = {}) {
@@ -724,6 +919,8 @@ export function createServer({
       payload: row.payload,
       clientKey: 'virga',
       createdAt: row.created_at,
+      seriesId: row.series_id || null,
+      occurrence: row.occurrence ?? null,
     };
     if (list) out.partial = row.progress.length > 0;
     Object.assign(out, {
@@ -761,14 +958,10 @@ export function createServer({
       status,
       target: value.target,
       queued: value.queued,
-      payload: {
-        posts: value.posts,
-        gates: value.gates,
-        media: {},
-        rkeys,
-        tz: value.tz,
-        selfDestruct: value.selfDestruct,
-      },
+      payload: payloadOf(value, { rkeys }),
+      // A post that repeats starts a series as its first occurrence.
+      series_id: value.repeat ? uuid() : null,
+      occurrence: value.repeat ? 1 : null,
       progress: [],
       result_uri: null,
       result_cid: null,
@@ -788,9 +981,13 @@ export function createServer({
 
   const api = {};
 
+  /** 400 for a refused validation: its sentence, and its code when it has one. */
+  const invalid = (v) =>
+    codedError(400, { success: false, error: v.error, ...(v.code ? { code: v.code } : {}) });
+
   api['POST /api/schedule/create'] = (auth, { body }) => {
     const v = validateCreate(body || {});
-    if (v.error) throw codedError(400, { success: false, error: v.error });
+    if (v.error) throw invalid(v);
     if (v.value.selfDestruct) enforceTimerLimit(auth.did, v.value.selfDestruct, {});
     enforceScheduledLimit(auth.did);
     const row = insertScheduled({
@@ -837,7 +1034,7 @@ export function createServer({
   };
 
   api['POST /api/schedule/update'] = (auth, { body = {} }) => {
-    const { id, scheduledFor, payload, retry, acknowledgeTimer } = body;
+    const { id, scheduledFor, payload, retry, acknowledgeTimer, skip, stopRepeat } = body;
     if (!id) throw codedError(400, { success: false, error: 'Missing id' });
     const row = ownedRow(auth, id);
     const refuse = (error, code, extra = {}) =>
@@ -876,9 +1073,43 @@ export function createServer({
         next_attempt_at: null,
         updated_at: iso(now()),
       });
+    } else if (skip) {
+      if (!row || row.status !== 'pending' || row.progress.length || !carries(row)) {
+        throw refuse(
+          'there is nothing to skip here: this post is not repeating, or is already on its way out.',
+          'NOT_SKIPPABLE',
+        );
+      }
+      const next = spawnNext(row);
+      Object.assign(row, { status: 'cancelled', updated_at: iso(now()) });
+      dropMedia(row);
+      note(`skipped ${row.id}`);
+      return [
+        200,
+        {
+          success: true,
+          data: next ? rowShape(next) : null,
+          skipped: id,
+          ended: !next,
+        },
+      ];
+    } else if (stopRepeat) {
+      if (!row || !['pending', 'failed'].includes(row.status) || !row.payload.repeat) {
+        throw refuse(
+          'this post is not repeating, or is already on its way out, so there is nothing to stop.',
+          'NOT_REPEATING',
+        );
+      }
+      const { repeat: _stopped, ...rest } = row.payload; // eslint-disable-line no-unused-vars
+      Object.assign(row, { payload: rest, updated_at: iso(now()) });
     } else if (payload) {
-      const v = validateCreate(body);
-      if (v.error) throw codedError(400, { success: false, error: v.error });
+      // A rule is anchored at this row's number when it is the row its
+      // series goes on from; anywhere else it starts a series at one.
+      const v = validateCreate({
+        ...body,
+        occurrence: carries(row) ? row.occurrence : 1,
+      });
+      if (v.error) throw invalid(v);
       if (!row || !['pending', 'failed'].includes(row.status)) {
         throw refuse(
           'This post can no longer be rescheduled — it may already be publishing.',
@@ -895,8 +1126,15 @@ export function createServer({
           exceptScheduledId: id,
         });
       if (row.status === 'failed') enforceScheduledLimit(auth.did, id);
-      dropMedia(row);
-      const fresh = stashMedia(row.id, v.value.posts, payload.mediaBytes || {});
+      const startsSeries = Boolean(v.value.repeat) && !carries(row);
+      // The edit's bytes go in a folder of their own, so the old ones can
+      // stay for a failed occurrence of the series that still names them.
+      const old = row.payload;
+      const fresh = stashMedia(
+        `${row.id}/e-${now().toString(36)}`,
+        v.value.posts,
+        payload.mediaBytes || {},
+      );
       Object.assign(row, {
         scheduled_for: v.value.scheduledFor,
         target: v.value.target,
@@ -906,9 +1144,7 @@ export function createServer({
         next_attempt_at: null,
         last_error: null,
         last_error_code: null,
-        payload: {
-          posts: v.value.posts,
-          gates: v.value.gates,
+        payload: payloadOf(v.value, {
           media: fresh,
           rkeys: assignRkeys(
             auth.did,
@@ -916,11 +1152,12 @@ export function createServer({
             v.value.posts.length,
             row.id,
           ),
-          tz: v.value.tz,
-          selfDestruct: v.value.selfDestruct,
-        },
+        }),
         updated_at: iso(now()),
       });
+      dropMedia({ ...row, payload: old });
+      if (startsSeries)
+        Object.assign(row, { series_id: uuid(), occurrence: 1 });
     } else {
       const timeError = validateTime(scheduledFor);
       if (timeError)
@@ -953,6 +1190,17 @@ export function createServer({
           row.id,
         ),
       };
+      // A repeating post moved to a new time repeats from there.
+      if (row.payload.repeat)
+        row.payload.repeat = {
+          ...row.payload.repeat,
+          anchor: anchoredRepeat(
+            row.payload.repeat,
+            row.scheduled_for,
+            row.payload.repeat.tz,
+            row.occurrence,
+          ).anchor,
+        };
       row.updated_at = iso(now());
     }
     note(`updated ${row.id}`);
@@ -1592,6 +1840,17 @@ export function createServer({
     }
     const posts = row.payload.posts;
     const base = Date.parse(row.scheduled_for);
+    const reply = row.payload.reply || null;
+    // A reply isn't posted as an orphan: the post it answers has to be
+    // there still. Asked once, before the first post.
+    if (reply && row.progress.length === 0 && !views.postView(reply.parent.uri)) {
+      throw Object.assign(
+        new Error(
+          'the post this replies to has been deleted, so the reply was not posted.',
+        ),
+        { code: 'REPLY_TARGET_GONE', terminal: true },
+      );
+    }
     for (let i = row.progress.length; i < posts.length; i++) {
       const spec = posts[i];
       const record = {
@@ -1603,15 +1862,20 @@ export function createServer({
         if (spec.record[k]) record[k] = spec.record[k];
       const embed = await buildEmbed(world, row, spec.embed);
       if (embed) record.embed = embed;
+      // A reply's later posts answer the one before, under the same root.
       if (i > 0)
-        record.reply = { root: row.progress[0], parent: row.progress[i - 1] };
+        record.reply = {
+          root: reply ? reply.root : row.progress[0],
+          parent: row.progress[i - 1],
+        };
+      else if (reply) record.reply = { root: reply.root, parent: reply.parent };
       const rkey = row.payload.rkeys?.[i] || tidAt(base + i);
       const written = await writeRecord(world, {
         collection: 'app.bsky.feed.post',
         rkey,
         record,
       });
-      if (i === 0) {
+      if (i === 0 && !reply) {
         const { threadgate, postgate } = row.payload.gates || {};
         if (Array.isArray(threadgate)) {
           await writeRecord(world, {
@@ -1659,6 +1923,10 @@ export function createServer({
       row.attempts += 1;
       try {
         const progress = await publishRow(row);
+        // The next occurrence of a repeating post is written with the status
+        // that ends this one; its images stay for it (dropMedia leaves what
+        // a waiting row of the series still names).
+        spawnNext(row);
         Object.assign(row, {
           status: 'published',
           result_uri: progress[0].uri,
@@ -1691,6 +1959,20 @@ export function createServer({
         }
       } catch (err) {
         const exhausted = err.terminal || row.attempts >= row.max_attempts;
+        // A repeating post goes on from its schedule: the failed occurrence
+        // stays to retry or dismiss, and an older failure makes way for it.
+        if (exhausted && spawnNext(row)) {
+          for (const old of scheduled) {
+            if (
+              old.series_id === row.series_id &&
+              old.status === 'failed' &&
+              old.occurrence < row.occurrence
+            ) {
+              old.status = 'cancelled';
+              dropMedia(old);
+            }
+          }
+        }
         Object.assign(row, {
           status: exhausted ? 'failed' : 'pending',
           next_attempt_at: exhausted
@@ -1964,15 +2246,32 @@ export function createServer({
       tz: 'Europe/London',
       ...extra,
     });
-    // At a time of its own, outside the weekly queue.
-    insertScheduled({
+    // At a time of its own, outside the weekly queue, and repeating: the
+    // second of six monthly posts.
+    const swapAt = at(1, 10);
+    const swap = insertScheduled({
       did,
       id: seededUuid('virga-seed-swap'),
-      value: value(at(1, 10), [
-        text(
-          'Seed swap at the library on Saturday morning. Bring envelopes and labels.',
-        ),
-      ]),
+      value: value(
+        swapAt,
+        [
+          text(
+            'Seed swap at the library on Saturday morning. Bring envelopes and labels.',
+          ),
+        ],
+        {
+          repeat: anchoredRepeat(
+            { every: 'month', count: 6 },
+            swapAt,
+            'Europe/London',
+            2,
+          ),
+        },
+      ),
+    });
+    Object.assign(swap, {
+      series_id: seededUuid('virga-seed-swap-series'),
+      occurrence: 2,
     });
     insertScheduled({
       did,

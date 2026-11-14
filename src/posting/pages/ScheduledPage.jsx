@@ -3,16 +3,20 @@ import {
   AlertTriangle,
   ArrowDown,
   ArrowUp,
+  Ban,
   CalendarClock,
   CalendarRange,
+  CornerDownRight,
   GripVertical,
   Hourglass,
   ListPlus,
   Lock,
   MoreHorizontal,
   Pencil,
+  Repeat,
   RotateCcw,
   Send,
+  SkipForward,
   Timer,
   Trash2,
 } from 'lucide-react';
@@ -42,7 +46,10 @@ import {
   listScheduled,
   reorderScheduled,
   retryScheduled,
+  skipScheduled,
+  stopRepeating,
 } from '../schedule/scheduleService.js';
+import { rowRepeat } from '../schedule/repeat.js';
 import {
   reorderRefusal,
   scheduleErrorMessage,
@@ -93,11 +100,14 @@ function ScheduledRow({
   onPostNow,
   onRetry,
   onCancel,
+  onSkip,
+  onStopRepeat,
 }) {
   const facts = rowFacts(row);
   const status = rowStatus(row, now);
   const actions = rowActions(row, now);
   const tags = rowTags(facts);
+  const series = rowRepeat(row, now);
   const menu = [];
   if (actions.postNow)
     menu.push({
@@ -106,10 +116,31 @@ function ScheduledRow({
       icon: Send,
       onSelect: () => onPostNow(row),
     });
+  if (actions.skip)
+    menu.push({
+      key: 'skip',
+      label: 'Skip this one',
+      hint: series.last ? 'It’s the last, so that ends it' : 'The next one still goes out',
+      icon: SkipForward,
+      onSelect: () => onSkip(row),
+    });
+  if (actions.stopRepeat)
+    menu.push({
+      key: 'stop',
+      label: 'Stop repeating',
+      hint: row.status === 'failed' ? 'Nothing follows this one' : 'This one still goes out',
+      icon: Ban,
+      onSelect: () => onStopRepeat(row),
+    });
   if (actions.cancel)
     menu.push({
       key: 'cancel',
-      label: row.status === 'failed' ? 'Dismiss' : 'Remove from the schedule',
+      label:
+        row.status === 'failed'
+          ? 'Dismiss'
+          : series.repeats
+            ? 'Remove, and stop repeating'
+            : 'Remove from the schedule',
       icon: Trash2,
       tone: 'danger',
       onSelect: () => onCancel(row),
@@ -162,7 +193,32 @@ function ScheduledRow({
         <p className="hub-row-text">
           {facts.text || <span className="muted">A post with media</span>}
         </p>
+        {facts.reply && (
+          <p className="sched-row-reply">
+            <CornerDownRight size={13} aria-hidden="true" />
+            <span className="sched-row-reply-who">
+              Replying to {facts.reply.who}
+            </span>
+            {facts.reply.text && (
+              <span className="sched-row-reply-text">{facts.reply.text}</span>
+            )}
+          </p>
+        )}
         <p className="hub-row-meta">
+          {series.repeats && (
+            <span className="sched-repeat-tag">
+              <Repeat size={12} aria-hidden="true" />
+              {series.label}
+              {series.progress ? `, ${series.progress}` : ''}
+              {series.last && !row.payload?.repeat?.count ? ', the last one' : ''}
+            </span>
+          )}
+          {series.former && row.status === 'failed' && (
+            <span>
+              From a repeating post
+              {row.occurrence ? `, number ${row.occurrence}` : ''}
+            </span>
+          )}
           {status.tone !== 'wait' && (
             <span
               className={`badge ${status.tone === 'danger' ? 'badge--danger' : status.tone === 'warn' ? 'badge--warn' : 'badge--accent'}`}
@@ -550,11 +606,12 @@ export default function ScheduledPage({ did }) {
               resolveMention,
               cancelScheduled,
               emitPostsChanged,
+              skipScheduled,
               armTimer: (result, state) =>
                 armAfterPublish(req, result, state.lifespan, {
                   snippet: timerSnippet(state.posts?.[0]?.text),
                   postedAt: new Date().toISOString(),
-                  fit: composerTimerFit({ reply: false }),
+                  fit: composerTimerFit({ reply: Boolean(state.reply) }),
                 }),
             },
           });
@@ -567,6 +624,45 @@ export default function ScheduledPage({ did }) {
           );
         } finally {
           setRowBusy(row.id, false);
+        }
+      },
+    });
+
+  const skip = (row) =>
+    setConfirm({
+      kind: 'skip',
+      row,
+      run: async () => {
+        try {
+          const out = await skipScheduled(req, row.id);
+          toast?.(
+            out.ended
+              ? 'Skipped. That was the last one, so it has stopped repeating.'
+              : `Skipped. The next one goes out ${formatInZone(out.next.scheduledFor, tz)}.`,
+            { ms: 7000 },
+          );
+        } catch (err) {
+          if (err?.status === 409) list.reload();
+          throw new Error(scheduleErrorMessage(err));
+        }
+      },
+    });
+
+  const stopRepeat = (row) =>
+    setConfirm({
+      kind: 'stop',
+      row,
+      run: async () => {
+        try {
+          await stopRepeating(req, row.id);
+          toast?.(
+            row.status === 'failed'
+              ? 'It won’t repeat any more.'
+              : 'It goes out once more, then stops.',
+          );
+        } catch (err) {
+          if (err?.status === 409) list.reload();
+          throw new Error(scheduleErrorMessage(err));
         }
       },
     });
@@ -610,6 +706,8 @@ export default function ScheduledPage({ did }) {
     onPostNow: postNow,
     onRetry: retry,
     onCancel: cancel,
+    onSkip: skip,
+    onStopRepeat: stopRepeat,
   });
 
   // One flat list with the day names between the rows, so a row that
@@ -831,7 +929,7 @@ export default function ScheduledPage({ did }) {
         <Section
           id="sched-timed"
           title="At a set time"
-          sub="Posts with a time of their own. They don’t move when the queue does."
+          sub="Posts with a time of their own, replies and repeating posts among them. They don’t move when the queue does."
           actions={
             <Button
               size="sm"
@@ -893,6 +991,9 @@ export default function ScheduledPage({ did }) {
       >
         <p>
           It won’t go out, and Virga’s server deletes its copy, images included.
+          {confirm?.row && rowRepeat(confirm.row).repeats
+            ? ' It stops repeating too: nothing follows it.'
+            : ''}{' '}
           This can’t be undone.
         </p>
         {confirm?.row && rowFacts(confirm.row).text && (
@@ -915,6 +1016,48 @@ export default function ScheduledPage({ did }) {
           {confirm?.row && rowFacts(confirm.row).timer
             ? ' Its timer starts now.'
             : ''}
+          {confirm?.row?.status === 'pending' &&
+          rowRepeat(confirm.row).repeats
+            ? ' It takes the place of this one; the next still goes out at its time.'
+            : ''}
+        </p>
+        {confirm?.row && rowFacts(confirm.row).text && (
+          <blockquote className="hub-quote">
+            {rowFacts(confirm.row).text.slice(0, 200)}
+          </blockquote>
+        )}
+      </ActionDialog>
+      <ActionDialog
+        open={confirm?.kind === 'skip'}
+        title="Skip this one?"
+        confirmLabel="Skip it"
+        busyLabel="Skipping…"
+        onConfirm={confirm?.run}
+        onClose={() => setConfirm(null)}
+      >
+        <p>
+          {confirm?.row && rowRepeat(confirm.row).last
+            ? 'This one doesn’t go out. It’s the last, so the post stops repeating and Virga’s server deletes its copy.'
+            : `The one due ${confirm?.row ? formatInZone(confirm.row.scheduledFor, tz, now) : ''} doesn’t go out. The next one takes its place, at its usual time.`}
+        </p>
+        {confirm?.row && rowFacts(confirm.row).text && (
+          <blockquote className="hub-quote">
+            {rowFacts(confirm.row).text.slice(0, 200)}
+          </blockquote>
+        )}
+      </ActionDialog>
+      <ActionDialog
+        open={confirm?.kind === 'stop'}
+        title="Stop this post repeating?"
+        confirmLabel="Stop repeating"
+        busyLabel="Stopping…"
+        onConfirm={confirm?.run}
+        onClose={() => setConfirm(null)}
+      >
+        <p>
+          {confirm?.row?.status === 'failed'
+            ? 'Nothing follows this one. It stays here to retry or dismiss.'
+            : `It still goes out ${confirm?.row ? formatInZone(confirm.row.scheduledFor, tz, now) : ''}, once, and nothing follows it. To take this one off too, remove it instead.`}
         </p>
         {confirm?.row && rowFacts(confirm.row).text && (
           <blockquote className="hub-quote">

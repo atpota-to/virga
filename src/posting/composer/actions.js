@@ -7,6 +7,7 @@ import {
   PUBLISH_ACTIONS,
   resolvePrimaryPublishAction,
   publishActionBlockReason,
+  queueBlockReason,
   scheduleBlockReason,
 } from '../schedule/publishActions.js';
 import { countComposerGraphemes } from '../lib/inlineLinks.js';
@@ -93,13 +94,14 @@ export function composerActions(
 
   const scheduleBlock = scheduleBlockReason({
     canSchedule: !!caps.canSchedule,
-    reply: f.reply,
     video: f.hasVideo,
     authMode,
   });
+  // A reply can be scheduled for a set time, but not queued.
+  const queueBlock = queueBlockReason({ reply: f.reply });
   const queueEmpty = isScheduleEmpty(queue);
   const scheduling = (action) =>
-    publishActionBlockReason(action, { queueEmpty, scheduleBlock }) ||
+    publishActionBlockReason(action, { queueEmpty, scheduleBlock, queueBlock }) ||
     common ||
     (f.overLimit ? OVER_LIMIT_HINT : null) ||
     (missingMedia ? MEDIA_MISSING_HINT : null);
@@ -131,7 +133,9 @@ export function composerActions(
   else
     primary = resolvePrimaryPublishAction({
       preferred: defaultAction,
-      canSchedule: !scheduleBlock,
+      // A reply is usually meant for now: the account's habit of scheduling
+      // or queueing doesn't apply to it unless Schedule is picked for it.
+      canSchedule: !scheduleBlock && !f.reply,
       canSaveDraft: true,
     });
   if (

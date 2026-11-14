@@ -24,7 +24,8 @@ import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
 import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
-const SECTIONS = [
+// Exported for the command palette, which lists them (src/shell/CommandPalette.jsx).
+export const SECTIONS = [
   { key: 'account', label: 'Account' },
   { key: 'data', label: 'Data and sync' },
   { key: 'dashboards', label: 'Dashboards' },
@@ -581,17 +582,13 @@ function AppearanceSection() {
           </select>
         </Row>
         <Row label="Week starts on" hint="For weekly charts, the best-time grid and the weekly schedule.">
-          <Segmented
-            label="Week starts on"
-            value={prefs.weekStart}
-            onChange={(v) => setPref('weekStart', v)}
-            options={[
-              { value: 'system', label: `Region (${WEEK_START_NAMES[regionWeekStart(activeLocale())]})` },
-              { value: 'monday', label: 'Monday' },
-              { value: 'sunday', label: 'Sunday' },
-              { value: 'saturday', label: 'Saturday' },
-            ]}
-          />
+          {/* A select, not a segmented control: four keys with a day's name in each don't fit a phone. */}
+          <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
+            <option value="system">As in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
+            <option value="monday">Monday</option>
+            <option value="sunday">Sunday</option>
+            <option value="saturday">Saturday</option>
+          </select>
         </Row>
       </Section>
 

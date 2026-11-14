@@ -18,6 +18,10 @@ const RAN_OUT_OF_TIME =
   'Virga’s server ran out of time before it could post this.';
 const RATE_LIMITED = 'Bluesky was rate limiting this account.';
 const REFUSED = 'Bluesky refused the post.';
+const REPLY_TARGET_GONE =
+  'The post this replies to is gone, so the reply wasn’t posted.';
+const REPLY_TARGET_UNCHECKED =
+  'Virga’s server couldn’t check that the post this replies to is still there, so it held the reply back. Retry sends it if the post is still up.';
 const TIMER_NOT_SET =
   'This posted, but its timer couldn’t be set. It stays up unless you delete it.';
 const NO_IDEA = 'This one didn’t go out.';
@@ -32,6 +36,8 @@ const BY_CODE = {
   TIMED_OUT: RAN_OUT_OF_TIME,
   RATE_LIMITED,
   REFUSED,
+  REPLY_TARGET_GONE,
+  REPLY_TARGET_UNCHECKED,
   TIMER_NOT_ARMED: TIMER_NOT_SET,
 };
 
@@ -103,7 +109,18 @@ export function quotaMessage(payload) {
 const BY_THROWN_CODE = {
   NEEDS_BACKEND:
     'Scheduling needs this account signed in through Virga’s server. Reconnect it for a longer session.',
-  SCHEDULE_REPLY: 'Replies can’t be scheduled. Post it now instead.',
+  QUEUE_REPLY:
+    'A reply can’t wait in the queue. Schedule it for a set time instead.',
+  REPLY_UNRESOLVED:
+    'The post you’re replying to couldn’t be read. Try again, or take the reply off.',
+  REPEAT_REPLY:
+    'A reply can’t repeat: it would answer the same post again each time.',
+  QUEUE_REPEAT:
+    'A post in the queue can’t repeat. Schedule it for a set time instead.',
+  NOT_SKIPPABLE:
+    'There’s nothing to skip: this post isn’t repeating, or is already on its way out.',
+  NOT_REPEATING:
+    'This post isn’t repeating, or is already on its way out, so there’s nothing to stop.',
   SCHEDULE_VIDEO: 'Posts with video can’t be scheduled. Post it now instead.',
   MEDIA_TOO_LARGE:
     'That’s more image than can be sent ahead. Use fewer or smaller images, or post it now.',
@@ -152,7 +169,11 @@ const BY_THROWN_CODE = {
 export function scheduleErrorMessage(err) {
   if (!err) return '';
   if (err.code === 'QUOTA_EXCEEDED') return quotaMessage(err.payload || err);
-  if (err.code === 'TIMER_PROBLEM' || err.code === 'LIFESPAN')
+  if (
+    err.code === 'TIMER_PROBLEM' ||
+    err.code === 'LIFESPAN' ||
+    err.code === 'REPEAT_INVALID'
+  )
     return String(err.message || '');
   // A retry refused because the images were cleared: the server's note says
   // whether part of the thread is already out, which decides what to do next.

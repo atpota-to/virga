@@ -1,10 +1,10 @@
 // Pure text edits the composer's editor makes: replacing a range, picking a
-// mention, turning a pasted address into an inline link, taking a pasted
-// post link out once it has become a quote, and splitting an over-long post
-// into a thread. Offsets are UTF-16 indexes into the textarea's value.
+// mention, turning a pasted address into an inline link, and taking a pasted
+// post link out once it has become a quote. Offsets are UTF-16 indexes into
+// the textarea's value. (Splitting an over-long post into a thread is in
+// lib/threadSplit.js and threadEdits.js.)
 
 import {
-  countComposerGraphemes,
   isSingleAddress,
   labelMisleads,
   linkDestination,
@@ -116,48 +116,6 @@ export function removeLinkFromText(text, { charStart, charEnd, expect } = {}) {
     after = after.replace(/^[ \t]+/, '');
   if (!after.trim()) return before.replace(/\s+$/, '');
   return before + after;
-}
-
-/**
- * An over-long post cut into posts that each fit `max` graphemes (counted as
- * they'll be written, links shortened), at the last paragraph, sentence or
- * word break that fits. A word longer than a whole post is cut where it must.
- * `maxParts` caps how many posts it makes: whatever doesn't fit in the
- * others stays, as written, in the last one (over the limit, so it's still
- * flagged) rather than being dropped.
- */
-export function splitForThread(text, max = MAX_POST_GRAPHEMES, { maxParts = Infinity } = {}) {
-  const parts = [];
-  let rest = str(text).trim();
-  const fits = (s) => countComposerGraphemes(s.trim()) <= max;
-  while (rest && !fits(rest) && parts.length < maxParts - 1) {
-    const cut = bestCut(rest, fits);
-    parts.push(rest.slice(0, cut).trim());
-    rest = rest.slice(cut).trim();
-  }
-  if (rest) parts.push(rest);
-  return parts.length ? parts : [''];
-}
-
-function bestCut(text, fits) {
-  // The longest prefix that fits, by binary search over code units.
-  let lo = 1;
-  let hi = text.length;
-  while (lo < hi) {
-    const mid = Math.ceil((lo + hi) / 2);
-    if (fits(text.slice(0, mid))) lo = mid;
-    else hi = mid - 1;
-  }
-  const room = text.slice(0, lo);
-  for (const pattern of [/\n\s*\n/g, /[.!?…](?=\s)/g, /\s/g]) {
-    let at = -1;
-    for (const m of room.matchAll(pattern)) at = m.index + m[0].length;
-    // A break that leaves the first post nearly empty isn't worth taking.
-    if (at > room.length * 0.4) return at;
-  }
-  // No break: never cut a surrogate pair in half.
-  const code = text.charCodeAt(lo - 1);
-  return code >= 0xd800 && code <= 0xdbff ? lo - 1 : lo;
 }
 
 /** How close a post's count is to the limit, from this many characters left. */

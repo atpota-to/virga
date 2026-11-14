@@ -6,7 +6,7 @@ import {
   seedFromIntent,
 } from './intent.js';
 import { emptyComposerState, emptyPost } from '../lib/composerModel.js';
-import { REPLY_HINT } from '../schedule/publishActions.js';
+import { QUEUE_REPLY_HINT } from '../schedule/publishActions.js';
 
 const MIRA = 'did:plc:mira';
 const LAB = 'did:plc:lab';
@@ -103,16 +103,17 @@ describe('normalizeIntent', () => {
     ).toBe(MIRA);
   });
 
-  it('a reply asked to be scheduled opens in post mode and says why (D19)', () => {
-    const plan = normalizeIntent(
-      {
-        reply: { uri: `at://${MIRA}/app.bsky.feed.post/3a` },
-        mode: 'schedule',
-      },
+  it('a reply can be scheduled; one asked into the queue opens in post mode and says why', () => {
+    const reply = { uri: `at://${MIRA}/app.bsky.feed.post/3a` };
+    const scheduled = normalizeIntent(
+      { reply, mode: 'schedule' },
       { activeDid: MIRA },
     );
-    expect(plan.mode).toBe('post');
-    expect(plan.notes).toContain(REPLY_HINT);
+    expect(scheduled.mode).toBe('schedule');
+    expect(scheduled.notes).toEqual([]);
+    const queued = normalizeIntent({ reply, mode: 'queue' }, { activeDid: MIRA });
+    expect(queued.mode).toBe('post');
+    expect(queued.notes).toContain(QUEUE_REPLY_HINT);
   });
 
   it('a reply must name a post', () => {

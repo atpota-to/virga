@@ -1,15 +1,16 @@
-// On a phone: a bar across the top (the mark, the page you're on, Sync, New
-// post, the account) and five tabs along the bottom edge where a thumb
-// reaches them.
+// On a phone: a bar across the top (the mark, the page you're on, Search,
+// Sync, New post, the account) and five tabs along the bottom edge where a
+// thumb reaches them. Search opens the command palette, which has no
+// keyboard shortcut to be found by here.
 
-import { BarChart3, LayoutDashboard, RefreshCw, Settings, SquarePen, Wrench } from 'lucide-react';
+import { BarChart3, LayoutDashboard, RefreshCw, Search, Settings, SquarePen, Wrench } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { Link } from '../lib/router.jsx';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import { syncWhen } from './SyncStatus.jsx';
 
-export function AppBar({ archive, title, profile, did, onSignOut, onNewPost }) {
+export function AppBar({ archive, title, profile, did, onSignOut, onNewPost, onSearch }) {
   const tapLogo = useSkyTaps();
   const pm = archive.meta.posts;
   const syncing = Boolean(archive.sync);
@@ -19,6 +20,9 @@ export function AppBar({ archive, title, profile, did, onSignOut, onNewPost }) {
         <LogoMark size={26} />
       </button>
       <span className="appbar-title">{title}</span>
+      <Button variant="ghost" icon aria-label="Search or jump to" title="Search or jump to" onClick={onSearch}>
+        <Search size={18} aria-hidden="true" />
+      </Button>
       {pm && (
         <Button
           variant="ghost"

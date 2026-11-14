@@ -342,18 +342,20 @@ export async function serializeForSchedule(state, options = {}) {
 
   const zone = tz || deviceTimeZone();
   const repeatZone = options.repeatTz || zone;
-  const rule = isQueued
+  const asked = isQueued
     ? null
-    : normalizeRepeat(
-        options.repeat !== undefined ? options.repeat : s.schedule?.repeat,
-      );
-  if (rule && s.reply) throw refuse('REPEAT_REPLY', REPEAT_REPLY_HINT);
-  if (rule) {
-    const wrong = repeatProblem(rule, new Date(whenMs).toISOString(), repeatZone, {
+    : (options.repeat !== undefined ? options.repeat : s.schedule?.repeat) ||
+      null;
+  if (asked && s.reply) throw refuse('REPEAT_REPLY', REPEAT_REPLY_HINT);
+  if (asked) {
+    // Judged as the picker left it: an end that is half filled in is asked
+    // for, never read as "no end".
+    const wrong = repeatProblem(asked, new Date(whenMs).toISOString(), repeatZone, {
       occurrence: options.occurrence || 1,
     });
     if (wrong) throw refuse('REPEAT_INVALID', wrong);
   }
+  const rule = normalizeRepeat(asked);
 
   const { problem, spec: selfDestruct } = scheduledTimerToSend(
     s.lifespan,

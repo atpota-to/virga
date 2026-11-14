@@ -559,9 +559,16 @@ describe('validateComposer', () => {
     };
     let s = run(withText('x'), { type: 'setReply', reply });
     expect(codes(validateComposer(s, { now }))).toEqual([]);
-    expect(codes(validateComposer(s, { now, forSchedule: true }))).toEqual([
-      'SCHEDULE_REPLY',
-    ]);
+    // A reply can be scheduled for a set time; only the queue refuses it.
+    expect(codes(validateComposer(s, { now, forSchedule: true }))).toEqual([]);
+    expect(
+      codes(
+        validateComposer(
+          run(s, { type: 'setSchedule', schedule: { mode: 'queue' } }),
+          { now, forSchedule: true },
+        ),
+      ),
+    ).toEqual(['QUEUE_REPLY']);
     s = run(withText('x'), {
       type: 'setVideo',
       index: 0,

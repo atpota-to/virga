@@ -25,6 +25,7 @@ import {
   rowActions,
   rowIsDueSoon,
   rowFacts,
+  rowReply,
   rowStatus,
   rowTags,
   ruleOfTimerRow,
@@ -184,6 +185,8 @@ describe('a row’s facts and state', () => {
       postNow: true,
       retry: false,
       cancel: true,
+      skip: false,
+      stopRepeat: false,
     });
     expect(rowActions(row('a', 'x', { status: 'failed' }))).toMatchObject({
       edit: true,
@@ -658,6 +661,97 @@ describe('the time picker', () => {
     );
     expect(whenProblem('2027-06-01T00:00:00Z', NOW)).toMatch(/further ahead/);
     expect(whenProblem('2026-11-13T12:00:00Z', NOW)).toBe('');
+  });
+});
+
+describe('a scheduled reply and a repeating post', () => {
+  const PARENT = { uri: 'at://did:plc:other/app.bsky.feed.post/3kp', cid: 'c' };
+  const reply = { root: PARENT, parent: PARENT };
+  const repeat = {
+    every: 'week',
+    tz: 'UTC',
+    until: null,
+    count: null,
+    anchor: { date: '2026-11-13', time: '09:00', occurrence: 1 },
+  };
+  const repeating = (extra = {}) =>
+    row('r', '2026-11-13T09:00:00Z', {
+      queued: false,
+      seriesId: 's',
+      occurrence: 1,
+      payload: { posts: [{ record: { text: 'weekly' } }], repeat },
+      ...extra,
+    });
+
+  it('says who a reply answers, as far as the row remembers', () => {
+    const base = { posts: [{ record: { text: 'yes' } }], reply };
+    expect(
+      rowReply({
+        payload: {
+          ...base,
+          replyTo: { handle: 'ada.example.com', displayName: 'Ada', text: ' two\nlines ' },
+        },
+      }),
+    ).toEqual({ who: '@ada.example.com', text: 'two lines' });
+    expect(rowReply({ payload: { ...base, replyTo: { displayName: 'Ada' } } })).toEqual({
+      who: 'Ada',
+      text: '',
+    });
+    expect(rowReply({ payload: base })).toEqual({ who: 'a post', text: '' });
+    expect(rowReply({ payload: { posts: [] } })).toBeNull();
+    expect(rowFacts({ payload: base }).reply).toEqual({ who: 'a post', text: '' });
+    expect(rowFacts(row('a', 'x')).reply).toBeNull();
+  });
+
+  it('offers Skip and Stop repeating on the waiting occurrence', () => {
+    expect(rowActions(repeating(), NOW)).toMatchObject({
+      edit: true,
+      cancel: true,
+      skip: true,
+      stopRepeat: true,
+    });
+    // Failed: nothing to skip, but it can be stopped.
+    expect(rowActions(repeating({ status: 'failed' }), NOW)).toMatchObject({
+      skip: false,
+      stopRepeat: true,
+      retry: true,
+    });
+    expect(rowActions(repeating({ status: 'publishing' }), NOW)).toMatchObject({
+      skip: false,
+      stopRepeat: false,
+    });
+    expect(rowActions(repeating({ partial: true }), NOW).skip).toBe(false);
+    // A failed occurrence its series has moved past carries no rule.
+    expect(
+      rowActions(
+        row('f', '2026-11-06T09:00:00Z', { status: 'failed', seriesId: 's', occurrence: 1 }),
+        NOW,
+      ),
+    ).toMatchObject({ skip: false, stopRepeat: false, retry: true });
+  });
+
+  it('posting it now skips this occurrence, so the next still goes out', async () => {
+    const d = {
+      requester: { did: 'did:plc:me' },
+      getScheduledMedia: vi.fn(async () => ({})),
+      reconstructFromScheduled: vi.fn(() => ({ posts: [{ text: 'weekly', images: [] }], lifespan: { enabled: false } })),
+      targetFor: vi.fn(async () => ({ did: 'did:plc:me' })),
+      publish: vi.fn(async () => ({ written: [{ uri: 'at://p' }], root: { uri: 'at://p' } })),
+      cancelScheduled: vi.fn(async () => ({})),
+      skipScheduled: vi.fn(async () => ({ next: { id: 'n' }, ended: false })),
+      emitPostsChanged: vi.fn(),
+    };
+    const out = await postScheduledNow(repeating(), { did: 'did:plc:me', deps: d, now: NOW });
+    expect(d.publish).toHaveBeenCalledTimes(1);
+    expect(d.skipScheduled).toHaveBeenCalledWith(d.requester, 'r');
+    expect(d.cancelScheduled).not.toHaveBeenCalled();
+    expect(out).toMatchObject({ cancelled: true, notes: [] });
+
+    // A failed one has nothing to skip: it is dismissed, as any failed row.
+    const failed = { ...d, skipScheduled: vi.fn(), cancelScheduled: vi.fn(async () => ({})) };
+    await postScheduledNow(repeating({ status: 'failed' }), { did: 'did:plc:me', deps: failed, now: NOW });
+    expect(failed.skipScheduled).not.toHaveBeenCalled();
+    expect(failed.cancelScheduled).toHaveBeenCalledTimes(1);
   });
 });
 

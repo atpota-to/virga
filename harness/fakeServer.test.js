@@ -18,8 +18,18 @@ import {
 } from './fakeServer.js';
 import { createRouter } from './fakeNetwork.js';
 import { readFlags } from './harness.js';
-import { listCollection, readRecord, writeRecord } from './repo.js';
+import { listCollection, readRecord, removeRecord, writeRecord } from './repo.js';
 import { narrowAllow as serverNarrowAllow } from '../server/timers/selfDestruct.js';
+import {
+  nextOccurrence as serverNextOccurrence,
+  occurrenceTime as serverOccurrenceTime,
+  validateRepeat as serverValidateRepeat,
+} from '../server/schedule/recurrence.js';
+import {
+  anchoredRepeat,
+  nextOccurrence,
+  occurrenceTime,
+} from '../src/posting/schedule/repeat.js';
 import { MAX_TEXT_LENGTH } from '../server/ai/handlers/analyzePost.js';
 import { LAB, ME, buildWorld } from './world.js';
 import {
@@ -38,9 +48,14 @@ import {
   listScheduled,
   reorderScheduled,
   retryScheduled,
+  skipScheduled,
+  stopRepeating,
   updateScheduled,
 } from '../src/posting/schedule/scheduleService.js';
-import { serializeForSchedule } from '../src/posting/schedule/scheduleSerialize.js';
+import {
+  reconstructFromScheduled,
+  serializeForSchedule,
+} from '../src/posting/schedule/scheduleSerialize.js';
 import { cancelTimer, listTimers } from '../src/posting/timers/timerService.js';
 import { emptyComposerState } from '../src/posting/lib/composerModel.js';
 
@@ -185,13 +200,10 @@ describe('scheduled posts', () => {
     });
   });
 
-  it('refuses a reply or a video, which the server’s payload can’t carry', async () => {
+  it('refuses a video, which the server’s payload can’t carry', async () => {
     const { req } = setup();
     const body = await scheduleBody(['hello'], { at: NOW + HOUR });
-    body.payload.posts[0].record.reply = {
-      root: { uri: 'at://x/y/z', cid: 'c' },
-      parent: { uri: 'at://x/y/z', cid: 'c' },
-    };
+    body.payload.posts[0].embed = { type: 'video' };
     await expect(createScheduled(req, body)).rejects.toMatchObject({
       status: 400,
     });
@@ -879,5 +891,338 @@ describe('the address flags', () => {
     expect(readFlags('?ailimits=5,2,1').aiLimits).toEqual({ adviser: 5, altText: 2, style: 1 });
     expect(readFlags('?ailimits=unlimited').aiLimits).toEqual({ adviser: null, altText: null, style: null });
     expect(readFlags('?ailimits=0').aiLimits).toEqual({ adviser: 0, altText: 15, style: 3 });
+  });
+});
+
+describe('scheduled replies', () => {
+  /** A reply, as the composer holds it, to the first post Field Lab has. */
+  function replyTo(lab) {
+    const post = lab.posts[0];
+    const found = readRecord(lab, 'app.bsky.feed.post', post.rkey);
+    const ref = { uri: found.uri, cid: found.cid };
+    return {
+      ...ref,
+      root: ref,
+      author: { did: LAB.did, handle: LAB.handle, displayName: 'Field Lab' },
+      text: found.value.text,
+    };
+  }
+
+  it('schedules a reply, lists what it answers, and publishes it under its parent', async () => {
+    const { req, mira, lab, server, advance } = setup();
+    const reply = replyTo(lab);
+    const body = await scheduleBody(['Count me in', 'and I’ll bring the ladder'], {
+      at: NOW + HOUR,
+      extra: { reply },
+    });
+    const row = await createScheduled(req, body);
+    const refs = { root: { uri: reply.uri, cid: reply.cid }, parent: { uri: reply.uri, cid: reply.cid } };
+    expect(row.payload.reply).toEqual(refs);
+    expect(row.payload.replyTo).toMatchObject({ handle: LAB.handle });
+    expect(row.payload.gates).toEqual({ threadgate: null, postgate: null });
+    const listed = (await listScheduled(req)).rows.find((r) => r.id === row.id);
+    expect(listed.payload.replyTo.text).toBe(reply.text.slice(0, 300));
+
+    // Opened again in the composer, it is still that reply.
+    const state = reconstructFromScheduled(listed, {}, { asDid: ME.did });
+    expect(state.reply).toMatchObject({ uri: reply.uri, cid: reply.cid, root: refs.root });
+
+    advance(HOUR + 1000);
+    const { published } = await server.runCron();
+    expect(published.map((r) => r.id)).toEqual([row.id]);
+    const first = readRecord(mira, 'app.bsky.feed.post', row.payload.rkeys[0]);
+    expect(first.value.reply).toEqual(refs);
+    const second = readRecord(mira, 'app.bsky.feed.post', row.payload.rkeys[1]);
+    expect(second.value.reply).toEqual({
+      root: refs.root,
+      parent: { uri: first.uri, cid: first.cid },
+    });
+    expect(
+      listCollection(mira, 'app.bsky.feed.threadgate').some((g) => g.value.post === first.uri),
+    ).toBe(false);
+  });
+
+  it('does not post a reply whose parent is gone by its time, and says why', async () => {
+    const { req, mira, lab, server, advance } = setup();
+    const reply = replyTo(lab);
+    const row = await createScheduled(
+      req,
+      await scheduleBody(['Too late'], { at: NOW + HOUR, extra: { reply } }),
+    );
+    const before = listCollection(mira, 'app.bsky.feed.post').length;
+    removeRecord(lab, 'app.bsky.feed.post', lab.posts[0].rkey);
+    advance(HOUR + 1000);
+    const { published } = await server.runCron();
+    expect(published).toEqual([]);
+    expect(listCollection(mira, 'app.bsky.feed.post')).toHaveLength(before);
+    const failed = (await listScheduled(req)).rows.find((r) => r.id === row.id);
+    expect(failed).toMatchObject({
+      status: 'failed',
+      lastErrorCode: 'REPLY_TARGET_GONE',
+      attempts: 1,
+    });
+    expect(failed.lastError).toMatch(/has been deleted, so the reply was not posted/);
+  });
+
+  it('keeps a reply out of the queue, and from repeating, with the server’s codes', async () => {
+    const { req, lab } = setup();
+    const reply = replyTo(lab);
+    const body = await scheduleBody(['hi'], { at: NOW + HOUR, extra: { reply } });
+    await expect(createScheduled(req, { ...body, queued: true })).rejects.toMatchObject({
+      status: 400,
+      code: 'QUEUE_REPLY',
+    });
+    await expect(
+      createScheduled(req, {
+        ...body,
+        payload: { ...body.payload, repeat: { every: 'day', tz: 'UTC' } },
+      }),
+    ).rejects.toMatchObject({ status: 400, code: 'REPEAT_REPLY' });
+    await expect(
+      createScheduled(req, {
+        ...body,
+        payload: { ...body.payload, reply: { root: body.payload.reply.root } },
+      }),
+    ).rejects.toMatchObject({ status: 400 });
+  });
+});
+
+describe('repeating posts', () => {
+  const DAY = 24 * HOUR;
+  const repeating = (texts, rule, { at = NOW + HOUR, extra = {} } = {}) =>
+    scheduleBody(texts, {
+      at,
+      extra: { ...extra, schedule: { mode: 'at', at: new Date(at).toISOString(), repeat: rule } },
+    });
+
+  it('starts a series, publishes an occurrence, and leaves the next one waiting', async () => {
+    const { req, mira, server, advance } = setup();
+    const row = await createScheduled(req, await repeating(['Every day at one'], { every: 'day', count: 3 }));
+    expect(row).toMatchObject({ occurrence: 1, status: 'pending' });
+    expect(row.seriesId).toBeTruthy();
+    expect(row.payload.repeat).toEqual({
+      every: 'day',
+      tz: 'UTC',
+      until: null,
+      count: 3,
+      anchor: { date: '2026-11-12', time: '13:00', occurrence: 1 },
+    });
+    const used = (await getLimits(req)).usage.scheduledPosts;
+
+    advance(HOUR + 1000);
+    const { published } = await server.runCron();
+    expect(published.map((r) => r.id)).toEqual([row.id]);
+    const waiting = (await listScheduled(req)).rows.filter((r) => r.seriesId === row.seriesId);
+    expect(waiting).toHaveLength(1);
+    expect(waiting[0]).toMatchObject({ status: 'pending', occurrence: 2 });
+    expect(waiting[0].scheduledFor).toBe(new Date(NOW + HOUR + DAY).toISOString());
+    expect(waiting[0].payload.repeat).toEqual(row.payload.repeat);
+    expect(waiting[0].payload.rkeys[0]).not.toBe(row.payload.rkeys[0]);
+    // The series holds one slot, before and after.
+    expect((await getLimits(req)).usage.scheduledPosts).toBe(used);
+
+    // Each occurrence is a record of its own, and the third is the last.
+    advance(DAY);
+    await server.runCron();
+    advance(DAY);
+    await server.runCron();
+    advance(DAY);
+    await server.runCron();
+    const mine = listCollection(mira, 'app.bsky.feed.post').filter(
+      (p) => p.value.text === 'Every day at one',
+    );
+    expect(mine).toHaveLength(3);
+    expect(new Set(mine.map((p) => p.uri)).size).toBe(3);
+    expect(
+      (await listScheduled(req)).rows.filter((r) => r.seriesId === row.seriesId),
+    ).toEqual([]);
+  });
+
+  it('skips an occurrence, stops repeating, and removes a series', async () => {
+    const { req, server, advance } = setup();
+    const row = await createScheduled(req, await repeating(['Weekly'], { every: 'week' }));
+    const skipped = await skipScheduled(req, row.id);
+    expect(skipped.ended).toBe(false);
+    expect(skipped.next).toMatchObject({ occurrence: 2, seriesId: row.seriesId });
+    expect(skipped.next.scheduledFor).toBe(new Date(NOW + HOUR + 7 * DAY).toISOString());
+    let rows = (await listScheduled(req)).rows.filter((r) => r.seriesId === row.seriesId);
+    expect(rows.map((r) => r.id)).toEqual([skipped.next.id]);
+    await expect(skipScheduled(req, row.id)).rejects.toMatchObject({
+      status: 409,
+      code: 'NOT_SKIPPABLE',
+    });
+
+    const stopped = await stopRepeating(req, skipped.next.id);
+    expect(stopped.payload).not.toHaveProperty('repeat');
+    await expect(stopRepeating(req, skipped.next.id)).rejects.toMatchObject({
+      status: 409,
+      code: 'NOT_REPEATING',
+    });
+    // It goes out its one last time, and nothing follows.
+    advance(HOUR + 7 * DAY + 1000);
+    // (The seeded rows come due in that week too.)
+    expect((await server.runCron()).published.map((r) => r.id)).toContain(skipped.next.id);
+    rows = (await listScheduled(req)).rows.filter((r) => r.seriesId === row.seriesId);
+    expect(rows).toEqual([]);
+
+    // Removing the waiting occurrence ends a series.
+    const other = await createScheduled(
+      req,
+      await repeating(['Monthly'], { every: 'month' }, { at: NOW + 8 * DAY }),
+    );
+    await cancelScheduled(req, other.id);
+    expect((await listScheduled(req)).rows.some((r) => r.seriesId === other.seriesId)).toBe(false);
+  });
+
+  it('ends the series when the one skipped was the last', async () => {
+    const { req } = setup();
+    const row = await createScheduled(req, await repeating(['Twice'], { every: 'day', count: 2 }));
+    const { next } = await skipScheduled(req, row.id);
+    expect(await skipScheduled(req, next.id)).toEqual({ next: null, ended: true });
+  });
+
+  it('keeps a repeating post’s picture for the next occurrence, and drops it when the series ends', async () => {
+    const { req, mira, server, advance } = setup();
+    const file = new File([new Uint8Array([1, 2, 3, 4])], 'p.png', { type: 'image/png' });
+    const body = await repeating(['With a picture'], { every: 'day', count: 2 }, {
+      extra: {
+        posts: [
+          {
+            ...emptyComposerState({ asDid: ME.did }).posts[0],
+            text: 'With a picture',
+            images: [{ id: 'i1', file, mime: 'image/png', size: 4, alt: 'four bytes' }],
+          },
+        ],
+      },
+    });
+    const row = await createScheduled(req, body);
+    advance(HOUR + 1000);
+    await server.runCron();
+    const next = (await listScheduled(req)).rows.find((r) => r.seriesId === row.seriesId);
+    expect(Object.keys(await getScheduledMedia(req, next.id))).toEqual(['p0-img0']);
+    advance(DAY);
+    await server.runCron();
+    const posts = listCollection(mira, 'app.bsky.feed.post').filter(
+      (p) => p.value.text === 'With a picture',
+    );
+    expect(posts).toHaveLength(2);
+    expect(posts.every((p) => p.value.embed.images.length === 1)).toBe(true);
+    // The series is over: Virga's server no longer holds the picture.
+    await expect(getScheduledMedia(req, next.id)).resolves.toEqual({});
+  });
+
+  it('goes on from its schedule past an occurrence that failed, keeping the failure to retry', async () => {
+    const { req, server, advance } = setup();
+    const row = await createScheduled(req, await repeating(['Daily'], { every: 'day' }));
+    server.refuseGrant(ME.did);
+    // Five attempts with backoff use the row up.
+    for (let i = 0; i < 6; i++) {
+      advance(i === 0 ? HOUR + 1000 : 61 * 60_000);
+      await server.runCron();
+    }
+    const rows = (await listScheduled(req)).rows.filter((r) => r.seriesId === row.seriesId);
+    expect(rows.map((r) => [r.occurrence, r.status])).toEqual([
+      [1, 'failed'],
+      [2, 'pending'],
+    ]);
+    expect(rows[0].payload).not.toHaveProperty('repeat');
+    expect(rows[1].payload.repeat.every).toBe('day');
+  });
+
+  it('changes this and later occurrences when the waiting one is edited', async () => {
+    const { req } = setup();
+    const row = await createScheduled(req, await repeating(['Old words'], { every: 'day' }));
+    const { next } = await skipScheduled(req, row.id);
+    const edited = await updateScheduled(
+      req,
+      next.id,
+      await repeating(['New words'], { every: 'week', count: 5 }, { at: NOW + 2 * DAY }),
+    );
+    expect(edited).toMatchObject({ id: next.id, seriesId: row.seriesId, occurrence: 2 });
+    expect(edited.payload.repeat).toMatchObject({
+      every: 'week',
+      count: 5,
+      anchor: { occurrence: 2 },
+    });
+    expect(edited.payload.posts[0].record.text).toBe('New words');
+    // Saved without a rule, it stops repeating.
+    const plain = await updateScheduled(
+      req,
+      next.id,
+      await scheduleBody(['New words'], { at: NOW + 2 * DAY }),
+    );
+    expect(plain.payload).not.toHaveProperty('repeat');
+  });
+
+  it('refuses what the server refuses: a queued repeat, a bad rule', async () => {
+    const { req } = setup();
+    const body = await repeating(['x'], { every: 'day' });
+    await expect(createScheduled(req, { ...body, queued: true })).rejects.toMatchObject({
+      status: 400,
+      code: 'QUEUE_REPEAT',
+    });
+    for (const repeat of [
+      { every: 'hour', tz: 'UTC' },
+      { every: 'day', tz: 'UTC', count: 1 },
+      { every: 'day', tz: 'UTC', count: 3, until: '2027-01-01' },
+      { every: 'day', tz: 'UTC', until: '2026-01-01' },
+      { every: 'day', tz: 'Mars/Olympus' },
+    ]) {
+      const sent = { ...body, payload: { ...body.payload, repeat, tz: undefined } };
+      const theirs = serverValidateRepeat(repeat, { scheduledFor: body.scheduledFor });
+      expect(theirs.error, JSON.stringify(repeat)).toBeTruthy();
+      await expect(createScheduled(req, sent)).rejects.toMatchObject({
+        status: 400,
+        detail: theirs.error,
+      });
+    }
+  });
+});
+
+describe('the client and the server on when a repeating post goes out', () => {
+  // The browser bundle and the server share no code, so each has its own
+  // wall-clock arithmetic (src/posting/schedule/repeat.js, and
+  // server/schedule/recurrence.js). The fake server uses the client's; this
+  // holds the two to the same answers.
+  const CASES = [
+    ['day', 'Europe/Paris', '2026-10-23T07:00:00Z'], // across the autumn change
+    ['day', 'Europe/Paris', '2026-03-27T01:30:00Z'], // 02:30, across the spring gap
+    ['week', 'America/New_York', '2026-03-02T14:00:00Z'],
+    ['2weeks', 'America/New_York', '2026-10-20T03:30:00Z'], // late evening, the day before in UTC
+    ['month', 'UTC', '2026-01-31T09:00:00Z'],
+    ['month', 'Pacific/Auckland', '2026-10-31T10:30:00Z'],
+    ['month', 'Asia/Kolkata', '2027-12-29T18:45:00Z'],
+    ['week', 'Australia/Lord_Howe', '2026-09-30T12:00:00Z'], // a half-hour clock change
+  ];
+
+  it.each(CASES)('every %s in %s from %s', (every, tz, at) => {
+    const theirs = serverValidateRepeat({ every, tz }, { scheduledFor: at }).value;
+    const ours = anchoredRepeat({ every }, at, tz, 1);
+    expect(ours).toEqual(theirs);
+    for (let k = 1; k <= 30; k++) {
+      expect(occurrenceTime(ours, k), `occurrence ${k}`).toEqual(serverOccurrenceTime(theirs, k));
+    }
+    const start = Date.parse(at);
+    for (const offset of [-1, 0, 1, 36 * HOUR, 9 * 24 * HOUR, 200 * 24 * HOUR]) {
+      for (const from of [1, 2, 7]) {
+        expect(nextOccurrence(ours, from, start + offset)).toEqual(
+          serverNextOccurrence(theirs, from, start + offset),
+        );
+      }
+    }
+  });
+
+  it('agrees on where a series ends', () => {
+    const at = '2026-11-02T09:00:00Z';
+    for (const end of [{ count: 3 }, { until: '2026-11-16' }, { until: '2026-11-15' }]) {
+      const theirs = serverValidateRepeat({ every: 'week', tz: 'UTC', ...end }, { scheduledFor: at }).value;
+      const ours = { ...anchoredRepeat({ every: 'week', ...end }, at, 'UTC', 1) };
+      expect(ours).toEqual(theirs);
+      for (const from of [1, 2, 3, 4]) {
+        expect(nextOccurrence(ours, from, Date.parse(at))).toEqual(
+          serverNextOccurrence(theirs, from, Date.parse(at)),
+        );
+      }
+    }
   });
 });

@@ -20,6 +20,7 @@ import {
 } from './adviser/setup.js';
 import { DEFAULT_POSTING_QUEUE } from './schedule/postingQueue.js';
 import { readDefaultGates as readBlueskyDefaultGates } from './lib/gates.js';
+import { THREAD_NUMBERING } from './lib/threadSplit.js';
 
 export const POSTING_SETTINGS_PREFIX = 'virga:posting:';
 
@@ -121,6 +122,7 @@ export function defaultPostingSettings({ language = browserLanguage() } = {}) {
     defaultAction: 'post',
     requireAltText: false,
     showThreadSuggestion: true,
+    threadNumbering: 'off',
     adviser: normalizeAdviserSettings(DEFAULT_ADVISER_SETTINGS),
     suggestBestTimes: true,
   };
@@ -256,6 +258,13 @@ function checkBoolean(field) {
   };
 }
 
+// How a long post split into a thread numbers its posts (lib/threadSplit.js).
+function checkThreadNumbering(value) {
+  if (!THREAD_NUMBERING.includes(value))
+    throw invalid('threadNumbering', `“${value}” isn’t a way to number posts.`);
+  return value;
+}
+
 const CHECKERS = {
   langs: checkLangs,
   gates: checkGates,
@@ -264,6 +273,7 @@ const CHECKERS = {
   defaultAction: checkAction,
   requireAltText: checkBoolean('requireAltText'),
   showThreadSuggestion: checkBoolean('showThreadSuggestion'),
+  threadNumbering: checkThreadNumbering,
   adviser: checkPlainObject('adviser'),
   suggestBestTimes: checkBoolean('suggestBestTimes'),
 };

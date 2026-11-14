@@ -154,6 +154,18 @@ set on the way out. It keeps an unsent post for a day if the tab closes. `n` ope
 anywhere, `/` at the start of a word offers templates, and Ctrl or ⌘ Enter runs the main
 button. A link of the form `/intent/compose?text=…&url=…&tags=…` opens it filled in.
 
+A post that runs past 300 characters offers to split itself into a thread, right under
+its text. The cuts fall at paragraph breaks, then sentence ends, then between words,
+never inside a link, a mention, a hashtag or an emoji, and each post is counted the way
+Bluesky counts it. The posts can be numbered (2/5, on a line of their own at the end; off
+unless Settings › Posting or the box on the offer says so). Undo, or Ctrl or ⌘ Z, puts
+the original text back, and a numbered thread that has changed since offers Renumber.
+
+Ctrl K (⌘K on a Mac) opens a command palette: go to any dashboard, report, tool, posting
+page or settings section, start a post, sync, set the period or the theme, switch
+account, or customize the dashboard you're on. The sidebar's Search or jump to opens it
+too, as does the search button in the phone's app bar.
+
 The **post adviser** is off until it's turned on, per account, and only for long
 sessions. It reads a post against goals you pick (and, if asked, proofreads it and checks
 it against a reading of your style) before it goes out or when you ask, and never stops a
@@ -169,8 +181,9 @@ and scheduled videos aren't offered.
 
 **Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
-action, alt text, the weekly schedule, a default timer, the adviser), appearance (theme,
-density, the sidebar, the live sky), the permissions, and where the data comes from.
+action, numbering a split thread, alt text, the weekly schedule, a default timer, the adviser), appearance (theme,
+accent, contrast, density, the sidebar, how numbers, dates and the week are written, the
+live sky), the permissions, and where the data comes from.
 
 The first build takes a minute or two for an account with thousands of posts. After
 that a sync only fetches what is new, and runs by itself when the archive is more than an
@@ -252,9 +265,9 @@ token (`virga:backend-token:<did>`), each account's dashboards (`virga:dashboard
 posting settings (`virga:posting:<did>`), an unsent post (`virga:composer-autosave:<did>`,
 for a day), a copy of its templates and how often each is used, this month's adviser
 allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), and the
-preferences for whoever is at the browser (`virga:preferences`: theme, density, the live
-sky, the period or range of dates, the sidebar, and how numbers, dates and the week are
-written). A long
+preferences for whoever is at the browser (`virga:preferences`: theme, accent, contrast,
+density, the live sky and its time of day, the period or range of dates, the sidebar, and
+how numbers, dates and the week are written). A long
 session's token sits where any script running on the page could read it, like the
 browser client's own session; Remove from this browser deletes it. sessionStorage holds a
 sign-in in progress (`virga:signin-pending`), a guard against sign-in loops
@@ -279,21 +292,30 @@ per account.
 
 ## The look
 
-A quiet, light workspace (the Ledger direction), with a dark theme beside it.
+A quiet, light workspace (the Ledger direction), with a dark theme beside it and a
+high-contrast set of each.
 
 - **Plain grounds and one-pixel lines.** White cards on a pale ground, small radii, no
   shadows except on what floats (menus, dialogs). Colours, type, spacing and density are
-  tokens in `src/styles/theme.css`, with a dark set under `[data-theme='dark']`. The
-  theme follows the system unless Settings picks one; `index.html` stamps it before the
-  first paint.
-- **One blue** for the data and whatever is pressed; coral for the second thing on a
-  chart and a change downward. A change says which way it went, not whether that's good.
-  The chart colours have their own steps in each theme, checked for colour-blind
-  separation and contrast against their own surface.
+  tokens in `src/styles/theme.css`, with a dark set under `[data-theme='dark']` and a
+  high-contrast set of each under `[data-contrast='high']`: words at 7:1 or better, lines
+  and borders at 3:1, one flat ground with the cards outlined on it, and a thicker focus
+  ring. The theme and the contrast follow the system unless Settings picks one;
+  `index.html` stamps them, with the accent and the density, before the first paint.
+  Under forced colours nothing is left to a fill or a shadow alone.
+- **One accent** for the data and whatever is pressed: blue, or one of five others chosen
+  in Settings (violet, teal, amber, rose, graphite). It is not a colour picker: each is a
+  full set of steps for both themes and for high contrast. The second thing on a chart,
+  and a change downward, is coral, or blue beside amber and rose, where coral would sit
+  too close. A change says which way it went, not whether that's good.
+  `src/styles/theme.test.js` reads the stylesheet and holds every accent, theme and
+  contrast setting to the same numbers: words at 4.5:1 (7:1 in high contrast), marks and
+  the focus ring at 3:1 (4.5:1), and the two series at least 15 apart in OKLab under
+  simulated protanopia, deuteranopia and tritanopia (20 with ordinary vision).
 - **One typeface,** Mona Sans, in sentence case, in its ordinary figures (its tabular
   ones have a slashed zero). Monospace is for code only (NSIDs, DIDs).
 - **Every chart has a table.** Hover shows a value; Show as table shows them all.
-- **On a phone,** the sidebar becomes an app bar (with New post) and five tabs at the
+- **On a phone,** the sidebar becomes an app bar (with Search and New post) and five tabs at the
   bottom, cards stack one to a row (figures two to a row), Customize moves cards with
   arrows, and the composer and its dialogs are full-height sheets with the main button
   under the thumb.
@@ -391,10 +413,10 @@ handlers as Node functions with the same paths, and call the two run paths every
 
 | Where | What |
 | --- | --- |
-| `src/shell/` | The signed-in frame: sidebar, app bar and tabs, page header, sync status, routing, shortcuts |
+| `src/shell/` | The signed-in frame: sidebar, app bar and tabs, page header, sync status, routing, shortcuts, the command palette (`commands.js` builds its list from the registries) |
 | `src/session/` | Signing in both ways, the accounts, switching, the backend fetch handler, session checks |
 | `src/accounts/` | The account menu, Settings › Account, the sign-in notices |
-| `src/posting/lib/` | Rich text and facets, the composer model, images, video, link cards, gates, `publish()` |
+| `src/posting/lib/` | Rich text and facets, the composer model, thread splitting, images, video, link cards, gates, `publish()` |
 | `src/posting/{drafts,templates,library,schedule,timers,adviser}/` | Each posting feature's logic, without UI |
 | `src/posting/composer/`, `pages/`, `ui/` | The composer, the posting pages and the shared posting components |
 | `api/` | The server's Vercel functions: one per area, each a thin router |

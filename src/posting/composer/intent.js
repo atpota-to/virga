@@ -6,7 +6,7 @@
 import { parseRecordLink, parseRecordUri } from '../lib/postLink.js';
 import { normalizeTags } from '../lib/tags.js';
 import { MAX_IMAGES, MAX_POSTS, MAX_LANGS } from '../lib/composerModel.js';
-import { REPLY_HINT } from '../schedule/publishActions.js';
+import { QUEUE_REPLY_HINT } from '../schedule/publishActions.js';
 
 const str = (v) => (typeof v === 'string' ? v : '');
 const isObject = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -60,8 +60,9 @@ export function readTargetRef(input) {
  *                arrives this way, with its description)
  *   tags, langs  normalized; langs null when the intent didn't say
  *   draftId, draftOwnerDid, scheduledId, templateId
- *   mode         'post' | 'schedule' | 'queue' (a reply can't be scheduled:
- *                D19, so it opens in post mode and `notes` says why)
+ *   mode         'post' | 'schedule' | 'queue' (a reply can be scheduled
+ *                for a set time but not queued, so one asked into the queue
+ *                opens in post mode and `notes` says why)
  *   fromLink, url   the "From a link" notice for /intent/compose
  *   hasContent   whether it brings anything, so a saved post isn't restored
  *                over it
@@ -89,9 +90,9 @@ export function normalizeIntent(intent, { activeDid = '' } = {}) {
 
   const notes = [];
   let mode = ['post', 'schedule', 'queue'].includes(i.mode) ? i.mode : 'post';
-  if (reply && mode !== 'post') {
+  if (reply && mode === 'queue') {
     mode = 'post';
-    notes.push(REPLY_HINT);
+    notes.push(QUEUE_REPLY_HINT);
   }
 
   const tags = normalizeTags(i.tags);

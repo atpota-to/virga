@@ -67,7 +67,8 @@ import {
 } from '../schedule/scheduleService.js';
 import { serializeForSchedule, reconstructFromScheduled } from '../schedule/scheduleSerialize.js';
 import { scheduleErrorMessage } from '../schedule/scheduledPostError.js';
-import { nextOpenSlot, queueSlotMoveNote } from '../schedule/postingQueue.js';
+import { nextOpenSlot, queueSlotMoveNote, resolveTimezone } from '../schedule/postingQueue.js';
+import { REPEAT_REPLY_HINT } from '../schedule/repeat.js';
 import { needsBackendHint } from '../schedule/publishActions.js';
 import {
   composerTimerFit,
@@ -99,7 +100,9 @@ import { normalizeIntent, intentLoads, seedFromIntent, readTargetRef } from './i
 import { composerActions } from './actions.js';
 import { defaultTimerFor, gatesSourceLine, gatesSummary, NO_FREE_TIMER, TIMER_NEEDS_SERVER } from './defaults.js';
 import { pastedImageFiles, sortIncomingFiles, IMAGE_INPUT_ACCEPT } from './media.js';
-import { removeLinkFromText, splitForThread } from './editing.js';
+import { removeLinkFromText } from './editing.js';
+import { planRenumber, planSplit, splitTexts, undoAction, undoLine, undoStands } from './threadEdits.js';
+import { threadNumbering } from '../lib/threadSplit.js';
 import { langsSummary, labelsSummary } from './languages.js';
 import {
   createPublishWatch,
@@ -126,7 +129,7 @@ import {
   worthSettingAside,
 } from './restore.js';
 import './composer.css';
-import { activeLocale } from '../../lib/locale.js';
+import { activeLocale, fmtInt } from '../../lib/locale.js';
 
 const DISMISS_SPLIT_KEY = 'virga:composer-split-dismissed';
 const GATES_CACHE_MS = 5 * 60 * 1000;
@@ -217,6 +220,10 @@ export default function Composer({ open, intent, onClose }) {
       return false;
     }
   });
+  // The last split or renumbering, while it can still be taken back in one
+  // step (threadEdits.js). It names posts by id, so it means nothing once
+  // another post has been loaded.
+  const [threadUndo, setThreadUndo] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [moreAlign, setMoreAlign] = useState('end');
   const composerRef = useRef(null);
@@ -469,8 +476,8 @@ export default function Composer({ open, intent, onClose }) {
     for (const n of plan.notes) notes.push({ key: `mode-${n}`, tone: 'info', text: n });
     if (plan.fromLink) notes.push({ key: 'link', tone: 'info', text: 'From a link. Nothing is posted until you send it.' });
     setNotices(notes);
-    setWhenOpen(plan.mode === 'schedule' && !plan.reply);
-    if (plan.mode === 'schedule' && !plan.reply) dispatch({ type: 'setSchedule', schedule: { mode: 'at', at: nextHour() } });
+    setWhenOpen(plan.mode === 'schedule');
+    if (plan.mode === 'schedule') dispatch({ type: 'setSchedule', schedule: { mode: 'at', at: nextHour() } });
     if (plan.images.length) pendingImages.current = { images: plan.images, token, postId: seeded.posts[0]?.id };
     runLoads(plan, token);
   }
@@ -642,6 +649,12 @@ export default function Composer({ open, intent, onClose }) {
         loadState(loaded, { touched: true });
         setLoads({});
         setWhenOpen(loaded.schedule?.mode === 'at');
+        // A scheduled reply keeps the refs it goes out with and a note of
+        // who it answers; the post itself is read again to show it whole.
+        if (loaded.reply?.uri && !loaded.reply.view) {
+          replyRefPending.current = { kind: 'post', uri: loaded.reply.uri, soft: true, scheduled: true };
+          loadReply(replyRefPending.current, token);
+        }
       } catch (err) {
         settle('scheduled', { error: err.message });
       }
@@ -758,7 +771,7 @@ export default function Composer({ open, intent, onClose }) {
     } catch (err) {
       if (!fresh() || replyRefPending.current !== ref) return;
       const error = soft
-        ? `${err.message} It still goes out as a reply to that post.`
+        ? `${err.message} ${ref.scheduled ? 'Virga’s server looks again when it’s due, and holds the reply back if the post is gone.' : 'It still goes out as a reply to that post.'}`
         : `${err.message} Until it can, this would go out as a new post.`;
       setLoads((l) => ({ ...l, reply: { error, soft } }));
     }
@@ -1547,7 +1560,10 @@ export default function Composer({ open, intent, onClose }) {
         scheduledFor,
         queued,
         resolveMention,
-        fit: composerTimerFit({ reply: false }),
+        fit: composerTimerFit({ reply: !!s.reply }),
+        // A repeating post keeps its wall clock in the zone its time was picked in.
+        repeatTz: resolveTimezone(settings.queue),
+        occurrence: editingRow?.payload?.repeat ? editingRow.occurrence || 1 : 1,
         loadImage: loadImageBytes,
       });
       const row = editing ? await updateScheduled(req, editing.id, body) : await createScheduled(req, body);
@@ -1556,7 +1572,7 @@ export default function Composer({ open, intent, onClose }) {
         if (src.warning) toast?.('Scheduled, but its draft couldn’t be deleted. Delete it in Drafts.', { tone: 'danger', ms: 9000 });
       }
       const acct = accounts.find((x) => x.did === did);
-      toast?.(`${scheduledMessage({ at: row?.scheduledFor || scheduledFor, queued, editing: !!editing, account: acct, did })}${moveNote ? ` ${moveNote}` : ''}`, {
+      toast?.(`${scheduledMessage({ at: row?.scheduledFor || scheduledFor, queued, editing: !!editing, account: acct, did, repeat: body.payload.repeat })}${moveNote ? ` ${moveNote}` : ''}`, {
         ms: 8000,
       });
       for (const w of body.warnings || []) toast?.(w.message, { ms: 7000 });
@@ -1757,15 +1773,11 @@ export default function Composer({ open, intent, onClose }) {
     },
     openLibrary: (index, range) => setLibraryFor({ postId: stateRef.current.posts[index]?.id, range }),
     applyTemplate: (index, template, range) => applyTemplate(stateRef.current.posts[index]?.id, template, range),
-    split: (index) => {
-      const post = stateRef.current.posts[index];
-      const room = MAX_POSTS - stateRef.current.posts.length;
-      // What doesn't fit in the posts there's room for stays in the last one.
-      const parts = splitForThread(post.text, undefined, { maxParts: room + 1 });
-      if (parts.length < 2) return;
-      dispatch({ type: 'setText', index, text: parts[0] });
-      parts.slice(1).forEach((text, i) => dispatch({ type: 'addPost', after: index + i, post: { ...emptyPost(), text } }));
-    },
+    // What a split of this post would make (null when it wouldn't split), and
+    // the split itself: the post becomes several, in place, and can be taken
+    // back in one step.
+    previewSplit: (postId, options) => splitTexts(stateRef.current.posts, postId, options),
+    split: (postId, options) => applyThreadEdit(planSplit(stateRef.current.posts, postId, options), postId),
     dismissSplit: () => {
       setSplitDismissed(true);
       try {
@@ -1812,7 +1824,34 @@ export default function Composer({ open, intent, onClose }) {
     return out;
   }, [state]);
 
+  /* ---- splitting and renumbering, and the step back --------------------- */
+
+  function applyThreadEdit(plan, focusId) {
+    if (!plan) return;
+    dispatch(plan.action);
+    setThreadUndo(plan.undo);
+    // The button that was pressed goes away with the offer, so the caret
+    // goes back to the post (not on a phone, where it would raise the keys).
+    if (!narrow) requestAnimationFrame(() => editors.current.get(focusId)?.focus());
+  }
+  const undoable = !!threadUndo && undoStands(state.posts, threadUndo);
+  function undoThreadEdit() {
+    const undo = threadUndo;
+    if (!undo || !undoStands(stateRef.current.posts, undo)) return;
+    dispatch(undoAction(undo));
+    setThreadUndo(null);
+    if (!narrow) requestAnimationFrame(() => editors.current.get(undo.made[0].id)?.focus());
+  }
+  const numberingState = useMemo(() => threadNumbering(state.posts.map((p) => p.text)), [state.posts]);
+
   function onKeyDown(e) {
+    // Undo, straight after a split or a renumbering, takes that back: the
+    // text field's own undo knows nothing of posts made around it.
+    if ((e.key === 'z' || e.key === 'Z') && (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && undoable && !disabled) {
+      e.preventDefault();
+      undoThreadEdit();
+      return;
+    }
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent?.isComposing) {
       e.preventDefault();
       if (disabled) return;
@@ -1972,6 +2011,20 @@ export default function Composer({ open, intent, onClose }) {
                 </p>
               )}
 
+              {undoable && (
+                <div className="callout composer-notice" role="status">
+                  <span>{undoLine(threadUndo, fmtInt)}</span>
+                  <span className="callout-actions">
+                    <Button size="sm" onClick={undoThreadEdit} disabled={disabled} aria-keyshortcuts="Control+Z Meta+Z">
+                      Undo
+                    </Button>
+                    <Button variant="ghost" size="sm" icon aria-label="Dismiss" onClick={() => setThreadUndo(null)}>
+                      <X size={14} aria-hidden="true" />
+                    </Button>
+                  </span>
+                </div>
+              )}
+
               <div className="post-blocks" data-thread={state.posts.length > 1 || undefined}>
                 {state.posts.map((post, index) => (
                   <PostBlock
@@ -1998,9 +2051,18 @@ export default function Composer({ open, intent, onClose }) {
                     problems={problemsByPost[index] || []}
                     requireAltText={settings.requireAltText}
                     offerSplit={settings.showThreadSuggestion !== false && !splitDismissed && state.posts.length < MAX_POSTS}
+                    numbering={settings.threadNumbering}
                   />
                 ))}
               </div>
+              {numberingState === 'stale' && (
+                <p className="field-hint thread-renumber">
+                  These posts are numbered, and the numbers no longer match their order.
+                  <button type="button" className="link-button" disabled={disabled} onClick={() => applyThreadEdit(planRenumber(stateRef.current.posts), stateRef.current.posts[0]?.id)}>
+                    Renumber
+                  </button>
+                </p>
+              )}
               {state.posts.length < MAX_POSTS && (
                 <Button
                   variant="ghost"
@@ -2103,8 +2165,12 @@ export default function Composer({ open, intent, onClose }) {
                     <WhenPicker
                       did={asDid}
                       value={state.schedule.at}
-                      onChange={(iso) => dispatch({ type: 'setSchedule', schedule: iso ? { mode: 'at', at: iso } : { mode: 'at', at: '' } })}
-                      queue
+                      onChange={(iso) => dispatch({ type: 'setSchedule', schedule: { ...state.schedule, mode: 'at', at: iso || '' } })}
+                      repeat={state.schedule.repeat || null}
+                      onRepeatChange={(repeat) => dispatch({ type: 'setSchedule', schedule: { mode: 'at', at: state.schedule.at, ...(repeat ? { repeat } : {}) } })}
+                      repeatBlock={replying ? REPEAT_REPLY_HINT : ''}
+                      occurrence={state.source?.kind === 'scheduled' && scheduledRowRef.current?.payload?.repeat ? scheduledRowRef.current.occurrence || 1 : 1}
+                      queue={!replying}
                       onQueue={() => dispatch({ type: 'setSchedule', schedule: { mode: 'queue' } })}
                       min={new Date(Date.now() + 60_000).toISOString()}
                       max={new Date(Date.now() + 90 * 86_400_000).toISOString()}

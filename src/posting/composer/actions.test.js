@@ -12,7 +12,7 @@ import {
   EMPTY_QUEUE_HINT,
   NEEDS_BACKEND_HINT,
   NO_BACKEND_HINT,
-  REPLY_HINT,
+  QUEUE_REPLY_HINT,
   VIDEO_HINT,
 } from '../schedule/publishActions.js';
 import { POSTING_REGRANT_MESSAGE } from '../../accounts/accountCopy.js';
@@ -104,15 +104,34 @@ describe('composerActions', () => {
     expect(r.actions.schedule.disabled).toBe(false);
   });
 
-  it('refuses to schedule a reply or a video (D19)', () => {
-    const reply = composerActions(
-      stateWith('hi', {
-        reply: { uri: 'at://x/app.bsky.feed.post/1', cid: 'c' },
-      }),
-      { defaultAction: 'post', queue: QUEUE, caps: CAPS },
-    );
-    expect(reply.actions.schedule.reason).toBe(REPLY_HINT);
-    expect(reply.actions.queue.reason).toBe(REPLY_HINT);
+  it('schedules a reply for a set time but keeps it out of the queue, and refuses a video (D19)', () => {
+    const replyState = stateWith('hi', {
+      reply: { uri: 'at://x/app.bsky.feed.post/1', cid: 'c' },
+    });
+    const reply = composerActions(replyState, {
+      defaultAction: 'post',
+      queue: QUEUE,
+      caps: CAPS,
+    });
+    expect(reply.actions.schedule).toEqual({ disabled: false, reason: null });
+    expect(reply.actions.queue).toEqual({
+      disabled: true,
+      reason: QUEUE_REPLY_HINT,
+    });
+    // An account that usually schedules or queues still replies now, unless
+    // a time is picked for this reply.
+    for (const defaultAction of ['schedule', 'queue']) {
+      expect(
+        composerActions(replyState, { defaultAction, queue: QUEUE, caps: CAPS })
+          .primary,
+      ).toBe('post');
+    }
+    expect(
+      composerActions(
+        { ...replyState, schedule: { mode: 'at', at: '2030-01-01T00:00:00Z' } },
+        { defaultAction: 'post', queue: QUEUE, caps: CAPS },
+      ).primary,
+    ).toBe('schedule');
     const s = stateWith('hi');
     s.posts[0].video = { file: {}, status: 'ready', alt: '' };
     expect(

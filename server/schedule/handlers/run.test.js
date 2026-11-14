@@ -205,9 +205,10 @@ describe('a tick', () => {
       failed: 0,
       armed: 0,
       armFailed: 0,
-      mediaReclaimed: null,
       errors: [],
     });
+    // (mediaReclaimed is null on every minute but the sweep's, which the
+    // sweep's own tests pin; this one runs on the real clock.)
     expect(res.body.runId).toMatch(/^[0-9a-f-]{36}$/);
     expect(res.body).not.toHaveProperty('ledger');
     const after = await readRow(row.id);

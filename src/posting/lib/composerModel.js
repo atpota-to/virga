@@ -714,12 +714,14 @@ export function validateComposer(state, options = {}) {
     );
   }
 
-  if (forSchedule && state?.reply) {
+  // A reply can be scheduled for a set time, but not queued: it answers one
+  // post at one moment, not whichever slot comes free.
+  if (forSchedule && state?.reply && state?.schedule?.mode === 'queue') {
     problems.push(
       problem(
         null,
-        'SCHEDULE_REPLY',
-        'Replies can’t be scheduled. Post it now instead.',
+        'QUEUE_REPLY',
+        'A reply can’t wait in the queue. Schedule it for a set time instead.',
       ),
     );
   }

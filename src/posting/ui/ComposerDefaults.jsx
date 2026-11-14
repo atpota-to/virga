@@ -10,14 +10,14 @@ import '../composer/composer.css';
 
 /**
  * Settings › Posting: what a new post starts with, for one account: its
- * languages, who can reply and quote, what the main button does, and two
- * habits (requiring alt text, offering to split a long post). Kept in this
- * browser, per account.
+ * languages, who can reply and quote, what the main button does, and three
+ * habits (requiring alt text, offering to split a long post, numbering the
+ * posts of a split). Kept in this browser, per account.
  */
 export default function ComposerDefaults({ did }) {
   const { settings, update } = usePostingSettings(did);
   const [error, setError] = useState(null);
-  const ids = { action: useId(), alt: useId(), thread: useId() };
+  const ids = { action: useId(), alt: useId(), thread: useId(), numbering: useId() };
   const save = (patch) => {
     try {
       update(patch);
@@ -95,6 +95,21 @@ export default function ComposerDefaults({ did }) {
           className="switch"
           aria-checked={settings.showThreadSuggestion !== false}
           onClick={() => save({ showThreadSuggestion: settings.showThreadSuggestion === false })}
+        />
+      </SettingsRow>
+
+      <SettingsRow
+        label="Number the posts of a split thread"
+        hint="End each post with its place and the total, such as 2/5, on a line of its own. You can still choose each time you split."
+        htmlFor={ids.numbering}
+      >
+        <button
+          id={ids.numbering}
+          type="button"
+          role="switch"
+          className="switch"
+          aria-checked={settings.threadNumbering === 'counter'}
+          onClick={() => save({ threadNumbering: settings.threadNumbering === 'counter' ? 'off' : 'counter' })}
         />
       </SettingsRow>
 

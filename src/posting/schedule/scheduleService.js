@@ -184,12 +184,16 @@ export async function createScheduled(req, body, { signal } = {}) {
 }
 
 /**
- * Change a scheduled row. `patch` is one of the server's four shapes:
+ * Change a scheduled row. `patch` is one of the server's six shapes:
  *   `{ scheduledFor }`                     move it (time only)
  *   the same body as create                rewrite it (every image again)
  *   `{ retry: true }`                      send a failed row again as it is
  *   `{ acknowledgeTimer: true }`           clear a "timer couldn't be set" note
- * Answers the server's row.
+ *   `{ skip: true }`                       skip a repeating post's waiting
+ *                                          occurrence (skipScheduled)
+ *   `{ stopRepeat: true }`                 stop a post repeating
+ * Answers the server's row (for a skip, the occurrence that took its place,
+ * or null when it was the last).
  */
 export async function updateScheduled(req, id, patch = {}, { signal } = {}) {
   checkRequester(req);
@@ -208,11 +212,39 @@ export async function updateScheduled(req, id, patch = {}, { signal } = {}) {
     ? 'retried'
     : patch.acknowledgeTimer
       ? 'acknowledged'
-      : content
-        ? 'edited'
-        : 'moved';
+      : patch.skip
+        ? 'skipped'
+        : patch.stopRepeat
+          ? 'stopped'
+          : content
+            ? 'edited'
+            : 'moved';
   announce(req, { change, id });
   return row;
+}
+
+/**
+ * Skip the waiting occurrence of a repeating post: it doesn't go out, and
+ * the next one takes its place. Answers `{ next, ended }`: the row now
+ * waiting, or `ended: true` when the one skipped was the last. 409
+ * NOT_SKIPPABLE: it isn't repeating, or is already going out.
+ */
+export async function skipScheduled(req, id, options) {
+  const next = await updateScheduled(req, id, { skip: true }, options);
+  return { next: next || null, ended: !next };
+}
+
+/**
+ * Stop a post repeating: the waiting occurrence still goes out at its time,
+ * and nothing follows it. Answers the row. 409 NOT_REPEATING.
+ */
+export function stopRepeating(req, id, options) {
+  return updateScheduled(req, id, { stopRepeat: true }, options);
+}
+
+/** Whether a row is the waiting occurrence of a repeating post. */
+export function isRepeatingRow(row) {
+  return Boolean(row?.payload?.repeat?.every);
 }
 
 export function retryScheduled(req, id, options) {

@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, BookOpen, Film, ImagePlus, Scissors, Trash2 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import PostEditor from './PostEditor.jsx';
@@ -7,11 +7,15 @@ import { LinkCard, RecordCard } from './EmbedCards.jsx';
 import { countComposerGraphemes } from '../lib/inlineLinks.js';
 import { MAX_POST_GRAPHEMES } from '../lib/composerModel.js';
 import { limitAnnouncement } from './editing.js';
+import { readCounter } from '../lib/threadSplit.js';
+import { fmtInt } from '../../lib/locale.js';
 
 /**
  * One post of what's being written (a single post is a thread of one): its
  * text, what's attached, its own count, and in a thread its place and the
- * ways to move or remove it.
+ * ways to move or remove it. A post over the limit offers to split itself
+ * into a thread, right under its text; when that offer is put away (Not now,
+ * or the setting), the same thing is a quiet link beside the count.
  */
 export default function PostBlock({
   post,
@@ -33,10 +37,25 @@ export default function PostBlock({
   problems = [],
   requireAltText = false,
   offerSplit = false,
+  numbering = 'off',
 }) {
   const id = useId();
   const count = countComposerGraphemes((post.text || '').trim());
   const over = count > MAX_POST_GRAPHEMES;
+  // Numbering starts as the account's setting; the box changes it for this
+  // split only.
+  const [numberChoice, setNumberChoice] = useState(null);
+  const numbered = numberChoice ?? numbering === 'counter';
+  const splitOptions = { numbering: numbered ? 'counter' : 'off' };
+  // What a split would make, so the offer can say how many posts. Null when
+  // there's nothing to split or no room in the thread.
+  const parts = useMemo(
+    () => (over ? api.previewSplit(post.id, { numbering: numbered ? 'counter' : 'off' }) : null),
+    // The thread's size and this post's place change the room and the numbers.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [over, post.id, post.text, numbered, index, total],
+  );
+  const firstCounter = parts && numbered ? readCounter(parts[0]) : null;
   const thread = total > 1;
   const hasMedia = post.images.length > 0 || !!post.video;
   const countId = `${id}-count`;
@@ -92,15 +111,22 @@ export default function PostBlock({
         onFocus={() => api.focus(index)}
       />
 
-      {offerSplit && over && (
-        <div className="callout split-offer" role="status">
+      {offerSplit && parts && (
+        <div className="callout split-offer" role="group" aria-label="Split this post into a thread">
           <Scissors size={16} aria-hidden="true" />
-          <span>
-            This is {count - MAX_POST_GRAPHEMES} characters over the {MAX_POST_GRAPHEMES} limit. Split it into a thread?
+          <span className="split-offer-text">
+            This is {fmtInt(count - MAX_POST_GRAPHEMES)} characters over the {MAX_POST_GRAPHEMES} limit. As a thread it would be {fmtInt(parts.length)} posts.
           </span>
+          <label className="check split-offer-number">
+            <input type="checkbox" checked={numbered} disabled={disabled} onChange={(e) => setNumberChoice(e.target.checked)} />
+            <span>
+              Number them
+              {firstCounter && <span className="split-offer-example num"> ({firstCounter.number}/{firstCounter.total} and so on)</span>}
+            </span>
+          </label>
           <span className="callout-actions">
-            <Button size="sm" variant="primary" onClick={() => api.split(index)} disabled={disabled}>
-              Split into posts
+            <Button size="sm" variant="primary" onClick={() => api.split(post.id, splitOptions)} disabled={disabled}>
+              Split into a thread
             </Button>
             <Button size="sm" variant="ghost" onClick={() => api.dismissSplit()}>
               Not now
@@ -176,10 +202,15 @@ export default function PostBlock({
             <BookOpen size={17} aria-hidden="true" />
           </Button>
         </span>
+        {!offerSplit && parts && (
+          <button type="button" className="link-button post-split-link" disabled={disabled} onClick={() => api.split(post.id, splitOptions)}>
+            Split into a thread
+          </button>
+        )}
         {/* The count is read with the editor (aria-describedby), not as it
             changes; only crossing toward or past the limit is announced. */}
         <span id={countId} className={`field-hint num post-count${over ? ' is-over' : ''}`}>
-          {over ? `${count} of ${MAX_POST_GRAPHEMES}, ${count - MAX_POST_GRAPHEMES} over` : `${count} of ${MAX_POST_GRAPHEMES}`}
+          {over ? `${fmtInt(count)} of ${MAX_POST_GRAPHEMES}, ${fmtInt(count - MAX_POST_GRAPHEMES)} over` : `${count} of ${MAX_POST_GRAPHEMES}`}
         </span>
         <span className="visually-hidden" aria-live="polite">
           {limitAnnouncement(count)}

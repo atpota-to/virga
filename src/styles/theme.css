@@ -1028,48 +1028,61 @@
     --heat-6: CanvasText !important;
   }
 
+  /* The kit's own rules are as specific as these or more so, and come
+     later, so everything below is marked important: in this mode it has to
+     win. */
+
   /* Focus that was only a shadow, with its outline turned off. */
   :focus-visible {
     outline: 2px solid Highlight !important;
-    outline-offset: 2px;
+    outline-offset: 2px !important;
   }
 
   .post-editor:focus-within {
-    outline: 2px solid Highlight;
-    outline-offset: 2px;
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
   }
 
   /* What is pressed, chosen, or the page you are on: the system's own
-     selection colours, since a wash would be painted over. */
+     selection colours, since a wash would be painted over. Taken out of
+     the forcing, because otherwise the browser lays a plate of the page
+     ground behind the words, and they vanish into it. */
   [aria-pressed='true'],
   [role='radio'][aria-checked='true'],
   [aria-current='page'] {
-    border-color: Highlight;
-    background: Highlight;
-    color: HighlightText;
+    forced-color-adjust: none;
+    border-color: Highlight !important;
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  [aria-pressed='true'] *,
+  [role='radio'][aria-checked='true'] *,
+  [aria-current='page'] * {
+    color: HighlightText !important;
   }
 
   .segmented {
-    border: 1px solid ButtonBorder;
+    border: 1px solid ButtonBorder !important;
   }
 
   .switch {
-    padding: 1px;
-    border: 1px solid ButtonText;
-    background: Canvas;
+    padding: 1px !important;
+    border: 1px solid ButtonText !important;
+    background: Canvas !important;
   }
 
   .switch::after {
-    background: ButtonText;
+    background: ButtonText !important;
   }
 
   .switch[aria-checked='true'] {
-    border-color: Highlight;
-    background: Highlight;
+    border-color: Highlight !important;
+    background: Highlight !important;
   }
 
   .switch[aria-checked='true']::after {
-    background: HighlightText;
+    background: HighlightText !important;
   }
 
   /* Marks that are fills in the page, not shapes in an SVG. */
@@ -1080,22 +1093,22 @@
   }
 
   .heatmap-cell {
-    outline: 1px solid GrayText;
-    outline-offset: -1px;
+    outline: 1px solid GrayText !important;
+    outline-offset: -1px !important;
   }
 
   .heatmap-cell.is-best {
-    outline: 2px solid Highlight;
-    outline-offset: -2px;
+    outline: 2px solid Highlight !important;
+    outline-offset: -2px !important;
   }
 
   .barlist-track,
   .progress {
-    outline: 1px solid GrayText;
+    outline: 1px solid GrayText !important;
   }
 
   .progress-fill {
-    background: Highlight;
+    background: Highlight !important;
   }
 
   /* What floats had only a shadow for an edge. */
@@ -1104,6 +1117,6 @@
   .toast,
   .info-tip-pop,
   .an-chart-tip {
-    outline: 1px solid CanvasText;
+    outline: 1px solid CanvasText !important;
   }
 }

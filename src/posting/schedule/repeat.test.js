@@ -85,6 +85,26 @@ describe('repeatProblem', () => {
     );
   });
 
+  it('asks for an end that is only half filled in, rather than reading it as never', () => {
+    expect(repeatProblem({ every: 'day', ends: 'on', until: '' }, at, 'UTC')).toBe(
+      'Choose the date it ends on.',
+    );
+    expect(repeatProblem({ every: 'day', ends: 'after', count: '' }, at, 'UTC')).toBe(
+      'Say how many times it goes out.',
+    );
+    expect(repeatEnds({ every: 'day', ends: 'on', until: '' })).toBe('on');
+    expect(repeatEnds({ every: 'day', ends: 'after' })).toBe('after');
+    // The end the picker means wins over one left behind.
+    expect(normalizeRepeat({ every: 'day', ends: 'on', until: '2026-12-01', count: 4 })).toEqual({
+      every: 'day',
+      until: '2026-12-01',
+    });
+    expect(normalizeRepeat({ every: 'day', ends: 'after', until: '2026-12-01', count: 4 })).toEqual({
+      every: 'day',
+      count: 4,
+    });
+  });
+
   it('reads the end date on the zone’s calendar', () => {
     expect(repeatProblem({ every: 'day', until: '2026-11-15' }, at, 'UTC')).toMatch(
       /before it first goes out/,

@@ -312,6 +312,46 @@
 .split-offer {
   flex-wrap: wrap;
   align-items: center;
+  row-gap: 8px;
+}
+
+/* The sentence takes the first line; the box and the buttons share the next. */
+.split-offer-text {
+  flex: 1 1 calc(100% - 26px);
+}
+
+.split-offer-number {
+  margin-left: 26px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+.split-offer-example {
+  color: var(--muted);
+}
+
+/* The same offer, quiet, beside the count. */
+.post-split-link {
+  margin-left: auto;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.post-split-link + .post-count {
+  margin-left: 0;
+}
+
+.post-split-link:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.thread-renumber {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: -4px;
 }
 
 .add-post {

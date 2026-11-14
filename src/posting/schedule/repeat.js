@@ -4,7 +4,12 @@
 //
 // In the composer the rule rides on the schedule (`schedule.repeat`):
 //
-//   { every: 'day' | 'week' | '2weeks' | 'month', until?: 'YYYY-MM-DD', count?: N }
+//   { every: 'day' | 'week' | '2weeks' | 'month', until?: 'YYYY-MM-DD', count?: N,
+//     ends?: 'on' | 'after' }
+//
+// `ends` is only the picker's: it says which end is being filled in while
+// the date or the number is still blank, so a half-typed end is asked for
+// rather than read as "never".
 //
 // The server stores it with the zone it was picked in and an anchor ("the
 // occurrence numbered n goes out at this wall-clock date and time"), and
@@ -61,15 +66,22 @@ export function normalizeRepeat(raw) {
     return null;
   const out = { every: raw.every };
   const count = Number(raw.count);
-  if (raw.count !== null && raw.count !== undefined && raw.count !== '' && Number.isInteger(count) && count >= 1)
-    out.count = count;
-  else if (typeof raw.until === 'string' && parseDate(raw.until))
-    out.until = raw.until;
+  const hasCount =
+    raw.count !== null &&
+    raw.count !== undefined &&
+    raw.count !== '' &&
+    Number.isInteger(count) &&
+    count >= 1;
+  const hasUntil = typeof raw.until === 'string' && Boolean(parseDate(raw.until));
+  // The picker says which end it means; a stored rule has only one.
+  if (hasCount && raw.ends !== 'on') out.count = count;
+  else if (hasUntil && raw.ends !== 'after') out.until = raw.until;
   return out;
 }
 
 /** How a rule ends, for the picker: 'never' | 'on' | 'after'. */
 export function repeatEnds(repeat) {
+  if (repeat?.ends === 'on' || repeat?.ends === 'after') return repeat.ends;
   const r = normalizeRepeat(repeat);
   if (!r) return 'never';
   if (r.count) return 'after';
@@ -85,7 +97,12 @@ export function repeatProblem(repeat, at, tz, { occurrence = 1 } = {}) {
   if (!repeat) return '';
   const r = normalizeRepeat(repeat);
   if (!r) return 'Choose how often it repeats.';
-  if (repeat.count !== undefined && repeat.count !== null && repeat.count !== '') {
+  const blank = (v) => v === undefined || v === null || v === '';
+  if (repeat.ends === 'on' && blank(repeat.until))
+    return 'Choose the date it ends on.';
+  if (repeat.ends === 'after' && blank(repeat.count))
+    return 'Say how many times it goes out.';
+  if (!blank(repeat.count) && repeat.ends !== 'on') {
     const n = Number(repeat.count);
     if (!Number.isInteger(n) || n < 2)
       return 'A post that repeats a number of times goes out at least twice.';
@@ -94,7 +111,7 @@ export function repeatProblem(repeat, at, tz, { occurrence = 1 } = {}) {
     if (n < occurrence)
       return `This post has already gone out ${occurrence - 1} ${occurrence - 1 === 1 ? 'time' : 'times'}, so it can’t end after ${n}.`;
   }
-  if (repeat.until !== undefined && repeat.until !== null && repeat.until !== '') {
+  if (!blank(repeat.until) && repeat.ends !== 'after') {
     if (!parseDate(repeat.until)) return 'Choose the date it ends on.';
     const first = zonedWallTime(at, tz);
     if (first && repeat.until < first.date)

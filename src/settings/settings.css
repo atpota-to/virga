@@ -362,10 +362,12 @@
   }
 }
 
-/* Forced colours paint over a fill; these two are the point of the control. */
+/* Forced colours paint over a fill, and here the fills are the point: the
+   swatches, and the little pictures of each theme. */
 @media (forced-colors: active) {
   .accent-swatch,
-  .accent-swatch::after {
+  .accent-swatch::after,
+  .theme-preview {
     forced-color-adjust: none;
   }
 }
