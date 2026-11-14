@@ -19,7 +19,7 @@ A first pass, ported from the Analytics studio in [dame.is](https://github.com/d
 
 What has been checked, as of 2026-11-12:
 
-- Every page (the dashboards and their editing, the six reports, the seven tools, the
+- Every page (the dashboards and their editing, the reports, the tools, the
   posting pages, the composer and its dialogs, settings, the front page), the first build
   and a second sync, posting, scheduling and timers end to end, two accounts and switching
   between them, against made-up data and a fake Virga server in the harness (below), at
@@ -30,10 +30,24 @@ What has been checked, as of 2026-11-12:
   endpoints) by its own tests, with the SQL run on PGlite (Postgres in WebAssembly), and the
   real client modules talking to the real server handlers in-process.
 
+Added on 2026-11-14, and checked the same way (the harness, at phone and desktop
+widths, and each piece's own tests): the Content report and richer post rows, including
+the one-time upgrade of an older archive; card settings, custom date ranges and the
+Posting cards; chart notes and follower milestones; Post this chart; the Interaction
+lookup; the accents, high contrast and the dusk and night skies; number, date and week
+formats; thread splitting and the command palette; scheduled replies, repeating posts
+and Post again. Not everything was looked at in every combination: the accents and high
+contrast were looked at on the dashboard and Settings, not on every page; the sky only
+with software rendering; the scheduling pages not in the dark theme; and only Chromium
+was used.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
-Vercel, and the adviser against the real AI gateway. That needs a deployment (below) and
-someone to sign in.
+Vercel, and the adviser against the real AI gateway. For the newer pieces that also
+means: a scheduled reply's check that the post it answers is still there, a repeating
+post under two workers at once (the tests run them one after the other), the archive
+upgrade against a real repo, and Safari, Firefox and a Mac's ⌘K. That needs a deployment
+(below) and someone to sign in.
 
 The copy on every screen is a draft.
 
@@ -137,10 +151,10 @@ in the composer already attached and described. Nothing is posted from the dialo
 | --- | --- |
 | Overview | What goes out next, the latest drafts, recent posts, live timers, and New post |
 | Drafts | Bluesky's private drafts (so they're in any app that reads them), with Open, Post now, Schedule and Delete. Pictures and video in a draft stay on the device that saved them |
-| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; reorder the queue by dragging or with the keyboard |
+| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; skip one occurrence of a repeating post or stop it repeating; reorder the queue by dragging or with the keyboard |
 | Weekly schedule | The times each week that a queued post goes out, in a time zone, with suggestions from the archive's best times |
 | Timers | Posts set to delete themselves, limit replies or turn off quotes after a while or when something happens (a number of likes, replies, quotes, …), counting down and settled |
-| Posted | Your posts from the archive: reply, quote, change who can reply or quote, put on a timer, save as a template, delete. Published posts aren't edited in place |
+| Posted | Your posts from the archive: reply, quote, change who can reply or quote, put on a timer, save as a template, delete, or post again (opens it in the composer with its words, links, tags, languages, quote or link card and pictures, to post, schedule or queue). Published posts aren't edited in place |
 | Templates | Posts and replies to start from, with blanks to fill (`net.anisota.feed.template` records in your repo, which Anisota reads too) |
 | Library | Your posts, replies, saved posts, links, feeds and lists, ready to quote or attach |
 
@@ -161,6 +175,10 @@ Bluesky counts it. The posts can be numbered (2/5, on a line of their own at the
 unless Settings › Posting or the box on the offer says so). Undo, or Ctrl or ⌘ Z, puts
 the original text back, and a numbered thread that has changed since offers Renumber.
 
+A reply can be scheduled for a set time, though not added to the queue. A post scheduled
+for a set time can repeat every day, week, two weeks or month, ending never, on a date or
+after a number of times.
+
 Ctrl K (⌘K on a Mac) opens a command palette: go to any dashboard, report, tool, posting
 page or settings section, start a post, sync, set the period or the theme, switch
 account, or customize the dashboard you're on. The sidebar's Search or jump to opens it
@@ -176,8 +194,18 @@ Scheduling, the queue, timers and the adviser need a long session, because Virga
 does them while the browser is closed. On a browser-session account those pages say so
 and offer to reconnect. They keep running while any browser is signed in to Virga with a
 long session for the account; signing out of the last one stops them until it signs in
-that way again, so a sign-out with posts or timers waiting asks first. Scheduled replies
-and scheduled videos aren't offered.
+that way again, so a sign-out with posts or timers waiting asks first. Scheduled videos
+aren't offered.
+
+A scheduled reply goes out only if the post it answers is still there at its time:
+Virga's server asks that post's PDS first, and if the post is gone the reply isn't posted
+and the Scheduled page says why; if it can't find out, it tries again before giving up. A
+repeating post has one occurrence waiting at a time and counts as one scheduled post.
+When an occurrence goes out, fails for good or is skipped, the next is created at the
+same wall-clock time in the zone it was scheduled in, so 9:00 stays 9:00 across a clock
+change and the 31st falls on the last day of a shorter month. A failed occurrence stays
+listed to retry while the series carries on. Each occurrence is its own post; a reply
+can't repeat.
 
 **Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
@@ -281,9 +309,14 @@ it.
 Requests go from the browser to: the account's PDS; `public.api.bsky.app`, `plc.directory`
 and `constellation.microcosm.blue`, as before; `cardyb.bsky.app` for link cards;
 `video.bsky.app` for video; and, for long sessions, scheduling, timers and the adviser,
-Virga's server (this site's `/api/*`). A scheduled post's text and pictures wait in
+Virga's server (this site's `/api/*`). Post again reads a post's pictures back from the
+account's PDS (`com.atproto.sync.getBlob`). A scheduled post's text and pictures wait in
 Virga's Supabase project until it goes out (the pictures in a private Storage bucket,
-removed after publishing). The adviser sends the post, your goals and notes, your style
+removed after publishing; a repeating post's are kept until its last occurrence goes out,
+or it is removed). A scheduled reply also keeps the handle, name and first 300 characters
+of the post it answers, and before it goes out Virga's server resolves that post's
+account (at `plc.directory`, or its did:web host) and asks its PDS, without signing in,
+whether the post is still there. The adviser sends the post, your goals and notes, your style
 reading and, if you ask it to read replies in their conversation, other people's public
 posts, to Virga's server, which passes them to an AI model through an AI gateway; alt
 text sends the image. The allowance (by default 30 adviser reads, 3 style readings and
@@ -352,7 +385,9 @@ server's routes answer 503 and the posting pages that need it say so.
    then `supabase db push`, or paste each file into the SQL editor). They create the
    sign-in, scheduled-post, timer and AI-usage tables (row-level security on, nothing for
    the `anon` or `authenticated` roles; only the server's service-role key reads them) and
-   a private Storage bucket, `scheduled-media`.
+   a private Storage bucket, `scheduled-media`. The newest,
+   `20261114000100_scheduled_repeats.sql`, adds the series columns and functions for
+   repeating posts; without it scheduling answers as not set up.
 2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
    `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
 3. **Vercel settings** (Production only; see `.env.example` for every option and its
