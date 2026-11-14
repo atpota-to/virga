@@ -12,6 +12,7 @@ import { formatDateShort } from '../lib/time.js';
 import { cardFor, useWantActors } from '../people/people.jsx';
 import { listsModel } from '../reports/models.js';
 import { ToolHeader } from './ToolPage.jsx';
+import { activeLocale } from '../lib/locale.js';
 
 function listUrl(list, ownerHandle) {
   const rkey = String(list.uri).split('/').pop();
@@ -103,7 +104,7 @@ export default function ListsYoureOn({ tool }) {
                           <td>
                             <span className={`badge${l.purpose === 'moderation' ? ' badge--danger' : ''}`}>{l.purpose}</span>
                           </td>
-                          <td className="is-num">{l.purpose === 'moderation' && l.subscribers != null ? l.subscribers.toLocaleString('en-US') : '—'}</td>
+                          <td className="is-num">{l.purpose === 'moderation' && l.subscribers != null ? l.subscribers.toLocaleString(activeLocale()) : '—'}</td>
                           <td className="num">{l.memberAt ? formatDateShort(l.memberAt) : '—'}</td>
                         </tr>
                       );

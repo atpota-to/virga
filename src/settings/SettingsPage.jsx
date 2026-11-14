@@ -20,6 +20,7 @@ import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PageHeader, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
+import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
 const SECTIONS = [
   { key: 'account', label: 'Account' },
@@ -128,19 +129,19 @@ function DataSection() {
             <dl className="data-facts">
               <div>
                 <dt>Posts</dt>
-                <dd className="num">{counts.posts.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.posts.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Followers</dt>
-                <dd className="num">{counts.followers.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.followers.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Repo records</dt>
-                <dd className="num">{counts.records.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.records.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Blocked by</dt>
-                <dd className="num">{counts.blockedBy.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.blockedBy.toLocaleString(activeLocale())}</dd>
               </div>
             </dl>
             {archive.syncError && (
@@ -435,6 +436,18 @@ function DashboardsSection() {
 
 /* ---- appearance ---------------------------------------------------- */
 
+const WEEK_START_NAMES = { 0: 'Sunday', 1: 'Monday', 6: 'Saturday' };
+
+/** "Germany" for 'en-DE'; the tag itself where the browser can't name it. */
+function regionName(tag) {
+  try {
+    const region = new Intl.Locale(tag).region;
+    return (region && new Intl.DisplayNames(['en'], { type: 'region' }).of(region)) || tag;
+  } catch {
+    return tag;
+  }
+}
+
 function AppearanceSection() {
   const prefs = usePreferences();
   const { setPref } = prefs;
@@ -487,6 +500,32 @@ function AppearanceSection() {
             options={[
               { value: 'expanded', label: 'Open' },
               { value: 'collapsed', label: 'Folded' },
+            ]}
+          />
+        </Row>
+      </Section>
+
+      <Section title="Numbers and dates" sub="Virga’s words are English. These choose how its figures, dates and times are written.">
+        <Row label="Format" hint={localeSample(activeLocale())}>
+          <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
+            <option value="system">This browser’s region ({regionName(systemLocale())})</option>
+            {LOCALE_CHOICES.map((tag) => (
+              <option key={tag} value={tag}>
+                {regionName(tag)}: {localeSample(tag)}
+              </option>
+            ))}
+          </select>
+        </Row>
+        <Row label="Week starts on" hint="For weekly charts, the best-time grid and the weekly schedule.">
+          <Segmented
+            label="Week starts on"
+            value={prefs.weekStart}
+            onChange={(v) => setPref('weekStart', v)}
+            options={[
+              { value: 'system', label: `Region (${WEEK_START_NAMES[regionWeekStart(activeLocale())]})` },
+              { value: 'monday', label: 'Monday' },
+              { value: 'sunday', label: 'Sunday' },
+              { value: 'saturday', label: 'Saturday' },
             ]}
           />
         </Row>

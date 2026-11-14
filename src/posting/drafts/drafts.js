@@ -46,6 +46,7 @@ import {
   loadDraftMedia,
 } from './draftMedia.js';
 import { autosaveKey, loadSessionDraft } from '../autosave.js';
+import { activeLocale } from '../../lib/locale.js';
 
 const APPVIEW_SERVICE = ['bsky_appview', 'did:web:api.bsky.app'];
 
@@ -214,7 +215,7 @@ function textProblem(text, index) {
     encoder.encode(text).length > DRAFT_LIMITS.textBytes
   ) {
     const error = new Error(
-      `Post ${index + 1} is longer than a draft can hold (${DRAFT_LIMITS.textGraphemes.toLocaleString('en')} characters).`,
+      `Post ${index + 1} is longer than a draft can hold (${DRAFT_LIMITS.textGraphemes.toLocaleString(activeLocale())} characters).`,
     );
     error.code = 'DRAFT_TOO_LONG';
     error.postIndex = index;

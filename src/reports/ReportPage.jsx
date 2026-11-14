@@ -51,6 +51,7 @@ import {
 import PostRow, { postText } from './PostRow.jsx';
 import { REPORTS, REPORT_BY_KEY } from './registry.js';
 import './reports.css';
+import { activeLocale } from '../lib/locale.js';
 
 const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Quote, mention: AtSign };
 
@@ -270,8 +271,8 @@ export function ReportsIndex() {
     const pe = peopleModel(archive, period, nowMs);
     const a = atmosphereModel(archive, period, nowMs);
     return {
-      followers: [fmtFigure(f.profileCount ?? f.total), `+${f.gained.toLocaleString('en-US')} in ${periodPhrase(period)}`],
-      blocks: b ? [fmtFigure(b.total), `blocked by, +${b.received.toLocaleString('en-US')} in ${periodPhrase(period)}`] : ['—', 'read at the next sync'],
+      followers: [fmtFigure(f.profileCount ?? f.total), `+${f.gained.toLocaleString(activeLocale())} in ${periodPhrase(period)}`],
+      blocks: b ? [fmtFigure(b.total), `blocked by, +${b.received.toLocaleString(activeLocale())} in ${periodPhrase(period)}`] : ['—', 'read at the next sync'],
       posts: [fmtFigure(p.count), `posts in ${periodPhrase(period)}`],
       engagement: [fmtFigure(e.total), `received in ${periodPhrase(period)}`],
       people: [fmtFigure(pe.inbound.length), `people engaged with you in ${periodPhrase(period)}`],
@@ -377,15 +378,15 @@ function FollowersReport({ archive, period, nowMs }) {
           fig('Followers', m.profileCount ?? m.total, {
             sub: m.counterGap ? (
               <span className="fig-note">
-                {m.total.toLocaleString('en-US')} can be listed
+                {m.total.toLocaleString(activeLocale())} can be listed
                 <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
               </span>
             ) : null,
           }),
           fig(period.days ? `New in ${periodPhrase(period)}` : 'Gained, all time', m.gained, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
-            sub: period.days ? `${m.compare.previous.toLocaleString('en-US')} the ${period.label.toLowerCase()} before` : null,
+            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} the ${period.label.toLowerCase()} before` : null,
           }),
           fig('Per day', m.perDay, { decimals: true, sub: 'Averaged over the window' }),
           fig('Unfollows at the last sync', log.tracking ? log.latestLost.length : '—', {
@@ -447,7 +448,7 @@ function FollowersReport({ archive, period, nowMs }) {
                 return (
                   <li key={d.t} className="day-row">
                     <span className="day-row-date num">{bucketLabel(d.t, 'day')}</span>
-                    <span className="day-row-n num">+{d.n.toLocaleString('en-US')}</span>
+                    <span className="day-row-n num">+{d.n.toLocaleString(activeLocale())}</span>
                     <span className="day-row-post">{post ? postText(post) : <span className="muted">No post that day</span>}</span>
                   </li>
                 );
@@ -465,15 +466,15 @@ function FollowersReport({ archive, period, nowMs }) {
         </p>
         {m.counterGap > 0 && (
           <p>
-            Bluesky’s profile counter says {m.profileCount.toLocaleString('en-US')}. It keeps counting deactivated, suspended and
-            deleted accounts, so the {m.counterGap.toLocaleString('en-US')}-account gap is followers who can’t currently be listed.
+            Bluesky’s profile counter says {m.profileCount.toLocaleString(activeLocale())}. It keeps counting deactivated, suspended and
+            deleted accounts, so the {m.counterGap.toLocaleString(activeLocale())}-account gap is followers who can’t currently be listed.
             The dashed reach on the chart marks that counter; it is not measured growth.
           </p>
         )}
         <p>
           The curve dates each follower by their follow record, so accounts that unfollowed are invisible to it. The Unfollow tracker
           finds them by comparing two syncs.
-          {m.undated > 0 && ` ${m.undated.toLocaleString('en-US')} followers carry no readable follow date and sit outside the chart.`}
+          {m.undated > 0 && ` ${m.undated.toLocaleString(activeLocale())} followers carry no readable follow date and sit outside the chart.`}
         </p>
       </HowCounted>
     </>
@@ -506,7 +507,7 @@ function BlocksReport({ archive, period, nowMs }) {
           fig('Through lists', m.listTotal, { sub: <Link to="/tools/lists">See the lists</Link> }),
           fig(period.days ? `New in ${periodPhrase(period)}` : 'All time', m.received, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
+            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
           }),
         ]}
       />
@@ -554,9 +555,9 @@ function BlocksReport({ archive, period, nowMs }) {
         </p>
         <p>
           People reached through several lists, or through both a list and a direct block, count once in the total
-          {m.overlap > 0 && `; ${m.overlap.toLocaleString('en-US')} also block you directly`}. Removed blocks, memberships and
+          {m.overlap > 0 && `; ${m.overlap.toLocaleString(activeLocale())} also block you directly`}. Removed blocks, memberships and
           subscriptions disappear at the next sync, so this is a picture of blocks that still exist, not a permanent history.
-          {m.undated > 0 && ` ${m.undated.toLocaleString('en-US')} people have no readable date and sit outside the chart.`}
+          {m.undated > 0 && ` ${m.undated.toLocaleString(activeLocale())} people have no readable date and sit outside the chart.`}
         </p>
       </HowCounted>
     </>
@@ -579,12 +580,12 @@ function PostsReport({ archive, period, nowMs }) {
         items={[
           fig(period.days ? `Posts in ${periodPhrase(period)}` : 'Posts, all time', m.count, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
-            sub: period.days ? `${m.compare.previous.toLocaleString('en-US')} the ${period.label.toLowerCase()} before` : null,
+            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            sub: period.days ? `${m.compare.previous.toLocaleString(activeLocale())} the ${period.label.toLowerCase()} before` : null,
           }),
           fig('Per day', m.perDay, { decimals: true }),
-          fig('Replies', pct(m.replies), { unit: '%', sub: `${m.replies.toLocaleString('en-US')} posts` }),
-          fig('With media', pct(m.withMedia), { unit: '%', sub: `${m.withMedia.toLocaleString('en-US')} posts` }),
+          fig('Replies', pct(m.replies), { unit: '%', sub: `${m.replies.toLocaleString(activeLocale())} posts` }),
+          fig('With media', pct(m.withMedia), { unit: '%', sub: `${m.withMedia.toLocaleString(activeLocale())} posts` }),
         ]}
       />
       <div className="report-split report-split--wide">
@@ -596,7 +597,7 @@ function PostsReport({ archive, period, nowMs }) {
           <SeriesChart series={m.counts} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`Posts per ${m.unit} over ${periodPhrase(period)}`} />
           <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" />
         </Card>
-        <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString('en-US')} in the window`}>
+        <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString(activeLocale())} in the window`}>
           <BarList
             ariaLabel="Posts by kind"
             labelWidth="110px"
@@ -638,8 +639,8 @@ function EngagementReport({ archive, period, nowMs, kind }) {
         items={[
           fig(kind === 'all' ? 'Received' : `${head} received`, m.total, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `On posts from the ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
-            sub: `On ${m.posts.toLocaleString('en-US')} posts`,
+            deltaTitle: period.days ? `On posts from the ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
+            sub: `On ${m.posts.toLocaleString(activeLocale())} posts`,
           }),
           fig('Per post', m.ownRate == null ? '—' : fmtRate(m.ownRate), {
             delta: m.rateCompare ? m.rateCompare.pct : undefined,
@@ -661,7 +662,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
           <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} />
         </Card>
         {kind === 'all' && (
-          <Card title="By type" sub={`Of ${m.total.toLocaleString('en-US')} in the window`}>
+          <Card title="By type" sub={`Of ${m.total.toLocaleString(activeLocale())} in the window`}>
             <BarList ariaLabel="Engagement by type" labelWidth="96px" rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))} />
           </Card>
         )}
@@ -701,7 +702,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
         <p>
           The rate averages over the posts made each {unitNoun(m.rateUnit)}: your top-level posts and the replies in your own threads.
           A gap is a {unitNoun(m.rateUnit)} with nothing posted.
-          {m.ownPosts > 0 && ` ${m.ownPosts.toLocaleString('en-US')} ${m.ownPosts === 1 ? 'post' : 'posts'} in this window.`}
+          {m.ownPosts > 0 && ` ${m.ownPosts.toLocaleString(activeLocale())} ${m.ownPosts === 1 ? 'post' : 'posts'} in this window.`}
         </p>
       </HowCounted>
     </>
@@ -723,7 +724,7 @@ function GivenReport({ archive, period, nowMs, kind }) {
         items={[
           fig(kind === 'all' ? 'Given' : `${head} given`, m.total, {
             delta: period.days ? m.compare.pct : undefined,
-            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString('en-US')}` : null,
+            deltaTitle: period.days ? `The ${period.label.toLowerCase()} before: ${m.compare.previous.toLocaleString(activeLocale())}` : null,
           }),
           fig('Per day', m.perDay, { decimals: true }),
           fig('Accounts', m.accounts, { sub: 'Engaged with' }),
@@ -799,7 +800,7 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
       {rows.length ? (
         <ul className="widget-rows report-rows">
           {rows.map((r) => (
-            <PersonRow key={r.did} archive={archive} did={r.did} meta={detail(r)} value={r.total.toLocaleString('en-US')} valueTitle={detail(r)} follow={followAndKeep} />
+            <PersonRow key={r.did} archive={archive} did={r.did} meta={detail(r)} value={r.total.toLocaleString(activeLocale())} valueTitle={detail(r)} follow={followAndKeep} />
           ))}
         </ul>
       ) : (
@@ -811,7 +812,7 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
             Show {Math.min(PEOPLE_PAGE, ranked.length - rows.length)} more
           </Button>
           <span className="num">
-            {rows.length.toLocaleString('en-US')} of {ranked.length.toLocaleString('en-US')}
+            {rows.length.toLocaleString(activeLocale())} of {ranked.length.toLocaleString(activeLocale())}
           </span>
         </div>
       )}
@@ -832,7 +833,7 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
               <MessagesSquare size={16} aria-hidden="true" /> They engage with you
             </>
           }
-          sub={archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString('en-US')} of them you don’t follow` : null}
+          sub={archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow` : null}
           className="card--flush"
         >
           {list(inTop, inRanked, 'in', relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.')}

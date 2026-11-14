@@ -14,6 +14,7 @@ import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PersonRow, useFollow } from '../people/people.jsx';
 import { followerLogModel } from '../reports/models.js';
 import { ToolHeader } from './ToolPage.jsx';
+import { activeLocale } from '../lib/locale.js';
 
 const PAGE = 40;
 
@@ -92,8 +93,8 @@ export default function UnfollowTracker({ tool }) {
                     setLimit(PAGE);
                   }}
                   options={[
-                    { value: 'lost', label: `Left (${m.lost.length.toLocaleString('en-US')})` },
-                    { value: 'gained', label: `Arrived (${m.gained.length.toLocaleString('en-US')})` },
+                    { value: 'lost', label: `Left (${m.lost.length.toLocaleString(activeLocale())})` },
+                    { value: 'gained', label: `Arrived (${m.gained.length.toLocaleString(activeLocale())})` },
                   ]}
                 />
                 <Button size="sm" onClick={syncNow} disabled={Boolean(archive.sync)}>
@@ -110,7 +111,7 @@ export default function UnfollowTracker({ tool }) {
                 <div key={g.at} className="change-group">
                   <h3 className="change-group-head num">
                     Noticed {formatDateShort(g.at)}
-                    {g.since ? `, since the sync on ${formatDateShort(g.since)}` : ''} · {g.entries.length.toLocaleString('en-US')}
+                    {g.since ? `, since the sync on ${formatDateShort(g.since)}` : ''} · {g.entries.length.toLocaleString(activeLocale())}
                   </h3>
                   <ul className="widget-rows report-rows">
                     {g.entries.map((e) => (

@@ -10,6 +10,7 @@ import { followBackModel } from '../reports/models.js';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
 import { useKeepList } from './keep.js';
+import { activeLocale } from '../lib/locale.js';
 
 const PAGE = 25;
 
@@ -51,7 +52,7 @@ export default function FollowBack({ tool }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">
-                {rows.length.toLocaleString('en-US')} {rows.length === 1 ? 'person' : 'people'} waiting
+                {rows.length.toLocaleString(activeLocale())} {rows.length === 1 ? 'person' : 'people'} waiting
               </h2>
               <p className="card-sub">Engaged with you in {periodPhrase(period)}, follow you, and you don’t follow them.</p>
             </div>
@@ -73,7 +74,7 @@ export default function FollowBack({ tool }) {
                   archive={archive}
                   did={r.did}
                   meta={detail(r)}
-                  value={r.total.toLocaleString('en-US')}
+                  value={r.total.toLocaleString(activeLocale())}
                   valueTitle={detail(r)}
                   follow={followTracked}
                   followLabel="Follow back"

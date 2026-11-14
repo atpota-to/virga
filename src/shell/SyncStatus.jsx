@@ -14,6 +14,7 @@ import { blockReach } from '../lib/analytics.js';
 import { SYNC_STEPS } from '../lib/syncProgress.js';
 import { relativeTime } from '../lib/time.js';
 import { Link } from '../lib/router.jsx';
+import { activeLocale } from '../lib/locale.js';
 
 /** Overall progress across a sync's steps, 0–1, or null when unmeasured. */
 export function overallFraction(sync) {
@@ -94,7 +95,7 @@ export function SyncCard({ archive }) {
       </div>
       {pm && (
         <span className="sync-card-sub num">
-          {counts.records.toLocaleString('en-US')} repo records and {counts.followers.toLocaleString('en-US')} followers, kept in this browser
+          {counts.records.toLocaleString(activeLocale())} repo records and {counts.followers.toLocaleString(activeLocale())} followers, kept in this browser
         </span>
       )}
       {syncError && (

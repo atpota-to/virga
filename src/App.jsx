@@ -17,7 +17,7 @@ import SignInReturn from './pages/SignInReturn.jsx';
 import Shell from './shell/Shell.jsx';
 import { ToastProvider } from './shell/bits.jsx';
 import { ComposerProvider } from './posting/composer/ComposerContext.jsx';
-import { PreferencesProvider } from './lib/preferences.jsx';
+import { PreferencesProvider, usePreferences } from './lib/preferences.jsx';
 import { navigate, usePath } from './lib/router.jsx';
 import { useAtprotoSession } from './session/useAtprotoSession.jsx';
 import { getProfile } from './lib/atproto.js';
@@ -37,6 +37,9 @@ export default function App() {
 function AppInner() {
   const { session, agent, did, loading, error, signOut, accounts } = useAtprotoSession();
   const path = usePath();
+  // The pages are drawn again when the number and date formats change, so
+  // nothing keeps a string written the old way.
+  const { formats } = usePreferences();
   const remembered = accounts.find((a) => a.did === did) || null;
   const profile = useProfile(did, remembered);
 
@@ -81,7 +84,7 @@ function AppInner() {
       <SessionNotices />
       <ArchiveProvider key={did} agent={agent} did={did} profile={profile}>
         <DashboardsProvider key={did} did={did}>
-          <Shell profile={profile} did={did} onSignOut={signOut} />
+          <Shell key={formats} profile={profile} did={did} onSignOut={signOut} />
         </DashboardsProvider>
       </ArchiveProvider>
     </ComposerProvider>

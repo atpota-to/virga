@@ -3,11 +3,12 @@
 // repo, or only its URI.
 
 import { bskyUrlFor, parseRecordUri } from '../lib/postLink.js';
+import { activeLocale } from '../../lib/locale.js';
 
 const PREVIEW_CHARS = 280;
 
 function plural(n, one, many) {
-  return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
+  return `${n.toLocaleString(activeLocale())} ${n === 1 ? one : many}`;
 }
 
 /** One line for an embed: "2 images", "A video", "Link: <title>", "Quotes a post". */

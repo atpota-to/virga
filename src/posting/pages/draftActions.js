@@ -10,6 +10,7 @@
 
 import { blobCid } from '../lib/blobs.js';
 import { countPhrase } from './hubModel.js';
+import { activeLocale } from '../../lib/locale.js';
 
 /** The meta line under a draft in a list, as short parts joined with " · ". */
 export function draftMeta(row, now = Date.now()) {
@@ -49,7 +50,7 @@ export function editedLabel(iso, now = Date.now()) {
   const d = new Date(t);
   const opts = { month: 'short', day: 'numeric' };
   if (d.getFullYear() !== new Date(now).getFullYear()) opts.year = 'numeric';
-  return `Edited ${d.toLocaleDateString('en-US', opts)}`;
+  return `Edited ${d.toLocaleDateString(activeLocale(), opts)}`;
 }
 
 /**

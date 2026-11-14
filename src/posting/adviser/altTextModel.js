@@ -10,6 +10,7 @@ import {
   quickNoteIds,
 } from './altTextFollowUp.js';
 import { adviserUsageLine } from './usage.js';
+import { activeLocale } from '../../lib/locale.js';
 
 /** Bluesky's limit on an image's description. */
 export const ALT_TEXT_MAX_GRAPHEMES = 2000;
@@ -26,7 +27,7 @@ export function altTextCount(text) {
   return {
     count,
     over: count > ALT_TEXT_MAX_GRAPHEMES,
-    label: `${count.toLocaleString('en-US')} of ${ALT_TEXT_MAX_GRAPHEMES.toLocaleString('en-US')}`,
+    label: `${count.toLocaleString(activeLocale())} of ${ALT_TEXT_MAX_GRAPHEMES.toLocaleString(activeLocale())}`,
   };
 }
 

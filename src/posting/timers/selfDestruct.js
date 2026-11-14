@@ -22,6 +22,8 @@
 
 // Must match MIN/MAX_LIFESPAN_SECONDS in server/timers/selfDestruct.js, which refuses
 // anything outside the range.
+import { activeLocale } from '../../lib/locale.js';
+
 export const MIN_LIFESPAN_SECONDS = 5 * 60;
 export const MAX_LIFESPAN_SECONDS = 30 * 24 * 60 * 60;
 export const MAX_EXTENSIONS_CAP = 10;
@@ -186,7 +188,7 @@ export function describeFrom(clause) {
   const parts = [];
   if (f.notFollowed) parts.push("you don't follow");
   if (f.followersOver)
-    parts.push(`with over ${f.followersOver.toLocaleString()} followers`);
+    parts.push(`with over ${f.followersOver.toLocaleString(activeLocale())} followers`);
   if (parts.length === 0) return '';
   return ` from people ${parts.join(f.match === 'all' ? ' and ' : ' or ')}`;
 }
@@ -1106,15 +1108,15 @@ export function describeDeleteAt(iso, now = Date.now()) {
       new Date(today.getFullYear(), today.getMonth(), today.getDate())) /
       86400000,
   );
-  const time = at.toLocaleTimeString(undefined, {
+  const time = at.toLocaleTimeString(activeLocale(), {
     hour: 'numeric',
     minute: '2-digit',
   });
   if (days === 0) return `today at ${time}`;
   if (days === 1) return `tomorrow at ${time}`;
   if (days > 1 && days <= 6)
-    return `${at.toLocaleDateString(undefined, { weekday: 'long' })} at ${time}`;
-  return `${at.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${time}`;
+    return `${at.toLocaleDateString(activeLocale(), { weekday: 'long' })} at ${time}`;
+  return `${at.toLocaleDateString(activeLocale(), { month: 'short', day: 'numeric' })} at ${time}`;
 }
 
 /** '1 hour' for a duration, or the pinned instant ('tomorrow at 9:00 AM'). */

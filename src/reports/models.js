@@ -26,6 +26,7 @@ import {
   topPosts,
   unitChoicesFor,
 } from '../lib/analytics.js';
+import { localeStamp, uses12Hour, weekOrder } from '../lib/locale.js';
 
 const DAY_MS = 86_400_000;
 
@@ -42,7 +43,9 @@ const cache = new Map();
  */
 export function cached(archive, name, period, options, compute) {
   // followRev moves when Follow or Unfollow changes the follows between syncs.
-  const key = [archive.did, archive.rev, archive.followRev || 0, archive.nowMs, name, period?.key, JSON.stringify(options || {})].join('|');
+  // localeStamp moves with the locale and the first day of the week: a week
+  // bucketed from Monday must not be served to someone who starts on Sunday.
+  const key = [archive.did, archive.rev, archive.followRev || 0, archive.nowMs, localeStamp(), name, period?.key, JSON.stringify(options || {})].join('|');
   if (cache.has(key)) return cache.get(key);
   const value = compute();
   cache.set(key, value);
@@ -363,7 +366,19 @@ export function atmosphereModel(archive, period, nowMs, { unit: unitPick = null 
 /* When posts land                                                      */
 /* ------------------------------------------------------------------ */
 
+// Indexed from Monday everywhere in the model (`day` 0 is Monday), whatever
+// day the reader's week starts on; weekdayOrder() below is the order to draw
+// them in.
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+export const WEEKDAYS_LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+/**
+ * The model's weekday indexes in the order the reader's week runs:
+ * [0..6] for a Monday start, [6, 0, 1, 2, 3, 4, 5] for a Sunday one.
+ */
+export function weekdayOrder() {
+  return weekOrder().map((day) => (day + 6) % 7);
+}
 
 /** The fewest posts a slot needs before its average is shown at all. */
 export const BEST_TIME_MIN_POSTS = 3;
@@ -426,9 +441,16 @@ export function bestTimeModel(archive, period, nowMs, { block = 2 } = {}) {
   });
 }
 
-/** "6–8 pm" for a column of `block` hours starting at `col * block`. */
+/**
+ * "6–8 pm" for a column of `block` hours starting at `col * block`, or
+ * "18–20" where the reader's clock runs to 24.
+ */
 export function hourRange(col, block = 2) {
   const from = col * block;
+  if (!uses12Hour()) {
+    const two = (x) => String(x % 24).padStart(2, '0');
+    return `${two(from)}–${two(from + block)}`;
+  }
   const h = (x) => {
     const v = x % 24;
     return { n: v % 12 === 0 ? 12 : v % 12, ap: v < 12 ? 'am' : 'pm' };
@@ -445,7 +467,8 @@ export function hourColumns(block = 2) {
   const out = [];
   for (let c = 0; c < cols; c += every) {
     const h = c * block;
-    out.push({ label: h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? `${h}a` : `${h - 12}p`, span: Math.min(every, cols - c) });
+    const label = !uses12Hour() ? String(h).padStart(2, '0') : h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? `${h}a` : `${h - 12}p`;
+    out.push({ label, span: Math.min(every, cols - c) });
   }
   return out;
 }

@@ -13,6 +13,7 @@ import TemplateEditor from '../library/TemplateEditor.jsx';
 import PostingHeader from '../ui/PostingHeader.jsx';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
 import './hub.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const USE_WORDS = { reply: 'For replies', post: 'For new posts', any: 'For posts and replies' };
 const ATTACH_WORDS = { post: 'Quotes a post', feed: 'Attaches a feed', list: 'Attaches a list', link: 'Attaches a link card', unsupported: 'Attaches pictures' };
@@ -33,7 +34,7 @@ function TemplateText({ text }) {
 
 function usedLine(entry) {
   if (!entry?.count) return 'Not used here yet';
-  return `Used ${entry.count === 1 ? 'once' : `${entry.count.toLocaleString('en-US')} times`} in this browser`;
+  return `Used ${entry.count === 1 ? 'once' : `${entry.count.toLocaleString(activeLocale())} times`} in this browser`;
 }
 
 /**

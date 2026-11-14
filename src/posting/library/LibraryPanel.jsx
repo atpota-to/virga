@@ -22,6 +22,7 @@ import { effectFor, previewFor, verbFor } from './model.js';
 import { SHELF_EMPTY, SHELF_HINT, looksLikeLink, moveActive, sectionsFor } from './libraryUi.js';
 import TemplateQuestions, { TemplatePreview } from './TemplateQuestions.jsx';
 import './library.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const SHELF_ICONS = {
   suggested: Sparkles,
@@ -402,7 +403,7 @@ export default function LibraryPanel({
                       <Icon size={15} aria-hidden="true" />
                       <span className="lib-shelf-label">{s.label}</span>
                       {s.id !== 'search' && Number.isFinite(s.count) && s.count > 0 && (
-                        <span className="lib-shelf-count num">{s.count.toLocaleString('en-US')}</span>
+                        <span className="lib-shelf-count num">{s.count.toLocaleString(activeLocale())}</span>
                       )}
                     </button>
                   </li>

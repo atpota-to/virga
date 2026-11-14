@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_PREFERENCES, PREFERENCES_KEY, effectiveTheme, readPreferences } from './preferences.jsx';
+import { afterEach } from 'vitest';
+import { DEFAULT_PREFERENCES, PREFERENCES_KEY, applyFormats, effectiveTheme, readPreferences } from './preferences.jsx';
+import { activeLocale, activeWeekStart, setActiveLocale, setActiveWeekStart } from './locale.js';
 
 function store(value) {
   return { getItem: (k) => (k === PREFERENCES_KEY ? value : null) };
@@ -27,5 +29,36 @@ describe('preferences', () => {
     expect(effectiveTheme('system', false)).toBe('light');
     expect(effectiveTheme('light', true)).toBe('light');
     expect(effectiveTheme('dark', false)).toBe('dark');
+  });
+
+  it('keep a named format and week start, and follow the browser otherwise', () => {
+    const out = readPreferences(store(JSON.stringify({ locale: 'en-GB', weekStart: 'sunday' })));
+    expect(out.locale).toBe('en-GB');
+    expect(out.weekStart).toBe('sunday');
+    const odd = readPreferences(store(JSON.stringify({ locale: 'tlh', weekStart: 'someday' })));
+    expect(odd.locale).toBe('system');
+    expect(odd.weekStart).toBe('system');
+  });
+});
+
+describe('applyFormats', () => {
+  afterEach(() => {
+    setActiveLocale('en-US');
+    setActiveWeekStart(1);
+  });
+
+  it('hands the formats to lib/locale.js and names them', () => {
+    const stamp = applyFormats({ locale: 'en-GB', weekStart: 'sunday' });
+    expect(activeLocale()).toBe('en-GB');
+    expect(activeWeekStart()).toBe(0);
+    expect(applyFormats({ locale: 'en-GB', weekStart: 'sunday' })).toBe(stamp);
+    expect(applyFormats({ locale: 'en-GB', weekStart: 'monday' })).not.toBe(stamp);
+  });
+
+  it('takes the week start from the format when none is named', () => {
+    applyFormats({ locale: 'en-US', weekStart: 'system' });
+    expect(activeWeekStart()).toBe(0);
+    applyFormats({ locale: 'en-DE', weekStart: 'system' });
+    expect(activeWeekStart()).toBe(1);
   });
 });

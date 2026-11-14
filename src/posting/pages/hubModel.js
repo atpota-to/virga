@@ -5,6 +5,7 @@
 import { compactPostFromRecord } from '../../lib/analytics.js';
 import { summarizeDraft } from '../drafts/drafts.js';
 import { isLiveTimer } from '../timers/timerService.js';
+import { activeLocale } from '../../lib/locale.js';
 
 const time = (iso) => {
   const t = Date.parse(iso || '');
@@ -14,7 +15,7 @@ const time = (iso) => {
 /** "1 draft", "3 drafts", with the number in en-US form. */
 export function countPhrase(n, one, many = `${one}s`) {
   const value = Number.isFinite(n) ? n : 0;
-  return `${value.toLocaleString('en-US')} ${value === 1 ? one : many}`;
+  return `${value.toLocaleString(activeLocale())} ${value === 1 ? one : many}`;
 }
 
 /**
@@ -147,7 +148,7 @@ export function whenLabel(iso, now = new Date()) {
   const t = time(iso);
   if (t == null) return '';
   const d = new Date(t);
-  const clock = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const clock = d.toLocaleTimeString(activeLocale(), { hour: 'numeric', minute: '2-digit' });
   const startOf = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const days = Math.round((startOf(d) - startOf(now)) / 86_400_000);
   if (days === 0) return `Today, ${clock}`;
@@ -155,5 +156,5 @@ export function whenLabel(iso, now = new Date()) {
   if (days === -1) return `Yesterday, ${clock}`;
   const opts = { weekday: 'short', month: 'short', day: 'numeric' };
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
-  return `${d.toLocaleDateString('en-US', opts)}, ${clock}`;
+  return `${d.toLocaleDateString(activeLocale(), opts)}, ${clock}`;
 }

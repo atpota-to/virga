@@ -22,6 +22,7 @@ import { countPhrase, draftRows, mergePostRows, rowFromPostView, scheduledOvervi
 import { draftMeta } from './draftActions.js';
 import { LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import './hub.css';
+import { activeLocale } from '../../lib/locale.js';
 
 function Tile({ to, icon: Icon, label, value, note, loading }) {
   return (
@@ -116,7 +117,7 @@ export default function HubPage({ did }) {
   );
   const recentLoading = fresh.status === 'loading' && !(isBuilt(archive) && archive.posts.length);
 
-  const draftCount = drafts.data ? `${drafts.data.rows.length.toLocaleString('en-US')}${drafts.data.more ? '+' : ''}` : '–';
+  const draftCount = drafts.data ? `${drafts.data.rows.length.toLocaleString(activeLocale())}${drafts.data.more ? '+' : ''}` : '–';
   const now = new Date();
 
   return (
@@ -154,7 +155,7 @@ export default function HubPage({ did }) {
                 : scheduled.data?.failed
                   ? `${countPhrase(scheduled.data.failed, 'post')} didn’t go out`
                   : scheduled.data
-                    ? `${scheduled.data.queued.toLocaleString('en-US')} in the queue`
+                    ? `${scheduled.data.queued.toLocaleString(activeLocale())} in the queue`
                     : scheduled.status === 'error'
                       ? 'Couldn’t read them'
                       : ''

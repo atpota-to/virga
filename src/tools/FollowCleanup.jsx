@@ -16,6 +16,7 @@ import { relationSets } from '../reports/models.js';
 import { useToast } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
 import { useKeepList } from './keep.js';
+import { activeLocale } from '../lib/locale.js';
 
 const DAY_MS = 86_400_000;
 const PAGE = 50;
@@ -112,7 +113,7 @@ export default function FollowCleanup({ tool }) {
     setChecking({ done: 0, total: dids.length });
     try {
       const n = await archive.checkActivity(dids, { signal: ac.signal, onProgress: (p) => setChecking(p) });
-      toast?.(`Checked ${n.toLocaleString('en-US')} accounts.`);
+      toast?.(`Checked ${n.toLocaleString(activeLocale())} accounts.`);
     } finally {
       abortRef.current = null;
       setChecking(null);
@@ -133,7 +134,7 @@ export default function FollowCleanup({ tool }) {
     }
     setWorking(null);
     setSelected(new Set());
-    toast?.(`Unfollowed ${ok.toLocaleString('en-US')} ${ok === 1 ? 'account' : 'accounts'}. Each row can undo it.`);
+    toast?.(`Unfollowed ${ok.toLocaleString(activeLocale())} ${ok === 1 ? 'account' : 'accounts'}. Each row can undo it.`);
   }
 
   function toggleRow(did) {
@@ -154,7 +155,7 @@ export default function FollowCleanup({ tool }) {
 
   return (
     <>
-      <ToolHeader tool={tool} sub={`You follow ${rows.length.toLocaleString('en-US')} accounts. Nothing happens until you press Unfollow.`} />
+      <ToolHeader tool={tool} sub={`You follow ${rows.length.toLocaleString(activeLocale())} accounts. Nothing happens until you press Unfollow.`} />
       <div className="page-body">
         {!follow.known && (
           <p className="callout">Who you follow arrives with the next sync. Until then there’s nothing to tidy.</p>
@@ -162,7 +163,7 @@ export default function FollowCleanup({ tool }) {
 
         <section className="card check-card" aria-label="Activity check">
           <div className="check-card-text">
-            <strong>{checkedCount ? `Activity checked for ${checkedCount.toLocaleString('en-US')} of ${rows.length.toLocaleString('en-US')} accounts` : 'When did they last post?'}</strong>
+            <strong>{checkedCount ? `Activity checked for ${checkedCount.toLocaleString(activeLocale())} of ${rows.length.toLocaleString(activeLocale())} accounts` : 'When did they last post?'}</strong>
             <span className="muted">
               Reads the newest post or repost of each account you follow from Bluesky’s public API, one request each. About a minute for
               800 accounts. Kept in this browser.
@@ -171,7 +172,7 @@ export default function FollowCleanup({ tool }) {
           {checking ? (
             <div className="check-progress">
               <span className="num muted">
-                {checking.done.toLocaleString('en-US')} of {checking.total.toLocaleString('en-US')}
+                {checking.done.toLocaleString(activeLocale())} of {checking.total.toLocaleString(activeLocale())}
               </span>
               <div className="progress" aria-hidden="true">
                 <div className="progress-fill" style={{ width: `${checking.total ? (checking.done / checking.total) * 100 : 0}%` }} />
@@ -214,7 +215,7 @@ export default function FollowCleanup({ tool }) {
               }}
             >
               <span className="filter-card-label">{f.label}</span>
-              <span className="filter-card-count num">{counts[f.key].toLocaleString('en-US')}</span>
+              <span className="filter-card-count num">{counts[f.key].toLocaleString(activeLocale())}</span>
               <span className="filter-card-hint">{f.hint}</span>
             </button>
           ))}
@@ -224,12 +225,12 @@ export default function FollowCleanup({ tool }) {
           <div className="table-bar" data-selected={selectedLive.length ? '' : undefined}>
             {working ? (
               <span role="status">
-                Unfollowing {working.done.toLocaleString('en-US')} of {working.total.toLocaleString('en-US')}…
+                Unfollowing {working.done.toLocaleString(activeLocale())} of {working.total.toLocaleString(activeLocale())}…
               </span>
             ) : selectedLive.length ? (
               <>
                 <span className="table-bar-count">
-                  {selectedLive.length.toLocaleString('en-US')} selected
+                  {selectedLive.length.toLocaleString(activeLocale())} selected
                 </span>
                 <span className="table-bar-actions">
                   <Button size="sm" onClick={() => setSelected(new Set())}>
@@ -246,15 +247,15 @@ export default function FollowCleanup({ tool }) {
                     Keep, don’t suggest
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => setConfirming(true)} disabled={follow.locked}>
-                    Unfollow {selectedLive.length.toLocaleString('en-US')}
+                    Unfollow {selectedLive.length.toLocaleString(activeLocale())}
                   </Button>
                 </span>
               </>
             ) : (
               <>
                 <span className="muted num">
-                  Showing {shown.length.toLocaleString('en-US')} of {filtered.length.toLocaleString('en-US')}
-                  {keep.size ? `. ${keep.size.toLocaleString('en-US')} kept accounts are ${showKept ? 'shown' : 'hidden'}` : ''}.
+                  Showing {shown.length.toLocaleString(activeLocale())} of {filtered.length.toLocaleString(activeLocale())}
+                  {keep.size ? `. ${keep.size.toLocaleString(activeLocale())} kept accounts are ${showKept ? 'shown' : 'hidden'}` : ''}.
                 </span>
                 <span className="table-bar-actions">
                   {keep.size > 0 && (
@@ -340,7 +341,7 @@ export default function FollowCleanup({ tool }) {
                           {r.gone ? 'Gone' : !r.checked ? <span className="muted">Not checked</span> : r.lastActiveMs ? relativeTime(r.lastActiveMs) : 'Never posted'}
                         </span>
                       </td>
-                      <td className="is-num">{r.interactions.toLocaleString('en-US')}</td>
+                      <td className="is-num">{r.interactions.toLocaleString(activeLocale())}</td>
                       <td className="num">{r.followedAt ? formatDateShort(r.followedAt) : '—'}</td>
                       <td className="col-action">
                         {following ? (
@@ -387,7 +388,7 @@ export default function FollowCleanup({ tool }) {
       <Dialog
         open={confirming}
         onClose={() => setConfirming(false)}
-        title={`Unfollow ${selectedLive.length.toLocaleString('en-US')} ${selectedLive.length === 1 ? 'account' : 'accounts'}?`}
+        title={`Unfollow ${selectedLive.length.toLocaleString(activeLocale())} ${selectedLive.length === 1 ? 'account' : 'accounts'}?`}
         actions={
           <>
             <Button onClick={() => setConfirming(false)}>Cancel</Button>

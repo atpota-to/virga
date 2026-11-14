@@ -1,6 +1,6 @@
 // How Virga looks and behaves for whoever is at this browser: the theme, the
-// density, the live sky, the period every chart answers for, and whether the
-// sidebar is folded. Kept in localStorage, for every account on the browser
+// density, the live sky, the period every chart answers for, how numbers and
+// dates are written, and whether the sidebar is folded. Kept in localStorage, for every account on the browser
 // alike (the archive and the dashboards are per account; these are per
 // person at the keyboard).
 //
@@ -8,8 +8,14 @@
 // data-density, which is what the stylesheets read. index.html stamps them
 // once before the first paint, from the same key, so a dark-mode reader
 // never sees a white flash.
+//
+// The formats (locale, first day of the week) are handed to lib/locale.js,
+// which the plain formatting functions read. `formats` in the context value
+// changes whenever they do; App keys the shell on it, so every page is
+// drawn again in the new formats rather than keeping strings in the old.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { LOCALE_CHOICES, WEEK_START_CHOICES, localeStamp, resolveLocale, resolveWeekStart, setActiveLocale, setActiveWeekStart } from './locale.js';
 
 export const PREFERENCES_KEY = 'virga:preferences';
 
@@ -21,6 +27,8 @@ export const DEFAULT_PREFERENCES = Object.freeze({
   skyScope: 'dashboard', // 'dashboard' | 'everywhere'
   period: '30d',
   sidebar: 'expanded', // 'expanded' | 'collapsed'
+  locale: 'system', // 'system' (English, in the browser's region) | one of LOCALE_CHOICES
+  weekStart: 'system', // 'system' (the locale's own) | 'monday' | 'sunday' | 'saturday'
 });
 
 const CHOICES = {
@@ -30,6 +38,8 @@ const CHOICES = {
   skyScope: ['dashboard', 'everywhere'],
   period: ['7d', '30d', '90d', '1y', 'all'],
   sidebar: ['expanded', 'collapsed'],
+  locale: ['system', ...LOCALE_CHOICES],
+  weekStart: ['system', ...Object.keys(WEEK_START_CHOICES)],
 };
 
 function storage() {
@@ -69,6 +79,16 @@ export function writePreferences(prefs, store = storage()) {
   }
 }
 
+/**
+ * Hand the formats a set of preferences means to lib/locale.js, and return
+ * the stamp that names them. Safe to call again with the same preferences.
+ */
+export function applyFormats(prefs) {
+  const tag = setActiveLocale(resolveLocale(prefs?.locale));
+  setActiveWeekStart(resolveWeekStart(prefs?.weekStart, tag));
+  return localeStamp();
+}
+
 /** 'light' or 'dark', from the preference and what the system asks for. */
 export function effectiveTheme(theme, systemDark) {
   if (theme === 'light' || theme === 'dark') return theme;
@@ -93,6 +113,9 @@ export function PreferencesProvider({ children }) {
   const [prefs, setPrefs] = useState(() => readPreferences());
   const systemDark = useSystemDark();
   const theme = effectiveTheme(prefs.theme, systemDark);
+  // In render, not in an effect: the formats have to be in place before the
+  // first child formats a number, and an effect runs after they all have.
+  const formats = useMemo(() => applyFormats({ locale: prefs.locale, weekStart: prefs.weekStart }), [prefs.locale, prefs.weekStart]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -111,7 +134,7 @@ export function PreferencesProvider({ children }) {
     });
   }, []);
 
-  const value = useMemo(() => ({ ...prefs, effectiveTheme: theme, setPref }), [prefs, theme, setPref]);
+  const value = useMemo(() => ({ ...prefs, effectiveTheme: theme, formats, setPref }), [prefs, theme, formats, setPref]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

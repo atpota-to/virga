@@ -35,6 +35,7 @@ import {
 } from './postedModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import './hub.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const STEP = 30;
 
@@ -47,9 +48,9 @@ function actionError(err, what) {
 function Count({ icon: Icon, value, label }) {
   const n = value || 0;
   return (
-    <span className="posted-count" title={`${n.toLocaleString('en-US')} ${label}`}>
+    <span className="posted-count" title={`${n.toLocaleString(activeLocale())} ${label}`}>
       <Icon size={13} aria-hidden="true" />
-      {n.toLocaleString('en-US')}
+      {n.toLocaleString(activeLocale())}
       <span className="visually-hidden"> {label}</span>
     </span>
   );
@@ -232,7 +233,7 @@ export default function PostedPage({ did }) {
           <div className="card-head">
             <div>
               <h2 id="posted-title" className="card-title">
-                {loading ? 'Your posts' : `${countPhrase(rows.length, 'post')}${rows.length !== total ? ` of ${total.toLocaleString('en-US')}` : ''}`}
+                {loading ? 'Your posts' : `${countPhrase(rows.length, 'post')}${rows.length !== total ? ` of ${total.toLocaleString(activeLocale())}` : ''}`}
               </h2>
               <p className="card-sub">Newest first. Posts can’t be edited once they’re out; copy one into a new post instead.</p>
             </div>

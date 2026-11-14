@@ -17,6 +17,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { bucketLabel, fmtCompact } from '../lib/analytics.js';
 import { clamp, fmtCount, fmtTick, niceScale, uniqueTicks } from './format.js';
 import './charts.css';
+import { activeLocale } from '../lib/locale.js';
 
 const PAD = { l: 8, r: 12, t: 18, b: 20 };
 /**
@@ -178,7 +179,7 @@ export default function SeriesChart({
             height={H}
             viewBox={`0 0 ${w} ${H}`}
             role="img"
-            aria-label={`${ariaLabel || 'Series'}: ${n} ${unit} buckets, peak ${fmt(dataMax)}${showGhost ? `; dashed reference reaching ${Math.round(ghost.v).toLocaleString('en-US')}` : ''}`}
+            aria-label={`${ariaLabel || 'Series'}: ${n} ${unit} buckets, peak ${fmt(dataMax)}${showGhost ? `; dashed reference reaching ${Math.round(ghost.v).toLocaleString(activeLocale())}` : ''}`}
             onPointerMove={onMove}
             onPointerLeave={() => setHover(null)}
           >
@@ -281,12 +282,12 @@ export default function SeriesChart({
             <strong>{seriesLabel && `${seriesLabel} `}{fmt(hp.v)}</strong>
             {secondaryHp && (
               <strong className="an-chart-tip-secondary">
-                {secondary.label} {Math.round(secondaryHp.v).toLocaleString('en-US')}
+                {secondary.label} {Math.round(secondaryHp.v).toLocaleString(activeLocale())}
               </strong>
             )}
             {stacked && secondaryPlotHp && (
               <strong>
-                Total {Math.round(secondaryPlotHp.v).toLocaleString('en-US')}
+                Total {Math.round(secondaryPlotHp.v).toLocaleString(activeLocale())}
               </strong>
             )}
             <span className="an-chart-tip-when">{bucketLabel(hp.t, unit)}</span>

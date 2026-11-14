@@ -7,6 +7,7 @@
 import { isMissingScopeError } from '../../session/scopes.js';
 import { isReauthRequiredError } from '../../session/accounts.js';
 import { bskyUrlFor } from '../lib/postLink.js';
+import { activeLocale } from '../../lib/locale.js';
 
 export const SLOW_PUBLISH_MS = 60_000;
 export const HARD_PUBLISH_MS = 180_000;
@@ -137,7 +138,7 @@ export function postedToast({ account, did, root }) {
   };
 }
 
-function whenWords(iso, { now = new Date(), locale = 'en-US', timeZone } = {}) {
+function whenWords(iso, { now = new Date(), locale = activeLocale(), timeZone } = {}) {
   const at = new Date(iso);
   if (!Number.isFinite(at.getTime())) return '';
   const opts = timeZone ? { timeZone } : {};

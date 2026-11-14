@@ -8,6 +8,7 @@
 // since the reading is one request and its second half is the writing).
 
 import { fetchStylePostTexts, synthesizeStyleFromTexts } from './style.js';
+import { activeLocale } from '../../lib/locale.js';
 
 export const STYLE_STAGES = Object.freeze([
   { id: 'gather', label: 'Gathering your recent posts' },
@@ -46,12 +47,12 @@ export function styleErrorMessage(err) {
 /** "Written from 212 of your posts · 12 Nov 2026", or ''. */
 export function styleProfileLine(
   { analyzedCount, updatedAt } = {},
-  { locale } = {},
+  { locale = activeLocale() } = {},
 ) {
   const parts = [];
   if (analyzedCount > 0)
     parts.push(
-      `Written from ${analyzedCount.toLocaleString('en-US')} of your posts`,
+      `Written from ${analyzedCount.toLocaleString(activeLocale())} of your posts`,
     );
   const at = updatedAt ? new Date(updatedAt) : null;
   if (at && !Number.isNaN(at.getTime()))

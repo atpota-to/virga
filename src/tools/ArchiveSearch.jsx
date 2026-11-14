@@ -12,6 +12,7 @@ import { engagementOf } from '../lib/analytics.js';
 import PostRow from '../reports/PostRow.jsx';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
+import { activeLocale } from '../lib/locale.js';
 
 const DAY_MS = 86_400_000;
 const PAGE = 30;
@@ -60,7 +61,7 @@ export default function ArchiveSearch({ tool }) {
               label="Export"
               size="md"
               items={[
-                { icon: Download, label: `These ${results.length.toLocaleString('en-US')} posts (CSV)`, hint: 'What the search shows, newest first.', onSelect: () => exportPosts(archive, results) },
+                { icon: Download, label: `These ${results.length.toLocaleString(activeLocale())} posts (CSV)`, hint: 'What the search shows, newest first.', onSelect: () => exportPosts(archive, results) },
                 { icon: Download, label: 'Every post (CSV)', hint: 'The whole post archive with its counts.', onSelect: () => exportPosts(archive) },
                 { icon: Download, label: 'Everything (JSON)', hint: 'Posts, followers, blocks, engagement and repo records.', onSelect: () => exportArchive(archive) },
               ]}
@@ -116,7 +117,7 @@ export default function ArchiveSearch({ tool }) {
         <section className="card card--flush" aria-label="Results">
           <div className="card-head">
             <p className="card-sub num" role="status">
-              {results.length.toLocaleString('en-US')} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
+              {results.length.toLocaleString(activeLocale())} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
               {q ? ` matching “${query.trim()}”` : ''}
             </p>
           </div>

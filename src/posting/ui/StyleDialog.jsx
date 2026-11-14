@@ -11,6 +11,7 @@ import { STYLE_STAGES, createStyleSession, styleProfileLine } from '../adviser/s
 import { adviserUsageLine, readAdviserUsage } from '../adviser/usage.js';
 import NeedsBackend from './NeedsBackend.jsx';
 import './adviser.css';
+import { activeLocale } from '../../lib/locale.js';
 
 /**
  * The adviser's reading of how this account writes: its recent posts are
@@ -226,7 +227,7 @@ function StyleProgress({ stage, count }) {
           <span className="style-progress-dot" aria-hidden="true" />
           <span>
             {s.label}
-            {s.id === 'gather' && count > 0 ? ` · ${count.toLocaleString('en-US')} posts` : ''}
+            {s.id === 'gather' && count > 0 ? ` · ${count.toLocaleString(activeLocale())} posts` : ''}
           </span>
           {i === at && <span className="visually-hidden"> (in progress)</span>}
         </li>

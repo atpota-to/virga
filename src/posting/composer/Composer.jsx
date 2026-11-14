@@ -126,6 +126,7 @@ import {
   worthSettingAside,
 } from './restore.js';
 import './composer.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const DISMISS_SPLIT_KEY = 'virga:composer-split-dismissed';
 const GATES_CACHE_MS = 5 * 60 * 1000;
@@ -2073,7 +2074,7 @@ export default function Composer({ open, intent, onClose }) {
                         : queuePreview.status === 'error'
                           ? 'Couldn’t read your queue just now; the time is found when you add it.'
                           : queuePreview.at
-                            ? `Goes out at the next open time: ${new Date(queuePreview.at).toLocaleString(undefined, { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`
+                            ? `Goes out at the next open time: ${new Date(queuePreview.at).toLocaleString(activeLocale(), { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`
                             : 'Your weekly schedule has no open times in the next 90 days.'}{' '}
                       <button type="button" className="link-button" onClick={() => dispatch({ type: 'setSchedule', schedule: { mode: 'at', at: nextHour() } })}>
                         Pick a time instead

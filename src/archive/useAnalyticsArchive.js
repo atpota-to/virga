@@ -38,6 +38,7 @@ import {
 import { formatDateShort } from '../lib/time.js';
 import { onPostingEvent, POSTS_CHANGED_EVENT } from '../posting/events.js';
 import { applyPostChanges, isOwnPostUri, postRowsFor } from './postChanges.js';
+import { activeLocale } from '../lib/locale.js';
 
 const DAY_MS = 86_400_000;
 
@@ -533,7 +534,7 @@ export function useAnalyticsArchive(agent, did, handle) {
           onProgress: (p) =>
             report(
               partsFraction(p.part, p.parts, timeFraction(startedAt, p.reachedMs, outTarget)),
-              reachedDetail(`${p.part === 0 ? 'likes' : 'reposts'} · ${p.fetched.toLocaleString('en-US')} read`, p.reachedMs),
+              reachedDetail(`${p.part === 0 ? 'likes' : 'reposts'} · ${p.fetched.toLocaleString(activeLocale())} read`, p.reachedMs),
             ),
         });
         if (outb.error) fail('outbound', outb.error);
@@ -760,7 +761,7 @@ export function useAnalyticsArchive(agent, did, handle) {
 
 /* The words beside the progress. Each says what was measured, in its own unit. */
 
-const num = (v) => Math.round(v).toLocaleString('en-US');
+const num = (v) => Math.round(v).toLocaleString(activeLocale());
 
 /** "2,300 of ~5,592 followers", or "2,300 followers" with nothing to go by. */
 function ofAbout(fetched, est, noun) {

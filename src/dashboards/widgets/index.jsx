@@ -25,6 +25,7 @@ import { PersonRow, useFollow, useWantActors } from '../../people/people.jsx';
 import PostRow from '../../reports/PostRow.jsx';
 import {
   WEEKDAYS,
+  WEEKDAYS_LONG,
   atmosphereModel,
   bestTimeModel,
   blocksModel,
@@ -35,11 +36,13 @@ import {
   givenModel,
   hourColumns,
   hourRange,
+  weekdayOrder,
   listsModel,
   peopleModel,
   postsModel,
 } from '../../reports/models.js';
 import { periodPhrase } from '../../shell/bits.jsx';
+import { activeLocale } from '../../lib/locale.js';
 
 const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Quote };
 
@@ -51,7 +54,7 @@ function windowWord(period) {
 }
 
 function compareTitle(period, previous) {
-  return period.days ? `The ${period.label.toLowerCase()} before: ${Math.round(previous).toLocaleString('en-US')}` : null;
+  return period.days ? `The ${period.label.toLowerCase()} before: ${Math.round(previous).toLocaleString(activeLocale())}` : null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -92,11 +95,11 @@ function StatFollowers({ archive, period, nowMs, def }) {
       to={def.href}
       window="Now"
       value={fmtFigure(lead)}
-      delta={<span className="delta is-up" title={`New in ${periodPhrase(period)}`}>+{m.gained.toLocaleString('en-US')}</span>}
+      delta={<span className="delta is-up" title={`New in ${periodPhrase(period)}`}>+{m.gained.toLocaleString(activeLocale())}</span>}
       sub={
         differs ? (
           <span className="stat-sub-info">
-            {m.total.toLocaleString('en-US')} can be listed
+            {m.total.toLocaleString(activeLocale())} can be listed
             <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
           </span>
         ) : null
@@ -116,7 +119,7 @@ function StatNewFollowers({ archive, period, nowMs, def }) {
       window={windowWord(period)}
       value={fmtFigure(m.gained)}
       delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
-      sub={period.days ? `${m.compare.previous.toLocaleString('en-US')} the ${period.label.toLowerCase()} before` : `${fmtFigure(m.perDay, { decimals: true })} a day`}
+      sub={period.days ? `${m.compare.previous.toLocaleString(activeLocale())} the ${period.label.toLowerCase()} before` : `${fmtFigure(m.perDay, { decimals: true })} a day`}
       spark={m.counts.map((p) => p.v)}
     />
   );
@@ -133,7 +136,7 @@ function StatUnfollows({ archive, def }) {
       value={m.tracking ? fmtFigure(m.latestLost.length) : '—'}
       sub={
         m.tracking
-          ? `${m.latestGained.length.toLocaleString('en-US')} arrived · ${m.lost.length.toLocaleString('en-US')} left in all`
+          ? `${m.latestGained.length.toLocaleString(activeLocale())} arrived · ${m.lost.length.toLocaleString(activeLocale())} left in all`
           : 'Counting starts with your next sync'
       }
     />
@@ -166,7 +169,7 @@ function StatPerPost({ archive, period, nowMs, def }) {
       window={windowWord(period)}
       value={m.ownRate == null ? '—' : fmtRate(m.ownRate)}
       delta={m.rateCompare ? <Delta pct={m.rateCompare.pct} title={`The ${period.label.toLowerCase()} before: ${fmtRate(m.rateCompare.previous)}`} /> : null}
-      sub={`Over ${m.ownPosts.toLocaleString('en-US')} posts and threads`}
+      sub={`Over ${m.ownPosts.toLocaleString(activeLocale())} posts and threads`}
       spark={m.rate.map((p) => p.v)}
     />
   );
@@ -182,7 +185,7 @@ function StatGiven({ archive, period, nowMs, def }) {
       window={windowWord(period)}
       value={fmtFigure(m.total)}
       delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
-      sub={`To ${m.accounts.toLocaleString('en-US')} accounts`}
+      sub={`To ${m.accounts.toLocaleString(activeLocale())} accounts`}
       spark={m.series.map((p) => p.v)}
     />
   );
@@ -215,8 +218,8 @@ function StatBlocks({ archive, period, nowMs, def }) {
       to={def.href}
       window="Now"
       value={fmtFigure(m.total)}
-      delta={<span className="delta is-down" title={`New in ${periodPhrase(period)}`}>+{m.received.toLocaleString('en-US')}</span>}
-      sub={`${m.directTotal.toLocaleString('en-US')} direct · ${m.listTotal.toLocaleString('en-US')} via lists`}
+      delta={<span className="delta is-down" title={`New in ${periodPhrase(period)}`}>+{m.received.toLocaleString(activeLocale())}</span>}
+      sub={`${m.directTotal.toLocaleString(activeLocale())} direct · ${m.listTotal.toLocaleString(activeLocale())} via lists`}
       spark={m.cumulative.map((p) => p.v)}
     />
   );
@@ -307,7 +310,7 @@ function EngagementByType({ archive, period, nowMs }) {
   return (
     <div className="widget-stack">
       <div className="widget-headline">
-        <span className="widget-figure num">{m.total.toLocaleString('en-US')}</span>
+        <span className="widget-figure num">{m.total.toLocaleString(activeLocale())}</span>
         <span className="muted">interactions{m.ownRate != null ? `, ${fmtRate(m.ownRate)} per post` : ''}</span>
       </div>
       <BarList
@@ -361,20 +364,22 @@ export function bestTimeSentence(m) {
   return `Your posts do best on ${WEEKDAYS_LONG[top.day]}s, ${hourRange(top.col, m.block)}: a typical post there earns ${fmtRate(top.avg)}${m.overall != null ? `, against ${fmtRate(m.overall)} overall` : ''}.`;
 }
 
-const WEEKDAYS_LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
+/** The heatmap's rows, in the order the reader's week runs. */
 export function bestTimeRows(m) {
   const best = m.best[0];
-  return m.rows.map((r, day) => ({
-    label: r.label,
-    cells: r.cells.map((c, col) => ({
-      value: c.avg,
-      best: best && best.day === day && best.col === col,
-      title: c.avg == null
-        ? `${WEEKDAYS[day]} ${hourRange(col, m.block)}: ${c.posts ? `only ${c.posts} post${c.posts === 1 ? '' : 's'}` : 'no posts'}`
-        : `${WEEKDAYS[day]} ${hourRange(col, m.block)}: a typical post earns ${fmtRate(c.avg)} (${c.posts} posts)`,
-    })),
-  }));
+  return weekdayOrder().map((day) => {
+    const r = m.rows[day];
+    return {
+      label: r.label,
+      cells: r.cells.map((c, col) => ({
+        value: c.avg,
+        best: best && best.day === day && best.col === col,
+        title: c.avg == null
+          ? `${WEEKDAYS[day]} ${hourRange(col, m.block)}: ${c.posts ? `only ${c.posts} post${c.posts === 1 ? '' : 's'}` : 'no posts'}`
+          : `${WEEKDAYS[day]} ${hourRange(col, m.block)}: a typical post earns ${fmtRate(c.avg)} (${c.posts} posts)`,
+      })),
+    };
+  });
 }
 
 function BestTime({ archive, period, nowMs }) {
@@ -385,7 +390,7 @@ function BestTime({ archive, period, nowMs }) {
       <p className="widget-insight">{bestTimeSentence(m)}</p>
       <Heatmap rows={bestTimeRows(m)} columns={hourColumns(m.block)} summary={bestTimeSentence(m)} />
       <p className="widget-foot">
-        {m.posts.toLocaleString('en-US')} posts and threads over {periodPhrase(win)}, in your time zone.
+        {m.posts.toLocaleString(activeLocale())} posts and threads over {periodPhrase(win)}, in your time zone.
       </p>
     </div>
   );
@@ -441,7 +446,7 @@ function TopPosts({ archive, period, nowMs, size }) {
   );
 }
 
-function PeopleList({ archive, rows, size, empty, value = (r) => r.total.toLocaleString('en-US'), meta = null, followLabel }) {
+function PeopleList({ archive, rows, size, empty, value = (r) => r.total.toLocaleString(activeLocale()), meta = null, followLabel }) {
   const shown = rows.slice(0, ROWS[size]);
   useWantActors(archive, shown.map((r) => r.did));
   const follow = useFollow(archive);
@@ -496,7 +501,7 @@ function FollowBack({ archive, period, nowMs, size, def }) {
       />
       {rows.length > ROWS[size] && (
         <p className="widget-foot">
-          <Link to={def.href}>See all {rows.length.toLocaleString('en-US')}</Link>
+          <Link to={def.href}>See all {rows.length.toLocaleString(activeLocale())}</Link>
         </p>
       )}
     </>
@@ -537,7 +542,7 @@ function Unfollows({ archive, size, def }) {
       />
       {m.lost.length > rows.length && (
         <p className="widget-foot">
-          <Link to={def.href}>See all {m.lost.length.toLocaleString('en-US')}</Link>
+          <Link to={def.href}>See all {m.lost.length.toLocaleString(activeLocale())}</Link>
         </p>
       )}
     </>
@@ -552,21 +557,21 @@ function ListsOn({ archive, size, def }) {
   return (
     <div className="widget-stack">
       <div className="widget-headline">
-        <span className="widget-figure num">{lists.length.toLocaleString('en-US')}</span>
-        <span className="muted">lists, {mod.toLocaleString('en-US')} of them moderation lists</span>
+        <span className="widget-figure num">{lists.length.toLocaleString(activeLocale())}</span>
+        <span className="muted">lists, {mod.toLocaleString(activeLocale())} of them moderation lists</span>
       </div>
       <ul className="widget-rows">
         {lists.slice(0, ROWS[size] - 1).map((l) => (
           <li key={l.uri} className="list-row">
             <span className="list-row-name">{l.name || 'Untitled list'}</span>
             <span className={`badge${l.purpose === 'moderation' ? ' badge--danger' : ''}`}>{l.purpose}</span>
-            <span className="list-row-subs num">{l.subscribers != null ? `${l.subscribers.toLocaleString('en-US')} subscribers` : ''}</span>
+            <span className="list-row-subs num">{l.subscribers != null ? `${l.subscribers.toLocaleString(activeLocale())} subscribers` : ''}</span>
           </li>
         ))}
       </ul>
       {lists.length > ROWS[size] - 1 && (
         <p className="widget-foot">
-          <Link to={def.href}>See all {lists.length.toLocaleString('en-US')}</Link>
+          <Link to={def.href}>See all {lists.length.toLocaleString(activeLocale())}</Link>
         </p>
       )}
     </div>
@@ -587,8 +592,8 @@ function RepoCollections({ archive, period, nowMs, size }) {
         rows={rows.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))}
       />
       <p className="widget-foot num">
-        {m.ranked.length > n ? `And ${(m.ranked.length - n).toLocaleString('en-US')} more collections. ` : ''}
-        {m.total.toLocaleString('en-US')} records in {periodPhrase(period)}.
+        {m.ranked.length > n ? `And ${(m.ranked.length - n).toLocaleString(activeLocale())} more collections. ` : ''}
+        {m.total.toLocaleString(activeLocale())} records in {periodPhrase(period)}.
       </p>
     </div>
   );

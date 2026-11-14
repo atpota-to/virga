@@ -29,6 +29,7 @@ import {
   timerSlotSentence,
   TIMER_BUCKET_FEATURE,
 } from '../timers/selfDestruct.js';
+import { activeLocale } from '../../lib/locale.js';
 
 const instant = (value) => (value ? new Date(value).getTime() : NaN);
 const byTime = (a, b) => instant(a.scheduledFor) - instant(b.scheduledFor);
@@ -229,12 +230,12 @@ export function zoneLabel(tz) {
 
 function safeFormat(ms, tz, options) {
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(activeLocale(), {
       ...options,
       timeZone: tz || undefined,
     }).format(new Date(ms));
   } catch {
-    return new Intl.DateTimeFormat(undefined, options).format(new Date(ms));
+    return new Intl.DateTimeFormat(activeLocale(), options).format(new Date(ms));
   }
 }
 

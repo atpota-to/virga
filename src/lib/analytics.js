@@ -20,6 +20,8 @@
 //                                          outbound (did = who it was aimed at).
 //   post   the compact archive shape compactPostFromFeedItem produces.
 
+import { activeLocale, weekdayOffset } from './locale.js';
+
 const DAY_MS = 86_400_000;
 
 /**
@@ -90,17 +92,18 @@ export function engagementOf(post, kind = 'all') {
 /* ------------------------------------------------------------------ */
 
 /**
- * Start of the bucket containing `t`, in local time. Weeks start Monday —
- * `getDay()` counts from Sunday, so Monday-offset is `(day + 6) % 7`.
- * Returns a millisecond timestamp, NaN for unparseable input.
+ * Start of the bucket containing `t`, in local time. Weeks start on the
+ * reader's first day of the week (Monday unless Settings or their region
+ * says otherwise; lib/locale.js). Returns a millisecond timestamp, NaN for
+ * unparseable input.
  */
 export function bucketStartMs(t, unit) {
   const d = new Date(t);
   if (Number.isNaN(d.getTime())) return NaN;
   if (unit === 'month') return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
   if (unit === 'week') {
-    const monday = d.getDate() - ((d.getDay() + 6) % 7);
-    return new Date(d.getFullYear(), d.getMonth(), monday).getTime();
+    const first = d.getDate() - weekdayOffset(d.getDay());
+    return new Date(d.getFullYear(), d.getMonth(), first).getTime();
   }
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
@@ -572,7 +575,7 @@ export function fmtCompact(n) {
   const abs = Math.abs(n);
   if (abs >= 1_000_000) return `${trimZero((n / 1_000_000).toFixed(1))}M`;
   if (abs >= 10_000) return `${trimZero((n / 1000).toFixed(1))}K`;
-  return Math.round(n).toLocaleString('en-US');
+  return Math.round(n).toLocaleString(activeLocale());
 }
 
 function trimZero(s) {
@@ -595,9 +598,9 @@ export function bucketLabel(t, unit) {
   const d = new Date(t);
   if (Number.isNaN(d.getTime())) return '';
   if (unit === 'month') {
-    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(activeLocale(), { month: 'short', year: 'numeric' });
   }
-  const day = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const day = d.toLocaleDateString(activeLocale(), { month: 'short', day: 'numeric' });
   return unit === 'week' ? `wk of ${day}` : day;
 }
 

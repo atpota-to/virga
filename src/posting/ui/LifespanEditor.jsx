@@ -39,6 +39,7 @@ import {
   withQuoteFilter,
 } from './lifespanModel.js';
 import '../pages/schedule.css';
+import { activeLocale } from '../../lib/locale.js';
 
 function toLocalInput(value) {
   const t = Date.parse(value || '');
@@ -536,7 +537,7 @@ export default function LifespanEditor({
                     >
                       {FOLLOWER_THRESHOLDS.map((n) => (
                         <option key={n} value={n}>
-                          {n.toLocaleString()} followers
+                          {n.toLocaleString(activeLocale())} followers
                         </option>
                       ))}
                     </select>

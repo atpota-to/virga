@@ -11,6 +11,7 @@ import { PLC_DIRECTORY } from '../config.js';
 import { Link } from '../lib/router.jsx';
 import { formatDateShort } from '../lib/time.js';
 import { ToolHeader } from './ToolPage.jsx';
+import { activeLocale } from '../lib/locale.js';
 
 function CopyButton({ text, label }) {
   const [done, setDone] = useState(false);
@@ -109,15 +110,15 @@ export default function Identity({ tool }) {
           <dl className="identity-facts">
             <div>
               <dt>Followers</dt>
-              <dd className="num">{profile?.followersCount != null ? profile.followersCount.toLocaleString('en-US') : '—'}</dd>
+              <dd className="num">{profile?.followersCount != null ? profile.followersCount.toLocaleString(activeLocale()) : '—'}</dd>
             </div>
             <div>
               <dt>Following</dt>
-              <dd className="num">{profile?.followsCount != null ? profile.followsCount.toLocaleString('en-US') : '—'}</dd>
+              <dd className="num">{profile?.followsCount != null ? profile.followsCount.toLocaleString(activeLocale()) : '—'}</dd>
             </div>
             <div>
               <dt>Posts</dt>
-              <dd className="num">{profile?.postsCount != null ? profile.postsCount.toLocaleString('en-US') : '—'}</dd>
+              <dd className="num">{profile?.postsCount != null ? profile.postsCount.toLocaleString(activeLocale()) : '—'}</dd>
             </div>
             <div>
               <dt>Account created</dt>
@@ -197,15 +198,15 @@ export default function Identity({ tool }) {
             <dl className="kv">
               <div className="kv-row">
                 <dt>Records</dt>
-                <dd className="num">{repo.records.toLocaleString('en-US')}</dd>
+                <dd className="num">{repo.records.toLocaleString(activeLocale())}</dd>
               </div>
               <div className="kv-row">
                 <dt>Collections</dt>
-                <dd className="num">{repo.collections.toLocaleString('en-US')}</dd>
+                <dd className="num">{repo.collections.toLocaleString(activeLocale())}</dd>
               </div>
               <div className="kv-row">
                 <dt>Apps writing to it</dt>
-                <dd className="num">{repo.apps.toLocaleString('en-US')}</dd>
+                <dd className="num">{repo.apps.toLocaleString(activeLocale())}</dd>
               </div>
               <div className="kv-row">
                 <dt>Oldest record</dt>
