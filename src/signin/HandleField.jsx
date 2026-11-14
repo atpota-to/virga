@@ -96,6 +96,14 @@ export default function HandleField({ id, value, onChange, onPick, invalid = fal
   const optionId = (index) => `${listId}-${index}`;
   const showing = open && items.length > 0;
 
+  // The row the arrows have marked stays in sight, in a list that scrolls
+  // or inside a dialog that does.
+  useEffect(() => {
+    if (showing && active >= 0) document.getElementById(optionId(active))?.scrollIntoView({ block: 'nearest' });
+    // optionId is built from listId alone.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showing, active, listId]);
+
   return (
     <div className="handle-field" data-open={showing || undefined}>
       <span className="handle-field-at" aria-hidden="true">
@@ -104,7 +112,10 @@ export default function HandleField({ id, value, onChange, onPick, invalid = fal
       {/* A handle is not prose: iOS otherwise capitalizes the first letter
           and runs autocorrect over it, and each of the three has to be turned
           off by name. inputMode="url" puts the '.' on the first key plane,
-          and enterKeyHint labels the return key for what it does. */}
+          and enterKeyHint labels the return key for what it does. The
+          browser's own list of remembered values is off too: it opens over
+          this one and takes the arrow keys, and the accounts this browser
+          remembers are listed above the field already. */}
       <input
         ref={field}
         id={id}
@@ -118,7 +129,7 @@ export default function HandleField({ id, value, onChange, onPick, invalid = fal
         aria-activedescendant={showing && active >= 0 ? optionId(active) : undefined}
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
-        autoComplete="username"
+        autoComplete="off"
         autoCorrect="off"
         autoCapitalize="none"
         inputMode="url"

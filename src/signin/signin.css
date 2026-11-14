@@ -209,6 +209,10 @@
 
 .handle-suggestion[aria-selected='true'] {
   background: var(--accent-wash);
+  /* More than a pale fill: the row the arrows have marked has to be told
+     from the one the pointer is over, and found at all by someone who
+     can't see the difference between two washes. */
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 @media (hover: hover) {
@@ -239,6 +243,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* In a dialog the list takes its place in the layout: laid over what
+   follows, it would run past the dialog's edge and be cut off there. */
+.signin-flow--dialog .handle-suggestions {
+  position: static;
+  max-height: none;
+  margin-top: 4px;
+  box-shadow: none;
 }
 
 /* With no name, the handle is the name. */

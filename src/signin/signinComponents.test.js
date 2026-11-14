@@ -92,7 +92,9 @@ describe('the handle field', () => {
 
   it('keeps a handle from being corrected, capitalised or spell-checked', () => {
     const html = draw();
-    for (const attribute of ['autoComplete="username"', 'autoCorrect="off"', 'autoCapitalize="none"', 'spellCheck="false"', 'inputMode="url"', 'enterKeyHint="go"', 'name="handle"']) {
+    // autoComplete is off as well: the browser's own list would open over
+    // the suggestions and take the arrow keys.
+    for (const attribute of ['autoComplete="off"', 'autoCorrect="off"', 'autoCapitalize="none"', 'spellCheck="false"', 'inputMode="url"', 'enterKeyHint="go"', 'name="handle"']) {
       expect(html.toLowerCase(), attribute).toContain(attribute.toLowerCase());
     }
   });

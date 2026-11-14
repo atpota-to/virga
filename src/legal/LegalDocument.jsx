@@ -92,12 +92,13 @@ export default function LegalDocument({ document: doc, onOpenDocument = null, co
     if (block.type === 'table') {
       const labels = block.head.map(inlineText);
       return (
-        // On a wide screen a table that doesn't fit scrolls inside its own
-        // box, so the page never does. On a narrow one each row is drawn as
-        // a card, its cells under one another with their headings (the
-        // data-label), which is why the roles are spelled out: a table laid
-        // out as blocks is otherwise no longer announced as one.
-        <div key={index} className="legal-table" role="region" aria-label={`Table: ${labels.join(', ')}`} tabIndex={0}>
+        // On a narrow screen each row is drawn as a card, its cells under
+        // one another with their headings (the data-label), which is why the
+        // roles are spelled out: a table laid out as blocks is otherwise no
+        // longer announced as one. The box around it is only that: the
+        // column is always wide enough for the table, so there is nothing
+        // in it for a keyboard to scroll to.
+        <div key={index} className="legal-table">
           <table role="table">
             <thead role="rowgroup">
               <tr role="row">

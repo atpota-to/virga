@@ -169,9 +169,9 @@ describe('the words', () => {
 
   it('name the host on the button and the leaving card, when it is known', () => {
     expect(continueLabel(MIRA)).toBe('Continue at bsky.social');
-    expect(continueLabel({ ...MIRA, host: null })).toBe('Continue to your account’s server');
+    expect(continueLabel({ ...MIRA, host: null })).toBe('Continue to your account’s host');
     expect(leavingTitle({ host: 'bsky.social' })).toBe('Taking you to bsky.social');
-    expect(leavingTitle({ host: null })).toBe('Taking you to your account’s server');
+    expect(leavingTitle({ host: null })).toBe('Taking you to your account’s host');
     expect(stallLabel({ host: 'bsky.social' })).toBe('Open bsky.social');
     expect(stallLabel({ host: null })).toBe('Try again');
   });
@@ -201,7 +201,7 @@ describe('the words', () => {
   it('don’t blame the host for a missing connection, on a browser sign-in either', () => {
     // A browser sign-in fails with the library's own error, which has no code.
     const offline = new TypeError('Failed to fetch');
-    expect(tripFailureNotice(offline, { purpose: 'signup', host: 'bsky.social' }).text).toMatch(/Couldn’t reach the account’s server/);
+    expect(tripFailureNotice(offline, { purpose: 'signup', host: 'bsky.social' }).text).toMatch(/Couldn’t reach the account’s host/);
     const broken = Object.assign(new Error('x'), { code: 'INTERNAL', status: 500 });
     expect(tripFailureNotice(broken, { purpose: 'signup', host: 'bsky.social' }).text).not.toMatch(/bsky\.social isn’t taking sign-ups/);
   });

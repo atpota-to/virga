@@ -62,7 +62,8 @@ describe('a legal document on the page', () => {
     const html = decode(renderToString(h(LegalDocument, { document: readDocument('privacy') })));
     expect(html).toContain('role="table"');
     expect(html).toContain('<td role="cell" data-label="For how long">');
-    expect(html).toContain('aria-label="Table: Feature, What is kept, For how long"');
+    // The box around a table is only a box: not a region to stop at.
+    expect(html).not.toMatch(/class="legal-table"[^>]*(tabindex|role=)/);
   });
 
   it('leaves the title to the frame and moves the headings down a level, in a dialog', () => {
@@ -117,7 +118,7 @@ describe('the agreement screen', () => {
   });
 
   it('says what is recorded, for the kind of session it is', () => {
-    expect(draw()).toContain('Virga’s server keeps a record that this account agreed, and when');
+    expect(draw()).toContain('Virga’s server keeps a record that this account agreed, and when, with the IP address and browser');
     expect(draw({ mode: 'browser' })).toContain('Virga notes in this browser that this account agreed, and sends its server a report of it');
   });
 

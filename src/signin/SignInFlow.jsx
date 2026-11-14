@@ -222,7 +222,8 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
     if (kind === 'url') {
       const host = hostnameOf(value);
       if (!host) {
-        dispatch({ type: 'notice', notice: { about: 'field', text: 'That address isn’t one Virga can read. Type your handle (it looks like you.bsky.social).' } });
+        // Raised without the card changing, so nothing moves focus: an alert.
+        dispatch({ type: 'notice', notice: { about: 'address', text: 'That address isn’t one Virga can read. Type your handle (it looks like you.bsky.social).' } });
         return;
       }
       leave({ host, purpose: 'signin', go: (signal) => signIn(value, { mode: authMode, intent: 'add', signal }) });
@@ -298,11 +299,18 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
   // Not on the first card: the page shouldn't take focus (or raise a phone's
   // keyboard) just by loading.
   const firstStep = useRef(true);
+  const lastStep = useRef(step);
   useEffect(() => {
+    const from = lastStep.current;
+    lastStep.current = step;
     if (firstStep.current) {
       firstStep.current = false;
       return undefined;
     }
+    // The account arriving on the card that was waiting for it isn't a new
+    // card. Focus is on the button unless the reader has moved it (to "Not
+    // you?", say), and it is left where they put it.
+    if (from === STEP.FINDING && step === STEP.FOUND) return undefined;
     const frame = requestAnimationFrame(() => {
       if (step === STEP.ENTRY) {
         inputRef.current?.focus({ preventScroll: true });
@@ -315,8 +323,13 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
 
   /* ---- the cards ---------------------------------------------------- */
 
+  // A notice about the handle is the field's description, and focus goes to
+  // the field as it appears, so it is read once that way; as an alert too it
+  // would be read twice. Any other notice has no control to hang on, and is
+  // an alert.
+  const aboutField = notice?.about === 'field';
   const noticeLine = notice && (
-    <p id={noticeId} className="callout callout--danger" role="alert">
+    <p id={noticeId} className="callout callout--danger" role={aboutField ? undefined : 'alert'}>
       <span>
         {notice.text}
         {notice.anyway && (
@@ -371,8 +384,8 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
             size={inDialog ? 'md' : 'lg'}
             autoFocus={inDialog}
             disabled={Boolean(opening)}
-            invalid={notice?.about === 'field'}
-            describedBy={notice ? noticeId : undefined}
+            invalid={aboutField || notice?.about === 'address'}
+            describedBy={aboutField || notice?.about === 'address' ? noticeId : undefined}
             onChange={(value) => {
               setHandle(value);
               dispatch({ type: 'typed' });
@@ -419,7 +432,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
                 Your account lives at <strong>{identity.host}</strong>, so that’s where you sign in.
               </>
             ) : (
-              'Virga couldn’t tell where this account lives. Its server is found when you continue.'
+              'Virga couldn’t tell where this account lives. Its host is found when you continue.'
             )}
           </p>
         )}

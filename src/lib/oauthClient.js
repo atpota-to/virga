@@ -139,7 +139,7 @@ export function signInErrorMessage(err) {
     return 'Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID.';
   }
   if (code === 'AUTHORIZE_FAILED') {
-    return 'Found the account, but its server isn’t accepting sign-ins from here right now.';
+    return 'Found the account, but its host isn’t accepting sign-ins from here right now.';
   }
   if (code === 'VIRGA_CLIENT_UNAVAILABLE' || (code == null && err?.status === 503)) {
     return 'Virga’s server isn’t taking sign-ins right now. Try again in a little while.';
@@ -163,15 +163,15 @@ export function signInErrorMessage(err) {
   const serverRefused =
     /resolve oauth server metadata|not protected by issuer|does not support/i;
   if (serverRefused.test(message)) {
-    return 'Found the account, but its server isn’t accepting sign-ins from here right now.';
+    return 'Found the account, but its host isn’t accepting sign-ins from here right now.';
   }
   // A server that doesn't know the permissions this app asks for answers the
   // request with invalid_scope. Older PDS software is the usual reason.
   if (/invalid_scope|scope/i.test(message)) {
-    return 'Found the account, but its server didn’t accept the permissions Virga asks for. It may be running older software.';
+    return 'Found the account, but its host didn’t accept the permissions Virga asks for. It may be running older software.';
   }
   if (err?.name === 'TypeError' && /fetch|network|load failed/i.test(message)) {
-    return 'Couldn’t reach the account’s server. Check your connection and try again.';
+    return 'Couldn’t reach the account’s host. Check your connection and try again.';
   }
   return 'Sign-in couldn’t start. Check the handle and try again.';
 }
@@ -192,7 +192,7 @@ export function callbackErrorMessage(err) {
     return 'That sign-in wasn’t started from this tab, so Virga ignored it. Nothing was changed.';
   }
   if (code === 'invalid_scope') {
-    return 'The account’s server didn’t accept the permissions Virga asks for, so you’re not signed in.';
+    return 'The account’s host didn’t accept the permissions Virga asks for, so you’re not signed in.';
   }
   if (code === 'VIRGA_CLIENT_UNAVAILABLE') {
     return 'Virga’s server isn’t taking sign-ins right now, so you’re not signed in. Try again in a little while.';

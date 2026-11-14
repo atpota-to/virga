@@ -61,7 +61,7 @@ export default function Landing({ composing = false }) {
 
             <SignInFlow variant="page" remembered composing={composing} />
             <p className="landing-note">
-              You sign in on your own account’s server, not here, and Virga never sees your password. Before your account opens, Virga asks you
+              You sign in on your own account’s host, not here, and Virga never sees your password. Before your account opens, Virga asks you
               to agree to its <Link to={TERMS_PATH}>Terms of Service</Link> and <Link to={PRIVACY_PATH}>Privacy Policy</Link>.
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function Landing({ composing = false }) {
 
       <footer className="landing-foot">
         <span>
-          Your archive is worked out and kept in this browser. Requests go to your account’s server, Bluesky’s public API, the PLC directory
+          Your archive is worked out and kept in this browser. Requests go to your account’s host, Bluesky’s public API, the PLC directory
           and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The{' '}
           <Link to={PRIVACY_PATH}>Privacy Policy</Link> has the whole list.
         </span>

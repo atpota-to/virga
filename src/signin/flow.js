@@ -113,11 +113,11 @@ export function identityMeta(identity) {
 }
 
 export function continueLabel(identity) {
-  return identity?.host ? `Continue at ${identity.host}` : 'Continue to your account’s server';
+  return identity?.host ? `Continue at ${identity.host}` : 'Continue to your account’s host';
 }
 
 export function leavingTitle(leaving) {
-  return leaving?.host ? `Taking you to ${leaving.host}` : 'Taking you to your account’s server';
+  return leaving?.host ? `Taking you to ${leaving.host}` : 'Taking you to your account’s host';
 }
 
 export function leavingDetail(leaving) {

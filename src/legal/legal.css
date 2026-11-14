@@ -145,8 +145,13 @@ a.brand {
   break-inside: avoid;
 }
 
-/* A wide table scrolls in its own box rather than widening the page. */
+/* A wide table scrolls in its own box rather than widening the page. It is
+   also what its heading row is placed against when that row is hidden (the
+   narrow layout below): without a positioned box of its own, the row would
+   be placed against whatever holds the document, and in a dialog that makes
+   the dialog itself scroll. */
 .legal-table {
+  position: relative;
   max-width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -182,14 +187,19 @@ a.brand {
 
 /* ---- in a dialog ---------------------------------------------------- */
 
-.legal-dialog {
+/* Two classes, as every dialog with a size of its own has: this stylesheet
+   loads before the shell's, so one class would lose to `.dialog` there. */
+.dialog.legal-dialog {
   width: min(760px, calc(100vw - 32px));
 }
 
-.legal-dialog[open] {
+/* Clipped, not hidden: a hidden box can still be scrolled by a link to a
+   section, and then nothing a finger does scrolls it back. Only the body
+   inside scrolls. */
+.dialog.legal-dialog[open] {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .legal-dialog .dialog-in {
@@ -206,6 +216,12 @@ a.brand {
 
 .legal-doc--dialog .legal-text {
   font-size: var(--text-base);
+}
+
+/* It takes focus when the document inside it changes, to be read out; it
+   isn't a control, so it gets no ring. */
+.legal-doc--dialog:focus {
+  outline: none;
 }
 
 .legal-doc--dialog .legal-h2 {
@@ -253,7 +269,7 @@ a.brand {
 }
 
 /* In a sentence, a document's name is a link in the sentence's own size. */
-.terms-doc-link {
+.signin-link.terms-doc-link {
   font-size: inherit;
 }
 
@@ -332,7 +348,7 @@ a.brand {
   }
 
   /* A full-height sheet, as the app's other long dialogs are on a phone. */
-  .legal-dialog {
+  .dialog.legal-dialog {
     width: 100vw;
     max-width: 100vw;
     height: 100dvh;
@@ -352,5 +368,28 @@ a.brand {
 
   .terms-card {
     padding: 20px;
+  }
+}
+
+/* Under a finger: the contents are a column of links a line apart, and the
+   box is the one control on its screen that has to be pressed. */
+@media (pointer: coarse) {
+  .legal-contents li a {
+    display: block;
+    padding: 7px 0;
+  }
+
+  .legal-contents li {
+    padding: 0;
+  }
+
+  .terms-check {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .landing-foot-links a,
+  .legal-nav a {
+    padding: 10px 2px;
   }
 }

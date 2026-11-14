@@ -122,8 +122,10 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
           />
           <span>I’ve read the Terms of Service and the Privacy Policy, and I agree to them.</span>
         </label>
+        {/* Read as the box's description when focus lands on it, which the
+            press that raised it does; an alert as well would say it twice. */}
         {nudge && !agreed && (
-          <p id={hintId} className="callout callout--warn" role="alert">
+          <p id={hintId} className="callout callout--warn">
             Tick the box to say you agree, then carry on.
           </p>
         )}
@@ -147,8 +149,8 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
         </Button>
         <p className="note">
           {mode === 'backend'
-            ? `${APP_NAME}’s server keeps a record that this account agreed, and when, with the address and browser the agreement came from.`
-            : `${APP_NAME} notes in this browser that this account agreed, and sends its server a report of it, with the address and browser the agreement came from.`}
+            ? `${APP_NAME}’s server keeps a record that this account agreed, and when, with the IP address and browser the agreement came from.`
+            : `${APP_NAME} notes in this browser that this account agreed, and sends its server a report of it, with the IP address and browser the agreement came from.`}
         </p>
       </main>
       <LegalDialog docKey={reading} onClose={() => setReading(null)} />
