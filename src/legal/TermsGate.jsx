@@ -106,19 +106,21 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
           </button>
           . They say what {APP_NAME} does, what it keeps about your account, and what you agree to by using it.
         </p>
+        {/* The box's words say in full what is agreed to, and they are its
+            name as well: what is read out, and what someone using their
+            voice says to tick it, are what is on the screen. */}
         <label className="check terms-check">
           <input
             ref={check}
             type="checkbox"
             checked={agreed}
             aria-describedby={nudge && !agreed ? hintId : undefined}
-            aria-label="I’ve read the Terms of Service and the Privacy Policy, and I agree to them"
             onChange={(event) => {
               setAgreed(event.target.checked);
               if (event.target.checked) setNudge(false);
             }}
           />
-          <span>I’ve read both, and I agree to them.</span>
+          <span>I’ve read the Terms of Service and the Privacy Policy, and I agree to them.</span>
         </label>
         {nudge && !agreed && (
           <p id={hintId} className="callout callout--warn" role="alert">

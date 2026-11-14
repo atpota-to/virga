@@ -106,10 +106,11 @@ describe('the agreement screen', () => {
     expect(html).toContain('Sign out');
   });
 
-  it('starts with the box empty, named in full for a screen reader', () => {
+  it('starts with the box empty, and its words say in full what is agreed to', () => {
     const html = draw();
-    expect(html).toContain('aria-label="I’ve read the Terms of Service and the Privacy Policy, and I agree to them"');
-    expect(html).toContain('I’ve read both, and I agree to them.');
+    expect(html).toContain('<span>I’ve read the Terms of Service and the Privacy Policy, and I agree to them.</span>');
+    // The words on screen are the box's name: nothing else is read in their place.
+    expect(html).not.toMatch(/<input[^>]*aria-label/);
     expect(html).not.toMatch(/checked=""/);
     // The button isn't greyed out: pressed early, it says what is missing.
     expect(html).not.toMatch(/<button[^>]*disabled=""[^>]*>Agree and continue/);
