@@ -202,9 +202,10 @@ function isMissingSchema(error) {
   if (!error) return false;
   // PGRST202/205: unknown function/table in the schema cache. 42883/42P01: the
   // same as raw Postgres errors. PGRST204/42703: a column this code writes that
-  // the table does not have.
+  // the table does not have. PGRST106: Virga's schema isn't among the
+  // project's exposed schemas, so none of it can be reached.
   const code = error.code;
-  if (['PGRST202', 'PGRST205', 'PGRST204', '42883', '42P01', '42703'].includes(code)) return true;
+  if (['PGRST202', 'PGRST205', 'PGRST204', 'PGRST106', '42883', '42P01', '42703'].includes(code)) return true;
   return typeof error.message === 'string' &&
     /could not find the (function|table)|relation .* does not exist/i.test(error.message);
 }

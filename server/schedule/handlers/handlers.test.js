@@ -264,7 +264,7 @@ describe('POST /api/schedule/create', () => {
       'p0-img1': { storagePath: `${id}/p0-img1.png`, encoding: 'image/png' },
     });
     expect(
-      t.supabase.storage.read('scheduled-media', `${id}/p0-img0.png`),
+      t.supabase.storage.read('virga-scheduled-media', `${id}/p0-img0.png`),
     ).toEqual(Buffer.from(PNG_BASE64, 'base64'));
   });
 

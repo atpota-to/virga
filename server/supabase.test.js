@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
+  DB_SCHEMA,
   getSupabaseClient,
   isSupabaseConfigured,
   resetSupabaseClientForTests,
@@ -9,6 +10,7 @@ import {
 afterEach(() => {
   resetSupabaseClientForTests();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 const ENV = { SUPABASE_URL: 'https://abc.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'service-role-key' };
@@ -31,6 +33,34 @@ describe('getSupabaseClient', () => {
     expect(getSupabaseClient({ ...ENV })).toBe(a);
     const b = getSupabaseClient({ ...ENV, SUPABASE_SERVICE_ROLE_KEY: 'another-key' });
     expect(b).not.toBe(a);
+  });
+
+  it('sends every table read and function call to Virga’s schema, and Storage to none', async () => {
+    const seen = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input, init) => {
+        const request = new Request(input, init);
+        seen.push({
+          path: new URL(request.url).pathname,
+          accept: request.headers.get('accept-profile'),
+          content: request.headers.get('content-profile'),
+        });
+        return new Response('[]', { status: 200, headers: { 'content-type': 'application/json' } });
+      }),
+    );
+    expect(DB_SCHEMA).toBe('virga');
+    const client = getSupabaseClient(ENV);
+    await client.from('scheduled_posts').select('id');
+    await client.from('scheduled_posts').insert({ user_did: 'did:plc:x' });
+    await client.rpc('claim_scheduled_posts', { p_run_id: 'run' });
+    await client.storage.from('virga-scheduled-media').list('x');
+    expect(seen).toEqual([
+      { path: '/rest/v1/scheduled_posts', accept: DB_SCHEMA, content: null },
+      { path: '/rest/v1/scheduled_posts', accept: null, content: DB_SCHEMA },
+      { path: '/rest/v1/rpc/claim_scheduled_posts', accept: null, content: DB_SCHEMA },
+      { path: '/storage/v1/object/list/virga-scheduled-media', accept: null, content: null },
+    ]);
   });
 
   it('accepts SUPABASE_SERVICE_KEY as the key', () => {

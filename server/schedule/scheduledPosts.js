@@ -26,7 +26,7 @@
  *
  * Blobs are uploaded to the PDS at publish time (a PDS garbage-collects blobs
  * nothing references). Image and thumbnail bytes wait in the private
- * `scheduled-media` Storage bucket meanwhile; a card thumbnail may instead be a
+ * `virga-scheduled-media` Storage bucket meanwhile; a card thumbnail may instead be a
  * thumbUrl the worker fetches. Quote and record embeds are just { uri, cid }.
  *
  * Threads publish in order, each post replying to the one before. The
@@ -54,7 +54,7 @@ import {
 } from '../limits/limits.js';
 
 const TABLE = 'scheduled_posts';
-export const MEDIA_BUCKET = 'scheduled-media';
+export const MEDIA_BUCKET = 'virga-scheduled-media';
 
 export const MAX_HORIZON_DAYS = 90;
 export const MAX_THREAD_POSTS = 25;
@@ -188,10 +188,20 @@ function isInvalidToken(err) {
 
 // ─── Database errors ────────────────────────────────────────────────────────
 
+/**
+ * True when the Data API doesn't serve Virga's schema at all: it hasn't been
+ * added to the project's exposed schemas (PostgREST answers PGRST106). Every
+ * table and function is out of reach then, so both checks below count it.
+ */
+export function isSchemaNotExposed(error) {
+  return Boolean(error) && error.code === 'PGRST106';
+}
+
 /** True when the database has no such table: the migration hasn't been applied. */
 export function isMissingTable(error) {
   if (!error) return false;
   return (
+    isSchemaNotExposed(error) ||
     error.code === 'PGRST205' ||
     error.code === '42P01' ||
     // Anchored, so "column x of relation y does not exist" isn't read as a missing table.
@@ -206,6 +216,7 @@ export function isMissingTable(error) {
 export function isUndefinedFunction(error) {
   if (!error) return false;
   return (
+    isSchemaNotExposed(error) ||
     error.code === 'PGRST202' ||
     error.code === '42883' ||
     (typeof error.message === 'string' &&

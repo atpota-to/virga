@@ -8,9 +8,14 @@
 -- on the row, so requests that arrive together can't both read the same count
 -- and pass a monthly allowance or the daily ceiling between them.
 
+-- Virga's own schema; see the first migration.
+CREATE SCHEMA IF NOT EXISTS virga;
+REVOKE ALL ON SCHEMA virga FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA virga TO service_role;
+
 -- Monthly allowance: adviser reads (count) and style readings (style_count),
 -- one row per (did, month). Separate columns so one never eats the other.
-CREATE TABLE IF NOT EXISTS posting_adviser_usage (
+CREATE TABLE IF NOT EXISTS virga.posting_adviser_usage (
   did         TEXT        NOT NULL,
   month       TEXT        NOT NULL,              -- 'YYYY-MM' (UTC)
   count       INTEGER     NOT NULL DEFAULT 0,    -- /api/ai/analyze-post
@@ -19,15 +24,15 @@ CREATE TABLE IF NOT EXISTS posting_adviser_usage (
   PRIMARY KEY (did, month)
 );
 
-COMMENT ON TABLE posting_adviser_usage IS
+COMMENT ON TABLE virga.posting_adviser_usage IS
   'AI adviser allowances per account per UTC month. Service role only.';
-COMMENT ON COLUMN posting_adviser_usage.count IS
+COMMENT ON COLUMN virga.posting_adviser_usage.count IS
   'Adviser reads this month (AI_ADVISER_MONTHLY_LIMIT).';
-COMMENT ON COLUMN posting_adviser_usage.style_count IS
+COMMENT ON COLUMN virga.posting_adviser_usage.style_count IS
   'Style readings this month (AI_STYLE_MONTHLY_LIMIT), separate from the adviser count.';
 
 -- Monthly allowance: image descriptions, one row per (did, month).
-CREATE TABLE IF NOT EXISTS alt_text_usage (
+CREATE TABLE IF NOT EXISTS virga.alt_text_usage (
   did         TEXT        NOT NULL,
   month       TEXT        NOT NULL,              -- 'YYYY-MM' (UTC)
   count       INTEGER     NOT NULL DEFAULT 0,    -- /api/ai/alt-text
@@ -35,12 +40,12 @@ CREATE TABLE IF NOT EXISTS alt_text_usage (
   PRIMARY KEY (did, month)
 );
 
-COMMENT ON TABLE alt_text_usage IS
+COMMENT ON TABLE virga.alt_text_usage IS
   'Image descriptions per account per UTC month (AI_ALT_TEXT_MONTHLY_LIMIT). Service role only.';
 
 -- Daily ceiling across all three AI endpoints (AI_DAILY_LIMIT), one row per
 -- (did, day). A slot is taken before the model is called and never given back.
-CREATE TABLE IF NOT EXISTS ai_rate_limit (
+CREATE TABLE IF NOT EXISTS virga.ai_rate_limit (
   did         TEXT        NOT NULL,
   day         TEXT        NOT NULL,              -- 'YYYY-MM-DD' (UTC)
   count       INTEGER     NOT NULL DEFAULT 0,
@@ -48,7 +53,7 @@ CREATE TABLE IF NOT EXISTS ai_rate_limit (
   PRIMARY KEY (did, day)
 );
 
-COMMENT ON TABLE ai_rate_limit IS
+COMMENT ON TABLE virga.ai_rate_limit IS
   'AI requests per account per UTC day, the cost ceiling (AI_DAILY_LIMIT). Service role only.';
 
 -- Take one of this month's uses of an allowance if any is left, before the
@@ -58,10 +63,10 @@ COMMENT ON TABLE ai_rate_limit IS
 -- allowance id: adviser | style | altText. Returns one row: whether the use
 -- was taken, and the month's count after it (or as it stands, when refused).
 -- A limit below one takes nothing.
-CREATE OR REPLACE FUNCTION reserve_ai_usage(p_allowance TEXT, p_did TEXT, p_month TEXT, p_limit INTEGER)
+CREATE OR REPLACE FUNCTION virga.reserve_ai_usage(p_allowance TEXT, p_did TEXT, p_month TEXT, p_limit INTEGER)
 RETURNS TABLE (allowed BOOLEAN, used INTEGER)
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count INTEGER;
@@ -115,10 +120,10 @@ $$;
 -- Give back a use reserve_ai_usage took, for a request that ended without a
 -- usable answer (the model failed, answered nothing, or the daily ceiling
 -- refused it). Never below zero. Returns the month's count after it.
-CREATE OR REPLACE FUNCTION release_ai_usage(p_allowance TEXT, p_did TEXT, p_month TEXT)
+CREATE OR REPLACE FUNCTION virga.release_ai_usage(p_allowance TEXT, p_did TEXT, p_month TEXT)
 RETURNS INTEGER
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count INTEGER;
@@ -149,10 +154,10 @@ $$;
 -- one statement (the conditional DO UPDATE), so requests arriving together
 -- can't pass the ceiling between them. Returns one row: whether the slot was
 -- taken, and the day's count after it (or as it stands, when refused).
-CREATE OR REPLACE FUNCTION consume_ai_daily(p_did TEXT, p_day TEXT, p_limit INTEGER)
+CREATE OR REPLACE FUNCTION virga.consume_ai_daily(p_did TEXT, p_day TEXT, p_limit INTEGER)
 RETURNS TABLE (allowed BOOLEAN, used INTEGER)
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count INTEGER;
@@ -178,19 +183,19 @@ BEGIN
 END;
 $$;
 
--- Service role only: RLS with no policies denies everyone else, and the
--- default grants Supabase gives anon and authenticated go too.
-ALTER TABLE posting_adviser_usage ENABLE ROW LEVEL SECURITY;
-ALTER TABLE alt_text_usage        ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ai_rate_limit         ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE posting_adviser_usage FROM anon, authenticated;
-REVOKE ALL ON TABLE alt_text_usage        FROM anon, authenticated;
-REVOKE ALL ON TABLE ai_rate_limit         FROM anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE posting_adviser_usage, alt_text_usage, ai_rate_limit TO service_role;
+-- Service role only: RLS with no policies denies everyone else, and anything
+-- anon and authenticated were granted here goes too.
+ALTER TABLE virga.posting_adviser_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE virga.alt_text_usage        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE virga.ai_rate_limit         ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE virga.posting_adviser_usage FROM anon, authenticated;
+REVOKE ALL ON TABLE virga.alt_text_usage        FROM anon, authenticated;
+REVOKE ALL ON TABLE virga.ai_rate_limit         FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.posting_adviser_usage, virga.alt_text_usage, virga.ai_rate_limit TO service_role;
 
-REVOKE ALL ON FUNCTION reserve_ai_usage(TEXT, TEXT, TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION release_ai_usage(TEXT, TEXT, TEXT)          FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION consume_ai_daily(TEXT, TEXT, INTEGER)       FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION reserve_ai_usage(TEXT, TEXT, TEXT, INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION release_ai_usage(TEXT, TEXT, TEXT)          TO service_role;
-GRANT EXECUTE ON FUNCTION consume_ai_daily(TEXT, TEXT, INTEGER)       TO service_role;
+REVOKE ALL ON FUNCTION virga.reserve_ai_usage(TEXT, TEXT, TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.release_ai_usage(TEXT, TEXT, TEXT)          FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.consume_ai_daily(TEXT, TEXT, INTEGER)       FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION virga.reserve_ai_usage(TEXT, TEXT, TEXT, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.release_ai_usage(TEXT, TEXT, TEXT)          TO service_role;
+GRANT EXECUTE ON FUNCTION virga.consume_ai_daily(TEXT, TEXT, INTEGER)       TO service_role;

@@ -396,7 +396,12 @@ describe('armSelfDestruct calls create_self_destruct_capped with every argument'
   });
 
   it('says the feature is unavailable when the function is missing', async () => {
-    onRpc = async () => ({ data: null, error: { code: 'PGRST202', message: 'Could not find the function public.create_self_destruct_capped' } });
+    onRpc = async () => ({ data: null, error: { code: 'PGRST202', message: 'Could not find the function virga.create_self_destruct_capped' } });
+    await expect(arm()).rejects.toMatchObject({ code: 'UNAVAILABLE' });
+  });
+
+  it('says the feature is unavailable when the Data API doesn’t expose Virga’s schema', async () => {
+    onRpc = async () => ({ data: null, error: { code: 'PGRST106', message: 'Invalid schema: virga' } });
     await expect(arm()).rejects.toMatchObject({ code: 'UNAVAILABLE' });
   });
 

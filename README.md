@@ -9,8 +9,8 @@ The numbers are worked out in the browser. The app reads from the signed-in acco
 Bluesky's public API and Constellation, and keeps what it gathers in that browser's
 IndexedDB; the archive is never sent anywhere. What has to happen while the browser is
 closed (long sessions, scheduled posts, post timers) and the optional post adviser go
-through Virga's server: Vercel functions in this repo (`api/`, `server/`) with their own
-Supabase database (`supabase/migrations/`).
+through Virga's server: Vercel functions in this repo (`api/`, `server/`) with a schema of
+their own, `virga`, in a Supabase database (`supabase/migrations/`).
 
 ## Status
 
@@ -239,7 +239,7 @@ Requests go from the browser to: the account's PDS; `public.api.bsky.app`, `plc.
 and `constellation.microcosm.blue`, as before; `cardyb.bsky.app` for link cards;
 `video.bsky.app` for video; and, for long sessions, scheduling, timers and the adviser,
 Virga's server (this site's `/api/*`). A scheduled post's text and pictures wait in
-Virga's Supabase project until it goes out (the pictures in a private Storage bucket,
+Virga's schema in Supabase until it goes out (the pictures in a private Storage bucket,
 removed after publishing). The adviser sends the post, your goals and notes, your style
 reading and, if you ask it to read replies in their conversation, other people's public
 posts, to Virga's server, which passes them to an AI model through an AI gateway; alt
@@ -296,11 +296,25 @@ runs two crons every minute: `/api/schedule/run` (scheduled posts) and
 Without the server settings below, the app still works with browser sign-ins; the
 server's routes answer 503 and the posting pages that need it say so.
 
-1. **Supabase.** Make a project and apply `supabase/migrations/` in order (`supabase link`
-   then `supabase db push`, or paste each file into the SQL editor). They create the
-   sign-in, scheduled-post, timer and AI-usage tables (row-level security on, nothing for
-   the `anon` or `authenticated` roles; only the server's service-role key reads them) and
-   a private Storage bucket, `scheduled-media`.
+1. **Supabase.** A project of Virga's own, or one it shares with other apps: everything
+   Virga keeps is in a `virga` schema, and the migrations create, replace and drop nothing
+   in `public`, even where another app has tables and functions of the same names there.
+   - Apply `supabase/migrations/` in order. On a project of its own, `supabase link` then
+     `supabase db push`. On a shared one, paste each file into the SQL editor or apply it
+     with Supabase's MCP server instead, because `db push` expects the project's whole
+     migration history to be in this folder. They create the schema, the sign-in,
+     scheduled-post, timer and AI-usage tables (row-level security on, nothing for the
+     `anon` or `authenticated` roles; only the server's service-role key reads them) and a
+     private Storage bucket, `virga-scheduled-media`.
+   - Add `virga` to **Exposed schemas** in the project's API settings. Until it is there
+     the Data API refuses every call the server makes (PostgREST's `PGRST106`), and the
+     posting pages read that as the database not being set up.
+   - Don't run the grants from Supabase's guide to exposing a schema. They hand the schema
+     to the public API key; the migrations already give the service role what it needs,
+     and take the rest back if they are applied again.
+
+   On a shared project the service-role key is the whole project's, so Virga's server
+   holds a key that reaches the other apps' tables too.
 2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
    `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
 3. **Vercel settings** (Production only; see `.env.example` for every option and its
@@ -308,7 +322,7 @@ server's routes answer 503 and the posting pages that need it say so.
    - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
    - `OAUTH_PUBLIC_URL`: the production origin, e.g. `https://virga.example`. The
      client_id hangs off it, so it must not change once anyone has signed in, and one
-     Supabase project serves one public URL.
+     `virga` schema serves one public URL.
    - `OAUTH_PRIVATE_KEY_1`, and `SESSION_ENCRYPTION_KEY` (`openssl rand -hex 32`), which
      encrypts the stored sessions
    - `CRON_SECRET` (a long random string): Vercel sends it to the crons, and the run
@@ -371,7 +385,7 @@ handlers as Node functions with the same paths, and call the two run paths every
 | `server/oauth/` | The long-session sign-in: client metadata, keys, tokens, the XRPC proxy, uploads |
 | `server/schedule/`, `server/timers/`, `server/ai/`, `server/limits/` | Scheduled posts and their worker, post timers and their worker, the adviser and alt text, limits |
 | `server/` | Shared server pieces (Supabase, HTTP helpers, cron auth, safe fetching) and test helpers (`server/test/`) |
-| `supabase/migrations/` | The server's database |
+| `supabase/migrations/` | The server's database: the `virga` schema and its Storage bucket |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
