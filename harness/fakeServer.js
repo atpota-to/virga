@@ -1363,7 +1363,9 @@ export function createServer({
       agreements.push(row);
       note(`${did} agreed to version ${TERMS_VERSION} (${identity})`);
     }
-    return [200, { success: true, ...currentTerms(), acceptedAt: row.accepted_at, identity, created }];
+    // A claim's answer says nothing about the row: the caller could be anyone.
+    if (identity === 'claimed') return [200, { success: true, ...currentTerms(), identity }];
+    return [200, { success: true, ...currentTerms(), identity, acceptedAt: row.accepted_at, created }];
   }
 
   /* ---- limits ---- */

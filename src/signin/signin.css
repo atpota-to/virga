@@ -211,6 +211,12 @@
   background: var(--accent-wash);
 }
 
+@media (hover: hover) {
+  .handle-suggestion:hover:not([aria-selected='true']) {
+    background: var(--hover);
+  }
+}
+
 .handle-suggestion-text {
   display: flex;
   flex-direction: column;

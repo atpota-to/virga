@@ -19,21 +19,34 @@ export const SIGNUP_HOSTS = Object.freeze([
 ]);
 
 // What a host's refusal can't be put down to: Virga's own server, the
-// connection, or a limit. Trying again without the prompt wouldn't help.
-const NOT_THE_HOST = new Set(['NETWORK_ERROR', 'RATE_LIMITED', 'VIRGA_CLIENT_UNAVAILABLE', 'REDIRECT_NOT_ALLOWED']);
+// connection, a limit, or the reader calling it off. Trying again without
+// the prompt wouldn't help, and after a cancel it would send the browser
+// somewhere it was just told not to go.
+const NOT_THE_HOST = new Set(['NETWORK_ERROR', 'RATE_LIMITED', 'VIRGA_CLIENT_UNAVAILABLE', 'REDIRECT_NOT_ALLOWED', 'CANCELLED', 'INTERNAL']);
+
+/** Whether a failed sign-in is something other than the host saying no. */
+export function notTheHosts(error) {
+  if (NOT_THE_HOST.has(error?.code)) return true;
+  if (error?.name === 'AbortError') return true;
+  const message = String(error?.message || '');
+  if (/navigated back|aborted/i.test(message)) return true;
+  // A request that never arrived, as a browser sign-in's library reports it.
+  return error?.name === 'TypeError' && /fetch|network|load failed/i.test(message);
+}
 
 /**
  * Send someone to `hostUrl` to make an account. A host that turns down the
  * request for its make-an-account page (older software doesn't know the
  * prompt) is asked again for its ordinary sign-in page, which has its own way
  * to make one. `signIn` is the session's; the promise normally never settles,
- * because the browser leaves.
+ * because the browser leaves. `options.signal` calls the whole thing off,
+ * the second try included.
  */
 export async function signUpAt(signIn, hostUrl, options = {}) {
   try {
     return await signIn(hostUrl, { ...options, intent: 'add', prompt: 'create' });
   } catch (error) {
-    if (NOT_THE_HOST.has(error?.code) || /navigated back/i.test(String(error?.message || ''))) throw error;
+    if (options.signal?.aborted || notTheHosts(error)) throw error;
     return signIn(hostUrl, { ...options, intent: 'add' });
   }
 }

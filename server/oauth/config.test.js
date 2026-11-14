@@ -161,6 +161,36 @@ describe('client metadata', () => {
     // A plain-http policy would stop the client from starting; the site's
     // own page stands in for it.
     expect(linked.policy_uri).toBe('https://virga.example.com/privacy');
+
+    // https alone isn't enough: these would each stop the client too.
+    for (const unusable of [
+      'https://localhost/terms',
+      'https://intranet/terms',
+      'https://docs.local/terms',
+      'https://127.0.0.1/terms',
+      'https://[::1]/terms',
+      'not a url',
+    ]) {
+      const fallen = clientMetadata({
+        ...process.env,
+        OAUTH_TOS_URL: unusable,
+        OAUTH_POLICY_URL: unusable,
+      });
+      expect(fallen.tos_uri, unusable).toBe('https://virga.example.com/terms');
+      expect(fallen.policy_uri, unusable).toBe(
+        'https://virga.example.com/privacy',
+      );
+      expect(
+        () =>
+          new NodeOAuthClient({
+            clientMetadata: fallen,
+            keyset: [env.key],
+            stateStore: store,
+            sessionStore: store,
+          }),
+        unusable,
+      ).not.toThrow();
+    }
     expect(
       () =>
         new NodeOAuthClient({

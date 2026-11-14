@@ -63,10 +63,18 @@ export function navigate(to, { replace = false, keepScroll = false, keepQuery = 
   if (!keepScroll) window.scrollTo(0, 0);
 }
 
-/** The address a move to `to` lands on, given the current query string. */
+/**
+ * The address a move to `to` lands on, given the current query string. The
+ * query goes before a fragment (`/privacy#contact` → `/privacy?x=1#contact`):
+ * after it, the query would be part of the fragment.
+ */
 export function hrefFor(to, currentSearch = '', { keepQuery = true } = {}) {
-  const search = keepQuery && !String(to).includes('?') ? currentSearch || '' : '';
-  return `${to}${search}`;
+  const text = String(to);
+  const at = text.indexOf('#');
+  const path = at === -1 ? text : text.slice(0, at);
+  const fragment = at === -1 ? '' : text.slice(at);
+  const search = keepQuery && !path.includes('?') ? currentSearch || '' : '';
+  return `${path}${search}${fragment}`;
 }
 
 /**

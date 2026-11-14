@@ -10,6 +10,7 @@
 //   leaving  the card that says where the browser is about to go
 
 import { signInErrorMessage } from '../lib/oauthClient.js';
+import { notTheHosts } from './hosts.js';
 
 export const STEP = Object.freeze({ ENTRY: 'entry', FINDING: 'finding', FOUND: 'found', HOSTS: 'hosts', LEAVING: 'leaving' });
 
@@ -129,16 +130,16 @@ export function stallLabel(leaving) {
   return leaving?.host ? `Open ${leaving.host}` : 'Try again';
 }
 
-// What isn’t the host’s doing, and so is worded the same for either kind of trip.
-const OURS = new Set(['NETWORK_ERROR', 'RATE_LIMITED', 'VIRGA_CLIENT_UNAVAILABLE', 'REDIRECT_NOT_ALLOWED']);
-
 /**
  * What to say when the trip to a host couldn’t start, or null when there is
- * nothing to say (the reader came back with the browser’s Back button).
+ * nothing to say (the reader called it off, or came back with the browser’s
+ * Back button). A new account’s trip blames the host only for what is the
+ * host’s doing: no connection, or Virga’s own server, is worded as it is
+ * for any sign-in.
  */
 export function tripFailureNotice(error, leaving) {
-  if (/navigated back/i.test(String(error?.message || ''))) return null;
-  if (leaving?.purpose === 'signup' && !OURS.has(error?.code)) {
+  if (error?.code === 'CANCELLED' || error?.name === 'AbortError' || /navigated back/i.test(String(error?.message || ''))) return null;
+  if (leaving?.purpose === 'signup' && !notTheHosts(error)) {
     const host = leaving.host || 'That host';
     return { about: 'trip', text: `${host} isn’t taking sign-ups from here right now. Pick another host, or try again in a little while.` };
   }

@@ -152,9 +152,11 @@ export default function HandleField({ id, value, onChange, onPick, invalid = fal
               role="option"
               aria-selected={index === active}
               // The press would take focus from the field, and its blur would
-              // put the list away before the click arrived.
+              // put the list away before the click arrived. Pointing at a row
+              // only shades it (in CSS): the marked row is the arrows' alone,
+              // or Enter would take whichever row the list happened to open
+              // under the pointer instead of what was typed.
               onMouseDown={(event) => event.preventDefault()}
-              onMouseEnter={() => setActive(index)}
               onClick={() => pick(item)}
             >
               <Avatar src={item.avatar} name={item.displayName || item.handle} size="sm" />

@@ -2,7 +2,10 @@
 // of Service and Privacy Policy.
 //
 //   body  { version, did? }
-//   200   { success: true, version, effectiveDate, acceptedAt, identity, created }
+//   200   with a session  { success: true, version, effectiveDate, identity:
+//                           'session', acceptedAt, created }
+//         without one     { success: true, version, effectiveDate, identity:
+//                           'claimed' }
 //
 // `version` is the one the page showed. If the documents have moved on since
 // that page loaded, nothing is written: 409 TERMS_VERSION_MISMATCH with the
@@ -16,8 +19,11 @@
 // no part in) the account is the `did` in the body, taken on the browser's
 // word and marked so (identity 'claimed'). That is an unauthenticated write,
 // so it takes a DID only in its real shape, refuses a page on another site,
-// and can be turned off with TERMS_ACCEPT_CLAIMED=false. The address and
-// User-Agent the request arrived with are kept beside either kind of row.
+// is bounded per address in the database as well as per minute here, and can
+// be turned off with TERMS_ACCEPT_CLAIMED=false. Its answer is the same
+// whether or not the account had been reported before, and carries nothing
+// from the row: the caller could be anyone, and whether and when an account
+// agreed is not theirs to learn.
 //
 // Both kinds are limited per minute: by account with a session, by address
 // without one.
@@ -39,6 +45,7 @@ import {
   currentTerms,
   isAccountDid,
   recordAcceptance,
+  recordClaim,
 } from '../acceptance.js';
 import { sendFailure, sendUnavailable } from '../respond.js';
 
@@ -61,6 +68,11 @@ function acceptLimiter() {
 export function resetAcceptLimiterForTests() {
   limiters.clear();
 }
+
+// New claims taken from one address in a day, counted in the database so it
+// holds across instances. A household or an office shares an address; nobody
+// signs in fifty accounts from one in a day.
+const CLAIMS_PER_ADDRESS_PER_DAY = 50;
 
 /** Whether an account on a browser session may be recorded on its own word (default yes). */
 function claimsAllowed(env = process.env) {
@@ -139,28 +151,52 @@ export default async function handler(req, res) {
           code: 'DID_INVALID',
         });
       }
-      did = body.did;
+      const claim = await recordClaim({
+        did: body.did,
+        ip: address,
+        userAgent: callerUserAgent(req),
+        dailyCap: envInt(
+          process.env,
+          'TERMS_CLAIMS_PER_ADDRESS_PER_DAY',
+          CLAIMS_PER_ADDRESS_PER_DAY,
+        ),
+      });
+      if (claim.created) {
+        console.log(
+          `[terms/accept] a browser session reported ${body.did} agreeing to version ${terms.version}`,
+        );
+      }
+      return sendJson(res, 200, { success: true, ...terms, identity });
     }
 
     const row = await recordAcceptance({
       did,
-      identity,
       ip: address,
       userAgent: callerUserAgent(req),
     });
     if (row.created) {
       console.log(
-        `[terms/accept] ${did} agreed to version ${terms.version} (${identity})`,
+        `[terms/accept] ${did} agreed to version ${terms.version} (session)`,
       );
     }
     return sendJson(res, 200, {
       success: true,
       ...terms,
-      acceptedAt: row.acceptedAt,
       identity,
+      acceptedAt: row.acceptedAt,
       created: row.created,
     });
   } catch (error) {
+    if (error?.code === 'CLAIM_LIMIT') {
+      res.setHeader('Retry-After', '3600');
+      return sendJson(res, 429, {
+        success: false,
+        error:
+          'that is a lot of agreements from one place today. try again later.',
+        code: 'RATE_LIMITED',
+        retryAfter: 3600,
+      });
+    }
     return sendFailure(
       res,
       'terms/accept',

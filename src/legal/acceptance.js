@@ -7,13 +7,20 @@
 // wait while the server is asked. It is a convenience, not the record: the
 // record is the row on Virga's server (the virga_terms_acceptance table).
 //
-//   { version, at, recorded, tries }
+//   { version, at, recorded, tries, identity }
 //
-// `recorded` says Virga's server has the row. For an account on a long
-// session it is always true: the note is only written once the server has
-// answered. For an account on a browser session, which the server can't
-// vouch for, the note comes first and the report follows, and is tried again
-// on later visits (up to MAX_REPORT_TRIES) until it lands.
+// `identity` is how the server knows the agreement: 'session' (a long
+// session's own, written here only once the server has answered), 'claimed'
+// (a browser session's, reported on its word) or null (not reported yet).
+// `recorded` says the server has it. For an account on a browser session,
+// which the server can't vouch for, the note comes first and the report
+// follows, and is tried again on later visits (up to MAX_REPORT_TRIES) until
+// it lands.
+//
+// A long session is opened only by a 'session' note. An account that agreed
+// on a browser session and later takes a long one in the same browser is
+// asked again, once, so that no long session runs without a row the server
+// can stand behind.
 
 import { TERMS_VERSION } from './version.js';
 
@@ -37,6 +44,7 @@ export function readAcceptance(storage, did) {
       at: typeof value.at === 'string' ? value.at : null,
       recorded: value.recorded === true,
       tries: Number.isInteger(value.tries) && value.tries > 0 ? value.tries : 0,
+      identity: value.identity === 'session' || value.identity === 'claimed' ? value.identity : null,
     };
   } catch {
     return null;
@@ -44,10 +52,10 @@ export function readAcceptance(storage, did) {
 }
 
 /** Keep the note. Fails soft: without storage the account is simply asked again next time. */
-export function writeAcceptance(storage, did, { version = TERMS_VERSION, at = null, recorded = false, tries = 0 } = {}) {
+export function writeAcceptance(storage, did, { version = TERMS_VERSION, at = null, recorded = false, tries = 0, identity = null } = {}) {
   if (!did) return;
   try {
-    storage?.setItem(termsKey(did), JSON.stringify({ version, at, recorded, tries }));
+    storage?.setItem(termsKey(did), JSON.stringify({ version, at, recorded, tries, identity }));
   } catch {
     // Unwritable storage: nothing to do about it here.
   }
@@ -64,16 +72,28 @@ export function needsReport(entry, version = TERMS_VERSION) {
 }
 
 /**
+ * Whether a note lets the account past the agreement screen. On a long
+ * session only the server's own word does, whether or not the server can be
+ * reached just now; on a browser session the note is all there is.
+ */
+export function opensGate(entry, { mode }) {
+  if (!coversCurrent(entry)) return false;
+  return mode === 'backend' ? entry.identity === 'session' : true;
+}
+
+/**
  * Where the agreement screen starts for an account, before anything is asked
  * of the network:
  *
- *   'accepted'  this browser has a note that covers the current documents
- *   'checking'  no note, but the account is on a long session, so the server
- *               can say whether it agreed somewhere else
- *   'needs'     no note and nobody to ask: show the screen
+ *   'accepted'  this browser has a note that opens the gate
+ *   'checking'  no such note, but the account is on a long session, so the
+ *               server can say whether it agreed somewhere else
+ *   'needs'     no note and nobody to ask: show the screen. A long session
+ *               whose token has gone lands here too, and can't agree until
+ *               it has signed in again
  */
 export function startingStatus({ entry, mode, canAsk }) {
-  if (coversCurrent(entry)) return 'accepted';
+  if (opensGate(entry, { mode })) return 'accepted';
   return mode === 'backend' && canAsk ? 'checking' : 'needs';
 }
 
@@ -103,7 +123,7 @@ export function acceptFailure(error) {
     return { text: 'Virga’s server is busy with this account. Wait a minute and try again.', reload: false };
   }
   if (code === 'FRONTEND_SESSION_INVALID' || error?.status === 401) {
-    return { text: 'This account’s sign-in has ended, so the agreement couldn’t be recorded. Sign in again to carry on.', reload: false };
+    return { text: 'Virga’s server didn’t recognise this account’s sign-in, so your agreement isn’t recorded yet. Try again; if it keeps happening, the account needs to sign in again.', reload: false };
   }
   return { text: 'Virga’s server couldn’t record your agreement just now. Try again in a little while.', reload: false };
 }

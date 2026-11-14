@@ -23,12 +23,13 @@ import {
   TERMS_VERSION,
 } from '../../src/legal/version.js';
 import {
-  IDENTITY,
+  addressText,
   contextText,
   currentTerms,
   findAcceptance,
   isAccountDid,
   recordAcceptance,
+  recordClaim,
 } from './acceptance.js';
 
 const auth = vi.hoisted(() => ({ resolveUserDid: vi.fn() }));
@@ -143,7 +144,7 @@ describe('the terms acceptance migration', () => {
   });
 
   it('refuses the service role an update or a delete, and lets it add and read', async () => {
-    await recordAcceptance({ did: DID, identity: IDENTITY.SESSION });
+    await recordAcceptance({ did: DID });
     // As on Supabase, where the service role is exempt from RLS and so held
     // back by its table privileges alone.
     await t.exec('ALTER ROLE service_role BYPASSRLS');
@@ -197,10 +198,9 @@ describe('the ledger', () => {
     });
   });
 
-  it('records an agreement once, with where it came from', async () => {
+  it('records a session’s agreement once, with where it came from', async () => {
     const first = await recordAcceptance({
       did: DID,
-      identity: IDENTITY.SESSION,
       ip: '203.0.113.7',
       userAgent: 'Vitest/1.0',
     });
@@ -212,23 +212,18 @@ describe('the ledger', () => {
     expect(row).toMatchObject({
       did: DID,
       terms_version: TERMS_VERSION,
+      policy_version: TERMS_EFFECTIVE_DATE,
+      document: 'tos+privacy',
       identity: 'session',
       ip: '203.0.113.7',
       user_agent: 'Vitest/1.0',
     });
-    expect(row.policy_version).toBe(TERMS_EFFECTIVE_DATE);
-    expect(row.document).toBe('tos+privacy');
   });
 
   it('answers a second agreement with the first, and writes nothing', async () => {
-    const first = await recordAcceptance({
-      did: DID,
-      identity: IDENTITY.SESSION,
-      ip: '203.0.113.7',
-    });
+    const first = await recordAcceptance({ did: DID, ip: '203.0.113.7' });
     const second = await recordAcceptance({
       did: DID,
-      identity: IDENTITY.SESSION,
       ip: '192.0.2.99',
       userAgent: 'Another/2.0',
     });
@@ -238,22 +233,11 @@ describe('the ledger', () => {
     expect(all[0].ip).toBe('203.0.113.7');
   });
 
-  it('keeps a session’s agreement and a browser’s claim as separate rows', async () => {
-    await recordAcceptance({ did: DID, identity: IDENTITY.CLAIMED });
+  it('finds an agreement only for its own account and version, and never a claim', async () => {
+    await recordClaim({ did: DID, ip: '198.51.100.20' });
     expect(await findAcceptance(DID)).toBeNull();
-    expect(
-      await findAcceptance(DID, { identity: IDENTITY.CLAIMED }),
-    ).not.toBeNull();
 
-    await recordAcceptance({ did: DID, identity: IDENTITY.SESSION });
-    expect((await rows()).map((r) => r.identity).sort()).toEqual([
-      'claimed',
-      'session',
-    ]);
-  });
-
-  it('finds an agreement only for its own account and version', async () => {
-    await recordAcceptance({ did: DID, identity: IDENTITY.SESSION });
+    await recordAcceptance({ did: DID });
     expect(await findAcceptance(OTHER)).toBeNull();
     expect(
       await findAcceptance(DID, { version: TERMS_VERSION + 1 }),
@@ -261,12 +245,15 @@ describe('the ledger', () => {
     expect(await findAcceptance(DID)).toMatchObject({
       acceptedAt: expect.any(String),
     });
+    expect((await rows()).map((r) => r.identity).sort()).toEqual([
+      'claimed',
+      'session',
+    ]);
   });
 
-  it('keeps one line of context, cut to length, and drops an unknown address', async () => {
+  it('keeps one line of context, cut to length', async () => {
     await recordAcceptance({
       did: DID,
-      identity: IDENTITY.SESSION,
       ip: 'unknown',
       userAgent: `Mozilla/5.0\r\nX-Injected: 1 ${'a'.repeat(600)}`,
     });
@@ -280,13 +267,29 @@ describe('the ledger', () => {
     expect(contextText(undefined, 10)).toBeNull();
   });
 
-  it('refuses an entry with no account or an unknown identity', async () => {
-    await expect(
-      recordAcceptance({ identity: IDENTITY.SESSION }),
-    ).rejects.toThrow(TypeError);
-    await expect(
-      recordAcceptance({ did: DID, identity: 'guessed' }),
-    ).rejects.toThrow(TypeError);
+  it('keeps an address only when it is one', () => {
+    expect(addressText('203.0.113.7')).toBe('203.0.113.7');
+    expect(addressText(' 2001:db8::1 ')).toBe('2001:db8::1');
+    expect(addressText('[2001:db8::1]')).toBe('2001:db8::1');
+    expect(addressText('fe80::1%eth0')).toBe('fe80::1');
+    for (const not of [
+      'unknown',
+      '',
+      'not an address <b>hi</b>',
+      '203.0.113.7, 10.0.0.1',
+      '999.1.1.1',
+      undefined,
+      null,
+      42,
+    ])
+      expect(addressText(not), String(not)).toBeNull();
+  });
+
+  it('refuses an entry with no account, or a claim that isn’t a DID', async () => {
+    await expect(recordAcceptance({})).rejects.toThrow(TypeError);
+    await expect(recordClaim({ did: 'mira.example.com' })).rejects.toThrow(
+      TypeError,
+    );
     expect(await rows()).toEqual([]);
   });
 
@@ -295,9 +298,12 @@ describe('the ledger', () => {
     await expect(findAcceptance(DID)).rejects.toMatchObject({
       code: 'UNAVAILABLE',
     });
-    await expect(
-      recordAcceptance({ did: DID, identity: IDENTITY.SESSION }),
-    ).rejects.toMatchObject({ code: 'UNAVAILABLE' });
+    await expect(recordAcceptance({ did: DID })).rejects.toMatchObject({
+      code: 'UNAVAILABLE',
+    });
+    await expect(recordClaim({ did: DID })).rejects.toMatchObject({
+      code: 'UNAVAILABLE',
+    });
 
     const before = await createTestDatabase({ upTo: '20261113000400' });
     try {
@@ -305,12 +311,90 @@ describe('the ledger', () => {
       await expect(findAcceptance(DID)).rejects.toMatchObject({
         code: 'UNAVAILABLE',
       });
-      await expect(
-        recordAcceptance({ did: DID, identity: IDENTITY.SESSION }),
-      ).rejects.toMatchObject({ code: 'UNAVAILABLE' });
+      await expect(recordAcceptance({ did: DID })).rejects.toMatchObject({
+        code: 'UNAVAILABLE',
+      });
+      await expect(recordClaim({ did: DID })).rejects.toMatchObject({
+        code: 'UNAVAILABLE',
+      });
     } finally {
       await before.close();
     }
+  });
+});
+
+describe('a browser session’s claim', () => {
+  it('is kept once for an account from one address', async () => {
+    expect(await recordClaim({ did: DID, ip: '198.51.100.20' })).toEqual({
+      created: true,
+    });
+    expect(
+      await recordClaim({ did: DID, ip: '198.51.100.20', userAgent: 'Again' }),
+    ).toEqual({ created: false });
+    const all = await rows();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ identity: 'claimed', ip: '198.51.100.20' });
+  });
+
+  it('can’t be pre-empted: a stranger naming an account first leaves room for its own', async () => {
+    await recordClaim({ did: DID, ip: '192.0.2.66', userAgent: 'curl/8' });
+    expect(
+      await recordClaim({
+        did: DID,
+        ip: '198.51.100.20',
+        userAgent: 'Firefox',
+      }),
+    ).toEqual({ created: true });
+    const kept = (await rows()).map((r) => [r.ip, r.user_agent]).sort();
+    expect(kept).toEqual([
+      ['192.0.2.66', 'curl/8'],
+      ['198.51.100.20', 'Firefox'],
+    ]);
+  });
+
+  it('says nothing about the row it found or made', async () => {
+    const made = await recordClaim({ did: DID, ip: '198.51.100.20' });
+    const found = await recordClaim({ did: DID, ip: '198.51.100.20' });
+    expect(Object.keys(made)).toEqual(['created']);
+    expect(Object.keys(found)).toEqual(['created']);
+  });
+
+  it('stops taking new ones from an address that has made its share today', async () => {
+    const from = { ip: '198.51.100.20', dailyCap: 2 };
+    await recordClaim({ did: DID, ...from });
+    await recordClaim({ did: OTHER, ...from });
+    await expect(
+      recordClaim({ did: 'did:web:third.example', ...from }),
+    ).rejects.toMatchObject({ code: 'CLAIM_LIMIT' });
+    // Another address has its own count, and yesterday's don't count.
+    expect(
+      await recordClaim({
+        did: 'did:web:third.example',
+        ip: '198.51.100.99',
+        dailyCap: 2,
+      }),
+    ).toEqual({ created: true });
+    await t.exec(
+      `UPDATE virga_terms_acceptance SET accepted_at = NOW() - INTERVAL '25 hours' WHERE ip = '198.51.100.20'`,
+    );
+    expect(
+      await recordClaim({ did: 'did:web:third.example', ...from }),
+    ).toEqual({ created: true });
+  });
+
+  it('counts callers with no address as one address', async () => {
+    await recordClaim({ did: DID, ip: 'unknown', dailyCap: 1 });
+    await expect(
+      recordClaim({ did: OTHER, ip: 'also not an address', dailyCap: 1 }),
+    ).rejects.toMatchObject({ code: 'CLAIM_LIMIT' });
+    expect((await rows()).map((r) => r.ip)).toEqual([null]);
+  });
+
+  it('doesn’t count a session’s agreements against an address', async () => {
+    await recordAcceptance({ did: DID, ip: '198.51.100.20' });
+    expect(
+      await recordClaim({ did: OTHER, ip: '198.51.100.20', dailyCap: 1 }),
+    ).toEqual({ created: true });
   });
 });
 
@@ -326,7 +410,7 @@ describe('an account’s DID', () => {
       expect(isAccountDid(did), did).toBe(true);
   });
 
-  it('is nothing else', () => {
+  it('is nothing else, and is spelled one way', () => {
     for (const did of [
       '',
       null,
@@ -342,7 +426,12 @@ describe('an account’s DID', () => {
       'did:web:.example.com',
       'did:web:example.com/path',
       'did:web:example.com?x=1',
+      // The same account in another case would be another row.
+      'DID:WEB:example.com',
+      'did:web:Example.com',
+      'did:web:localhost%3a3000',
       `did:web:${'a'.repeat(300)}`,
+      `did:web:example.com${':segment'.repeat(80)}`,
       'did:plc:abcdefghijklmnopqrstuvwx\n',
       ' did:plc:abcdefghijklmnopqrstuvwx',
     ])
@@ -365,10 +454,7 @@ describe('GET /api/terms/status', () => {
   });
 
   it('says one that has, has, and when', async () => {
-    const first = await recordAcceptance({
-      did: DID,
-      identity: IDENTITY.SESSION,
-    });
+    const first = await recordAcceptance({ did: DID });
     const res = await call(status, { headers: { authorization: TOKEN } });
     expect(res.body).toMatchObject({
       success: true,
@@ -378,8 +464,8 @@ describe('GET /api/terms/status', () => {
   });
 
   it('doesn’t count a browser’s claim, or another account’s agreement', async () => {
-    await recordAcceptance({ did: DID, identity: IDENTITY.CLAIMED });
-    await recordAcceptance({ did: OTHER, identity: IDENTITY.SESSION });
+    await recordClaim({ did: DID, ip: '198.51.100.20' });
+    await recordAcceptance({ did: OTHER });
     const res = await call(status, { headers: { authorization: TOKEN } });
     expect(res.body).toMatchObject({ accepted: false, acceptedAt: null });
   });
@@ -425,8 +511,8 @@ describe('POST /api/terms/accept, with a session', () => {
       success: true,
       version: TERMS_VERSION,
       effectiveDate: TERMS_EFFECTIVE_DATE,
-      acceptedAt: expect.any(String),
       identity: 'session',
+      acceptedAt: expect.any(String),
       created: true,
     });
     expect(await rows()).toEqual([
@@ -586,14 +672,17 @@ describe('POST /api/terms/accept, with a session', () => {
 });
 
 describe('POST /api/terms/accept, without a session', () => {
+  const CLAIMED_ANSWER = {
+    success: true,
+    version: TERMS_VERSION,
+    effectiveDate: TERMS_EFFECTIVE_DATE,
+    identity: 'claimed',
+  };
+
   it('records the DID the browser reports, marked as a claim', async () => {
     const res = await call(accept, unsigned());
     expect(res.statusCode).toBe(200);
-    expect(res.body).toMatchObject({
-      success: true,
-      identity: 'claimed',
-      created: true,
-    });
+    expect(res.body).toEqual(CLAIMED_ANSWER);
     expect(auth.resolveUserDid).not.toHaveBeenCalled();
     expect(await rows()).toEqual([
       expect.objectContaining({
@@ -605,12 +694,33 @@ describe('POST /api/terms/accept, without a session', () => {
     ]);
   });
 
+  it('tells a caller nothing about an account: the same answer whether or not it had agreed', async () => {
+    const first = await call(accept, unsigned());
+    // Someone else, somewhere else, asking about the same account.
+    const probe = await call(
+      accept,
+      unsigned({ headers: { 'x-real-ip': '192.0.2.66' } }),
+    );
+    const again = await call(accept, unsigned());
+    for (const res of [first, probe, again]) {
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual(CLAIMED_ANSWER);
+      expect(res.body).not.toHaveProperty('acceptedAt');
+      expect(res.body).not.toHaveProperty('created');
+    }
+    // And the same for an account with a session's agreement on record.
+    await recordAcceptance({ did: OTHER });
+    const known = await call(accept, unsigned({ body: { did: OTHER } }));
+    expect(known.body).toEqual(CLAIMED_ANSWER);
+  });
+
   it('takes a DID only in its real shape', async () => {
     for (const did of [
       undefined,
       '',
       'mira.example.com',
       'did:plc:short',
+      'DID:WEB:Example.COM',
       { $ne: null },
       ['did:plc:x'],
     ]) {
@@ -667,7 +777,7 @@ describe('POST /api/terms/accept, without a session', () => {
     expect(await rows()).toHaveLength(2);
   });
 
-  it('limits claims by address, whatever DIDs they name', async () => {
+  it('limits claims by address per minute, whatever DIDs they name', async () => {
     vi.stubEnv('TERMS_ACCEPT_RATE_LIMIT', '2');
     expect((await call(accept, unsigned())).statusCode).toBe(200);
     expect(
@@ -688,6 +798,32 @@ describe('POST /api/terms/accept, without a session', () => {
       }),
     );
     expect(elsewhere.statusCode).toBe(200);
+  });
+
+  it('limits new claims by address per day, in the database', async () => {
+    vi.stubEnv('TERMS_CLAIMS_PER_ADDRESS_PER_DAY', '2');
+    expect((await call(accept, unsigned())).statusCode).toBe(200);
+    expect(
+      (await call(accept, unsigned({ body: { did: OTHER } }))).statusCode,
+    ).toBe(200);
+    // A fresh window on every instance wouldn't get past this one.
+    resetAcceptLimiterForTests();
+    const third = await call(
+      accept,
+      unsigned({ body: { did: 'did:web:third.example' } }),
+    );
+    expect(third.statusCode).toBe(429);
+    expect(third.body).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(third.headers['retry-after']).toBe('3600');
+    expect(await rows()).toHaveLength(2);
+  });
+
+  it('keeps an address only when the request’s is one', async () => {
+    await call(
+      accept,
+      unsigned({ headers: { 'x-real-ip': 'not an address <b>hi</b>' } }),
+    );
+    expect((await rows()).map((r) => r.ip)).toEqual([null]);
   });
 
   it('can be turned off, leaving sessions as the only way to agree', async () => {

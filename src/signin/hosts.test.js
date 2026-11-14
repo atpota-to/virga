@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { SIGNUP_HOSTS, signUpAt } from './hosts.js';
+import { SIGNUP_HOSTS, notTheHosts, signUpAt } from './hosts.js';
 
 describe('the hosts offered for a new account', () => {
   it('each have a name, a secure address and the domain it is known by', () => {
@@ -53,7 +53,38 @@ describe('making an account at a host', () => {
     await expect(signUpAt(signIn, 'https://down.example')).rejects.toThrow('second');
   });
 
+  it('never tries again once the reader has called it off', async () => {
+    // Cancel stops the page's requests, and the first try fails as any
+    // dropped request does. A second try would send the browser to the host
+    // the reader just turned back from.
+    const controller = new AbortController();
+    const signIn = vi.fn(async () => {
+      controller.abort();
+      throw new Error('some failure with no code');
+    });
+    await expect(signUpAt(signIn, 'https://bsky.social', { mode: 'browser', signal: controller.signal })).rejects.toThrow('some failure with no code');
+    expect(signIn).toHaveBeenCalledTimes(1);
+    expect(signIn.mock.calls[0][1].signal).toBe(controller.signal);
+
+    const cancelled = vi.fn().mockRejectedValue(Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' }));
+    await expect(signUpAt(cancelled, 'https://bsky.social')).rejects.toMatchObject({ code: 'CANCELLED' });
+    expect(cancelled).toHaveBeenCalledTimes(1);
+  });
+
+  it('tells the host’s refusal from everything that isn’t', () => {
+    expect(notTheHosts(coded('AUTHORIZE_FAILED'))).toBe(false);
+    expect(notTheHosts(new Error('invalid_request: unsupported prompt'))).toBe(false);
+    expect(notTheHosts(new TypeError('Failed to fetch'))).toBe(true);
+    expect(notTheHosts(new TypeError('NetworkError when attempting to fetch resource.'))).toBe(true);
+    expect(notTheHosts(new DOMException('The operation was aborted', 'AbortError'))).toBe(true);
+    expect(notTheHosts(coded('INTERNAL'))).toBe(true);
+    expect(notTheHosts(undefined)).toBe(false);
+  });
+
   it('doesn’t try again for a failure that isn’t the host’s', async () => {
+    const dropped = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+    await expect(signUpAt(dropped, 'https://bsky.social')).rejects.toThrow('Failed to fetch');
+    expect(dropped).toHaveBeenCalledTimes(1);
     for (const code of ['NETWORK_ERROR', 'RATE_LIMITED', 'VIRGA_CLIENT_UNAVAILABLE', 'REDIRECT_NOT_ALLOWED']) {
       const signIn = vi.fn().mockRejectedValue(coded(code));
       await expect(signUpAt(signIn, 'https://bsky.social')).rejects.toMatchObject({ code });

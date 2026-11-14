@@ -8,20 +8,25 @@ import './legal.css';
 /**
  * A legal document in a dialog, for reading without leaving the screen that
  * asks about it. `docKey` is 'terms', 'privacy' or null (closed). A link from
- * one document to the other changes which is shown, in place.
+ * one document to the other changes which is shown, in place, and goes to
+ * the section it names.
  */
 export default function LegalDialog({ docKey, onClose }) {
-  const [shown, setShown] = useState(docKey);
+  const [shown, setShown] = useState({ key: docKey, anchor: null });
   const body = useRef(null);
   useEffect(() => {
-    if (docKey) setShown(docKey);
+    if (docKey) setShown({ key: docKey, anchor: null });
   }, [docKey]);
-  // The other document starts at its top.
+  // The other document starts at its top, or at the section the link named.
   useEffect(() => {
-    body.current?.closest('.dialog-body')?.scrollTo?.(0, 0);
+    const scroller = body.current?.closest('.dialog-body');
+    if (!scroller) return;
+    const section = shown.anchor ? [...scroller.querySelectorAll('[id]')].find((el) => el.id === shown.anchor) : null;
+    if (section) section.scrollIntoView();
+    else scroller.scrollTo?.(0, 0);
   }, [shown]);
 
-  const key = shown || 'terms';
+  const key = shown.key || 'terms';
   const doc = readDocument(key);
   return (
     <Dialog open={Boolean(docKey)} onClose={onClose} title={doc.title} className="legal-dialog">
@@ -32,7 +37,7 @@ export default function LegalDialog({ docKey, onClose }) {
             <ExternalLink size={13} aria-hidden="true" />
           </a>
         </p>
-        <LegalDocument document={doc} skipTitle headingOffset={1} onOpenDocument={setShown} />
+        <LegalDocument document={doc} skipTitle headingOffset={1} onOpenDocument={(next, anchor) => setShown({ key: next, anchor })} />
       </div>
     </Dialog>
   );

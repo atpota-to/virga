@@ -48,7 +48,7 @@ Our server is a set of functions hosted by Vercel, with a database and file stor
 
 Our server also writes operational logs, which Vercel keeps for a limited time. Virga’s own log lines can include a DID, a handle from a sign-in that failed, the name of a call and an error message. Virga doesn’t write post text, tokens or IP addresses to them, though an error returned by another service is logged in that service’s own words. Vercel and Supabase, as hosts, see the IP address and browser of each request to them and keep their own logs.
 
-The IP address of a request is also used in memory, for about two minutes, to limit how many sign-ins and agreements can be started from one address.
+The IP address of a request is also used in memory, for about two minutes, to limit how many sign-ins and agreements can be started from one address. The addresses kept with agreements that browser sessions report are counted, to cap how many such reports one address can make in a day.
 
 ## What passes through the server without being kept
 

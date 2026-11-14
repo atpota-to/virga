@@ -756,7 +756,7 @@ describe('the terms ledger', () => {
     const { req, requester, server } = setup({ terms: 'ask' });
     expect(await fetchTermsStatus(req)).toEqual({ accepted: false, acceptedAt: null, version: TERMS_VERSION });
     const first = await recordAcceptance(req);
-    expect(first.identity).toBe('session');
+    expect(server.inspect().agreements.map((row) => row.identity)).toEqual(['session']);
     expect(await fetchTermsStatus(req)).toMatchObject({ accepted: true, acceptedAt: first.acceptedAt });
     // Again, from another browser: the first agreement is the answer.
     expect(await recordAcceptance(requester(ME.did))).toEqual(first);
@@ -768,7 +768,8 @@ describe('the terms ledger', () => {
   it('takes a browser session’s word for its DID, and keeps it apart from a session’s agreement', async () => {
     const { fetch, req, server } = setup({ terms: 'ask' });
     const reported = await reportAcceptance({ did: ME.did, backendUrl: SERVER_ORIGIN, fetch });
-    expect(reported.identity).toBe('claimed');
+    // Nothing about the row comes back: the caller could be anyone.
+    expect(reported).toEqual({ identity: 'claimed' });
     expect(await fetchTermsStatus(req)).toMatchObject({ accepted: false });
     expect(server.inspect().agreements.map((row) => row.identity)).toEqual(['claimed']);
   });

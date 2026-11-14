@@ -12,6 +12,7 @@ import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
 import { coversCurrent, readAcceptance } from '../legal/acceptance.js';
 import { DOCUMENTS } from '../legal/documents.js';
+import LegalDialog from '../legal/LegalDialog.jsx';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -611,6 +612,9 @@ function AboutSection() {
   const archive = useArchive();
   const { did } = useAtprotoSession();
   const agreed = agreementNote(did);
+  // Read in place: going to the document's own page would take the app, and
+  // a sync that is running, down with it.
+  const [reading, setReading] = useState(null);
   return (
     <>
       <Section title="About Virga">
@@ -624,11 +628,12 @@ function AboutSection() {
       <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
         {Object.values(DOCUMENTS).map((doc) => (
           <Row key={doc.key} label={doc.title}>
-            <Link className="btn" to={doc.path} aria-label={`Read the ${doc.title}`}>
+            <Button onClick={() => setReading(doc.key)} aria-label={`Read the ${doc.title}`}>
               Read
-            </Link>
+            </Button>
           </Row>
         ))}
+        <LegalDialog docKey={reading} onClose={() => setReading(null)} />
         {agreed && (
           <p className="settings-text muted">
             This account agreed to version {agreed.version} of both{agreed.at ? ` on ${formatDateShort(agreed.at)}` : ''}.

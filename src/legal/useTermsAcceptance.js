@@ -9,11 +9,13 @@
 //   accept  record the agreement. On a long session it resolves once the
 //           server has the row and throws when it couldn't be written
 //           (acceptFailure words the error), so nobody on a long session is
-//           let in without a record. On a browser session the note is kept
-//           here at once and the report to the server follows.
+//           let in without a record; that holds when the session's token has
+//           gone too, which is refused rather than taken as a browser
+//           session's. On a browser session the note is kept here at once
+//           and the report to the server follows.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MAX_REPORT_TRIES, coversCurrent, needsReport, readAcceptance, startingStatus, statusFromAnswer, termsKey, writeAcceptance } from './acceptance.js';
+import { MAX_REPORT_TRIES, needsReport, opensGate, readAcceptance, startingStatus, statusFromAnswer, termsKey, writeAcceptance } from './acceptance.js';
 import { fetchTermsStatus, recordAcceptance, reportAcceptance } from './termsService.js';
 import { TERMS_VERSION } from './version.js';
 
@@ -36,8 +38,10 @@ const reported = new Set();
  */
 async function report(did, entry, send = reportAcceptance) {
   try {
-    const result = await send({ did, version: entry.version });
-    writeAcceptance(local(), did, { ...entry, at: result.acceptedAt || entry.at, recorded: true });
+    await send({ did, version: entry.version });
+    // The server says nothing back about a claim, so the time stays this
+    // browser's own.
+    writeAcceptance(local(), did, { ...entry, recorded: true, identity: 'claimed' });
   } catch (error) {
     const tries = error?.code === 'SESSION_REQUIRED' ? MAX_REPORT_TRIES : entry.tries + 1;
     writeAcceptance(local(), did, { ...entry, tries });
@@ -75,7 +79,7 @@ export function useTermsAcceptance({ did, mode, backendFor }) {
       .then((answer) => {
         if (controller.signal.aborted) return;
         const next = statusFromAnswer(answer);
-        if (next === 'accepted') writeAcceptance(local(), did, { at: answer.acceptedAt, recorded: true });
+        if (next === 'accepted') writeAcceptance(local(), did, { at: answer.acceptedAt, recorded: true, identity: 'session' });
         setState({ did, status: next });
       })
       .catch(() => {
@@ -100,23 +104,27 @@ export function useTermsAcceptance({ did, mode, backendFor }) {
     if (!did || typeof window === 'undefined') return undefined;
     const onStorage = (event) => {
       if (event.key !== termsKey(did)) return;
-      if (coversCurrent(readAcceptance(local(), did))) setState({ did, status: 'accepted' });
+      if (opensGate(readAcceptance(local(), did), { mode })) setState({ did, status: 'accepted' });
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
-  }, [did]);
+  }, [did, mode]);
 
   const accept = useCallback(async () => {
     if (!did) return;
     const at = new Date().toISOString();
     const asked = requesterRef.current;
-    if (mode === 'backend' && asked) {
+    if (mode === 'backend') {
+      // A long session whose token has gone (it ended while this screen was
+      // up) has nobody to vouch for it. It is not a browser session, and
+      // isn't recorded as one.
+      if (!asked) throw Object.assign(new Error('This account has no session with Virga’s server'), { status: 401, code: 'FRONTEND_SESSION_INVALID' });
       const result = await recordAcceptance(asked, { version: TERMS_VERSION });
-      writeAcceptance(local(), did, { at: result.acceptedAt || at, recorded: true });
+      writeAcceptance(local(), did, { at: result.acceptedAt, recorded: true, identity: 'session' });
       setState({ did, status: 'accepted' });
       return;
     }
-    const entry = { version: TERMS_VERSION, at, recorded: false, tries: 0 };
+    const entry = { version: TERMS_VERSION, at, recorded: false, tries: 0, identity: null };
     writeAcceptance(local(), did, entry);
     reported.add(`${did}:${entry.version}`);
     setState({ did, status: 'accepted' });

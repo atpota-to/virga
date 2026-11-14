@@ -198,7 +198,17 @@ describe('the words', () => {
     expect(tripFailureNotice(limited, { purpose: 'signup', host: 'eurosky.social' }).text).toMatch(/Too many sign-ins/);
   });
 
-  it('say nothing when the reader simply came back', () => {
+  it('don’t blame the host for a missing connection, on a browser sign-in either', () => {
+    // A browser sign-in fails with the library's own error, which has no code.
+    const offline = new TypeError('Failed to fetch');
+    expect(tripFailureNotice(offline, { purpose: 'signup', host: 'bsky.social' }).text).toMatch(/Couldn’t reach the account’s server/);
+    const broken = Object.assign(new Error('x'), { code: 'INTERNAL', status: 500 });
+    expect(tripFailureNotice(broken, { purpose: 'signup', host: 'bsky.social' }).text).not.toMatch(/bsky\.social isn’t taking sign-ups/);
+  });
+
+  it('say nothing when the reader called it off, or simply came back', () => {
     expect(tripFailureNotice(new Error('User navigated back'), { purpose: 'signin' })).toBeNull();
+    expect(tripFailureNotice(Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' }), { purpose: 'signup', host: 'bsky.social' })).toBeNull();
+    expect(tripFailureNotice(new DOMException('Aborted', 'AbortError'), { purpose: 'signin' })).toBeNull();
   });
 });

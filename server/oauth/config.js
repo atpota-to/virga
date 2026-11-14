@@ -76,6 +76,22 @@ export function httpsUrlOrNull(value) {
   }
 }
 
+/**
+ * An https address that can go in the client metadata as a link, or null.
+ * The library, and the account's host after it, refuse more than http: a
+ * loopback host, a bare name with no dot, a .local name. Any of those in the
+ * metadata stops the client from starting, so they are passed over here.
+ */
+export function metadataLinkOrNull(value) {
+  const url = httpsUrlOrNull(value);
+  if (!url) return null;
+  const { hostname } = new URL(url);
+  const bare = !hostname.includes('.');
+  const local = /\.(local|localhost)$/i.test(hostname);
+  const literal = hostname.startsWith('[') || /^\d+(\.\d+){3}$/.test(hostname);
+  return bare || local || literal ? null : url;
+}
+
 /** The https origin of OAUTH_PUBLIC_URL, or null (a confidential client can't be loopback). */
 function httpsPublicUrl(env) {
   const origin = publicUrl(env);
@@ -96,12 +112,12 @@ export function clientMetadata(env = process.env) {
   const origin = httpsPublicUrl(env);
   if (!origin)
     throw new Error('OAUTH_PUBLIC_URL is not set to an https origin');
-  // The site's own pages, unless the environment names others. An http link
-  // would stop NodeOAuthClient from starting, so one that isn't https is
-  // passed over for the page here.
-  const tos = httpsUrlOrNull(env.OAUTH_TOS_URL) || `${origin}${TERMS_PATH}`;
+  // The site's own pages, unless the environment names others. A link the
+  // library would refuse stops NodeOAuthClient from starting, so one that
+  // isn't usable is passed over for the page here.
+  const tos = metadataLinkOrNull(env.OAUTH_TOS_URL) || `${origin}${TERMS_PATH}`;
   const policy =
-    httpsUrlOrNull(env.OAUTH_POLICY_URL) || `${origin}${PRIVACY_PATH}`;
+    metadataLinkOrNull(env.OAUTH_POLICY_URL) || `${origin}${PRIVACY_PATH}`;
   return {
     client_id: `${origin}${CLIENT_METADATA_PATH}`,
     client_name: APP_NAME,

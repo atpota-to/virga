@@ -228,15 +228,20 @@ which means a first sign-in, another browser, or a change to the documents.
   of both documents beside the version, so an edit to either fails until someone decides.
 - **The record.** `POST /api/terms/accept` adds a row to `virga_terms_acceptance`: the DID, the
   version and date, the time, and the address and User-Agent the request came from. The
-  server's key can add and read rows but not change or delete them. One row per account
-  per version: agreeing again finds the first.
+  server's key can add and read rows but not change or delete them.
 - **A long session** is recorded from the session, so the DID is one the account's host
-  vouched for, and the screen stays up until the server has the row. A new browser asks
-  `GET /api/terms/status` first, so an account that agreed elsewhere isn't asked twice.
+  vouched for, and the screen stays up until the server has the row. One row per account
+  per version: agreeing again finds the first. A new browser asks `GET /api/terms/status`
+  first, so an account that agreed elsewhere isn't asked twice.
 - **A browser session** has no session with Virga's server, so the agreement is kept in
-  the browser and reported with the DID in the body. The row is marked `claimed`, never
-  counts as a long session's agreement, and the report is tried again on later visits
-  until it lands. `TERMS_ACCEPT_CLAIMED=false` turns those off.
+  the browser and reported with the DID in the body, by a route that takes no token. The
+  row is marked `claimed` and is a note, not the account's record: anyone could name any
+  account. So it never counts as a long session's agreement (an account that later takes
+  a long session is asked once more), it is kept once per account, version and address,
+  the answer says nothing about what was already there, and one address can file 50 new
+  ones a day (`TERMS_CLAIMS_PER_ADDRESS_PER_DAY`), counted in the database. The report is
+  tried again on later visits until it lands. `TERMS_ACCEPT_CLAIMED=false` turns claims
+  off.
 
 The documents are `TERMS_OF_SERVICE.md` and `PRIVACY_POLICY.md` at the repo's root. The
 pages at `/terms` and `/privacy` are drawn from those same files (`src/legal/markdown.js`
@@ -441,6 +446,8 @@ per-account daily ceiling.
 On another host than Vercel, serve the browser client's metadata yourself (the object
 `buildClientMetadata(origin)` returns in `src/lib/oauthClient.js`), run the `api/`
 handlers as Node functions with the same paths, and call the two run paths every minute.
+Have the proxy in front write `x-real-ip` itself: the per-address limits on sign-ins and
+on agreements read it, and Vercel's edge is what makes it trustworthy there.
 
 ## How the code is laid out
 

@@ -17,7 +17,7 @@ import { PRIVACY_PATH, TERMS_EFFECTIVE_DATE, TERMS_PATH, TERMS_VERSION, formatLe
 const FINGERPRINTS = {
   version: 1,
   terms: '2669f3e5de8fa40ce4c1a416f373cbe194b9a862fd6e784f646a36d71c969a0b',
-  privacy: 'cecf13328ca64b98ffb5534f357915524262da65ffbcf28ca115867c3728e62b',
+  privacy: '2f62aea65d052214763e41c27d68ebd3b8e5b5bef25ce2c984e066fd7f227238',
 };
 
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex');

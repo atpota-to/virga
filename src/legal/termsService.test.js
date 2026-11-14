@@ -39,18 +39,27 @@ describe('asking whether an account agreed', () => {
 describe('recording an agreement on a long session', () => {
   it('posts the version this page shows, and nothing naming the account', async () => {
     const requester = { request: vi.fn(async () => ({ success: true, acceptedAt: '2026-11-14T10:00:00Z', identity: 'session', created: true })) };
-    expect(await recordAcceptance(requester)).toEqual({ acceptedAt: '2026-11-14T10:00:00Z', identity: 'session' });
+    expect(await recordAcceptance(requester)).toEqual({ acceptedAt: '2026-11-14T10:00:00Z' });
     const [path, options] = requester.request.mock.calls[0];
     expect(path).toBe('/api/terms/accept');
     expect(options).toMatchObject({ method: 'POST', body: { version: TERMS_VERSION } });
     expect(Object.keys(options.body)).toEqual(['version']);
   });
+
+  it('takes only the server saying it has the row for an answer', async () => {
+    // A host that serves its own page for a path it doesn't know answers 200,
+    // which the requester passes on as no body at all.
+    const answers = [null, {}, { success: true }, { success: true, identity: 'claimed' }, { success: true, identity: 'session' }, { success: true, identity: 'session', acceptedAt: 42 }];
+    for (const answer of answers) {
+      await expect(recordAcceptance({ request: async () => answer }), JSON.stringify(answer)).rejects.toBeInstanceOf(Error);
+    }
+  });
 });
 
 describe('reporting an agreement made on a browser session', () => {
   it('posts the DID and the version, with no token', async () => {
-    const fetch = vi.fn(async () => json({ success: true, acceptedAt: '2026-11-14T10:00:00Z', identity: 'claimed', created: true }));
-    expect(await reportAcceptance({ did: DID, backendUrl: SERVER, fetch })).toEqual({ acceptedAt: '2026-11-14T10:00:00Z', identity: 'claimed' });
+    const fetch = vi.fn(async () => json({ success: true, version: TERMS_VERSION, identity: 'claimed' }));
+    expect(await reportAcceptance({ did: DID, backendUrl: SERVER, fetch })).toEqual({ identity: 'claimed' });
     const [url, init] = fetch.mock.calls[0];
     expect(url).toBe(`${SERVER}/api/terms/accept`);
     expect(init.method).toBe('POST');

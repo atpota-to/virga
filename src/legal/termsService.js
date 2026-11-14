@@ -21,17 +21,24 @@ export async function fetchTermsStatus(requester, { signal } = {}) {
   return { accepted: body?.accepted === true, acceptedAt: body?.acceptedAt || null, version: body?.version ?? null };
 }
 
-/** Record that the account behind `requester` agrees: `{ acceptedAt, identity }`. Throws on any refusal. */
+/**
+ * Record that the account behind `requester` agrees: `{ acceptedAt }`, the
+ * time on the server's row. Throws on any refusal, and on any answer that
+ * isn't the server saying it has the row: a host that serves a page for a
+ * path it doesn't know answers 200 too, and that is not a record.
+ */
 export async function recordAcceptance(requester, { version = TERMS_VERSION } = {}) {
   const body = await requester.request(TERMS_API.accept, { method: 'POST', body: { version }, timeoutMs: 20_000 });
-  return { acceptedAt: body?.acceptedAt || null, identity: body?.identity || null };
+  if (body?.success !== true || body.identity !== 'session' || typeof body.acceptedAt !== 'string') throw requestError(200, body);
+  return { acceptedAt: body.acceptedAt };
 }
 
 /**
  * Report an agreement made on a browser session. There is no session with
  * Virga's server to send, so the DID goes in the body and the server marks
- * the row as the browser's own word. Throws an error with `code` and
- * `status` when it didn't land.
+ * the row as the browser's own word. The server's answer says only that it
+ * took the report. Throws an error with `code` and `status` when it didn't
+ * land.
  */
 export async function reportAcceptance({ did, version = TERMS_VERSION, backendUrl = BACKEND_URL, fetch = globalThis.fetch } = {}) {
   let res;
@@ -48,5 +55,5 @@ export async function reportAcceptance({ did, version = TERMS_VERSION, backendUr
   const body = await res.json().catch(() => null);
   // A deployment with no server answers /api/* with a page, not JSON.
   if (!res.ok || body?.success !== true) throw requestError(res.status, body);
-  return { acceptedAt: body.acceptedAt || null, identity: body.identity || null };
+  return { identity: body.identity || null };
 }

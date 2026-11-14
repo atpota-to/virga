@@ -26,7 +26,13 @@ export default function LegalPage({ docKey }) {
   // A link to a section (/privacy#what-virgas-server-keeps) arrives before
   // the section is drawn, so the browser has nowhere to scroll to by itself.
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.slice(1));
+    const raw = window.location.hash.slice(1);
+    let id = raw;
+    try {
+      id = decodeURIComponent(raw);
+    } catch {
+      // Not valid percent-encoding (a link cut short): take it as written.
+    }
     if (id) document.getElementById(id)?.scrollIntoView();
   }, [docKey]);
 

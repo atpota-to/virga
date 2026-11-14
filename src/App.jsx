@@ -12,7 +12,11 @@
 // account's agent is built, then everything below the per-account key
 // remounts for it. Only the app's start shows the loading line. Toasts, the
 // session notices and the composer sit above that key, so a toast, a notice
-// or a half-written post outlives a switch.
+// or a half-written post outlives a switch. The one switch that takes the
+// shell down is to an account that hasn't agreed to the terms: the agreement
+// screen stands in its place, with the session notices still above it (an
+// account whose sign-in ends there is still handed on to sign in again), and
+// a half-written post is in the composer's own autosave.
 
 import { useEffect, useState } from 'react';
 import { ArchiveProvider } from './archive/ArchiveContext.jsx';
@@ -93,12 +97,23 @@ function AppInner() {
   // line as the app starting, so nothing flashes before the answer.
   if (terms.status === 'checking') {
     return (
-      <p className="app-status" role="status">
-        Opening Virga…
-      </p>
+      <>
+        <SessionNotices />
+        <p className="app-status" role="status">
+          Opening Virga…
+        </p>
+      </>
     );
   }
-  if (terms.status === 'needs') return <TermsGate did={did} profile={profile} mode={mode} onAccept={terms.accept} onSignOut={signOut} />;
+  if (terms.status === 'needs') {
+    return (
+      <>
+        <SessionNotices />
+        {/* Keyed by account: a tick, or an error, is one account's own. */}
+        <TermsGate key={did} did={did} profile={profile} mode={mode} onAccept={terms.accept} onSignOut={signOut} />
+      </>
+    );
+  }
   return (
     <ComposerProvider>
       <SessionNotices />

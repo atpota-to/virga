@@ -573,6 +573,18 @@ describe('signing in', () => {
     expect(browser.signIn).toHaveBeenCalledWith('https://eurosky.social', { scope: OAUTH_SCOPE, intent: 'add', prompt: 'create' });
   });
 
+  it('hands a sign-in the signal that calls it off, either way of signing in', async () => {
+    const controller = new AbortController();
+    const { ctrl, browser } = setup();
+    await ctrl.signIn('mira.example.com', { mode: 'browser', signal: controller.signal });
+    expect(browser.signIn).toHaveBeenCalledWith('mira.example.com', { scope: OAUTH_SCOPE, intent: 'add', signal: controller.signal });
+
+    controller.abort();
+    const backend = setup({ answer: () => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?x=3' }) });
+    await expect(backend.ctrl.signIn('mira.example.com', { mode: 'backend', signal: controller.signal })).rejects.toMatchObject({ code: 'CANCELLED' });
+    expect(backend.env.assign).not.toHaveBeenCalled();
+  });
+
   it('drops a prompt a sign-in has no business sending', async () => {
     const { ctrl, browser } = setup();
     await ctrl.signIn('mira.example.com', { mode: 'browser', prompt: 'none' });

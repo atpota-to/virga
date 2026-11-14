@@ -9,10 +9,10 @@
 -- the three read alike, and so this one can't be mistaken for another app's
 -- if it is ever applied beside them.
 
--- virga_terms_acceptance: one row per account, per version of the documents,
--- per way the account was known. Agreeing again (another device, a retry
--- after a dropped connection) finds the first row rather than adding one, so
--- the table grows with accounts and versions, not with requests.
+-- virga_terms_acceptance: who agreed to which version of the documents, and
+-- how the account was known. A long session's agreement is one row per
+-- account and version: agreeing again (another device, a retry after a
+-- dropped connection) finds the first row rather than adding one.
 --
 -- terms_version is the number the gate compares (TERMS_VERSION,
 -- src/legal/version.js); policy_version is the date those documents carry
@@ -26,26 +26,43 @@
 --   'claimed'  reported by a browser holding a browser session, which the
 --              server has no part in and can't check
 -- Only a 'session' row answers "has this account agreed?" (GET
--- /api/terms/status); a 'claimed' row is kept as a note of what a browser
--- said, with the address it said it from.
+-- /api/terms/status). A 'claimed' row is a note of what a browser said, with
+-- the address it said it from; it is nobody's one record, because anyone can
+-- name any account. So a claim is kept once per account, version and address:
+-- the same browser reporting twice adds nothing, and a stranger naming an
+-- account first can't put their address where the account's own would go.
 --
 -- ip and user_agent are context for the record, taken from the request as it
--- arrived. They aren't identity, and nothing reads them back.
+-- arrived. They aren't identity. The address is read back for one thing: to
+-- count how many claims it has made lately.
 CREATE TABLE IF NOT EXISTS virga_terms_acceptance (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  did            TEXT NOT NULL,                              -- the account that agreed
+  did            TEXT NOT NULL CHECK (char_length(did) <= 512), -- the account that agreed
   policy_version TEXT NOT NULL,                              -- the documents' "Last updated" date, YYYY-MM-DD
   terms_version  INTEGER NOT NULL CHECK (terms_version > 0), -- TERMS_VERSION
   document       TEXT NOT NULL DEFAULT 'tos+privacy',        -- both, always: they are agreed to together
   identity       TEXT NOT NULL CHECK (identity IN ('session', 'claimed')),
   accepted_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  ip             TEXT,
-  user_agent     TEXT
+  ip             TEXT CHECK (ip IS NULL OR char_length(ip) <= 64),
+  user_agent     TEXT CHECK (user_agent IS NULL OR char_length(user_agent) <= 512)
 );
 
--- The first agreement stands; a second insert for the same account, version
--- and identity is refused (23505), and the server answers with the first.
-CREATE UNIQUE INDEX IF NOT EXISTS idx_virga_terms_acceptance_once ON virga_terms_acceptance(did, terms_version, identity);
+-- A long session's first agreement stands; a second insert for the same
+-- account and version is refused (23505), and the server answers with the
+-- first.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_virga_terms_acceptance_session
+  ON virga_terms_acceptance(did, terms_version) WHERE identity = 'session';
+
+-- A claim, once per account, version and address (an unknown address counts
+-- as one address).
+CREATE UNIQUE INDEX IF NOT EXISTS idx_virga_terms_acceptance_claim
+  ON virga_terms_acceptance(did, terms_version, COALESCE(ip, '')) WHERE identity = 'claimed';
+
+-- The claims one address has made lately: the server counts them before it
+-- takes another, so the table can't be filled from one place
+-- (recordClaim, server/terms/acceptance.js).
+CREATE INDEX IF NOT EXISTS idx_virga_terms_acceptance_claims_by_address
+  ON virga_terms_acceptance(ip, accepted_at) WHERE identity = 'claimed';
 
 COMMENT ON TABLE virga_terms_acceptance IS 'Who agreed to which version of Virga''s Terms of Service and Privacy Policy, and when. Append-only. Service role only.';
 

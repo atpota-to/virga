@@ -57,6 +57,7 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
     } catch (error) {
       console.warn('[terms] the agreement wasn’t recorded:', error);
       setFailure(acceptFailure(error));
+    } finally {
       setBusy(false);
     }
   }

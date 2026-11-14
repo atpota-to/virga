@@ -5,9 +5,10 @@ import { inlineText, outlineOf } from './markdown.js';
 
 /**
  * A legal document, drawn from the blocks markdown.js read out of its
- * Markdown. `onOpenDocument(key)` takes a link from one document to the
- * other, for a place that shows them without changing the address (the
- * dialog on the agreement screen); without it such a link is an ordinary one.
+ * Markdown. `onOpenDocument(key, anchor)` takes a link from one document to
+ * the other (and the section it names, if any), for a place that shows them
+ * without changing the address (a dialog); without it such a link is an
+ * ordinary one.
  * `contents` lists the sections under the document's opening lines.
  * `skipTitle` leaves the first heading out, where a frame already says it.
  */
@@ -48,7 +49,7 @@ export default function LegalDocument({ document: doc, onOpenDocument = null, co
             onClick={(event) => {
               if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
               event.preventDefault();
-              onOpenDocument(target.document);
+              onOpenDocument(target.document, target.href.split('#')[1] || null);
             }}
           >
             {inline(node.children)}

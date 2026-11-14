@@ -5,6 +5,7 @@ import {
   acceptFailure,
   coversCurrent,
   needsReport,
+  opensGate,
   readAcceptance,
   startingStatus,
   statusFromAnswer,
@@ -43,8 +44,8 @@ describe('the note that an account agreed', () => {
   it('round-trips', () => {
     const storage = memoryStorage();
     expect(readAcceptance(storage, DID)).toBeNull();
-    writeAcceptance(storage, DID, { at: '2026-11-14T10:00:00.000Z', recorded: true });
-    expect(readAcceptance(storage, DID)).toEqual({ version: TERMS_VERSION, at: '2026-11-14T10:00:00.000Z', recorded: true, tries: 0 });
+    writeAcceptance(storage, DID, { at: '2026-11-14T10:00:00.000Z', recorded: true, identity: 'session' });
+    expect(readAcceptance(storage, DID)).toEqual({ version: TERMS_VERSION, at: '2026-11-14T10:00:00.000Z', recorded: true, tries: 0, identity: 'session' });
     expect(readAcceptance(storage, 'did:plc:someoneelse0000000000000')).toBeNull();
   });
 
@@ -56,8 +57,8 @@ describe('the note that an account agreed', () => {
   });
 
   it('takes the rest of a note at its most careful reading', () => {
-    const storage = memoryStorage({ [termsKey(DID)]: JSON.stringify({ version: 2, at: 42, recorded: 'yes', tries: -3 }) });
-    expect(readAcceptance(storage, DID)).toEqual({ version: 2, at: null, recorded: false, tries: 0 });
+    const storage = memoryStorage({ [termsKey(DID)]: JSON.stringify({ version: 2, at: 42, recorded: 'yes', tries: -3, identity: 'verified' }) });
+    expect(readAcceptance(storage, DID)).toEqual({ version: 2, at: null, recorded: false, tries: 0, identity: null });
   });
 
   it('fails soft without storage, or with one that throws', () => {
@@ -87,15 +88,27 @@ describe('whether a note covers the current documents', () => {
 });
 
 describe('where the agreement screen starts', () => {
-  const noted = { version: TERMS_VERSION, at: null, recorded: true, tries: 0 };
+  const session = { version: TERMS_VERSION, at: null, recorded: true, tries: 0, identity: 'session' };
+  const claimed = { ...session, identity: 'claimed' };
+  const unreported = { ...session, recorded: false, identity: null };
 
   it('is out of the way for an account this browser knows agreed', () => {
-    expect(startingStatus({ entry: noted, mode: 'backend', canAsk: true })).toBe('accepted');
-    expect(startingStatus({ entry: noted, mode: 'browser', canAsk: false })).toBe('accepted');
+    expect(startingStatus({ entry: session, mode: 'backend', canAsk: true })).toBe('accepted');
+    expect(startingStatus({ entry: claimed, mode: 'browser', canAsk: false })).toBe('accepted');
+    expect(startingStatus({ entry: unreported, mode: 'browser', canAsk: false })).toBe('accepted');
   });
 
   it('asks the server first for a long session with no note here', () => {
     expect(startingStatus({ entry: null, mode: 'backend', canAsk: true })).toBe('checking');
+  });
+
+  it('asks the server for a long session whose only note is a browser session’s', () => {
+    // Agreed on a browser session, then took a long one in the same browser:
+    // the note isn't the server's word, so the server is asked.
+    expect(startingStatus({ entry: claimed, mode: 'backend', canAsk: true })).toBe('checking');
+    expect(startingStatus({ entry: unreported, mode: 'backend', canAsk: true })).toBe('checking');
+    expect(opensGate(claimed, { mode: 'backend', canAsk: true })).toBe(false);
+    expect(opensGate(session, { mode: 'backend', canAsk: true })).toBe(true);
   });
 
   it('shows the screen when there is nobody to ask', () => {
@@ -104,8 +117,21 @@ describe('where the agreement screen starts', () => {
     expect(startingStatus({ entry: null, mode: 'backend', canAsk: false })).toBe('needs');
   });
 
+  it('never lets a long session in on a browser session’s note, even with nobody to ask', () => {
+    // The token went while the screen was up: still a long session, still
+    // not vouched for by a note the server never confirmed.
+    expect(startingStatus({ entry: claimed, mode: 'backend', canAsk: false })).toBe('needs');
+    expect(startingStatus({ entry: unreported, mode: 'backend', canAsk: false })).toBe('needs');
+    expect(startingStatus({ entry: session, mode: 'backend', canAsk: false })).toBe('accepted');
+  });
+
+  it('takes a browser session at its note’s word, whichever kind it is', () => {
+    for (const entry of [session, claimed, unreported]) expect(opensGate(entry, { mode: 'browser', canAsk: false })).toBe(true);
+    expect(opensGate(null, { mode: 'browser', canAsk: false })).toBe(false);
+  });
+
   it('asks again after the documents change', () => {
-    const old = { ...noted, version: TERMS_VERSION - 1 };
+    const old = { ...session, version: TERMS_VERSION - 1 };
     expect(startingStatus({ entry: old, mode: 'backend', canAsk: true })).toBe('checking');
     expect(startingStatus({ entry: old, mode: 'browser', canAsk: false })).toBe('needs');
   });
@@ -151,8 +177,8 @@ describe('an agreement that couldn’t be recorded', () => {
     expect(acceptFailure(coded('NETWORK_ERROR', 0)).text).toMatch(/Couldn’t reach Virga’s server/);
     expect(acceptFailure(coded('TIMEOUT', 0)).text).toMatch(/Couldn’t reach Virga’s server/);
     expect(acceptFailure(coded('RATE_LIMITED', 429)).text).toMatch(/Wait a minute/);
-    expect(acceptFailure(coded('FRONTEND_SESSION_INVALID', 401)).text).toMatch(/sign-in has ended/);
-    expect(acceptFailure(coded(null, 401)).text).toMatch(/sign-in has ended/);
+    expect(acceptFailure(coded('FRONTEND_SESSION_INVALID', 401)).text).toMatch(/didn’t recognise this account’s sign-in/);
+    expect(acceptFailure(coded(null, 401)).text).toMatch(/needs to sign in again/);
   });
 
   it('never repeats the server’s own text for anything else', () => {

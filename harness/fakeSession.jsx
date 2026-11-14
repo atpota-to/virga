@@ -17,7 +17,7 @@ import { createHarness, readFlags } from './harness.js';
 import { SERVER_ORIGIN } from './fakeServer.js';
 import { LAB, ME } from './world.js';
 import { OAUTH_CALLBACK_PATH } from '../src/config.js';
-import { coversCurrent, readAcceptance, termsKey, writeAcceptance } from '../src/legal/acceptance.js';
+import { opensGate, readAcceptance, termsKey, writeAcceptance } from '../src/legal/acceptance.js';
 import { makeReauthRequiredError } from '../src/session/accounts.js';
 import { backendSignOut, checkBackendSession, createBackendRequester } from '../src/session/backendClient.js';
 import { resolvePdsUrl } from '../src/session/pds.js';
@@ -49,7 +49,9 @@ if (flags.mode === 'backend' && !flags.signedOut) {
 for (const id of flags.accounts) {
   try {
     if (flags.terms !== 'agreed') localStorage.removeItem(termsKey(id.did));
-    else if (!coversCurrent(readAcceptance(localStorage, id.did))) writeAcceptance(localStorage, id.did, { at: new Date().toISOString(), recorded: true });
+    else if (!opensGate(readAcceptance(localStorage, id.did), { mode: flags.mode })) {
+      writeAcceptance(localStorage, id.did, { at: new Date().toISOString(), recorded: true, identity: flags.mode === 'backend' ? 'session' : 'claimed' });
+    }
   } catch {
     // Without storage the app asks, as it would anywhere.
   }
@@ -81,10 +83,12 @@ export function AtprotoSessionProvider({ children }) {
     setRows((list) => list.map((r) => (r.did === did ? { ...r, status, lastUsed: status === 'ready' ? Date.now() : r.lastUsed } : r)));
 
   // `input` is a handle, a DID, or a host's address (to make an account
-  // there, which here lands as Mira). The real one's options (mode, intent,
-  // prompt) change where the browser goes, and there is nowhere to go.
-  const signIn = useCallback(async (input) => {
+  // there, which here lands as Mira). The real one's other options (mode,
+  // intent, prompt) change where the browser goes, and there is nowhere to go.
+  const signIn = useCallback(async (input, { signal } = {}) => {
     await sleep(500);
+    // Called off while "the host" was being reached: nobody is signed in.
+    if (signal?.aborted) throw Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' });
     if (/^nobody/i.test(String(input))) throw new Error(`Failed to resolve identity: ${input}`);
     const id = String(input).replace(/^@/, '') === LAB.handle || input === LAB.did ? LAB : ME;
     if (!harness.worldOf(id.did)) throw new Error(`Failed to resolve identity: ${input}`);

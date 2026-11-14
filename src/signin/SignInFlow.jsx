@@ -106,8 +106,11 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
   const headingRef = useRef(null);
   const actionRef = useRef(null);
   const lookup = useRef(null);
-  // What sends the browser on, for the trip the leaving card is showing.
+  // What sends the browser on, for the trip the leaving card is showing, and
+  // what calls that trip off: its requests are dropped, and an address that
+  // arrives late isn't gone to.
   const run = useRef(null);
+  const tripAbort = useRef(null);
   const stallTimer = useRef(null);
   const flowRef = useRef(flow);
   flowRef.current = flow;
@@ -121,6 +124,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
   useEffect(
     () => () => {
       lookup.current?.abort();
+      tripAbort.current?.abort();
       clearTimeout(stallTimer.current);
     },
     [],
@@ -130,13 +134,16 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
 
   const depart = useCallback(async (trip) => {
     const go = run.current;
-    if (!go) return;
+    const signal = tripAbort.current?.signal;
+    if (!go || signal?.aborted) return;
     dispatch({ type: 'sent', trip });
     clearTimeout(stallTimer.current);
     stallTimer.current = setTimeout(() => dispatch({ type: 'stalled', trip }), STALL_MS);
     try {
-      await go();
+      await go(signal);
     } catch (error) {
+      // Called off: the card has already gone back, and there is nothing to say.
+      if (signal?.aborted) return;
       console.warn('[sign-in] failed to start:', error);
       clearTimeout(stallTimer.current);
       dispatch({ type: 'trip-failed', trip, notice: tripFailureNotice(error, flowRef.current.leaving) });
@@ -162,25 +169,37 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
     const onPageShow = (event) => {
       if (!event.persisted || flowRef.current.step !== STEP.LEAVING) return;
       run.current = null;
+      tripAbort.current?.abort();
       dispatch({ type: 'cancel' });
     };
     window.addEventListener('pageshow', onPageShow);
     return () => window.removeEventListener('pageshow', onPageShow);
   }, []);
 
+  // `go(signal)` starts the sign-in; the signal is this trip's, and Cancel
+  // fires it.
   function leave({ host, purpose, go }) {
+    tripAbort.current?.abort();
+    tripAbort.current = new AbortController();
     run.current = go;
     dispatch({ type: 'leave', host, purpose });
   }
 
   function cancelLeaving() {
+    const sent = flowRef.current.leaving?.phase !== 'waiting';
     run.current = null;
+    tripAbort.current?.abort();
     clearTimeout(stallTimer.current);
-    // Stops a move to another page that the browser has already begun.
-    try {
-      window.stop();
-    } catch {
-      // Nothing to stop.
+    // Once the sign-in has been sent, the browser may already be on its way
+    // to the host: this stops that. Not before then, because it stops every
+    // request the page has in flight, and inside the app (Add an account)
+    // those are the archive's and the composer's.
+    if (sent) {
+      try {
+        window.stop();
+      } catch {
+        // Nothing to stop.
+      }
     }
     dispatch({ type: 'cancel' });
   }
@@ -206,7 +225,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
         dispatch({ type: 'notice', notice: { about: 'field', text: 'That address isn’t one Virga can read. Type your handle (it looks like you.bsky.social).' } });
         return;
       }
-      leave({ host, purpose: 'signin', go: () => signIn(value, { mode: authMode, intent: 'add' }) });
+      leave({ host, purpose: 'signin', go: (signal) => signIn(value, { mode: authMode, intent: 'add', signal }) });
       return;
     }
 
@@ -235,17 +254,17 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
 
   function continueAs(who) {
     const id = who.handle || who.did;
-    leave({ host: who.host || null, purpose: 'signin', go: () => signIn(id, { mode: authMode, intent: 'add' }) });
+    leave({ host: who.host || null, purpose: 'signin', go: (signal) => signIn(id, { mode: authMode, intent: 'add', signal }) });
   }
 
   function chooseHost(host) {
-    leave({ host: host.domain, purpose: 'signup', go: () => signUpAt(signIn, host.url, { mode: authMode }) });
+    leave({ host: host.domain, purpose: 'signup', go: (signal) => signUpAt(signIn, host.url, { mode: authMode, signal }) });
   }
 
   async function openRemembered(account) {
     if (opening || flowRef.current.step !== STEP.ENTRY) return;
     dispatch({ type: 'notice', notice: null });
-    const again = () => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth' });
+    const again = (signal) => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth', signal });
     const stepOut = () => {
       setOpening(null);
       const next = flowRef.current.trips + 1;
@@ -306,7 +325,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
             <button
               type="button"
               className="signin-link"
-              onClick={() => leave({ host: null, purpose: 'signin', go: () => signIn(notice.anyway, { mode: authMode, intent: 'add' }) })}
+              onClick={() => leave({ host: null, purpose: 'signin', go: (signal) => signIn(notice.anyway, { mode: authMode, intent: 'add', signal }) })}
             >
               Continue anyway
             </button>
