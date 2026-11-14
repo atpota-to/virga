@@ -1,5 +1,5 @@
 // The terms ledger on a real Postgres (PGlite) with the migrations applied:
-// the table of 20261114000100_terms_acceptance.sql, the store, and both
+// the table of 20261114000100_virga_terms_acceptance.sql, the store, and both
 // handlers end to end. The session is mocked; everything below it is real.
 
 import {
@@ -38,7 +38,7 @@ const { default: status } = await import('./handlers/status.js');
 const { default: accept, resetAcceptLimiterForTests } =
   await import('./handlers/accept.js');
 
-const MIGRATION = '20261114000100_terms_acceptance.sql';
+const MIGRATION = '20261114000100_virga_terms_acceptance.sql';
 const DID = 'did:plc:abcdefghijklmnopqrstuvwx';
 const OTHER = 'did:plc:zyxwvutsrqponmlkjihgfedc';
 const TOKEN = `Bearer vg_${'a'.repeat(64)}`;
@@ -58,7 +58,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await t.exec('TRUNCATE terms_acceptance');
+  await t.exec('TRUNCATE virga_terms_acceptance');
   setSupabaseClientForTests(t.supabase);
   resetAcceptLimiterForTests();
   for (const [name, value] of Object.entries(OAUTH_ENV))
@@ -84,7 +84,7 @@ afterEach(() => {
 const rows = async () =>
   (
     await t.query(
-      'SELECT * FROM terms_acceptance ORDER BY accepted_at, identity',
+      'SELECT * FROM virga_terms_acceptance ORDER BY accepted_at, identity',
     )
   ).rows;
 
@@ -128,7 +128,7 @@ describe('the terms acceptance migration', () => {
               has_table_privilege('service_role', c.oid, 'SELECT') AS service_select,
               has_table_privilege('service_role', c.oid, 'INSERT') AS service_insert,
               has_table_privilege('service_role', c.oid, 'UPDATE,DELETE,TRUNCATE') AS service_change
-         FROM pg_class c WHERE c.relname = 'terms_acceptance'`,
+         FROM pg_class c WHERE c.relname = 'virga_terms_acceptance'`,
     );
     expect(tables).toEqual([
       {
@@ -157,29 +157,29 @@ describe('the terms acceptance migration', () => {
     };
     await expect(
       asService(
-        `UPDATE terms_acceptance SET accepted_at = NOW() - INTERVAL '1 year'`,
+        `UPDATE virga_terms_acceptance SET accepted_at = NOW() - INTERVAL '1 year'`,
       ),
     ).rejects.toThrow(/permission denied/);
-    await expect(asService('DELETE FROM terms_acceptance')).rejects.toThrow(
-      /permission denied/,
-    );
-    await expect(asService('TRUNCATE terms_acceptance')).rejects.toThrow(
+    await expect(
+      asService('DELETE FROM virga_terms_acceptance'),
+    ).rejects.toThrow(/permission denied/);
+    await expect(asService('TRUNCATE virga_terms_acceptance')).rejects.toThrow(
       /permission denied/,
     );
     const added = await asService(
-      `INSERT INTO terms_acceptance (did, terms_version, effective_date, identity)
+      `INSERT INTO virga_terms_acceptance (did, terms_version, policy_version, identity)
        VALUES ('${OTHER}', 1, '2026-11-14', 'session') RETURNING did`,
     );
     expect(added.rows).toEqual([{ did: OTHER }]);
     expect(
-      (await asService('SELECT did FROM terms_acceptance')).rows,
+      (await asService('SELECT did FROM virga_terms_acceptance')).rows,
     ).toHaveLength(2);
   });
 
   it('holds a row to a known identity and a version above zero', async () => {
     const insert = (version, identity) =>
       t.query(
-        `INSERT INTO terms_acceptance (did, terms_version, effective_date, identity)
+        `INSERT INTO virga_terms_acceptance (did, terms_version, policy_version, identity)
          VALUES ($1, $2, '2026-11-14', $3)`,
         [DID, version, identity],
       );
@@ -216,9 +216,8 @@ describe('the ledger', () => {
       ip: '203.0.113.7',
       user_agent: 'Vitest/1.0',
     });
-    expect(new Date(row.effective_date).toISOString().slice(0, 10)).toBe(
-      TERMS_EFFECTIVE_DATE,
-    );
+    expect(row.policy_version).toBe(TERMS_EFFECTIVE_DATE);
+    expect(row.document).toBe('tos+privacy');
   });
 
   it('answers a second agreement with the first, and writes nothing', async () => {

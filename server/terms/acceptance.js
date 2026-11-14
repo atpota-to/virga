@@ -1,6 +1,6 @@
 // The ledger of who agreed to Virga's Terms of Service and Privacy Policy:
-// the terms_acceptance table
-// (supabase/migrations/20261114000100_terms_acceptance.sql). A row is added
+// the virga_terms_acceptance table
+// (supabase/migrations/20261114000100_virga_terms_acceptance.sql). A row is added
 // once and never changed; the server's key can't change one.
 //
 // Which documents "current" means comes from src/legal/version.js, the same
@@ -13,7 +13,7 @@ import {
 } from '../../src/legal/version.js';
 import { getSupabaseClient } from '../supabase.js';
 
-const TABLE = 'terms_acceptance';
+const TABLE = 'virga_terms_acceptance';
 
 /** How the account in a row was known (the table's `identity` column). */
 export const IDENTITY = Object.freeze({
@@ -139,8 +139,8 @@ export async function recordAcceptance({ did, identity, ip, userAgent }) {
     .from(TABLE)
     .insert({
       did,
+      policy_version: TERMS_EFFECTIVE_DATE,
       terms_version: TERMS_VERSION,
-      effective_date: TERMS_EFFECTIVE_DATE,
       identity,
       // 'unknown' is what callerAddress answers when there was nothing to read.
       ip: address === 'unknown' ? null : address,

@@ -12,7 +12,8 @@
 export const TERMS_VERSION = 1;
 
 // The "Last updated" date both documents carry, as YYYY-MM-DD. The ledger
-// stores it beside the version, so a row says which text it means on its own.
+// stores it beside the version (as policy_version, the name its sibling
+// tables use), so a row says which text it means on its own.
 export const TERMS_EFFECTIVE_DATE = '2026-11-14';
 
 // Where the documents are read on the site. The sign-in metadata that an

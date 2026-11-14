@@ -381,8 +381,8 @@ export function createServer({
     .filter(() => terms === 'agreed')
     .map((w) => ({
       did: w.me.did,
+      policy_version: TERMS_EFFECTIVE_DATE,
       terms_version: TERMS_VERSION,
-      effective_date: TERMS_EFFECTIVE_DATE,
       identity: 'session',
       accepted_at: iso(now() - 30 * DAY),
       ip: null,
@@ -1353,8 +1353,8 @@ export function createServer({
     if (created) {
       row = {
         did,
+        policy_version: TERMS_EFFECTIVE_DATE,
         terms_version: TERMS_VERSION,
-        effective_date: TERMS_EFFECTIVE_DATE,
         identity,
         accepted_at: iso(now()),
         ip: '203.0.113.7',

@@ -59,7 +59,7 @@ async function functionPrivileges(db) {
 
 // A record that is only ever added to: the service role reads and inserts,
 // and holds no way to rewrite or remove a row.
-const APPEND_ONLY = ['terms_acceptance'];
+const APPEND_ONLY = ['virga_terms_acceptance'];
 
 const projects = [
   ['with Supabase’s automatic grants', () => t],

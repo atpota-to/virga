@@ -226,7 +226,7 @@ which means a first sign-in, another browser, or a change to the documents.
   documents carry. The browser's gate and the server's ledger both read it from there.
   Raise the version when a change should be agreed to again. A test keeps a fingerprint
   of both documents beside the version, so an edit to either fails until someone decides.
-- **The record.** `POST /api/terms/accept` adds a row to `terms_acceptance`: the DID, the
+- **The record.** `POST /api/terms/accept` adds a row to `virga_terms_acceptance`: the DID, the
   version and date, the time, and the address and User-Agent the request came from. The
   server's key can add and read rows but not change or delete them. One row per account
   per version: agreeing again finds the first.
@@ -372,13 +372,17 @@ runs two crons every minute: `/api/schedule/run` (scheduled posts) and
 Without the server settings below, the app still works with browser sign-ins; the
 server's routes answer 503 and the posting pages that need it say so.
 
-1. **Supabase.** Make a project and apply `supabase/migrations/` in order (`supabase link`
-   then `supabase db push`, or paste each file into the SQL editor). They create the
-   sign-in, scheduled-post, timer, AI-usage and terms-agreement tables (row-level security
-   on, nothing for the `anon` or `authenticated` roles; only the server's service-role key
-   reads them) and a private Storage bucket, `scheduled-media`. Apply a new migration
-   before deploying the code that needs it: without `terms_acceptance`, an account on a
-   long session can't get past the agreement screen.
+1. **Supabase.** Make a project of Virga's own and apply `supabase/migrations/` in order
+   (`supabase link` then `supabase db push`, or paste each file into the SQL editor). They
+   create the sign-in, scheduled-post, timer, AI-usage and terms-agreement tables
+   (row-level security on, nothing for the `anon` or `authenticated` roles; only the
+   server's service-role key reads them) and a private Storage bucket, `scheduled-media`.
+   Its own project, not one another app's server already uses: the sign-in, scheduled-post
+   and timer tables have the names Anisota's backend gives its own (`oauth_sessions`,
+   `frontend_sessions`, `scheduled_posts`, `self_destruct_posts`), and `CREATE TABLE IF NOT
+   EXISTS` would quietly leave the two sharing rows. Apply a new migration before deploying
+   the code that needs it: without `virga_terms_acceptance`, an account on a long session
+   can't get past the agreement screen.
 2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
    `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
 3. **Vercel settings** (Production only; see `.env.example` for every option and its
