@@ -10,7 +10,9 @@ Bluesky's public API and Constellation, and keeps what it gathers in that browse
 IndexedDB; the archive is never sent anywhere. What has to happen while the browser is
 closed (long sessions, scheduled posts, post timers) and the optional post adviser go
 through Virga's server: Vercel functions in this repo (`api/`, `server/`) with a schema of
-their own, `virga`, in a Supabase database (`supabase/migrations/`).
+their own, `virga`, in a Supabase database (`supabase/migrations/`). The server also keeps
+the record that an account agreed to the [Terms of Service](TERMS_OF_SERVICE.md) and
+[Privacy Policy](PRIVACY_POLICY.md), which every account is asked to do on the way in.
 
 ## Status
 
@@ -41,13 +43,27 @@ contrast were looked at on the dashboard and Settings, not on every page; the sk
 with software rendering; the scheduling pages not in the dark theme; and only Chromium
 was used.
 
+And, as of 2026-11-14: the sign-in a step at a time (suggestions, "Is this you?", the
+card before the browser leaves, the hosts for a new account, Add an account), the
+agreement screen on a long session and on a browser session, with the server recording
+it and with the server down, and the Terms and Privacy pages, in the harness at phone
+and desktop widths in both themes. The agreement ledger's SQL and both of its routes by
+their own tests on PGlite. That the five hosts offered for a new account answer, and say
+they take a request for their make-an-account page (their
+`/.well-known/oauth-authorization-server`, read that day).
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
-Vercel, and the adviser against the real AI gateway. For the newer pieces that also
-means: a scheduled reply's check that the post it answers is still there, a repeating
-post under two workers at once (the tests run them one after the other), the archive
-upgrade against a real repo, and Safari, Firefox and a Mac's ⌘K. That needs a deployment
-(below) and someone to sign in.
+Vercel, the adviser against the real AI gateway, an account actually made at one of the
+hosts, and an agreement written to a real Supabase project. For the newer pieces that
+also means: a scheduled reply's check that the post it answers is still there, a
+repeating post under two workers at once (the tests run them one after the other), the
+archive upgrade against a real repo, and Safari, Firefox and a Mac's ⌘K. That needs a
+deployment (below) and someone to sign in.
+
+The Terms of Service and the Privacy Policy are drafts too, written to match what the
+code does and what Anisota's say about the same operator. They have not been read by a
+lawyer, and should be before anyone is asked to agree to them.
 
 The copy on every screen is a draft.
 
@@ -219,6 +235,29 @@ hour old.
 
 ## Signing in
 
+The front page and Add an account share one sign-in, a step at a time
+(`src/signin/`, after Anisota's):
+
+1. **Type a handle.** Accounts that match are suggested as it is typed, from Bluesky's
+   public search (from the second character; not for a DID or an address). A pasted
+   bsky.app profile link is reduced to its handle.
+2. **"Is this you?"** The account is looked up before the browser goes anywhere: its
+   name and picture from the public profile, its PDS from its DID document, and the page
+   it signs in on from that PDS's own `/.well-known/oauth-protected-resource` (Bluesky's
+   PDSes sign in at bsky.social). A handle nobody has stops here, in words. If the
+   lookup itself fails, the reader can go on anyway.
+3. **"Taking you to bsky.social…"** The card that names the host stays for three and a
+   half seconds (`LEAVE_DELAY_MS`, the time Anisota gives it) with Cancel, then the
+   browser leaves. If it is still here four seconds later, the card offers to try again.
+4. **Make an account** lists five hosts (`src/signin/hosts.js`). Choosing one starts a
+   sign-in with the host's address in place of a handle and `prompt=create`, which opens
+   the host's page on making an account; a host that turns the prompt down is asked again
+   without it.
+
+A host's address typed into the field (`https://pds.example.com`) signs in there without
+naming an account. The accounts this browser remembers are listed above the field, as
+before.
+
 Sign-in is atproto OAuth, held one of two ways (`VITE_AUTH_MODE`):
 
 - **In the browser** (`browser`, the default): `@atproto/oauth-client-browser`, as
@@ -236,6 +275,43 @@ Each account keeps the way it signed in, so the two live side by side. To cut ov
 deploy the server (below) and set `VITE_AUTH_MODE=backend`: new sign-ins get long
 sessions, and existing browser sessions carry on until they end, with Reconnect for a
 longer session in the account menu and Settings › Account.
+
+### Agreeing to the terms
+
+An account that signs in is shown the agreement screen before the app: its name, the
+two documents (each opens in place), a box to tick and one button. Nothing of the app is
+mounted, and nothing of the archive is read, until it agrees (the screen itself reads the
+account's public profile, for its name); the other way on is Sign out. The screen comes
+back for an account that hasn't agreed to the current version, which means a first
+sign-in, another browser on a browser session, or a change to the documents.
+
+- **Which documents.** `src/legal/version.js` holds `TERMS_VERSION` and the date both
+  documents carry. The browser's gate and the server's ledger both read it from there.
+  Raise the version when a change should be agreed to again. A test keeps a fingerprint
+  of both documents beside the version, so an edit to either fails until someone decides.
+- **The record.** `POST /api/terms/accept` adds a row to `terms_acceptance` in the `virga` schema: the DID, the
+  version and date, the time, and the address and User-Agent the request came from. The
+  server's key can add and read rows but not change or delete them.
+- **A long session** is recorded from the session, so the DID is one the account's host
+  vouched for, and the screen stays up until the server has the row. One row per account
+  per version: agreeing again finds the first. A new browser asks `GET /api/terms/status`
+  first, so an account that agreed elsewhere isn't asked twice.
+- **A browser session** has no session with Virga's server, so the agreement is kept in
+  the browser and reported with the DID in the body, by a route that takes no token. The
+  row is marked `claimed` and is a note, not the account's record: anyone could name any
+  account. So it never counts as a long session's agreement (an account that later takes
+  a long session is asked once more), it is kept once per account, version and address,
+  the answer says nothing about what was already there, and one address can file 50 new
+  ones a day (`TERMS_CLAIMS_PER_ADDRESS_PER_DAY`), counted in the database. The report is
+  tried again on up to five later visits; after that the note in the browser is the only
+  record. `TERMS_ACCEPT_CLAIMED=false` turns claims
+  off.
+
+The documents are `TERMS_OF_SERVICE.md` and `PRIVACY_POLICY.md` at the repo's root. The
+pages at `/terms` and `/privacy` are drawn from those same files (`src/legal/markdown.js`
+reads the Markdown they use, and a test holds them to it), and both sign-in clients name
+the pages as their `tos_uri` and `policy_uri`, so an account's host can link them from
+its consent screen.
 
 ### Several accounts
 
@@ -292,10 +368,11 @@ In localStorage: the accounts (`virga:accounts`, `virga:account`), each long ses
 token (`virga:backend-token:<did>`), each account's dashboards (`virga:dashboards:<did>`),
 posting settings (`virga:posting:<did>`), an unsent post (`virga:composer-autosave:<did>`,
 for a day), a copy of its templates and how often each is used, this month's adviser
-allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), and the
-preferences for whoever is at the browser (`virga:preferences`: theme, accent, contrast,
-density, the live sky and its time of day, the period or range of dates, the sidebar, and
-how numbers, dates and the week are written). A long
+allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), a note
+that the account agreed to the terms (`virga:terms-accepted:<did>`), and the preferences
+for whoever is at the browser (`virga:preferences`: theme, accent, contrast, density, the
+live sky and its time of day, the period or range of dates, the sidebar, and how numbers,
+dates and the week are written). A long
 session's token sits where any script running on the page could read it, like the
 browser client's own session; Remove from this browser deletes it. sessionStorage holds a
 sign-in in progress (`virga:signin-pending`), a guard against sign-in loops
@@ -308,15 +385,20 @@ it.
 
 Requests go from the browser to: the account's PDS; `public.api.bsky.app`, `plc.directory`
 and `constellation.microcosm.blue`, as before; `cardyb.bsky.app` for link cards;
-`video.bsky.app` for video; and, for long sessions, scheduling, timers and the adviser,
-Virga's server (this site's `/api/*`). Post again reads a post's pictures back from the
+`video.bsky.app` for video; `cdn.bsky.app` for pictures; and, for long sessions,
+scheduling, timers, the adviser and the agreement to the terms, Virga's server (this
+site's `/api/*`). Signing in sends the handle being typed to `public.api.bsky.app`; a
+browser session's library also resolves it at `bsky.social`, and Virga's server looks it
+up at `dns.google` for a long one. Post again reads a post's pictures back from the
 account's PDS (`com.atproto.sync.getBlob`). A scheduled post's text and pictures wait in
-Virga's schema in Supabase until it goes out (the pictures in a private Storage bucket,
-removed after publishing; a repeating post's are kept until its last occurrence goes out,
-or it is removed). A scheduled reply also keeps the handle, name and first 300 characters
-of the post it answers, and before it goes out Virga's server resolves that post's
-account (at `plc.directory`, or its did:web host) and asks its PDS, without signing in,
-whether the post is still there. The adviser sends the post, your goals and notes, your style
+Virga's schema in Supabase until it goes out. The pictures (in a private Storage bucket)
+are removed after publishing, or for a repeating post once its last occurrence has gone
+out or it is removed; the row, with the text, stays, and so does a timer's row once it
+has ended. Nothing deletes those yet. A scheduled reply's row also keeps the handle, name
+and first 300 characters of the post it answers, and before it goes out Virga's server
+resolves that post's account (at `plc.directory`, or its did:web host) and asks its PDS,
+without signing in, whether the post is still there. The Privacy Policy lists everything
+kept and sent, and has to be kept true to the code. The adviser sends the post, your goals and notes, your style
 reading and, if you ask it to read replies in their conversation, other people's public
 posts, to Virga's server, which passes them to an AI model through an AI gateway; alt
 text sends the image. The allowance (by default 30 adviser reads, 3 style readings and
@@ -366,13 +448,14 @@ Virga server schedules, publishes and runs timers in memory, so the whole app ca
 looked at and clicked through offline. Flags in the address show other states: one
 account (`?accounts=1`), browser sessions (`?mode=browser`), an ended session
 (`?expired=lab`), a session from before posting (`?scope=read`), limits
-(`?limits=3,1,1`, `?ailimits=…`), the adviser slow or down. See `harness/README.md`.
+(`?limits=3,1,1`, `?ailimits=…`), the adviser slow or down, the agreement screen
+(`?terms=ask`, `?terms=down`). See `harness/README.md`.
 
 ## Deploying
 
-Built for Vercel with a Supabase project. The front end is static; the server is six
+Built for Vercel with a Supabase project. The front end is static; the server is seven
 functions: `api/client-metadata.js` (the browser client's metadata, per host, as before)
-and one function per area, `api/{oauth,schedule,self-destruct,ai,limits}/[action].js`,
+and one function per area, `api/{oauth,schedule,self-destruct,ai,limits,terms}/[action].js`,
 each dispatching to the handlers in `server/`. `vercel.json` sets their time limits,
 rewrites the two OAuth `.json` addresses, sends every other path to `index.html`, and
 runs two crons every minute: `/api/schedule/run` (scheduled posts) and
@@ -388,20 +471,24 @@ server's routes answer 503 and the posting pages that need it say so.
      `supabase db push`. On a shared one, paste each file into the SQL editor or apply it
      with Supabase's MCP server instead, because `db push` expects the project's whole
      migration history to be in this folder. They create the schema, the sign-in,
-     scheduled-post, timer and AI-usage tables (row-level security on, nothing for the
-     `anon` or `authenticated` roles; only the server's service-role key reads them) and a
-     private Storage bucket, `virga-scheduled-media`. The newest,
-     `20261114000100_scheduled_repeats.sql`, adds the series columns and functions for
-     repeating posts; without it scheduling answers as not set up.
+     scheduled-post, timer, AI-usage and terms-agreement tables (row-level security on,
+     nothing for the `anon` or `authenticated` roles; only the server's service-role key
+     reads them) and a private Storage bucket, `virga-scheduled-media`. The two newest:
+     `20261114000100_scheduled_repeats.sql` adds the series columns and functions for
+     repeating posts (without it scheduling answers as not set up), and
+     `20261114000200_terms_acceptance.sql` adds the agreement ledger.
    - Add `virga` to **Exposed schemas** in the project's API settings. Until it is there
      the Data API refuses every call the server makes (PostgREST's `PGRST106`), and the
      posting pages read that as the database not being set up.
    - Don't run the grants from Supabase's guide to exposing a schema. They hand the schema
      to the public API key; the migrations already give the service role what it needs,
      and take the rest back if they are applied again.
+   - Apply a new migration before deploying the code that needs it. Without
+     `virga.terms_acceptance`, or while the schema isn't exposed, an account on a long
+     session can't get past the agreement screen.
 
    On a shared project the service-role key is the whole project's, so Virga's server
-   holds a key that reaches the other apps' tables too.
+   holds a key that reaches the other apps' tables too, and theirs reach Virga's.
 2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
    `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
 3. **Vercel settings** (Production only; see `.env.example` for every option and its
@@ -411,11 +498,15 @@ server's routes answer 503 and the posting pages that need it say so.
      client_id hangs off it, so it must not change once anyone has signed in, and one
      `virga` schema serves one public URL.
    - `OAUTH_PRIVATE_KEY_1`, and `SESSION_ENCRYPTION_KEY` (`openssl rand -hex 32`), which
-     encrypts the stored sessions
+     encrypts the stored sessions. In production long sessions stay off until it is set:
+     the Privacy Policy says sessions are encrypted, so they aren't stored any other way
    - `CRON_SECRET` (a long random string): Vercel sends it to the crons, and the run
      endpoints refuse anything without it in production
    - `AI_GATEWAY_API_KEY`, for the adviser and alt text (optional; without it they answer
      503)
+   - `TERMS_ACCEPT_RATE_LIMIT` and `TERMS_ACCEPT_CLAIMED`, for the agreement ledger
+     (optional; see `.env.example`). `OAUTH_TOS_URL` and `OAUTH_POLICY_URL` only if the
+     consent screen should link somewhere other than this site's `/terms` and `/privacy`
    - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
 4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
    can fetch the client metadata and keys for the life of every sign-in. After deploying,
@@ -457,6 +548,8 @@ per-account daily ceiling.
 On another host than Vercel, serve the browser client's metadata yourself (the object
 `buildClientMetadata(origin)` returns in `src/lib/oauthClient.js`), run the `api/`
 handlers as Node functions with the same paths, and call the two run paths every minute.
+Have the proxy in front write `x-real-ip` itself: the per-address limits on sign-ins and
+on agreements read it, and Vercel's edge is what makes it trustworthy there.
 
 ## How the code is laid out
 
@@ -464,6 +557,8 @@ handlers as Node functions with the same paths, and call the two run paths every
 | --- | --- |
 | `src/shell/` | The signed-in frame: sidebar, app bar and tabs, page header, sync status, routing, shortcuts, the command palette (`commands.js` builds its list from the registries) |
 | `src/session/` | Signing in both ways, the accounts, switching, the backend fetch handler, session checks |
+| `src/signin/` | The sign-in a step at a time: the handle field and its suggestions, the account and host lookup, the steps and their words, the hosts for a new account |
+| `src/legal/` | The Terms and Privacy pages (drawn from the Markdown at the root), the version both sides agree on, the agreement screen and what it keeps |
 | `src/accounts/` | The account menu, Settings › Account, the sign-in notices |
 | `src/posting/lib/` | Rich text and facets, the composer model, thread splitting, images, video, link cards, gates, `publish()` |
 | `src/posting/{drafts,templates,library,schedule,timers,adviser}/` | Each posting feature's logic, without UI |
@@ -471,6 +566,7 @@ handlers as Node functions with the same paths, and call the two run paths every
 | `api/` | The server's Vercel functions: one per area, each a thin router |
 | `server/oauth/` | The long-session sign-in: client metadata, keys, tokens, the XRPC proxy, uploads |
 | `server/schedule/`, `server/timers/`, `server/ai/`, `server/limits/` | Scheduled posts and their worker, post timers and their worker, the adviser and alt text, limits |
+| `server/terms/` | The ledger of who agreed to the Terms and Privacy Policy, and its two routes |
 | `server/` | Shared server pieces (Supabase, HTTP helpers, cron auth, safe fetching) and test helpers (`server/test/`) |
 | `supabase/migrations/` | The server's database: the `virga` schema and its Storage bucket |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
@@ -508,3 +604,9 @@ handlers as Node functions with the same paths, and call the two run paths every
   switcher, composer, drafts, templates, library, scheduling, self-destructing posts and
   post adviser), rebuilt for Virga's look and many accounts; the pure modules and their
   tests are ported close to verbatim.
+- `src/signin/`, `src/legal/` and `server/terms/`: Anisota's sign-in card (the porch) and
+  its terms gate, and cocoon's acceptance ledger. The steps, the timings and the host
+  list are Anisota's; the code is written for Virga, and differs where the review of
+  Anisota's found gaps: the server names the version rather than taking it from the
+  caller, one row per account per version, a limit per minute, and a record the server's
+  key can't alter.

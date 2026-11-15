@@ -34,6 +34,7 @@ import {
   writeActiveDid,
   writeBackendToken,
 } from './accounts.js';
+import { termsKey } from '../legal/acceptance.js';
 
 function memoryStorage(initial = {}) {
   const map = new Map(Object.entries(initial));
@@ -281,6 +282,7 @@ describe('what an account keeps in this browser', () => {
     for (const k of ['posting', 'composer-autosave', 'templates', 'template-usage', 'adviser-usage']) {
       expect(keys).toContain(`virga:${k}:${MIRA}`);
     }
+    expect(keys).toContain(termsKey(MIRA));
     expect(keys).not.toContain(keepKey(LAB, 'cleanup'));
     expect(keys).not.toContain('virga:preferences');
     expect(keys).not.toContain('virga:posting-device');

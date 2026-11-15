@@ -147,19 +147,50 @@ describe('client metadata', () => {
     expect(SCOPE).toBe(OAUTH_SCOPE);
   });
 
-  it('links terms and privacy only when they are set, and only over https', () => {
+  it('links the site’s own terms and privacy pages, or the https ones the environment names', () => {
     const plain = clientMetadata();
-    expect(plain).not.toHaveProperty('tos_uri');
-    expect(plain).not.toHaveProperty('policy_uri');
+    expect(plain.tos_uri).toBe('https://virga.example.com/terms');
+    expect(plain.policy_uri).toBe('https://virga.example.com/privacy');
 
     const linked = clientMetadata({
       ...process.env,
-      OAUTH_TOS_URL: 'https://virga.example.com/terms',
-      OAUTH_POLICY_URL: 'http://virga.example.com/privacy',
+      OAUTH_TOS_URL: 'https://legal.example.org/virga/terms',
+      OAUTH_POLICY_URL: 'http://legal.example.org/virga/privacy',
     });
-    expect(linked.tos_uri).toBe('https://virga.example.com/terms');
-    // A plain-http policy would stop the client from starting; it is left out.
-    expect(linked).not.toHaveProperty('policy_uri');
+    expect(linked.tos_uri).toBe('https://legal.example.org/virga/terms');
+    // A plain-http policy would stop the client from starting; the site's
+    // own page stands in for it.
+    expect(linked.policy_uri).toBe('https://virga.example.com/privacy');
+
+    // https alone isn't enough: these would each stop the client too.
+    for (const unusable of [
+      'https://localhost/terms',
+      'https://intranet/terms',
+      'https://docs.local/terms',
+      'https://127.0.0.1/terms',
+      'https://[::1]/terms',
+      'not a url',
+    ]) {
+      const fallen = clientMetadata({
+        ...process.env,
+        OAUTH_TOS_URL: unusable,
+        OAUTH_POLICY_URL: unusable,
+      });
+      expect(fallen.tos_uri, unusable).toBe('https://virga.example.com/terms');
+      expect(fallen.policy_uri, unusable).toBe(
+        'https://virga.example.com/privacy',
+      );
+      expect(
+        () =>
+          new NodeOAuthClient({
+            clientMetadata: fallen,
+            keyset: [env.key],
+            stateStore: store,
+            sessionStore: store,
+          }),
+        unusable,
+      ).not.toThrow();
+    }
     expect(
       () =>
         new NodeOAuthClient({
@@ -185,6 +216,37 @@ describe('availability and keys', () => {
     ).toMatch(/OAUTH_PRIVATE_KEY_1/);
     expect(unavailableReason({})).toMatch(/OAUTH_PRIVATE_KEY_1/);
     expect(unavailableReason(process.env)).toBeNull();
+  });
+
+  it('is unavailable in production without a key to encrypt sessions with', () => {
+    const ready = { ...process.env, SESSION_ENCRYPTION_KEY: '' };
+    // Development and tests run without one.
+    expect(unavailableReason({ ...ready, VERCEL_ENV: 'preview' })).toBeNull();
+    expect(unavailableReason(ready)).toBeNull();
+    // Production doesn't, however it is told it is production.
+    for (const production of [
+      { VERCEL_ENV: 'production' },
+      { NODE_ENV: 'production' },
+    ]) {
+      expect(unavailableReason({ ...ready, ...production })).toMatch(
+        /SESSION_ENCRYPTION_KEY/,
+      );
+      // A key that isn't 32 bytes encrypts nothing.
+      expect(
+        unavailableReason({
+          ...ready,
+          ...production,
+          SESSION_ENCRYPTION_KEY: 'too-short',
+        }),
+      ).toMatch(/SESSION_ENCRYPTION_KEY/);
+      expect(
+        unavailableReason({
+          ...ready,
+          ...production,
+          SESSION_ENCRYPTION_KEY: 'ab'.repeat(32),
+        }),
+      ).toBeNull();
+    }
   });
 
   it('is unavailable without an https OAUTH_PUBLIC_URL', () => {

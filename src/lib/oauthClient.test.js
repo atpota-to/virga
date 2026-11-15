@@ -191,6 +191,7 @@ describe('signInErrorMessage', () => {
     expect(signInErrorMessage(new Error('Invalid redirect_uri. Must be an allowed frontend URL.'))).toMatch(/doesn’t take sign-ins from this address/);
     // The code alone is enough, whatever the server's sentence says.
     expect(signInErrorMessage(coded('REDIRECT_NOT_ALLOWED'))).toMatch(/doesn’t take sign-ins from this address/);
+    expect(signInErrorMessage(coded('RATE_LIMITED', 429))).toMatch(/Too many sign-ins.*Wait a minute/);
   });
 
   it('never shows the library’s own text for anything else', () => {

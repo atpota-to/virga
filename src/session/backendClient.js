@@ -104,13 +104,29 @@ export function clearSigninPending(storage) {
   }
 }
 
-/** The login request: the address the server is asked for, and where it should send the person back. */
-export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce }) {
+// What a sign-in may ask the account's host to show first. 'create' opens
+// its page for making an account; the server takes the same four and no
+// others (server/oauth/handlers/login.js).
+export const SIGNIN_PROMPTS = Object.freeze(['login', 'consent', 'select_account', 'create']);
+
+/** `prompt` if it is one a sign-in may send, else null. */
+export function signInPrompt(prompt) {
+  return SIGNIN_PROMPTS.includes(prompt) ? prompt : null;
+}
+
+/**
+ * The login request: the address the server is asked for, and where it
+ * should send the person back. `handle` is a handle, a DID, or the address of
+ * a host (to sign in there without naming an account, or with `prompt:
+ * 'create'` to make one).
+ */
+export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt = null }) {
   const returnUrl = new URL(returnPath, origin);
   returnUrl.search = new URLSearchParams({ n: nonce }).toString();
   const url = backendAddress(backendUrl, BACKEND_PATHS.login);
   url.searchParams.set('handle', handle);
   url.searchParams.set('redirect_uri', returnUrl.href);
+  if (signInPrompt(prompt)) url.searchParams.set('prompt', prompt);
   return { url: url.href, returnUrl: returnUrl.href };
 }
 
@@ -126,6 +142,9 @@ export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonc
  * someone else's token can't sign this browser in as them.
  *
  * Errors carry `code` (the server's, such as HANDLE_NOT_FOUND) and `status`.
+ * With `signal`, a sign-in that is called off before the browser has left
+ * goes nowhere: the request is dropped, nothing is stored, and the promise
+ * rejects with an AbortError coded CANCELLED.
  */
 export async function startBackendSignIn({
   backendUrl,
@@ -135,21 +154,28 @@ export async function startBackendSignIn({
   mode = 'backend',
   intent = 'add',
   did = null,
+  prompt = null,
+  signal = null,
   fetch = globalThis.fetch,
   sessionStorage,
   assign,
 }) {
   const nonce = randomNonce();
-  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce });
+  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt });
+  const calledOff = () => Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' });
   let res;
   let body = null;
   try {
-    res = await fetch(url, { headers: { Accept: 'application/json' }, signal: withDeadline(null, SESSION_TIMEOUT_MS) });
+    res = await fetch(url, { headers: { Accept: 'application/json' }, signal: withDeadline(signal, SESSION_TIMEOUT_MS) });
     body = await res.json().catch(() => null);
   } catch (cause) {
+    if (signal?.aborted) throw calledOff();
     // A network failure: worded by signInErrorMessage as "couldn't reach".
     throw Object.assign(new TypeError('Failed to fetch'), { cause, code: 'NETWORK_ERROR' });
   }
+  // Called off while the server was answering: the address it sent is not
+  // gone to.
+  if (signal?.aborted) throw calledOff();
   if (!res.ok || !body?.success || typeof body.authUrl !== 'string') {
     const message = typeof body?.error === 'string' ? body.error : `Sign-in couldn’t start (HTTP ${res.status})`;
     throw Object.assign(new Error(message), { code: body?.code || null, status: res.status });

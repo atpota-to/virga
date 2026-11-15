@@ -39,6 +39,7 @@ import {
   anchoredRepeat,
   nextOccurrence,
 } from '../src/posting/schedule/repeat.js';
+import { TERMS_EFFECTIVE_DATE, TERMS_VERSION } from '../src/legal/version.js';
 
 const DAY = 86_400_000;
 const MINUTE = 60_000;
@@ -358,6 +359,7 @@ export function createServer({
   seed = true,
   aiDelayMs = 900,
   ai = 'ok',
+  terms = 'agreed',
   now = () => Date.now(),
 } = {}) {
   const list = Array.isArray(worlds) ? worlds : [worlds];
@@ -381,6 +383,20 @@ export function createServer({
   const timers = [];
   const media = new Map(); // `${rowId}/${mediaId}` → { base64, encoding }
   const aiUsage = new Map(); // `${did}:${kind}:${month}` → count
+  // The terms ledger, as its table holds it. `terms` says how it starts:
+  // 'agreed' (every account has agreed, so the app opens), 'ask' (nobody has)
+  // or 'down' (nobody has, and an agreement can't be recorded).
+  const agreements = list
+    .filter(() => terms === 'agreed')
+    .map((w) => ({
+      did: w.me.did,
+      policy_version: TERMS_EFFECTIVE_DATE,
+      terms_version: TERMS_VERSION,
+      identity: 'session',
+      accepted_at: iso(now() - 30 * DAY),
+      ip: null,
+      user_agent: null,
+    }));
   const log = [];
 
   const note = (line) => {
@@ -1535,6 +1551,71 @@ export function createServer({
     return [200, { success: true, data: { id: row.id, status: row.status } }];
   };
 
+  /* ---- the terms ledger ---- */
+
+  const currentTerms = () => ({ version: TERMS_VERSION, effectiveDate: TERMS_EFFECTIVE_DATE });
+  const agreementOf = (did, identity) =>
+    agreements.find((row) => row.did === did && row.terms_version === TERMS_VERSION && row.identity === identity) || null;
+
+  /** GET /api/terms/status: only a session's own agreement counts. */
+  function termsStatus(headers) {
+    const auth = authOf(headers);
+    const found = agreementOf(auth.did, 'session');
+    return [200, { success: true, ...currentTerms(), accepted: Boolean(found), acceptedAt: found?.accepted_at || null }];
+  }
+
+  /**
+   * POST /api/terms/accept: with a token the account is the session's;
+   * without one it is the DID in the body, kept as a browser's own word. The
+   * first agreement stands, as the table's unique index makes it.
+   */
+  function termsAccept(headers, body = {}) {
+    if (terms === 'down') {
+      return [503, { success: false, error: "agreements can't be recorded on Virga's server yet.", code: 'UNAVAILABLE' }];
+    }
+    let did;
+    let identity;
+    if (headers.authorization) {
+      did = authOf(headers).did;
+      identity = 'session';
+    } else identity = 'claimed';
+    if (body.version !== TERMS_VERSION) {
+      return [
+        409,
+        {
+          success: false,
+          error: 'the Terms of Service and Privacy Policy have changed. reload to read the current ones.',
+          code: 'TERMS_VERSION_MISMATCH',
+          ...currentTerms(),
+        },
+      ];
+    }
+    if (identity === 'claimed') {
+      if (typeof body.did !== 'string' || !/^did:(plc|web):[A-Za-z0-9._:%-]+$/.test(body.did)) {
+        return [400, { success: false, error: "that isn't an account's DID.", code: 'DID_INVALID' }];
+      }
+      did = body.did;
+    }
+    let row = agreementOf(did, identity);
+    const created = !row;
+    if (created) {
+      row = {
+        did,
+        policy_version: TERMS_EFFECTIVE_DATE,
+        terms_version: TERMS_VERSION,
+        identity,
+        accepted_at: iso(now()),
+        ip: '203.0.113.7',
+        user_agent: headers['user-agent'] || null,
+      };
+      agreements.push(row);
+      note(`${did} agreed to version ${TERMS_VERSION} (${identity})`);
+    }
+    // A claim's answer says nothing about the row: the caller could be anyone.
+    if (identity === 'claimed') return [200, { success: true, ...currentTerms(), identity }];
+    return [200, { success: true, ...currentTerms(), identity, acceptedAt: row.accepted_at, created }];
+  }
+
   /* ---- limits ---- */
 
   api['GET /api/limits/status'] = (auth) => {
@@ -2195,6 +2276,12 @@ export function createServer({
       if (path === '/api/oauth/session') return sessionRoute(headers, query);
       if (path === '/api/oauth/logout' && method === 'POST')
         return logoutRoute(headers, body);
+      // The two routes that decide for themselves who is asking: one of
+      // them takes a caller with no token at all.
+      if (path === '/api/terms/status')
+        return method === 'GET' ? termsStatus(headers) : [405, { success: false, error: 'Method not allowed' }];
+      if (path === '/api/terms/accept')
+        return method === 'POST' ? termsAccept(headers, body) : [405, { success: false, error: 'Method not allowed' }];
       if (
         (path === '/api/oauth/proxy' && (method === 'GET' || method === 'POST')) ||
         (path === '/api/oauth/upload-blob' && method === 'POST')
@@ -2388,8 +2475,8 @@ export function createServer({
     runCron,
     runSchedule,
     runTimers,
-    /** What's held, for tests and the console: `{ scheduled, timers, tokens, log }`. */
-    inspect: () => ({ scheduled, timers, tokens: [...tokens.entries()], log }),
+    /** What's held, for tests and the console: `{ scheduled, timers, tokens, agreements, log }`. */
+    inspect: () => ({ scheduled, timers, tokens: [...tokens.entries()], agreements, log }),
   };
 }
 

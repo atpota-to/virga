@@ -138,6 +138,49 @@ describe('startBackendSignIn', () => {
     expect(settled).toBe('pending');
   });
 
+  it('asks for the host’s make-an-account page when told to, and for nothing it doesn’t know', async () => {
+    const fetch = recorder(() => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?request_uri=y' }));
+    const assign = vi.fn();
+    startBackendSignIn({ ...base, handle: 'https://bsky.social', prompt: 'create', fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalled());
+    const asked = new URL(fetch.calls[0].url).searchParams;
+    expect(asked.get('handle')).toBe('https://bsky.social');
+    expect(asked.get('prompt')).toBe('create');
+
+    startBackendSignIn({ ...base, prompt: 'none', fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(2));
+    expect(new URL(fetch.calls[1].url).searchParams.has('prompt')).toBe(false);
+    // An ordinary sign-in sends none at all.
+    startBackendSignIn({ ...base, fetch, sessionStorage: memoryStorage(), assign });
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(3));
+    expect(new URL(fetch.calls[2].url).searchParams.has('prompt')).toBe(false);
+  });
+
+  it('goes nowhere once it has been called off, before or after the server answers', async () => {
+    const answer = () => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?request_uri=z' });
+    // Called off while the server was answering.
+    const during = new AbortController();
+    const slow = recorder(() => {
+      during.abort();
+      return answer();
+    });
+    const assign = vi.fn();
+    const sessionStorage = memoryStorage();
+    await expect(startBackendSignIn({ ...base, signal: during.signal, fetch: slow, sessionStorage, assign })).rejects.toMatchObject({ name: 'AbortError', code: 'CANCELLED' });
+    expect(assign).not.toHaveBeenCalled();
+    expect(sessionStorage.map.has(SIGNIN_PENDING_KEY)).toBe(false);
+
+    // Called off while the request was in flight: the fetch itself is dropped.
+    const before = new AbortController();
+    const dropped = vi.fn(async (_url, init) => {
+      before.abort();
+      expect(init.signal.aborted).toBe(true);
+      throw new DOMException('The operation was aborted', 'AbortError');
+    });
+    await expect(startBackendSignIn({ ...base, signal: before.signal, fetch: dropped, sessionStorage, assign })).rejects.toMatchObject({ code: 'CANCELLED' });
+    expect(assign).not.toHaveBeenCalled();
+  });
+
   it('throws the server’s code for a handle that doesn’t resolve, and stays put', async () => {
     const fetch = recorder(() => json({ success: false, code: 'HANDLE_NOT_FOUND', error: 'Could not resolve handle' }, 400));
     const assign = vi.fn();

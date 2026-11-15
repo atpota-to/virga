@@ -9,6 +9,8 @@
 // without a change here. A command says what to do as data: `{ go: path }`
 // or `{ do: name, arg }`.
 
+import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
+
 /** The groups, in the order an empty palette lists them. */
 export const COMMAND_GROUPS = Object.freeze(['Actions', 'Dashboards', 'Reports', 'Posting', 'Tools', 'Settings', 'Period', 'Theme', 'Accounts']);
 
@@ -95,6 +97,10 @@ export function buildCommands(context = {}) {
   for (const s of settingsSections) {
     add({ id: `go:/settings/${s.key}`, group: 'Settings', title: s.label, keywords: 'settings preferences', go: `/settings/${s.key}` });
   }
+  // The two documents an account agrees to have pages of their own, outside
+  // Settings; they are listed with it because that is where people look.
+  add({ id: `go:${TERMS_PATH}`, group: 'Settings', title: 'Terms of Service', keywords: 'legal agreement rules', go: TERMS_PATH });
+  add({ id: `go:${PRIVACY_PATH}`, group: 'Settings', title: 'Privacy Policy', keywords: 'legal data kept sent', go: PRIVACY_PATH });
 
   for (const p of periods) {
     add({ id: `period:${p.key}`, group: 'Period', title: periodTitle(p), keywords: 'period range window charts show', do: 'period', arg: p.key, current: p.key === period });

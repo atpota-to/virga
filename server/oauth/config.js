@@ -12,8 +12,11 @@
 
 import crypto from 'node:crypto';
 import { APP_NAME, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
+import { PRIVACY_PATH, TERMS_PATH } from '../../src/legal/version.js';
+import { isProduction } from '../env.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
 import { sendJson } from '../http.js';
+import { sessionEncryptionEnabled } from './sessionCrypto.js';
 
 /** Every frontend session token is this plus 64 lowercase hex (the client checks the shape). */
 export const TOKEN_PREFIX = 'vg_';
@@ -75,6 +78,22 @@ export function httpsUrlOrNull(value) {
   }
 }
 
+/**
+ * An https address that can go in the client metadata as a link, or null.
+ * The library, and the account's host after it, refuse more than http: a
+ * loopback host, a bare name with no dot, a .local name. Any of those in the
+ * metadata stops the client from starting, so they are passed over here.
+ */
+export function metadataLinkOrNull(value) {
+  const url = httpsUrlOrNull(value);
+  if (!url) return null;
+  const { hostname } = new URL(url);
+  const bare = !hostname.includes('.');
+  const local = /\.(local|localhost)$/i.test(hostname);
+  const literal = hostname.startsWith('[') || /^\d+(\.\d+){3}$/.test(hostname);
+  return bare || local || literal ? null : url;
+}
+
 /** The https origin of OAUTH_PUBLIC_URL, or null (a confidential client can't be loopback). */
 function httpsPublicUrl(env) {
   const origin = publicUrl(env);
@@ -95,17 +114,21 @@ export function clientMetadata(env = process.env) {
   const origin = httpsPublicUrl(env);
   if (!origin)
     throw new Error('OAUTH_PUBLIC_URL is not set to an https origin');
-  const tos = httpsUrlOrNull(env.OAUTH_TOS_URL);
-  const policy = httpsUrlOrNull(env.OAUTH_POLICY_URL);
+  // The site's own pages, unless the environment names others. A link the
+  // library would refuse stops NodeOAuthClient from starting, so one that
+  // isn't usable is passed over for the page here.
+  const tos = metadataLinkOrNull(env.OAUTH_TOS_URL) || `${origin}${TERMS_PATH}`;
+  const policy =
+    metadataLinkOrNull(env.OAUTH_POLICY_URL) || `${origin}${PRIVACY_PATH}`;
   return {
     client_id: `${origin}${CLIENT_METADATA_PATH}`,
     client_name: APP_NAME,
     // Must share the client_id's host.
     client_uri: origin,
     logo_uri: `${origin}/icon.svg`,
-    // An http link would stop NodeOAuthClient from starting; it is left out.
-    ...(tos ? { tos_uri: tos } : {}),
-    ...(policy ? { policy_uri: policy } : {}),
+    // Shown on the host's consent screen, beside what Virga asks for.
+    tos_uri: tos,
+    policy_uri: policy,
     redirect_uris: [`${origin}${CALLBACK_PATH}`],
     grant_types: ['authorization_code', 'refresh_token'],
     scope: SCOPE,
@@ -184,13 +207,31 @@ export function loadPrivateKeys(env = process.env) {
 /**
  * Why the client can't run here, or null when it can. Previews are given no
  * key on purpose: they answer 503 and the app stays in browser mode.
+ *
+ * On the production deployment a session's tokens are stored encrypted or
+ * not at all: with no usable SESSION_ENCRYPTION_KEY, long sessions are off
+ * there, rather than left to write refresh tokens to the database as they
+ * are. The Privacy Policy says they are encrypted, and this is what makes
+ * that true whatever was forgotten at deploy time. Development keeps working
+ * without a key.
  */
 export function unavailableReason(env = process.env) {
   if (loadPrivateKeys(env).length === 0)
     return 'OAUTH_PRIVATE_KEY_1 is not set';
   if (!httpsPublicUrl(env))
     return 'OAUTH_PUBLIC_URL is not set to an https origin';
+  if (isProduction(env) && !sessionsEncrypted(env))
+    return 'SESSION_ENCRYPTION_KEY is not set to a 32-byte key';
   return null;
+}
+
+/** Whether there is a key that encrypts. One of the wrong length throws when read. */
+function sessionsEncrypted(env) {
+  try {
+    return sessionEncryptionEnabled(env);
+  } catch {
+    return false;
+  }
 }
 
 /** The 503 every OAuth route answers while the client is unavailable. */

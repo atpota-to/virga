@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { createReq, createRes } from './test/http.js';
 
-// The five api/<area>/[action].js functions are thin: each builds a router
+// The six api/<area>/[action].js functions are thin: each builds a router
 // over exactly the handler modules the design names. The handlers are mocked
 // here (each answers with its own module path), so this pins the wiring
 // whatever the handlers do. Vite can't resolve an import of a file that
@@ -36,6 +36,10 @@ const MAP = {
     'alt-text': 'server/ai/handlers/altText.js',
   },
   'api/limits/[action].js': { status: 'server/limits/handlers/status.js' },
+  'api/terms/[action].js': {
+    status: 'server/terms/handlers/status.js',
+    accept: 'server/terms/handlers/accept.js',
+  },
 };
 
 // vi.mock is hoisted and takes literal paths, so each module is listed once.
@@ -64,6 +68,8 @@ vi.mock('./ai/handlers/analyzePost.js', () => answer('server/ai/handlers/analyze
 vi.mock('./ai/handlers/synthesizeStyle.js', () => answer('server/ai/handlers/synthesizeStyle.js'));
 vi.mock('./ai/handlers/altText.js', () => answer('server/ai/handlers/altText.js'));
 vi.mock('./limits/handlers/status.js', () => answer('server/limits/handlers/status.js'));
+vi.mock('./terms/handlers/status.js', () => answer('server/terms/handlers/status.js'));
+vi.mock('./terms/handlers/accept.js', () => answer('server/terms/handlers/accept.js'));
 
 const ENTRYPOINTS = {
   'api/oauth/[action].js': () => import('../api/oauth/[action].js'),
@@ -71,6 +77,7 @@ const ENTRYPOINTS = {
   'api/self-destruct/[action].js': () => import('../api/self-destruct/[action].js'),
   'api/ai/[action].js': () => import('../api/ai/[action].js'),
   'api/limits/[action].js': () => import('../api/limits/[action].js'),
+  'api/terms/[action].js': () => import('../api/terms/[action].js'),
 };
 
 const root = new URL('../', import.meta.url);

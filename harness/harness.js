@@ -19,6 +19,10 @@
 //                    style readings ('unlimited' for none; the default is 30,15,3)
 //   ?ai=slow|down    the adviser and alt text take longer than the composer
 //                    waits, or are unavailable
+//   ?terms=ask|down  nobody has agreed to the Terms of Service and Privacy
+//                    Policy yet, so the agreement screen stands in front of
+//                    the app; with 'down' the server can't record it either.
+//                    By default every account has agreed
 //   ?cron=20         how often (seconds) the server's workers run; 0 stops them
 //   ?latency=60      simulated delay per request, in ms
 //   ?now=<ms>        the moment the made-up world is dated back from. Every
@@ -78,6 +82,7 @@ export function readFlags(search) {
     limits: readLimits(params.get('limits')),
     aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
+    terms: ['ask', 'down'].includes(params.get('terms')) ? params.get('terms') : 'agreed',
     cronSeconds: num('cron', 20),
     latency: num('latency', 60),
     now: num('now', 0) > 0 ? num('now', 0) : null,
@@ -101,6 +106,7 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     limits: flags.limits,
     aiLimits: flags.aiLimits,
     ai: flags.ai,
+    terms: flags.terms,
   });
   const agents = new Map();
 

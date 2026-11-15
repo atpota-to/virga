@@ -8,13 +8,14 @@ const catchAll = rewrites.find((r) => r.destination === '/index.html');
 const matchesCatchAll = (path) => new RegExp(`^${catchAll.source}$`).test(path);
 
 describe('vercel.json functions', () => {
-  it('gives the five area functions their durations', () => {
+  it('gives the six area functions their durations', () => {
     expect(functions).toEqual({
       'api/oauth/[action].js': { maxDuration: 60 },
       'api/schedule/[action].js': { maxDuration: 60 },
       'api/self-destruct/[action].js': { maxDuration: 60 },
       'api/ai/[action].js': { maxDuration: 60 },
       'api/limits/[action].js': { maxDuration: 30 },
+      'api/terms/[action].js': { maxDuration: 30 },
     });
   });
 

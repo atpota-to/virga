@@ -14,6 +14,7 @@
 // lazily-fetched chunk: the session provider only awaits it when a session
 // may exist or a sign-in starts.
 import { APP_NAME, OAUTH_CALLBACK_PATH, OAUTH_SCOPE } from '../config.js';
+import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 
 let _clientPromise = null;
 
@@ -64,6 +65,9 @@ export function buildClientMetadata(origin) {
     client_name: APP_NAME,
     client_uri: origin,
     logo_uri: `${origin}/icon.svg`,
+    // Shown on the host's consent screen, beside what Virga asks for.
+    tos_uri: `${origin}${TERMS_PATH}`,
+    policy_uri: `${origin}${PRIVACY_PATH}`,
     redirect_uris: [`${origin}${OAUTH_CALLBACK_PATH}`],
     scope: OAUTH_SCOPE,
     grant_types: ['authorization_code', 'refresh_token'],
@@ -135,13 +139,16 @@ export function signInErrorMessage(err) {
     return 'Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID.';
   }
   if (code === 'AUTHORIZE_FAILED') {
-    return 'Found the account, but its server isn’t accepting sign-ins from here right now.';
+    return 'Found the account, but its host isn’t accepting sign-ins from here right now.';
   }
   if (code === 'VIRGA_CLIENT_UNAVAILABLE' || (code == null && err?.status === 503)) {
     return 'Virga’s server isn’t taking sign-ins right now. Try again in a little while.';
   }
   if (code === 'NETWORK_ERROR') {
     return 'Couldn’t reach Virga’s server. Check your connection and try again.';
+  }
+  if (code === 'RATE_LIMITED') {
+    return 'Too many sign-ins were started from here in the last minute. Wait a minute and try again.';
   }
   if (code === 'REDIRECT_NOT_ALLOWED') {
     return 'Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site.';
@@ -156,15 +163,15 @@ export function signInErrorMessage(err) {
   const serverRefused =
     /resolve oauth server metadata|not protected by issuer|does not support/i;
   if (serverRefused.test(message)) {
-    return 'Found the account, but its server isn’t accepting sign-ins from here right now.';
+    return 'Found the account, but its host isn’t accepting sign-ins from here right now.';
   }
   // A server that doesn't know the permissions this app asks for answers the
   // request with invalid_scope. Older PDS software is the usual reason.
   if (/invalid_scope|scope/i.test(message)) {
-    return 'Found the account, but its server didn’t accept the permissions Virga asks for. It may be running older software.';
+    return 'Found the account, but its host didn’t accept the permissions Virga asks for. It may be running older software.';
   }
   if (err?.name === 'TypeError' && /fetch|network|load failed/i.test(message)) {
-    return 'Couldn’t reach the account’s server. Check your connection and try again.';
+    return 'Couldn’t reach the account’s host. Check your connection and try again.';
   }
   return 'Sign-in couldn’t start. Check the handle and try again.';
 }
@@ -185,7 +192,7 @@ export function callbackErrorMessage(err) {
     return 'That sign-in wasn’t started from this tab, so Virga ignored it. Nothing was changed.';
   }
   if (code === 'invalid_scope') {
-    return 'The account’s server didn’t accept the permissions Virga asks for, so you’re not signed in.';
+    return 'The account’s host didn’t accept the permissions Virga asks for, so you’re not signed in.';
   }
   if (code === 'VIRGA_CLIENT_UNAVAILABLE') {
     return 'Virga’s server isn’t taking sign-ins right now, so you’re not signed in. Try again in a little while.';
