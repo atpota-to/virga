@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Hillside from '../hillside/Hillside.jsx';
+import { useSkyPhase } from '../hillside/useSkyPhase.js';
 import Button from '../components/Button.jsx';
 import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -28,7 +29,8 @@ import { AppBar, TabBar } from './MobileNav.jsx';
 import { SyncBanner } from './SyncStatus.jsx';
 import { useIsNarrow } from './bits.jsx';
 import { needsArchive as routeNeedsArchive, opensBeforeArchive, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
-import { isNewPostShortcut } from './shortcuts.js';
+import { isNewPostShortcut, isPaletteShortcut } from './shortcuts.js';
+import CommandPalette from './CommandPalette.jsx';
 import './shell.css';
 
 export { parseRoute };
@@ -42,6 +44,10 @@ export default function Shell({ profile, did, onSignOut }) {
   const route = parseRoute(path);
   const narrow = useIsNarrow();
   const [creating, setCreating] = useState(false);
+  const [searching, setSearching] = useState(false);
+  // Counts the palette's "Customize this dashboard": the page reads ?edit=1
+  // when it mounts, so the command sets the flag and mounts it again.
+  const [customizing, setCustomizing] = useState(0);
 
   // A dashboard address that names nothing (deleted, or never there) goes to
   // the first one, without leaving the dead address in history.
@@ -54,10 +60,11 @@ export default function Shell({ profile, did, onSignOut }) {
   }, [route.section, dashboard, dashboards, lastDashboard]);
 
   useNewPostShortcut(composer);
+  usePaletteShortcut(setSearching);
 
   const built = isBuilt(archive);
   const needsArchive = routeNeedsArchive(route);
-  const dayFor = { archive: built ? 1 : 0, day: 1, dawn: 0 };
+  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built });
   const skyHere = prefs.sky && (prefs.skyScope === 'everywhere' || route.section === 'dashboard');
 
   let page;
@@ -72,7 +79,7 @@ export default function Shell({ profile, did, onSignOut }) {
       );
   } else if (!archive.loaded) page = <p className="page-loading">Opening your archive…</p>;
   else if (needsArchive && !built) page = <FirstRun archive={archive} />;
-  else if (route.section === 'dashboard') page = dashboard ? <DashboardPage dashboard={dashboard} /> : null;
+  else if (route.section === 'dashboard') page = dashboard ? <DashboardPage key={customizing} dashboard={dashboard} /> : null;
   else if (route.section === 'reports') page = route.page ? <ReportPage reportKey={route.page} /> : <ReportsIndex />;
   else if (route.section === 'tools') page = route.page ? <ToolPage toolKey={route.page} /> : <ToolsIndex />;
   else if (route.section === 'settings') page = <SettingsPage section={route.page} profile={profile} onSignOut={onSignOut} />;
@@ -100,7 +107,7 @@ export default function Shell({ profile, did, onSignOut }) {
       </a>
       {skyHere && (
         <div className="shell-sky" aria-hidden="true">
-          <Hillside day={dayFor[prefs.skyTime] ?? 1} depth={0.8} />
+          <Hillside phase={sky} depth={0.8} />
         </div>
       )}
       {!narrow && (
@@ -112,6 +119,7 @@ export default function Shell({ profile, did, onSignOut }) {
           onSignOut={onSignOut}
           onNewDashboard={() => setCreating(true)}
           onNewPost={() => composer.open({})}
+          onSearch={() => setSearching(true)}
         />
       )}
       <div className="shell-main">
@@ -123,6 +131,7 @@ export default function Shell({ profile, did, onSignOut }) {
             did={did}
             onSignOut={onSignOut}
             onNewPost={() => composer.open({})}
+            onSearch={() => setSearching(true)}
           />
         )}
         {(narrow || prefs.sidebar === 'collapsed') && <SyncBanner archive={archive} />}
@@ -138,6 +147,18 @@ export default function Shell({ profile, did, onSignOut }) {
           const id = addDashboard({ name, template });
           setCreating(false);
           if (id) navigate(`/dashboard/${id}${template ? '' : '?edit=1'}`);
+        }}
+      />
+      <CommandPalette
+        open={searching}
+        onClose={() => setSearching(false)}
+        route={{ section: route.section, dashboard: dashboard?.id || null }}
+        onNewDashboard={() => setCreating(true)}
+        onCustomize={() => {
+          const params = new URLSearchParams(window.location.search);
+          params.set('edit', '1');
+          window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
+          setCustomizing((n) => n + 1);
         }}
       />
     </div>
@@ -161,6 +182,24 @@ function useNewPostShortcut(composer) {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, []);
+}
+
+/**
+ * ⌘K, or Ctrl K off a Mac, opens the command palette and closes it again,
+ * from anywhere, a text field included. It stays out of the way while any
+ * other dialog is open (the composer is one).
+ */
+function usePaletteShortcut(setOpen) {
+  useEffect(() => {
+    const onKey = (event) => {
+      const inDialog = Boolean(document.querySelector('dialog[open]:not(.palette-dialog)'));
+      if (!isPaletteShortcut(event, { inDialog })) return;
+      event.preventDefault();
+      setOpen((open) => !open);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [setOpen]);
 }
 
 /**

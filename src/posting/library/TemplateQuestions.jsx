@@ -5,6 +5,7 @@ import { initialAnswers, missingAnswers, templateQuestions } from '../templates/
 import { itemFromTemplate, previewFor } from './model.js';
 import { templateContextFrom } from './libraryUi.js';
 import './library.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const isPlainEnter = (e) =>
   e.key === 'Enter' && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && !e.nativeEvent?.isComposing;
@@ -76,7 +77,7 @@ export function TemplatePreview({ preview, label = 'The post will read', maxLeng
       <div className="lib-preview-head">
         <span className="lib-eyebrow">{label}</span>
         <span className={`lib-preview-count num${preview.overLimit ? ' is-over' : ''}`}>
-          {preview.count.toLocaleString('en-US')} of {maxLength}
+          {preview.count.toLocaleString(activeLocale())} of {maxLength}
           {preview.overLimit && <span className="visually-hidden">, over the limit</span>}
         </span>
       </div>

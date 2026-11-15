@@ -162,10 +162,44 @@
   font-size: var(--text-sm);
 }
 
-.sched-timer-tag {
+.sched-timer-tag,
+.sched-repeat-tag {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+}
+
+.sched-repeat-tag {
+  color: var(--accent-ink);
+  font-weight: 560;
+}
+
+/* What a scheduled reply answers: who, and the start of what they said. */
+.sched-row-reply {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.sched-row-reply > svg {
+  flex: none;
+  align-self: center;
+}
+
+.sched-row-reply-who {
+  flex: none;
+  color: var(--ink);
+}
+
+.sched-row-reply-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sched-row-actions {
@@ -604,6 +638,32 @@ button.sched-cal-cell:focus-visible {
   font-weight: 560;
 }
 
+.sched-repeat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.sched-repeat-fields {
+  display: grid;
+  /* The middle one holds the longest words ("After a number of times"). */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.sched-repeat .field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sched-repeat .field-hint {
+  margin: 0;
+}
+
 .sched-when-queue {
   display: flex;
   flex-wrap: wrap;
@@ -957,7 +1017,8 @@ button.sched-cal-cell:focus-visible {
     min-height: 36px;
   }
 
-  .sched-when .sched-when-fields {
+  .sched-when .sched-when-fields,
+  .sched-repeat-fields {
     grid-template-columns: minmax(0, 1fr);
   }
 

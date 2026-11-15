@@ -20,14 +20,19 @@
 //                                          outbound (did = who it was aimed at).
 //   post   the compact archive shape compactPostFromFeedItem produces.
 
+import { activeLocale, weekdayOffset } from './locale.js';
+
 const DAY_MS = 86_400_000;
 
 /**
- * How much of a post's text an archive row keeps. A snippet is all the dashboard
- * draws, and it keeps ~25,000 rows small; the export names the cap so a
- * downloaded file never passes a cut sentence off as the whole post.
+ * The shape of an archive post row. It went to 2 when rows began to keep the
+ * whole text and what a post is made of (its length, tags, links, mentions,
+ * media, alt text, languages and thread), which the Content report and the
+ * archive search read. An archive whose `meta.posts.shape` is older is
+ * brought up at its next sync from the repo's own post records, without
+ * walking the author feed again (upgradePostRows below).
  */
-export const POST_TEXT_LIMIT = 200;
+export const POST_ROW_VERSION = 2;
 
 /* ------------------------------------------------------------------ */
 /* Periods and kinds                                                    */
@@ -90,17 +95,18 @@ export function engagementOf(post, kind = 'all') {
 /* ------------------------------------------------------------------ */
 
 /**
- * Start of the bucket containing `t`, in local time. Weeks start Monday —
- * `getDay()` counts from Sunday, so Monday-offset is `(day + 6) % 7`.
- * Returns a millisecond timestamp, NaN for unparseable input.
+ * Start of the bucket containing `t`, in local time. Weeks start on the
+ * reader's first day of the week (Monday unless Settings or their region
+ * says otherwise; lib/locale.js). Returns a millisecond timestamp, NaN for
+ * unparseable input.
  */
 export function bucketStartMs(t, unit) {
   const d = new Date(t);
   if (Number.isNaN(d.getTime())) return NaN;
   if (unit === 'month') return new Date(d.getFullYear(), d.getMonth(), 1).getTime();
   if (unit === 'week') {
-    const monday = d.getDate() - ((d.getDay() + 6) % 7);
-    return new Date(d.getFullYear(), d.getMonth(), monday).getTime();
+    const first = d.getDate() - weekdayOffset(d.getDay());
+    return new Date(d.getFullYear(), d.getMonth(), first).getTime();
   }
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
@@ -415,8 +421,9 @@ export function didFromAtUri(uri) {
 
 /**
  * The facts a raw post RECORD carries, shared by both archive shapers: when
- * it was made, a snippet, and — for the outbound People list — WHO a reply
- * or quote was aimed at. A post can be both (a reply that quotes someone);
+ * it was made, its words, what it is made of (length, tags, links, mentions,
+ * media and its descriptions, languages, thread), and — for the outbound
+ * People list — WHO a reply or quote was aimed at. A post can be both (a reply that quotes someone);
  * both targets are kept. Returns null when the record cannot be dated.
  */
 function postFacts(record) {
@@ -426,25 +433,128 @@ function postFacts(record) {
   // Quotes live in the embed, in one of two shapes: a bare record embed, or
   // record-with-media where the record is nested one level deeper.
   const embed = record.embed || {};
-  const quotedUri =
-    embed.$type === 'app.bsky.embed.record'
-      ? embed.record?.uri
-      : embed.$type === 'app.bsky.embed.recordWithMedia'
-        ? embed.record?.record?.uri
-        : null;
-  const media =
-    embed.$type === 'app.bsky.embed.images' ||
-    embed.$type === 'app.bsky.embed.video' ||
-    (embed.$type === 'app.bsky.embed.recordWithMedia' &&
-      (embed.media?.$type === 'app.bsky.embed.images' || embed.media?.$type === 'app.bsky.embed.video'));
+  const withMedia = embed.$type === 'app.bsky.embed.recordWithMedia';
+  const quotedUri = embed.$type === 'app.bsky.embed.record' ? embed.record?.uri : withMedia ? embed.record?.record?.uri : null;
+  const media = mediaFacts(withMedia ? embed.media : embed);
+  const text = typeof record.text === 'string' ? record.text : '';
+  const { tags, links, mentions } = facetFacts(record);
+  if (media.host && !links.includes(media.host)) links.push(media.host);
+  const root = atUriParts(record.reply?.root?.uri);
 
   return {
     at,
-    text: typeof record.text === 'string' ? record.text.slice(0, POST_TEXT_LIMIT) : '',
+    text,
+    len: graphemeCount(text),
     replyTo: didFromAtUri(record.reply?.parent?.uri),
     quoteOf: didFromAtUri(quotedUri),
-    hasMedia: Boolean(media),
+    hasMedia: media.kind === 'image' || media.kind === 'video',
+    media: media.kind,
+    mediaCount: media.count,
+    altCount: media.alt,
+    tags,
+    links,
+    mentions,
+    langs: Array.isArray(record.langs) ? record.langs.filter((l) => typeof l === 'string' && l).slice(0, 3) : [],
+    // The thread a reply belongs to: who started it and the key of its first
+    // post. Null on a post that isn't a reply (it may still START a thread;
+    // the replies name it).
+    threadOf: root?.did || null,
+    threadKey: root?.rkey || null,
   };
+}
+
+const segmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
+
+/** A text's length as Bluesky counts it, in grapheme clusters. */
+function graphemeCount(text) {
+  if (!text) return 0;
+  if (!segmenter) return [...text].length;
+  let n = 0;
+  // eslint-disable-next-line no-unused-vars
+  for (const _ of segmenter.segment(text)) n++;
+  return n;
+}
+
+function atUriParts(uri) {
+  const m = typeof uri === 'string' ? uri.match(/^at:\/\/([^/]+)\/[^/]+\/([^/?#]+)/) : null;
+  return m ? { did: m[1], rkey: m[2] } : null;
+}
+
+/** "example.com" for a link, without the www; null for anything that isn't one. */
+export function linkHost(uri) {
+  try {
+    const host = new URL(uri).hostname.toLowerCase().replace(/^www\./, '');
+    return host || null;
+  } catch {
+    return null;
+  }
+}
+
+// Bluesky's GIF picker posts a GIF as a link card to one of these hosts.
+const GIF_HOST = /(^|\.)(tenor\.com|giphy\.com)$/;
+
+/**
+ * What a post carries besides its words: pictures, a video, a GIF or a link
+ * card, how many, and how many of them are described.
+ */
+function mediaFacts(embed) {
+  const none = { kind: null, count: 0, alt: 0, host: null };
+  if (!embed || typeof embed !== 'object') return none;
+  if (embed.$type === 'app.bsky.embed.images') {
+    const images = Array.isArray(embed.images) ? embed.images : [];
+    return { kind: 'image', count: images.length, alt: images.filter((i) => typeof i?.alt === 'string' && i.alt.trim()).length, host: null };
+  }
+  if (embed.$type === 'app.bsky.embed.video') {
+    return { kind: 'video', count: 1, alt: typeof embed.alt === 'string' && embed.alt.trim() ? 1 : 0, host: null };
+  }
+  if (embed.$type === 'app.bsky.embed.external') {
+    const host = linkHost(embed.external?.uri);
+    if (host && GIF_HOST.test(host)) return { kind: 'gif', count: 1, alt: 0, host: null };
+    return { kind: 'link', count: 1, alt: 0, host };
+  }
+  return none;
+}
+
+/** The tags, link hosts and mentioned accounts a post's facets (and its tag list) name. */
+function facetFacts(record) {
+  const tags = [];
+  const links = [];
+  const mentions = [];
+  const add = (list, value) => {
+    if (value && !list.includes(value)) list.push(value);
+  };
+  for (const facet of Array.isArray(record.facets) ? record.facets : []) {
+    for (const feature of Array.isArray(facet?.features) ? facet.features : []) {
+      if (feature?.$type === 'app.bsky.richtext.facet#tag') add(tags, cleanTag(feature.tag));
+      else if (feature?.$type === 'app.bsky.richtext.facet#link') add(links, linkHost(feature.uri));
+      else if (feature?.$type === 'app.bsky.richtext.facet#mention') add(mentions, typeof feature.did === 'string' ? feature.did : null);
+    }
+  }
+  // Tags added beside the text rather than in it.
+  for (const tag of Array.isArray(record.tags) ? record.tags : []) add(tags, cleanTag(tag));
+  return { tags, links, mentions };
+}
+
+function cleanTag(tag) {
+  return typeof tag === 'string' ? tag.trim().replace(/^#/, '') || null : null;
+}
+
+/**
+ * Bring rows of an older shape up to the current one from the repo's own
+ * post records (`uri → record`), keeping every count the archive holds.
+ * Returns only the rows that changed, for one write. A row whose record is
+ * not in the repo (deleted since) is left as it is.
+ */
+export function upgradePostRows(rows, recordsByUri) {
+  const out = [];
+  for (const row of rows || []) {
+    const record = recordsByUri?.get(row?.uri);
+    if (!record) continue;
+    const facts = postFacts(record);
+    if (!facts) continue;
+    out.push({ ...row, ...facts });
+  }
+  return out;
 }
 
 /**
@@ -502,12 +612,16 @@ const INBOUND_REASONS = new Set(['like', 'repost', 'reply', 'quote', 'mention'])
  *
  * `uri` is the record that CAUSED the notification (their like record, their
  * reply post…), which is unique per event and therefore the archive key.
+ * `subject` is what it was about, when the notification says (`reasonSubject`:
+ * the post that was liked, reposted, replied to or quoted). Events archived
+ * before this was kept have none, and nothing goes back for them.
  */
 export function inboundFromNotification(n) {
   if (!n?.uri || !n?.author?.did || !INBOUND_REASONS.has(n.reason)) return null;
   const at = n.record?.createdAt || n.indexedAt || null;
   if (!at || !Number.isFinite(Date.parse(at))) return null;
-  return { uri: n.uri, did: n.author.did, kind: n.reason, at };
+  const subject = typeof n.reasonSubject === 'string' && n.reasonSubject.startsWith('at://') ? n.reasonSubject : null;
+  return subject ? { uri: n.uri, did: n.author.did, kind: n.reason, at, subject } : { uri: n.uri, did: n.author.did, kind: n.reason, at };
 }
 
 /**
@@ -572,7 +686,7 @@ export function fmtCompact(n) {
   const abs = Math.abs(n);
   if (abs >= 1_000_000) return `${trimZero((n / 1_000_000).toFixed(1))}M`;
   if (abs >= 10_000) return `${trimZero((n / 1000).toFixed(1))}K`;
-  return Math.round(n).toLocaleString('en-US');
+  return Math.round(n).toLocaleString(activeLocale());
 }
 
 function trimZero(s) {
@@ -595,9 +709,9 @@ export function bucketLabel(t, unit) {
   const d = new Date(t);
   if (Number.isNaN(d.getTime())) return '';
   if (unit === 'month') {
-    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(activeLocale(), { month: 'short', year: 'numeric' });
   }
-  const day = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const day = d.toLocaleDateString(activeLocale(), { month: 'short', day: 'numeric' });
   return unit === 'week' ? `wk of ${day}` : day;
 }
 

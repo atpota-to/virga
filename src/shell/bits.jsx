@@ -2,7 +2,12 @@
 // toasts, and the hook that counts taps on the logo.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { CalendarRange } from 'lucide-react';
+import Button from '../components/Button.jsx';
+import Dialog from '../components/Dialog.jsx';
 import { ANALYTICS_PERIODS } from '../lib/analytics.js';
+import { CUSTOM_PERIOD, customPeriod, dayKey, periodPhrase, periodWindowWord, resolvePeriod } from '../lib/periods.js';
+import { activeLocale } from '../lib/locale.js';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
 import Segmented from '../components/Segmented.jsx';
@@ -75,36 +80,123 @@ export function PageHeader({ crumbs = null, title, sub = null, actions = null, c
 
 const SHORT = { '7d': '7d', '30d': '30d', '90d': '90d', '1y': '1y', all: 'All' };
 
-/** The window every chart answers for, kept across visits. */
+/**
+ * The window every chart answers for, kept across visits: one of the
+ * presets, or a range of dates. Returns the period, a setter for a preset
+ * key, and a setter for a custom range (two 'YYYY-MM-DD' days).
+ */
 export function usePeriod() {
-  const { period, setPref } = usePreferences();
-  const value = ANALYTICS_PERIODS.find((p) => p.key === period) || ANALYTICS_PERIODS[1];
-  return [value, (key) => setPref('period', key)];
+  const { period, periodFrom, periodTo, setPref, setPrefs } = usePreferences();
+  const value = useMemo(() => resolvePeriod({ period, periodFrom, periodTo }), [period, periodFrom, periodTo]);
+  const setCustom = useCallback((from, to) => setPrefs({ period: CUSTOM_PERIOD, periodFrom: from, periodTo: to }), [setPrefs]);
+  return [value, (key) => setPref('period', key), setCustom];
 }
 
 export function PeriodPicker() {
-  const [period, setPeriod] = usePeriod();
+  const [period, setPeriod, setCustom] = usePeriod();
+  const [picking, setPicking] = useState(false);
   return (
-    <Segmented
-      className="period-picker"
-      label="Period"
-      value={period.key}
-      onChange={setPeriod}
-      options={ANALYTICS_PERIODS.map((p) => ({
-        value: p.key,
-        label: SHORT[p.key] || p.label,
-        title: p.days ? `Last ${p.label.toLowerCase()}` : 'All time',
-        ariaLabel: p.days ? `Last ${p.label.toLowerCase()}` : 'All time',
-      }))}
-    />
+    <>
+      <Segmented
+        className="period-picker"
+        label="Period"
+        value={period.custom ? CUSTOM_PERIOD : period.key}
+        onChange={(key) => (key === CUSTOM_PERIOD ? setPicking(true) : setPeriod(key))}
+        options={[
+          ...ANALYTICS_PERIODS.map((p) => ({
+            value: p.key,
+            label: SHORT[p.key] || p.label,
+            title: periodWindowWord(p),
+            ariaLabel: periodWindowWord(p),
+          })),
+          {
+            value: CUSTOM_PERIOD,
+            icon: CalendarRange,
+            label: period.custom ? period.label : 'Custom',
+            title: period.custom ? `${period.label}. Press to change the dates.` : 'Pick a range of dates',
+            ariaLabel: period.custom ? `Custom range: ${period.label}. Change the dates` : 'Custom range of dates',
+          },
+        ]}
+      />
+      <RangeDialog
+        open={picking}
+        period={period}
+        onClose={() => setPicking(false)}
+        onApply={(from, to) => {
+          setCustom(from, to);
+          setPicking(false);
+        }}
+      />
+    </>
   );
 }
 
-/** "the last 30 days", "the last year", "all time": for sentences. */
-export function periodPhrase(period) {
-  if (!period.days) return 'all time';
-  return period.key === '1y' ? 'the last year' : `the last ${period.label.toLowerCase()}`;
+const DAY_MS = 86_400_000;
+
+/** The dialog behind Custom: two days, checked as they're typed. */
+function RangeDialog({ open, period, onClose, onApply }) {
+  const today = dayKey(Date.now());
+  // Starts from the range in use, or the window the preset covers, so the
+  // first thing to do is nudge an end rather than type both from nothing.
+  const initial = () => ({
+    from: period.custom ? period.from : dayKey(Date.now() - ((period.days || 30) - 1) * DAY_MS),
+    to: period.custom ? period.to : today,
+  });
+  const [range, setRange] = useState(initial);
+  useEffect(() => {
+    if (open) setRange(initial());
+    // Only when it opens: typing must not be overwritten by the period it came from.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  const result = customPeriod(range.from, range.to);
+  const problem = !range.from || !range.to
+    ? 'Pick both days.'
+    : range.to < range.from
+      ? 'The last day is before the first.'
+      : !result
+        ? 'That range hasn’t started yet.'
+        : null;
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="Custom range"
+      actions={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" form="range-form" disabled={Boolean(problem)}>
+            Show this range
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="range-form"
+        className="dialog-form range-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!problem) onApply(range.from, range.to);
+        }}
+      >
+        <div className="range-fields">
+          <label className="field">
+            <span className="field-label">First day</span>
+            <input className="input" type="date" value={range.from} max={range.to || today} onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))} data-autofocus />
+          </label>
+          <label className="field">
+            <span className="field-label">Last day</span>
+            <input className="input" type="date" value={range.to} min={range.from || undefined} max={today} onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))} />
+          </label>
+        </div>
+        <p className="field-hint" role="status">
+          {problem || `${result.days.toLocaleString(activeLocale())} ${result.days === 1 ? 'day' : 'days'}, in your time zone. Changes are measured against ${result.days === 1 ? 'the day' : `the ${result.days} days`} before.`}
+        </p>
+      </form>
+    </Dialog>
+  );
 }
+
+export { periodPhrase };
 
 /* ---- toasts ------------------------------------------------------- */
 

@@ -3,8 +3,10 @@
 // action works from the post as it is now, not from the archive's copy),
 // reading its reply and quote settings, and deleting it.
 
+import { blobCid } from '../lib/blobs.js';
 import { composerTextFromRecord } from '../lib/inlineLinks.js';
 import { gatesFromRules } from '../lib/gates.js';
+import { normalizeTags } from '../lib/tags.js';
 import { getPosts } from '../library/sources.js';
 
 export const POSTED_FILTERS = Object.freeze([
@@ -161,12 +163,148 @@ export function templateSeedFrom(record) {
   return { text: textForComposer(record), embed: seedEmbed };
 }
 
+/* ---- posting it again -------------------------------------------------- */
+
+const mimeOf = (blob) =>
+  typeof blob?.mimeType === 'string' ? blob.mimeType : 'image/jpeg';
+
+/** The pictures an embed carries, in order: `[{ cid, mime, alt }]`. */
+function imagesOf(media) {
+  const list =
+    media?.$type === 'app.bsky.embed.images'
+      ? media.images
+      : media?.$type === 'app.bsky.embed.gallery'
+        ? media.items
+        : [];
+  return (Array.isArray(list) ? list : [])
+    .map((item) => ({
+      cid: blobCid(item?.image),
+      mime: mimeOf(item?.image),
+      alt: typeof item?.alt === 'string' ? item.alt : '',
+    }))
+    .filter((image) => image.cid);
+}
+
+/**
+ * What "Post again" takes from a post as it reads now: its words with their
+ * links put back, its tags and languages, what it quotes, its link card, and
+ * its pictures by CID (fetchPostImages reads them back from the repo).
+ * `video` and `labelled` say what can't come along as it is: a video isn't
+ * fetched back, and a post with a content warning doesn't bring its pictures
+ * without it.
+ */
+export function postAgainSeed(record) {
+  const embed = record?.embed || null;
+  const withMedia = embed?.$type === 'app.bsky.embed.recordWithMedia';
+  const media = withMedia ? embed.media : embed;
+  const quoted = withMedia
+    ? embed.record?.record?.uri
+    : embed?.$type === 'app.bsky.embed.record'
+      ? embed.record?.uri
+      : null;
+  const external =
+    media?.$type === 'app.bsky.embed.external' ? media.external : null;
+  return {
+    text: textForComposer(record),
+    tags: normalizeTags(record?.tags),
+    langs: Array.isArray(record?.langs)
+      ? record.langs.filter((l) => typeof l === 'string' && l)
+      : [],
+    quote: typeof quoted === 'string' && quoted ? quoted : null,
+    link: external?.uri
+      ? {
+          url: external.uri,
+          title: String(external.title || ''),
+          description: String(external.description || ''),
+        }
+      : null,
+    images: imagesOf(media),
+    video: media?.$type === 'app.bsky.embed.video',
+    labelled:
+      Array.isArray(record?.labels?.values) && record.labels.values.length > 0,
+  };
+}
+
+/**
+ * Read a post's pictures back from the account's own repo (the PDS's public
+ * `com.atproto.sync.getBlob`), as files the composer can attach:
+ * `{ files: [{ file, alt }], missing }`. A picture that can't be read is
+ * counted, not thrown: the post still opens, and the writer adds it again.
+ */
+export async function fetchPostImages(
+  images,
+  { did, pdsUrl, fetch = globalThis.fetch } = {},
+) {
+  const files = [];
+  let missing = 0;
+  for (const [n, image] of (images || []).entries()) {
+    try {
+      if (!pdsUrl || typeof fetch !== 'function') throw new Error('no PDS');
+      const url = `${String(pdsUrl).replace(/\/+$/, '')}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(did)}&cid=${encodeURIComponent(image.cid)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      if (!blob.size) throw new Error('empty');
+      const type = blob.type?.startsWith('image/') ? blob.type : image.mime;
+      const ext = type.split('/')[1]?.split('+')[0] || 'jpg';
+      files.push({
+        file: new File([blob], `posted-image-${n + 1}.${ext}`, { type }),
+        alt: image.alt,
+      });
+    } catch {
+      missing += 1;
+    }
+  }
+  return { files, missing };
+}
+
+/**
+ * The composer intent for "Post again", and what to tell the writer about
+ * anything that didn't come along: `{ intent, notes }`. `intent` is null
+ * when there is nothing to open with (a post that was only pictures, none of
+ * which could be read). The new post goes out with the account's usual reply
+ * settings and no timer, as any new post does, and never as a reply.
+ *
+ * @param {object} seed - postAgainSeed's
+ * @param {{ did: string, files?: Array<{ file: Blob, alt: string }>, missing?: number }} options
+ */
+export function postAgainIntent(seed, { did, files = [], missing = 0 } = {}) {
+  const notes = [];
+  const pictures = seed.labelled ? [] : files;
+  if (seed.labelled && seed.images.length) {
+    notes.push(
+      'It had a content warning, so its pictures weren’t brought over. Add them again and set the warning.',
+    );
+  } else if (missing > 0) {
+    notes.push(
+      `${missing === 1 ? 'One of its pictures' : `${missing} of its pictures`} couldn’t be fetched. Add ${missing === 1 ? 'it' : 'them'} again.`,
+    );
+  }
+  if (seed.video) notes.push('Its video isn’t carried over. Add it again.');
+
+  const intent = { asDid: did, text: seed.text };
+  if (seed.tags.length) intent.tags = seed.tags;
+  if (seed.langs.length) intent.langs = seed.langs;
+  if (seed.quote) intent.quote = { uri: seed.quote };
+  if (pictures.length) intent.images = pictures;
+  // A post holds pictures or a link card, not both; the original had one.
+  else if (seed.link) intent.attach = { attach: { kind: 'link', ...seed.link } };
+
+  const brings =
+    seed.text.trim() ||
+    seed.tags.length ||
+    seed.quote ||
+    pictures.length ||
+    seed.link;
+  return { intent: brings ? intent : null, notes };
+}
+
 /** What a post row offers, given the account's capabilities. */
 export function postRowActions(row, { canPost, canSchedule }) {
   return {
     reply: canPost,
     quote: canPost,
-    copy: canPost,
+    again: canPost,
     gates: canPost,
     // Replies take no threadgate: only quoting can be changed on one. That
     // holds for a reply in a thread of the account's own too, which

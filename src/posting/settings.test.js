@@ -45,6 +45,7 @@ describe('posting settings defaults', () => {
       defaultAction: 'post',
       requireAltText: false,
       showThreadSuggestion: true,
+      threadNumbering: 'off',
       suggestBestTimes: true,
       adviser: { enabled: false },
     });
@@ -330,6 +331,26 @@ describe('writePostingSettings', () => {
       JSON.parse(store.getItem(postingSettingsKey(DID))).lifespan
         .lifespanSeconds,
     ).toBe(3600);
+  });
+
+  it('numbers a split thread only in a way it knows', () => {
+    const store = memoryStore();
+    const target = new EventTarget();
+    expect(readPostingSettings(DID, store).threadNumbering).toBe('off');
+    const s = writePostingSettings(DID, { threadNumbering: 'counter' }, store, {
+      target,
+    });
+    expect(s.threadNumbering).toBe('counter');
+    expect(readPostingSettings(DID, store).threadNumbering).toBe('counter');
+    expect(() =>
+      writePostingSettings(DID, { threadNumbering: 'roman' }, store, { target }),
+    ).toThrow(/number posts/);
+    // A stored value from some other version reads as the default.
+    store.setItem(
+      postingSettingsKey(DID),
+      JSON.stringify({ threadNumbering: true }),
+    );
+    expect(readPostingSettings(DID, store).threadNumbering).toBe('off');
   });
 
   it('needs an account', () => {

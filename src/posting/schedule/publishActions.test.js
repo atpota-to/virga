@@ -6,7 +6,8 @@ import {
   NO_BACKEND_HINT,
   PUBLISH_ACTIONS,
   PUBLISH_ACTION_OPTIONS,
-  REPLY_HINT,
+  QUEUE_REPLY_HINT,
+  queueBlockReason,
   VIDEO_HINT,
   getPublishActionLabel,
   normalizePublishAction,
@@ -134,13 +135,34 @@ describe('why an action is off', () => {
     }
   });
 
-  it('says why a post can’t be scheduled: no long session, a reply, a video', () => {
+  it('says why a post can’t be scheduled: no long session, a video', () => {
     expect(scheduleBlockReason({})).toBeNull();
-    expect(scheduleBlockReason({ canSchedule: false, reply: true })).toBe(
+    expect(scheduleBlockReason({ canSchedule: false, video: true })).toBe(
       NEEDS_BACKEND_HINT,
     );
-    expect(scheduleBlockReason({ reply: true, video: true })).toBe(REPLY_HINT);
     expect(scheduleBlockReason({ video: true })).toBe(VIDEO_HINT);
+  });
+
+  it('keeps a reply out of the queue, and only out of the queue', () => {
+    expect(queueBlockReason({ reply: true })).toBe(QUEUE_REPLY_HINT);
+    expect(queueBlockReason({})).toBeNull();
+    const queueBlock = queueBlockReason({ reply: true });
+    expect(
+      publishActionBlockReason(PUBLISH_ACTIONS.QUEUE, { queueBlock }),
+    ).toBe(QUEUE_REPLY_HINT);
+    expect(
+      publishActionBlockReason(PUBLISH_ACTIONS.SCHEDULE, { queueBlock }),
+    ).toBeNull();
+    expect(
+      publishActionBlockReason(PUBLISH_ACTIONS.POST, { queueBlock }),
+    ).toBeNull();
+    // Ahead of the empty week: adding times wouldn't help a reply.
+    expect(
+      publishActionBlockReason(PUBLISH_ACTIONS.QUEUE, {
+        queueBlock,
+        queueEmpty: true,
+      }),
+    ).toBe(QUEUE_REPLY_HINT);
   });
 
   it('only says to reconnect where this copy of Virga offers its server', () => {
@@ -156,16 +178,16 @@ describe('why an action is off', () => {
   });
 
   it('puts that reason on Schedule and Add to queue, ahead of the empty week', () => {
-    const scheduleBlock = scheduleBlockReason({ reply: true });
+    const scheduleBlock = scheduleBlockReason({ video: true });
     expect(
       publishActionBlockReason(PUBLISH_ACTIONS.QUEUE, {
         queueEmpty: true,
         scheduleBlock,
       }),
-    ).toBe(REPLY_HINT);
+    ).toBe(VIDEO_HINT);
     expect(
       publishActionBlockReason(PUBLISH_ACTIONS.SCHEDULE, { scheduleBlock }),
-    ).toBe(REPLY_HINT);
+    ).toBe(VIDEO_HINT);
     expect(
       publishActionBlockReason(PUBLISH_ACTIONS.POST, { scheduleBlock }),
     ).toBeNull();

@@ -3,6 +3,7 @@ import Avatar from '../../components/Avatar.jsx';
 import { formatDateShort, relativeTime } from '../../lib/time.js';
 import { postPreviewModel } from './postPreview.js';
 import '../posting.css';
+import { activeLocale } from '../../lib/locale.js';
 
 /**
  * A post, small: who wrote it, its words, what's attached, when, and its
@@ -48,22 +49,22 @@ export default function PostPreview({ view = null, record = null, uri = null, co
               <span title="Replies">
                 <MessageSquare size={13} aria-hidden="true" />
                 <span className="visually-hidden">Replies </span>
-                {m.counts.replies.toLocaleString('en-US')}
+                {m.counts.replies.toLocaleString(activeLocale())}
               </span>
               <span title="Reposts">
                 <Repeat2 size={13} aria-hidden="true" />
                 <span className="visually-hidden">Reposts </span>
-                {m.counts.reposts.toLocaleString('en-US')}
+                {m.counts.reposts.toLocaleString(activeLocale())}
               </span>
               <span title="Quotes">
                 <Quote size={13} aria-hidden="true" />
                 <span className="visually-hidden">Quotes </span>
-                {m.counts.quotes.toLocaleString('en-US')}
+                {m.counts.quotes.toLocaleString(activeLocale())}
               </span>
               <span title="Likes">
                 <Heart size={13} aria-hidden="true" />
                 <span className="visually-hidden">Likes </span>
-                {m.counts.likes.toLocaleString('en-US')}
+                {m.counts.likes.toLocaleString(activeLocale())}
               </span>
             </span>
           )}

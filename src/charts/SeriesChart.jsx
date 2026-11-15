@@ -17,6 +17,8 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { bucketLabel, fmtCompact } from '../lib/analytics.js';
 import { clamp, fmtCount, fmtTick, niceScale, uniqueTicks } from './format.js';
 import './charts.css';
+import { activeLocale } from '../lib/locale.js';
+import { markText } from '../reports/annotations.js';
 
 const PAD = { l: 8, r: 12, t: 18, b: 20 };
 /**
@@ -46,6 +48,12 @@ const GHOST_GUTTER = 28;
  * ink on purpose: it is a simulation, not a measurement, and it must never
  * dress like the data. `{ v, label }`.
  *
+ * `marks` are the days worth pointing at (reports/annotations.js
+ * marksOnSeries): a note someone wrote, a follower milestone. Each is a
+ * dashed rule through its bucket with a small diamond at the top; the
+ * readout names it on hover, and the list under the chart names them all,
+ * so none is reachable only by pointer.
+ *
  * `format` writes a value for the readout and the table — a rate wants a
  * decimal, and a bucket with no value (null: nothing posted that week) wants
  * words, not a zero. Null points draw no bar and break the trend line.
@@ -61,6 +69,7 @@ export default function SeriesChart({
   zeroBase = true,
   ghost = null,
   format = null,
+  marks = null,
   height = 200,
   ariaLabel,
 }) {
@@ -129,6 +138,8 @@ export default function SeriesChart({
     setHover(i);
   }
 
+  const shownMarks = marks?.length ? marks.filter((m) => m.i >= 0 && m.i < n) : [];
+  const hoverMark = hover != null ? shownMarks.find((m) => m.i === hover) : null;
   const hp = hover != null && series[hover] ? { ...series[hover], i: hover } : null;
   const secondaryHp = hover != null && secondarySeries?.[hover] ? secondarySeries[hover] : null;
   const secondaryPlotHp =
@@ -178,7 +189,7 @@ export default function SeriesChart({
             height={H}
             viewBox={`0 0 ${w} ${H}`}
             role="img"
-            aria-label={`${ariaLabel || 'Series'}: ${n} ${unit} buckets, peak ${fmt(dataMax)}${showGhost ? `; dashed reference reaching ${Math.round(ghost.v).toLocaleString('en-US')}` : ''}`}
+            aria-label={`${ariaLabel || 'Series'}: ${n} ${unit} buckets, peak ${fmt(dataMax)}${showGhost ? `; dashed reference reaching ${Math.round(ghost.v).toLocaleString(activeLocale())}` : ''}${shownMarks.length ? `; ${shownMarks.length} marked ${shownMarks.length === 1 ? 'day' : 'days'}, listed below` : ''}`}
             onPointerMove={onMove}
             onPointerLeave={() => setHover(null)}
           >
@@ -263,6 +274,13 @@ export default function SeriesChart({
               </>
             )}
 
+            {shownMarks.map((m) => (
+              <g key={`mark-${m.i}`} className={`an-chart-mark is-${m.kind}`}>
+                <line x1={x(m.i)} x2={x(m.i)} y1={PAD.t - 6} y2={baseY} />
+                <path d={diamondPath(x(m.i), PAD.t - 9, 4)} />
+              </g>
+            ))}
+
             {hp && (
               <g>
                 <line className="an-chart-cross" x1={x(hp.i)} x2={x(hp.i)} y1={PAD.t - 6} y2={baseY} />
@@ -281,18 +299,23 @@ export default function SeriesChart({
             <strong>{seriesLabel && `${seriesLabel} `}{fmt(hp.v)}</strong>
             {secondaryHp && (
               <strong className="an-chart-tip-secondary">
-                {secondary.label} {Math.round(secondaryHp.v).toLocaleString('en-US')}
+                {secondary.label} {Math.round(secondaryHp.v).toLocaleString(activeLocale())}
               </strong>
             )}
             {stacked && secondaryPlotHp && (
               <strong>
-                Total {Math.round(secondaryPlotHp.v).toLocaleString('en-US')}
+                Total {Math.round(secondaryPlotHp.v).toLocaleString(activeLocale())}
               </strong>
             )}
             <span className="an-chart-tip-when">{bucketLabel(hp.t, unit)}</span>
             {trend && trend[hp.i]?.v != null && (
               <span className="an-chart-tip-trend">trend {fmt(trend[hp.i].v)}</span>
             )}
+            {hoverMark?.items.map((item, k) => (
+              <span key={k} className="an-chart-tip-mark">
+                {item.label}
+              </span>
+            ))}
           </div>
         )}
       </div>
@@ -306,8 +329,27 @@ export default function SeriesChart({
         {n >= 5 && <span>{bucketLabel(series[Math.floor((n - 1) / 2)].t, unit)}</span>}
         <span>{bucketLabel(series[n - 1].t, unit)}</span>
       </div>
+      {shownMarks.length > 0 && (
+        <ul className="an-chart-marks" aria-label="Marked on this chart">
+          {/* The newest few: a chart of three years would otherwise carry a
+              paragraph of milestones under it. */}
+          {shownMarks.slice(-MARKS_LISTED).map((m) => (
+            <li key={m.i} className={`is-${m.kind}`}>
+              {markText(m, unit)}
+            </li>
+          ))}
+          {shownMarks.length > MARKS_LISTED && <li className="an-chart-marks-more">and {shownMarks.length - MARKS_LISTED} earlier</li>}
+        </ul>
+      )}
     </div>
   );
+}
+
+const MARKS_LISTED = 5;
+
+/** A small diamond centred on (cx, cy), `r` from centre to point. */
+function diamondPath(cx, cy, r) {
+  return `M${cx.toFixed(1)},${(cy - r).toFixed(1)}L${(cx + r).toFixed(1)},${cy.toFixed(1)}L${cx.toFixed(1)},${(cy + r).toFixed(1)}L${(cx - r).toFixed(1)},${cy.toFixed(1)}Z`;
 }
 
 /** A bar with its top corners rounded (by up to 3px), its foot square. */

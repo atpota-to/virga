@@ -1,6 +1,7 @@
 import { Heart, MessageCircle, Quote, Repeat2 } from 'lucide-react';
 import { fmtCompact } from '../lib/analytics.js';
 import { formatDateShort } from '../lib/time.js';
+import { activeLocale } from '../lib/locale.js';
 
 /** The text a post row shows: its words, or what kind of post it is. */
 export function postText(post) {
@@ -45,7 +46,7 @@ export default function PostRow({ post, did, kind = 'all', rank = null }) {
 function Count({ glyph: Glyph, label, value, dim }) {
   const n = value || 0;
   return (
-    <span className={`post-count${dim ? ' is-dim' : ''}`} title={`${n.toLocaleString('en-US')} ${label}`}>
+    <span className={`post-count${dim ? ' is-dim' : ''}`} title={`${n.toLocaleString(activeLocale())} ${label}`}>
       <Glyph size={13} aria-hidden="true" />
       {fmtCompact(n)}
       <span className="visually-hidden"> {label}</span>

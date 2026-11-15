@@ -17,6 +17,7 @@ import {
 import {
   canCancelScheduledRow,
   canEditScheduledRow,
+  isRepeatingRow,
 } from '../schedule/scheduleService.js';
 import { friendlyScheduleError } from '../schedule/scheduledPostError.js';
 import { splitQueueRows } from '../schedule/queueReorder.js';
@@ -29,6 +30,7 @@ import {
   timerSlotSentence,
   TIMER_BUCKET_FEATURE,
 } from '../timers/selfDestruct.js';
+import { activeLocale } from '../../lib/locale.js';
 
 const instant = (value) => (value ? new Date(value).getTime() : NaN);
 const byTime = (a, b) => instant(a.scheduledFor) - instant(b.scheduledFor);
@@ -64,9 +66,26 @@ function embedKind(embed) {
 }
 
 /**
+ * What a scheduled reply answers, as far as the row remembers: `{ who, text }`
+ * ('@handle', a name, or 'a post'; and the start of what was said, or ''),
+ * or null for a row that isn't a reply.
+ */
+export function rowReply(row) {
+  const reply = row?.payload?.reply;
+  if (!reply?.parent?.uri) return null;
+  const hint = row.payload.replyTo || {};
+  const handle = typeof hint.handle === 'string' ? hint.handle.trim() : '';
+  const name = typeof hint.displayName === 'string' ? hint.displayName.trim() : '';
+  return {
+    who: handle ? `@${handle}` : name || 'a post',
+    text: typeof hint.text === 'string' ? hint.text.replace(/\s+/g, ' ').trim() : '',
+  };
+}
+
+/**
  * What a scheduled row holds, for its line of facts: its words, how many
  * posts, pictures, a quote or link, whether replies or quotes are limited,
- * and its timer as a sentence.
+ * what it replies to, and its timer as a sentence.
  */
 export function rowFacts(row) {
   const posts = Array.isArray(row?.payload?.posts) ? row.payload.posts : [];
@@ -100,6 +119,7 @@ export function rowFacts(row) {
     quote,
     link,
     limited,
+    reply: rowReply(row),
     timer: timer?.enabled ? describeTimer(timer) : '',
   };
 }
@@ -175,15 +195,22 @@ export function rowIsDueSoon(row, now = Date.now()) {
  *   postNow  post it now and drop the scheduled copy (whole, and not about
  *            to go out at its time: rowIsDueSoon)
  *   retry    send a failed one again as it is
- *   cancel   take it off the schedule
+ *   cancel   take it off the schedule (for a repeating post, with everything
+ *            after it)
+ *   skip     a repeating post's waiting occurrence: leave this one out and
+ *            let the next take its place
+ *   stopRepeat  let this one go out and nothing after it
  */
 export function rowActions(row, now = Date.now()) {
   const waitingOrFailed = row?.status === 'pending' || row?.status === 'failed';
+  const repeating = isRepeatingRow(row);
   return {
     edit: canEditScheduledRow(row),
     postNow: waitingOrFailed && !row?.partial && !rowIsDueSoon(row, now),
     retry: row?.status === 'failed',
     cancel: canCancelScheduledRow(row),
+    skip: repeating && row.status === 'pending' && !row.partial,
+    stopRepeat: repeating && waitingOrFailed,
   };
 }
 
@@ -229,12 +256,12 @@ export function zoneLabel(tz) {
 
 function safeFormat(ms, tz, options) {
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(activeLocale(), {
       ...options,
       timeZone: tz || undefined,
     }).format(new Date(ms));
   } catch {
-    return new Intl.DateTimeFormat(undefined, options).format(new Date(ms));
+    return new Intl.DateTimeFormat(activeLocale(), options).format(new Date(ms));
   }
 }
 
@@ -840,9 +867,13 @@ function coded(code, message) {
  * post goes out first: a failed cancel leaves a copy waiting (said in
  * `notes`), but a failed post never loses the row.
  *
+ * The waiting occurrence of a repeating post is skipped rather than
+ * cancelled (`deps.skipScheduled`), so the one posted now stands in for it
+ * and the next still goes out at its time.
+ *
  * deps: { requester, getScheduledMedia, reconstructFromScheduled, targetFor,
- * publish, resolveMention, cancelScheduled, emitPostsChanged, armTimer }
- * (armTimer(result, state) → armAfterPublish's answer).
+ * publish, resolveMention, cancelScheduled, skipScheduled?, emitPostsChanged,
+ * armTimer } (armTimer(result, state) → armAfterPublish's answer).
  *
  * @returns {Promise<{ result, cancelled: boolean, timer: object|null, notes: string[] }>}
  */
@@ -888,12 +919,22 @@ export async function postScheduledNow(row, { did, deps, now = Date.now() }) {
   }
   const notes = [];
   let cancelled = false;
+  const skips =
+    isRepeatingRow(row) &&
+    row.status === 'pending' &&
+    typeof deps.skipScheduled === 'function';
   for (let attempt = 0; attempt < 2 && !cancelled; attempt += 1) {
     try {
-      await deps.cancelScheduled(deps.requester, row.id);
+      if (skips) await deps.skipScheduled(deps.requester, row.id);
+      else await deps.cancelScheduled(deps.requester, row.id);
       cancelled = true;
     } catch (err) {
-      if (err?.code === 'NOT_CANCELLABLE' || err?.status === 409) break;
+      if (
+        err?.code === 'NOT_CANCELLABLE' ||
+        err?.code === 'NOT_SKIPPABLE' ||
+        err?.status === 409
+      )
+        break;
     }
   }
   if (!cancelled)

@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useState } from 'react';
-import { CalendarClock, ListTree } from 'lucide-react';
+import { CalendarClock, ListTree, Repeat } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
@@ -14,6 +14,14 @@ import {
   zonedWallTimeToUtc,
 } from '../schedule/postingQueue.js';
 import { listScheduled } from '../schedule/scheduleService.js';
+import {
+  MAX_REPEAT_COUNT,
+  REPEAT_OPTIONS,
+  normalizeRepeat,
+  repeatEnds,
+  repeatProblem,
+  repeatSummary,
+} from '../schedule/repeat.js';
 import {
   formatInZone,
   quickPicks,
@@ -32,6 +40,13 @@ const instant = (v) => (v ? Date.parse(v) : NaN);
  * string or null; `onChange` hears an ISO string, or null while the date or
  * time is incomplete. `min` and `max` default to what Virga's server takes:
  * a minute from now to 90 days out.
+ *
+ * With `onRepeatChange` it also offers Repeat: every day, week, two weeks or
+ * month, ending never, on a date or after a number of times. `repeat` is the
+ * rule (`{ every, until?, count?, ends? }`, repeat.js) or null, and
+ * `onRepeatChange` hears the new one. `repeatBlock` is a sentence saying why
+ * this post can't repeat (a reply), which turns the control off; `occurrence`
+ * is the number, in its series, of the post being edited.
  */
 export default function WhenPicker({
   did,
@@ -41,6 +56,10 @@ export default function WhenPicker({
   onQueue,
   min,
   max,
+  repeat = null,
+  onRepeatChange,
+  repeatBlock = '',
+  occurrence = 1,
 }) {
   const { backendFor, capabilitiesFor } = useAtprotoSession();
   const { settings } = usePostingSettings(did);
@@ -127,6 +146,34 @@ export default function WhenPicker({
 
   const describedBy = `${baseId}-zone${problem ? ` ${baseId}-problem` : ''}`;
 
+  // Repeat. The rule is the parent's; which end is being filled in rides on
+  // it (`ends`), so a blank date or number is asked for, not read as never.
+  const every = repeatBlock ? '' : repeat?.every || '';
+  const ends = every ? repeatEnds(repeat) : 'never';
+  const repeatWrong =
+    every && Number.isFinite(instant(value))
+      ? repeatProblem(repeat, value, tz, { occurrence })
+      : '';
+  const setRepeat = (next) => onRepeatChange?.(next);
+  const defaultUntil = () => {
+    // A month of dailies or weeklies, half a year of monthlies: somewhere to
+    // start from, not a suggestion.
+    const days = { day: 30, week: 56, '2weeks': 112, month: 183 }[every] || 30;
+    const from = Number.isFinite(instant(value)) ? instant(value) : now;
+    return zonedWallTime(from + days * 86_400_000, tz)?.date || '';
+  };
+  const changeEnds = (kind) => {
+    if (kind === 'on')
+      setRepeat({ every, ends: 'on', until: repeat?.until || defaultUntil() });
+    else if (kind === 'after')
+      setRepeat({
+        every,
+        ends: 'after',
+        count: repeat?.count || Math.max(10, occurrence + 1),
+      });
+    else setRepeat({ every });
+  };
+
   return (
     <div className="when-picker sched-when">
       <div className="sched-when-fields">
@@ -204,6 +251,105 @@ export default function WhenPicker({
         >
           {problem}
         </p>
+      )}
+
+      {onRepeatChange && (
+        <div className="sched-repeat">
+          <div className="sched-repeat-fields">
+            <label className="field" htmlFor={`${baseId}-repeat`}>
+              <span className="field-label">
+                <Repeat size={13} aria-hidden="true" /> Repeat
+              </span>
+              <select
+                id={`${baseId}-repeat`}
+                className="input"
+                value={every}
+                disabled={Boolean(repeatBlock)}
+                aria-describedby={`${baseId}-repeat-note`}
+                onChange={(e) =>
+                  setRepeat(
+                    e.target.value
+                      ? { ...(repeat || {}), every: e.target.value }
+                      : null,
+                  )
+                }
+              >
+                {REPEAT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {every && (
+              <label className="field" htmlFor={`${baseId}-ends`}>
+                <span className="field-label">Ends</span>
+                <select
+                  id={`${baseId}-ends`}
+                  className="input"
+                  value={ends}
+                  onChange={(e) => changeEnds(e.target.value)}
+                >
+                  <option value="never">Never</option>
+                  <option value="on">On a date</option>
+                  <option value="after">After a number of times</option>
+                </select>
+              </label>
+            )}
+            {every && ends === 'on' && (
+              <label className="field" htmlFor={`${baseId}-until`}>
+                <span className="field-label">Last day</span>
+                <input
+                  id={`${baseId}-until`}
+                  type="date"
+                  className="input"
+                  value={repeat?.until || ''}
+                  min={zonedWallTime(value, tz)?.date || loDay}
+                  aria-invalid={repeatWrong ? true : undefined}
+                  aria-describedby={`${baseId}-repeat-note`}
+                  onChange={(e) =>
+                    setRepeat({ every, ends: 'on', until: e.target.value })
+                  }
+                />
+              </label>
+            )}
+            {every && ends === 'after' && (
+              <label className="field" htmlFor={`${baseId}-count`}>
+                <span className="field-label">Times in all</span>
+                <input
+                  id={`${baseId}-count`}
+                  type="number"
+                  inputMode="numeric"
+                  className="input sched-repeat-count"
+                  value={repeat?.count ?? ''}
+                  min={Math.max(2, occurrence)}
+                  max={MAX_REPEAT_COUNT}
+                  step={1}
+                  aria-invalid={repeatWrong ? true : undefined}
+                  aria-describedby={`${baseId}-repeat-note`}
+                  onChange={(e) =>
+                    setRepeat({
+                      every,
+                      ends: 'after',
+                      count: e.target.value === '' ? '' : Number(e.target.value),
+                    })
+                  }
+                />
+              </label>
+            )}
+          </div>
+          <p
+            className={`field-hint${repeatWrong ? ' sched-problem' : ''}`}
+            id={`${baseId}-repeat-note`}
+            role={repeatWrong ? 'alert' : undefined}
+          >
+            {repeatBlock ||
+              repeatWrong ||
+              (every
+                ? `${repeatSummary(normalizeRepeat(repeat), value, tz)}${occurrence > 1 ? ` This is number ${occurrence}; the change applies to it and the ones after.` : ' Each one is a post of its own, with the same words and pictures.'}`
+                : 'It goes out once.')}
+          </p>
+        </div>
       )}
 
       {queue && (

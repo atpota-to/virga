@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
+import { activeLocale } from '../lib/locale.js';
 
 /**
  * A small (i) that explains the number beside it. The explanation shows on
@@ -53,8 +54,8 @@ export default function InfoTip({ label = 'What this means', children }) {
 export function FollowerCountTip({ profileCount, listed }) {
   return (
     <InfoTip label="Why there are two follower counts">
-      {profileCount.toLocaleString('en-US')} is Bluesky’s own counter, the number on your profile. It still counts accounts
-      that were deactivated, suspended or deleted, and it can lag. {listed.toLocaleString('en-US')} is everyone who can be
+      {profileCount.toLocaleString(activeLocale())} is Bluesky’s own counter, the number on your profile. It still counts accounts
+      that were deactivated, suspended or deleted, and it can lag. {listed.toLocaleString(activeLocale())} is everyone who can be
       listed right now, which is what the charts and reports count.
     </InfoTip>
   );

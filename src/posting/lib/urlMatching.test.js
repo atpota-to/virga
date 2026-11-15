@@ -146,3 +146,22 @@ describe('the character count', () => {
     },
   );
 });
+
+describe('a long run with no dot in it', () => {
+  it('is given up on quickly, not tried every way', () => {
+    const started = Date.now();
+    const { urls } = findUrlsAndMentions(`${'z'.repeat(6000)} and then example.com`);
+    expect(urls.map((u) => u.matchText)).toEqual(['example.com']);
+    // Seconds before the host was spelled unambiguously; well under this now.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
+
+  it('still reads hosts with dots and hyphens between their parts', () => {
+    const found = (text) => findUrlsAndMentions(text).urls.map((u) => u.matchText);
+    expect(found('see a-b.example.co.uk/path?x=1#top now')).toEqual(['a-b.example.co.uk/path?x=1#top']);
+    expect(found('www.example.com and sub.domain.example.org.')).toEqual(['www.example.com', 'sub.domain.example.org']);
+    expect(found('xn--bcher-kva.example and a--b.example')).toEqual(['xn--bcher-kva.example', 'a--b.example']);
+    expect(found('no-dot-here and trailing-.com')).toEqual([]);
+  });
+});
+

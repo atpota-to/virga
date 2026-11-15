@@ -4,9 +4,16 @@
 //
 // The server stores the body and its worker writes each post later, as the
 // account, with no one at the keyboard. So everything the worker can't do is
-// refused here: replies (its payload has no reply field) and video (it can't
-// upload one). Images travel as base64 and are uploaded only when the post
-// goes out, because a PDS drops blobs no record points at.
+// refused here: video (it can't upload one), a reply in the weekly queue (a
+// reply answers one post at one moment, so it takes a time of its own), and
+// a reply or a queued post that repeats. Images travel as base64 and are
+// uploaded only when the post goes out, because a PDS drops blobs no record
+// points at.
+//
+// A reply carries the root and parent strong refs (`payload.reply`), which
+// the worker writes into the record after checking the parent is still
+// there, and a note of who it answers (`payload.replyTo`) for the Scheduled
+// page. A repeating post carries its rule (`payload.repeat`, repeat.js).
 //
 // The text pipeline and the embed rules are the ones publishing uses
 // (resolvePostTexts, buildPostEmbed), so a scheduled post comes out as the
@@ -35,6 +42,12 @@ import {
   scheduledTimerToSend,
 } from '../timers/selfDestruct.js';
 import { QUEUE_HORIZON_DAYS } from './postingQueue.js';
+import {
+  REPEAT_REPLY_HINT,
+  normalizeRepeat,
+  repeatForServer,
+  repeatProblem,
+} from './repeat.js';
 
 /**
  * Most base64 characters one body may carry. Vercel refuses a request body
@@ -258,7 +271,8 @@ function toEmbedSpec(embed) {
  * goes out.
  *
  * Throws a ScheduleSerializeError, before any network, with code
- * SCHEDULE_REPLY, SCHEDULE_VIDEO, SCHEDULE_INVALID, SCHEDULE_PAST,
+ * QUEUE_REPLY, REPLY_UNRESOLVED, REPEAT_REPLY, REPEAT_INVALID (its message
+ * is the sentence), SCHEDULE_VIDEO, SCHEDULE_INVALID, SCHEDULE_PAST,
  * SCHEDULE_TOO_FAR, EMPTY, IMAGE_MISSING, IMAGE_TOO_LARGE, TOO_MANY_IMAGES,
  * RECORD_UNRESOLVED, LIFESPAN (its message is the sentence) or
  * MEDIA_TOO_LARGE.
@@ -269,6 +283,12 @@ function toEmbedSpec(embed) {
  * @param {string|Date} [options.scheduledFor] - default `state.schedule.at`
  * @param {boolean} [options.queued] - default `state.schedule.mode === 'queue'`
  * @param {string} [options.tz] - default the device's zone
+ * @param {object|null} [options.repeat] - default `state.schedule.repeat`;
+ *   a queued post never repeats
+ * @param {string} [options.repeatTz] - the zone the time was picked in,
+ *   which a repeating post keeps its wall clock in; default `tz`
+ * @param {number} [options.occurrence] - the number, in its series, of the
+ *   row being saved over (1 for a new post)
  * @param {(handle: string) => Promise<string|null>} [options.resolveMention]
  * @param {object} [options.fit] - composerTimerFit's; default for this post
  * @param {(image: object) => Promise<Blob|null>} [options.loadImage] - bytes
@@ -289,11 +309,18 @@ export async function serializeForSchedule(state, options = {}) {
     signal,
   } = options;
   const s = normalizeComposerState(state);
+  const isQueued = queued ?? s.schedule?.mode === 'queue';
 
-  if (s.reply) {
+  if (s.reply && isQueued) {
     throw refuse(
-      'SCHEDULE_REPLY',
-      'Replies can’t be scheduled. Post it now instead.',
+      'QUEUE_REPLY',
+      'A reply can’t wait in the queue. Schedule it for a set time instead.',
+    );
+  }
+  if (s.reply && !s.reply.cid) {
+    throw refuse(
+      'REPLY_UNRESOLVED',
+      'The post you’re replying to couldn’t be read. Try again, or take the reply off.',
     );
   }
   if (s.posts.some((post) => post.video)) {
@@ -313,9 +340,26 @@ export async function serializeForSchedule(state, options = {}) {
     }
   }
 
+  const zone = tz || deviceTimeZone();
+  const repeatZone = options.repeatTz || zone;
+  const asked = isQueued
+    ? null
+    : (options.repeat !== undefined ? options.repeat : s.schedule?.repeat) ||
+      null;
+  if (asked && s.reply) throw refuse('REPEAT_REPLY', REPEAT_REPLY_HINT);
+  if (asked) {
+    // Judged as the picker left it: an end that is half filled in is asked
+    // for, never read as "no end".
+    const wrong = repeatProblem(asked, new Date(whenMs).toISOString(), repeatZone, {
+      occurrence: options.occurrence || 1,
+    });
+    if (wrong) throw refuse('REPEAT_INVALID', wrong);
+  }
+  const rule = normalizeRepeat(asked);
+
   const { problem, spec: selfDestruct } = scheduledTimerToSend(
     s.lifespan,
-    { fit: fit || composerTimerFit({ reply: false }) },
+    { fit: fit || composerTimerFit({ reply: !!s.reply }) },
     whenMs,
   );
   if (problem) throw refuse('LIFESPAN', problem);
@@ -361,27 +405,90 @@ export async function serializeForSchedule(state, options = {}) {
     return out;
   });
 
-  const { threadgateAllow, postgateEmbeddingRules } = gatesToRules(s.gates);
+  // A reply takes no gates, as when it is posted live: the thread isn't the
+  // account's to gate.
+  const { threadgateAllow, postgateEmbeddingRules } = s.reply
+    ? { threadgateAllow: null, postgateEmbeddingRules: null }
+    : gatesToRules(s.gates);
 
   const body = {
     scheduledFor: new Date(whenMs).toISOString(),
     target: 'bluesky',
-    queued: queued ?? s.schedule?.mode === 'queue',
+    queued: isQueued,
     payload: {
       posts,
       gates: { threadgate: threadgateAllow, postgate: postgateEmbeddingRules },
       mediaBytes,
-      tz: tz || deviceTimeZone(),
+      tz: zone,
       selfDestruct,
     },
   };
+  if (s.reply) {
+    const parent = { uri: s.reply.uri, cid: s.reply.cid };
+    const root =
+      s.reply.root?.uri && s.reply.root?.cid
+        ? { uri: s.reply.root.uri, cid: s.reply.root.cid }
+        : parent;
+    body.payload.reply = { root, parent };
+    const replyTo = replyHint(s.reply);
+    if (replyTo) body.payload.replyTo = replyTo;
+  }
+  if (rule) body.payload.repeat = repeatForServer(rule, repeatZone);
   // For the composer, not for the server: not enumerable, so neither JSON nor a
   // spread carries it into the request.
   Object.defineProperty(body, 'warnings', { value: warnings });
   return body;
 }
 
+/**
+ * Who a reply answers and the start of what they said, as the Scheduled
+ * page shows it. Null when the composer knows neither.
+ */
+function replyHint(reply) {
+  const hint = {
+    handle: typeof reply?.author?.handle === 'string' ? reply.author.handle : '',
+    displayName:
+      typeof reply?.author?.displayName === 'string'
+        ? reply.author.displayName
+        : '',
+    text: typeof reply?.text === 'string' ? reply.text.trim().slice(0, 300) : '',
+  };
+  return hint.handle || hint.displayName || hint.text ? hint : null;
+}
+
 /* ---- reconstructing ----------------------------------------------------- */
+
+/**
+ * A row's reply as ComposerState.reply: the refs it goes out with, and who
+ * it answers as far as the row remembers (the composer reads the post again
+ * to show it whole).
+ */
+function replyFromRow(payload) {
+  const parent = payload?.reply?.parent;
+  if (!parent?.uri || !parent.cid) return null;
+  const root = payload.reply.root;
+  const reply = {
+    uri: parent.uri,
+    cid: parent.cid,
+    root:
+      root?.uri && root?.cid
+        ? { uri: root.uri, cid: root.cid }
+        : { uri: parent.uri, cid: parent.cid },
+  };
+  const hint = payload.replyTo;
+  if (hint && typeof hint === 'object') {
+    if (typeof hint.text === 'string') reply.text = hint.text;
+    if (hint.handle || hint.displayName) {
+      reply.author = {
+        did: parseRecordUri(parent.uri)?.did || '',
+        handle: hint.handle || '',
+        displayName: hint.displayName || '',
+        avatar: null,
+      };
+    }
+  }
+  return reply;
+}
 
 function imageFromSpec(spec, media, n) {
   const stored = media?.[spec?.mediaId];
@@ -483,7 +590,8 @@ function postFromSpec(spec, media) {
  * to edit and save back over the row. Every post of a thread comes back;
  * langs, labels and tags are read off the root, where every post carries
  * them. The row's gates are kept as its own choice, and its timer as the
- * writer's rule; a row with no timer has none, whatever the default.
+ * writer's rule; a row with no timer has none, whatever the default. A
+ * scheduled reply keeps what it answers, and a repeating post its rule.
  *
  * @param {object} row - as listScheduled / getScheduled return it
  * @param {Record<string, { base64: string, encoding: string }>} [media]
@@ -498,9 +606,11 @@ export function reconstructFromScheduled(row, media = {}, { asDid } = {}) {
   const scheduledFor = row?.scheduledFor ?? row?.scheduled_for ?? null;
   const at = scheduledFor ? new Date(scheduledFor) : null;
 
+  const repeat = row?.queued ? null : normalizeRepeat(payload.repeat);
+
   return normalizeComposerState({
     posts: specs.map((spec) => postFromSpec(spec, media)),
-    reply: null,
+    reply: replyFromRow(payload),
     tags: normalizeTags(root.tags),
     langs: Array.isArray(root.langs) ? root.langs : [],
     labels: selfLabelsToLabels(root.labels),
@@ -515,7 +625,7 @@ export function reconstructFromScheduled(row, media = {}, { asDid } = {}) {
     schedule: row?.queued
       ? { mode: 'queue' }
       : at && Number.isFinite(at.getTime())
-        ? { mode: 'at', at: at.toISOString() }
+        ? { mode: 'at', at: at.toISOString(), ...(repeat ? { repeat } : {}) }
         : null,
     lifespan: payload.selfDestruct
       ? readStoredTimer({ ...payload.selfDestruct, enabled: true }).timer

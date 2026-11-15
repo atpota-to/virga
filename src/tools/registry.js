@@ -20,9 +20,9 @@ export const TOOLS = Object.freeze([
   { key: 'follow-back', name: 'Follow-back queue', icon: UserPlus, section: 'tidy', access: 'follow', desc: 'People who follow you and engage with your posts, that you don’t follow yet.' },
   { key: 'best-time', name: 'Best time to post', icon: Clock, section: 'understand', access: 'read', desc: 'When your posts earn the most, by weekday and hour, from your own history.' },
   { key: 'lists', name: 'Lists you’re on', icon: Shield, section: 'understand', access: 'read', desc: 'Every list that includes you, with moderation lists and their subscribers flagged.' },
+  { key: 'interaction-lookup', name: 'Interaction lookup', icon: UsersRound, section: 'understand', access: 'read', desc: 'Your whole history with one account: likes, replies and follows, both ways.' },
   { key: 'archive', name: 'Archive search and export', icon: Archive, section: 'data', access: 'read', desc: 'Search every post you’ve made and download it as JSON or CSV.' },
   { key: 'identity', name: 'Identity inspector', icon: Fingerprint, section: 'data', access: 'read', desc: 'Your DID, your PDS, your handle history and what each app writes to your repo.' },
-  { key: 'interaction-lookup', name: 'Interaction lookup', icon: UsersRound, section: 'later', access: 'read', planned: true, desc: 'Your whole history with one account: likes, replies and follows, both ways.' },
   { key: 'list-manager', name: 'List manager', icon: List, section: 'later', access: 'ask', planned: true, desc: 'Keep a Bluesky list in step with a filter, such as mutuals you talk to every week.' },
 ]);
 

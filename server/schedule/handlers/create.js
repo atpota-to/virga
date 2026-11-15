@@ -2,12 +2,15 @@
 //
 //   { scheduledFor: ISO (future, within 90 days), target: 'bluesky', queued,
 //     payload: { posts, gates, mediaBytes: { [mediaId]: { base64, encoding } },
-//                tz?, selfDestruct? } }
+//                tz?, selfDestruct?, reply?, replyTo?, repeat? } }
 //
 // Image bytes are stashed in Storage; the blob upload to the PDS happens at
 // publish time. A `selfDestruct` block rides along for the worker, which arms
 // the timer on the records it wrote, so a post can be scheduled and given a
-// lifespan in one action. The caller's DID comes from the session token.
+// lifespan in one action. `reply` (the root and parent strong refs) makes it
+// a scheduled reply, and `repeat` the first occurrence of a repeating post;
+// neither goes in the queue, and a reply doesn't repeat. The caller's DID
+// comes from the session token.
 
 import { methodGuard, readJson, sendJson } from '../../http.js';
 import { envInt } from '../../env.js';
@@ -70,7 +73,8 @@ export default async function handler(req, res) {
     });
     if (!validation.ok) return sendInvalid(res, validation);
 
-    const { posts, gates, selfDestruct } = validation.value;
+    const { posts, gates, selfDestruct, reply, replyTo, repeat } =
+      validation.value;
     const mediaBytes = (payload && payload.mediaBytes) || {};
     if (refuseOversizedMedia(res, mediaBytes)) return;
     // The scheduling device's zone, kept as it came so it round-trips.
@@ -106,7 +110,16 @@ export default async function handler(req, res) {
     const row = await scheduled.createScheduledPost({
       userDid,
       scheduledFor: validation.value.scheduledFor,
-      payload: { posts, gates, media: {}, rkeys, tz, selfDestruct },
+      payload: scheduled.buildPayload({
+        posts,
+        gates,
+        rkeys,
+        tz,
+        selfDestruct,
+        reply,
+        replyTo,
+        repeat,
+      }),
       queued: validation.value.queued,
     });
 

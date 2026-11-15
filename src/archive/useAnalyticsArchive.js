@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { getProfile, resolvePds, rkeyFromAtUri } from '../lib/atproto.js';
-import { blockReach, compactPostFromRecord, outboundFromRecord } from '../lib/analytics.js';
+import { POST_ROW_VERSION, blockReach, compactPostFromRecord, outboundFromRecord, upgradePostRows } from '../lib/analytics.js';
 import { openAnalyticsStore } from '../lib/analyticsStore.js';
 import { atmosphereRowFromEntry, fetchRepoCar, readRepoCar } from '../lib/carRepo.js';
 import {
@@ -38,6 +38,7 @@ import {
 import { formatDateShort } from '../lib/time.js';
 import { onPostingEvent, POSTS_CHANGED_EVENT } from '../posting/events.js';
 import { applyPostChanges, isOwnPostUri, postRowsFor } from './postChanges.js';
+import { activeLocale } from '../lib/locale.js';
 
 const DAY_MS = 86_400_000;
 
@@ -295,6 +296,10 @@ export function useAnalyticsArchive(agent, did, handle) {
          later syncs to a small diff. */
       let carEntries = null;
       const repoMeta = data.meta.repo;
+      // Post rows archived in an older shape (a clipped text, none of what a
+      // post is made of) are brought up from the repo's own post records,
+      // which means the whole repo this once rather than a diff.
+      const postsShapeOld = Boolean(data.meta.posts) && data.meta.posts.shape !== POST_ROW_VERSION;
       try {
         const pds = await resolvePds(did);
         // The PDS streams the CAR without a Content-Length, so a full pull
@@ -320,7 +325,7 @@ export function useAnalyticsArchive(agent, did, handle) {
           });
           return { parsed, size: bytes.byteLength };
         };
-        let since = mode !== 'full' && repoMeta?.rev ? repoMeta.rev : null;
+        let since = mode !== 'full' && !postsShapeOld && repoMeta?.rev ? repoMeta.rev : null;
         let pulled;
         try {
           pulled = await pull(since);
@@ -408,6 +413,10 @@ export function useAnalyticsArchive(agent, did, handle) {
       // on a fresh build, the archive otherwise.
       let heldPosts = data.posts;
       const building = full || resume;
+      // The shape the rows are in once this sync is done: a build from page
+      // one writes the current one; anything else keeps what it had unless
+      // the upgrade below runs.
+      let shape = full ? POST_ROW_VERSION : (postsMeta.shape ?? null);
       report = begin('posts', {
         fraction: null,
         doing: building ? 'Archiving posts' : 'Refreshing recent posts',
@@ -417,7 +426,7 @@ export function useAnalyticsArchive(agent, did, handle) {
         // Mark the build as underway BEFORE page one. From here on, however
         // the tab dies — cancel, crash, the deploy auto-reload — the archive
         // reads as incomplete and resumable, never as "never started".
-        await store.setMeta('posts', { syncedAt: startedAt, complete: false, cursor: null });
+        await store.setMeta('posts', { syncedAt: startedAt, complete: false, cursor: null, shape });
         heldPosts = [];
         if (carEntries) {
           // Seed the freshly-cleared archive with the repo's own post
@@ -438,6 +447,21 @@ export function useAnalyticsArchive(agent, did, handle) {
           }
           heldPosts = seed;
         }
+      } else if (postsShapeOld && carEntries) {
+        // The upgrade: every held row takes its whole text and its content
+        // facts from its own record, and keeps its counts. Rows the sweep
+        // below fetches again arrive in the current shape anyway.
+        const records = new Map();
+        for (const entry of carEntries) {
+          if (entry.collection === 'app.bsky.feed.post') records.set(entry.uri, entry.record);
+        }
+        const upgraded = upgradePostRows(data.posts, records);
+        if (upgraded.length) {
+          report(null, `reading ${num(upgraded.length)} posts again from the repo`);
+          await store.putAll('posts', upgraded);
+        }
+        shape = POST_ROW_VERSION;
+        await store.setMeta('posts', { ...postsMeta, shape });
       }
       const postTimes = heldPosts
         .map((p) => Date.parse(p.at))
@@ -462,7 +486,7 @@ export function useAnalyticsArchive(agent, did, handle) {
         onPage: async (rows, { cursor } = {}) => {
           await store.putAll('posts', rows);
           if (building && cursor) {
-            await store.setMeta('posts', { syncedAt: startedAt, complete: false, cursor });
+            await store.setMeta('posts', { syncedAt: startedAt, complete: false, cursor, shape });
           }
         },
         onProgress: (p) =>
@@ -477,9 +501,10 @@ export function useAnalyticsArchive(agent, did, handle) {
           syncedAt: startedAt,
           complete: ps.complete,
           cursor: ps.complete ? null : ps.cursor,
+          shape,
         });
       } else {
-        await store.setMeta('posts', { ...postsMeta, syncedAt: startedAt });
+        await store.setMeta('posts', { ...postsMeta, syncedAt: startedAt, shape });
       }
       if (ac.signal.aborted) return;
 
@@ -533,7 +558,7 @@ export function useAnalyticsArchive(agent, did, handle) {
           onProgress: (p) =>
             report(
               partsFraction(p.part, p.parts, timeFraction(startedAt, p.reachedMs, outTarget)),
-              reachedDetail(`${p.part === 0 ? 'likes' : 'reposts'} · ${p.fetched.toLocaleString('en-US')} read`, p.reachedMs),
+              reachedDetail(`${p.part === 0 ? 'likes' : 'reposts'} · ${p.fetched.toLocaleString(activeLocale())} read`, p.reachedMs),
             ),
         });
         if (outb.error) fail('outbound', outb.error);
@@ -671,7 +696,9 @@ export function useAnalyticsArchive(agent, did, handle) {
     // Existing archives may predate the blocks store, moderation-list reach
     // or the follows the People tab marks. Populate the current shape even
     // when posts are still fresh.
-    if (data.meta.blocks?.version !== 2 || !data.meta.following || !data.meta.lists) {
+    // The same goes for post rows from before they kept what a post is
+    // made of: the Content report and the archive search read the new shape.
+    if (data.meta.blocks?.version !== 2 || !data.meta.following || !data.meta.lists || pm.shape !== POST_ROW_VERSION) {
       runSync('incremental');
       return;
     }
@@ -760,7 +787,7 @@ export function useAnalyticsArchive(agent, did, handle) {
 
 /* The words beside the progress. Each says what was measured, in its own unit. */
 
-const num = (v) => Math.round(v).toLocaleString('en-US');
+const num = (v) => Math.round(v).toLocaleString(activeLocale());
 
 /** "2,300 of ~5,592 followers", or "2,300 followers" with nothing to go by. */
 function ofAbout(fetched, est, noun) {

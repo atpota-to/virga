@@ -19,7 +19,7 @@ A first pass, ported from the Analytics studio in [dame.is](https://github.com/d
 
 What has been checked, as of 2026-11-12:
 
-- Every page (the dashboards and their editing, the six reports, the seven tools, the
+- Every page (the dashboards and their editing, the reports, the tools, the
   posting pages, the composer and its dialogs, settings, the front page), the first build
   and a second sync, posting, scheduling and timers end to end, two accounts and switching
   between them, against made-up data and a fake Virga server in the harness (below), at
@@ -30,10 +30,24 @@ What has been checked, as of 2026-11-12:
   endpoints) by its own tests, with the SQL run on PGlite (Postgres in WebAssembly), and the
   real client modules talking to the real server handlers in-process.
 
+Added on 2026-11-14, and checked the same way (the harness, at phone and desktop
+widths, and each piece's own tests): the Content report and richer post rows, including
+the one-time upgrade of an older archive; card settings, custom date ranges and the
+Posting cards; chart notes and follower milestones; Post this chart; the Interaction
+lookup; the accents, high contrast and the dusk and night skies; number, date and week
+formats; thread splitting and the command palette; scheduled replies, repeating posts
+and Post again. Not everything was looked at in every combination: the accents and high
+contrast were looked at on the dashboard and Settings, not on every page; the sky only
+with software rendering; the scheduling pages not in the dark theme; and only Chromium
+was used.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
-Vercel, and the adviser against the real AI gateway. That needs a deployment (below) and
-someone to sign in.
+Vercel, and the adviser against the real AI gateway. For the newer pieces that also
+means: a scheduled reply's check that the post it answers is still there, a repeating
+post under two workers at once (the tests run them one after the other), the archive
+upgrade against a real repo, and Safari, Firefox and a Mac's ⌘K. That needs a deployment
+(below) and someone to sign in.
 
 The copy on every screen is a draft.
 
@@ -79,18 +93,24 @@ phone.
 (Overview, Growth, Content); make more, rename, duplicate, reorder or delete them.
 Customize turns a dashboard's cards into things to arrange: drag a card by its handle (or
 move it with the arrow buttons), pick a size (a quarter, a third, half, two thirds or the
-whole row), remove it, or add any of 26 cards from the report library beside the grid.
-Every card answers for the period picked in the header (7 days to all time), and links to
-its full report. The cards are listed in `src/dashboards/catalog.js`.
+whole row), remove it, or add any of 36 cards from the report library beside the grid.
+Every card answers for the period picked in the header (7 days to all time, or a range of
+dates you pick), and links to its full report. A card's settings, the gear in Customize,
+can give it a title, a period of its own (it then says which, and stays put when the
+header changes), one kind of engagement to count, and a number of rows. Besides the
+numbers there are Posting cards (what goes out next, the latest drafts, timers counting
+down), so a dashboard can hold both halves of Virga. The cards are listed in
+`src/dashboards/catalog.js`.
 
 **Reports**, one page each, with every chart's numbers also available as a table, a
-note on how they're counted, an export, and Add to dashboard:
+note on how they're counted, an export, Add to dashboard, and Post this chart:
 
 | Report | What | Where it comes from |
 | --- | --- | --- |
 | Followers | Growth over time, new per day or week, the newest followers and the biggest days | `app.bsky.graph.getFollowers`, signed in. Each follower's follow record has a key that dates it |
 | Blocks | Who blocks the account directly or through a moderation list, over time | Constellation backlinks, then the lists' own records from the public API |
 | Posts | Posts per day, week or month, share of replies, quotes and media | `app.bsky.feed.getAuthorFeed` on the public API |
+| Content | What your posts are made of and what each kind typically earns: by format (text, images, video, link card, GIF, quote), length, place in a thread, tag and linked site, and how much of your media has alt text | Each post's own record: its facets, embed, tags and languages |
 | Engagement | Likes, reposts, replies and quotes received, the rate per post, top posts; and the same given | Post counts from the public API; likes and reposts given from the repo |
 | People | Who engages with the account and who it engages with, with Follow buttons | Notifications, signed in; the repo; follow records |
 | Atmosphere | Every record in every collection, by day and by collection | The whole repo in one download, `com.atproto.sync.getRepo` |
@@ -104,11 +124,26 @@ note on how they're counted, an export, and Add to dashboard:
 | Follow-back queue | Followers who engage with you that you don't follow yet | Follow records |
 | Best time to post | What a typical post (the median) earns by weekday and hour, in your time zone | Read only |
 | Lists you're on | Every list that includes you, moderation lists and their subscribers flagged | Read only |
-| Archive search and export | Search every post, filter by kind and window, export CSV or JSON | Read only |
+| Archive search and export | Search every post by its words, its tags (`#bees`) and the sites it links to, filter by kind and window, export CSV or JSON | Read only |
+| Interaction lookup | Your whole history with one account, each way: who follows whom and since when, likes, reposts, replies, quotes and mentions by kind and by month, and every event as a dated list with links, filters and a CSV export | Read only. Them to you comes from notifications, which reach back a year at most; you to them from the repo and your posts |
 | Identity inspector | DID, handle, PDS, the DID's handle and server history, what's in the repo | Read only, plus the PLC directory's audit log |
 
-Two more are listed under Later and aren't built: an interaction lookup and a list
-manager. The list manager would need a permission Virga doesn't ask for.
+One more is listed under Later and isn't built: a list manager, which would need a
+permission Virga doesn't ask for.
+
+**Notes and milestones.** Followers, Posts and Engagement each end with a notes card: a
+day and a few words ("Changed my handle", "The zine went out"), marked on every chart
+over time, on the reports and the dashboards. The follower charts also mark the round
+numbers the count has passed (1,000, 2,500, 5,000, …) on the day the follower who made
+each one arrived. Those are counted from the followers the account has today, so the
+real count got there on that day or a little before.
+
+**Post this chart** (on a report, or the picture button on a dashboard card) draws the
+card as a 1200 by 675 picture in the theme on screen, and writes its alt text from the
+chart's own numbers: what it shows, whose, over what window, where it starts and ends,
+its highest and lowest point, anything marked on it, and every value while the chart is
+short enough to list. The description can be edited; the picture can be saved, or opened
+in the composer already attached and described. Nothing is posted from the dialog.
 
 **Posting**: write, schedule and look after posts, for any signed-in account.
 
@@ -116,10 +151,10 @@ manager. The list manager would need a permission Virga doesn't ask for.
 | --- | --- |
 | Overview | What goes out next, the latest drafts, recent posts, live timers, and New post |
 | Drafts | Bluesky's private drafts (so they're in any app that reads them), with Open, Post now, Schedule and Delete. Pictures and video in a draft stay on the device that saved them |
-| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; reorder the queue by dragging or with the keyboard |
+| Scheduled | Scheduled and queued posts by day, with a week's calendar; edit, post now, retry, remove; skip one occurrence of a repeating post or stop it repeating; reorder the queue by dragging or with the keyboard |
 | Weekly schedule | The times each week that a queued post goes out, in a time zone, with suggestions from the archive's best times |
 | Timers | Posts set to delete themselves, limit replies or turn off quotes after a while or when something happens (a number of likes, replies, quotes, …), counting down and settled |
-| Posted | Your posts from the archive: reply, quote, change who can reply or quote, put on a timer, save as a template, delete. Published posts aren't edited in place |
+| Posted | Your posts from the archive: reply, quote, change who can reply or quote, put on a timer, save as a template, delete, or post again (opens it in the composer with its words, links, tags, languages, quote or link card and pictures, to post, schedule or queue). Published posts aren't edited in place |
 | Templates | Posts and replies to start from, with blanks to fill (`net.anisota.feed.template` records in your repo, which Anisota reads too) |
 | Library | Your posts, replies, saved posts, links, feeds and lists, ready to quote or attach |
 
@@ -133,6 +168,22 @@ set on the way out. It keeps an unsent post for a day if the tab closes. `n` ope
 anywhere, `/` at the start of a word offers templates, and Ctrl or ⌘ Enter runs the main
 button. A link of the form `/intent/compose?text=…&url=…&tags=…` opens it filled in.
 
+A post that runs past 300 characters offers to split itself into a thread, right under
+its text. The cuts fall at paragraph breaks, then sentence ends, then between words,
+never inside a link, a mention, a hashtag or an emoji, and each post is counted the way
+Bluesky counts it. The posts can be numbered (2/5, on a line of their own at the end; off
+unless Settings › Posting or the box on the offer says so). Undo, or Ctrl or ⌘ Z, puts
+the original text back, and a numbered thread that has changed since offers Renumber.
+
+A reply can be scheduled for a set time, though not added to the queue. A post scheduled
+for a set time can repeat every day, week, two weeks or month, ending never, on a date or
+after a number of times.
+
+Ctrl K (⌘K on a Mac) opens a command palette: go to any dashboard, report, tool, posting
+page or settings section, start a post, sync, set the period or the theme, switch
+account, or customize the dashboard you're on. The sidebar's Search or jump to opens it
+too, as does the search button in the phone's app bar.
+
 The **post adviser** is off until it's turned on, per account, and only for long
 sessions. It reads a post against goals you pick (and, if asked, proofreads it and checks
 it against a reading of your style) before it goes out or when you ask, and never stops a
@@ -143,13 +194,24 @@ Scheduling, the queue, timers and the adviser need a long session, because Virga
 does them while the browser is closed. On a browser-session account those pages say so
 and offer to reconnect. They keep running while any browser is signed in to Virga with a
 long session for the account; signing out of the last one stops them until it signs in
-that way again, so a sign-out with posts or timers waiting asks first. Scheduled replies
-and scheduled videos aren't offered.
+that way again, so a sign-out with posts or timers waiting asks first. Scheduled videos
+aren't offered.
+
+A scheduled reply goes out only if the post it answers is still there at its time:
+Virga's server asks that post's PDS first, and if the post is gone the reply isn't posted
+and the Scheduled page says why; if it can't find out, it tries again before giving up. A
+repeating post has one occurrence waiting at a time and counts as one scheduled post.
+When an occurrence goes out, fails for good or is skipped, the next is created at the
+same wall-clock time in the zone it was scheduled in, so 9:00 stays 9:00 across a clock
+change and the 31st falls on the last day of a shorter month. A failed occurrence stays
+listed to retry while the series carries on. Each occurrence is its own post; a reply
+can't repeat.
 
 **Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
-action, alt text, the weekly schedule, a default timer, the adviser), appearance (theme,
-density, the sidebar, the live sky), the permissions, and where the data comes from.
+action, numbering a split thread, alt text, the weekly schedule, a default timer, the adviser), appearance (theme,
+accent, contrast, density, the sidebar, how numbers, dates and the week are written, the
+live sky), the permissions, and where the data comes from.
 
 The first build takes a minute or two for an account with thousands of posts. After
 that a sync only fetches what is new, and runs by itself when the archive is more than an
@@ -216,6 +278,13 @@ In IndexedDB, in a database per account (`virga-analytics:<did>`), so two accoun
 browser never share rows. Signing out leaves the archive in place for next time; Settings
 › Data and sync deletes it. The unfollow log and the last-activity checks live there too.
 
+A post's row keeps its whole text, its counts, and what it is made of: its length, tags,
+link hosts, mentions, media kind and how much of it is described, languages, and the
+thread it belongs to (`POST_ROW_VERSION` 2 in `src/lib/analytics.js`). An archive built
+before that has shorter rows; its next sync brings them up from the repo's own post
+records, in the one download it already makes, keeping every count. Until then the
+Content report says it needs a sync, and the archive search says what it can't see yet.
+
 In IndexedDB too, per account (`virga-posting:<did>`): the pictures and video of drafts,
 which Bluesky's drafts can't hold.
 
@@ -223,8 +292,10 @@ In localStorage: the accounts (`virga:accounts`, `virga:account`), each long ses
 token (`virga:backend-token:<did>`), each account's dashboards (`virga:dashboards:<did>`),
 posting settings (`virga:posting:<did>`), an unsent post (`virga:composer-autosave:<did>`,
 for a day), a copy of its templates and how often each is used, this month's adviser
-allowance, the tools' Keep lists, and the preferences for whoever is at the browser
-(`virga:preferences`: theme, density, the live sky, the period, the sidebar). A long
+allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), and the
+preferences for whoever is at the browser (`virga:preferences`: theme, accent, contrast,
+density, the live sky and its time of day, the period or range of dates, the sidebar, and
+how numbers, dates and the week are written). A long
 session's token sits where any script running on the page could read it, like the
 browser client's own session; Remove from this browser deletes it. sessionStorage holds a
 sign-in in progress (`virga:signin-pending`), a guard against sign-in loops
@@ -238,9 +309,14 @@ it.
 Requests go from the browser to: the account's PDS; `public.api.bsky.app`, `plc.directory`
 and `constellation.microcosm.blue`, as before; `cardyb.bsky.app` for link cards;
 `video.bsky.app` for video; and, for long sessions, scheduling, timers and the adviser,
-Virga's server (this site's `/api/*`). A scheduled post's text and pictures wait in
+Virga's server (this site's `/api/*`). Post again reads a post's pictures back from the
+account's PDS (`com.atproto.sync.getBlob`). A scheduled post's text and pictures wait in
 Virga's Supabase project until it goes out (the pictures in a private Storage bucket,
-removed after publishing). The adviser sends the post, your goals and notes, your style
+removed after publishing; a repeating post's are kept until its last occurrence goes out,
+or it is removed). A scheduled reply also keeps the handle, name and first 300 characters
+of the post it answers, and before it goes out Virga's server resolves that post's
+account (at `plc.directory`, or its did:web host) and asks its PDS, without signing in,
+whether the post is still there. The adviser sends the post, your goals and notes, your style
 reading and, if you ask it to read replies in their conversation, other people's public
 posts, to Virga's server, which passes them to an AI model through an AI gateway; alt
 text sends the image. The allowance (by default 30 adviser reads, 3 style readings and
@@ -249,21 +325,30 @@ per account.
 
 ## The look
 
-A quiet, light workspace (the Ledger direction), with a dark theme beside it.
+A quiet, light workspace (the Ledger direction), with a dark theme beside it and a
+high-contrast set of each.
 
 - **Plain grounds and one-pixel lines.** White cards on a pale ground, small radii, no
   shadows except on what floats (menus, dialogs). Colours, type, spacing and density are
-  tokens in `src/styles/theme.css`, with a dark set under `[data-theme='dark']`. The
-  theme follows the system unless Settings picks one; `index.html` stamps it before the
-  first paint.
-- **One blue** for the data and whatever is pressed; coral for the second thing on a
-  chart and a change downward. A change says which way it went, not whether that's good.
-  The chart colours have their own steps in each theme, checked for colour-blind
-  separation and contrast against their own surface.
+  tokens in `src/styles/theme.css`, with a dark set under `[data-theme='dark']` and a
+  high-contrast set of each under `[data-contrast='high']`: words at 7:1 or better, lines
+  and borders at 3:1, one flat ground with the cards outlined on it, and a thicker focus
+  ring. The theme and the contrast follow the system unless Settings picks one;
+  `index.html` stamps them, with the accent and the density, before the first paint.
+  Under forced colours nothing is left to a fill or a shadow alone.
+- **One accent** for the data and whatever is pressed: blue, or one of five others chosen
+  in Settings (violet, teal, amber, rose, graphite). It is not a colour picker: each is a
+  full set of steps for both themes and for high contrast. The second thing on a chart,
+  and a change downward, is coral, or blue beside amber and rose, where coral would sit
+  too close. A change says which way it went, not whether that's good.
+  `src/styles/theme.test.js` reads the stylesheet and holds every accent, theme and
+  contrast setting to the same numbers: words at 4.5:1 (7:1 in high contrast), marks and
+  the focus ring at 3:1 (4.5:1), and the two series at least 15 apart in OKLab under
+  simulated protanopia, deuteranopia and tritanopia (20 with ordinary vision).
 - **One typeface,** Mona Sans, in sentence case, in its ordinary figures (its tabular
   ones have a slashed zero). Monospace is for code only (NSIDs, DIDs).
 - **Every chart has a table.** Hover shows a value; Show as table shows them all.
-- **On a phone,** the sidebar becomes an app bar (with New post) and five tabs at the
+- **On a phone,** the sidebar becomes an app bar (with Search and New post) and five tabs at the
   bottom, cards stack one to a row (figures two to a row), Customize moves cards with
   arrows, and the composer and its dialogs are full-height sheets with the main button
   under the thumb.
@@ -300,7 +385,9 @@ server's routes answer 503 and the posting pages that need it say so.
    then `supabase db push`, or paste each file into the SQL editor). They create the
    sign-in, scheduled-post, timer and AI-usage tables (row-level security on, nothing for
    the `anon` or `authenticated` roles; only the server's service-role key reads them) and
-   a private Storage bucket, `scheduled-media`.
+   a private Storage bucket, `scheduled-media`. The newest,
+   `20261114000100_scheduled_repeats.sql`, adds the series columns and functions for
+   repeating posts; without it scheduling answers as not set up.
 2. **A signing key.** `node scripts/generate-oauth-key.js` prints an ES256 key as
    `OAUTH_PRIVATE_KEY_1`. Keep it secret; `_2` and `_3` are for rotating keys.
 3. **Vercel settings** (Production only; see `.env.example` for every option and its
@@ -361,10 +448,10 @@ handlers as Node functions with the same paths, and call the two run paths every
 
 | Where | What |
 | --- | --- |
-| `src/shell/` | The signed-in frame: sidebar, app bar and tabs, page header, sync status, routing, shortcuts |
+| `src/shell/` | The signed-in frame: sidebar, app bar and tabs, page header, sync status, routing, shortcuts, the command palette (`commands.js` builds its list from the registries) |
 | `src/session/` | Signing in both ways, the accounts, switching, the backend fetch handler, session checks |
 | `src/accounts/` | The account menu, Settings › Account, the sign-in notices |
-| `src/posting/lib/` | Rich text and facets, the composer model, images, video, link cards, gates, `publish()` |
+| `src/posting/lib/` | Rich text and facets, the composer model, thread splitting, images, video, link cards, gates, `publish()` |
 | `src/posting/{drafts,templates,library,schedule,timers,adviser}/` | Each posting feature's logic, without UI |
 | `src/posting/composer/`, `pages/`, `ui/` | The composer, the posting pages and the shared posting components |
 | `api/` | The server's Vercel functions: one per area, each a thin router |
@@ -374,6 +461,9 @@ handlers as Node functions with the same paths, and call the two run paths every
 | `supabase/migrations/` | The server's database |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
+| `src/reports/annotations.js` | Chart notes and follower milestones, and where they land on a chart |
+| `src/lib/periods.js`, `src/lib/locale.js` | What a period means (presets and custom ranges) and the words for it; how numbers, dates, the clock and the week are written |
+| `src/share/` | A card as a picture: what it shows, its alt text, the canvas that draws it, the dialog |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
 | `src/reports/`, `src/tools/`, `src/settings/` | The pages |
 | `src/charts/` | The time series, sparklines, heatmaps and bar lists |
@@ -388,6 +478,10 @@ handlers as Node functions with the same paths, and call the two run paths every
   own.
 - **Very large accounts.** A sync reads up to 100,000 followers and 20,000 block records
   per walk, and says so when it stops short.
+- **How a post grew.** A post's counts are as of the sync that last fetched it, so there
+  is no curve of its first hours. A browser only syncs while it is open; doing it on
+  Virga's server would mean the archive leaving the browser, which it doesn't today.
+- **Dashboards and notes on other devices.** They are kept in this browser only.
 
 ## Where things came from
 

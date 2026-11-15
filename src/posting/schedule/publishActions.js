@@ -41,7 +41,9 @@ export function needsBackendHint(authMode = 'backend') {
   return authMode === 'backend' ? NEEDS_BACKEND_HINT : NO_BACKEND_HINT;
 }
 
-export const REPLY_HINT = 'Replies can’t be scheduled. Post it now instead.';
+/** Why "Add to queue" is off for a reply: it can still be scheduled for a time. */
+export const QUEUE_REPLY_HINT =
+  'A reply can’t wait in the queue. Schedule it for a set time instead.';
 export const VIDEO_HINT =
   'Posts with video can’t be scheduled. Post it now instead.';
 
@@ -61,20 +63,28 @@ export function getPublishActionLabel(action) {
 
 /**
  * Why this post can't be scheduled or queued at all, or null when it can:
- * the account has no long session, or the post is a reply (or continues a
- * thread) or carries a video, which the server can't hold. `authMode` is the
- * session's, which picks the long-session wording (needsBackendHint).
+ * the account has no long session, or the post carries a video, which the
+ * server can't hold. `authMode` is the session's, which picks the
+ * long-session wording (needsBackendHint). A reply can be scheduled for a
+ * set time; only the queue refuses it (queueBlockReason).
  */
 export function scheduleBlockReason({
   canSchedule = true,
-  reply = false,
   video = false,
   authMode = 'backend',
 } = {}) {
   if (!canSchedule) return needsBackendHint(authMode);
-  if (reply) return REPLY_HINT;
   if (video) return VIDEO_HINT;
   return null;
+}
+
+/**
+ * Why this post can't go in the weekly queue though it could be scheduled,
+ * or null: a reply answers one post at one moment, so waiting for whichever
+ * slot comes free isn't offered.
+ */
+export function queueBlockReason({ reply = false } = {}) {
+  return reply ? QUEUE_REPLY_HINT : null;
 }
 
 /**
@@ -110,11 +120,11 @@ export function resolvePrimaryPublishAction({
 
 /**
  * Why an action can't run right now, or null when it can. `scheduleBlock` is
- * scheduleBlockReason's answer for the post.
+ * scheduleBlockReason's answer for the post, `queueBlock` queueBlockReason's.
  */
 export function publishActionBlockReason(
   action,
-  { queueEmpty = false, scheduleBlock = null } = {},
+  { queueEmpty = false, scheduleBlock = null, queueBlock = null } = {},
 ) {
   const normalized = normalizePublishAction(action);
   if (
@@ -122,6 +132,7 @@ export function publishActionBlockReason(
     normalized === PUBLISH_ACTIONS.QUEUE
   ) {
     if (scheduleBlock) return scheduleBlock;
+    if (normalized === PUBLISH_ACTIONS.QUEUE && queueBlock) return queueBlock;
     if (normalized === PUBLISH_ACTIONS.QUEUE && queueEmpty)
       return EMPTY_QUEUE_HINT;
   }

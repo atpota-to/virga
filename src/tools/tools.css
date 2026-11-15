@@ -477,3 +477,396 @@
 .timeline-date {
   color: var(--muted);
 }
+
+/* ---- interaction lookup --------------------------------------------------- */
+
+/* The two directions wear the chart's two colours wherever they are named:
+   the accent for them to you, the second colour for you to them. Always
+   beside the words or an arrow, never the colour alone. */
+.lookup-pair [data-dir='in'],
+.lookup-legend [data-dir='in'],
+.lookup-dir[data-dir='in'] {
+  color: var(--accent-ink);
+}
+
+.lookup-pair [data-dir='out'],
+.lookup-legend [data-dir='out'],
+.lookup-dir[data-dir='out'] {
+  color: var(--second-ink);
+}
+
+.lookup-search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lookup-combo {
+  position: relative;
+}
+
+/* Under the page header (which sticks, at 10), over the cards below. */
+.lookup-options {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 24rem;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  list-style: none;
+}
+
+.lookup-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.lookup-option[aria-selected='true'] {
+  background: var(--accent-wash);
+}
+
+.lookup-option-glyph {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--ink-2);
+}
+
+.lookup-option-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lookup-option-name,
+.lookup-option-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lookup-option-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.lookup-option-meta {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.lookup-status {
+  max-width: 80ch;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.lookup-status.is-error {
+  color: var(--danger);
+}
+
+.lookup-pair {
+  display: inline-flex;
+  flex: none;
+  gap: 10px;
+  font-size: var(--text-sm);
+  font-weight: 560;
+}
+
+/* A fixed measure each, so the counts line up down a list. */
+.lookup-pair > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  min-width: 3.4em;
+}
+
+.lookup-legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.lookup-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* A row that is one link: the whole of it opens that person's history. */
+.widget-rows > li.lookup-pick-row {
+  padding: 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.lookup-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--row-pad) var(--card-pad);
+  color: inherit;
+  text-decoration: none;
+}
+
+.lookup-pick:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .lookup-pick:hover {
+    background: var(--surface-2);
+  }
+
+  .lookup-pick:hover .person-name {
+    text-decoration: underline;
+  }
+}
+
+.lookup-person {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lookup-person-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.lookup-person-main {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lookup-person-main .identity-name {
+  overflow-wrap: anywhere;
+}
+
+.lookup-did {
+  color: var(--muted);
+}
+
+.lookup-person-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lookup-facts {
+  margin-top: 0;
+}
+
+.lookup-facts .kv-row dd {
+  color: var(--ink);
+}
+
+.lookup-cannot {
+  max-width: 78ch;
+}
+
+/* The totals beside the timeline: the table is the narrow one. */
+.report-split.lookup-top {
+  grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
+}
+
+@media (max-width: 1000px) {
+  .report-split.lookup-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.lookup-totals th[scope='row'] {
+  font-weight: 560;
+  white-space: nowrap;
+}
+
+.lookup-kind,
+.lookup-dir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lookup-kind svg {
+  color: var(--muted);
+}
+
+.lookup-total {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lookup-total-track {
+  flex: 1;
+  min-width: 12px;
+  max-width: 120px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+
+.lookup-total-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--chart-1);
+}
+
+.lookup-total-fill[data-dir='out'] {
+  background: var(--chart-2);
+}
+
+.lookup-total-n {
+  min-width: 2.2em;
+  font-weight: 560;
+}
+
+.table.lookup-totals .lookup-totals-sum th,
+.table.lookup-totals .lookup-totals-sum td {
+  border-top: 1px solid var(--line-2);
+  font-weight: 640;
+}
+
+.lookup-edge {
+  color: var(--ink-2);
+}
+
+.lookup-edge-kind {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.lookup-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 var(--card-pad) 12px;
+}
+
+.lookup-event {
+  display: grid;
+  grid-template-columns: 92px 26px minmax(0, 1fr) auto;
+  grid-template-areas: 'date glyph main link';
+  align-items: center;
+  gap: 2px 10px;
+  padding-top: var(--row-pad);
+  padding-bottom: var(--row-pad);
+  border-top: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+}
+
+.lookup-event-date {
+  grid-area: date;
+  color: var(--muted);
+}
+
+.lookup-event-glyph {
+  display: grid;
+  grid-area: glyph;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+}
+
+.lookup-event-glyph[data-dir='out'] {
+  background: var(--second-wash);
+  color: var(--second-ink);
+}
+
+.lookup-event-main {
+  display: flex;
+  grid-area: main;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lookup-event-what {
+  font-weight: 560;
+}
+
+.lookup-event-text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.lookup-event-link {
+  grid-area: link;
+  white-space: nowrap;
+}
+
+/* On a phone the date goes under what happened, and the glyph leads. */
+@media (max-width: 560px) {
+  .lookup-event {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'glyph main link'
+      'glyph date date';
+  }
+
+  .lookup-event-glyph {
+    align-self: start;
+  }
+
+  .lookup-event-date {
+    font-size: var(--text-xs);
+  }
+}
+
+/* ---- the way in from a person row ------------------------------------------ */
+
+/* Every person row links to that person's history (people.jsx). Quiet, so a
+   list of people still reads as names and numbers. */
+.person-history {
+  flex: none;
+  color: var(--muted);
+}
+
+/* A dashboard card a third of the row wide has room for a name, a count and
+   Follow, and no more. */
+@container widget (max-width: 400px) {
+  .person-history {
+    display: none;
+  }
+}
+
+/* Nor, on a phone, has a row that already carries a button of its own
+   (Dismiss in the follow-back queue). */
+@media (max-width: 560px) {
+  .person-history--spare {
+    display: none;
+  }
+}

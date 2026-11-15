@@ -92,4 +92,48 @@ describe('dashboard layouts', () => {
     layout = L.renameDashboard(layout, 'overview', '   ');
     expect(layout.dashboards[0].name).toBe('Weekly');
   });
+
+  it('keeps a card’s own settings, and only the ones its type takes', () => {
+    const def = { options: ['title', 'period', 'rows'], sizes: ['m'], defaultSize: 'm' };
+    expect(L.cleanOptions({ title: '  My posts  ', period: '90d', kind: 'like', rows: 10 }, def)).toEqual({ title: 'My posts', period: '90d', rows: 10 });
+    expect(L.cleanOptions({ title: '   ', period: 'fortnight', rows: 7 }, def)).toBe(null);
+    expect(L.cleanOptions({ title: 'x'.repeat(200) }, def).title).toHaveLength(L.CARD_TITLE_MAX);
+    expect(L.cleanOptions({ title: 'Anything' }, { options: [] })).toBe(null);
+    expect(L.cleanOptions(null, def)).toBe(null);
+    // A custom range is the dashboard's to pick, not a card's.
+    expect(L.cleanOptions({ period: 'custom' }, def)).toBe(null);
+  });
+
+  it('sets and clears a card’s settings without touching its neighbours', () => {
+    let layout = L.defaultLayout();
+    const [first, second] = layout.dashboards[0].widgets;
+    layout = L.setWidgetOptions(layout, 'overview', first.id, { period: '7d', title: 'This week' }, WIDGETS[first.type]);
+    const cards = layout.dashboards[0].widgets;
+    expect(cards[0]).toEqual({ ...first, options: { title: 'This week', period: '7d' } });
+    expect(cards[1]).toBe(second);
+    layout = L.setWidgetOptions(layout, 'overview', first.id, {}, WIDGETS[first.type]);
+    expect(layout.dashboards[0].widgets[0]).toEqual(first);
+    expect('options' in layout.dashboards[0].widgets[0]).toBe(false);
+  });
+
+  it('reads stored settings back checked, and carries them into a duplicate', () => {
+    const raw = {
+      dashboards: [
+        {
+          id: 'mine',
+          name: 'Mine',
+          widgets: [
+            { id: 'a', type: 'top-posts', size: 'm', options: { kind: 'repost', rows: 15, period: 'all', nonsense: true } },
+            { id: 'b', type: 'stat-unfollows', size: 'xs', options: { period: '7d', title: 'Left' } },
+          ],
+        },
+      ],
+    };
+    const layout = L.sanitizeLayout(raw, WIDGETS);
+    expect(layout.dashboards[0].widgets[0].options).toEqual({ period: 'all', kind: 'repost', rows: 15 });
+    // Unfollows are counted between syncs, whatever the period.
+    expect(layout.dashboards[0].widgets[1].options).toEqual({ title: 'Left' });
+    const { layout: copied, id } = L.duplicateDashboard(layout, 'mine', 'copy');
+    expect(copied.dashboards.find((d) => d.id === id).widgets[0].options).toEqual({ period: 'all', kind: 'repost', rows: 15 });
+  });
 });

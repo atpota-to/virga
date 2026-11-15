@@ -9,11 +9,10 @@ import { fmtRate } from '../charts/format.js';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { bestTimeRows, bestTimeSentence, bestTimeWindow } from '../dashboards/widgets/index.jsx';
-import { BEST_TIME_MIN_POSTS, WEEKDAYS, bestTimeModel, hourColumns, hourRange } from '../reports/models.js';
+import { BEST_TIME_MIN_POSTS, WEEKDAYS, WEEKDAYS_LONG as LONG, bestTimeModel, hourColumns, hourRange, weekdayOrder } from '../reports/models.js';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
-
-const LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+import { activeLocale } from '../lib/locale.js';
 
 export default function BestTime({ tool }) {
   const archive = useArchive();
@@ -34,7 +33,7 @@ export default function BestTime({ tool }) {
                 What a typical post earns, by when it was posted
               </h2>
               <p className="card-sub">
-                {m.posts.toLocaleString('en-US')} posts and threads over {periodPhrase(win)}
+                {m.posts.toLocaleString(activeLocale())} posts and threads over {periodPhrase(win)}
                 {win !== period ? ' (a shorter window holds too few posts to say)' : ''}, in {zone.replace(/_/g, ' ')} time
               </p>
             </div>
@@ -90,7 +89,7 @@ export default function BestTime({ tool }) {
               ariaLabel="What a typical post earns, by weekday"
               labelWidth="48px"
               format={(v) => fmtRate(v)}
-              rows={m.byDay.map((d) => ({ key: d.day, label: WEEKDAYS[d.day], value: d.avg || 0, display: d.avg == null ? '—' : fmtRate(d.avg), title: `${d.posts} posts` }))}
+              rows={weekdayOrder().map((day) => m.byDay[day]).map((d) => ({ key: d.day, label: WEEKDAYS[d.day], value: d.avg || 0, display: d.avg == null ? '—' : fmtRate(d.avg), title: `${d.posts} posts` }))}
             />
           </section>
         </div>
@@ -110,8 +109,8 @@ export default function BestTime({ tool }) {
                 </tr>
               </thead>
               <tbody>
-                {m.rows.flatMap((r, day) =>
-                  r.cells
+                {weekdayOrder().flatMap((day) =>
+                  m.rows[day].cells
                     .map((c, col) => ({ c, col }))
                     .filter(({ c }) => c.posts > 0)
                     .map(({ c, col }) => (

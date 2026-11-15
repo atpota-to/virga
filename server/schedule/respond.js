@@ -40,6 +40,8 @@ export async function authorize(req, res) {
  * A row as the client reads it. `clientKey` is a constant: every row is
  * Virga's, and the client only lets a reader edit, retry or reorder rows that
  * say so. `partial` (some of the thread is already out) is the list's.
+ * `seriesId` and `occurrence` are set on every occurrence of a repeating
+ * post; the one the series goes on from also has `payload.repeat`.
  */
 export function publicRow(row, { partial = false } = {}) {
   const out = {
@@ -59,6 +61,8 @@ export function publicRow(row, { partial = false } = {}) {
     lastError: row.last_error || null,
     lastErrorCode: row.last_error_code || null,
     createdAt: row.created_at,
+    seriesId: row.series_id || null,
+    occurrence: row.occurrence ?? null,
     clientKey: 'virga',
   });
   return out;

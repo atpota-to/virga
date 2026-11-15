@@ -10,6 +10,8 @@
 // Every queued row holds its minute until it is moved; a row that can't move
 // (failed, part-published, due) is stepped around.
 
+import { activeLocale } from '../../lib/locale.js';
+
 export const QUEUE_HORIZON_DAYS = 90; // matches backend MAX_HORIZON_DAYS
 export const MIN_LEAD_MS = 60 * 1000; // never place a slot < 1 min out
 
@@ -59,7 +61,7 @@ export function dateBucketLabel(iso, now = new Date()) {
   if (diff === 0) return 'Today';
   if (diff === 1) return 'Tomorrow';
   if (diff <= 6) return `In ${diff} days`;
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(activeLocale(), {
     weekday: 'short',
     month: 'short',
     day: 'numeric',

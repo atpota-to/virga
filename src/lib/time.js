@@ -2,6 +2,8 @@
 // The charts bucket by local time (see analytics.js), so their captions do
 // too: someone reading their own numbers reads them on their own clock.
 
+import { activeLocale } from './locale.js';
+
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
@@ -29,7 +31,7 @@ function calendarDaysAgo(t, now) {
 export function formatDateShort(date) {
   const t = toMs(date);
   if (!Number.isFinite(t)) return '';
-  return new Date(t).toLocaleDateString('en-US', {
+  return new Date(t).toLocaleDateString(activeLocale(), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

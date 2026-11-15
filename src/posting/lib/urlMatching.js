@@ -12,10 +12,18 @@ import { findMentions } from './mentions.js';
  * `lastIndex` would leak between callers. Matches protocol URLs and bare
  * domains, stopping at whitespace, quotes and `,;!…`. A hit can still end in
  * sentence punctuation; trimUrlMatch takes that off.
+ *
+ * A bare domain's host is written as letters and digits joined by runs of
+ * `.` and `-` (`[a-zA-Z0-9]+(?:[.-]+[a-zA-Z0-9]+)*`), which says the same
+ * thing as "starts and ends with a letter or digit, with `.` and `-` allowed
+ * between" but can only be read one way. The looser spelling made the
+ * matcher try every way of dividing a long run of letters before giving up
+ * on it, and a pasted run of a few thousand letters with no dot held the
+ * editor for seconds.
  * @returns {RegExp}
  */
 export function createUrlRegex() {
-  return /https?:\/\/[^\s,;!…"\u201C\u201D]+?(?=[,;!…"\u201C\u201D\s]|$)|(?:www\.)?[a-zA-Z0-9]+(?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?\.(?:[a-zA-Z]{2,}|xn--[a-zA-Z0-9]+)(?:\/[^\s,;!…"\u201C\u201D]*)?(?:\?[^\s,;!…"\u201C\u201D]*)?(?:#[^\s,;!…"\u201C\u201D]*)?(?=[.,;!…"\u201C\u201D\s]|$)/gi;
+  return /https?:\/\/[^\s,;!…"\u201C\u201D]+?(?=[,;!…"\u201C\u201D\s]|$)|(?:www\.)?[a-zA-Z0-9]+(?:[.-]+[a-zA-Z0-9]+)*\.(?:[a-zA-Z]{2,}|xn--[a-zA-Z0-9]+)(?:\/[^\s,;!…"\u201C\u201D]*)?(?:\?[^\s,;!…"\u201C\u201D]*)?(?:#[^\s,;!…"\u201C\u201D]*)?(?=[.,;!…"\u201C\u201D\s]|$)/gi;
 }
 
 const count = (text, ch) => text.split(ch).length - 1;

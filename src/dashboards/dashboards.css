@@ -162,7 +162,9 @@
 }
 
 .widget-open {
+  display: flex;
   flex: none;
+  gap: 2px;
   margin: -4px -6px 0 0;
 }
 
@@ -595,4 +597,17 @@
     position: static;
     max-height: none;
   }
+}
+
+/* A card that keeps its own period or one kind of engagement says so. */
+.widget-own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+/* The one dialog action that sits apart from the others, at the start. */
+.dialog-action-start {
+  margin-right: auto;
 }

@@ -1,7 +1,8 @@
 /* The hillside fills whatever it's put in. Under the canvas, a flat picture of
    the same sky and field, for the moment before the 3D one is drawn and for
    browsers without WebGL. --crest (from the page) is where the hill meets the
-   sky. */
+   sky. One gradient for each sky the scene has (scene.js), in its colours:
+   day here, then dawn, dusk and night by data-phase. */
 
 .hillside {
   position: absolute;
@@ -20,7 +21,7 @@
   );
 }
 
-.hillside[data-dawn] {
+.hillside[data-phase='dawn'] {
   background: linear-gradient(
     180deg,
     #3b5aa8 0%,
@@ -30,6 +31,32 @@
     #9cb04a var(--crest, 50%),
     #557c2c calc(var(--crest, 50%) + 10%),
     #22431e 100%
+  );
+}
+
+.hillside[data-phase='dusk'] {
+  background: linear-gradient(
+    180deg,
+    #262a66 0%,
+    #5d4a8f calc(var(--crest, 50%) * 0.5),
+    #c9796b calc(var(--crest, 50%) - 6%),
+    #ffb070 calc(var(--crest, 50%) - 0.5%),
+    #7c8440 var(--crest, 50%),
+    #3c5429 calc(var(--crest, 50%) + 10%),
+    #172b1e 100%
+  );
+}
+
+.hillside[data-phase='night'] {
+  background: linear-gradient(
+    180deg,
+    #050a1d 0%,
+    #0c1838 calc(var(--crest, 50%) * 0.5),
+    #182c55 calc(var(--crest, 50%) - 6%),
+    #2a4470 calc(var(--crest, 50%) - 0.5%),
+    #24463a var(--crest, 50%),
+    #143026 calc(var(--crest, 50%) + 10%),
+    #081712 100%
   );
 }
 

@@ -1,4 +1,5 @@
 import './charts.css';
+import { activeLocale } from '../lib/locale.js';
 
 /**
  * Ranked rows, each a label, a bar and its value: the share of the biggest
@@ -6,7 +7,7 @@ import './charts.css';
  * `{ key, label, value, icon?, display?, title? }`; `label` may be markup
  * (a <code> NSID, a link).
  */
-export default function BarList({ rows, labelWidth = '1.2fr', format = (v) => v.toLocaleString('en-US'), max = null, ariaLabel }) {
+export default function BarList({ rows, labelWidth = '1.2fr', format = (v) => v.toLocaleString(activeLocale()), max = null, ariaLabel }) {
   if (!rows?.length) return null;
   const top = max ?? Math.max(...rows.map((r) => r.value), 1);
   return (

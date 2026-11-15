@@ -110,6 +110,50 @@
   height: 40px;
 }
 
+/* "Search or jump to": shaped like a field, because pressing it gives one
+   (the command palette), with the shortcut that does the same at its end. */
+.sidebar-search {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--control-h);
+  margin-top: -8px;
+  padding: 0 6px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-search > svg {
+  flex: none;
+}
+
+.sidebar-search-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .sidebar-search:hover {
+    border-color: var(--line-2);
+    color: var(--ink-2);
+  }
+}
+
+.sidebar-search-icon {
+  flex: none;
+  margin-top: -8px;
+}
+
 .sidebar[data-collapsed] {
   align-items: center;
   width: var(--rail-w);

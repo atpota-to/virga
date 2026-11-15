@@ -172,3 +172,64 @@
   font-weight: 640;
   letter-spacing: -0.02em;
 }
+
+/* The sentence a group chart leads with: what stands out, in words. */
+.report-insight {
+  margin: 0 0 14px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+/* ---- chart notes --------------------------------------------------- */
+
+.chart-notes-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.chart-notes-form .field {
+  margin: 0;
+}
+
+.chart-notes-what {
+  flex: 1 1 260px;
+}
+
+.chart-notes-list {
+  display: flex;
+  flex-direction: column;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chart-notes-list li {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+}
+
+.chart-notes-day {
+  color: var(--muted);
+}
+
+.chart-notes-label {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .chart-notes-form > .btn {
+    width: 100%;
+  }
+}
+
+/* A line under a report's cards that says what they leave out. */
+.report-aside {
+  margin: 0 2px;
+}

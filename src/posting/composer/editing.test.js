@@ -5,10 +5,8 @@ import {
   pasteAsInlineLink,
   misleadingLinkNotes,
   removeLinkFromText,
-  splitForThread,
   limitAnnouncement,
 } from './editing.js';
-import { countComposerGraphemes } from '../lib/inlineLinks.js';
 
 describe('replaceRange', () => {
   it('replaces and puts the caret after', () => {
@@ -131,54 +129,6 @@ describe('removeLinkFromText', () => {
         expect: 'other',
       }),
     ).toBe(text);
-  });
-});
-
-describe('splitForThread', () => {
-  it('leaves a post that fits alone', () => {
-    expect(splitForThread('short')).toEqual(['short']);
-  });
-  it('splits at sentence breaks, each part within the limit', () => {
-    const sentence = 'This is a sentence that goes on for a while. ';
-    const text = sentence.repeat(12).trim();
-    const parts = splitForThread(text, 300);
-    expect(parts.length).toBeGreaterThan(1);
-    for (const p of parts) {
-      expect(countComposerGraphemes(p)).toBeLessThanOrEqual(300);
-      expect(p.endsWith('.')).toBe(true);
-    }
-    expect(parts.join(' ')).toBe(text);
-  });
-  it('prefers a paragraph break', () => {
-    const a = 'x'.repeat(200);
-    const b = 'y '.repeat(80).trim();
-    const parts = splitForThread(`${a}\n\n${b}`, 300);
-    expect(parts[0]).toBe(a);
-  });
-  it('cuts a word that is longer than a post', () => {
-    const parts = splitForThread('z'.repeat(650), 300);
-    expect(parts.map((p) => p.length)).toEqual([300, 300, 50]);
-  });
-  it('counts links as they will be written', () => {
-    const url = `https://example.org/${'a'.repeat(200)}`;
-    expect(splitForThread(`${url} ${'w '.repeat(100).trim()}`)).toHaveLength(1);
-  });
-});
-
-describe('splitForThread with no room for every part', () => {
-  it('keeps what doesn’t fit in the last post instead of dropping it', () => {
-    const sentence = 'The river ran high after the storm and the herons came back to the shallows. ';
-    const text = sentence.repeat(12).trim();
-    const all = splitForThread(text, 300);
-    expect(all.length).toBeGreaterThan(2);
-    const two = splitForThread(text, 300, { maxParts: 2 });
-    expect(two).toHaveLength(2);
-    expect(two[0]).toBe(all[0]);
-    expect(countComposerGraphemes(two[1])).toBeGreaterThan(300);
-    // Every word is still there.
-    expect(two.join(' ').split(/\s+/)).toEqual(text.split(/\s+/));
-    // A full thread has no room at all: nothing is split off.
-    expect(splitForThread(text, 300, { maxParts: 1 })).toEqual([text]);
   });
 });
 

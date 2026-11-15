@@ -297,7 +297,10 @@
   gap: 8px;
 }
 
-.post-count {
+/* The character count under a post. Named with its field-hint class, because
+   a post's engagement counts in the reports (PostRow) are .post-count too,
+   and this stylesheet is on the page with them once the composer has loaded. */
+.field-hint.post-count {
   margin-left: auto;
   white-space: nowrap;
 }
@@ -312,6 +315,46 @@
 .split-offer {
   flex-wrap: wrap;
   align-items: center;
+  row-gap: 8px;
+}
+
+/* The sentence takes the first line; the box and the buttons share the next. */
+.split-offer-text {
+  flex: 1 1 calc(100% - 26px);
+}
+
+.split-offer-number {
+  margin-left: 26px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+.split-offer-example {
+  color: var(--muted);
+}
+
+/* The same offer, quiet, beside the count. */
+.post-split-link {
+  margin-left: auto;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.post-split-link + .field-hint.post-count {
+  margin-left: 0;
+}
+
+.post-split-link:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.thread-renumber {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: -4px;
 }
 
 .add-post {

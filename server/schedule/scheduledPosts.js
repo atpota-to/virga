@@ -15,7 +15,10 @@
  *     gates: { threadgate, postgate },   // applied to posts[0] (the root) only
  *     media: { [mediaId]: { storagePath, encoding } },  // filled in at create
  *     rkeys: [ tid, ... ],               // one per post, minted from the time
- *     tz?, selfDestruct?
+ *     tz?, selfDestruct?,
+ *     reply?:   { root: { uri, cid }, parent: { uri, cid } },  // replyTarget.js
+ *     replyTo?: { handle, displayName, text },  // what it answers, for the list
+ *     repeat?:  { every, tz, until, count, anchor }            // recurrence.js
  *   }
  *   PostSpec = { record: { text, facets?, langs?, labels?, tags? }, embed?: EmbedSpec }
  *   EmbedSpec =
@@ -32,6 +35,18 @@
  * Threads publish in order, each post replying to the one before. The
  * { uri, cid } of each written post is saved as `progress` after every post, so
  * a retry resumes rather than writing earlier posts again.
+ *
+ * A reply is a row whose first post answers somebody's post (`payload.reply`).
+ * Before writing it the worker asks the parent's PDS whether that post is
+ * still there, and doesn't post an orphan.
+ *
+ * A repeating post is a series of rows sharing `series_id`, one per
+ * occurrence, of which only one waits at a time: the row carrying
+ * `payload.repeat`. Settling that row (it published, failed for good, or was
+ * skipped) writes the next occurrence in the same transaction
+ * (settle_scheduled_occurrence). The stashed images belong to the whole
+ * series: an object is removed once no row that could still publish it
+ * names it (releaseRowMedia).
  */
 
 import crypto from 'node:crypto';
@@ -52,6 +67,15 @@ import {
   maxPending,
   scheduledPostsCeiling,
 } from '../limits/limits.js';
+import { nextOccurrence, reanchor, validateRepeat } from './recurrence.js';
+import {
+  PARENT_ACCOUNT_GONE_ERROR,
+  PARENT_GONE_ERROR,
+  PARENT_UNCHECKED_ERROR,
+  normalizeReplyHint,
+  probeReplyParent,
+  validateReply,
+} from './replyTarget.js';
 
 const TABLE = 'scheduled_posts';
 export const MEDIA_BUCKET = 'scheduled-media';
@@ -92,6 +116,11 @@ export const FAILURE_CODES = Object.freeze([
   'TIMED_OUT',
   'RATE_LIMITED',
   'REFUSED',
+  // A reply whose parent is gone (deleted, or its account no longer served),
+  // and one whose parent couldn't be checked in any of its attempts. Neither
+  // was posted.
+  'REPLY_TARGET_GONE',
+  'REPLY_TARGET_UNCHECKED',
   // The post published, but the self-destruct timer it asked for couldn't be
   // set. The one code that rides on a 'published' row: the author needs to
   // know the post won't take itself down.
@@ -213,6 +242,22 @@ export function isUndefinedFunction(error) {
   );
 }
 
+/**
+ * True when the table lacks a column this code reads or writes: the table's
+ * own migration is applied, but a later one (the series columns) isn't.
+ */
+export function isMissingColumn(error) {
+  if (!error) return false;
+  return (
+    error.code === 'PGRST204' ||
+    error.code === '42703' ||
+    (typeof error.message === 'string' &&
+      /^(could not find the '[^']+' column|column "?[\w.]+"? (of relation "[^"]+" )?does not exist)/i.test(
+        error.message,
+      ))
+  );
+}
+
 /** Scheduling can't run here: no Supabase, or its migration isn't applied. */
 function unavailable(message) {
   return codedError(message, 'UNAVAILABLE');
@@ -220,7 +265,11 @@ function unavailable(message) {
 
 /** A thrown Error for a Supabase error, coded UNAVAILABLE when the schema is missing. */
 function dbError(error) {
-  if (isMissingTable(error) || isUndefinedFunction(error)) {
+  if (
+    isMissingTable(error) ||
+    isUndefinedFunction(error) ||
+    isMissingColumn(error)
+  ) {
     return unavailable(
       `scheduling needs its database migration: ${error.message}`,
     );
@@ -359,16 +408,28 @@ function checkTime(scheduledFor) {
   return { when };
 }
 
+// What can't be combined, each with the code the client's serializer throws
+// for the same mistake, so the writer reads the client's sentence.
+export const QUEUE_REPLY_ERROR =
+  "a reply can't wait in the queue. schedule it for a set time instead.";
+export const QUEUE_REPEAT_ERROR =
+  "a post in the queue can't repeat. schedule it for a set time instead.";
+export const REPEAT_REPLY_ERROR =
+  "a reply can't repeat: it would answer the same post again each time.";
+
 /**
  * Validate a create (or a full edit). Returns { ok: true, value } or
- * { ok: false, error, code? } (a code only on the time guards). The endpoint stashes the media and fills in
- * payload.media afterwards.
+ * { ok: false, error, code? } (a code on the time guards and on what can't be
+ * combined). The endpoint stashes the media and fills in payload.media
+ * afterwards. `occurrence` is the number of the row being edited in its
+ * series (1 for a new post): a repeat rule is anchored at it.
  */
 export function validateCreate({
   scheduledFor,
   target = TARGET,
   payload,
   queued = false,
+  occurrence = 1,
 } = {}) {
   const time = checkTime(scheduledFor);
   if (time.error) return { ok: false, error: time.error, code: time.code };
@@ -408,7 +469,28 @@ export function validateCreate({
     if (embedErr) return { ok: false, error: `posts[${i}]: ${embedErr}` };
   }
 
-  const gates = payload.gates || {};
+  // A reply answers one post at one moment, so it takes a time of its own:
+  // waiting for whichever queue slot comes free, or going out again and
+  // again, is not what replying to someone means.
+  const reply = validateReply(payload.reply);
+  if (reply.error) return { ok: false, error: reply.error };
+  if (reply.value && queued)
+    return { ok: false, error: QUEUE_REPLY_ERROR, code: 'QUEUE_REPLY' };
+
+  const repeat = validateRepeat(payload.repeat, {
+    scheduledFor: when.toISOString(),
+    occurrence,
+    fallbackTz: payload.tz,
+  });
+  if (repeat.error) return { ok: false, error: repeat.error };
+  if (repeat.value && queued)
+    return { ok: false, error: QUEUE_REPEAT_ERROR, code: 'QUEUE_REPEAT' };
+  if (repeat.value && reply.value)
+    return { ok: false, error: REPEAT_REPLY_ERROR, code: 'REPEAT_REPLY' };
+
+  // A reply takes no gates: a threadgate belongs to the thread's root, which
+  // is somebody else's, and a live reply writes no postgate either.
+  const gates = reply.value ? {} : payload.gates || {};
 
   // Checked here, while the writer is still at the keyboard, rather than at
   // publish time hours later when a refusal is nobody's to act on.
@@ -432,8 +514,34 @@ export function validateCreate({
       },
       queued: !!queued,
       selfDestruct: selfDestruct.value,
+      reply: reply.value,
+      replyTo: reply.value ? normalizeReplyHint(payload.replyTo) : null,
+      repeat: repeat.value,
     },
   };
+}
+
+/**
+ * The payload a row stores, from a validated create or edit: the posts and
+ * gates, and the optional parts only when the post has them, so a plain
+ * post's payload is the shape it always was.
+ */
+export function buildPayload({
+  posts,
+  gates,
+  media = {},
+  rkeys,
+  tz,
+  selfDestruct,
+  reply = null,
+  replyTo = null,
+  repeat = null,
+}) {
+  const payload = { posts, gates, media, rkeys, tz, selfDestruct };
+  if (reply) payload.reply = reply;
+  if (reply && replyTo) payload.replyTo = replyTo;
+  if (repeat) payload.repeat = repeat;
+  return payload;
 }
 
 /**
@@ -654,15 +762,79 @@ async function listRowObjects(rowId) {
   }
 }
 
+// The statuses in which a row may still publish what it has stashed. A
+// failed row counts until the sweep stamps it: it is offered Retry.
+const NEEDS_MEDIA = ['pending', 'publishing', 'failed'];
+
 /**
- * Remove a finished row's stashed objects: those its media map names, and
- * anything else under its folder (a create killed mid-stash uploads bytes
- * the map never learns about). True only when the bytes are really gone, so
- * the caller may stamp the row reclaimed.
+ * The Storage paths the other rows of a series still need: those named by
+ * every sibling that could yet publish. A repeating post's occurrences all
+ * name the same objects, so a row that is done must leave them for the one
+ * that is waiting. Null when the database can't say, and then nothing may be
+ * removed.
  */
-async function deleteRowMedia(rowId, mediaMap) {
+async function pathsHeldBySeries(seriesId, exceptRowId) {
+  try {
+    const supabase = requireSupabase();
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('id, payload')
+      .eq('series_id', seriesId)
+      .neq('id', exceptRowId)
+      .in('status', NEEDS_MEDIA)
+      .is('media_reclaimed_at', null);
+    if (error) throw new Error(error.message);
+    const held = new Set();
+    for (const row of data || [])
+      for (const path of mediaPaths(row.payload?.media)) held.add(path);
+    return held;
+  } catch (err) {
+    console.warn(`[schedule] series media lookup failed: ${err.message}`);
+    return null;
+  }
+}
+
+/** A row's series: its id, null for a post that never repeated, undefined when unreadable. */
+async function seriesIdOf(rowId) {
+  try {
+    const supabase = requireSupabase();
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('series_id')
+      .eq('id', rowId)
+      .single();
+    if (error) throw new Error(error.message);
+    return data?.series_id ?? null;
+  } catch (err) {
+    console.warn(`[schedule] series lookup failed for ${rowId}: ${err.message}`);
+    return undefined;
+  }
+}
+
+/**
+ * Let go of a finished row's stashed objects: those its media map names, and
+ * anything else under its folder (a create killed mid-stash uploads bytes
+ * the map never learns about). An object another row of the same series
+ * still needs is left for that row to release in its turn, so a repeating
+ * post's images last until the series ends, is stopped or is cancelled, and
+ * no longer. `seriesId` is the row's (null for none); left undefined, it is
+ * read.
+ *
+ * True only when everything this row alone held is really gone, so the
+ * caller may stamp the row reclaimed.
+ */
+async function releaseRowMedia(rowId, mediaMap, seriesId) {
   const listed = rowId ? await listRowObjects(rowId) : [];
-  const paths = [...new Set([...mediaPaths(mediaMap), ...(listed || [])])];
+  let paths = [...new Set([...mediaPaths(mediaMap), ...(listed || [])])];
+  if (paths.length > 0 && rowId) {
+    const series = seriesId === undefined ? await seriesIdOf(rowId) : seriesId;
+    if (series === undefined) return false;
+    if (series) {
+      const held = await pathsHeldBySeries(series, rowId);
+      if (held === null) return false;
+      paths = paths.filter((path) => !held.has(path));
+    }
+  }
   const removed = await removeQuietly(paths);
   return removed && listed !== null;
 }
@@ -719,6 +891,9 @@ export async function createScheduledPost({
 }) {
   const supabase = requireSupabase();
   const ceiling = scheduledPostsCeiling();
+  // A post that repeats starts a series as its first occurrence. Every
+  // argument is always named, so only the eight-argument function can match.
+  const repeats = !!payload?.repeat;
   const { data, error } = await supabase.rpc('create_scheduled_post_capped', {
     p_user_did: userDid,
     p_scheduled_for: scheduledFor,
@@ -726,6 +901,8 @@ export async function createScheduledPost({
     p_payload: payload,
     p_queued: !!queued,
     p_max_active: ceiling,
+    p_series_id: repeats ? crypto.randomUUID() : null,
+    p_occurrence: repeats ? 1 : null,
   });
   if (error) throw dbError(error);
   if (data && data.ok === false) throw quotaError(ceiling);
@@ -812,7 +989,7 @@ export async function updatePayload(id, payload) {
 }
 
 const LIST_COLUMNS =
-  'id, scheduled_for, status, target, queued, payload, progress, result_uri, attempts, max_attempts, last_error, last_error_code, created_at';
+  'id, scheduled_for, status, target, queued, payload, progress, result_uri, attempts, max_attempts, last_error, last_error_code, created_at, series_id, occurrence';
 
 /**
  * The account's queue: waiting, publishing and failed rows, plus the one
@@ -911,6 +1088,10 @@ export async function getScheduledMediaMap(id, userDid) {
  * 'pending' and 'failed' (dismissing a failed row is this same call); a
  * 'publishing' row may be mid-write and is left alone. Null when nothing was
  * cancelled.
+ *
+ * Cancelling the waiting occurrence of a repeating post ends the series:
+ * nothing is left to carry it forward, and its images go with it (unless a
+ * failed earlier occurrence could still be retried with them).
  */
 export async function cancelScheduledPost(id, userDid) {
   if (!isRowId(id)) return null;
@@ -928,7 +1109,7 @@ export async function cancelScheduledPost(id, userDid) {
     throw dbError(error);
   }
   // A delete that fails leaves the row unstamped for the media sweep.
-  if (await deleteRowMedia(id, data?.payload?.media))
+  if (await releaseRowMedia(id, data?.payload?.media, data?.series_id ?? null))
     await stampMediaReclaimed(id);
   return data;
 }
@@ -960,6 +1141,10 @@ export async function rescheduleScheduledPost({ id, userDid, scheduledFor }) {
     : 0;
   const rkeys = await assignRkeys({ userDid, scheduledFor, postCount });
   const payload = { ...(row.payload || {}), rkeys };
+  // A repeating post moved to a new time repeats from there: the occurrences
+  // after this one follow it.
+  if (payload.repeat)
+    payload.repeat = reanchor(payload.repeat, scheduledFor, row.occurrence);
 
   // `progress` is in the predicate, not only checked above: between that read
   // and this write the worker can claim the row, write the root, fail a later
@@ -1213,6 +1398,12 @@ export async function reorderScheduledPosts({ userDid, moves }) {
  * Takes 'pending' and 'failed': reworking a post that ran out of attempts is
  * how a reader gets it back in the queue, so a failed row comes back pending.
  * Returns the row, null when it can't be edited, or { blocked } with why.
+ *
+ * `repeat` is the rule the edit leaves the post with (validateCreate's, null
+ * for none). On the row that carries a series it replaces the rule, so this
+ * occurrence and the ones after it change and the series keeps its number.
+ * On any other row it starts a series of its own: a failed occurrence the
+ * series has already moved past can't become a second head of it.
  */
 export async function updateScheduledPostContent({
   id,
@@ -1224,6 +1415,9 @@ export async function updateScheduledPostContent({
   queued = false,
   tz = undefined,
   selfDestruct = null,
+  reply = null,
+  replyTo = null,
+  repeat = null,
 }) {
   const supabase = requireSupabase();
   const existing = await getScheduledPost(id, userDid);
@@ -1289,21 +1483,40 @@ export async function updateScheduledPostContent({
       sameTime && storedRkeys.length === posts.length
         ? storedRkeys
         : await assignRkeys({ userDid, scheduledFor, postCount: posts.length });
+    // Whether this row is the one its series goes on from. If it is, the
+    // rule it is saved with keeps the series' number; if not, a rule starts
+    // a new series at one.
+    const carries = seriesCarrier(existing);
+    const rule = repeat
+      ? {
+          ...repeat,
+          anchor: {
+            ...repeat.anchor,
+            occurrence: carries ? existing.occurrence : 1,
+          },
+        }
+      : null;
     // tz is the scheduling device's zone, kept for the client's round trip.
-    const payload = {
+    const payload = buildPayload({
       posts,
       gates,
       media,
       rkeys,
       tz: tz ?? existing.payload?.tz,
       selfDestruct,
-    };
+      reply,
+      replyTo,
+      repeat: rule,
+    });
 
     const patch = {
       scheduled_for: scheduledFor,
       target: TARGET,
       queued: !!queued,
       payload,
+      ...(rule && !carries
+        ? { series_id: crypto.randomUUID(), occurrence: 1 }
+        : {}),
       // A reworked failed row starts over: a clean attempt count and no stale
       // lock or error from the run that gave up.
       status: 'pending',
@@ -1339,7 +1552,15 @@ export async function updateScheduledPostContent({
       }
       throw dbError(error);
     }
-    await removeQuietly(oldPaths.filter((p) => !newPaths.includes(p)));
+    // The bytes this edit replaced. In a series they may still be named by
+    // an earlier occurrence that failed and can be retried, and then they
+    // stay until that row lets go of them.
+    let dropped = oldPaths.filter((p) => !newPaths.includes(p));
+    if (dropped.length > 0 && existing.series_id) {
+      const held = await pathsHeldBySeries(existing.series_id, id);
+      dropped = held ? dropped.filter((p) => !held.has(p)) : [];
+    }
+    await removeQuietly(dropped);
     return data;
   } catch (err) {
     // The edit never landed, so nothing references this edit's folder.
@@ -1392,8 +1613,9 @@ export async function reclaimFailedMedia(
   for (const row of data || []) {
     try {
       // Stamped only after the delete really happened: stamping first would
-      // tell later sweeps to forget bytes still in the bucket.
-      const gone = await deleteRowMedia(row.id, row.payload?.media);
+      // tell later sweeps to forget bytes still in the bucket. What a live
+      // row of the same series still needs is not this row's to remove.
+      const gone = await releaseRowMedia(row.id, row.payload?.media);
       if (!gone) {
         failed += 1;
         continue;
@@ -1445,22 +1667,154 @@ export async function writeBookkeeping(id, fields) {
   if (error) throw dbError(error);
 }
 
-/** The row went out: record its root and drop its stashed images. */
-export async function markPublished(id, { uri, cid }, mediaMap) {
-  await writeBookkeeping(id, {
-    status: 'published',
-    result_uri: uri,
-    result_cid: cid,
-    locked_at: null,
-    locked_by: null,
-    last_error: null,
-    last_error_code: null,
-    updated_at: nowIso(),
+// ─── Series ─────────────────────────────────────────────────────────────────
+
+/**
+ * Whether a row is the one its series goes on from: it belongs to a series
+ * and still holds the rule. The rule moves to the next occurrence when one is
+ * written, so at most one row of a series says yes.
+ */
+export function seriesCarrier(row) {
+  return !!(row && row.series_id && row.payload && row.payload.repeat);
+}
+
+/**
+ * What follows a row that carries a series, as settle_scheduled_occurrence's
+ * p_next: `{ scheduledFor, occurrence, payload }`, or null when the row
+ * carries none or the series is over. The time is the rule's next slot still
+ * ahead of now; the record keys are minted for it, as for any new row.
+ */
+export async function planNextOccurrence(row, nowMs = Date.now()) {
+  if (!seriesCarrier(row)) return null;
+  const next = nextOccurrence(row.payload.repeat, row.occurrence, nowMs);
+  if (!next) return null;
+  const postCount = Array.isArray(row.payload.posts)
+    ? row.payload.posts.length
+    : 0;
+  const rkeys = await assignRkeys({
+    userDid: row.user_did,
+    scheduledFor: next.scheduledFor,
+    postCount,
   });
+  const payload = { rkeys };
+  // A pinned delete time was chosen against one occurrence and would be in
+  // the past for every later one, so they run for the length behind it.
+  if (row.payload.selfDestruct?.deleteAt)
+    payload.selfDestruct = { ...row.payload.selfDestruct, deleteAt: null };
+  return {
+    scheduledFor: next.scheduledFor,
+    occurrence: next.occurrence,
+    payload,
+  };
+}
+
+/**
+ * Record how a row ended and, in the same transaction, write the occurrence
+ * that follows it (settle_scheduled_occurrence). Answers the RPC's
+ * `{ ok, next }` or `{ ok: false, code }`.
+ */
+async function settleOccurrence({
+  id,
+  status,
+  fields = {},
+  next = null,
+  userDid = null,
+  onlyPending = false,
+}) {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase.rpc('settle_scheduled_occurrence', {
+    p_id: id,
+    p_status: status,
+    p_fields: fields,
+    p_next: next,
+    p_user_did: userDid,
+    p_only_pending: onlyPending,
+  });
+  if (error) throw dbError(error);
+  return data || { ok: false, code: 'NOT_FOUND' };
+}
+
+/**
+ * Skip the waiting occurrence of one of the account's repeating posts: it
+ * doesn't go out, and the next one takes its place. Answers
+ * `{ skipped, next }` (next is the new row, or null when that was the last
+ * one and the series is over), or null when there's nothing to skip: not the
+ * account's, not waiting, part-way out, or not repeating.
+ */
+export async function skipOccurrence({ id, userDid }) {
+  const row = await getScheduledPost(id, userDid);
+  if (!row || row.status !== 'pending' || !seriesCarrier(row)) return null;
+  const next = await planNextOccurrence(row);
+  const settled = await settleOccurrence({
+    id,
+    status: 'cancelled',
+    next,
+    userDid,
+    onlyPending: true,
+  });
+  // The worker claimed it, or it was edited away, between the read and here.
+  if (!settled.ok) return null;
+  // What the next occurrence needs stays; with no next, the series is over
+  // and its images go.
+  if (await releaseRowMedia(id, row.payload?.media, row.series_id))
+    await stampMediaReclaimed(id);
+  return { skipped: { ...row, status: 'cancelled' }, next: settled.next || null };
+}
+
+/**
+ * Stop one of the account's posts repeating: the occurrence that is waiting
+ * (or failed) stays as it is and goes out once more, and nothing follows it.
+ * Answers the row, or null when it isn't the account's, isn't repeating, or
+ * is already on its way out.
+ */
+export async function stopRepeating({ id, userDid }) {
+  if (!isRowId(id)) return null;
+  const supabase = requireSupabase();
+  const { data, error } = await supabase.rpc('stop_scheduled_repeat', {
+    p_id: id,
+    p_user_did: userDid,
+  });
+  if (error) throw dbError(error);
+  return data || null;
+}
+
+/**
+ * The row went out: record its root and drop its stashed images. `row` is
+ * the claimed row; when it carries a series, the next occurrence is written
+ * in the same transaction as the status, and the images stay for it.
+ */
+export async function markPublished(id, { uri, cid }, mediaMap, row = null) {
+  let seriesId = row ? (row.series_id ?? null) : undefined;
+  if (seriesCarrier(row)) {
+    seriesId = row.series_id;
+    await settleOccurrence({
+      id,
+      status: 'published',
+      fields: {
+        result_uri: uri,
+        result_cid: cid,
+        last_error: null,
+        last_error_code: null,
+      },
+      next: await planNextOccurrence(row),
+    });
+  } else {
+    await writeBookkeeping(id, {
+      status: 'published',
+      result_uri: uri,
+      result_cid: cid,
+      locked_at: null,
+      locked_by: null,
+      last_error: null,
+      last_error_code: null,
+      updated_at: nowIso(),
+    });
+  }
   // Never throws past here: the post is out, and the worker would otherwise
   // read a cleanup hiccup as a failed publish. A failed delete leaves the row
   // unstamped for the media sweep.
-  if (await deleteRowMedia(id, mediaMap)) await stampMediaReclaimed(id);
+  if (await releaseRowMedia(id, mediaMap, seriesId))
+    await stampMediaReclaimed(id);
 }
 
 /**
@@ -1479,14 +1833,44 @@ export async function markFailedOrRetry(
   const failureCode = normalizeFailureCode(code) || classifyFailure(errMessage);
 
   if (exhausted) {
-    await writeBookkeeping(row.id, {
-      status: 'failed',
-      last_error: errMessage?.slice(0, 500),
-      last_error_code: failureCode,
-      locked_at: null,
-      locked_by: null,
-      updated_at: nowIso(),
-    });
+    // A repeating post goes on from its schedule: the occurrence that failed
+    // stays in the list as failed, to retry or dismiss, and the next one is
+    // written with it. If that can't be planned or written, the failure is
+    // still recorded below, and the row keeps the rule, so retrying it picks
+    // the series up again.
+    let settled = false;
+    if (seriesCarrier(row)) {
+      try {
+        const next = await planNextOccurrence(row);
+        const out = await settleOccurrence({
+          id: row.id,
+          status: 'failed',
+          fields: {
+            last_error: errMessage?.slice(0, 500) ?? null,
+            last_error_code: failureCode,
+          },
+          next,
+        });
+        settled = out.ok === true;
+        // One failed occurrence of a series is shown at a time: an older one
+        // nobody came back to makes way for this one.
+        if (settled && out.next) await retireOlderFailures(row);
+      } catch (err) {
+        console.warn(
+          `[schedule] could not carry the series of ${row.id} past its failure: ${err.message}`,
+        );
+      }
+    }
+    if (!settled) {
+      await writeBookkeeping(row.id, {
+        status: 'failed',
+        last_error: errMessage?.slice(0, 500),
+        last_error_code: failureCode,
+        locked_at: null,
+        locked_by: null,
+        updated_at: nowIso(),
+      });
+    }
     // The stashed images stay: a failed row is still editable, and deleting
     // them would break the retry the reader is offered. They go when the row
     // is dismissed, when a retry publishes, or when the media sweep runs.
@@ -1507,6 +1891,35 @@ export async function markFailedOrRetry(
     updated_at: nowIso(),
   });
   return 'retry';
+}
+
+/**
+ * Dismiss the failed occurrences of a series older than `row`, which has
+ * just failed in its turn. A series whose account can't post (a session that
+ * ended, say) fails every time it comes round; without this its failures
+ * would pile up, one a day for a daily post. The newest is the one worth
+ * retrying, and it is the one that stays. Best-effort.
+ */
+async function retireOlderFailures(row) {
+  try {
+    const supabase = requireSupabase();
+    const { data, error } = await supabase
+      .from(TABLE)
+      .update({ status: 'cancelled', updated_at: nowIso() })
+      .eq('series_id', row.series_id)
+      .eq('status', 'failed')
+      .lt('occurrence', row.occurrence)
+      .select('id, payload');
+    if (error) throw new Error(error.message);
+    for (const old of data || []) {
+      if (await releaseRowMedia(old.id, old.payload?.media, row.series_id))
+        await stampMediaReclaimed(old.id);
+    }
+  } catch (err) {
+    console.warn(
+      `[schedule] could not retire older failures of ${row.series_id}: ${err.message}`,
+    );
+  }
 }
 
 // ─── Publish ────────────────────────────────────────────────────────────────
@@ -1784,10 +2197,38 @@ async function writeRoot(userDid, sessionRef, record, rkey, createdAt, gates) {
 }
 
 /**
+ * Before a reply is written: is the post it answers still there? Throws when
+ * it isn't (terminally: the reply is not posted, and the row says why) and
+ * when it couldn't be found out (retriably, under the row's usual attempts
+ * and backoff, rather than posting blind). Asked once, before the first
+ * post: a thread that is resuming has already answered.
+ */
+async function assertReplyParentThere(reply) {
+  const probe = await probeReplyParent(reply.parent.uri);
+  if (probe.state === 'there') return;
+  if (probe.state === 'gone') {
+    throw new NonRetryableError(
+      probe.reason === 'account' ? PARENT_ACCOUNT_GONE_ERROR : PARENT_GONE_ERROR,
+      'REPLY_TARGET_GONE',
+    );
+  }
+  console.warn(
+    `[schedule] couldn't check a reply's parent (${reply.parent.uri}): ${probe.detail}`,
+  );
+  throw codedError(PARENT_UNCHECKED_ERROR, 'REPLY_TARGET_UNCHECKED');
+}
+
+const strongRef = (ref) => ({ uri: ref.uri, cid: ref.cid });
+
+/**
  * Publish one row (a post or a thread) to the account's PDS. Resumes a
  * partly written thread from row.progress, and calls onProgress after each
  * post so the saved progress stays current. Throws on failure (`.nonRetryable`
- * when retrying can't help). Returns the root's { uri, cid }.
+ * when retrying can't help). Returns the first post's { uri, cid }.
+ *
+ * A row with `payload.reply` goes out as a reply: its first post answers the
+ * parent, under the parent's root, and each later post answers the one
+ * before under that same root, as a threaded reply written live does.
  */
 export async function publishScheduledPost(row, { onProgress } = {}) {
   const userDid = row.user_did;
@@ -1806,7 +2247,11 @@ export async function publishScheduledPost(row, { onProgress } = {}) {
   const payload = row.payload || {};
   const posts = Array.isArray(payload.posts) ? payload.posts : [];
   const mediaMap = payload.media || {};
-  const gates = payload.gates || {};
+  const reply = payload.reply?.parent?.uri && payload.reply?.root?.uri
+    ? payload.reply
+    : null;
+  // A reply takes no gates: the thread isn't the account's to gate.
+  const gates = reply ? {} : payload.gates || {};
 
   const baseMicros = scheduledMicros(row.scheduled_for);
   const rkeys =
@@ -1824,6 +2269,9 @@ export async function publishScheduledPost(row, { onProgress } = {}) {
 
   const progress = Array.isArray(row.progress) ? [...row.progress] : [];
 
+  // Before any blob is uploaded or record written.
+  if (reply && progress.length === 0) await assertReplyParentThere(reply);
+
   for (let i = progress.length; i < posts.length; i++) {
     const rkey = rkeys[i];
     const createdAt = createdAtFor(i);
@@ -1836,11 +2284,15 @@ export async function publishScheduledPost(row, { onProgress } = {}) {
     );
 
     if (i > 0) {
-      const root = progress[0];
-      const parent = progress[i - 1];
+      const root = reply ? reply.root : progress[0];
       record.reply = {
-        root: { uri: root.uri, cid: root.cid },
-        parent: { uri: parent.uri, cid: parent.cid },
+        root: strongRef(root),
+        parent: strongRef(progress[i - 1]),
+      };
+    } else if (reply) {
+      record.reply = {
+        root: strongRef(reply.root),
+        parent: strongRef(reply.parent),
       };
     }
 

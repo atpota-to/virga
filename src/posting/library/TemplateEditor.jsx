@@ -21,6 +21,7 @@ import {
   patchVariable,
 } from './templateEditorModel.js';
 import './library.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const ATTACH_OPTIONS = [
   { value: 'none', label: 'Nothing' },
@@ -366,7 +367,7 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
             ))}
           </div>
           <span className={`field-hint num${textCount > TEMPLATE_LIMITS.textGraphemes ? ' is-over' : ''}`}>
-            {textCount.toLocaleString('en-US')} of {TEMPLATE_LIMITS.textGraphemes}
+            {textCount.toLocaleString(activeLocale())} of {TEMPLATE_LIMITS.textGraphemes}
           </span>
         </div>
         {blankLabel !== null && (

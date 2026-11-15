@@ -17,6 +17,8 @@
 // for adviser reads, with the same shape under `altText` and `style` for the
 // other two allowances.
 
+import { activeLocale } from '../../lib/locale.js';
+
 export const ADVISER_USAGE_KEY_PREFIX = 'virga:adviser-usage:';
 
 export const USAGE_FEATURES = Object.freeze(['adviser', 'altText', 'style']);
@@ -214,7 +216,7 @@ export function adviserUsageLine(
   const [one, many] = NOUNS[feature];
   const left = Math.max(0, usage.limit - usage.used);
   if (left === 0) {
-    const resets = usageResetsAt(now).toLocaleDateString('en-US', RESET_FORMAT);
+    const resets = usageResetsAt(now).toLocaleDateString(activeLocale(), RESET_FORMAT);
     return `No free ${many} left this month. They start again on ${resets}.`;
   }
   return `${left} of ${usage.limit} free ${usage.limit === 1 ? one : many} left this month.`;

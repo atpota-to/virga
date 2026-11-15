@@ -275,6 +275,103 @@
   font-weight: 600;
 }
 
+/* ---- accent choices ------------------------------------------------------ */
+
+/* Each choice carries data-accent, which makes it a swatch (theme.css):
+   inside it --accent and the rest are that accent's own, in the page's
+   theme. So the disc, the small dot of its second colour, and the tint and
+   border of the chosen one all come from the tokens, not from a second
+   list of colours here. */
+
+.accent-choices {
+  display: grid;
+  flex: 1 1 340px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  max-width: 440px;
+}
+
+.accent-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+  font-weight: 560;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .accent-choice:hover:not([aria-checked='true']) {
+    background: var(--hover);
+  }
+}
+
+.accent-choice[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+  font-weight: 650;
+}
+
+.accent-swatch {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.accent-swatch::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  bottom: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--chart-2);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+@media (hover: hover) {
+  .accent-choice:hover:not([aria-checked='true']) .accent-swatch::after {
+    box-shadow: 0 0 0 2px var(--hover);
+  }
+}
+
+.accent-choice[aria-checked='true'] .accent-swatch::after {
+  box-shadow: 0 0 0 2px var(--accent-wash);
+}
+
+@media (max-width: 760px) {
+  .accent-choices {
+    flex-basis: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: none;
+  }
+
+  .accent-choice {
+    min-height: 44px;
+  }
+}
+
+/* Forced colours paint over a fill, and here the fills are the point: the
+   swatches, and the little pictures of each theme. */
+@media (forced-colors: active) {
+  .accent-swatch,
+  .accent-swatch::after,
+  .theme-preview {
+    forced-color-adjust: none;
+  }
+}
+
 .theme-preview {
   display: flex;
   gap: 5px;
@@ -373,6 +470,14 @@
   fill: #8fa27c;
 }
 
+.sky-preview .sky-stars {
+  fill: #dfe8ff;
+  opacity: 0;
+}
+
+/* On: the sky it will show, in the scene's own colours (hillside/scene.js).
+   data-time is the sky in force, so "with the archive" and "with the clock"
+   show what they come to now. */
 .sky-preview[data-on] {
   background: linear-gradient(180deg, #3a7fe2 0%, #8bbaf0 55%, #d4e7f8 100%);
 }
@@ -381,10 +486,71 @@
   background: linear-gradient(180deg, #3b5aa8 0%, #7890cf 45%, #e7b7a6 80%, #ffd59e 100%);
 }
 
+.sky-preview[data-on][data-time='dusk'] {
+  background: linear-gradient(180deg, #262a66 0%, #5d4a8f 45%, #c9796b 80%, #ffb070 100%);
+}
+
+.sky-preview[data-on][data-time='night'] {
+  background: linear-gradient(180deg, #050a1d 0%, #0c1838 45%, #182c55 80%, #2a4470 100%);
+}
+
 .sky-preview[data-on] .sky-hill-1 {
   fill: #94d43c;
 }
 
 .sky-preview[data-on] .sky-hill-2 {
   fill: #4fa624;
+}
+
+.sky-preview[data-on][data-time='dawn'] .sky-hill-1 {
+  fill: #9cb04a;
+}
+
+.sky-preview[data-on][data-time='dawn'] .sky-hill-2 {
+  fill: #557c2c;
+}
+
+.sky-preview[data-on][data-time='dawn'] .sky-cloud {
+  fill: #ffe0c4;
+}
+
+.sky-preview[data-on][data-time='dusk'] .sky-hill-1 {
+  fill: #6b7a3a;
+}
+
+.sky-preview[data-on][data-time='dusk'] .sky-hill-2 {
+  fill: #3c5429;
+}
+
+.sky-preview[data-on][data-time='dusk'] .sky-cloud {
+  fill: #ffc2a0;
+}
+
+.sky-preview[data-on][data-time='night'] .sky-hill-1 {
+  fill: #1f3d33;
+}
+
+.sky-preview[data-on][data-time='night'] .sky-hill-2 {
+  fill: #102820;
+}
+
+.sky-preview[data-on][data-time='night'] .sky-cloud {
+  fill: #3d4e74;
+}
+
+.sky-preview[data-on][data-time='night'] .sky-stars {
+  opacity: 1;
+}
+
+.sky-preview[data-on][data-time='dusk'] .sky-stars {
+  opacity: 0.3;
+}
+
+/* Six keys don't fit a phone in one row, so they take two rather than scroll. */
+@media (max-width: 760px) {
+  .segmented.sky-times {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
 }

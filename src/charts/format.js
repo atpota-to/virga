@@ -1,6 +1,7 @@
 // Number and axis formatting shared by every chart, figure and table.
 
 import { fmtCompact } from '../lib/analytics.js';
+import { activeLocale } from '../lib/locale.js';
 
 /**
  * A clean axis around [min, max]: pick a 1/2/2.5/5×10ⁿ step near a quarter of
@@ -38,20 +39,20 @@ export function clamp(v, lo, hi) {
 
 /** A count as the charts write it: whole, with thousands separators. */
 export function fmtCount(v) {
-  return v == null ? '—' : Math.round(v).toLocaleString('en-US');
+  return v == null ? '—' : Math.round(v).toLocaleString(activeLocale());
 }
 
 /** A rate (engagement per post): one decimal while small; words for none. */
 export function fmtRate(v) {
   if (v == null) return 'no posts';
-  return v < 10 ? (Math.round(v * 10) / 10).toLocaleString('en-US') : Math.round(v).toLocaleString('en-US');
+  return v < 10 ? (Math.round(v * 10) / 10).toLocaleString(activeLocale()) : Math.round(v).toLocaleString(activeLocale());
 }
 
 /** A number for a figure: whole with separators, or one decimal while small. */
 export function fmtFigure(v, { decimals = false } = {}) {
   if (v == null || Number.isNaN(v)) return '—';
-  if (decimals && Math.abs(v) < 10) return (Math.round(v * 10) / 10).toLocaleString('en-US');
-  return Math.round(v).toLocaleString('en-US');
+  if (decimals && Math.abs(v) < 10) return (Math.round(v * 10) / 10).toLocaleString(activeLocale());
+  return Math.round(v).toLocaleString(activeLocale());
 }
 
 /** "Daily", "Weekly", "Monthly", for a unit key. */
@@ -69,5 +70,5 @@ export function deltaText(pct) {
   if (pct == null) return 'new';
   if (pct === 0) return '0%';
   const v = Math.abs(pct) >= 10 ? Math.round(Math.abs(pct)) : Math.round(Math.abs(pct) * 10) / 10;
-  return `${pct > 0 ? '+' : '−'}${v.toLocaleString('en-US')}%`;
+  return `${pct > 0 ? '+' : '−'}${v.toLocaleString(activeLocale())}%`;
 }

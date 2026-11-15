@@ -1,6 +1,6 @@
-// Search every post in the archive, by its words, its kind and its window,
-// sorted by date or by what it earned, and take the results (or the whole
-// archive) with you.
+// Search every post in the archive, by its words, its tags, the sites it
+// links to, its kind and its window, sorted by date or by what it earned,
+// and take the results (or the whole archive) with you.
 
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Download } from 'lucide-react';
@@ -9,12 +9,27 @@ import Menu from '../components/Menu.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { engagementOf } from '../lib/analytics.js';
+import { periodEnd, periodStart } from '../lib/periods.js';
+import { contentReady } from '../reports/models.js';
 import PostRow from '../reports/PostRow.jsx';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
+import { activeLocale } from '../lib/locale.js';
 
-const DAY_MS = 86_400_000;
 const PAGE = 30;
+
+/**
+ * Whether a post matches every word of a search. A word is looked for in
+ * the post's text and in the sites it links to; a word that starts with #
+ * has to be one of its tags, whole, so #bee doesn't find #bees.
+ */
+export function matchesWords(post, words) {
+  if (!words.length) return true;
+  const text = (post.text || '').toLowerCase();
+  const tags = (post.tags || []).map((t) => t.toLowerCase());
+  const links = (post.links || []).join(' ');
+  return words.every((w) => (w.length > 1 && w.startsWith('#') ? tags.includes(w.slice(1)) || text.split(/\s+/).includes(w) : text.includes(w) || links.includes(w)));
+}
 
 export default function ArchiveSearch({ tool }) {
   const archive = useArchive();
@@ -27,20 +42,20 @@ export default function ArchiveSearch({ tool }) {
   const nowMs = archive.nowMs;
 
   const results = useMemo(() => {
-    const t0 = period.days ? nowMs - period.days * DAY_MS : -Infinity;
+    const t1 = periodEnd(period, nowMs);
+    const t0 = periodStart(period, t1) ?? -Infinity;
     const words = q.split(/\s+/).filter(Boolean);
     const out = [];
     for (const p of archive.posts) {
       const t = Date.parse(p.at);
-      if (!(t >= t0)) continue;
+      if (!(t >= t0 && t <= t1)) continue;
       if (kind === 'posts' && p.replyTo) continue;
       if (kind === 'replies' && !p.replyTo) continue;
       if (kind === 'quotes' && !p.quoteOf) continue;
       if (kind === 'media' && !p.hasMedia) continue;
-      if (words.length) {
-        const text = (p.text || '').toLowerCase();
-        if (!words.every((w) => text.includes(w))) continue;
-      }
+      if (kind === 'links' && !p.links?.length) continue;
+      if (kind === 'tags' && !p.tags?.length) continue;
+      if (!matchesWords(p, words)) continue;
       out.push({ p, t, e: engagementOf(p, 'all') });
     }
     out.sort((a, b) => (sort === 'oldest' ? a.t - b.t : sort === 'engagement' ? b.e - a.e || b.t - a.t : b.t - a.t));
@@ -60,7 +75,7 @@ export default function ArchiveSearch({ tool }) {
               label="Export"
               size="md"
               items={[
-                { icon: Download, label: `These ${results.length.toLocaleString('en-US')} posts (CSV)`, hint: 'What the search shows, newest first.', onSelect: () => exportPosts(archive, results) },
+                { icon: Download, label: `These ${results.length.toLocaleString(activeLocale())} posts (CSV)`, hint: 'What the search shows, newest first.', onSelect: () => exportPosts(archive, results) },
                 { icon: Download, label: 'Every post (CSV)', hint: 'The whole post archive with its counts.', onSelect: () => exportPosts(archive) },
                 { icon: Download, label: 'Everything (JSON)', hint: 'Posts, followers, blocks, engagement and repo records.', onSelect: () => exportArchive(archive) },
               ]}
@@ -81,7 +96,7 @@ export default function ArchiveSearch({ tool }) {
             <input
               className="input input--lg"
               type="search"
-              placeholder="Search your posts"
+              placeholder="Search your posts: words, #tags, sites"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -97,6 +112,8 @@ export default function ArchiveSearch({ tool }) {
                 ['replies', 'Replies'],
                 ['quotes', 'Quotes'],
                 ['media', 'With media'],
+                ['links', 'With links'],
+                ['tags', 'With tags'],
               ].map(([k, label]) => (
                 <button key={k} type="button" className="chip" aria-pressed={kind === k} onClick={() => setKind(k)}>
                   {label}
@@ -116,9 +133,14 @@ export default function ArchiveSearch({ tool }) {
         <section className="card card--flush" aria-label="Results">
           <div className="card-head">
             <p className="card-sub num" role="status">
-              {results.length.toLocaleString('en-US')} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
+              {results.length.toLocaleString(activeLocale())} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
               {q ? ` matching “${query.trim()}”` : ''}
             </p>
+            {!contentReady(archive) && (
+              <p className="card-sub">
+                Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.
+              </p>
+            )}
           </div>
           {shown.length ? (
             <ol className="widget-rows report-rows">

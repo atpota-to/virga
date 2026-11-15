@@ -5,7 +5,7 @@
 // Only the middle part scrolls, so a menu hanging from the account button
 // (at the top, or at the foot of the rail) is never clipped by the scroll.
 
-import { LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Settings, SquarePen, Wrench } from 'lucide-react';
+import { LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings, SquarePen, Wrench } from 'lucide-react';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import Button from '../components/Button.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -16,6 +16,7 @@ import { POSTING_PAGES } from '../posting/routes.js';
 import { TOOLS, TOOL_BY_KEY } from '../tools/registry.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { SyncCard } from './SyncStatus.jsx';
+import { paletteShortcutAria, paletteShortcutLabel } from './shortcuts.js';
 
 const PINNED_TOOLS = ['follow-cleanup', 'unfollow-tracker', 'best-time'];
 
@@ -37,7 +38,7 @@ function NavItem({ to, icon: Icon, label, count = null, current = false, collaps
 
 const PINNED_POSTING = POSTING_PAGES.filter((p) => p.pinned);
 
-export default function Sidebar({ archive, route, profile, did, onSignOut, onNewDashboard, onNewPost }) {
+export default function Sidebar({ archive, route, profile, did, onSignOut, onNewDashboard, onNewPost, onSearch }) {
   const { dashboards } = useDashboards();
   const { sidebar, setPref } = usePreferences();
   const tapLogo = useSkyTaps();
@@ -79,6 +80,27 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
         <SquarePen size={16} aria-hidden="true" />
         {!collapsed && 'New post'}
       </Button>
+
+      {/* The command palette, and where its shortcut is written down. */}
+      {collapsed ? (
+        <Button
+          variant="ghost"
+          icon
+          className="sidebar-search-icon"
+          aria-label="Search or jump to"
+          title={`Search or jump to (${paletteShortcutLabel()})`}
+          aria-keyshortcuts={paletteShortcutAria()}
+          onClick={onSearch}
+        >
+          <Search size={16} aria-hidden="true" />
+        </Button>
+      ) : (
+        <button type="button" className="sidebar-search" aria-keyshortcuts={paletteShortcutAria()} onClick={onSearch}>
+          <Search size={15} aria-hidden="true" />
+          <span className="sidebar-search-label">Search or jump to…</span>
+          <kbd className="kbd">{paletteShortcutLabel()}</kbd>
+        </button>
+      )}
 
       <div className="sidebar-scroll">
         {collapsed ? (

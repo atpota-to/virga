@@ -24,6 +24,7 @@ import { blobImageLoader, draftActionMessage, draftMeta, draftPostBlock, draftSc
 import { draftRows, whenLabel } from './hubModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
 import './hub.css';
+import { activeLocale } from '../../lib/locale.js';
 
 const PAGE = 50;
 // Accounts whose stray draft files this tab has already cleared out.
@@ -220,7 +221,7 @@ export default function DraftsPage({ did, id = null }) {
             <div>
               <h2 id="drafts-title" className="card-title">
                 {list.status === 'ready' && rows.length
-                  ? `${rows.length.toLocaleString('en-US')}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
+                  ? `${rows.length.toLocaleString(activeLocale())}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
                   : 'Drafts'}
               </h2>
               <p className="card-sub">The latest edit first. Pictures stay on the device that saved them.</p>

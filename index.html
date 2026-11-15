@@ -11,18 +11,23 @@
     <meta name="theme-color" content="#f5f6f8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <script>
-      // Theme and density before the first paint, from what src/lib/preferences.jsx
-      // stores, so a dark-mode reader never sees a white flash. Kept tiny on purpose.
+      // Theme, accent, contrast and density before the first paint, from what
+      // src/lib/preferences.jsx stores, so a dark-mode reader never sees a white
+      // flash. Kept tiny on purpose. It has to stamp what rootAttributes() there
+      // would: preferences.test.js runs this script against it.
       (function () {
+        var p = {};
         try {
-          var p = JSON.parse(localStorage.getItem('virga:preferences') || '{}') || {};
-          var t = p.theme === 'light' || p.theme === 'dark' ? p.theme
-            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          document.documentElement.dataset.theme = t;
-          document.documentElement.dataset.density = p.density === 'compact' ? 'compact' : 'comfortable';
-        } catch (e) {
-          document.documentElement.dataset.theme = 'light';
-        }
+          p = JSON.parse(localStorage.getItem('virga:preferences') || '{}') || {};
+        } catch (e) {}
+        var asks = function (q) {
+          return !!(window.matchMedia && window.matchMedia(q).matches);
+        };
+        var d = document.documentElement.dataset;
+        d.theme = p.theme === 'light' || p.theme === 'dark' ? p.theme : asks('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+        d.accent = /^(violet|teal|amber|rose|graphite)$/.test(p.accent) ? p.accent : 'blue';
+        d.contrast = p.contrast === 'normal' || p.contrast === 'high' ? p.contrast : asks('(prefers-contrast: more)') ? 'high' : 'normal';
+        d.density = p.density === 'compact' ? 'compact' : 'comfortable';
       })();
     </script>
   </head>

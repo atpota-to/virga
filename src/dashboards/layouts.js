@@ -6,7 +6,12 @@
 //
 //   layout     { version, dashboards: [dashboard] }
 //   dashboard  { id, name, widgets: [card] }
-//   card       { id, type, size }      size: 'xs' | 's' | 'm' | 'l' | 'xl'
+//   card       { id, type, size, options? }   size: 'xs' | 's' | 'm' | 'l' | 'xl'
+//
+// A card's `options` are its own settings, present only when it has any:
+// a title, a period of its own instead of the dashboard's, the kind of
+// engagement it counts, and how many rows a list shows. Which of these a
+// card takes is its type's to say (catalog.js `options`).
 //
 // The sizes are spans of a twelve-column grid: xs 3, s 4, m 6, l 8, xl 12.
 // On a phone every card is full width; the order is the same everywhere.
@@ -69,6 +74,36 @@ export const TEMPLATES = Object.freeze({
   },
 });
 
+/** The periods a card can keep for itself. A custom range belongs to the dashboard. */
+export const CARD_PERIODS = Object.freeze(['7d', '30d', '90d', '1y', 'all']);
+/** The kinds of engagement a card can be narrowed to. */
+export const CARD_KINDS = Object.freeze(['like', 'repost', 'reply', 'quote']);
+/** How many rows a list can be set to show, instead of what fits its size. */
+export const CARD_ROWS = Object.freeze([3, 5, 8, 10, 15, 20]);
+export const CARD_TITLE_MAX = 60;
+
+/**
+ * A card's options, checked against what its type takes: anything the type
+ * doesn't take, or a value this version doesn't know, is dropped. Returns
+ * null when nothing is left, so a card with no settings stores none.
+ */
+export function cleanOptions(raw, def) {
+  if (!raw || typeof raw !== 'object') return null;
+  const takes = def?.options || [];
+  const out = {};
+  if (takes.includes('title') && typeof raw.title === 'string' && raw.title.trim()) out.title = raw.title.trim().slice(0, CARD_TITLE_MAX);
+  if (takes.includes('period') && CARD_PERIODS.includes(raw.period)) out.period = raw.period;
+  if (takes.includes('kind') && CARD_KINDS.includes(raw.kind)) out.kind = raw.kind;
+  if (takes.includes('rows') && CARD_ROWS.includes(raw.rows)) out.rows = raw.rows;
+  return Object.keys(out).length ? out : null;
+}
+
+function withOptions(card, options) {
+  const rest = { ...card };
+  delete rest.options;
+  return options ? { ...rest, options } : rest;
+}
+
 let counter = 0;
 
 /** A short id, unique enough within one browser's layouts. */
@@ -110,7 +145,7 @@ export function sanitizeLayout(raw, widgets) {
       template: TEMPLATES[d.template] ? d.template : null,
       widgets: (Array.isArray(d.widgets) ? d.widgets : [])
         .filter((w) => w && typeof w.id === 'string' && widgets[w.type])
-        .map((w) => ({ id: w.id, type: w.type, size: fitSize(w.size, widgets[w.type]) })),
+        .map((w) => withOptions({ id: w.id, type: w.type, size: fitSize(w.size, widgets[w.type]) }, cleanOptions(w.options, widgets[w.type]))),
     }));
   if (!dashboards.length) return defaultLayout();
   return { version: LAYOUT_VERSION, dashboards };
@@ -190,6 +225,14 @@ export function resizeWidget(layout, dashboardId, widgetId, size) {
   return mapDashboard(layout, dashboardId, (d) => ({
     ...d,
     widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, size } : w)),
+  }));
+}
+
+/** Set a card's own settings (checked against its type), or clear them with nothing. */
+export function setWidgetOptions(layout, dashboardId, widgetId, options, def) {
+  return mapDashboard(layout, dashboardId, (d) => ({
+    ...d,
+    widgets: d.widgets.map((w) => (w.id === widgetId ? withOptions(w, cleanOptions(options, def)) : w)),
   }));
 }
 

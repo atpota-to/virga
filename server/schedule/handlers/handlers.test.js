@@ -19,6 +19,7 @@ import {
   resetSupabaseClientForTests,
 } from '../../supabase.js';
 import {
+  CIDS,
   DID,
   OTHER_DID,
   HOUR,
@@ -45,7 +46,7 @@ const { DELETE_TIME_TOO_EARLY_ERROR } = await import('../scheduledPosts.js');
 
 let t;
 beforeAll(async () => {
-  t = await createTestDatabase({ upTo: '20261113000300' });
+  t = await createTestDatabase({ upTo: '20261114000100' });
 });
 afterAll(async () => {
   await t?.close();
@@ -128,10 +129,12 @@ const ROW_KEYS = [
   'lastError',
   'lastErrorCode',
   'maxAttempts',
+  'occurrence',
   'payload',
   'queued',
   'resultUri',
   'scheduledFor',
+  'seriesId',
   'status',
   'target',
 ];
@@ -844,6 +847,275 @@ describe('POST /api/schedule/update', () => {
     });
     expect(res.body.code).toBe('NOT_ACKNOWLEDGEABLE');
     expect((await readRow(failed.id)).status).toBe('failed');
+  });
+});
+
+describe('scheduled replies', () => {
+  const PARENT = {
+    uri: 'at://did:plc:ewvi7nxzyoun6zhxrhs64oiz/app.bsky.feed.post/3lwcs2m4ock2z',
+    cid: CIDS[3],
+  };
+  const ROOT = {
+    uri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lwcrzq3bbc2y',
+    cid: CIDS[4],
+  };
+  const replyBody = (extra = {}, options = {}) => {
+    const body = createBody(options);
+    Object.assign(body.payload, {
+      reply: { root: ROOT, parent: PARENT },
+      replyTo: { handle: 'ada.example.com', displayName: 'Ada', text: 'what was said' },
+      ...extra,
+    });
+    return body;
+  };
+
+  it('stores the root and parent refs, and who it answers, and no gates', async () => {
+    const res = await post(
+      create,
+      replyBody({}, { gates: { threadgate: [], postgate: null } }),
+    );
+    expect(res.statusCode).toBe(201);
+    expect(res.body.data.payload).toMatchObject({
+      reply: { root: ROOT, parent: PARENT },
+      replyTo: { handle: 'ada.example.com', displayName: 'Ada', text: 'what was said' },
+      gates: { threadgate: null, postgate: null },
+    });
+    expect(res.body.data).toMatchObject({ queued: false, seriesId: null, occurrence: null });
+    expect((await readRow(res.body.data.id)).payload.reply).toEqual({
+      root: ROOT,
+      parent: PARENT,
+    });
+  });
+
+  it('refuses refs that aren’t well formed, before anything is reserved', async () => {
+    for (const [reply, error] of [
+      [{ root: ROOT, parent: { uri: 'https://bsky.app/x', cid: PARENT.cid } }, 'reply.parent.uri must be the at:// address of a post'],
+      [{ root: { uri: ROOT.uri, cid: 'short' }, parent: PARENT }, 'reply.root.cid must be a CID'],
+      [{ parent: PARENT }, 'reply.root needs a uri and a cid'],
+      ['at://x', 'reply must be an object'],
+    ]) {
+      const res = await post(create, replyBody({ reply }));
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({ success: false, error });
+    }
+    expect(await countRows()).toBe(0);
+  });
+
+  it('refuses a reply in the queue and a reply that repeats, with the client’s codes', async () => {
+    const queued = await post(create, replyBody({}, { queued: true }));
+    expect(queued.statusCode).toBe(400);
+    expect(queued.body.code).toBe('QUEUE_REPLY');
+    const repeating = await post(create, replyBody({ repeat: { every: 'day', tz: 'UTC' } }));
+    expect(repeating.statusCode).toBe(400);
+    expect(repeating.body.code).toBe('REPEAT_REPLY');
+    expect(await countRows()).toBe(0);
+  });
+
+  it('keeps the reply through a rewrite from the composer, and takes it off when the edit drops it', async () => {
+    const created = (await post(create, replyBody())).body.data;
+    const edited = replyBody();
+    edited.payload.posts = [{ record: { text: 'said better' } }];
+    const res = await post(update, { id: created.id, ...edited });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.payload).toMatchObject({
+      posts: [{ record: { text: 'said better' } }],
+      reply: { root: ROOT, parent: PARENT },
+      replyTo: { handle: 'ada.example.com' },
+    });
+    const plain = await post(update, { id: created.id, ...createBody() });
+    expect(plain.body.data.payload).not.toHaveProperty('reply');
+    expect(plain.body.data.payload).not.toHaveProperty('replyTo');
+  });
+});
+
+describe('repeating posts', () => {
+  const repeatBody = (repeat = { every: 'week', tz: 'Europe/Paris' }, options = {}) => {
+    const body = createBody(options);
+    body.payload.repeat = repeat;
+    return body;
+  };
+
+  it('creates the first occurrence of a series, with the rule anchored at its time', async () => {
+    const body = repeatBody({ every: 'week', tz: 'UTC', count: 6 });
+    const res = await post(create, body);
+    expect(res.statusCode).toBe(201);
+    const data = res.body.data;
+    expect(data.seriesId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(data.occurrence).toBe(1);
+    const at = new Date(body.scheduledFor);
+    const pad = (v) => String(v).padStart(2, '0');
+    expect(data.payload.repeat).toEqual({
+      every: 'week',
+      tz: 'UTC',
+      until: null,
+      count: 6,
+      anchor: {
+        date: at.toISOString().slice(0, 10),
+        time: `${pad(at.getUTCHours())}:${pad(at.getUTCMinutes())}`,
+        occurrence: 1,
+      },
+    });
+  });
+
+  it('answers a rule it can’t take as a 400 sentence, and a queued one with QUEUE_REPEAT', async () => {
+    const bad = await post(create, repeatBody({ every: 'fortnight' }));
+    expect(bad.statusCode).toBe(400);
+    expect(bad.body.error).toMatch(/repeat\.every must be one of/);
+    const queued = await post(create, repeatBody(undefined, { queued: true }));
+    expect(queued.statusCode).toBe(400);
+    expect(queued.body.code).toBe('QUEUE_REPEAT');
+    expect(await countRows()).toBe(0);
+  });
+
+  it('lists a repeating row with its series and number', async () => {
+    const created = (await post(create, repeatBody())).body.data;
+    const res = await call(list, { method: 'GET' });
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0]).toMatchObject({
+      id: created.id,
+      seriesId: created.seriesId,
+      occurrence: 1,
+    });
+    expect(res.body.data[0].payload.repeat.every).toBe('week');
+  });
+
+  it('skips the waiting occurrence: the next one comes back in its place', async () => {
+    const created = (await post(create, repeatBody({ every: 'day', tz: 'UTC' }))).body.data;
+    const res = await post(update, { id: created.id, skip: true });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({ success: true, skipped: created.id, ended: false });
+    expect(res.body.data).toMatchObject({
+      status: 'pending',
+      seriesId: created.seriesId,
+      occurrence: 2,
+    });
+    // A day on, at the rule's wall-clock minute.
+    const firstAt = new Date(created.scheduledFor).getTime();
+    expect(new Date(res.body.data.scheduledFor).getTime()).toBe(
+      Math.floor(firstAt / MINUTE) * MINUTE + DAY,
+    );
+    expect((await readRow(created.id)).status).toBe('cancelled');
+    const listed = (await call(list, { method: 'GET' })).body.data;
+    expect(listed.map((r) => r.id)).toEqual([res.body.data.id]);
+  });
+
+  it('says the series ended when the one skipped was the last', async () => {
+    const body = repeatBody({ every: 'day', tz: 'UTC', count: 2 });
+    const first = (await post(create, body)).body.data;
+    const second = (await post(update, { id: first.id, skip: true })).body.data;
+    const res = await post(update, { id: second.id, skip: true });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      success: true,
+      data: null,
+      skipped: second.id,
+      ended: true,
+    });
+    expect((await call(list, { method: 'GET' })).body.data).toEqual([]);
+  });
+
+  it('answers 409 NOT_SKIPPABLE for a post that isn’t repeating, is going out, or isn’t the account’s', async () => {
+    const plain = await insertRow();
+    const created = (await post(create, repeatBody())).body.data;
+    await t.query(`UPDATE scheduled_posts SET status = 'publishing' WHERE id = $1`, [created.id]);
+    const theirs = await insertRow({ user_did: OTHER_DID });
+    for (const id of [plain.id, created.id, theirs.id]) {
+      const res = await post(update, { id, skip: true });
+      expect(res.statusCode).toBe(409);
+      expect(res.body.code).toBe('NOT_SKIPPABLE');
+    }
+    expect((await readRow(plain.id)).status).toBe('pending');
+  });
+
+  it('stops a post repeating: the waiting occurrence stays, without its rule', async () => {
+    const created = (await post(create, repeatBody())).body.data;
+    const res = await post(update, { id: created.id, stopRepeat: true });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data).toMatchObject({
+      id: created.id,
+      status: 'pending',
+      seriesId: created.seriesId,
+      occurrence: 1,
+    });
+    expect(res.body.data.payload).not.toHaveProperty('repeat');
+    expect(new Date(res.body.data.scheduledFor).getTime()).toBe(
+      new Date(created.scheduledFor).getTime(),
+    );
+    const again = await post(update, { id: created.id, stopRepeat: true });
+    expect(again.statusCode).toBe(409);
+    expect(again.body.code).toBe('NOT_REPEATING');
+  });
+
+  it('rewrites the waiting occurrence and the rule with it, keeping its place in the series', async () => {
+    const first = (await post(create, repeatBody({ every: 'day', tz: 'UTC' }))).body.data;
+    const second = (await post(update, { id: first.id, skip: true })).body.data;
+    const edited = repeatBody({ every: 'week', tz: 'UTC', count: 5 });
+    edited.payload.posts = [{ record: { text: 'weekly from now on' } }];
+    const res = await post(update, { id: second.id, ...edited });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data).toMatchObject({
+      id: second.id,
+      seriesId: first.seriesId,
+      occurrence: 2,
+    });
+    expect(res.body.data.payload.repeat).toMatchObject({
+      every: 'week',
+      count: 5,
+      anchor: { occurrence: 2 },
+    });
+    expect(res.body.data.payload.posts).toEqual([{ record: { text: 'weekly from now on' } }]);
+  });
+
+  it('refuses an edit that ends the series before the occurrence being edited', async () => {
+    const first = (await post(create, repeatBody({ every: 'day', tz: 'UTC' }))).body.data;
+    let row = first;
+    for (let n = 0; n < 3; n++)
+      row = (await post(update, { id: row.id, skip: true })).body.data;
+    expect(row.occurrence).toBe(4);
+    const res = await post(update, {
+      id: row.id,
+      ...repeatBody({ every: 'day', tz: 'UTC', count: 3 }),
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toMatch(/already gone out 3 times/);
+  });
+
+  it('takes the rule off when the composer saves the post without one', async () => {
+    const created = (await post(create, repeatBody())).body.data;
+    const res = await post(update, { id: created.id, ...createBody() });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.payload).not.toHaveProperty('repeat');
+    expect(res.body.data.seriesId).toBe(created.seriesId);
+  });
+
+  it('removes the waiting occurrence, and the series with it', async () => {
+    const created = (await post(create, repeatBody(undefined, { images: 1 }))).body.data;
+    const path = created.payload.media['p0-img0'].storagePath;
+    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    const res = await post(cancel, { id: created.id });
+    expect(res.statusCode).toBe(200);
+    expect((await call(list, { method: 'GET' })).body.data).toEqual([]);
+    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    const { rows } = await t.query(
+      `SELECT COUNT(*)::int AS n FROM scheduled_posts WHERE series_id = $1 AND status IN ('pending', 'publishing')`,
+      [created.seriesId],
+    );
+    expect(rows[0].n).toBe(0);
+  });
+
+  it('checks skip and stopRepeat after retry and before a rewrite', async () => {
+    const created = (await post(create, repeatBody({ every: 'day', tz: 'UTC' }))).body.data;
+    const both = await post(update, {
+      id: created.id,
+      skip: true,
+      stopRepeat: true,
+      ...createBody(),
+    });
+    expect(both.body.skipped).toBe(created.id);
+    const next = both.body.data;
+    const stop = await post(update, { id: next.id, stopRepeat: true, ...createBody({ texts: ['not this'] }) });
+    expect(stop.body.data.payload.posts[0].record.text).toBe('hello moths');
+    expect(stop.body.data.payload).not.toHaveProperty('repeat');
   });
 });
 

@@ -8,20 +8,24 @@ import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
 import Segmented from '../components/Segmented.jsx';
-import { useArchive } from '../archive/ArchiveContext.jsx';
+import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
 import PostingSettingsSection from '../posting/PostingSettingsSection.jsx';
-import { usePreferences } from '../lib/preferences.jsx';
+import { ACCENT_CHOICES, usePreferences } from '../lib/preferences.jsx';
+import { useSkyPhase } from '../hillside/useSkyPhase.js';
+import { radioKeyTarget } from './radioKeys.js';
 import { Link, navigate } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PageHeader, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
+import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
-const SECTIONS = [
+// Exported for the command palette, which lists them (src/shell/CommandPalette.jsx).
+export const SECTIONS = [
   { key: 'account', label: 'Account' },
   { key: 'data', label: 'Data and sync' },
   { key: 'dashboards', label: 'Dashboards' },
@@ -128,19 +132,19 @@ function DataSection() {
             <dl className="data-facts">
               <div>
                 <dt>Posts</dt>
-                <dd className="num">{counts.posts.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.posts.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Followers</dt>
-                <dd className="num">{counts.followers.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.followers.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Repo records</dt>
-                <dd className="num">{counts.records.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.records.toLocaleString(activeLocale())}</dd>
               </div>
               <div>
                 <dt>Blocked by</dt>
-                <dd className="num">{counts.blockedBy.toLocaleString('en-US')}</dd>
+                <dd className="num">{counts.blockedBy.toLocaleString(activeLocale())}</dd>
               </div>
             </dl>
             {archive.syncError && (
@@ -435,28 +439,67 @@ function DashboardsSection() {
 
 /* ---- appearance ---------------------------------------------------- */
 
+const WEEK_START_NAMES = { 0: 'Sunday', 1: 'Monday', 6: 'Saturday' };
+
+/** "Germany" for 'en-DE'; the tag itself where the browser can't name it. */
+function regionName(tag) {
+  try {
+    const region = new Intl.Locale(tag).region;
+    return (region && new Intl.DisplayNames(['en'], { type: 'region' }).of(region)) || tag;
+  } catch {
+    return tag;
+  }
+}
+
+const THEMES = [
+  { key: 'light', label: 'Light' },
+  { key: 'dark', label: 'Dark' },
+  { key: 'system', label: 'Match system' },
+];
+
+const ACCENT_NAMES = { blue: 'Blue', violet: 'Violet', teal: 'Teal', amber: 'Amber', rose: 'Rose', graphite: 'Graphite' };
+const ACCENTS = ACCENT_CHOICES.map((key) => ({ key, label: ACCENT_NAMES[key] }));
+
+/**
+ * A radio group drawn as buttons. One tab stop, on the chosen one; the
+ * arrows move between the choices and choose as they go (radioKeys.js), as
+ * in a native group. `children(choice, radio)` draws one button and spreads
+ * `radio` onto it.
+ */
+function RadioButtons({ className, label = undefined, labelledBy = undefined, choices, value, onChange, children }) {
+  const chosen = choices.findIndex((c) => c.key === value);
+  const onKeyDown = (event) => {
+    const target = radioKeyTarget(event.key, chosen, choices.length);
+    if (target === null) return;
+    event.preventDefault();
+    onChange(choices[target].key);
+    event.currentTarget.querySelectorAll('[role="radio"]')[target]?.focus();
+  };
+  return (
+    <div className={className} role="radiogroup" aria-label={label} aria-labelledby={labelledBy} onKeyDown={onKeyDown}>
+      {choices.map((choice, i) =>
+        children(choice, {
+          type: 'button',
+          role: 'radio',
+          'aria-checked': i === chosen,
+          tabIndex: i === Math.max(chosen, 0) ? 0 : -1,
+          onClick: () => onChange(choice.key),
+        }),
+      )}
+    </div>
+  );
+}
+
 function AppearanceSection() {
   const prefs = usePreferences();
   const { setPref } = prefs;
-  const themes = [
-    { key: 'light', label: 'Light' },
-    { key: 'dark', label: 'Dark' },
-    { key: 'system', label: 'Match system' },
-  ];
+  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built: isBuilt(useArchive()) });
   return (
     <>
       <Section title="Theme" sub="Charts get their own colours in each, not an inverted copy.">
-        <div className="theme-choices" role="radiogroup" aria-label="Theme">
-          {themes.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              role="radio"
-              aria-checked={prefs.theme === t.key}
-              className="theme-choice"
-              data-theme-preview={t.key}
-              onClick={() => setPref('theme', t.key)}
-            >
+        <RadioButtons className="theme-choices" label="Theme" choices={THEMES} value={prefs.theme} onChange={(v) => setPref('theme', v)}>
+          {(t, radio) => (
+            <button key={t.key} {...radio} className="theme-choice" data-theme-preview={t.key}>
               <span className="theme-preview" aria-hidden="true">
                 <span className="theme-preview-side" />
                 <span className="theme-preview-main">
@@ -466,8 +509,43 @@ function AppearanceSection() {
               </span>
               <span className="theme-choice-label">{t.label}</span>
             </button>
-          ))}
+          )}
+        </RadioButtons>
+        <div className="settings-row">
+          <div className="settings-row-text">
+            <div className="settings-row-label" id="accent-label">
+              Accent
+            </div>
+            <div className="settings-row-hint">
+              The colour of your numbers, and of whatever is pressed. The small dot is the second line on a chart. Each pair is checked for
+              contrast and for colour-blind eyes, in both themes.
+            </div>
+          </div>
+          <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
+            {(a, radio) => (
+              // data-accent makes this button a swatch (theme.css): inside it, the accent tokens are this accent's.
+              <button key={a.key} {...radio} className="accent-choice" data-accent={a.key}>
+                <span className="accent-swatch" aria-hidden="true" />
+                <span className="accent-choice-label">{a.label}</span>
+              </button>
+            )}
+          </RadioButtons>
         </div>
+        <Row
+          label="Contrast"
+          hint="High darkens the words and lines, outlines the cards and thickens the focus ring. Match system follows your device’s own setting."
+        >
+          <Segmented
+            label="Contrast"
+            value={prefs.contrast}
+            onChange={(v) => setPref('contrast', v)}
+            options={[
+              { value: 'system', label: 'Match system' },
+              { value: 'normal', label: 'Standard' },
+              { value: 'high', label: 'High' },
+            ]}
+          />
+        </Row>
         <Row label="Density" hint="Compact fits more reports on a screen.">
           <Segmented
             label="Density"
@@ -492,12 +570,43 @@ function AppearanceSection() {
         </Row>
       </Section>
 
+      <Section title="Numbers and dates" sub="Virga’s words are English. These choose how its figures, dates and times are written.">
+        <Row label="Format" hint={localeSample(activeLocale())}>
+          <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
+            <option value="system">This browser’s region ({regionName(systemLocale())})</option>
+            {LOCALE_CHOICES.map((tag) => (
+              <option key={tag} value={tag}>
+                {regionName(tag)}: {localeSample(tag)}
+              </option>
+            ))}
+          </select>
+        </Row>
+        <Row label="Week starts on" hint="For weekly charts, the best-time grid and the weekly schedule.">
+          {/* A select, not a segmented control: four keys with a day's name in each don't fit a phone. */}
+          <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
+            <option value="system">As in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
+            <option value="monday">Monday</option>
+            <option value="sunday">Sunday</option>
+            <option value="saturday">Saturday</option>
+          </select>
+        </Row>
+      </Section>
+
       <Section title="Live sky">
         <div className="sky-setting">
-          <div className="sky-preview" data-on={prefs.sky || undefined} data-time={prefs.skyTime} aria-hidden="true">
+          <div className="sky-preview" data-on={prefs.sky || undefined} data-time={sky} aria-hidden="true">
             <svg viewBox="0 0 168 104" preserveAspectRatio="none">
-              <path d="M18 36a8 8 0 0 1 4-15 11 11 0 0 1 20-3 9 9 0 0 1 16 5 7 7 0 0 1 4 13Z" fill="#fff" fillOpacity="0.85" />
-              <path d="M96 30a6 6 0 0 1 3-11 8 8 0 0 1 15-2 7 7 0 0 1 12 4 5 5 0 0 1 3 9Z" fill="#fff" fillOpacity="0.7" />
+              <g className="sky-stars">
+                <circle cx="22" cy="14" r="1.2" />
+                <circle cx="58" cy="9" r="0.9" />
+                <circle cx="84" cy="24" r="1.1" />
+                <circle cx="118" cy="11" r="1.3" />
+                <circle cx="146" cy="30" r="0.9" />
+                <circle cx="70" cy="42" r="0.8" />
+                <circle cx="152" cy="8" r="1" />
+              </g>
+              <path className="sky-cloud" d="M18 36a8 8 0 0 1 4-15 11 11 0 0 1 20-3 9 9 0 0 1 16 5 7 7 0 0 1 4 13Z" fill="#fff" fillOpacity="0.85" />
+              <path className="sky-cloud" d="M96 30a6 6 0 0 1 3-11 8 8 0 0 1 15-2 7 7 0 0 1 12 4 5 5 0 0 1 3 9Z" fill="#fff" fillOpacity="0.7" />
               <path className="sky-hill-1" d="M0 70C40 52 80 56 110 66S150 76 168 62V104H0Z" />
               <path className="sky-hill-2" d="M0 86C50 74 100 82 130 88S160 90 168 84V104H0Z" />
             </svg>
@@ -522,15 +631,28 @@ function AppearanceSection() {
         </div>
         {prefs.sky && (
           <>
-            <Row label="Time of day" hint="Following your archive: dawn until the first build, day after.">
+            <Row
+              label="Time of day"
+              hint={
+                <>
+                  With your archive, the sun comes up at the first build: dawn, then day. In the dark theme that is dusk, then night. With
+                  the clock, it is the time of day where you are.
+                  {(prefs.skyTime === 'archive' || prefs.skyTime === 'clock') && <> It is {sky} now.</>}
+                </>
+              }
+            >
               <Segmented
+                className="sky-times"
                 label="Time of day"
                 value={prefs.skyTime}
                 onChange={(v) => setPref('skyTime', v)}
                 options={[
-                  { value: 'archive', label: 'Follow the archive' },
-                  { value: 'day', label: 'Day' },
+                  { value: 'archive', label: 'Archive', ariaLabel: 'Follow the archive' },
+                  { value: 'clock', label: 'Clock', ariaLabel: 'Follow the clock' },
                   { value: 'dawn', label: 'Dawn' },
+                  { value: 'day', label: 'Day' },
+                  { value: 'dusk', label: 'Dusk' },
+                  { value: 'night', label: 'Night' },
                 ]}
               />
             </Row>

@@ -120,6 +120,91 @@ describe('composerReducer: posts', () => {
   });
 });
 
+describe('composerReducer: splitting a post', () => {
+  const thread = () => {
+    let s = run(
+      fresh(),
+      { type: 'setText', index: 0, text: 'first' },
+      { type: 'addPost' },
+      { type: 'setText', index: 1, text: 'long' },
+      { type: 'addPost' },
+      { type: 'setText', index: 2, text: 'last' },
+    );
+    s = run(s, {
+      type: 'addImages',
+      index: 1,
+      images: [{ id: 'i1', file: file(), alt: 'a' }],
+    });
+    return s;
+  };
+
+  it('splitPost replaces one post with several, in place, media on the first', () => {
+    const s = thread();
+    const [a, b] = [emptyPost(), emptyPost()];
+    const out = run(s, {
+      type: 'splitPost',
+      id: s.posts[1].id,
+      text: 'lo',
+      rest: [
+        { ...a, text: 'n' },
+        { ...b, text: 'g' },
+      ],
+    });
+    expect(out.posts.map((p) => p.text)).toEqual(['first', 'lo', 'n', 'g', 'last']);
+    expect(out.posts.map((p) => p.id)).toEqual([
+      s.posts[0].id,
+      s.posts[1].id,
+      a.id,
+      b.id,
+      s.posts[2].id,
+    ]);
+    expect(out.posts[1].images).toHaveLength(1);
+    expect(out.posts[2].images).toEqual([]);
+    expect(out.reply).toBe(s.reply);
+  });
+
+  it('splitPost never passes the thread limit, and ignores a post it can’t find', () => {
+    const s = thread();
+    const rest = Array.from({ length: MAX_POSTS }, () => ({ ...emptyPost(), text: 'x' }));
+    const out = run(s, { type: 'splitPost', id: s.posts[1].id, text: 'lo', rest });
+    expect(out.posts).toHaveLength(MAX_POSTS);
+    expect(composerReducer(s, { type: 'splitPost', id: 'nope', text: 'x', rest })).toBe(s);
+    expect(composerReducer(s, { type: 'splitPost', id: s.posts[1].id, text: 'x', rest: [] })).toBe(s);
+  });
+
+  it('unsplitPost puts the text back and removes the others, by id', () => {
+    const s = thread();
+    const [a, b] = [emptyPost(), emptyPost()];
+    let out = run(s, {
+      type: 'splitPost',
+      id: s.posts[1].id,
+      text: 'lo',
+      rest: [
+        { ...a, text: 'n' },
+        { ...b, text: 'g' },
+      ],
+    });
+    // The thread moves in between; the ids still name the same posts.
+    out = run(out, { type: 'movePost', from: 0, to: 4 });
+    out = run(out, { type: 'unsplitPost', id: s.posts[1].id, remove: [a.id, b.id], text: 'long' });
+    expect(out.posts.map((p) => p.text)).toEqual(['long', 'last', 'first']);
+    expect(out.posts[0].images).toHaveLength(1);
+    expect(composerReducer(out, { type: 'unsplitPost', id: 'nope', remove: [], text: 'x' })).toBe(out);
+  });
+
+  it('setTexts changes the posts it names and no others', () => {
+    const s = thread();
+    const out = run(s, {
+      type: 'setTexts',
+      texts: { [s.posts[0].id]: 'one', [s.posts[2].id]: 'three', nope: 'x' },
+    });
+    expect(out.posts.map((p) => p.text)).toEqual(['one', 'long', 'three']);
+    expect(out.posts[1]).toBe(s.posts[1]);
+    expect(composerReducer(s, { type: 'setTexts', texts: { nope: 'x' } })).toBe(s);
+    expect(composerReducer(s, { type: 'setTexts' })).toBe(s);
+  });
+});
+
 describe('composerReducer: media', () => {
   it('adds up to four images, which replace a video and a card', () => {
     let s = run(
@@ -474,9 +559,16 @@ describe('validateComposer', () => {
     };
     let s = run(withText('x'), { type: 'setReply', reply });
     expect(codes(validateComposer(s, { now }))).toEqual([]);
-    expect(codes(validateComposer(s, { now, forSchedule: true }))).toEqual([
-      'SCHEDULE_REPLY',
-    ]);
+    // A reply can be scheduled for a set time; only the queue refuses it.
+    expect(codes(validateComposer(s, { now, forSchedule: true }))).toEqual([]);
+    expect(
+      codes(
+        validateComposer(
+          run(s, { type: 'setSchedule', schedule: { mode: 'queue' } }),
+          { now, forSchedule: true },
+        ),
+      ),
+    ).toEqual(['QUEUE_REPLY']);
     s = run(withText('x'), {
       type: 'setVideo',
       index: 0,

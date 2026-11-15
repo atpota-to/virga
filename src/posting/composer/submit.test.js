@@ -136,6 +136,31 @@ describe('copy', () => {
       }),
     ).toBe('Added to the queue, going out today at 5:30 PM as @m.example.');
   });
+
+  it('says when a scheduled post repeats', () => {
+    const now = new Date('2026-11-12T12:00:00Z');
+    expect(
+      scheduledMessage({
+        at: '2026-11-13T09:00:00Z',
+        account: { handle: 'm.example' },
+        now,
+        timeZone: 'UTC',
+        locale: 'en-US',
+        repeat: { every: 'week', tz: 'UTC' },
+      }),
+    ).toBe('Scheduled for tomorrow at 9:00 AM as @m.example, repeating every week.');
+    expect(
+      scheduledMessage({
+        at: '2026-11-13T09:00:00Z',
+        editing: true,
+        account: { handle: 'm.example' },
+        now,
+        timeZone: 'UTC',
+        locale: 'en-US',
+        repeat: { every: '2weeks' },
+      }),
+    ).toBe('Rescheduled for tomorrow at 9:00 AM as @m.example, repeating every two weeks.');
+  });
 });
 
 describe('queueSlotRows', () => {

@@ -1,3 +1,5 @@
+import { activeLocale } from '../lib/locale.js';
+
 /**
  * A row of figures: each a large numeral with its label under it, and an
  * optional note under that (a qualifier, or the change against the previous
@@ -19,7 +21,7 @@ export default function Figures({ items, label, className = '' }) {
               stylesheet sets the numeral above it. */}
           <dt className="figures-label">{f.label}</dt>
           <dd className="figures-value">
-            {typeof f.value === 'number' ? f.value.toLocaleString('en-US') : f.value}
+            {typeof f.value === 'number' ? f.value.toLocaleString(activeLocale()) : f.value}
           </dd>
           {f.note && <dd className="figures-note">{f.note}</dd>}
         </div>

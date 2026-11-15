@@ -9,6 +9,7 @@ import { buildCalendarDays, compactTime } from '../schedule/queueCalendar.js';
 import { resolveTimezone } from '../schedule/postingQueue.js';
 import { formatInZone, timeInZone, zoneLabel } from './scheduleModel.js';
 import './schedule.css';
+import { activeLocale } from '../../lib/locale.js';
 
 function allZones() {
   try {
@@ -143,7 +144,7 @@ export function QueueCalendar({
             key={day.key}
             className="sched-cal-day"
             role="listitem"
-            aria-label={day.date.toLocaleDateString(undefined, {
+            aria-label={day.date.toLocaleDateString(activeLocale(), {
               weekday: 'long',
               month: 'long',
               day: 'numeric',
@@ -153,7 +154,7 @@ export function QueueCalendar({
               <span className="sched-cal-dow">
                 {i === 0
                   ? 'Today'
-                  : day.date.toLocaleDateString(undefined, {
+                  : day.date.toLocaleDateString(activeLocale(), {
                       weekday: 'short',
                     })}
               </span>

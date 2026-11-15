@@ -1,11 +1,14 @@
 // People, wherever they are listed: a row with their face, name, handle,
-// what they did, and a Follow button that writes (or deletes) a follow record
-// in the owner's own repo.
+// what they did, a way in to your history with them, and a Follow button
+// that writes (or deletes) a follow record in the owner's own repo.
 
 import { useEffect, useMemo, useState } from 'react';
+import { History } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
-import Button from '../components/Button.jsx';
+import Button, { buttonClass } from '../components/Button.jsx';
+import { Link } from '../lib/router.jsx';
 import { relationSets } from '../reports/models.js';
+import { lookupHref } from '../tools/interactionModel.js';
 
 /** The best card for a DID: the resolved profile, else the follower row. */
 export function cardFor(archive, did) {
@@ -93,9 +96,11 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
 
 /**
  * One person in a list. `meta` is the line under the name (after the
- * handle); `value` sits at the right before the button (a count).
+ * handle); `value` sits at the right before the button (a count). After it
+ * comes a small link to the Interaction lookup for this person, unless
+ * `history` is false.
  */
-export function PersonRow({ archive, did, card: given = null, meta = null, value = null, valueTitle = null, follow = null, followLabel, extra = null }) {
+export function PersonRow({ archive, did, card: given = null, meta = null, value = null, valueTitle = null, follow = null, followLabel, extra = null, history = true }) {
   // A card passed in (someone who has since left the follower list, as the
   // log remembers them) stands in until a fresher one is resolved.
   const resolved = cardFor(archive, did);
@@ -124,6 +129,18 @@ export function PersonRow({ archive, did, card: given = null, meta = null, value
         <span className="person-value num" title={valueTitle || undefined}>
           {value}
         </span>
+      )}
+      {history && did !== archive.did && (
+        <Link
+          to={lookupHref(did)}
+          // A row that already carries a button of its own gives the link up
+          // on a phone, where there isn't room for both and a name.
+          className={buttonClass({ variant: 'ghost', size: 'sm', icon: true, className: `person-history${extra ? ' person-history--spare' : ''}` })}
+          title={`See your history with ${name}`}
+          aria-label={`See your history with ${name}`}
+        >
+          <History size={15} aria-hidden="true" />
+        </Link>
       )}
       {extra}
       {follow && <FollowButton follow={follow} did={did} name={name} followLabel={followLabel} />}

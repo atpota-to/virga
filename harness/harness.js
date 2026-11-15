@@ -21,6 +21,9 @@
 //                    waits, or are unavailable
 //   ?cron=20         how often (seconds) the server's workers run; 0 stops them
 //   ?latency=60      simulated delay per request, in ms
+//   ?now=<ms>        the moment the made-up world is dated back from. Every
+//                    post's address comes from its date, so without this a
+//                    reload is a new set of posts; with it, the same ones
 
 import { OAUTH_SCOPE } from '../src/config.js';
 import { DEFAULT_AI_LIMITS, createServer } from './fakeServer.js';
@@ -77,6 +80,7 @@ export function readFlags(search) {
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
     cronSeconds: num('cron', 20),
     latency: num('latency', 60),
+    now: num('now', 0) > 0 ? num('now', 0) : null,
   };
 }
 
@@ -84,7 +88,7 @@ export function readFlags(search) {
  * @param {ReturnType<typeof readFlags>} flags
  * @param {{ now?: number }} [options]
  */
-export function createHarness(flags, { now = Date.now() } = {}) {
+export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
   const worlds = flags.accounts.map((account) => {
     const world = buildWorld({ now, account });
     // What Virga's server reports about the session (/api/oauth/session).

@@ -30,6 +30,14 @@ const easeOut = (t) => 1 - (1 - clamp(t, 0, 1)) ** 3;
 // Day is the picture: deep blue overhead, paler to the horizon, bright white
 // clouds lit from behind you and a vivid green hill. Dawn is where Thread
 // starts, before the group moves: a warm, low sun just behind the far hills.
+// Dusk is dawn's other end, for the dark theme: the sun going down to the
+// left, the sky above it already violet, the hill losing its green. Night is
+// what the dark theme settles on: a deep blue with a paler band low down,
+// the land a shape more than a colour, and a few stars. No moon: the light
+// comes from high behind you, as if from one you can't see.
+//
+// `sun` is where the light comes from; `disc` is whether the sun itself is
+// drawn; `stars` is how much of the stars shows.
 const PALETTES = {
   day: {
     top: '#1c54cc',
@@ -39,6 +47,7 @@ const PALETTES = {
     sunCol: '#fff1d2',
     sun: [-0.62, 0.6, 0.4],
     disc: 0,
+    stars: 0,
     cloudLit: '#ffffff',
     cloudShadow: '#a9bee6',
     cloudRim: '#fff4e4',
@@ -56,6 +65,7 @@ const PALETTES = {
     sunCol: '#ffbf6e',
     sun: [0.6, 0.035, -0.8],
     disc: 1,
+    stars: 0,
     cloudLit: '#ffe0c4',
     cloudShadow: '#8d8bbd',
     cloudRim: '#ffad62',
@@ -65,7 +75,49 @@ const PALETTES = {
     shade: '#22431e',
     haze: '#e4c2aa',
   },
+  dusk: {
+    top: '#262a66',
+    mid: '#5d4a8f',
+    low: '#c9796b',
+    hor: '#ffb070',
+    sunCol: '#ff8f4a',
+    sun: [-0.6, 0.03, -0.8],
+    disc: 1,
+    stars: 0.25,
+    cloudLit: '#ffc2a0',
+    cloudShadow: '#54477e',
+    cloudRim: '#ff8748',
+    cloudFog: '#c98f86',
+    lit: '#7c8440',
+    mid2: '#3c5429',
+    shade: '#172b1e',
+    haze: '#b98a86',
+  },
+  night: {
+    top: '#050a1d',
+    mid: '#0c1838',
+    low: '#182c55',
+    hor: '#2a4470',
+    sunCol: '#31486f',
+    sun: [-0.35, 0.55, 0.45],
+    disc: 0,
+    stars: 1,
+    cloudLit: '#3d4e74',
+    cloudShadow: '#131b33',
+    cloudRim: '#5a6d96',
+    cloudFog: '#1d2f54',
+    lit: '#24463a',
+    mid2: '#143026',
+    shade: '#081712',
+    haze: '#1f3358',
+  },
 };
+
+/** The skies the scene can show. Anything else asked of it is day. */
+const phaseOf = (name) => (Object.hasOwn(PALETTES, name) ? name : 'day');
+
+// How long a change of sky takes, in seconds.
+const TURN = 3.4;
 
 const COLOR_KEYS = [
   'top',
@@ -88,7 +140,7 @@ const COLOR_KEYS = [
  *
  * `opts`:
  *   calm     reduced motion: a still picture, drawn when something changes
- *   day      0 is dawn, 1 is day
+ *   phase    the sky to open on: 'dawn', 'day', 'dusk' or 'night'
  *   depth    how deep a blue the sky reaches at the top of the frame: 1 is the
  *            full deep blue, less is paler, for a page with a lot of words on
  *            its sky
@@ -100,7 +152,8 @@ const COLOR_KEYS = [
  * The scene it returns:
  *   resize(width, height, crest)  the canvas's size, and how far down it the
  *                                 hill's crest should sit (0 to 1)
- *   setDay(day, instant)          ease toward dawn (0) or day (1); `instant`
+ *   setPhase(phase, instant)      ease from the sky as it stands, even partway
+ *                                 through a change, to another; `instant`
  *                                 jumps there
  *   setActive(on)                 whether the page has it in view; out of
  *                                 view, it doesn't draw
@@ -126,36 +179,57 @@ export function createHillside(canvas, opts) {
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
   const calm = opts.calm;
 
-  /* ---------- colours, eased between dawn and day ---------- */
+  /* ---------- colours, eased from one sky to another ---------- */
+  // C is what is drawn. A change of sky starts from whatever C holds at that
+  // moment (A) and eases to the new palette (B), so any sky can follow any
+  // other, and a change asked for halfway through another starts from the
+  // half-turned sky rather than jumping.
   const C = {};
   const A = {};
   const B = {};
   for (const k of COLOR_KEYS) {
     C[k] = new THREE.Color();
-    A[k] = new THREE.Color(PALETTES.dawn[k]);
-    B[k] = new THREE.Color(PALETTES.day[k]);
+    A[k] = new THREE.Color();
+    B[k] = new THREE.Color();
   }
-  const sunA = new THREE.Vector3(...PALETTES.dawn.sun).normalize();
-  const sunB = new THREE.Vector3(...PALETTES.day.sun).normalize();
-  const sunDir = new THREE.Vector3();
+  const sunA = new THREE.Vector3();
+  const sunB = new THREE.Vector3();
+  const sunDir = new THREE.Vector3(0, 1, 0);
   const qA = new THREE.Quaternion();
   const qT = new THREE.Quaternion();
   const ref = new THREE.Vector3(0, 0, -1);
   const uDisc = { value: 0 };
+  const uStars = { value: 0 };
   const uSpan = { value: 0.45 };
-  let dayGoal = clamp(opts.day, 0, 1);
-  let dayT = dayGoal;
-  function applyDay() {
-    const e = smooth(dayT);
+  const from = { disc: 0, stars: 0 };
+  let phase = phaseOf(opts.phase);
+  let turnT = 1;
+  function turnTo(name) {
+    const P = PALETTES[name];
+    for (const k of COLOR_KEYS) {
+      A[k].copy(C[k]);
+      B[k].set(P[k]);
+    }
+    sunA.copy(sunDir);
+    sunB.set(...P.sun).normalize();
+    from.disc = uDisc.value;
+    from.stars = uStars.value;
+    phase = name;
+  }
+  function applyTurn() {
+    const P = PALETTES[phase];
+    const e = smooth(turnT);
     for (const k of COLOR_KEYS) C[k].copy(A[k]).lerp(B[k], e);
-    // the sun climbs the short way round, from the dawn spot to the day one
+    // the light moves the short way round, from where it was to its new place
     qA.setFromUnitVectors(ref, sunA);
     qT.setFromUnitVectors(ref, sunB);
     qA.slerp(qT, e);
     sunDir.copy(ref).applyQuaternion(qA);
-    uDisc.value = lerp(PALETTES.dawn.disc, PALETTES.day.disc, e);
+    uDisc.value = lerp(from.disc, P.disc, e);
+    uStars.value = lerp(from.stars, P.stars, e);
   }
-  applyDay();
+  turnTo(phase);
+  applyTurn();
 
   /* ---------- scene ---------- */
   const scene = new THREE.Scene();
@@ -178,14 +252,16 @@ export function createHillside(canvas, opts) {
       uSunDir: { value: sunDir },
       uSunCol: { value: C.sunCol },
       uDisc: uDisc,
+      uStars,
       uSpan,
     },
     vertexShader: /* glsl */ `
       varying vec3 vDir;
       void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
     fragmentShader: /* glsl */ `
-      uniform vec3 uTop, uMid, uLow, uHor, uHaze, uSunDir, uSunCol; uniform float uDisc, uSpan;
+      uniform vec3 uTop, uMid, uLow, uHor, uHaze, uSunDir, uSunCol; uniform float uDisc, uSpan, uStars;
       varying vec3 vDir;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void main(){
         // u is 0 at the horizon and 1 at the top of the frame, so the deep blue is always overhead
         vec3 d = normalize(vDir); float y = d.y, u = max(y, 0.0) / uSpan;
@@ -195,8 +271,20 @@ export function createHillside(canvas, opts) {
         if (y < 0.0) c = mix(uHor, uHaze, smoothstep(0.0, -0.02, y));
         float sd = max(dot(d, normalize(uSunDir)), 0.0);
         c += uSunCol * (pow(sd, 6.0) * 0.2 + pow(sd, 48.0) * 0.32);
-        // the sun itself, at dawn: a warm, soft-edged disc in its own glow
+        // the sun itself, at dawn and dusk: a warm, soft-edged disc in its own glow
         c += uSunCol * uDisc * (pow(sd, 900.0) * 0.45 + smoothstep(0.99935, 0.9997, sd) * 0.5);
+        // stars: the sky in squares three degrees across, a star somewhere in about one in seven of
+        // them, the same ones every night. They are soft discs rather than points, because the page
+        // shows this out of focus and a point would blur away. Fewer low down, where the air is thick.
+        if (uStars > 0.003 && y > 0.0) {
+          vec2 sq = vec2(atan(d.x, -d.z), asin(y)) * 19.1;
+          vec2 id = floor(sq);
+          float pick = hash(id);
+          vec2 at = fract(sq) - 0.5 - (vec2(hash(id + 3.1), hash(id + 7.7)) - 0.5) * 0.6;
+          float size = 0.07 + 0.07 * hash(id + 1.3);
+          float star = step(0.86, pick) * smoothstep(size, size * 0.3, length(at));
+          c += vec3(0.82, 0.88, 1.0) * star * uStars * (0.45 + 0.55 * hash(id + 5.9)) * smoothstep(0.03, 0.3, u);
+        }
         gl_FragColor = vec4(c, 1.0);
       }`,
   });
@@ -308,13 +396,9 @@ export function createHillside(canvas, opts) {
     clock += dt;
     uTime.value = clock;
     uWindOff.value.addScaledVector(windDir, WIND * 0.9 * dt);
-    if (dayT !== dayGoal) {
-      const rate = dayGoal > dayT ? 1 / 3.6 : 1 / 0.8;
-      dayT =
-        dayGoal > dayT
-          ? Math.min(dayGoal, dayT + dt * rate)
-          : Math.max(dayGoal, dayT - dt * rate);
-      applyDay();
+    if (turnT < 1) {
+      turnT = Math.min(1, turnT + dt / TURN);
+      applyTurn();
     }
     if (introT < 1) introT = Math.min(1, introT + dt / 3.4);
     const k = 1 - Math.exp(-dt * 2.2);
@@ -332,13 +416,13 @@ export function createHillside(canvas, opts) {
   // Something on screen is moving fast enough to want every frame.
   const busy = () =>
     introT < 1 ||
-    dayT !== dayGoal ||
+    turnT < 1 ||
     Math.abs(lean.gx - lean.x) > 0.002 ||
     Math.abs(lean.gy - lean.y) > 0.002;
 
   // Draw while the page has it in view, and, out of view, until a change of
   // light under way has finished, so it never stops halfway to dawn.
-  const wanted = () => !dead && shown && (active || dayT !== dayGoal);
+  const wanted = () => !dead && shown && (active || turnT < 1);
 
   function tick(now) {
     raf = 0;
@@ -429,12 +513,13 @@ export function createHillside(canvas, opts) {
       }
       run();
     },
-    setDay(day, instant) {
-      dayGoal = clamp(day, 0, 1);
-      if (instant || calm) {
-        dayT = dayGoal;
-        applyDay();
-      }
+    setPhase(next, instant) {
+      const name = phaseOf(next);
+      if (name === phase) return;
+      turnTo(name);
+      // With reduced motion there is no turning: the still is drawn again in the new light.
+      turnT = instant || calm ? 1 : 0;
+      applyTurn();
       run();
     },
     setActive(on) {

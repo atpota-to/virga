@@ -3,8 +3,10 @@
 //   1. reclaims rows stuck in 'publishing' (a run that died mid-write);
 //   2. claims a batch of due rows (FOR UPDATE SKIP LOCKED, so overlapping
 //      runs never take the same row and nothing is published twice);
-//   3. publishes each with the account's restored OAuth session;
-//   4. marks each published, or requeues it with backoff, or fails it;
+//   3. publishes each with the account's restored OAuth session (a reply
+//      only after its parent's PDS says the post it answers is still there);
+//   4. marks each published, or requeues it with backoff, or fails it, and in
+//      the same transaction writes the next occurrence of a repeating post;
 //   5. arms the self-destruct timer of any row that asked for one;
 //   6. once an hour, sweeps the stashed images of long-dead failed rows.
 
@@ -94,7 +96,12 @@ async function settleSpent(row, summary) {
       : 0;
     const progress = Array.isArray(row.progress) ? row.progress : [];
     if (posts > 0 && progress.length >= posts && progress[0]?.uri) {
-      await scheduled.markPublished(row.id, progress[0], row.payload?.media);
+      await scheduled.markPublished(
+        row.id,
+        progress[0],
+        row.payload?.media,
+        row,
+      );
       summary.published += 1;
       await armTimer(row, progress, summary);
       return;
@@ -126,7 +133,7 @@ async function publishOne(row, summary) {
         return scheduled.markProgress(row.id, progress);
       },
     });
-    await scheduled.markPublished(row.id, result, row.payload?.media);
+    await scheduled.markPublished(row.id, result, row.payload?.media, row);
     summary.published += 1;
     // After markPublished and never allowed to throw: the post is out, and a
     // hiccup here must not turn it into a row the queue reports as failed. A

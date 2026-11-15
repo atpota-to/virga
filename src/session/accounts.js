@@ -326,6 +326,7 @@ export function isReauthRequiredError(error) {
 const LOCAL_KEYS = [
   (did) => `virga:dashboards:${did}`, // src/dashboards/DashboardsContext.jsx
   (did) => `virga:posting:${did}`, // src/posting/settings.js
+  (did) => `virga:annotations:${did}`, // src/reports/annotations.js
   (did) => `virga:composer-autosave:${did}`, // src/posting/autosave.js
   (did) => `virga:templates:${did}`, // src/posting/templates
   (did) => `virga:template-usage:${did}`,

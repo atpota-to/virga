@@ -212,8 +212,34 @@ describe('scheduleErrorMessage', () => {
     expect(
       scheduleErrorMessage(thrown({ status: 403, code: 'NOT_YOUR_CLIENT' })),
     ).toMatch(/another app/);
-    expect(scheduleErrorMessage(thrown({ code: 'SCHEDULE_REPLY' }))).toMatch(
-      /Replies can’t be scheduled/,
+    expect(scheduleErrorMessage(thrown({ code: 'QUEUE_REPLY' }))).toMatch(
+      /A reply can’t wait in the queue/,
+    );
+    expect(scheduleErrorMessage(thrown({ code: 'REPEAT_REPLY' }))).toMatch(
+      /A reply can’t repeat/,
+    );
+    expect(scheduleErrorMessage(thrown({ status: 400, code: 'QUEUE_REPEAT' }))).toMatch(
+      /A post in the queue can’t repeat/,
+    );
+    expect(scheduleErrorMessage(thrown({ status: 409, code: 'NOT_SKIPPABLE' }))).toMatch(
+      /nothing to skip/,
+    );
+    expect(scheduleErrorMessage(thrown({ status: 409, code: 'NOT_REPEATING' }))).toMatch(
+      /isn’t repeating/,
+    );
+    expect(
+      scheduleErrorMessage(
+        Object.assign(new Error('The date it ends on is before it first goes out.'), {
+          code: 'REPEAT_INVALID',
+        }),
+      ),
+    ).toBe('The date it ends on is before it first goes out.');
+    // What the worker stores on a reply it didn't post.
+    expect(friendlyScheduleError('whatever the server wrote', 'REPLY_TARGET_GONE')).toBe(
+      'The post this replies to is gone, so the reply wasn’t posted.',
+    );
+    expect(friendlyScheduleError('', 'REPLY_TARGET_UNCHECKED')).toMatch(
+      /couldn’t check that the post this replies to is still there/,
     );
     expect(
       scheduleErrorMessage(thrown({ status: 0, code: 'TIMEOUT' })),

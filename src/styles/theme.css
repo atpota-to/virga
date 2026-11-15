@@ -2,20 +2,31 @@
   Virga: a quiet, light workspace for your numbers (the Ledger direction).
 
   Plain grounds, one-pixel lines instead of shadows, small radii, and one
-  blue that means "the data, or what is pressed". Coral is the second thing
-  on a chart and the colour of a change downward. The live sky from the first
-  version is still here, behind a switch in Settings › Appearance: when it is
-  on, the page ground goes clear and the cards stay solid in front of it.
+  accent that means "the data, or what is pressed": blue, unless Settings
+  picks another of the six below. The second colour is the second thing on
+  a chart and the colour of a change downward: coral beside a cool accent,
+  blue beside a warm one. The live sky from the first version is still
+  here, behind a switch in Settings › Appearance: when it is on, the page
+  ground goes clear and the cards stay solid in front of it.
 
   One typeface, Mona Sans, in sentence case. Monospace is for code only:
   NSIDs, DIDs and record names. Numbers are set in the same face as the
   words, in its ordinary figures (its tabular ones have a slashed zero).
 
-  Two themes, light and dark, chosen in Settings (or following the system).
-  The chart colours are separate steps for each, checked for colour-blind
-  separation and contrast against their own surface, not an inverted copy.
-  `data-theme` on <html> is set before the first paint by the inline script
-  in index.html, and kept in step by src/lib/preferences.jsx.
+  Two themes, light and dark, chosen in Settings (or following the system),
+  and a high-contrast set of each, chosen there too (or following the
+  system's own setting). The chart colours are separate steps for every
+  one of them, not an inverted copy, and theme.test.js reads this file and
+  checks them all: contrast against their own surface, and the two series
+  still apart for colour-blind eyes. A colour changed here has to pass it.
+
+  `data-theme`, `data-accent`, `data-contrast` and `data-density` on <html>
+  are set before the first paint by the inline script in index.html, and
+  kept in step by src/lib/preferences.jsx.
+
+  In this order, because the later blocks have to win: the plain tokens,
+  the dark set, the accents, high contrast, then the few rules that tokens
+  can't say (high contrast and forced colours).
 */
 
 :root {
@@ -40,18 +51,10 @@
   --line-2: #d0d5dd;
   --line-soft: #f2f4f7;
 
-  /* The blue: the data, and whatever is pressed. */
-  --accent: #1d5ee0;
-  --accent-hover: #1849b5;
-  --accent-ink: #1849b5;
-  --accent-wash: #eef3fd;
-  --accent-line: #c9d8f7;
-  --on-accent: #ffffff;
-
-  /* Coral: the second series, and a change downward. */
-  --second: #e8553a;
-  --second-ink: #b13a1f;
-  --second-wash: #fdeeea;
+  /* The accent (the data, and whatever is pressed) and the second colour
+     (the second series, and a change downward) are under Accents below:
+     --accent*, --on-accent, --second*, --chart-1 to 4, --chart-area and
+     the --heat ramp. */
 
   /* A change against the window before says which way it went, not
      whether that is good: more blocks is "up" too. */
@@ -68,23 +71,10 @@
   --danger-hover: #912018;
   --danger-wash: #fef3f2;
 
-  /* Charts. Four categorical slots in a fixed order, a sequential ramp for
-     the heatmaps (lightest is "nothing"), and the chrome. */
-  --chart-1: #1d5ee0;
-  --chart-2: #e8553a;
-  --chart-3: #1baf7a;
-  --chart-4: #eda100;
-  --chart-area: rgb(29 94 224 / 0.08);
+  /* The charts' chrome. Their colours come with the accent. */
   --chart-grid: #eef0f3;
   --chart-axis: #d0d5dd;
   --chart-ghost: #5d6b82;
-  --heat-0: #f2f5fa;
-  --heat-1: #dce8fb;
-  --heat-2: #b7d3f6;
-  --heat-3: #86b6ef;
-  --heat-4: #5598e7;
-  --heat-5: #2a78d6;
-  --heat-6: #1c5cab;
 
   /* Avatars without a picture. */
   --avatar-bg: #e4e7ec;
@@ -126,7 +116,12 @@
   --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
   --shadow-md: 0 4px 12px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
   --shadow-lg: 0 20px 40px -12px rgb(16 24 40 / 0.25), 0 0 0 1px rgb(16 24 40 / 0.05);
-  --focus: 0 0 0 3px rgb(29 94 224 / 0.35);
+
+  /* Focus, where a rule draws it as a shadow: a solid line in --focus-ring
+     with a soft halo round it. The halo alone was 1.7:1 against a card, and
+     some controls show nothing else, so the line carries it. */
+  --focus-ring: var(--accent);
+  --focus: 0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent);
 
   /* Layout. */
   --sidebar-w: 248px;
@@ -164,17 +159,6 @@
   --line-2: #353c48;
   --line-soft: #1c2028;
 
-  --accent: #2f6fd6;
-  --accent-hover: #3d7ee6;
-  --accent-ink: #7ab0f5;
-  --accent-wash: #16233a;
-  --accent-line: #284068;
-  --on-accent: #ffffff;
-
-  --second: #d95926;
-  --second-ink: #f0906a;
-  --second-wash: #2e1a14;
-
   --ok: #2fbf71;
   --warn: #f5b454;
   --warn-wash: #2c2210;
@@ -182,21 +166,9 @@
   --danger-hover: #fda29b;
   --danger-wash: #2d1513;
 
-  --chart-1: #3987e5;
-  --chart-2: #d95926;
-  --chart-3: #199e70;
-  --chart-4: #c98500;
-  --chart-area: rgb(57 135 229 / 0.14);
   --chart-grid: #1f242d;
   --chart-axis: #353c48;
   --chart-ghost: #959eae;
-  --heat-0: #1a1f28;
-  --heat-1: #18304f;
-  --heat-2: #1c4373;
-  --heat-3: #235a9a;
-  --heat-4: #2d72c2;
-  --heat-5: #3987e5;
-  --heat-6: #7ab0f5;
 
   --avatar-bg: #252a33;
   --avatar-ink: #c3cad6;
@@ -204,12 +176,947 @@
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 6px 16px -4px rgb(0 0 0 / 0.6);
   --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.06);
-  --focus: 0 0 0 3px rgb(122 176 245 / 0.4);
+
+  /* On a dark card the lighter step of the accent is the one that shows. */
+  --focus-ring: var(--accent-ink);
+}
+
+/* ---- Accents ----------------------------------------------------------
+
+   Six, chosen in Settings › Appearance and stamped on <html> as
+   data-accent. Not a colour picker: each is a full set of steps for each
+   theme, and theme.test.js holds every one to the same checks.
+
+   Every block gives the same tokens: the accent with its ink, wash and
+   line, and what is written on it; the second colour (--second-tip is its
+   step for a chart's tooltip, which is dark in the light theme and light
+   in the dark one); the four chart slots in their fixed order and the
+   area under a line; and the ramp for the heatmaps (lightest is
+   "nothing"). Coral is the second colour beside blue, violet, teal and
+   graphite. Beside amber and rose it would sit too close, so theirs is
+   blue.
+
+   Where a block has two selectors, the second is a swatch: an element
+   inside the page that carries data-accent shows that accent's colours,
+   whatever the page's own is. Settings draws the choices with it.
+*/
+
+/* Blue: the one Virga has always had, and the one it starts with. */
+:root,
+[data-accent='blue'] {
+  --accent: #1d5ee0;
+  --accent-hover: #1849b5;
+  --accent-ink: #1849b5;
+  --accent-wash: #eef3fd;
+  --accent-line: #c9d8f7;
+  --on-accent: #ffffff;
+  --second: #e8553a;
+  --second-ink: #b13a1f;
+  --second-wash: #fdeeea;
+  --second-tip: #ffb7a6;
+  --chart-1: #1d5ee0;
+  --chart-2: #e8553a;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-area: rgb(29 94 224 / 0.08);
+  --heat-0: #f2f5fa;
+  --heat-1: #dce8fb;
+  --heat-2: #b7d3f6;
+  --heat-3: #86b6ef;
+  --heat-4: #5598e7;
+  --heat-5: #2a78d6;
+  --heat-6: #1c5cab;
+}
+
+:root[data-theme='dark'],
+[data-theme='dark'] [data-accent='blue'] {
+  --accent: #2f6fd6;
+  --accent-hover: #3373da;
+  --accent-ink: #7ab0f5;
+  --accent-wash: #16233a;
+  --accent-line: #284068;
+  --on-accent: #ffffff;
+  --second: #d95926;
+  --second-ink: #f0906a;
+  --second-wash: #2e1a14;
+  --second-tip: #b13a1f;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-area: rgb(57 135 229 / 0.14);
+  --heat-0: #1a1f28;
+  --heat-1: #18304f;
+  --heat-2: #1c4373;
+  --heat-3: #235a9a;
+  --heat-4: #2d72c2;
+  --heat-5: #3987e5;
+  --heat-6: #7ab0f5;
+}
+
+/* Violet. */
+[data-accent='violet'] {
+  --accent: #8149e3;
+  --accent-hover: #6333b3;
+  --accent-ink: #6333b3;
+  --accent-wash: #f4f1fe;
+  --accent-line: #dbd3f9;
+  --on-accent: #ffffff;
+  --second: #e8553a;
+  --second-ink: #b13a1f;
+  --second-wash: #fdeeea;
+  --second-tip: #ffb7a6;
+  --chart-1: #8149e3;
+  --chart-2: #e8553a;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-area: rgb(129 73 227 / 0.08);
+  --heat-0: #f6f5fb;
+  --heat-1: #e9e4fd;
+  --heat-2: #d4c9f9;
+  --heat-3: #b8a4f2;
+  --heat-4: #9d7fea;
+  --heat-5: #845ed7;
+  --heat-6: #6645ab;
+}
+
+[data-theme='dark'][data-accent='violet'],
+[data-theme='dark'] [data-accent='violet'] {
+  --accent: #7f56d3;
+  --accent-hover: #865ddb;
+  --accent-ink: #b8a0fc;
+  --accent-wash: #261f3b;
+  --accent-line: #433567;
+  --on-accent: #ffffff;
+  --second: #d95926;
+  --second-ink: #f0906a;
+  --second-wash: #2e1a14;
+  --second-tip: #b13a1f;
+  --chart-1: #906be2;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-area: rgb(144 107 226 / 0.14);
+  --heat-0: #201d28;
+  --heat-1: #33294d;
+  --heat-2: #483770;
+  --heat-3: #614999;
+  --heat-4: #795cbd;
+  --heat-5: #8f6ddf;
+  --heat-6: #b49df5;
+}
+
+/* Teal. Its line on a chart is a step lighter than its buttons, to stay
+   clear of coral for eyes that mix red and green; the third chart slot is
+   violet, since green would sit beside it. */
+[data-accent='teal'] {
+  --accent: #0a7788;
+  --accent-hover: #055a67;
+  --accent-ink: #055a67;
+  --accent-wash: #e8f7fa;
+  --accent-line: #b4e3ec;
+  --on-accent: #ffffff;
+  --second: #e8553a;
+  --second-ink: #b13a1f;
+  --second-wash: #fdeeea;
+  --second-tip: #ffb7a6;
+  --chart-1: #0e95a9;
+  --chart-2: #e8553a;
+  --chart-3: #6250d6;
+  --chart-4: #eda100;
+  --chart-area: rgb(14 149 169 / 0.08);
+  --heat-0: #f0f7f9;
+  --heat-1: #d1eef4;
+  --heat-2: #a0dde9;
+  --heat-3: #52c4da;
+  --heat-4: #02a7bf;
+  --heat-5: #06899d;
+  --heat-6: #006a79;
+}
+
+[data-theme='dark'][data-accent='teal'],
+[data-theme='dark'] [data-accent='teal'] {
+  --accent: #0a7a8c;
+  --accent-hover: #098193;
+  --accent-ink: #20c1da;
+  --accent-wash: #002a31;
+  --accent-line: #044853;
+  --on-accent: #ffffff;
+  --second: #d95926;
+  --second-ink: #f0906a;
+  --second-wash: #2e1a14;
+  --second-tip: #b13a1f;
+  --chart-1: #15b1c9;
+  --chart-2: #d95926;
+  --chart-3: #9085e9;
+  --chart-4: #c98500;
+  --chart-area: rgb(21 177 201 / 0.14);
+  --heat-0: #142225;
+  --heat-1: #023740;
+  --heat-2: #004d59;
+  --heat-3: #086675;
+  --heat-4: #0e7f91;
+  --heat-5: #0b97ab;
+  --heat-6: #32c2da;
+}
+
+/* Amber. On a light ground its buttons and words are the dark, bronze end
+   of it, which white words need; the charts keep the gold. Blue is its
+   second colour, and violet its fourth slot. */
+[data-accent='amber'] {
+  --accent: #966105;
+  --accent-hover: #764700;
+  --accent-ink: #764700;
+  --accent-wash: #f8f3e8;
+  --accent-line: #e9d7b4;
+  --on-accent: #ffffff;
+  --second: #2a78d6;
+  --second-ink: #1c5cab;
+  --second-wash: #eef3fd;
+  --second-tip: #a9cdfb;
+  --chart-1: #bf8310;
+  --chart-2: #2a78d6;
+  --chart-3: #1baf7a;
+  --chart-4: #6250d6;
+  --chart-area: rgb(191 131 16 / 0.08);
+  --heat-0: #f8f6ef;
+  --heat-1: #f1e7d0;
+  --heat-2: #e5cea2;
+  --heat-3: #d6ab60;
+  --heat-4: #c48810;
+  --heat-5: #a56d03;
+  --heat-6: #825103;
+}
+
+[data-theme='dark'][data-accent='amber'],
+[data-theme='dark'] [data-accent='amber'] {
+  --accent: #9a6403;
+  --accent-hover: #a26a01;
+  --accent-ink: #d9a648;
+  --accent-wash: #361e08;
+  --accent-line: #5c3504;
+  --on-accent: #ffffff;
+  --second: #3987e5;
+  --second-ink: #7ab0f5;
+  --second-wash: #16233a;
+  --second-tip: #1c5cab;
+  --chart-1: #e3a41a;
+  --chart-2: #3987e5;
+  --chart-3: #199e70;
+  --chart-4: #9085e9;
+  --chart-area: rgb(227 164 26 / 0.14);
+  --heat-0: #261d16;
+  --heat-1: #45290b;
+  --heat-2: #623800;
+  --heat-3: #7f4e01;
+  --heat-4: #9a650c;
+  --heat-5: #b37802;
+  --heat-6: #d6a54d;
+}
+
+/* Rose. Blue is its second colour. */
+[data-accent='rose'] {
+  --accent: #cb2864;
+  --accent-hover: #9d144a;
+  --accent-ink: #9d144a;
+  --accent-wash: #fdeff2;
+  --accent-line: #f6cdd5;
+  --on-accent: #ffffff;
+  --second: #2a78d6;
+  --second-ink: #1c5cab;
+  --second-wash: #eef3fd;
+  --second-tip: #a9cdfb;
+  --chart-1: #cb2965;
+  --chart-2: #2a78d6;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-area: rgb(203 41 101 / 0.08);
+  --heat-0: #fbf4f5;
+  --heat-1: #fbe0e5;
+  --heat-2: #f5c1cc;
+  --heat-3: #ea97aa;
+  --heat-4: #db6c89;
+  --heat-5: #c4486d;
+  --heat-6: #9b3253;
+}
+
+[data-theme='dark'][data-accent='rose'],
+[data-theme='dark'] [data-accent='rose'] {
+  --accent: #c04068;
+  --accent-hover: #c8476f;
+  --accent-ink: #f191a7;
+  --accent-wash: #371a21;
+  --accent-line: #602d3a;
+  --on-accent: #ffffff;
+  --second: #3987e5;
+  --second-ink: #7ab0f5;
+  --second-wash: #16233a;
+  --second-tip: #1c5cab;
+  --chart-1: #d05779;
+  --chart-2: #3987e5;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-area: rgb(208 87 121 / 0.14);
+  --heat-0: #271c1e;
+  --heat-1: #48232c;
+  --heat-2: #682e3d;
+  --heat-3: #8d3b52;
+  --heat-4: #af4b67;
+  --heat-5: #ce597a;
+  --heat-6: #eb8fa4;
+}
+
+/* Graphite: no colour at all, so coral is the only one on a chart. */
+[data-accent='graphite'] {
+  --accent: #343e4a;
+  --accent-hover: #1e2733;
+  --accent-ink: #1e2733;
+  --accent-wash: #e8ebef;
+  --accent-line: #d6d9dd;
+  --on-accent: #ffffff;
+  --second: #e8553a;
+  --second-ink: #b13a1f;
+  --second-wash: #fdeeea;
+  --second-tip: #ffb7a6;
+  --chart-1: #323b48;
+  --chart-2: #e8553a;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-area: rgb(50 59 72 / 0.08);
+  --heat-0: #f5f6f6;
+  --heat-1: #e6e8ea;
+  --heat-2: #ced1d6;
+  --heat-3: #adb3bb;
+  --heat-4: #8e96a0;
+  --heat-5: #727b87;
+  --heat-6: #575e68;
+}
+
+[data-theme='dark'][data-accent='graphite'],
+[data-theme='dark'] [data-accent='graphite'] {
+  --accent: #67707c;
+  --accent-hover: #6e7682;
+  --accent-ink: #d3dce7;
+  --accent-wash: #2c2e31;
+  --accent-line: #4a4d52;
+  --on-accent: #ffffff;
+  --second: #d95926;
+  --second-ink: #f0906a;
+  --second-wash: #2e1a14;
+  --second-tip: #b13a1f;
+  --chart-1: #c5cfdb;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-area: rgb(197 207 219 / 0.14);
+  --heat-0: #1e1f20;
+  --heat-1: #2e3134;
+  --heat-2: #40444a;
+  --heat-3: #555b63;
+  --heat-4: #6b727c;
+  --heat-5: #7f8792;
+  --heat-6: #a8afb7;
+}
+
+/* ---- High contrast ----------------------------------------------------
+
+   data-contrast='high' on <html>: asked for in Settings, or by the system
+   (prefers-contrast: more). Words at 7:1 or better on every ground, lines
+   and borders at 3:1 or better, chart colours at 4.5:1 or better, one flat
+   ground with the cards outlined on it, and a thicker focus ring with a
+   gap inside it. The accents have their own steps here too, below.
+*/
+
+:root[data-contrast='high'] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #eef0f3;
+  --hover: #e4e7ec;
+  --scrim: rgb(16 24 40 / 0.6);
+
+  --ink: #0a0d14;
+  --ink-2: #1d2534;
+  --muted: #3b4558;
+  --faint: #667085;
+
+  --line: #6b7585;
+  --line-2: #475467;
+  --line-soft: #8a93a1;
+
+  --ok: #067647;
+  --warn: #8a3a00;
+  --warn-wash: #fdf3e2;
+  --danger: #9a1b12;
+  --danger-hover: #7a140d;
+  --danger-wash: #fef3f2;
+
+  --chart-grid: #c4cad3;
+  --chart-axis: #667085;
+  --chart-ghost: #475467;
+
+  --avatar-bg: #d0d5dd;
+  --avatar-ink: #1d2534;
+
+  --focus-ring: var(--accent);
+  --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
+}
+
+:root[data-contrast='high'][data-theme='dark'] {
+  --bg: #000000;
+  --surface: #0b0d11;
+  --surface-2: #000000;
+  --surface-3: #1b1f27;
+  --hover: #262b35;
+  --scrim: rgb(0 0 0 / 0.75);
+
+  --ink: #ffffff;
+  --ink-2: #e4e8ef;
+  --muted: #bcc4d0;
+  --faint: #8791a1;
+
+  --line: #6f7989;
+  --line-2: #98a2b3;
+  --line-soft: #5c6676;
+
+  --ok: #4ade8b;
+  --warn: #ffc56e;
+  --warn-wash: #2c2210;
+  --danger: #ff9189;
+  --danger-hover: #ffb4ae;
+  --danger-wash: #2d1513;
+
+  --chart-grid: #353c48;
+  --chart-axis: #8791a1;
+  --chart-ghost: #bcc4d0;
+
+  --avatar-bg: #353c48;
+  --avatar-ink: #ffffff;
+
+  --focus-ring: var(--accent);
+  --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
+}
+
+/* The accents in high contrast. On a light ground the accent is deep
+   enough for white words at 7:1. On a dark one that can't hold (a fill
+   that dark would not show against black), so it turns over: a light
+   fill with dark words on it. */
+
+/* Blue. */
+:root[data-contrast='high'],
+[data-contrast='high'] [data-accent='blue'] {
+  --accent: #0650ac;
+  --accent-hover: #003c87;
+  --accent-ink: #004397;
+  --accent-wash: #e8f1ff;
+  --accent-line: #0650ac;
+  --on-accent: #ffffff;
+  --second: #c83406;
+  --second-ink: #8f2a12;
+  --second-wash: #fdeeea;
+  --second-tip: #ffc4b5;
+  --chart-1: #005cc8;
+  --chart-2: #c83406;
+  --chart-3: #0b7a53;
+  --chart-4: #8a5f00;
+  --chart-area: rgb(0 92 200 / 0.16);
+  --heat-0: #ebf1f8;
+  --heat-1: #c4d9f9;
+  --heat-2: #97bdf4;
+  --heat-3: #679ceb;
+  --heat-4: #3a7bda;
+  --heat-5: #195cb9;
+  --heat-6: #0a3f86;
+}
+
+:root[data-contrast='high'][data-theme='dark'],
+[data-contrast='high'][data-theme='dark'] [data-accent='blue'] {
+  --accent: #81b3fd;
+  --accent-hover: #a4c8fd;
+  --accent-ink: #a1c7fe;
+  --accent-wash: #152741;
+  --accent-line: #81b3fd;
+  --on-accent: #0b0d11;
+  --second: #ff8a5c;
+  --second-ink: #ffb499;
+  --second-wash: #2e1a14;
+  --second-tip: #8f2a12;
+  --chart-1: #7fb3fe;
+  --chart-2: #ff8a5c;
+  --chart-3: #3ecf9a;
+  --chart-4: #f0b429;
+  --chart-area: rgb(127 179 254 / 0.2);
+  --heat-0: #1c222b;
+  --heat-1: #253d61;
+  --heat-2: #315a97;
+  --heat-3: #3f76c8;
+  --heat-4: #5795f0;
+  --heat-5: #86b6fd;
+  --heat-6: #c1d9fe;
+}
+
+/* Violet. */
+[data-contrast='high'][data-accent='violet'],
+[data-contrast='high'] [data-accent='violet'] {
+  --accent: #6632ba;
+  --accent-hover: #501f97;
+  --accent-ink: #5729a0;
+  --accent-wash: #f1edff;
+  --accent-line: #6632ba;
+  --on-accent: #ffffff;
+  --second: #c83406;
+  --second-ink: #8f2a12;
+  --second-wash: #fdeeea;
+  --second-tip: #ffc4b5;
+  --chart-1: #753fd0;
+  --chart-2: #c83406;
+  --chart-3: #0b7a53;
+  --chart-4: #8a5f00;
+  --chart-area: rgb(117 63 208 / 0.16);
+  --heat-0: #f0eff8;
+  --heat-1: #d9d1f7;
+  --heat-2: #beaff1;
+  --heat-3: #a289e6;
+  --heat-4: #8663d5;
+  --heat-5: #6a45b3;
+  --heat-6: #4a2c82;
+}
+
+[data-contrast='high'][data-theme='dark'][data-accent='violet'],
+[data-contrast='high'][data-theme='dark'] [data-accent='violet'] {
+  --accent: #baa3ff;
+  --accent-hover: #cbbcfe;
+  --accent-ink: #c9b9fd;
+  --accent-wash: #29203f;
+  --accent-line: #baa3ff;
+  --on-accent: #0b0d11;
+  --second: #ff8a5c;
+  --second-ink: #ffb499;
+  --second-wash: #2e1a14;
+  --second-tip: #8f2a12;
+  --chart-1: #b79ffd;
+  --chart-2: #ff8a5c;
+  --chart-3: #3ecf9a;
+  --chart-4: #f0b429;
+  --chart-area: rgb(183 159 253 / 0.2);
+  --heat-0: #22202b;
+  --heat-1: #40345f;
+  --heat-2: #604b94;
+  --heat-3: #7f62c4;
+  --heat-4: #9d7eeb;
+  --heat-5: #baa3fe;
+  --heat-6: #dad0ff;
+}
+
+/* Teal. */
+[data-contrast='high'][data-accent='teal'],
+[data-contrast='high'] [data-accent='teal'] {
+  --accent: #075c6a;
+  --accent-hover: #044650;
+  --accent-ink: #044e5a;
+  --accent-wash: #e0f4f9;
+  --accent-line: #075c6a;
+  --on-accent: #ffffff;
+  --second: #c83406;
+  --second-ink: #8f2a12;
+  --second-wash: #fdeeea;
+  --second-tip: #ffc4b5;
+  --chart-1: #0e7c8d;
+  --chart-2: #c83406;
+  --chart-3: #4a3aa7;
+  --chart-4: #8a5f00;
+  --chart-area: rgb(14 124 141 / 0.16);
+  --heat-0: #e8f2f5;
+  --heat-1: #b2e1eb;
+  --heat-2: #70cadc;
+  --heat-3: #03aec6;
+  --heat-4: #048da0;
+  --heat-5: #096c7c;
+  --heat-6: #034b56;
+}
+
+[data-contrast='high'][data-theme='dark'][data-accent='teal'],
+[data-contrast='high'][data-theme='dark'] [data-accent='teal'] {
+  --accent: #00c2dc;
+  --accent-hover: #6cd4e8;
+  --accent-ink: #6cd4e8;
+  --accent-wash: #002c34;
+  --accent-line: #00c2dc;
+  --on-accent: #0b0d11;
+  --second: #ff8a5c;
+  --second-ink: #ffb499;
+  --second-wash: #2e1a14;
+  --second-tip: #8f2a12;
+  --chart-1: #0dd4f1;
+  --chart-2: #ff8a5c;
+  --chart-3: #b3aaf5;
+  --chart-4: #f0b429;
+  --chart-area: rgb(13 212 241 / 0.2);
+  --heat-0: #162427;
+  --heat-1: #024550;
+  --heat-2: #0a6675;
+  --heat-3: #0d8698;
+  --heat-4: #19a7bd;
+  --heat-5: #22c9e4;
+  --heat-6: #8de8fa;
+}
+
+/* Amber. */
+[data-contrast='high'][data-accent='amber'],
+[data-contrast='high'] [data-accent='amber'] {
+  --accent: #784900;
+  --accent-hover: #5d3603;
+  --accent-ink: #673c01;
+  --accent-wash: #f6f0e0;
+  --accent-line: #784900;
+  --on-accent: #ffffff;
+  --second: #1c5cab;
+  --second-ink: #0d366b;
+  --second-wash: #eef3fd;
+  --second-tip: #b7d3f6;
+  --chart-1: #895603;
+  --chart-2: #1c5cab;
+  --chart-3: #0b7a53;
+  --chart-4: #4a3aa7;
+  --chart-area: rgb(137 86 3 / 0.16);
+  --heat-0: #f3f0e7;
+  --heat-1: #e7d6b3;
+  --heat-2: #d8b577;
+  --heat-3: #c8902a;
+  --heat-4: #a97000;
+  --heat-5: #865400;
+  --heat-6: #603803;
+}
+
+[data-contrast='high'][data-theme='dark'][data-accent='amber'],
+[data-contrast='high'][data-theme='dark'] [data-accent='amber'] {
+  --accent: #dda844;
+  --accent-hover: #e6c078;
+  --accent-ink: #e4be76;
+  --accent-wash: #391f06;
+  --accent-line: #dda844;
+  --on-accent: #0b0d11;
+  --second: #96d3fe;
+  --second-ink: #b7d3f6;
+  --second-wash: #16233a;
+  --second-tip: #0d366b;
+  --chart-1: #fac044;
+  --chart-2: #96d3fe;
+  --chart-3: #3ecf9a;
+  --chart-4: #b3aaf5;
+  --chart-area: rgb(250 192 68 / 0.2);
+  --heat-0: #291f18;
+  --heat-1: #56340f;
+  --heat-2: #7f4e03;
+  --heat-3: #a16a09;
+  --heat-4: #c5880b;
+  --heat-5: #e2a939;
+  --heat-6: #f3d392;
+}
+
+/* Rose. */
+[data-contrast='high'][data-accent='rose'],
+[data-contrast='high'] [data-accent='rose'] {
+  --accent: #a40e4d;
+  --accent-hover: #810139;
+  --accent-ink: #8c0940;
+  --accent-wash: #fdebee;
+  --accent-line: #a40e4d;
+  --on-accent: #ffffff;
+  --second: #1c5cab;
+  --second-ink: #0d366b;
+  --second-wash: #eef3fd;
+  --second-tip: #b7d3f6;
+  --chart-1: #a5104d;
+  --chart-2: #1c5cab;
+  --chart-3: #0b7a53;
+  --chart-4: #8a5f00;
+  --chart-area: rgb(165 16 77 / 0.16);
+  --heat-0: #f7edef;
+  --heat-1: #f4cbd3;
+  --heat-2: #eaa4b3;
+  --heat-3: #da7991;
+  --heat-4: #c44f71;
+  --heat-5: #a23055;
+  --heat-6: #741c39;
+}
+
+[data-contrast='high'][data-theme='dark'][data-accent='rose'],
+[data-contrast='high'][data-theme='dark'] [data-accent='rose'] {
+  --accent: #f893ab;
+  --accent-hover: #ffafc1;
+  --accent-ink: #fcadbe;
+  --accent-wash: #3b1b23;
+  --accent-line: #f893ab;
+  --on-accent: #0b0d11;
+  --second: #96d3fe;
+  --second-ink: #b7d3f6;
+  --second-wash: #16233a;
+  --second-tip: #0d366b;
+  --chart-1: #f35a88;
+  --chart-2: #96d3fe;
+  --chart-3: #3ecf9a;
+  --chart-4: #f0b429;
+  --chart-area: rgb(243 90 136 / 0.2);
+  --heat-0: #2a1e20;
+  --heat-1: #5a2d38;
+  --heat-2: #8a3f53;
+  --heat-3: #b6516d;
+  --heat-4: #dc6c89;
+  --heat-5: #fa8ea9;
+  --heat-6: #fec7d2;
+}
+
+/* Graphite. */
+[data-contrast='high'][data-accent='graphite'],
+[data-contrast='high'] [data-accent='graphite'] {
+  --accent: #19222e;
+  --accent-hover: #060e18;
+  --accent-ink: #0e1721;
+  --accent-wash: #e5e8ec;
+  --accent-line: #19222e;
+  --on-accent: #ffffff;
+  --second: #c83406;
+  --second-ink: #8f2a12;
+  --second-wash: #fdeeea;
+  --second-tip: #ffc4b5;
+  --chart-1: #1f2732;
+  --chart-2: #c83406;
+  --chart-3: #0b7a53;
+  --chart-4: #8a5f00;
+  --chart-area: rgb(31 39 50 / 0.16);
+  --heat-0: #eff0f1;
+  --heat-1: #d5d8db;
+  --heat-2: #b6bbc2;
+  --heat-3: #959ca5;
+  --heat-4: #767e89;
+  --heat-5: #59616b;
+  --heat-6: #3d434b;
+}
+
+[data-contrast='high'][data-theme='dark'][data-accent='graphite'],
+[data-contrast='high'][data-theme='dark'] [data-accent='graphite'] {
+  --accent: #d6dfea;
+  --accent-hover: #eff6ff;
+  --accent-ink: #e7effb;
+  --accent-wash: #2e3033;
+  --accent-line: #d6dfea;
+  --on-accent: #0b0d11;
+  --second: #ff8a5c;
+  --second-ink: #ffb499;
+  --second-wash: #2e1a14;
+  --second-tip: #8f2a12;
+  --chart-1: #e0e9f4;
+  --chart-2: #ff8a5c;
+  --chart-3: #3ecf9a;
+  --chart-4: #f0b429;
+  --chart-area: rgb(224 233 244 / 0.2);
+  --heat-0: #212223;
+  --heat-1: #3a3d42;
+  --heat-2: #565b62;
+  --heat-3: #717881;
+  --heat-4: #8e96a0;
+  --heat-5: #adb5bf;
+  --heat-6: #d3d8df;
 }
 
 @media (max-width: 760px) {
   :root {
     --page-pad: 16px;
     --text-base: 0.9375rem;
+  }
+}
+
+/* ---- What tokens can't say --------------------------------------------
+
+   The kit draws from the tokens above and needs no second rule for a
+   theme. These few states were carried by one pale fill on another, or
+   by a shadow, and in high contrast or forced colours that is not enough.
+   They are here, with the reason, so the kit's own stylesheets stay about
+   shape.
+*/
+
+/* High contrast. A thicker focus ring. The pressed key of a segmented
+   control and a switch are drawn in ink and in the accent, with an edge
+   round them. A heatmap's cells are outlined, so "nothing" is still a
+   cell, and the page you are on is boxed as well as tinted. */
+
+:root[data-contrast='high'] :focus-visible {
+  outline-width: 3px;
+}
+
+:root[data-contrast='high'] .segmented {
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+:root[data-contrast='high'] .segmented .segmented-key.is-on {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: none;
+}
+
+:root[data-contrast='high'] .switch {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--muted);
+}
+
+:root[data-contrast='high'] .switch::after {
+  background: var(--muted);
+  box-shadow: none;
+  transform: scale(0.7);
+}
+
+:root[data-contrast='high'] .switch[aria-checked='true'] {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+:root[data-contrast='high'] .switch[aria-checked='true']::after {
+  background: var(--on-accent);
+  transform: translateX(16px) scale(0.7);
+}
+
+:root[data-contrast='high'] .heatmap-cell:not(.is-best):not([data-empty]) {
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+:root[data-contrast='high'] [aria-current='page'] {
+  box-shadow: inset 0 0 0 1px var(--accent-ink);
+}
+
+/* A few things are written in white without asking what goes on their
+   ground. In dark high contrast the accent is a light fill and the
+   danger colour a light red, so the logo's lines and a failure toast's
+   words follow the ground, and the two labels the composer lays over a
+   picture (which borrow --on-accent for "white on a scrim") stay white. */
+
+:root[data-contrast='high'] .logo-mark path,
+:root[data-contrast='high'] .brand > svg path {
+  stroke: var(--on-accent);
+}
+
+:root[data-contrast='high'] .toast[data-tone='danger'] {
+  color: var(--bg);
+}
+
+:root[data-contrast='high'] .image-alt:not([data-done]),
+:root[data-contrast='high'] .image-tool {
+  color: #ffffff;
+}
+
+/* Forced colours (the contrast themes in Windows). The browser swaps
+   every colour for one of the system's and drops shadows and gradients,
+   so a state that was a fill or a shadow has to become a border, an
+   outline or a system colour, or it is gone. Shapes inside an SVG keep
+   the colour they are given, on a ground that is no longer ours, so the
+   charts take system colours too. */
+
+@media (forced-colors: active) {
+  :root {
+    --chart-1: CanvasText !important;
+    --chart-2: LinkText !important;
+    --chart-area: transparent !important;
+    --chart-grid: GrayText !important;
+    --chart-axis: CanvasText !important;
+    --chart-ghost: GrayText !important;
+    --heat-0: Canvas !important;
+    --heat-1: color-mix(in srgb, CanvasText 15%, Canvas) !important;
+    --heat-2: color-mix(in srgb, CanvasText 30%, Canvas) !important;
+    --heat-3: color-mix(in srgb, CanvasText 45%, Canvas) !important;
+    --heat-4: color-mix(in srgb, CanvasText 60%, Canvas) !important;
+    --heat-5: color-mix(in srgb, CanvasText 80%, Canvas) !important;
+    --heat-6: CanvasText !important;
+  }
+
+  /* The kit's own rules are as specific as these or more so, and come
+     later, so everything below is marked important: in this mode it has to
+     win. */
+
+  /* Focus that was only a shadow, with its outline turned off. */
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+
+  .post-editor:focus-within {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+
+  /* What is pressed, chosen, or the page you are on: the system's own
+     selection colours, since a wash would be painted over. Taken out of
+     the forcing, because otherwise the browser lays a plate of the page
+     ground behind the words, and they vanish into it. */
+  [aria-pressed='true'],
+  [role='radio'][aria-checked='true'],
+  [aria-current='page'] {
+    forced-color-adjust: none;
+    border-color: Highlight !important;
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  [aria-pressed='true'] *,
+  [role='radio'][aria-checked='true'] *,
+  [aria-current='page'] * {
+    color: HighlightText !important;
+  }
+
+  .segmented {
+    border: 1px solid ButtonBorder !important;
+  }
+
+  .switch {
+    padding: 1px !important;
+    border: 1px solid ButtonText !important;
+    background: Canvas !important;
+  }
+
+  .switch::after {
+    background: ButtonText !important;
+  }
+
+  .switch[aria-checked='true'] {
+    border-color: Highlight !important;
+    background: Highlight !important;
+  }
+
+  .switch[aria-checked='true']::after {
+    background: HighlightText !important;
+  }
+
+  /* Marks that are fills in the page, not shapes in an SVG. */
+  .heatmap-cell,
+  .barlist-fill,
+  .stacked-seg {
+    forced-color-adjust: none;
+  }
+
+  .heatmap-cell {
+    outline: 1px solid GrayText !important;
+    outline-offset: -1px !important;
+  }
+
+  .heatmap-cell.is-best {
+    outline: 2px solid Highlight !important;
+    outline-offset: -2px !important;
+  }
+
+  .barlist-track,
+  .progress {
+    outline: 1px solid GrayText !important;
+  }
+
+  .progress-fill {
+    background: Highlight !important;
+  }
+
+  /* What floats had only a shadow for an edge. */
+  .dialog,
+  .menu-list,
+  .toast,
+  .info-tip-pop,
+  .an-chart-tip {
+    outline: 1px solid CanvasText !important;
   }
 }

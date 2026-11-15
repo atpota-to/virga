@@ -1,12 +1,21 @@
 // POST /api/schedule/update { id, … }: change one of the account's rows, in
-// one of four ways, checked in this order:
+// one of six ways, checked in this order:
 //
 //   { acknowledgeTimer: true }   clear a published row's TIMER_NOT_ARMED note
 //   { retry: true }              put a failed row back in the queue: one that
 //                                wrote nothing goes out now, a part-published
 //                                thread resumes as it stands
+//   { skip: true }               skip the waiting occurrence of a repeating
+//                                post: it doesn't go out, and the next one
+//                                takes its place (the answer's `data` is the
+//                                next row, or null with `ended: true` when
+//                                that was the last)
+//   { stopRepeat: true }         stop a post repeating: the waiting occurrence
+//                                still goes out, and nothing follows it
 //   { payload, scheduledFor, … } rewrite it from the composer (the create
-//                                body); a failed row comes back pending
+//                                body); a failed row comes back pending, and
+//                                on a repeating post this and the later
+//                                occurrences change
 //   { scheduledFor }             move a pending row to a new time
 //
 // A row already publishing or published can't be changed, nor can a thread
@@ -49,6 +58,8 @@ export default async function handler(req, res) {
       queued,
       retry,
       acknowledgeTimer,
+      skip,
+      stopRepeat,
     } = body;
     const id = typeof body.id === 'string' ? body.id.trim() : '';
     if (!id) return sendJson(res, 400, { success: false, error: 'Missing id' });
@@ -83,12 +94,46 @@ export default async function handler(req, res) {
           code: 'NOT_RETRIABLE',
         });
       }
+    } else if (skip) {
+      const out = await scheduled.skipOccurrence({ id, userDid });
+      if (!out) {
+        return sendJson(res, 409, {
+          success: false,
+          error:
+            'there is nothing to skip here: this post is not repeating, or is already on its way out.',
+          code: 'NOT_SKIPPABLE',
+        });
+      }
+      // The row the caller named is gone from the list; what it reads back
+      // is the occurrence that took its place, when there is one.
+      return sendJson(res, 200, {
+        success: true,
+        data: out.next ? publicRow(out.next) : null,
+        skipped: id,
+        ended: !out.next,
+      });
+    } else if (stopRepeat) {
+      row = await scheduled.stopRepeating({ id, userDid });
+      if (!row) {
+        return sendJson(res, 409, {
+          success: false,
+          error:
+            'this post is not repeating, or is already on its way out, so there is nothing to stop.',
+          code: 'NOT_REPEATING',
+        });
+      }
     } else if (payload) {
+      // A rule is anchored at this row's number in its series, when it is
+      // the row the series goes on from; anywhere else it starts at one.
+      const editing = payload.repeat
+        ? await scheduled.getScheduledPost(id, userDid)
+        : null;
       const validation = scheduled.validateCreate({
         scheduledFor,
         target,
         payload,
         queued,
+        occurrence: scheduled.seriesCarrier(editing) ? editing.occurrence : 1,
       });
       if (!validation.ok) return sendInvalid(res, validation);
 
@@ -127,6 +172,9 @@ export default async function handler(req, res) {
         queued: validation.value.queued,
         tz: typeof payload.tz === 'string' ? payload.tz : undefined,
         selfDestruct: validation.value.selfDestruct,
+        reply: validation.value.reply,
+        replyTo: validation.value.replyTo,
+        repeat: validation.value.repeat,
       });
     } else {
       const validation = scheduled.validateReschedule({ scheduledFor });

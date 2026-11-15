@@ -512,16 +512,20 @@ describe('serializeForSchedule: media and embeds', () => {
 });
 
 describe('serializeForSchedule: what the server can’t schedule', () => {
-  it('refuses a reply', async () => {
-    const err = await rejection(
-      serialize(
-        state({
-          reply: { uri: QUOTED, cid: 'c', root: { uri: QUOTED, cid: 'c' } },
-        }),
-      ),
-    );
-    expect(err.code).toBe('SCHEDULE_REPLY');
-    expect(err.message).toMatch(/Replies can’t be scheduled/);
+  it('refuses a reply in the queue, and one whose post was never read', async () => {
+    const reply = { uri: QUOTED, cid: 'c', root: { uri: QUOTED, cid: 'c' } };
+    const queued = await rejection(serialize(state({ reply }), { queued: true }));
+    expect(queued.code).toBe('QUEUE_REPLY');
+    expect(queued.message).toMatch(/A reply can’t wait in the queue/);
+    expect(
+      (
+        await rejection(
+          serialize(state({ reply, schedule: { mode: 'queue' } })),
+        )
+      ).code,
+    ).toBe('QUEUE_REPLY');
+    const unread = await rejection(serialize(state({ reply: { uri: QUOTED } })));
+    expect(unread.code).toBe('REPLY_UNRESOLVED');
   });
 
   it('refuses video', async () => {
@@ -544,15 +548,16 @@ describe('serializeForSchedule: what the server can’t schedule', () => {
     expect(err.code).toBe('SCHEDULE_VIDEO');
   });
 
-  it('agrees with validateComposer on both', () => {
+  it('agrees with validateComposer on the queue', () => {
     const reply = state({
       reply: { uri: QUOTED, cid: 'c', root: { uri: QUOTED, cid: 'c' } },
+      schedule: { mode: 'queue' },
     });
     expect(
       validateComposer(reply, { now: NOW, forSchedule: true }).map(
         (p) => p.code,
       ),
-    ).toContain('SCHEDULE_REPLY');
+    ).toContain('QUEUE_REPLY');
   });
 
   it('refuses a missing, past or too-distant time', async () => {
@@ -1209,5 +1214,177 @@ describe('round trip: serialize, store, reconstruct, serialize', () => {
     );
     expect(first.payload.gates.threadgate).toEqual([]);
     expect(second).toEqual(first);
+  });
+});
+
+describe('serializeForSchedule: a reply', () => {
+  const PARENT = 'at://did:plc:other/app.bsky.feed.post/3kparent';
+  const ROOT = 'at://did:plc:third/app.bsky.feed.post/3kroot';
+  const reply = {
+    uri: PARENT,
+    cid: 'parentcid',
+    root: { uri: ROOT, cid: 'rootcid' },
+    author: { did: 'did:plc:other', handle: 'ada.example.com', displayName: 'Ada', avatar: 'https://cdn/a.jpg' },
+    text: `  ${'what she said '.repeat(40)}`,
+    view: { big: 'object' },
+  };
+
+  it('carries the root and parent strong refs, and who it answers', async () => {
+    const body = await serialize(state({ reply }));
+    expect(body.queued).toBe(false);
+    expect(body.payload.reply).toEqual({
+      root: { uri: ROOT, cid: 'rootcid' },
+      parent: { uri: PARENT, cid: 'parentcid' },
+    });
+    expect(body.payload.replyTo).toEqual({
+      handle: 'ada.example.com',
+      displayName: 'Ada',
+      text: 'what she said '.repeat(40).trim().slice(0, 300),
+    });
+  });
+
+  it('takes the parent as the root when the reply has none of its own', async () => {
+    const body = await serialize(state({ reply: { uri: PARENT, cid: 'parentcid' } }));
+    expect(body.payload.reply).toEqual({
+      root: { uri: PARENT, cid: 'parentcid' },
+      parent: { uri: PARENT, cid: 'parentcid' },
+    });
+    expect(body.payload).not.toHaveProperty('replyTo');
+  });
+
+  it('sends no gates, as a live reply writes none', async () => {
+    const body = await serialize(
+      state({ reply, gates: { custom: true, reply: [], quotes: false } }),
+    );
+    expect(body.payload.gates).toEqual({ threadgate: null, postgate: null });
+  });
+
+  it('fits the timer to a reply: no reply limit to set on someone else’s thread', async () => {
+    const lifespan = {
+      enabled: true,
+      lifespanSeconds: 3600,
+      effects: [{ action: 'limitReplies', allow: ['follower'] }, { action: 'delete' }],
+    };
+    const plain = await serialize(state({ lifespan }));
+    const asReply = await serialize(state({ reply, lifespan }));
+    const actions = (b) => (b.payload.selfDestruct?.effects || []).map((e) => e.action);
+    expect(actions(plain)).toContain('limitReplies');
+    expect(actions(asReply)).not.toContain('limitReplies');
+  });
+
+  it('leaves a plain post’s payload without either field', async () => {
+    const body = await serialize(state());
+    expect(body.payload).not.toHaveProperty('reply');
+    expect(body.payload).not.toHaveProperty('replyTo');
+    expect(body.payload).not.toHaveProperty('repeat');
+  });
+
+  it('comes back into the composer as the reply it was', async () => {
+    const body = await serialize(state({ reply }));
+    const s = reconstructFromScheduled(
+      { id: 'r1', scheduledFor: AT, queued: false, payload: body.payload },
+      {},
+      { asDid: DID },
+    );
+    expect(s.reply).toEqual({
+      uri: PARENT,
+      cid: 'parentcid',
+      root: { uri: ROOT, cid: 'rootcid' },
+      text: body.payload.replyTo.text,
+      author: { did: 'did:plc:other', handle: 'ada.example.com', displayName: 'Ada', avatar: null },
+    });
+    // Saved again, it is the same reply.
+    const again = await serialize(s);
+    expect(again.payload.reply).toEqual(body.payload.reply);
+    expect(again.payload.replyTo).toEqual(body.payload.replyTo);
+  });
+});
+
+describe('serializeForSchedule: a repeating post', () => {
+  const weekly = { mode: 'at', at: AT, repeat: { every: 'week', count: 6 } };
+
+  it('sends the rule with the zone the time was picked in', async () => {
+    const body = await serialize(state({ schedule: weekly }), { repeatTz: 'Europe/Paris' });
+    expect(body.payload.repeat).toEqual({ every: 'week', tz: 'Europe/Paris', count: 6 });
+    // The scheduling device's zone is still its own field.
+    expect(body.payload.tz).toBe('America/New_York');
+  });
+
+  it('falls back to the device’s zone, and takes a rule passed in over the state’s', async () => {
+    expect((await serialize(state({ schedule: weekly }))).payload.repeat.tz).toBe(
+      'America/New_York',
+    );
+    const body = await serialize(state({ schedule: weekly }), {
+      repeat: { every: 'day', until: '2026-10-01' },
+    });
+    expect(body.payload.repeat).toEqual({
+      every: 'day',
+      tz: 'America/New_York',
+      until: '2026-10-01',
+    });
+    expect(
+      (await serialize(state({ schedule: weekly }), { repeat: null })).payload,
+    ).not.toHaveProperty('repeat');
+  });
+
+  it('never repeats a queued post', async () => {
+    const body = await serialize(state({ schedule: weekly }), { queued: true });
+    expect(body.queued).toBe(true);
+    expect(body.payload).not.toHaveProperty('repeat');
+  });
+
+  it('refuses a reply that repeats, and a rule that can’t be used', async () => {
+    const reply = { uri: QUOTED, cid: 'c', root: { uri: QUOTED, cid: 'c' } };
+    const err = await rejection(serialize(state({ reply, schedule: weekly })));
+    expect(err.code).toBe('REPEAT_REPLY');
+    expect(err.message).toMatch(/A reply can’t repeat/);
+    const bad = await rejection(
+      serialize(state({ schedule: { ...weekly, repeat: { every: 'week', until: '2026-08-01' } } })),
+    );
+    expect(bad.code).toBe('REPEAT_INVALID');
+    expect(bad.message).toMatch(/before it first goes out/);
+    const passed = await rejection(
+      serialize(state({ schedule: { ...weekly, repeat: { every: 'week', count: 3 } } }), {
+        occurrence: 5,
+      }),
+    );
+    expect(passed.message).toMatch(/already gone out 4 times/);
+    // An end left half typed in the picker is asked for, not sent as "never".
+    const half = await rejection(
+      serialize(state({ schedule: { ...weekly, repeat: { every: 'week', ends: 'after', count: '' } } })),
+    );
+    expect(half.code).toBe('REPEAT_INVALID');
+    expect(half.message).toBe('Say how many times it goes out.');
+  });
+
+  it('comes back into the composer with its rule', () => {
+    const s = reconstructFromScheduled(
+      {
+        id: 'r1',
+        scheduledFor: AT,
+        queued: false,
+        seriesId: 's',
+        occurrence: 3,
+        payload: {
+          posts: [{ record: { text: 'weekly' } }],
+          repeat: {
+            every: 'week',
+            tz: 'Europe/Paris',
+            until: null,
+            count: 6,
+            anchor: { date: '2026-09-01', time: '19:00', occurrence: 3 },
+          },
+        },
+      },
+      {},
+      { asDid: DID },
+    );
+    expect(s.schedule).toEqual({ mode: 'at', at: AT, repeat: { every: 'week', count: 6 } });
+    const plain = reconstructFromScheduled(
+      { id: 'r2', scheduledFor: AT, queued: false, payload: { posts: [{ record: { text: 'once' } }] } },
+      {},
+      { asDid: DID },
+    );
+    expect(plain.schedule).toEqual({ mode: 'at', at: AT });
   });
 });

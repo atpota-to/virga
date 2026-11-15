@@ -4,7 +4,6 @@
 // line breaks in the owner's own posts.
 
 import { describe, it, expect } from 'vitest';
-import { POST_TEXT_LIMIT } from './analytics.js';
 import { EXPORT_FORMAT, EXPORT_VERSION, archiveJson, exportFilename, postsCsv } from './analyticsExport.js';
 
 const DID = 'did:plc:owner';
@@ -86,9 +85,10 @@ describe('archiveJson', () => {
     expect(doc.rev).toBeUndefined();
   });
 
-  it('names the text cap instead of passing snippets off as whole posts', () => {
+  it('says what a post row holds, and that older rows hold less', () => {
     const doc = JSON.parse(archiveJson(archive));
-    expect(doc.notes.posts).toContain(`first ${POST_TEXT_LIMIT} characters`);
+    expect(doc.notes.posts).toContain('text is the whole post');
+    expect(doc.notes.posts).toContain('200-character text');
     for (const key of ['posts', 'followers', 'blocks', 'inbound', 'outbound', 'atmosphere', 'actors']) {
       expect(typeof doc.notes[key]).toBe('string');
     }
@@ -121,6 +121,13 @@ describe('postsCsv', () => {
       'quote_of',
       'url',
       'uri',
+      'media',
+      'media_count',
+      'alt_text_count',
+      'length',
+      'tags',
+      'links',
+      'langs',
     ]);
   });
 

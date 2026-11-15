@@ -7,6 +7,7 @@
 // ANALYTICS_PERIODS. All time starts at the oldest thing the model counts.
 
 import {
+  POST_ROW_VERSION,
   ENGAGEMENT_KINDS,
   blockReach,
   bucketSeries,
@@ -26,6 +27,8 @@ import {
   topPosts,
   unitChoicesFor,
 } from '../lib/analytics.js';
+import { localeStamp, uses12Hour, weekOrder } from '../lib/locale.js';
+import { periodEnd, periodStart } from '../lib/periods.js';
 
 const DAY_MS = 86_400_000;
 
@@ -42,7 +45,9 @@ const cache = new Map();
  */
 export function cached(archive, name, period, options, compute) {
   // followRev moves when Follow or Unfollow changes the follows between syncs.
-  const key = [archive.did, archive.rev, archive.followRev || 0, archive.nowMs, name, period?.key, JSON.stringify(options || {})].join('|');
+  // localeStamp moves with the locale and the first day of the week: a week
+  // bucketed from Monday must not be served to someone who starts on Sunday.
+  const key = [archive.did, archive.rev, archive.followRev || 0, archive.nowMs, localeStamp(), name, period?.key, JSON.stringify(options || {})].join('|');
   if (cache.has(key)) return cache.get(key);
   const value = compute();
   cache.set(key, value);
@@ -50,9 +55,13 @@ export function cached(archive, name, period, options, compute) {
   return value;
 }
 
+// Every model takes "now" and reads it as where its window ends: for a
+// preset that is now, for a custom range the close of its last day, which is
+// what the first line of each (`periodEnd`) swaps in.
+
 /** The window's start, its length in days and the units it can be drawn in. */
 function windowOf(period, nowMs, oldestMs, unitPick) {
-  const t0 = period.days ? nowMs - period.days * DAY_MS : Number.isFinite(oldestMs) ? oldestMs : nowMs;
+  const t0 = periodStart(period, nowMs) ?? (Number.isFinite(oldestMs) ? oldestMs : nowMs);
   const spanDays = Math.max(1, Math.round((nowMs - t0) / DAY_MS));
   const units = unitChoicesFor(period.days ?? spanDays);
   const unit = unitPick && units.includes(unitPick) ? unitPick : defaultUnitFor(period.days ?? spanDays);
@@ -73,6 +82,7 @@ function minOf(list, pick) {
 /* ------------------------------------------------------------------ */
 
 export function followersModel(archive, period, nowMs, { unit: unitPick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'followers', period, { unitPick }, () => {
     const { followers, blocks } = archive;
     const dated = [];
@@ -129,6 +139,7 @@ function biggestDays(dated, limit = 5) {
 /* ------------------------------------------------------------------ */
 
 export function blocksModel(archive, period, nowMs, { unit: unitPick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'blocks', period, { unitPick }, () => {
     const { blocks, followers } = archive;
     const reach = blockReach(blocks);
@@ -178,6 +189,7 @@ function datedPosts(archive) {
 }
 
 export function postsModel(archive, period, nowMs, { unit: unitPick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'posts', period, { unitPick }, () => {
     const dated = datedPosts(archive);
     const { t0, spanDays, units, unit } = windowOf(period, nowMs, minOf(dated, (p) => p.atMs), unitPick);
@@ -208,6 +220,7 @@ export function postsModel(archive, period, nowMs, { unit: unitPick = null } = {
 /* ------------------------------------------------------------------ */
 
 export function engagementModel(archive, period, nowMs, { kind = 'all', unit: unitPick = null, rateUnit: ratePick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'engagement', period, { kind, unitPick, ratePick }, () => {
     const did = archive.did;
     const dated = datedPosts(archive);
@@ -236,7 +249,8 @@ export function engagementModel(archive, period, nowMs, { kind = 'all', unit: un
       total,
       byKind,
       posts: inWindow.length,
-      top: topPosts(inWindow, { kind, t0, t1: nowMs, limit: 10 }),
+      // Twenty, for a dashboard card set to show that many; the report shows ten.
+      top: topPosts(inWindow, { kind, t0, t1: nowMs, limit: 20 }),
       compare: comparePeriods(dated, { days: period.days || spanDays, now: nowMs, pickTime: (p) => p.atMs, pickValue: value }),
       rateUnit,
       rate,
@@ -255,6 +269,7 @@ export function engagementModel(archive, period, nowMs, { kind = 'all', unit: un
 export const GIVEN_NOUN = { like: 'likes', repost: 'reposts', reply: 'replies', quote: 'quotes' };
 
 export function givenModel(archive, period, nowMs, { kind = 'all', unit: unitPick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'given', period, { kind, unitPick }, () => {
     const all = [];
     for (const ev of givenEvents(archive.outbound, archive.posts, archive.did)) {
@@ -293,9 +308,10 @@ export function givenModel(archive, period, nowMs, { kind = 'all', unit: unitPic
  * report filters these by relationship; the cards take the top few.
  */
 export function peopleModel(archive, period, nowMs, { kind = 'all' } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'people', period, { kind }, () => {
     const { posts, inbound, outbound, did } = archive;
-    const windowFor = (events) => (period.days ? nowMs - period.days * DAY_MS : (oldestEventMs(events) ?? nowMs));
+    const windowFor = (events) => periodStart(period, nowMs) ?? oldestEventMs(events) ?? nowMs;
     const outboundAll = [...outbound, ...outboundFromPosts(posts)];
     const inT0 = windowFor(inbound);
     const outT0 = windowFor(outboundAll);
@@ -322,6 +338,7 @@ export function relationSets(archive) {
  * most engaged first: the Follow-back queue.
  */
 export function followBackModel(archive, period, nowMs) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'followBack', period, null, () => {
     const { followers, following } = relationSets(archive);
     const people = peopleModel(archive, period, nowMs);
@@ -334,6 +351,7 @@ export function followBackModel(archive, period, nowMs) {
 /* ------------------------------------------------------------------ */
 
 export function atmosphereModel(archive, period, nowMs, { unit: unitPick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'atmosphere', period, { unitPick }, () => {
     const { atmosphere } = archive;
     if (!atmosphere.length) return null;
@@ -363,7 +381,19 @@ export function atmosphereModel(archive, period, nowMs, { unit: unitPick = null 
 /* When posts land                                                      */
 /* ------------------------------------------------------------------ */
 
+// Indexed from Monday everywhere in the model (`day` 0 is Monday), whatever
+// day the reader's week starts on; weekdayOrder() below is the order to draw
+// them in.
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+export const WEEKDAYS_LONG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+/**
+ * The model's weekday indexes in the order the reader's week runs:
+ * [0..6] for a Monday start, [6, 0, 1, 2, 3, 4, 5] for a Sunday one.
+ */
+export function weekdayOrder() {
+  return weekOrder().map((day) => (day + 6) % 7);
+}
 
 /** The fewest posts a slot needs before its average is shown at all. */
 export const BEST_TIME_MIN_POSTS = 3;
@@ -391,9 +421,10 @@ export function median(values) {
  * posts younger than two days are left out for that reason.
  */
 export function bestTimeModel(archive, period, nowMs, { block = 2 } = {}) {
+  nowMs = periodEnd(period, nowMs);
   return cached(archive, 'bestTime', period, { block }, () => {
     const cols = Math.ceil(24 / block);
-    const t0 = period.days ? nowMs - period.days * DAY_MS : -Infinity;
+    const t0 = periodStart(period, nowMs) ?? -Infinity;
     const settled = nowMs - 2 * DAY_MS;
     const grid = WEEKDAYS.map(() => Array.from({ length: cols }, () => []));
     const all = [];
@@ -426,9 +457,16 @@ export function bestTimeModel(archive, period, nowMs, { block = 2 } = {}) {
   });
 }
 
-/** "6–8 pm" for a column of `block` hours starting at `col * block`. */
+/**
+ * "6–8 pm" for a column of `block` hours starting at `col * block`, or
+ * "18–20" where the reader's clock runs to 24.
+ */
 export function hourRange(col, block = 2) {
   const from = col * block;
+  if (!uses12Hour()) {
+    const two = (x) => String(x % 24).padStart(2, '0');
+    return `${two(from)}–${two(from + block)}`;
+  }
   const h = (x) => {
     const v = x % 24;
     return { n: v % 12 === 0 ? 12 : v % 12, ap: v < 12 ? 'am' : 'pm' };
@@ -445,9 +483,180 @@ export function hourColumns(block = 2) {
   const out = [];
   for (let c = 0; c < cols; c += every) {
     const h = c * block;
-    out.push({ label: h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? `${h}a` : `${h - 12}p`, span: Math.min(every, cols - c) });
+    const label = !uses12Hour() ? String(h).padStart(2, '0') : h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? `${h}a` : `${h - 12}p`;
+    out.push({ label, span: Math.min(every, cols - c) });
   }
   return out;
+}
+
+/* ------------------------------------------------------------------ */
+/* What posts are made of                                               */
+/* ------------------------------------------------------------------ */
+
+/** What a post is, by what it carries. A quote that also has pictures is its pictures. */
+export const CONTENT_FORMATS = Object.freeze([
+  { key: 'text', label: 'Text only' },
+  { key: 'image', label: 'Images' },
+  { key: 'video', label: 'Video' },
+  { key: 'link', label: 'Link card' },
+  { key: 'gif', label: 'GIF' },
+  { key: 'quote', label: 'Quote post' },
+]);
+
+/** Length bands, in the characters Bluesky counts (a post holds 300). */
+export const LENGTH_BANDS = Object.freeze([
+  { key: 'short', label: 'Up to 80', max: 80 },
+  { key: 'medium', label: '81 to 160', max: 160 },
+  { key: 'long', label: '161 to 240', max: 240 },
+  { key: 'full', label: '241 to 300', max: Infinity },
+]);
+
+export const THREAD_PLACES = Object.freeze([
+  { key: 'single', label: 'On its own' },
+  { key: 'opener', label: 'Starts a thread' },
+  { key: 'later', label: 'Later in a thread' },
+]);
+
+/** The fewest posts a group needs before its typical post is shown. */
+export const CONTENT_MIN_POSTS = BEST_TIME_MIN_POSTS;
+
+export function formatOf(post) {
+  return post.media || (post.quoteOf ? 'quote' : 'text');
+}
+
+/** Whether the archive's post rows hold what the Content report reads. */
+export function contentReady(archive) {
+  return archive?.meta?.posts?.shape === POST_ROW_VERSION;
+}
+
+function tally() {
+  return { posts: 0, total: 0, settled: [] };
+}
+
+function addTo(group, post, settled) {
+  const e = engagementOf(post, 'all');
+  group.posts += 1;
+  group.total += e;
+  if (settled) group.settled.push(e);
+}
+
+function closed(group, all) {
+  return {
+    posts: group.posts,
+    total: group.total,
+    share: all ? group.posts / all : 0,
+    // The typical post, as Best time to post reads it: the median, and only
+    // once there are enough posts for a middle to mean something.
+    typical: group.settled.length >= CONTENT_MIN_POSTS ? median(group.settled) : null,
+  };
+}
+
+/**
+ * What the account's posts are made of, and what each kind typically earns:
+ * by format, by length, by tag, by linked site, by place in a thread, plus
+ * how much of its media is described. Over the owner's own voice (top-level
+ * posts and their own threads), like the engagement rate: a reply inside
+ * someone else's conversation earns on a different scale.
+ *
+ * Counts are every post in the window. What a group "typically earns" is the
+ * median over its posts older than two days, since the newest are still
+ * collecting, and is null for a group with fewer than CONTENT_MIN_POSTS.
+ *
+ * A row that doesn't hold what a post is made of is left out and counted in
+ * `unread`: it was archived before rows kept that, and its record has left
+ * the repo since (a deleted post), so there is nothing to read it from.
+ * Counting it as a short text post would be a guess.
+ */
+export function contentModel(archive, period, nowMs) {
+  nowMs = periodEnd(period, nowMs);
+  return cached(archive, 'content', period, null, () => {
+    const t0 = periodStart(period, nowMs) ?? -Infinity;
+    const settledBefore = nowMs - 2 * DAY_MS;
+    const inWindow = datedPosts(archive).filter((p) => p.atMs >= t0 && p.atMs <= nowMs && isOwnVoicePost(p, archive.did));
+    const own = inWindow.filter((p) => p.len != null);
+    // The first post of a thread carries no reply; the posts after it name it.
+    const openers = new Set();
+    for (const p of datedPosts(archive)) {
+      if (p.threadOf === archive.did && p.replyTo === archive.did && p.threadKey) openers.add(p.threadKey);
+    }
+
+    const all = tally();
+    const formats = new Map(CONTENT_FORMATS.map((f) => [f.key, tally()]));
+    const lengths = new Map(LENGTH_BANDS.map((b) => [b.key, tally()]));
+    const places = new Map(THREAD_PLACES.map((t) => [t.key, tally()]));
+    const tags = new Map();
+    const links = new Map();
+    const langs = new Map();
+    const alt = { posts: 0, described: 0, items: 0, itemsDescribed: 0 };
+    let withTags = 0;
+    let withLinks = 0;
+
+    for (const p of own) {
+      const settled = p.atMs <= settledBefore;
+      addTo(all, p, settled);
+      addTo(formats.get(formatOf(p)) || formats.get('text'), p, settled);
+      const len = p.len ?? 0;
+      addTo(lengths.get(LENGTH_BANDS.find((b) => len <= b.max).key), p, settled);
+      const place = p.replyTo ? 'later' : openers.has(p.rkey) ? 'opener' : 'single';
+      addTo(places.get(place), p, settled);
+
+      if (p.tags?.length) withTags += 1;
+      for (const tag of p.tags || []) {
+        const key = tag.toLowerCase();
+        if (!tags.has(key)) tags.set(key, { tag, ...tally() });
+        addTo(tags.get(key), p, settled);
+      }
+      if (p.links?.length) withLinks += 1;
+      for (const host of p.links || []) {
+        if (!links.has(host)) links.set(host, { host, ...tally() });
+        addTo(links.get(host), p, settled);
+      }
+      for (const lang of p.langs || []) langs.set(lang, (langs.get(lang) || 0) + 1);
+      if (p.media === 'image' || p.media === 'video') {
+        alt.posts += 1;
+        alt.items += p.mediaCount || 0;
+        alt.itemsDescribed += p.altCount || 0;
+        if (p.mediaCount && p.altCount >= p.mediaCount) alt.described += 1;
+      }
+    }
+
+    const ranked = (map, name) =>
+      [...map.values()]
+        .map((g) => ({ [name]: g[name], ...closed(g, all.posts) }))
+        .sort((a, b) => b.posts - a.posts || (b.typical ?? -1) - (a.typical ?? -1) || String(a[name]).localeCompare(String(b[name])));
+    const grouped = (defs, map) => defs.map((d) => ({ key: d.key, label: d.label, ...closed(map.get(d.key), all.posts) }));
+
+    return {
+      ready: contentReady(archive),
+      unread: inWindow.length - own.length,
+      posts: all.posts,
+      typical: all.settled.length ? median(all.settled) : null,
+      formats: grouped(CONTENT_FORMATS, formats),
+      lengths: grouped(LENGTH_BANDS, lengths),
+      places: grouped(THREAD_PLACES, places),
+      tags: ranked(tags, 'tag'),
+      links: ranked(links, 'host'),
+      langs: [...langs.entries()].map(([lang, posts]) => ({ lang, posts })).sort((a, b) => b.posts - a.posts || a.lang.localeCompare(b.lang)),
+      withTags,
+      withLinks,
+      alt: { ...alt, pct: alt.items ? (alt.itemsDescribed / alt.items) * 100 : null },
+    };
+  });
+}
+
+/**
+ * The group that typically earns the most among those with a typical value,
+ * and the one to hold it against (`against`, by key; the overall typical
+ * post when that group has none). Null when there is nothing to compare.
+ */
+export function contentStandout(groups, overall, against = null) {
+  const known = groups.filter((g) => g.typical != null);
+  if (known.length < 2) return null;
+  const best = known.reduce((a, b) => (b.typical > a.typical ? b : a));
+  const base = known.find((g) => g.key === against && g.key !== best.key) || null;
+  const baseline = base ? base.typical : overall;
+  if (baseline == null || best.typical <= baseline) return null;
+  return { best, base, baseline };
 }
 
 /* ------------------------------------------------------------------ */

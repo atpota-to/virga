@@ -46,6 +46,7 @@ import {
 import { templateEmbedKind } from '../templates/editorDrafts.js';
 import { countComposerGraphemes } from '../lib/inlineLinks.js';
 import { truncateGraphemes } from '../lib/graphemes.js';
+import { activeLocale } from '../../lib/locale.js';
 
 export {
   BLANK_TEMPLATE,
@@ -140,7 +141,7 @@ function shortDate(iso, now = new Date()) {
   const opts = { month: 'short', day: 'numeric' };
   // An older post needs its year, or "Sep 2" reads as this September.
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
-  return d.toLocaleDateString(undefined, opts);
+  return d.toLocaleDateString(activeLocale(), opts);
 }
 
 /** The first non-empty line, and the rest as one line. */

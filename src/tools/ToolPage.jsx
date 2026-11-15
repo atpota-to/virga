@@ -15,7 +15,10 @@ import BestTime from './BestTime.jsx';
 import ListsYoureOn from './ListsYoureOn.jsx';
 import ArchiveSearch from './ArchiveSearch.jsx';
 import Identity from './Identity.jsx';
+import InteractionLookup from './InteractionLookup.jsx';
+import { interactionIndex } from './interactionModel.js';
 import './tools.css';
+import { activeLocale } from '../lib/locale.js';
 
 const PAGES = {
   'follow-cleanup': FollowCleanup,
@@ -23,6 +26,7 @@ const PAGES = {
   'follow-back': FollowBack,
   'best-time': BestTime,
   lists: ListsYoureOn,
+  'interaction-lookup': InteractionLookup,
   archive: ArchiveSearch,
   identity: Identity,
 };
@@ -77,12 +81,14 @@ function useToolStats(archive) {
   const lists = archive.meta.lists ? listsModel(archive) : null;
   const queue = followBackModel(archive, { key: 'all', days: null, label: 'All time' }, archive.nowMs);
   const checked = archive.following.filter((f) => archive.actors.get(f.did)?.activityAt).length;
+  const met = interactionIndex(archive).ranked.length;
   return {
-    'follow-cleanup': `${archive.following.length.toLocaleString('en-US')} follows${checked ? `, ${checked.toLocaleString('en-US')} checked` : ''}`,
-    'unfollow-tracker': log.tracking ? `${log.latestLost.length.toLocaleString('en-US')} at the last sync` : 'Starts at your next sync',
-    'follow-back': `${queue.length.toLocaleString('en-US')} waiting`,
+    'follow-cleanup': `${archive.following.length.toLocaleString(activeLocale())} follows${checked ? `, ${checked.toLocaleString(activeLocale())} checked` : ''}`,
+    'unfollow-tracker': log.tracking ? `${log.latestLost.length.toLocaleString(activeLocale())} at the last sync` : 'Starts at your next sync',
+    'follow-back': `${queue.length.toLocaleString(activeLocale())} waiting`,
     lists: lists ? `${lists.length} lists, ${lists.filter((l) => l.purpose === 'moderation').length} moderation` : 'Read at the next sync',
-    archive: `${archive.posts.length.toLocaleString('en-US')} posts`,
+    'interaction-lookup': `${met.toLocaleString(activeLocale())} ${met === 1 ? 'account' : 'accounts'} on record`,
+    archive: `${archive.posts.length.toLocaleString(activeLocale())} posts`,
     identity: archive.atmosphere.length ? `${new Set(archive.atmosphere.map((r) => r.collection)).size} collections` : '',
   };
 }
