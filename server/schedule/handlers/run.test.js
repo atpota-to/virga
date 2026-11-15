@@ -247,7 +247,7 @@ describe('a tick', () => {
     });
     expect((await tick()).body.published).toBe(1);
     expect(pds.blobs).toHaveLength(1);
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
   });
 
   it('arms the timer over every post the thread wrote', async () => {
@@ -529,14 +529,14 @@ describe('the failed-media sweep', () => {
       unavailable: false,
     });
     expect((await readRow(row.id)).media_reclaimed_at).not.toBeNull();
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
   });
 
   it('stays out of every other minute', async () => {
     const { path } = await staleFailedRowWithMedia();
     at(18);
     expect((await tick()).body.mediaReclaimed).toBeNull();
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeTruthy();
   });
 });
 
@@ -862,7 +862,7 @@ describe('a repeating post', () => {
     });
     expect((await tick()).body.published).toBe(1);
     expect(pds.blobs).toHaveLength(1);
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeTruthy();
 
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(at + 7 * DAY + 2 * MINUTE));
@@ -874,7 +874,7 @@ describe('a repeating post', () => {
       'app.bsky.embed.images',
     ]);
     // The series is over ("after 2 times"): the stashed copy goes with it.
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
   });
 
   it('arms each occurrence’s timer on the records that occurrence wrote', async () => {

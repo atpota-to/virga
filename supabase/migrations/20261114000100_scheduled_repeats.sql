@@ -4,30 +4,41 @@
 -- occurrence is settled (it published, it failed for good, or it was
 -- skipped), the next one is written in the same transaction, so a crash can
 -- never leave a series with nothing waiting, and a second run can never
--- write a second copy. Scheduled replies need no schema: their refs ride in
+-- write a second copy. Scheduled replies need no columns: their refs ride in
 -- the payload. Only the service role touches any of it. Safe to re-apply.
+--
+-- Everything is in Virga's own schema and named with it, as in the earlier
+-- migrations: the project is shared, and another app has a scheduled_posts
+-- table and a create_scheduled_post_capped function of its own in public.
+-- Each function pins its search_path to the schema, so the names inside its
+-- body are Virga's.
+
+-- Virga's own schema; see the first migration.
+CREATE SCHEMA IF NOT EXISTS virga;
+REVOKE ALL ON SCHEMA virga FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA virga TO service_role;
 
 -- Every occurrence of one repeating post shares series_id; occurrence is its
 -- number in the series, from 1. A post that never repeated has neither. The
 -- rule itself (payload.repeat) sits only on the row that carries the series
 -- forward: the one waiting, or the last one once the series is over.
-ALTER TABLE scheduled_posts ADD COLUMN IF NOT EXISTS series_id  UUID;
-ALTER TABLE scheduled_posts ADD COLUMN IF NOT EXISTS occurrence INTEGER;
+ALTER TABLE virga.scheduled_posts ADD COLUMN IF NOT EXISTS series_id  UUID;
+ALTER TABLE virga.scheduled_posts ADD COLUMN IF NOT EXISTS occurrence INTEGER;
 
-COMMENT ON COLUMN scheduled_posts.series_id IS
+COMMENT ON COLUMN virga.scheduled_posts.series_id IS
   'Set on every occurrence of a repeating post; null for a post that never repeated.';
-COMMENT ON COLUMN scheduled_posts.occurrence IS
+COMMENT ON COLUMN virga.scheduled_posts.occurrence IS
   'This row''s number in its series, from 1; missed and skipped slots are counted.';
 
-ALTER TABLE scheduled_posts DROP CONSTRAINT IF EXISTS scheduled_posts_series_shape;
-ALTER TABLE scheduled_posts ADD CONSTRAINT scheduled_posts_series_shape
+ALTER TABLE virga.scheduled_posts DROP CONSTRAINT IF EXISTS scheduled_posts_series_shape;
+ALTER TABLE virga.scheduled_posts ADD CONSTRAINT scheduled_posts_series_shape
   CHECK ((series_id IS NULL) = (occurrence IS NULL) AND (occurrence IS NULL OR occurrence >= 1));
 
 -- One row per occurrence of a series. This is what makes writing the next
 -- occurrence idempotent: whoever tries second finds the number taken. It
 -- also serves "the other rows of this series" (the media release reads them).
 CREATE UNIQUE INDEX IF NOT EXISTS scheduled_posts_series_occurrence_idx
-  ON scheduled_posts (series_id, occurrence)
+  ON virga.scheduled_posts (series_id, occurrence)
   WHERE series_id IS NOT NULL;
 
 -- ─── Capped create, with a series ───────────────────────────────────────────
@@ -36,9 +47,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS scheduled_posts_series_occurrence_idx
 -- dropped so there is one function of this name; the server always passes
 -- every argument, so a re-applied earlier migration that brings the old form
 -- back cannot be called by mistake.
-DROP FUNCTION IF EXISTS create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER);
+DROP FUNCTION IF EXISTS virga.create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER);
 
-CREATE OR REPLACE FUNCTION create_scheduled_post_capped(
+CREATE OR REPLACE FUNCTION virga.create_scheduled_post_capped(
   p_user_did      TEXT,
   p_scheduled_for TIMESTAMPTZ,
   p_target        TEXT,
@@ -49,7 +60,7 @@ CREATE OR REPLACE FUNCTION create_scheduled_post_capped(
   p_occurrence    INTEGER DEFAULT NULL
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_limit INTEGER := GREATEST(COALESCE(p_max_active, 50), 0);
@@ -109,7 +120,7 @@ $$;
 -- Answers { ok: true, next: <the new row or null> }, or { ok: false, code }
 -- with NOT_FOUND, NOT_PENDING or BAD_REQUEST. A p_next that can't be read
 -- raises, which rolls the status change back with it.
-CREATE OR REPLACE FUNCTION settle_scheduled_occurrence(
+CREATE OR REPLACE FUNCTION virga.settle_scheduled_occurrence(
   p_id           UUID,
   p_status       TEXT,
   p_fields       JSONB   DEFAULT '{}'::jsonb,
@@ -118,7 +129,7 @@ CREATE OR REPLACE FUNCTION settle_scheduled_occurrence(
   p_only_pending BOOLEAN DEFAULT false
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_row    scheduled_posts%ROWTYPE;
@@ -186,12 +197,12 @@ $$;
 -- stays as it is and goes out at its time; nothing follows it. One statement,
 -- so it can't cross with a claim or an edit. Answers the row, or null when
 -- there was nothing of the account's to stop.
-CREATE OR REPLACE FUNCTION stop_scheduled_repeat(
+CREATE OR REPLACE FUNCTION virga.stop_scheduled_repeat(
   p_id       UUID,
   p_user_did TEXT
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_row JSONB;
@@ -210,9 +221,9 @@ $$;
 
 -- As in the scheduled-posts migration: nothing here may be callable through
 -- PostgREST with the public anon key.
-REVOKE ALL ON FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER, UUID, INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION settle_scheduled_occurrence(UUID, TEXT, JSONB, JSONB, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION stop_scheduled_repeat(UUID, TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER, UUID, INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION settle_scheduled_occurrence(UUID, TEXT, JSONB, JSONB, TEXT, BOOLEAN) TO service_role;
-GRANT EXECUTE ON FUNCTION stop_scheduled_repeat(UUID, TEXT) TO service_role;
+REVOKE ALL ON FUNCTION virga.create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER, UUID, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.settle_scheduled_occurrence(UUID, TEXT, JSONB, JSONB, TEXT, BOOLEAN) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.stop_scheduled_repeat(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION virga.create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER, UUID, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.settle_scheduled_occurrence(UUID, TEXT, JSONB, JSONB, TEXT, BOOLEAN) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.stop_scheduled_repeat(UUID, TEXT) TO service_role;

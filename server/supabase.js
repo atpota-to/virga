@@ -4,6 +4,13 @@
 
 import { createClient } from '@supabase/supabase-js';
 
+/**
+ * The Postgres schema every table and function of Virga's lives in
+ * (supabase/migrations), so the project can be shared with other apps. The
+ * Data API serves it only once it is listed in the project's exposed schemas.
+ */
+export const DB_SCHEMA = 'virga';
+
 let cached = null; // { url, key, client }
 let override; // undefined: no override; null: "unconfigured"; else the client to hand out
 let warned = false;
@@ -38,6 +45,8 @@ export function getSupabaseClient(env = process.env) {
   if (cached && cached.url === url && cached.key === key) return cached.client;
   const client = createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
+    // from() and rpc() go to Virga's schema; Storage has no schema.
+    db: { schema: DB_SCHEMA },
   });
   cached = { url, key, client };
   return client;

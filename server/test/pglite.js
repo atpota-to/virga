@@ -3,23 +3,32 @@
 //
 // Before the migrations run, the database is made to look like a Supabase
 // project in the ways they depend on: the anon / authenticated / service_role
-// roles, Supabase's default privileges (new tables and functions in public are
-// granted to all three, which is exactly why every migration has to REVOKE;
-// defaultGrants: false leaves them out, as on newer projects), and a `storage`
-// schema with the `buckets` and `objects` tables. PGlite has
-// no pg_cron, so a migration that schedules a job must guard on it.
+// roles, the grants a project may carry (new tables and functions in public
+// are granted to all three, and Supabase's guide to exposing a schema of your
+// own does the same there, which is exactly why every migration has to
+// REVOKE; defaultGrants: false leaves them out), and a `storage` schema with
+// the `buckets` and `objects` tables. PGlite has no pg_cron, so a migration
+// that schedules a job must guard on it.
 //
-// supabaseAdapter(db) is a small stand-in for the supabase-js client over the
-// same database: rpc() calls a public function by named arguments and answers
-// the way PostgREST does (a set as an array of rows, a scalar as itself, JSON
-// types throughout), and from() covers the builder calls the server makes.
-// Missing objects come back with PostgREST's codes (PGRST202, PGRST204,
-// PGRST205), so code that branches on them is tested on the real answer.
+// The migrations run with the search_path a Supabase session has, so a
+// statement that forgot to name Virga's schema lands in public and is caught
+// (server/test/migrations.test.js). Afterwards the session's search_path is
+// put on the app's schema, so a test's own SQL can name a table plainly.
+//
+// supabaseAdapter(db, { schema }) is a small stand-in for the supabase-js
+// client over the same database, bound to one schema as the real client is
+// (server/supabase.js): rpc() calls a function there by named arguments and
+// answers the way PostgREST does (a set as an array of rows, a scalar as
+// itself, JSON types throughout), and from() covers the builder calls the
+// server makes. Missing objects come back with PostgREST's codes (PGRST202,
+// PGRST204, PGRST205), so code that branches on them is tested on the real
+// answer.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFakeStorage, parseFilterExpression } from './fakeSupabase.js';
+import { DB_SCHEMA } from '../supabase.js';
 
 export const MIGRATIONS_DIR = fileURLToPath(new URL('../../supabase/migrations/', import.meta.url));
 
@@ -46,6 +55,21 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authentic
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO anon, authenticated, service_role;
 `;
+
+// What Supabase's guide to exposing a schema of your own has you run: the
+// three roles get the schema and whatever is made in it afterwards. A project
+// that ran it before Virga's migrations must still end with only the service
+// role holding anything, so createTestDatabase applies it to the app's schema.
+export function schemaGrantsSql(schema) {
+  const s = ident(schema);
+  return `
+CREATE SCHEMA IF NOT EXISTS ${s};
+GRANT USAGE ON SCHEMA ${s} TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA ${s} GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA ${s} GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA ${s} GRANT EXECUTE ON FUNCTIONS TO anon, authenticated, service_role;
+`;
+}
 
 // The parts of Supabase Storage's schema a migration may write to (a bucket
 // row) or read (objects).
@@ -110,9 +134,10 @@ export function selectMigrations({ upTo, dir = MIGRATIONS_DIR } = {}) {
  * @param {string[]} [options.files]  exactly these migration file names instead
  * @param {string} [options.dir]  the migrations folder (supabase/migrations by default)
  * @param {boolean} [options.storage]  false leaves the storage schema out, to test a migration's guard
- * @param {boolean} [options.defaultGrants]  false leaves out Supabase's automatic grants on new objects
+ * @param {boolean} [options.defaultGrants]  false leaves out the grants to anon, authenticated and service_role on new objects
+ * @param {string} [options.schema]  the schema the migrations build and the client is bound to (Virga's by default)
  * @param {object} [options.extensions]  PGlite extensions to load
- * @returns {Promise<{ db, query, exec, close, supabase, applied: string[] }>}
+ * @returns {Promise<{ db, query, exec, close, supabase, applied: string[], schema: string }>}
  */
 export async function createTestDatabase({
   upTo,
@@ -120,13 +145,17 @@ export async function createTestDatabase({
   dir = MIGRATIONS_DIR,
   storage = true,
   defaultGrants = true,
+  schema = DB_SCHEMA,
   extensions,
 } = {}) {
   const applied = files ? [...files] : selectMigrations({ upTo, dir });
   const { PGlite } = await import('@electric-sql/pglite');
   const db = await PGlite.create(extensions ? { extensions } : undefined);
   await db.exec(ROLES_SQL);
-  if (defaultGrants) await db.exec(DEFAULT_GRANTS_SQL);
+  if (defaultGrants) {
+    await db.exec(DEFAULT_GRANTS_SQL);
+    if (schema !== 'public') await db.exec(schemaGrantsSql(schema));
+  }
   if (storage) await db.exec(STORAGE_SQL);
   for (const name of applied) {
     try {
@@ -137,13 +166,16 @@ export async function createTestDatabase({
       throw err;
     }
   }
+  // For the tests' own SQL only; the migrations above ran without it.
+  if (schema !== 'public') await db.exec(`SET search_path TO ${ident(schema)}, public`);
   return {
     db,
     applied,
+    schema,
     query: (sql, params) => db.query(sql, params),
     exec: (sql) => db.exec(sql),
     close: () => db.close(),
-    supabase: supabaseAdapter(db),
+    supabase: supabaseAdapter(db, { schema }),
   };
 }
 
@@ -153,7 +185,7 @@ const ident = (name) => `"${String(name).replace(/"/g, '""')}"`;
 
 // A table request PostgREST refuses from its schema cache (PGRST204/205); an
 // error raised while a function runs comes through with the Postgres code.
-export function postgrestError(err, { table = false } = {}) {
+export function postgrestError(err, { table = false, schema = DB_SCHEMA } = {}) {
   const code = err?.code;
   const message = err?.message || String(err);
   if (table && code === '42703') {
@@ -164,7 +196,7 @@ export function postgrestError(err, { table = false } = {}) {
   }
   if (table && code === '42P01') {
     const m = /relation "([^"]+)" does not exist/.exec(message);
-    const name = m ? (m[1].includes('.') ? m[1] : `public.${m[1]}`) : 'unknown';
+    const name = m ? (m[1].includes('.') ? m[1] : `${schema}.${m[1]}`) : 'unknown';
     return { code: 'PGRST205', message: `Could not find the table '${name}' in the schema cache`, details: null, hint: null };
   }
   return { code: code || null, message, details: err?.detail || null, hint: err?.hint || null };
@@ -185,7 +217,7 @@ function argValue(value, type) {
   return String(value);
 }
 
-async function functionsNamed(db, name) {
+async function functionsNamed(db, schema, name) {
   const { rows } = await db.query(
     `SELECT p.proargnames AS names,
             ARRAY(SELECT format_type(t, NULL) FROM unnest(p.proargtypes::oid[]) AS t) AS types,
@@ -193,8 +225,8 @@ async function functionsNamed(db, name) {
             p.proretset AS returns_set,
             format_type(p.prorettype, NULL) AS returns
        FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-      WHERE n.nspname = 'public' AND p.proname = $1`,
-    [name],
+      WHERE n.nspname = $1 AND p.proname = $2`,
+    [schema, name],
   );
   return rows;
 }
@@ -208,15 +240,15 @@ function pickOverload(candidates, keys) {
   });
 }
 
-async function rpc(db, name, params = {}) {
+async function rpc(db, schema, name, params = {}) {
   const keys = Object.keys(params || {}).filter((k) => params[k] !== undefined);
   try {
-    const fn = pickOverload(await functionsNamed(db, name), keys);
+    const fn = pickOverload(await functionsNamed(db, schema, name), keys);
     if (!fn) {
       const signature = [...keys].sort().join(', ');
       return {
         data: null,
-        error: { code: 'PGRST202', message: `Could not find the function public.${name}(${signature}) in the schema cache`, details: null, hint: null },
+        error: { code: 'PGRST202', message: `Could not find the function ${schema}.${name}(${signature}) in the schema cache`, details: null, hint: null },
       };
     }
     const values = [];
@@ -225,7 +257,7 @@ async function rpc(db, name, params = {}) {
       values.push(argValue(params[key], type));
       return `${ident(key)} => ${argSql(values.length, type)}`;
     });
-    const callSql = `public.${ident(name)}(${args.join(', ')})`;
+    const callSql = `${ident(schema)}.${ident(name)}(${args.join(', ')})`;
     if (fn.returns === 'void') {
       await db.query(`SELECT ${callSql}`, values);
       return { data: null, error: null };
@@ -237,13 +269,14 @@ async function rpc(db, name, params = {}) {
     const { rows } = await db.query(`SELECT to_jsonb(${callSql}) AS data`, values);
     return { data: rows[0].data, error: null };
   } catch (err) {
-    return { data: null, error: postgrestError(err) };
+    return { data: null, error: postgrestError(err, { schema }) };
   }
 }
 
 const OPS = { eq: '=', neq: '<>', gt: '>', gte: '>=', lt: '<', lte: '<=' };
 
-function tableBuilder(db, table) {
+function tableBuilder(db, schema, table) {
+  const target = `${ident(schema)}.${ident(table)}`;
   const state = {
     verb: 'select',
     columns: '*',
@@ -304,7 +337,6 @@ function tableBuilder(db, table) {
   }
 
   function sql() {
-    const target = `public.${ident(table)}`;
     if (state.verb === 'select') {
       let text = `SELECT ${selectShape()} AS row FROM ${target} t${where()}`;
       if (state.order.length) {
@@ -337,7 +369,7 @@ function tableBuilder(db, table) {
 
   async function countRows() {
     values = [];
-    const text = `SELECT count(*)::int AS n FROM public.${ident(table)} t${where()}`;
+    const text = `SELECT count(*)::int AS n FROM ${target} t${where()}`;
     const { rows } = await db.query(text, values);
     return rows[0].n;
   }
@@ -367,7 +399,7 @@ function tableBuilder(db, table) {
       }
       return count === undefined ? result : { ...result, count };
     } catch (err) {
-      return { data: null, error: postgrestError(err, { table: true }) };
+      return { data: null, error: postgrestError(err, { table: true, schema }) };
     }
   }
 
@@ -421,13 +453,14 @@ function tableBuilder(db, table) {
 }
 
 /**
- * The supabase-js calls the server makes, over a PGlite database. Storage is
- * the in-memory fake (Storage isn't Postgres).
+ * The supabase-js calls the server makes, over a PGlite database, bound to
+ * one schema the way the real client is (db.schema). Storage is the in-memory
+ * fake (Storage isn't Postgres, and has no schema).
  */
-export function supabaseAdapter(db) {
+export function supabaseAdapter(db, { schema = DB_SCHEMA } = {}) {
   return {
-    rpc: (name, params) => rpc(db, name, params),
-    from: (table) => tableBuilder(db, table),
+    rpc: (name, params) => rpc(db, schema, name, params),
+    from: (table) => tableBuilder(db, schema, table),
     storage: createFakeStorage(),
   };
 }

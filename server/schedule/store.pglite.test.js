@@ -120,12 +120,12 @@ describe('the migration', () => {
     expect(rows[0].n).toBe(1);
   });
 
-  it('creates the private scheduled-media bucket when Storage exists', async () => {
+  it('creates the private virga-scheduled-media bucket when Storage exists', async () => {
     const { rows } = await t.query(
-      `SELECT id, public, file_size_limit FROM storage.buckets WHERE id = 'scheduled-media'`,
+      `SELECT id, public, file_size_limit FROM storage.buckets WHERE id = 'virga-scheduled-media'`,
     );
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ id: 'scheduled-media', public: false });
+    expect(rows[0]).toMatchObject({ id: 'virga-scheduled-media', public: false });
     expect(Number(rows[0].file_size_limit)).toBe(10485760);
   });
 
@@ -136,7 +136,7 @@ describe('the migration', () => {
     });
     try {
       const { rows } = await bare.query(
-        `SELECT to_regclass('public.scheduled_posts') AS t`,
+        `SELECT to_regclass('virga.scheduled_posts') AS t`,
       );
       expect(rows[0].t).toBe('scheduled_posts');
     } finally {
@@ -1006,8 +1006,8 @@ describe('media', () => {
     );
     const cancelled = await scheduled.cancelScheduledPost(a.id, DID);
     expect(cancelled.status).toBe('cancelled');
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
-    expect(t.supabase.storage.read('scheduled-media', stray)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', stray)).toBeUndefined();
     expect((await readRow(a.id)).media_reclaimed_at).not.toBeNull();
     expect(await scheduled.cancelScheduledPost(a.id, DID)).toBeNull();
   });
@@ -1019,7 +1019,7 @@ describe('media', () => {
       a.id,
       payload(['a'], { media: { m: { storagePath: path } } }),
     );
-    t.supabase.storage.failNext('scheduled-media', 'remove');
+    t.supabase.storage.failNext('virga-scheduled-media', 'remove');
     expect((await scheduled.cancelScheduledPost(a.id, DID)).status).toBe(
       'cancelled',
     );
@@ -1108,8 +1108,8 @@ describe('updateScheduledPostContent', () => {
       selfDestruct: null,
     });
     expect(row.payload.rkeys).toHaveLength(1);
-    expect(t.supabase.storage.read('scheduled-media', oldPath)).toBeUndefined();
-    expect(t.supabase.storage.read('scheduled-media', newPath)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', oldPath)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', newPath)).toBeTruthy();
   });
 
   it('keeps the stored keys when the time and length hold still', async () => {
@@ -1234,7 +1234,7 @@ describe('bookkeeping', () => {
     const row = await readRow(a.id);
     expect(row).toMatchObject({ status: 'failed', last_error_code: 'REFUSED' });
     expect(row.last_error).toHaveLength(500);
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeTruthy();
 
     const b = await insertRow({ status: 'publishing', attempts: 1 });
     expect(
@@ -1266,14 +1266,14 @@ describe('bookkeeping', () => {
       last_error: null,
       last_error_code: null,
     });
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
     expect((await readRow(a.id)).media_reclaimed_at).not.toBeNull();
   });
 
   it('leaves a published row for the sweep when its media delete fails, without throwing', async () => {
     const a = await insertRow({ status: 'publishing' });
     const path = await scheduled.storeMedia(a.id, 'm', PNG_BASE64, 'image/png');
-    t.supabase.storage.failNext('scheduled-media', 'remove');
+    t.supabase.storage.failNext('virga-scheduled-media', 'remove');
     await expect(
       scheduled.markPublished(
         a.id,
@@ -1284,7 +1284,7 @@ describe('bookkeeping', () => {
     const row = await readRow(a.id);
     expect(row.status).toBe('published');
     expect(row.media_reclaimed_at).toBeNull();
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeTruthy();
   });
 
   it('saves progress', async () => {
@@ -1342,8 +1342,8 @@ describe('reclaimFailedMedia', () => {
     });
     for (const r of [sweep, noMedia])
       expect((await readRow(r.id)).media_reclaimed_at).not.toBeNull();
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
-    expect(t.supabase.storage.read('scheduled-media', orphan)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', orphan)).toBeUndefined();
     for (const r of [recent, pending])
       expect((await readRow(r.id)).media_reclaimed_at).toBeNull();
     // Stamped rows aren't handed out again.
@@ -1387,7 +1387,7 @@ describe('reclaimFailedMedia', () => {
     });
     for (const { id, path } of Object.values(rows)) {
       expect((await readRow(id)).media_reclaimed_at).not.toBeNull();
-      expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+      expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
     }
     expect((await readRow(fresh.id)).media_reclaimed_at).toBeNull();
   });
@@ -1403,7 +1403,7 @@ describe('reclaimFailedMedia', () => {
       a.id,
       old,
     ]);
-    t.supabase.storage.failNext('scheduled-media', 'remove');
+    t.supabase.storage.failNext('virga-scheduled-media', 'remove');
     expect(await scheduled.reclaimFailedMedia()).toEqual({
       swept: 0,
       failed: 1,

@@ -1,7 +1,9 @@
-// The scheduled-posts migrations on a project without Supabase's automatic
-// grants on new public tables (the default Supabase is moving to). The shared
-// PGlite helper applies the legacy grants, which would hide a missing GRANT,
-// so this database has the three roles and nothing else.
+// The scheduled-posts migrations on a project that grants nothing by itself,
+// which is what a schema of Virga's own is: Supabase's automatic grants cover
+// public only. The shared PGlite helper applies grants on the schema, which
+// would hide a missing GRANT, so this database has the three roles and
+// nothing else. The statements below run as each role, so they also need the
+// migration to have let the service role into the schema.
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { STORAGE_SQL, readMigration } from '../test/pglite.js';
@@ -30,6 +32,8 @@ beforeAll(async () => {
   await db.exec(STORAGE_SQL);
   await db.exec(readMigration('20261113000200_scheduled_posts.sql'));
   await db.exec(readMigration('20261114000100_scheduled_repeats.sql'));
+  // For the statements below; the migrations ran without it.
+  await db.exec('SET search_path TO virga, public');
 });
 afterAll(async () => {
   await db?.close();
@@ -104,26 +108,30 @@ describe('scheduled_posts without default grants', () => {
     expect(stopped.rows[0].r.payload).not.toHaveProperty('repeat');
   });
 
-  it('refuses the public roles the table and the RPCs', async () => {
+  it('refuses the public roles the schema, and so the table and the RPCs', async () => {
     for (const role of ['anon', 'authenticated']) {
+      // Named with the schema: without it these roles can't even resolve the name.
+      await expect(
+        asRole(role, 'SELECT count(*) FROM virga.scheduled_posts'),
+      ).rejects.toThrow(/permission denied for schema virga/);
+      await expect(
+        asRole(role, `SELECT * FROM virga.claim_scheduled_posts('run', 5)`),
+      ).rejects.toThrow(/permission denied for schema virga/);
+      await expect(
+        asRole(
+          role,
+          `SELECT virga.settle_scheduled_occurrence('00000000-0000-4000-8000-000000000000'::uuid, 'published')`,
+        ),
+      ).rejects.toThrow(/permission denied for schema virga/);
+      await expect(
+        asRole(
+          role,
+          `SELECT virga.stop_scheduled_repeat('00000000-0000-4000-8000-000000000000'::uuid, 'did:plc:x')`,
+        ),
+      ).rejects.toThrow(/permission denied for schema virga/);
       await expect(
         asRole(role, 'SELECT count(*) FROM scheduled_posts'),
-      ).rejects.toThrow(/permission denied/);
-      await expect(
-        asRole(role, `SELECT * FROM claim_scheduled_posts('run', 5)`),
-      ).rejects.toThrow(/permission denied/);
-      await expect(
-        asRole(
-          role,
-          `SELECT settle_scheduled_occurrence('00000000-0000-4000-8000-000000000000'::uuid, 'published')`,
-        ),
-      ).rejects.toThrow(/permission denied/);
-      await expect(
-        asRole(
-          role,
-          `SELECT stop_scheduled_repeat('00000000-0000-4000-8000-000000000000'::uuid, 'did:plc:x')`,
-        ),
-      ).rejects.toThrow(/permission denied/);
+      ).rejects.toThrow(/does not exist/);
     }
   });
 });

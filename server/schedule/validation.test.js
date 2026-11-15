@@ -25,6 +25,7 @@ import {
   MAX_HORIZON_DAYS,
   isMissingTable,
   isUndefinedFunction,
+  isSchemaNotExposed,
 } from './scheduledPosts.js';
 import { CIDS, HOUR, DAY, MINUTE, iso, inHours } from './testing/fixtures.js';
 
@@ -877,7 +878,7 @@ describe('isMissingTable and isUndefinedFunction', () => {
       isMissingTable({
         code: 'PGRST205',
         message:
-          "Could not find the table 'public.scheduled_posts' in the schema cache",
+          "Could not find the table 'virga.scheduled_posts' in the schema cache",
       }),
     ).toBe(true);
     expect(
@@ -899,7 +900,7 @@ describe('isMissingTable and isUndefinedFunction', () => {
     expect(
       isUndefinedFunction({
         code: 'PGRST202',
-        message: 'Could not find the function public.f',
+        message: 'Could not find the function virga.f',
       }),
     ).toBe(true);
     expect(
@@ -909,5 +910,20 @@ describe('isMissingTable and isUndefinedFunction', () => {
       }),
     ).toBe(true);
     expect(isUndefinedFunction({ code: 'XX000', message: 'boom' })).toBe(false);
+  });
+
+  it('reads a schema the Data API doesn’t expose as both', () => {
+    // PostgREST's answer (406) while `virga` is missing from the project's exposed schemas.
+    const notExposed = {
+      code: 'PGRST106',
+      details: null,
+      hint: 'Only the following schemas are exposed: public, graphql_public',
+      message: 'Invalid schema: virga',
+    };
+    expect(isSchemaNotExposed(notExposed)).toBe(true);
+    expect(isMissingTable(notExposed)).toBe(true);
+    expect(isUndefinedFunction(notExposed)).toBe(true);
+    expect(isSchemaNotExposed({ code: 'PGRST205', message: 'x' })).toBe(false);
+    expect(isSchemaNotExposed(null)).toBe(false);
   });
 });

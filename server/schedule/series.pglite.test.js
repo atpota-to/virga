@@ -33,7 +33,7 @@ import {
 } from './testing/fixtures.js';
 
 const SERIES = '11111111-1111-4111-8111-111111111111';
-const BUCKET = 'scheduled-media';
+const BUCKET = 'virga-scheduled-media';
 
 let t;
 beforeAll(async () => {
