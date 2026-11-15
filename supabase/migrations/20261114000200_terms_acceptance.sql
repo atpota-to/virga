@@ -3,21 +3,25 @@
 -- way in, and is never changed afterwards. Only the service role (which
 -- bypasses RLS) touches it, and it may only read rows and add them. Safe to
 -- re-apply.
---
--- Named and shaped as its siblings are (anisota_terms_acceptance,
--- rainshare_terms_acceptance: did, policy_version, document, accepted_at), so
--- the three read alike, and so this one can't be mistaken for another app's
--- if it is ever applied beside them.
 
--- virga_terms_acceptance: who agreed to which version of the documents, and
--- how the account was known. A long session's agreement is one row per
--- account and version: agreeing again (another device, a retry after a
--- dropped connection) finds the first row rather than adding one.
+-- Virga's own schema; see the first migration.
+CREATE SCHEMA IF NOT EXISTS virga;
+REVOKE ALL ON SCHEMA virga FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA virga TO service_role;
+
+-- terms_acceptance: who agreed to which version of the documents, and how the
+-- account was known. A long session's agreement is one row per account and
+-- version: agreeing again (another device, a retry after a dropped
+-- connection) finds the first row rather than adding one.
+--
+-- The columns follow the other apps' ledgers in the same project
+-- (public.anisota_terms_acceptance, public.rainshare_terms_acceptance: did,
+-- policy_version, document, accepted_at), so the three read alike.
 --
 -- terms_version is the number the gate compares (TERMS_VERSION,
 -- src/legal/version.js); policy_version is the date those documents carry
--- (TERMS_EFFECTIVE_DATE, as YYYY-MM-DD), which is what the sibling tables
--- call a version. The server writes both from that one module; a caller never
+-- (TERMS_EFFECTIVE_DATE, as YYYY-MM-DD), which is what the other ledgers call
+-- a version. The server writes both from that one module; a caller never
 -- chooses either.
 --
 -- identity says how far `did` can be trusted:
@@ -35,7 +39,7 @@
 -- ip and user_agent are context for the record, taken from the request as it
 -- arrived. They aren't identity. The address is read back for one thing: to
 -- count how many claims it has made lately.
-CREATE TABLE IF NOT EXISTS virga_terms_acceptance (
+CREATE TABLE IF NOT EXISTS virga.terms_acceptance (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   did            TEXT NOT NULL CHECK (char_length(did) <= 512), -- the account that agreed
   policy_version TEXT NOT NULL,                              -- the documents' "Last updated" date, YYYY-MM-DD
@@ -50,29 +54,30 @@ CREATE TABLE IF NOT EXISTS virga_terms_acceptance (
 -- A long session's first agreement stands; a second insert for the same
 -- account and version is refused (23505), and the server answers with the
 -- first.
-CREATE UNIQUE INDEX IF NOT EXISTS idx_virga_terms_acceptance_session
-  ON virga_terms_acceptance(did, terms_version) WHERE identity = 'session';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_acceptance_session
+  ON virga.terms_acceptance(did, terms_version) WHERE identity = 'session';
 
 -- A claim, once per account, version and address (an unknown address counts
 -- as one address).
-CREATE UNIQUE INDEX IF NOT EXISTS idx_virga_terms_acceptance_claim
-  ON virga_terms_acceptance(did, terms_version, COALESCE(ip, '')) WHERE identity = 'claimed';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_acceptance_claim
+  ON virga.terms_acceptance(did, terms_version, COALESCE(ip, '')) WHERE identity = 'claimed';
 
 -- The claims one address has made lately: the server counts them before it
 -- takes another, so the table can't be filled from one place
 -- (recordClaim, server/terms/acceptance.js).
-CREATE INDEX IF NOT EXISTS idx_virga_terms_acceptance_claims_by_address
-  ON virga_terms_acceptance(ip, accepted_at) WHERE identity = 'claimed';
+CREATE INDEX IF NOT EXISTS idx_terms_acceptance_claims_by_address
+  ON virga.terms_acceptance(ip, accepted_at) WHERE identity = 'claimed';
 
-COMMENT ON TABLE virga_terms_acceptance IS 'Who agreed to which version of Virga''s Terms of Service and Privacy Policy, and when. Append-only. Service role only.';
+COMMENT ON TABLE virga.terms_acceptance IS
+  'Who agreed to which version of Virga''s Terms of Service and Privacy Policy, and when. Append-only. Service role only.';
 
--- Service role only: RLS on with no policies, and nothing granted to the
--- roles the public API key maps to (Supabase grants them new public objects by
--- default). The service role is left with SELECT and INSERT alone: the
--- server's key can't rewrite or remove a row, so the record is append-only by
--- privilege rather than by convention. Removing someone's rows (an erasure
--- request) is done by the project's owner, in the SQL editor.
-ALTER TABLE virga_terms_acceptance ENABLE ROW LEVEL SECURITY;
+-- Service role only: RLS on with no policies, and nothing for the roles the
+-- public API key maps to. Unlike Virga's other tables, the service role is
+-- left with SELECT and INSERT alone: the server's key can't rewrite or remove
+-- a row, so the record is append-only by privilege rather than by convention.
+-- Removing someone's rows (an erasure request) is done by the project's
+-- owner, in the SQL editor.
+ALTER TABLE virga.terms_acceptance ENABLE ROW LEVEL SECURITY;
 
-REVOKE ALL ON TABLE virga_terms_acceptance FROM anon, authenticated, service_role;
-GRANT SELECT, INSERT ON TABLE virga_terms_acceptance TO service_role;
+REVOKE ALL ON TABLE virga.terms_acceptance FROM anon, authenticated, service_role;
+GRANT SELECT, INSERT ON TABLE virga.terms_acceptance TO service_role;

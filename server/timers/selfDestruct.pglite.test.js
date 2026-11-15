@@ -46,7 +46,7 @@ describe('the migration on its own', () => {
               has_function_privilege('authenticated', p.oid, 'EXECUTE') AS authed,
               has_function_privilege('service_role', p.oid, 'EXECUTE') AS service
          FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-        WHERE n.nspname = 'public'
+        WHERE n.nspname = 'virga'
           AND p.proname IN ('create_self_destruct_capped', 'claim_self_destruct_posts', 'reclaim_stuck_self_destructs')
         ORDER BY 1`,
     );

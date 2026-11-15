@@ -5,7 +5,7 @@
 // A note is kept per account (`virga:terms-accepted:<did>`), so an account
 // that has agreed here is never asked again on this browser, nor made to
 // wait while the server is asked. It is a convenience, not the record: the
-// record is the row on Virga's server (the virga_terms_acceptance table).
+// record is the row on Virga's server (the terms_acceptance table in its schema).
 //
 //   { version, at, recorded, tries, identity }
 //

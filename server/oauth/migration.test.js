@@ -43,14 +43,20 @@ const normalized = (sql) => executable(sql).replace(/\s+/g, ' ').toLowerCase();
 describe('the migration as text', () => {
   const sql = normalized(readMigration(FILE));
 
+  it('opens its own schema to the service role alone', () => {
+    expect(sql).toContain('create schema if not exists virga;');
+    expect(sql).toContain('revoke all on schema virga from public, anon, authenticated;');
+    expect(sql).toContain('grant usage on schema virga to service_role;');
+  });
+
   it('creates the four tables, idempotently, with RLS on and nothing for anon or authenticated', () => {
     for (const table of TABLES) {
-      expect(sql).toContain(`create table if not exists ${table} (`);
+      expect(sql).toContain(`create table if not exists virga.${table} (`);
       expect(sql).toMatch(
-        new RegExp(`alter table ${table} +enable row level security;`),
+        new RegExp(`alter table virga\\.${table} +enable row level security;`),
       );
       expect(sql).toMatch(
-        new RegExp(`revoke all on table ${table} +from anon, authenticated;`),
+        new RegExp(`revoke all on table virga\\.${table} +from anon, authenticated;`),
       );
     }
     expect(sql).toContain('sub text primary key');
@@ -63,7 +69,7 @@ describe('the migration as text', () => {
   it('pins search_path on every function and revokes each from the public roles', () => {
     const functions = sql.match(/create or replace function/g) || [];
     expect(functions).toHaveLength(3);
-    expect((sql.match(/set search_path = public, pg_temp/g) || []).length).toBe(
+    expect((sql.match(/set search_path = virga, pg_temp/g) || []).length).toBe(
       functions.length,
     );
     for (const fn of [
@@ -73,7 +79,7 @@ describe('the migration as text', () => {
     ]) {
       expect(sql).toMatch(
         new RegExp(
-          `revoke all on function ${fn.replace(/[()]/g, '\\$&')} +from public, anon, authenticated;`,
+          `revoke all on function virga\\.${fn.replace(/[()]/g, '\\$&')} +from public, anon, authenticated;`,
         ),
       );
     }
@@ -81,18 +87,18 @@ describe('the migration as text', () => {
 
   it('indexes what the stores filter on and keeps updated_at current', () => {
     expect(sql).toContain(
-      'create index if not exists idx_oauth_state_expires on oauth_state(expires_at);',
+      'create index if not exists idx_oauth_state_expires on virga.oauth_state(expires_at);',
     );
     expect(sql).toContain(
-      'create index if not exists idx_frontend_sessions_expires on frontend_sessions(expires_at);',
+      'create index if not exists idx_frontend_sessions_expires on virga.frontend_sessions(expires_at);',
     );
     expect(sql).toContain(
-      'create index if not exists idx_frontend_sessions_user_did on frontend_sessions(user_did, expires_at);',
+      'create index if not exists idx_frontend_sessions_user_did on virga.frontend_sessions(user_did, expires_at);',
     );
     expect(sql).toContain(
-      'drop trigger if exists update_oauth_sessions_updated_at on oauth_sessions;',
+      'drop trigger if exists update_oauth_sessions_updated_at on virga.oauth_sessions;',
     );
-    expect(sql).toContain('execute function update_updated_at_column();');
+    expect(sql).toContain('execute function virga.update_updated_at_column();');
   });
 
   it('keeps one set of tables, with no per-client columns or functions', () => {

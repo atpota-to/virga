@@ -182,7 +182,7 @@ describe('an agreement that couldn’t be recorded', () => {
   });
 
   it('never repeats the server’s own text for anything else', () => {
-    for (const error of [coded('UNAVAILABLE', 503), coded('INTERNAL', 500), new Error('relation "virga_terms_acceptance" does not exist'), undefined]) {
+    for (const error of [coded('UNAVAILABLE', 503), coded('INTERNAL', 500), new Error('relation "terms_acceptance" does not exist'), undefined]) {
       const failure = acceptFailure(error);
       expect(failure).toEqual({ text: 'Virga’s server couldn’t record your agreement just now. Try again in a little while.', reload: false });
     }

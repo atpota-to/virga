@@ -1,6 +1,6 @@
 // The ledger of who agreed to Virga's Terms of Service and Privacy Policy:
-// the virga_terms_acceptance table
-// (supabase/migrations/20261114000100_virga_terms_acceptance.sql). A row is
+// the terms_acceptance table in Virga's schema
+// (supabase/migrations/20261114000200_terms_acceptance.sql). A row is
 // added once and never changed; the server's key can't change one.
 //
 // Which documents "current" means comes from src/legal/version.js, the same
@@ -20,7 +20,7 @@ import {
 } from '../../src/legal/version.js';
 import { getSupabaseClient } from '../supabase.js';
 
-const TABLE = 'virga_terms_acceptance';
+const TABLE = 'terms_acceptance';
 
 /** How the account in a row was known (the table's `identity` column). */
 export const IDENTITY = Object.freeze({
@@ -66,6 +66,14 @@ function coded(message, code) {
   return Object.assign(new Error(message), { code });
 }
 
+/**
+ * True when the Data API doesn't serve Virga's schema at all: it hasn't been
+ * added to the project's exposed schemas (PostgREST answers PGRST106).
+ */
+function isSchemaNotExposed(error) {
+  return error?.code === 'PGRST106';
+}
+
 /** True when the database has no such table: the migration hasn't been applied. */
 function isMissingTable(error) {
   return (
@@ -78,8 +86,17 @@ function isMissingTable(error) {
   );
 }
 
-/** A thrown Error for a Supabase error, coded UNAVAILABLE when the table is missing. */
+/**
+ * A thrown Error for a Supabase error, coded UNAVAILABLE when the ledger
+ * isn't set up yet: the schema isn't exposed, or the table isn't there.
+ */
 function dbError(error) {
+  if (isSchemaNotExposed(error)) {
+    return coded(
+      `the terms ledger can't be reached: Virga's schema isn't in the project's exposed schemas: ${error.message}`,
+      'UNAVAILABLE',
+    );
+  }
   if (isMissingTable(error)) {
     return coded(
       `the terms ledger needs its database migration: ${error.message}`,
