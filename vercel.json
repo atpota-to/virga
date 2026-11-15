@@ -9,7 +9,8 @@
     "api/schedule/[action].js": { "maxDuration": 60 },
     "api/self-destruct/[action].js": { "maxDuration": 60 },
     "api/ai/[action].js": { "maxDuration": 60 },
-    "api/limits/[action].js": { "maxDuration": 30 }
+    "api/limits/[action].js": { "maxDuration": 30 },
+    "api/terms/[action].js": { "maxDuration": 30 }
   },
   "crons": [
     { "path": "/api/schedule/run", "schedule": "* * * * *" },

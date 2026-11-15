@@ -1,98 +1,21 @@
-import { useRef, useState } from 'react';
-import { ChevronRight, LayoutDashboard, Lock, Wrench, X } from 'lucide-react';
-import { reauthModeFor } from '../accounts/accountCopy.js';
-import Avatar from '../components/Avatar.jsx';
-import Button from '../components/Button.jsx';
+import { useRef } from 'react';
+import { LayoutDashboard, Lock, Wrench } from 'lucide-react';
 import Hillside from '../hillside/Hillside.jsx';
 import { APP_NAME } from '../config.js';
-import { signInErrorMessage } from '../lib/oauthClient.js';
+import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 import { usePreferences } from '../lib/preferences.jsx';
-import { accountHandle, accountName, accountSignInId, lastOpenedLabel } from '../session/accounts.js';
-import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
+import { Link } from '../lib/router.jsx';
+import SignInFlow from '../signin/SignInFlow.jsx';
 import '../accounts/accounts.css';
 
 /**
- * The accounts this browser remembers, to come back to without typing a
- * handle. One whose sign-in still holds opens at once; the rest sign in again.
- */
-function RememberedAccounts({ busy, setBusy, setError }) {
-  const { accounts, signIn, switchAccount, removeAccount, authMode } = useAtprotoSession();
-  if (!accounts.length) return null;
-
-  const signInAgain = (account) => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth' });
-
-  async function open(account) {
-    setBusy(account.did);
-    setError(null);
-    try {
-      if (account.status === 'needsSignIn') {
-        await signInAgain(account);
-        return; // Redirected away.
-      }
-      // An account whose session holds opens in place; one that turns out
-      // to have ended signs in again.
-      await switchAccount(account.did).catch((err) => {
-        if (err?.code === 'REAUTH_REQUIRED') return signInAgain(account);
-        throw err;
-      });
-    } catch (err) {
-      console.warn('[sign-in] failed to start:', err);
-      setBusy(null);
-      setError(signInErrorMessage(err));
-    }
-  }
-
-  return (
-    <div className="remembered">
-      <h2 className="field-label" id="remembered-title">
-        Continue as
-      </h2>
-      <ul className="remembered-list" aria-labelledby="remembered-title">
-        {accounts.map((a) => {
-          const name = accountName(a);
-          const meta = [accountHandle(a), lastOpenedLabel(a.lastUsed)].filter(Boolean).join(' · ');
-          return (
-            <li key={a.did} className="remembered-row">
-              <button type="button" className="remembered-open" disabled={Boolean(busy)} onClick={() => open(a)} aria-label={`Continue as ${name}`}>
-                <Avatar src={a.avatar} name={name} size="lg" />
-                <span className="remembered-text">
-                  <span className="remembered-name">{busy === a.did ? 'Opening…' : name}</span>
-                  {meta && <span className="remembered-meta">{meta}</span>}
-                </span>
-                <ChevronRight className="remembered-chevron" size={16} aria-hidden="true" />
-              </button>
-              <Button
-                variant="ghost"
-                size="sm"
-                icon
-                aria-label={`Forget ${name} on this browser`}
-                title="Forget on this browser (its archive stays)"
-                disabled={Boolean(busy)}
-                onClick={() => removeAccount(a.did, { deleteData: false })}
-              >
-                <X size={15} aria-hidden="true" />
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
-/**
- * The front page, for someone who isn't signed in: what this is, the
- * accounts this browser remembers, and the one field that starts a sign-in.
- * All the copy here is a draft.
+ * The front page, for someone who isn't signed in: what this is, and the
+ * sign-in (src/signin/SignInFlow.jsx), which lists the accounts this browser
+ * remembers above the one field that starts a new one. All the copy here is
+ * a draft.
  */
 export default function Landing({ composing = false }) {
-  const { signIn, accounts, authMode } = useAtprotoSession();
-  const [opening, setOpening] = useState(null);
   const { sky, setPref } = usePreferences();
-  const [input, setInput] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
-  const inputRef = useRef(null);
   const taps = useRef({ n: 0, at: 0 });
 
   // Five taps on the mark: the live sky, as anywhere else in Virga.
@@ -104,27 +27,6 @@ export default function Landing({ composing = false }) {
     if (t.n >= 5) {
       t.n = 0;
       setPref('sky', !sky);
-    }
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const value = input.trim().replace(/^@/, '');
-    // The button is never greyed out; pressed with nothing typed, it sends
-    // you to the field.
-    if (!value) {
-      inputRef.current?.focus();
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      await signIn(value, { mode: authMode, intent: 'add' });
-      // Redirected away. Nothing below runs unless the redirect didn't happen.
-    } catch (err) {
-      console.warn('[sign-in] failed to start:', err);
-      setBusy(false);
-      setError(signInErrorMessage(err));
     }
   }
 
@@ -157,55 +59,11 @@ export default function Landing({ composing = false }) {
               for looking after your account. Worked out in your browser, from your own data.
             </p>
 
-            <form className="signin" onSubmit={handleSubmit}>
-              {composing && (
-                <p className="callout" role="status">
-                  Sign in to finish your post. What you were sharing opens in the composer once you’re in.
-                </p>
-              )}
-              <RememberedAccounts busy={opening} setBusy={setOpening} setError={setError} />
-              <label className="field-label" htmlFor="signin-input">
-                {accounts.length ? 'Or sign in with another handle' : 'Your handle'}
-              </label>
-              <div className="signin-row">
-                {/* A handle is not prose: iOS otherwise capitalizes the first
-                    letter and runs autocorrect over it. autoCorrect,
-                    autoCapitalize and spellCheck each have to be turned off by
-                    name. inputMode="url" puts the '.' on the primary key plane,
-                    and enterKeyHint labels the return key for what it does. */}
-                <input
-                  ref={inputRef}
-                  id="signin-input"
-                  className="input input--lg"
-                  type="text"
-                  name="handle"
-                  autoComplete="username"
-                  autoCorrect="off"
-                  autoCapitalize="none"
-                  inputMode="url"
-                  enterKeyHint="go"
-                  spellCheck={false}
-                  placeholder="you.bsky.social"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={busy}
-                  aria-describedby={error ? 'signin-error' : 'signin-note'}
-                />
-                <button type="submit" className="btn btn--primary btn--lg" disabled={busy}>
-                  {busy ? 'Redirecting…' : 'Sign in'}
-                </button>
-              </div>
-              {error && (
-                <p id="signin-error" className="callout callout--danger" role="alert">
-                  {error}
-                </p>
-              )}
-              <p id="signin-note" className="landing-note">
-                You sign in on your own account’s server, not here. Virga can then read your follower list and your notifications, follow or
-                unfollow someone when you press Follow, and post, reply or delete a post when you ask it to. It can’t like, repost or read your
-                messages.
-              </p>
-            </form>
+            <SignInFlow variant="page" remembered composing={composing} />
+            <p className="landing-note">
+              You sign in on your own account’s host, not here, and Virga never sees your password. Before your account opens, Virga asks you
+              to agree to its <Link to={TERMS_PATH}>Terms of Service</Link> and <Link to={PRIVACY_PATH}>Privacy Policy</Link>.
+            </p>
           </div>
 
           <div className="landing-preview" aria-hidden="true">
@@ -291,9 +149,14 @@ export default function Landing({ composing = false }) {
 
       <footer className="landing-foot">
         <span>
-          No database. Requests go to your PDS, Bluesky’s public API, plc.directory and Constellation, and, for long sessions and
-          scheduled posts, to Virga’s server.
+          Your archive is worked out and kept in this browser. Requests go to your account’s host, Bluesky’s public API, the PLC directory
+          and Constellation, and, for long sessions, scheduled posts and your agreement to the terms, to Virga’s server. The{' '}
+          <Link to={PRIVACY_PATH}>Privacy Policy</Link> has the whole list.
         </span>
+        <nav className="landing-foot-links" aria-label="Legal">
+          <Link to={TERMS_PATH}>Terms</Link>
+          <Link to={PRIVACY_PATH}>Privacy</Link>
+        </nav>
         <span>Draft copy</span>
       </footer>
     </div>

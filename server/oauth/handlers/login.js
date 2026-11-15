@@ -13,7 +13,7 @@
 // hour) and sends a pushed authorization request signed as Virga to the
 // account's host, so it is limited per address.
 
-import { methodGuard, sendJson } from '../../http.js';
+import { callerAddress, methodGuard, sendJson } from '../../http.js';
 import { envInt } from '../../env.js';
 import { createRateLimiter } from '../../rateLimit.js';
 import { getOAuthClient } from '../client.js';
@@ -53,26 +53,6 @@ function loginLimiter() {
 /** Tests only: start every window afresh. */
 export function resetLoginLimiterForTests() {
   limiter = null;
-}
-
-const firstHeader = (req, name) => {
-  const value = req.headers?.[name];
-  const text = Array.isArray(value) ? value[0] : value;
-  return typeof text === 'string' ? text.split(',')[0].trim() : '';
-};
-
-/**
- * The caller's address. Vercel's edge sets x-real-ip and x-forwarded-for
- * itself, replacing whatever the caller sent, so neither can be chosen to
- * dodge the limit there.
- */
-function callerAddress(req) {
-  return (
-    firstHeader(req, 'x-real-ip') ||
-    firstHeader(req, 'x-forwarded-for') ||
-    req.socket?.remoteAddress ||
-    'unknown'
-  );
 }
 
 const ERROR_TEXT = {

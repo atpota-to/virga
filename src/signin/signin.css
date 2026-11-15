@@ -1,0 +1,572 @@
+/* Signing in, a step at a time (SignInFlow.jsx): the handle field and its
+   suggestions, "Is this you?", the card that says where the browser is
+   going, and the hosts to make an account on. Also the account row and the
+   card the agreement screen borrows (src/legal/TermsGate.jsx). */
+
+.signin-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* On the front page each step is a card of its own; in a dialog the dialog
+   is the card. */
+.signin-flow--page .signin-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.signin-card {
+  animation: signin-step-in 0.28s var(--ease) both;
+}
+
+@keyframes signin-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.signin-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signin-step > .remembered {
+  margin-bottom: 4px;
+}
+
+.signin-title {
+  font-size: var(--text-xl);
+  font-weight: 660;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.signin-flow--dialog .signin-title {
+  font-size: var(--text-lg);
+}
+
+/* The heading takes focus when its card arrives, for a screen reader to
+   read; it isn't a control, so it gets no ring. */
+.signin-title:focus {
+  outline: none;
+}
+
+.signin-detail {
+  color: var(--ink-2);
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+.signin-detail strong {
+  color: var(--ink);
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+
+.signin-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.signin-row .handle-field {
+  flex: 1 1 240px;
+}
+
+.signin-action {
+  align-self: stretch;
+  white-space: normal;
+  line-height: 1.25;
+  padding-block: 8px;
+  overflow-wrap: anywhere;
+}
+
+/* The button waits where it stands while the account is looked up: it can
+   hold focus, which a disabled one can't. */
+.signin-action[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+/* The two things under a card: something to do on the left, something to
+   know on the right. */
+.signin-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  min-height: 24px;
+}
+
+.signin-aside {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* A button that reads as a link: it does something here rather than going
+   somewhere. */
+.signin-link {
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 580;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.signin-link--quiet {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.callout .signin-link {
+  color: inherit;
+  font-weight: 620;
+}
+
+@media (hover: hover) {
+  .signin-link:hover {
+    color: var(--ink);
+  }
+}
+
+/* Under a finger, the ones that stand alone get room. One in the middle of
+   a sentence stays the sentence's height, or its line would stand apart. */
+@media (pointer: coarse) {
+  .signin-links .signin-link {
+    min-height: 32px;
+  }
+}
+
+/* ---- the handle field ---------------------------------------------- */
+
+.handle-field {
+  position: relative;
+  min-width: 0;
+}
+
+.handle-field-at {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: var(--text-md);
+  pointer-events: none;
+}
+
+.handle-field .handle-field-input {
+  padding-left: 30px;
+}
+
+.handle-field .handle-field-input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.handle-suggestions {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: min(280px, 50svh);
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.handle-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.handle-suggestion[aria-selected='true'] {
+  background: var(--accent-wash);
+  /* More than a pale fill: the row the arrows have marked has to be told
+     from the one the pointer is over, and found at all by someone who
+     can't see the difference between two washes. */
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+@media (hover: hover) {
+  .handle-suggestion:hover:not([aria-selected='true']) {
+    background: var(--hover);
+  }
+}
+
+.handle-suggestion-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.handle-suggestion-name {
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.handle-suggestion-handle {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* In a dialog the list takes its place in the layout: laid over what
+   follows, it would run past the dialog's edge and be cut off there. */
+.signin-flow--dialog .handle-suggestions {
+  position: static;
+  max-height: none;
+  margin-top: 4px;
+  box-shadow: none;
+}
+
+/* With no name, the handle is the name. */
+.handle-suggestion-handle:only-child {
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+
+/* ---- an account ----------------------------------------------------- */
+
+.signin-identity-slot {
+  min-height: 62px;
+}
+
+.signin-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.signin-identity--arriving {
+  animation: signin-identity-in 0.32s var(--ease) both;
+}
+
+@keyframes signin-identity-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.signin-identity-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.signin-identity-name {
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+
+.signin-identity-meta {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+/* Bones in the account row's shape, so nothing moves when it lands. */
+.signin-bone {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  animation: signin-pulse 1.6s ease-in-out infinite;
+}
+
+.signin-bone--avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.signin-bone--name {
+  width: 46%;
+  height: 14px;
+  margin: 3px 0;
+}
+
+.signin-bone--meta {
+  width: 68%;
+  height: 11px;
+  margin: 3px 0;
+}
+
+@keyframes signin-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---- leaving -------------------------------------------------------- */
+
+.signin-arriving {
+  animation: signin-identity-in 0.32s var(--ease) both;
+}
+
+/* Fills over the wait before the browser goes, then breathes while the
+   host's page loads. */
+.signin-wick {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.signin-wick span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  animation: signin-wick-fill var(--signin-wick-ms, 3500ms) linear both;
+}
+
+.signin-wick:not([data-phase='waiting']) span {
+  animation: signin-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes signin-wick-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ---- the hosts ------------------------------------------------------ */
+
+.signin-hosts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signin-host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.signin-host svg {
+  flex: none;
+  color: var(--muted);
+}
+
+@media (hover: hover) {
+  .signin-host:hover {
+    border-color: var(--line-2);
+    background: var(--hover);
+  }
+}
+
+.signin-host-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.signin-host-name {
+  font-size: var(--text-sm);
+  font-weight: 620;
+}
+
+.signin-host-note {
+  color: var(--accent-ink);
+  font-weight: 560;
+}
+
+.signin-host-meta {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+/* ---- how signing in works ------------------------------------------- */
+
+.signin-how-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.signin-how-flow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.signin-how-stop {
+  display: flex;
+  flex: 0 1 96px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+.signin-how-glyph {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-2);
+}
+
+.signin-how-glyph--mark {
+  border-color: transparent;
+  background: none;
+}
+
+/* The line between two stops, carrying what passes along it. */
+.signin-how-link {
+  position: relative;
+  display: grid;
+  flex: 1 1 32px;
+  place-items: center;
+  max-width: 72px;
+  height: 40px;
+  color: var(--accent-ink);
+}
+
+.signin-how-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--line-2);
+}
+
+.signin-how-link svg {
+  position: relative;
+  padding: 3px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+
+.signin-how-asks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.signin-how-asks h3 {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 640;
+}
+
+.signin-how-asks ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signin-how-asks li {
+  display: flex;
+  gap: 8px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.signin-how-asks li svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .signin-flow--page .signin-card {
+    padding: 14px;
+  }
+
+  .signin-row .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* The wait before leaving is for reading, so it stays; the line that fills
+   during it is the only part that is motion. */
+@media (prefers-reduced-motion: reduce) {
+  .signin-wick {
+    display: none;
+  }
+
+  .signin-bone {
+    animation: none;
+  }
+}

@@ -17,6 +17,7 @@ import { createHarness, readFlags } from './harness.js';
 import { SERVER_ORIGIN } from './fakeServer.js';
 import { LAB, ME } from './world.js';
 import { OAUTH_CALLBACK_PATH } from '../src/config.js';
+import { opensGate, readAcceptance, termsKey, writeAcceptance } from '../src/legal/acceptance.js';
 import { makeReauthRequiredError } from '../src/session/accounts.js';
 import { backendSignOut, checkBackendSession, createBackendRequester } from '../src/session/backendClient.js';
 import { resolvePdsUrl } from '../src/session/pds.js';
@@ -39,6 +40,21 @@ const expiredAtStart = (id) => Boolean(flags.expired) && id.handle.startsWith(fl
 const tokens = new Map();
 if (flags.mode === 'backend' && !flags.signedOut) {
   for (const id of flags.accounts) if (!expiredAtStart(id)) tokens.set(id.did, harness.server.mintToken(id.did));
+}
+
+// The note this browser keeps that an account agreed to the terms
+// (src/legal/acceptance.js). By default the made-up accounts have agreed, so
+// the app opens as it always has; with ?terms= any note is taken away at
+// each load, so the agreement screen is there to look at every time.
+for (const id of flags.accounts) {
+  try {
+    if (flags.terms !== 'agreed') localStorage.removeItem(termsKey(id.did));
+    else if (!opensGate(readAcceptance(localStorage, id.did), { mode: flags.mode })) {
+      writeAcceptance(localStorage, id.did, { at: new Date().toISOString(), recorded: true, identity: flags.mode === 'backend' ? 'session' : 'claimed' });
+    }
+  } catch {
+    // Without storage the app asks, as it would anywhere.
+  }
 }
 
 export function AtprotoSessionProvider({ children }) {
@@ -66,8 +82,13 @@ export function AtprotoSessionProvider({ children }) {
   const setStatus = (did, status) =>
     setRows((list) => list.map((r) => (r.did === did ? { ...r, status, lastUsed: status === 'ready' ? Date.now() : r.lastUsed } : r)));
 
-  const signIn = useCallback(async (input) => {
+  // `input` is a handle, a DID, or a host's address (to make an account
+  // there, which here lands as Mira). The real one's other options (mode,
+  // intent, prompt) change where the browser goes, and there is nowhere to go.
+  const signIn = useCallback(async (input, { signal } = {}) => {
     await sleep(500);
+    // Called off while "the host" was being reached: nobody is signed in.
+    if (signal?.aborted) throw Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' });
     if (/^nobody/i.test(String(input))) throw new Error(`Failed to resolve identity: ${input}`);
     const id = String(input).replace(/^@/, '') === LAB.handle || input === LAB.did ? LAB : ME;
     if (!harness.worldOf(id.did)) throw new Error(`Failed to resolve identity: ${input}`);

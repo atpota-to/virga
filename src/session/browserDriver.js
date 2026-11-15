@@ -105,10 +105,16 @@ export function createBrowserDriver({
       }
     },
 
-    /** Redirects to the account's authorization server; normally never resolves. */
-    async signIn(input, { scope, intent = 'add' } = {}) {
+    /**
+     * Redirects to the account's authorization server; normally never
+     * resolves. `input` is a handle, a DID, or a host's address; `prompt`
+     * ('create', to make an account there) and `signal` (to call the sign-in
+     * off before the browser has left) are passed on only when given.
+     */
+    async signIn(input, { scope, intent = 'add', prompt = null, signal = null } = {}) {
       const client = await getClient();
-      await client.signIn(input, { scope, state: intent });
+      signal?.throwIfAborted();
+      await client.signIn(input, { scope, state: intent, ...(prompt ? { prompt } : {}), ...(signal ? { signal } : {}) });
     },
 
     /**

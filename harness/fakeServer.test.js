@@ -58,12 +58,14 @@ import {
   serializeForSchedule,
 } from '../src/posting/schedule/scheduleSerialize.js';
 import { cancelTimer, listTimers } from '../src/posting/timers/timerService.js';
+import { fetchTermsStatus, recordAcceptance, reportAcceptance } from '../src/legal/termsService.js';
+import { TERMS_VERSION } from '../src/legal/version.js';
 import { emptyComposerState } from '../src/posting/lib/composerModel.js';
 
 const NOW = Date.parse('2026-11-12T12:00:00.000Z');
 const HOUR = 3_600_000;
 
-function setup({ limits, aiLimits, seed = true } = {}) {
+function setup({ limits, aiLimits, seed = true, terms } = {}) {
   let clock = NOW;
   const mira = buildWorld({ now: NOW });
   const lab = buildWorld({ now: NOW, account: LAB });
@@ -74,6 +76,7 @@ function setup({ limits, aiLimits, seed = true } = {}) {
     limits,
     aiLimits,
     seed,
+    terms,
     aiDelayMs: 0,
     now: () => clock,
   });
@@ -749,6 +752,65 @@ describe('sessions', () => {
   });
 });
 
+describe('the terms ledger', () => {
+  const post = (fetch, body) =>
+    fetch(`${SERVER_ORIGIN}/api/terms/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(async (res) => ({
+      status: res.status,
+      body: await res.json(),
+    }));
+
+  it('starts with every account agreed, so the app opens', async () => {
+    const { req, server } = setup();
+    expect(await fetchTermsStatus(req)).toMatchObject({ accepted: true, version: TERMS_VERSION });
+    expect(server.inspect().agreements.map((row) => row.did).sort()).toEqual([LAB.did, ME.did].sort());
+  });
+
+  it('answers the real services: asked, then recorded once for the session’s account', async () => {
+    const { req, requester, server } = setup({ terms: 'ask' });
+    expect(await fetchTermsStatus(req)).toEqual({ accepted: false, acceptedAt: null, version: TERMS_VERSION });
+    const first = await recordAcceptance(req);
+    expect(server.inspect().agreements.map((row) => row.identity)).toEqual(['session']);
+    expect(await fetchTermsStatus(req)).toMatchObject({ accepted: true, acceptedAt: first.acceptedAt });
+    // Again, from another browser: the first agreement is the answer.
+    expect(await recordAcceptance(requester(ME.did))).toEqual(first);
+    expect(server.inspect().agreements).toHaveLength(1);
+    // The other account has still to agree.
+    expect(await fetchTermsStatus(requester(LAB.did))).toMatchObject({ accepted: false });
+  });
+
+  it('takes a browser session’s word for its DID, and keeps it apart from a session’s agreement', async () => {
+    const { fetch, req, server } = setup({ terms: 'ask' });
+    const reported = await reportAcceptance({ did: ME.did, backendUrl: SERVER_ORIGIN, fetch });
+    // Nothing about the row comes back: the caller could be anyone.
+    expect(reported).toEqual({ identity: 'claimed' });
+    expect(await fetchTermsStatus(req)).toMatchObject({ accepted: false });
+    expect(server.inspect().agreements.map((row) => row.identity)).toEqual(['claimed']);
+  });
+
+  it('refuses another version, a DID that isn’t one, and a token that doesn’t hold', async () => {
+    const { fetch, server } = setup({ terms: 'ask' });
+    expect(await post(fetch, { version: TERMS_VERSION + 1, did: ME.did })).toMatchObject({ status: 409, body: { code: 'TERMS_VERSION_MISMATCH', version: TERMS_VERSION } });
+    expect(await post(fetch, { version: TERMS_VERSION, did: 'mira.example.com' })).toMatchObject({ status: 400, body: { code: 'DID_INVALID' } });
+    const stale = createBackendRequester({ backendUrl: SERVER_ORIGIN, token: `vg_${'0'.repeat(64)}`, did: ME.did, fetch });
+    await expect(recordAcceptance(stale)).rejects.toMatchObject({ status: 401, code: 'FRONTEND_SESSION_INVALID' });
+    expect(server.inspect().agreements).toEqual([]);
+  });
+
+  it('can be down, so the screen has an error to show', async () => {
+    const { req, fetch } = setup({ terms: 'down' });
+    expect(await fetchTermsStatus(req)).toMatchObject({ accepted: false });
+    await expect(recordAcceptance(req)).rejects.toMatchObject({ status: 503, code: 'UNAVAILABLE' });
+    await expect(reportAcceptance({ did: ME.did, backendUrl: SERVER_ORIGIN, fetch })).rejects.toMatchObject({ status: 503 });
+  });
+
+  it('takes its flag from the address', () => {
+    expect(readFlags('').terms).toBe('agreed');
+    expect(readFlags('?terms=ask').terms).toBe('ask');
+    expect(readFlags('?terms=down').terms).toBe('down');
+    expect(readFlags('?terms=whatever').terms).toBe('agreed');
+  });
+});
+
 describe('the adviser and alt text', () => {
   it('reads a draft against the writer’s goals and checks its writing', async () => {
     const { req } = setup();
@@ -871,8 +933,16 @@ describe('the fake network', () => {
       'status',
       404,
     );
-    // The dev server's own /api is Vite's, never the fake's.
+    // The router answers its own origin only. In the page, installFakeNetwork
+    // is what sends this site's /api there, as the real server is the site's.
     expect(await createServerRouter(server)(new URL('http://127.0.0.1:5701/api/limits/status'), {})).toBeNull();
+  });
+
+  it('names the page an account signs in on, as a PDS does', async () => {
+    const { mira, lab } = setup();
+    const route = createRouter([mira, lab]);
+    const res = await route('https://pds.harness.example/.well-known/oauth-protected-resource', {});
+    expect(await res.json()).toEqual({ resource: 'https://pds.harness.example', authorization_servers: ['https://pds.harness.example'] });
   });
 });
 

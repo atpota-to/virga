@@ -15,6 +15,11 @@ describe('addresses', () => {
     expect(hrefFor('/reports?x=1', '?latency=0')).toBe('/reports?x=1');
     expect(hrefFor('/posting', '?text=hello', { keepQuery: false })).toBe('/posting');
     expect(hrefFor('/posting', '')).toBe('/posting');
+    // A query goes before the fragment, never into it.
+    expect(hrefFor('/privacy#contact', '?latency=0')).toBe('/privacy?latency=0#contact');
+    expect(hrefFor('/privacy#contact', '')).toBe('/privacy#contact');
+    expect(hrefFor('/privacy?x=1#contact', '?latency=0')).toBe('/privacy?x=1#contact');
+    expect(hrefFor('/privacy#contact', '?text=hello', { keepQuery: false })).toBe('/privacy#contact');
   });
 });
 

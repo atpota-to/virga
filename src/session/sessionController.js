@@ -583,8 +583,15 @@ export function createSessionController(set, env) {
       }
     },
 
-    async signIn(input, { mode = env.authMode, intent = 'add' } = {}) {
+    /**
+     * Start a sign-in. `input` is a handle, a DID, or the address of a host
+     * (https://bsky.social): with a host the account is chosen on its page,
+     * and `prompt: 'create'` opens that page on making a new one. `signal`
+     * calls it off, for as long as the browser hasn't left.
+     */
+    async signIn(input, { mode = env.authMode, intent = 'add', prompt = null, signal = null } = {}) {
       const handle = String(input || '').trim().replace(/^@/, '');
+      const ask = B.signInPrompt(prompt);
       A.writeOpenAtSignIn(env.tabStorage, intent === 'reauth' ? active.did : null);
       if (mode === 'backend') {
         return B.startBackendSignIn({
@@ -595,13 +602,15 @@ export function createSessionController(set, env) {
           returnPath: OAUTH_RETURN_PATH,
           mode,
           intent,
+          prompt: ask,
+          signal,
           sessionStorage: env.tabStorage,
           assign: env.assign,
         });
       }
       // Marked before the redirect, so the load after it restores.
       writeSessionHint(env.storage);
-      return browser.signIn(handle, { scope: OAUTH_SCOPE, intent });
+      return browser.signIn(handle, { scope: OAUTH_SCOPE, intent, ...(ask ? { prompt: ask } : {}), ...(signal ? { signal } : {}) });
     },
 
     async signOutAccount(did) {

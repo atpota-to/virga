@@ -1,3 +1,4 @@
+import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 import { describe, expect, it } from 'vitest';
 import { buildCommands, COMMAND_GROUPS, fold, moveActive, paletteGroups, parseRecent, periodTitle, rankCommands, rememberRecent, RECENT_GROUP, MAX_RECENT } from './commands.js';
 import { REPORTS } from '../reports/registry.js';
@@ -43,7 +44,12 @@ describe('buildCommands', () => {
     for (const p of POSTING_PAGES) expect(byId(commands, `go:${p.path}`)).toMatchObject({ group: 'Posting', title: p.label });
     for (const s of SECTIONS) expect(byId(commands, `go:/settings/${s.key}`)).toMatchObject({ group: 'Settings', title: s.label });
     expect(byId(commands, 'go:/dashboard/d2')).toMatchObject({ group: 'Dashboards', title: 'Growth' });
-    for (const c of commands.filter((x) => x.go)) expect(parseRoute(c.go).section, c.go).not.toBe('missing');
+    // The two legal pages are the app's own, drawn before the shell (App.jsx),
+    // so the shell's routes don't list them.
+    expect(byId(commands, `go:${TERMS_PATH}`)).toMatchObject({ group: 'Settings', title: 'Terms of Service' });
+    expect(byId(commands, `go:${PRIVACY_PATH}`)).toMatchObject({ group: 'Settings', title: 'Privacy Policy' });
+    const known = (go) => go === TERMS_PATH || go === PRIVACY_PATH || parseRoute(go).section !== 'missing';
+    for (const c of commands.filter((x) => x.go)) expect(known(c.go), c.go).toBe(true);
   });
 
   it('leaves out tools that aren’t built', () => {
@@ -105,7 +111,7 @@ describe('buildCommands', () => {
   });
 
   it('builds from nothing without falling over', () => {
-    expect(titles(buildCommands())).toEqual(['New post', 'Build your archive', 'New dashboard', 'Light theme', 'Dark theme', 'Match the system theme']);
+    expect(titles(buildCommands())).toEqual(['New post', 'Build your archive', 'New dashboard', 'Terms of Service', 'Privacy Policy', 'Light theme', 'Dark theme', 'Match the system theme']);
   });
 });
 

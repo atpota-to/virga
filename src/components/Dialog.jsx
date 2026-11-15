@@ -45,6 +45,10 @@ export default function Dialog({ open, onClose, title, children, actions = null,
       data-tone={tone || undefined}
       aria-labelledby={titleId}
       onCancel={(e) => {
+        // Escape in a dialog opened from inside this one: the browser sends
+        // the event to that dialog alone, but React passes it up through
+        // the tree as well, and this one would close with it.
+        if (e.target !== e.currentTarget) return;
         e.preventDefault();
         onClose?.();
       }}
