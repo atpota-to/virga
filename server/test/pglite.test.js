@@ -5,7 +5,8 @@ import { join } from 'node:path';
 import { createTestDatabase, listMigrations, MIGRATIONS_DIR, selectMigrations, supabaseAdapter } from './pglite.js';
 
 // The helper is tested on fixture migrations of its own, so it is pinned
-// whatever the real migrations folder holds at the moment.
+// whatever the real migrations folder holds at the moment. The fixtures build
+// in public; the last tests bind the client to another schema.
 
 const FIXTURE_A = `
 CREATE TABLE IF NOT EXISTS things (
@@ -94,7 +95,7 @@ describe('listing and selecting migrations', () => {
 
 describe('createTestDatabase', () => {
   it('starts on an empty migrations folder, with the roles and storage in place', async () => {
-    const t = await createTestDatabase({ dir: emptyDir });
+    const t = await createTestDatabase({ dir: emptyDir, schema: 'public' });
     try {
       expect(t.applied).toEqual([]);
       const { rows } = await t.query(`SELECT rolname FROM pg_roles WHERE rolname IN ('anon','authenticated','service_role') ORDER BY 1`);
@@ -115,7 +116,7 @@ describe('createTestDatabase', () => {
   });
 
   it('applies Supabase’s default grants, so a table without a REVOKE stays open to anon', async () => {
-    const t = await createTestDatabase({ dir });
+    const t = await createTestDatabase({ dir, schema: 'public' });
     try {
       const { rows } = await t.query(
         `SELECT has_table_privilege('anon', 'public.later', 'SELECT') AS later,
@@ -130,7 +131,7 @@ describe('createTestDatabase', () => {
   });
 
   it('leaves the automatic grants out on request, so service_role gets only what a migration GRANTs', async () => {
-    const t = await createTestDatabase({ dir, defaultGrants: false });
+    const t = await createTestDatabase({ dir, schema: 'public', defaultGrants: false });
     try {
       const { rows } = await t.query(
         `SELECT has_table_privilege('service_role', 'public.later', 'SELECT') AS service_table,
@@ -146,14 +147,14 @@ describe('createTestDatabase', () => {
   });
 
   it('applies up to a migration, and a guarded bucket insert runs or skips', async () => {
-    const first = await createTestDatabase({ dir, upTo: '20260101000100' });
+    const first = await createTestDatabase({ dir, schema: 'public', upTo: '20260101000100' });
     try {
       expect(first.applied).toEqual(['20260101000100_a.sql']);
       expect((await first.query(`SELECT to_regclass('public.later') AS t`)).rows[0].t).toBeNull();
     } finally {
       await first.close();
     }
-    const withStorage = await createTestDatabase({ dir });
+    const withStorage = await createTestDatabase({ dir, schema: 'public' });
     try {
       expect((await withStorage.query(`SELECT id, public FROM storage.buckets`)).rows).toEqual([{ id: 'scheduled-media', public: false }]);
       // Re-applying is a no-op.
@@ -161,7 +162,7 @@ describe('createTestDatabase', () => {
     } finally {
       await withStorage.close();
     }
-    const withoutStorage = await createTestDatabase({ dir, storage: false });
+    const withoutStorage = await createTestDatabase({ dir, schema: 'public', storage: false });
     try {
       expect((await withoutStorage.query(`SELECT to_regclass('storage.buckets') AS t`)).rows[0].t).toBeNull();
     } finally {
@@ -173,7 +174,7 @@ describe('createTestDatabase', () => {
     const bad = mkdtempSync(join(tmpdir(), 'virga-pglite-bad-'));
     try {
       writeFileSync(join(bad, '0001_bad.sql'), 'CREATE TABLE broken (');
-      await expect(createTestDatabase({ dir: bad })).rejects.toThrow(/^0001_bad\.sql: /);
+      await expect(createTestDatabase({ dir: bad, schema: 'public' })).rejects.toThrow(/^0001_bad\.sql: /);
     } finally {
       rmSync(bad, { recursive: true, force: true });
     }
@@ -185,7 +186,7 @@ describe('supabaseAdapter', () => {
   let sb;
 
   beforeAll(async () => {
-    t = await createTestDatabase({ dir });
+    t = await createTestDatabase({ dir, schema: 'public' });
     sb = t.supabase;
     expect(typeof supabaseAdapter).toBe('function');
   });
@@ -245,6 +246,41 @@ describe('supabaseAdapter', () => {
     expect((await sb.from('missing_table').select('*')).error.code).toBe('PGRST205');
     expect((await sb.from('things').insert({ id: 'z', owner: 'x', nope: 1 })).error.code).toBe('PGRST204');
     expect((await sb.from('things').insert({ id: 'a', owner: 'x' })).error.code).toBe('23505');
+  });
+
+  it('is bound to one schema, as the real client is, and sees nothing outside it', async () => {
+    const other = await createTestDatabase({ dir: emptyDir, schema: 'app' });
+    try {
+      expect(other.schema).toBe('app');
+      await other.exec(`
+        CREATE TABLE app.mine (id TEXT PRIMARY KEY);
+        CREATE TABLE public.theirs (id TEXT PRIMARY KEY);
+        CREATE FUNCTION app.whose() RETURNS TEXT LANGUAGE sql AS $$ SELECT 'mine' $$;
+        CREATE FUNCTION public.whose() RETURNS TEXT LANGUAGE sql AS $$ SELECT 'theirs' $$;
+        CREATE FUNCTION public.only_theirs() RETURNS TEXT LANGUAGE sql AS $$ SELECT 'theirs' $$;
+      `);
+      expect((await other.supabase.from('mine').insert({ id: 'a' })).error).toBeNull();
+      expect((await other.supabase.from('mine').select('id')).data).toEqual([{ id: 'a' }]);
+      expect((await other.supabase.rpc('whose')).data).toBe('mine');
+      const table = await other.supabase.from('theirs').select('id');
+      expect(table.error).toMatchObject({ code: 'PGRST205', message: "Could not find the table 'app.theirs' in the schema cache" });
+      const fn = await other.supabase.rpc('only_theirs');
+      expect(fn.error.code).toBe('PGRST202');
+      expect(fn.error.message).toContain('app.only_theirs');
+      // A test's own SQL finds the app's table by its plain name.
+      expect((await other.query(`SELECT count(*)::int AS n FROM mine`)).rows[0].n).toBe(1);
+    } finally {
+      await other.close();
+    }
+  });
+
+  it('binds to Virga’s schema unless told otherwise', async () => {
+    const real = await createTestDatabase();
+    try {
+      expect(real.schema).toBe('virga');
+    } finally {
+      await real.close();
+    }
   });
 
   it('has an in-memory storage', async () => {

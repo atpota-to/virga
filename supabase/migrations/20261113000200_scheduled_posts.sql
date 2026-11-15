@@ -7,7 +7,12 @@
 --
 -- gen_random_uuid() is built into Postgres 13+, so no extension is created.
 
-CREATE TABLE IF NOT EXISTS scheduled_posts (
+-- Virga's own schema; see the first migration.
+CREATE SCHEMA IF NOT EXISTS virga;
+REVOKE ALL ON SCHEMA virga FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA virga TO service_role;
+
+CREATE TABLE IF NOT EXISTS virga.scheduled_posts (
   id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_did           TEXT        NOT NULL,           -- whose PDS the post goes to
   scheduled_for      TIMESTAMPTZ NOT NULL,           -- when to publish (UTC)
@@ -41,46 +46,46 @@ CREATE TABLE IF NOT EXISTS scheduled_posts (
   updated_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON COLUMN scheduled_posts.queued IS
+COMMENT ON COLUMN virga.scheduled_posts.queued IS
   'true: a queue row, published at the next free posting slot; false: a one-off post pinned to scheduled_for.';
 
 -- The worker's "what is due?" read stays cheap as the table grows.
 CREATE INDEX IF NOT EXISTS scheduled_posts_due_idx
-  ON scheduled_posts (scheduled_for)
+  ON virga.scheduled_posts (scheduled_for)
   WHERE status = 'pending';
 
 -- The account's list, its counts and the rkey reservation all read every
 -- status of one DID's rows.
 CREATE INDEX IF NOT EXISTS scheduled_posts_user_idx
-  ON scheduled_posts (user_did, scheduled_for);
+  ON virga.scheduled_posts (user_did, scheduled_for);
 
 -- The media sweep. A published or cancelled row is stamped when its inline
 -- delete succeeds, so only the rows the sweep still owes anything sit here.
 -- Dropped first so a re-apply picks up a changed predicate.
-DROP INDEX IF EXISTS scheduled_posts_media_reclaim_idx;
+DROP INDEX IF EXISTS virga.scheduled_posts_media_reclaim_idx;
 CREATE INDEX scheduled_posts_media_reclaim_idx
-  ON scheduled_posts (updated_at)
+  ON virga.scheduled_posts (updated_at)
   WHERE status IN ('failed', 'published', 'cancelled') AND media_reclaimed_at IS NULL;
 
 -- No policies: every role but the service role is refused. The service role
--- is granted explicitly: Supabase is retiring the automatic grants on new
--- public tables, and the RPCs below are SECURITY INVOKER, so they need these
+-- is granted explicitly: nothing is granted automatically in a schema other
+-- than public, and the RPCs below are SECURITY INVOKER, so they need these
 -- privileges too.
-ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE scheduled_posts FROM anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE scheduled_posts TO service_role;
+ALTER TABLE virga.scheduled_posts ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE virga.scheduled_posts FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.scheduled_posts TO service_role;
 
 -- ─── Claim ──────────────────────────────────────────────────────────────────
 -- Flip a batch of due rows to 'publishing' in one statement. FOR UPDATE SKIP
 -- LOCKED means two overlapping cron runs never claim the same row, so nothing
 -- is published twice and nobody waits on a slow PDS. Each claim counts as an
 -- attempt.
-CREATE OR REPLACE FUNCTION claim_scheduled_posts(
+CREATE OR REPLACE FUNCTION virga.claim_scheduled_posts(
   p_run_id TEXT,
   p_limit  INTEGER DEFAULT 20
-) RETURNS SETOF scheduled_posts
+) RETURNS SETOF virga.scheduled_posts
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 BEGIN
   RETURN QUERY
@@ -111,11 +116,11 @@ $$;
 -- died mid-write. It goes back to 'pending' for the next claim, or, once it is
 -- past its attempt budget, to 'failed' with the sentence the worker writes for
 -- the same case, so it can't cycle pending -> publishing -> stuck forever.
-CREATE OR REPLACE FUNCTION reclaim_stuck_scheduled_posts(
+CREATE OR REPLACE FUNCTION virga.reclaim_stuck_scheduled_posts(
   p_older_than_seconds INTEGER DEFAULT 600
 ) RETURNS INTEGER
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count INTEGER;
@@ -149,12 +154,12 @@ $$;
 -- media map is still returned: its folder may hold objects the map never
 -- learned about. Read-only: the worker deletes the objects and only then
 -- stamps media_reclaimed_at, so a failed delete is retried later.
-CREATE OR REPLACE FUNCTION reclaim_failed_scheduled_media(
+CREATE OR REPLACE FUNCTION virga.reclaim_failed_scheduled_media(
   p_older_than_days INTEGER DEFAULT 30
 ) RETURNS TABLE (id UUID, payload JSONB)
 LANGUAGE sql
 STABLE
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
   SELECT s.id, s.payload
     FROM scheduled_posts s
@@ -178,12 +183,12 @@ $$;
 -- The named rows are locked before eligibility is checked (the claim's SKIP
 -- LOCKED then passes them by), and a row count that disagrees rolls the whole
 -- move back. Refusals come back as data, never as an error.
-CREATE OR REPLACE FUNCTION reorder_scheduled_posts(
+CREATE OR REPLACE FUNCTION virga.reorder_scheduled_posts(
   p_user_did TEXT,
   p_moves    JSONB
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count    INTEGER;
@@ -271,7 +276,7 @@ $$;
 -- the cap. p_max_active is the ceiling the server applies (the lower of its
 -- flat cap and any configured feature limit). Answers { ok: true, post } or
 -- { ok: false, code: 'QUOTA_EXCEEDED', limit, count }.
-CREATE OR REPLACE FUNCTION create_scheduled_post_capped(
+CREATE OR REPLACE FUNCTION virga.create_scheduled_post_capped(
   p_user_did      TEXT,
   p_scheduled_for TIMESTAMPTZ,
   p_target        TEXT,
@@ -280,7 +285,7 @@ CREATE OR REPLACE FUNCTION create_scheduled_post_capped(
   p_max_active    INTEGER DEFAULT 50
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_limit INTEGER := GREATEST(COALESCE(p_max_active, 50), 0);
@@ -306,33 +311,35 @@ BEGIN
 END;
 $$;
 
--- Postgres grants EXECUTE to PUBLIC, and Supabase to anon and authenticated,
--- on every new function; any of these would then be callable through
--- PostgREST with the public anon key.
-REVOKE ALL ON FUNCTION claim_scheduled_posts(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION reclaim_stuck_scheduled_posts(INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION reclaim_failed_scheduled_media(INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION reorder_scheduled_posts(TEXT, JSONB) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION claim_scheduled_posts(TEXT, INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION reclaim_stuck_scheduled_posts(INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION reclaim_failed_scheduled_media(INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION reorder_scheduled_posts(TEXT, JSONB) TO service_role;
-GRANT EXECUTE ON FUNCTION create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER) TO service_role;
+-- Postgres grants EXECUTE to PUBLIC on every new function, and anon and
+-- authenticated may have been granted the schema; any of these would then be
+-- callable through PostgREST with the public anon key.
+REVOKE ALL ON FUNCTION virga.claim_scheduled_posts(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.reclaim_stuck_scheduled_posts(INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.reclaim_failed_scheduled_media(INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.reorder_scheduled_posts(TEXT, JSONB) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION virga.claim_scheduled_posts(TEXT, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.reclaim_stuck_scheduled_posts(INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.reclaim_failed_scheduled_media(INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.reorder_scheduled_posts(TEXT, JSONB) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.create_scheduled_post_capped(TEXT, TIMESTAMPTZ, TEXT, JSONB, BOOLEAN, INTEGER) TO service_role;
 
 -- ─── Storage bucket for stashed images ──────────────────────────────────────
 -- Image and card-thumbnail bytes wait here between scheduling and publishing
 -- (the PDS garbage-collects a blob nothing references, so blobs are uploaded
--- only at publish time). Private: only the service role reads it. Guarded so
--- the file also applies to a plain Postgres without Supabase's storage schema.
+-- only at publish time). Private: only the service role reads it. Buckets
+-- belong to the whole project, not to a schema, so this one carries Virga's
+-- name. Guarded so the file also applies to a plain Postgres without
+-- Supabase's storage schema.
 DO $do$
 BEGIN
   IF to_regclass('storage.buckets') IS NULL THEN
-    RAISE NOTICE 'no storage.buckets table; the scheduled-media bucket was not created';
+    RAISE NOTICE 'no storage.buckets table; the virga-scheduled-media bucket was not created';
     RETURN;
   END IF;
   INSERT INTO storage.buckets (id, name, public, file_size_limit)
-  VALUES ('scheduled-media', 'scheduled-media', false, 10485760)  -- 10 MB per object
+  VALUES ('virga-scheduled-media', 'virga-scheduled-media', false, 10485760)  -- 10 MB per object
   ON CONFLICT (id) DO NOTHING;
 END
 $do$;

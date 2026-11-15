@@ -267,7 +267,7 @@ describe('POST /api/schedule/create', () => {
       'p0-img1': { storagePath: `${id}/p0-img1.png`, encoding: 'image/png' },
     });
     expect(
-      t.supabase.storage.read('scheduled-media', `${id}/p0-img0.png`),
+      t.supabase.storage.read('virga-scheduled-media', `${id}/p0-img0.png`),
     ).toEqual(Buffer.from(PNG_BASE64, 'base64'));
   });
 
@@ -1091,11 +1091,11 @@ describe('repeating posts', () => {
   it('removes the waiting occurrence, and the series with it', async () => {
     const created = (await post(create, repeatBody(undefined, { images: 1 }))).body.data;
     const path = created.payload.media['p0-img0'].storagePath;
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeTruthy();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeTruthy();
     const res = await post(cancel, { id: created.id });
     expect(res.statusCode).toBe(200);
     expect((await call(list, { method: 'GET' })).body.data).toEqual([]);
-    expect(t.supabase.storage.read('scheduled-media', path)).toBeUndefined();
+    expect(t.supabase.storage.read('virga-scheduled-media', path)).toBeUndefined();
     const { rows } = await t.query(
       `SELECT COUNT(*)::int AS n FROM scheduled_posts WHERE series_id = $1 AND status IN ('pending', 'publishing')`,
       [created.seriesId],

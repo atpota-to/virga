@@ -4,7 +4,12 @@
 -- the author's repo. Only the service role (which bypasses RLS) touches any of
 -- it. Safe to re-apply.
 
-CREATE TABLE IF NOT EXISTS self_destruct_posts (
+-- Virga's own schema; see the first migration.
+CREATE SCHEMA IF NOT EXISTS virga;
+REVOKE ALL ON SCHEMA virga FROM PUBLIC, anon, authenticated;
+GRANT USAGE ON SCHEMA virga TO service_role;
+
+CREATE TABLE IF NOT EXISTS virga.self_destruct_posts (
   id               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_did         TEXT        NOT NULL,
   post_uri         TEXT        NOT NULL,
@@ -42,37 +47,37 @@ CREATE TABLE IF NOT EXISTS self_destruct_posts (
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE self_destruct_posts IS
+COMMENT ON TABLE virga.self_destruct_posts IS
   'Post timers: a published post to delete (or gate) on its author''s PDS once its lifespan runs out, unless its conditions spare it. Service role only.';
-COMMENT ON COLUMN self_destruct_posts.status IS
+COMMENT ON COLUMN virga.self_destruct_posts.status IS
   'armed | checking | deleted | acted | spared | failed | cancelled. acted = the rule fired without deleting. A failed timer leaves the post up.';
-COMMENT ON COLUMN self_destruct_posts.lifespan_seconds IS
+COMMENT ON COLUMN virga.self_destruct_posts.lifespan_seconds IS
   'The window the author chose, as the composer sent it. An extend spare gives the post this same window again; never re-derived from check_at.';
 
 -- The worker's due read: live timers only.
 CREATE INDEX IF NOT EXISTS self_destruct_due_idx
-  ON self_destruct_posts (check_at)
+  ON virga.self_destruct_posts (check_at)
   WHERE status = 'armed';
 
 -- The timers page and the per-account counts.
 CREATE INDEX IF NOT EXISTS self_destruct_user_idx
-  ON self_destruct_posts (user_did, check_at)
+  ON virga.self_destruct_posts (user_did, check_at)
   WHERE status IN ('armed', 'checking', 'failed', 'acted');
 
 -- One live timer per post: a retried create hands back the same row.
 CREATE UNIQUE INDEX IF NOT EXISTS self_destruct_live_post_idx
-  ON self_destruct_posts (user_did, post_uri)
+  ON virga.self_destruct_posts (user_did, post_uri)
   WHERE status IN ('armed', 'checking');
 
 -- Claim due timers for one worker run. FOR UPDATE SKIP LOCKED in the same
 -- statement as the flip to 'checking', so overlapping runs never get the same
 -- row. Each claim spends an attempt.
-CREATE OR REPLACE FUNCTION claim_self_destruct_posts(
+CREATE OR REPLACE FUNCTION virga.claim_self_destruct_posts(
   p_run_id TEXT,
   p_limit  INTEGER DEFAULT 25
-) RETURNS SETOF self_destruct_posts
+) RETURNS SETOF virga.self_destruct_posts
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 BEGIN
   RETURN QUERY
@@ -101,11 +106,11 @@ $$;
 -- Hand back rows a dead worker left in 'checking'. Older than the function's
 -- maxDuration, so never a live worker's row. A row past its attempts is retired
 -- with the post still up; the sentence matches the worker's TIMED_OUT_ERROR.
-CREATE OR REPLACE FUNCTION reclaim_stuck_self_destructs(
+CREATE OR REPLACE FUNCTION virga.reclaim_stuck_self_destructs(
   p_older_than_seconds INTEGER DEFAULT 180
 ) RETURNS INTEGER
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_count INTEGER;
@@ -140,7 +145,7 @@ $$;
 -- live timer per post. Arming a post that already has one hands that row back
 -- with existing = true (the caller rewrites an armed one to the new rule).
 -- Returns { ok, row, existing? } or { ok: false, code: 'QUOTA_EXCEEDED', limit, count }.
-CREATE OR REPLACE FUNCTION create_self_destruct_capped(
+CREATE OR REPLACE FUNCTION virga.create_self_destruct_capped(
   p_user_did         TEXT,
   p_post_uri         TEXT,
   p_post_cid         TEXT,
@@ -155,7 +160,7 @@ CREATE OR REPLACE FUNCTION create_self_destruct_capped(
   p_effects          JSONB   DEFAULT NULL
 ) RETURNS JSONB
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
+SET search_path = virga, pg_temp
 AS $$
 DECLARE
   v_limit INTEGER := GREATEST(COALESCE(p_max_active, 200), 0);
@@ -201,15 +206,15 @@ BEGIN
 END;
 $$;
 
-ALTER TABLE self_destruct_posts ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE self_destruct_posts FROM anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE self_destruct_posts TO service_role;
+ALTER TABLE virga.self_destruct_posts ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE virga.self_destruct_posts FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.self_destruct_posts TO service_role;
 
-REVOKE ALL ON FUNCTION claim_self_destruct_posts(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION reclaim_stuck_self_destructs(INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION create_self_destruct_capped(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, JSONB, TIMESTAMPTZ, INTEGER, JSONB, INTEGER, JSONB)
+REVOKE ALL ON FUNCTION virga.claim_self_destruct_posts(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.reclaim_stuck_self_destructs(INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.create_self_destruct_capped(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, JSONB, TIMESTAMPTZ, INTEGER, JSONB, INTEGER, JSONB)
   FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION claim_self_destruct_posts(TEXT, INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION reclaim_stuck_self_destructs(INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION create_self_destruct_capped(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, JSONB, TIMESTAMPTZ, INTEGER, JSONB, INTEGER, JSONB)
+GRANT EXECUTE ON FUNCTION virga.claim_self_destruct_posts(TEXT, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.reclaim_stuck_self_destructs(INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.create_self_destruct_capped(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, JSONB, TIMESTAMPTZ, INTEGER, JSONB, INTEGER, JSONB)
   TO service_role;
