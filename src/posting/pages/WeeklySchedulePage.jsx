@@ -355,11 +355,17 @@ export default function WeeklySchedulePage({ did }) {
                       orderedWeekdays().findIndex((d) => d.key === b.dayKey) ||
                     a.time.localeCompare(b.time),
                 )
-                .map(
-                  (s) =>
-                    `${WEEKDAYS.find((d) => d.key === s.dayKey)?.label} ${slotLabel(s.time)}`,
-                )
-                .join(', ')}
+                // Each day and time kept whole, so a line never breaks
+                // between an hour and its AM or PM.
+                .map((s, i) => (
+                  <span key={`${s.dayKey}-${s.time}`}>
+                    {i > 0 && ', '}
+                    <span className="sched-suggest-time">
+                      {WEEKDAYS.find((d) => d.key === s.dayKey)?.label}{' '}
+                      {slotLabel(s.time)}
+                    </span>
+                  </span>
+                ))}
               .
               {shippedOrEmpty
                 ? ' They can replace the starting times.'
@@ -410,53 +416,56 @@ export default function WeeklySchedulePage({ did }) {
                 </p>
               </div>
             </div>
-            <div className="field sched-tz-field">
-              <label className="field-label" htmlFor={tzId}>
-                Time zone
-              </label>
-              <TimezoneSelect
-                id={tzId}
-                value={tz}
-                onChange={(z) => save(moveToZone(schedule, z))}
-              />
-              <span className="field-hint">
-                The times below are read on this clock, wherever you are when
-                they come round.
-              </span>
-            </div>
-            <ul className="sched-days">
-              {orderedWeekdays().map((day) => (
-                <DayRow
-                  key={day.key}
-                  day={day}
-                  times={schedule.slots?.[day.key] || []}
-                  onAdd={(t) => save(addSlot(schedule, day.key, t, device))}
-                  onRemove={(t) => save(removeSlot(schedule, day.key, t))}
-                  onCopy={(to) => save(copyDay(schedule, day.key, to))}
-                  onClear={() => save(clearDay(schedule, day.key))}
+            <div className="sched-week-body">
+              <div className="field sched-tz-field">
+                <label className="field-label" htmlFor={tzId}>
+                  Time zone
+                </label>
+                <TimezoneSelect
+                  id={tzId}
+                  value={tz}
+                  onChange={(z) => save(moveToZone(schedule, z))}
                 />
-              ))}
-            </ul>
-            <div className="card-foot sched-week-foot">
-              <span>Saved as you go, in this browser.</span>
-              {!isDefaultWeek(schedule) && (
-                <button
-                  type="button"
-                  className="link-action"
-                  onClick={() => setResetting(true)}
-                >
-                  <RotateCcw size={14} aria-hidden="true" />
-                  Start again from the default
-                </button>
-              )}
+                <span className="field-hint">
+                  The times below are read on this clock, wherever you are when
+                  they come round.
+                </span>
+              </div>
+              <ul className="sched-days">
+                {orderedWeekdays().map((day) => (
+                  <DayRow
+                    key={day.key}
+                    day={day}
+                    times={schedule.slots?.[day.key] || []}
+                    onAdd={(t) => save(addSlot(schedule, day.key, t, device))}
+                    onRemove={(t) => save(removeSlot(schedule, day.key, t))}
+                    onCopy={(to) => save(copyDay(schedule, day.key, to))}
+                    onClear={() => save(clearDay(schedule, day.key))}
+                  />
+                ))}
+              </ul>
+              <div className="card-foot sched-week-foot">
+                <span>Saved as you go, in this browser.</span>
+                {!isDefaultWeek(schedule) && (
+                  <button
+                    type="button"
+                    className="link-action"
+                    onClick={() => setResetting(true)}
+                  >
+                    <RotateCcw size={14} aria-hidden="true" />
+                    Start again from the default
+                  </button>
+                )}
+              </div>
             </div>
           </section>
 
-          {/* Its heading has a line under the title, as the week's has, so
-              the two rules in ink line up side by side. */}
+          {/* Its heading has a line under the title, as the week's has, and
+              the two headings share a row, so the two rules in ink line up
+              side by side however long the week's summary runs. */}
           <div className="sched-week-side">
             <section
-              className="card card--flush"
+              className="card card--flush sched-week-preview"
               aria-labelledby="sched-preview-title"
             >
               <div className="card-head">
@@ -469,74 +478,83 @@ export default function WeeklySchedulePage({ did }) {
                   </p>
                 </div>
               </div>
+              {/* With no times there is no week to draw, and nothing in it
+                  that could be taken. */}
               {empty ? (
-                <div className="empty-block">
+                <div className="empty-block sched-week-body">
                   <p className="empty">No posting times yet.</p>
                 </div>
               ) : (
-                <QueueCalendar
-                  schedule={schedule}
-                  rows={queued.filter((r) => r.status === 'pending')}
-                  now={now}
-                  occupancy={list.status === 'ready'}
-                  lead={
-                    list.status === 'ready' ? (
-                      <>
-                        {summary.queuedCount === 1
-                          ? '1 post is'
-                          : `${summary.queuedCount} posts are`}{' '}
-                        in the queue
-                        {summary.scheduledCount
-                          ? `, and ${summary.scheduledCount} at a set time`
-                          : ''}
-                        . <Link to={postingPath('scheduled')}>See them</Link>.
-                      </>
-                    ) : null
-                  }
-                />
-              )}
-              {list.status === 'error' && (
-                <p className="field-hint">
-                  Couldn’t read what’s already queued, so these may be taken.
-                </p>
+                <div className="sched-week-body">
+                  <QueueCalendar
+                    schedule={schedule}
+                    rows={queued.filter((r) => r.status === 'pending')}
+                    now={now}
+                    occupancy={list.status === 'ready'}
+                    lead={
+                      list.status === 'ready' ? (
+                        <>
+                          {summary.queuedCount === 1
+                            ? '1 post is'
+                            : `${summary.queuedCount} posts are`}{' '}
+                          in the queue
+                          {summary.scheduledCount
+                            ? `, and ${summary.scheduledCount} at a set time`
+                            : ''}
+                          . <Link to={postingPath('scheduled')}>See them</Link>.
+                        </>
+                      ) : null
+                    }
+                  />
+                  {list.status === 'error' && (
+                    <p className="field-hint">
+                      Couldn’t read what’s already queued, so these may be
+                      taken.
+                    </p>
+                  )}
+                </div>
               )}
             </section>
 
-            {off.length > 0 && (
-              <section className="card" aria-labelledby="sched-off-title">
-                <div className="card-head">
-                  <div>
-                    <h2 className="card-title" id="sched-off-title">
-                      {off.length === 1
-                        ? '1 queued post is off these times'
-                        : `${off.length} queued posts are off these times`}
-                    </h2>
-                    <p className="card-sub">
-                      Posts already in the queue keep the times they were
-                      given. Move them onto the week’s times, in the order
-                      they’re in now.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={repack}
-                  disabled={repacking || empty}
-                  aria-busy={repacking || undefined}
-                >
-                  {repacking ? 'Moving…' : 'Move them onto these times'}
-                </Button>
-              </section>
-            )}
+            {(off.length > 0 || !settings.suggestBestTimes) && (
+              <div className="sched-week-more">
+                {off.length > 0 && (
+                  <section className="card" aria-labelledby="sched-off-title">
+                    <div className="card-head">
+                      <div>
+                        <h2 className="card-title" id="sched-off-title">
+                          {off.length === 1
+                            ? '1 queued post is off these times'
+                            : `${off.length} queued posts are off these times`}
+                        </h2>
+                        <p className="card-sub">
+                          Posts already in the queue keep the times they were
+                          given. Move them onto the week’s times, in the order
+                          they’re in now.
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={repack}
+                      disabled={repacking || empty}
+                      aria-busy={repacking || undefined}
+                    >
+                      {repacking ? 'Moving…' : 'Move them onto these times'}
+                    </Button>
+                  </section>
+                )}
 
-            {!settings.suggestBestTimes && (
-              <div className="sched-suggest-off">
-                <Switch
-                  checked={false}
-                  onChange={(v) => update({ suggestBestTimes: v })}
-                  label="Suggest times from my best times"
-                  hint="Uses the archive in this browser; nothing is sent anywhere."
-                />
+                {!settings.suggestBestTimes && (
+                  <div className="sched-suggest-off">
+                    <Switch
+                      checked={false}
+                      onChange={(v) => update({ suggestBestTimes: v })}
+                      label="Suggest times from my best times"
+                      hint="Uses the archive in this browser; nothing is sent anywhere."
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

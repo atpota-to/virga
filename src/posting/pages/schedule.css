@@ -152,14 +152,15 @@
 }
 
 /* The same width as the overview's Going out next, so a time reads in
-   the same place on both. */
+   the same place on both. Its first line is as tall as the post's, so the
+   time and the words share a baseline. */
 .sched-when-cell {
   display: flex;
   flex: none;
   flex-direction: column;
   gap: 2px;
   width: var(--time-col);
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .sched-time {
@@ -172,10 +173,27 @@
   font-size: var(--text-sm);
 }
 
-.sched-row-why {
+/* A day and its hour, each kept whole, so a narrow column breaks between
+   them rather than inside either. */
+.sched-when-past > span {
+  white-space: nowrap;
+}
+
+/* Why a row is as it is: in red for a post that didn't go out (its
+   section's heading already says so, so this is the one red); in ink for
+   anything else, which carries a badge of its own. */
+.sched-row-why,
+.sched-row-note {
   margin: 0;
-  color: var(--danger);
   font-size: var(--text-sm);
+}
+
+.sched-row-why {
+  color: var(--danger);
+}
+
+.sched-row-note {
+  color: var(--ink-2);
 }
 
 /* What a scheduled reply answers: who, and the start of what they said. */
@@ -342,12 +360,15 @@
   }
 }
 
+/* The focus ring goes round the circle, drawn as every other control's is:
+   a shadow ring would sink into a filled circle of the same colour. */
 .sched-cal-pick:focus-visible {
   outline: none;
 }
 
 .sched-cal-pick:focus-visible .sched-cal-mark {
-  box-shadow: var(--focus);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Forced colours drop backgrounds, which would leave a taken time looking
@@ -389,18 +410,59 @@
 
 /* ---- the weekly schedule ----------------------------------------------- */
 
+/* One column, the week's times first, until there is room for two. */
 .sched-week-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--grid-gap) var(--grid-gap-x);
   align-items: start;
 }
 
-.sched-week-side {
+.sched-week-side,
+.sched-week-more {
   display: flex;
   flex-direction: column;
   gap: var(--grid-gap);
   min-width: 0;
+}
+
+/* Side by side, the two headings share the grid's first row and what is
+   under them its second (subgrid), so the rules in ink under the headings
+   line up however long the week's summary runs. What else the right column
+   holds takes a third row, beside the rest of the week's days. */
+@media (min-width: 1181px) {
+  .sched-week-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    row-gap: 0;
+  }
+
+  .sched-week,
+  .sched-week-side,
+  .sched-week-preview {
+    display: grid;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    align-self: stretch;
+  }
+
+  .sched-week,
+  .sched-week-side {
+    grid-row: 1 / -1;
+  }
+
+  .sched-week > .sched-week-body {
+    grid-row: 2 / -1;
+  }
+
+  .sched-week-preview {
+    grid-row: 1 / 3;
+  }
+
+  .sched-week-more {
+    grid-row: 3;
+    margin-top: var(--grid-gap);
+  }
 }
 
 .sched-tz-field {
@@ -489,6 +551,10 @@
 
 .sched-suggest .card-sub {
   max-width: var(--measure);
+}
+
+.sched-suggest-time {
+  white-space: nowrap;
 }
 
 .sched-suggest-actions {
@@ -879,12 +945,6 @@
 
 /* ---- narrower screens --------------------------------------------------- */
 
-@media (max-width: 1180px) {
-  .sched-week-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 /* A phone: a row's time becomes its first line, the words take the row's
    width, the ⋯ is in the corner (the kit's .has-corner-menu) and the one
    action drops under the words at its own width. */
@@ -908,6 +968,17 @@
   /* The ⋯ (or a note's ✕) centred on the time's line, a 13px line. */
   .sched-row .row-menu {
     top: calc(var(--row-pad) + 9.5px);
+  }
+
+  /* Only that line has to keep clear of it: the words under the time take
+     the row's whole width, rather than wrapping 40px short of it all the
+     way down. */
+  :root .sched-row.has-corner-menu {
+    padding-right: 0;
+  }
+
+  .sched-row.has-corner-menu > .sched-when-cell {
+    padding-right: 40px;
   }
 
   .sched-handle {

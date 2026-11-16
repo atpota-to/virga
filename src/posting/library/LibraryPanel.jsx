@@ -11,7 +11,6 @@ import {
   Sparkles,
   LayoutTemplate,
   Plus,
-  RefreshCw,
   X,
 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
@@ -83,7 +82,15 @@ function ItemRow({ item, id, active, selected, onPick }) {
         {item.reason ? (
           <span className="lib-row-reason">{item.reason}</span>
         ) : (
-          item.label && <span className="lib-row-label">{item.label}</span>
+          // Its kind and what it does, as a meta line, so the dots between
+          // them are spaced as every other one is.
+          item.label && (
+            <span className="lib-row-label meta">
+              {item.label.split(' · ').map((part, i) => (
+                <span key={i}>{part}</span>
+              ))}
+            </span>
+          )
         )}
         {item.excerpt && <span className="lib-row-excerpt">{item.excerpt}</span>}
       </span>
@@ -127,7 +134,6 @@ function ShelfStatus({ shelf, onRetry }) {
     <div className="callout callout--danger lib-status" role="alert">
       <span>{errorText(shelf.error) || 'This shelf couldn’t be read.'}</span>
       <Button size="sm" onClick={onRetry}>
-        <RefreshCw size={14} aria-hidden="true" />
         Try again
       </Button>
     </div>
@@ -445,7 +451,7 @@ export default function LibraryPanel({
               )}
               {!searching && shelf?.id === 'templates' && onNewTemplate && (
                 <button type="button" className="link-action" onClick={onNewTemplate}>
-                  <Plus aria-hidden="true" />
+                  <Plus size={14} aria-hidden="true" />
                   New template
                 </button>
               )}

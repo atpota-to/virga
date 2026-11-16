@@ -453,6 +453,15 @@
   margin-bottom: var(--space-4);
 }
 
+/* The title and its line take the room the right-hand group leaves, so a
+   long line under the title wraps beside the group rather than pushing the
+   group onto a line of its own, away from the title it belongs to. Only
+   when that room would be narrower than a short sentence does it wrap. */
+.card-head > :first-child:has(> .card-title) {
+  flex: 1 1 0;
+  min-width: min(100%, 16rem);
+}
+
 /* Link actions side by side in a heading. */
 .head-actions {
   display: flex;
@@ -861,6 +870,20 @@
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-lg);
+}
+
+/* A list with no room to open whole scrolls inside the room it has (Menu
+   gives it a max-height). It shades the edge with more past it, so the
+   items beyond, the destructive one last among them, don't read as
+   missing: each shade stays put while a cover moves with the items, and
+   the cover hides its shade once that end is reached. */
+.menu-list[style*='max-height'] {
+  background:
+    linear-gradient(var(--surface) 40%, transparent) top / 100% 36px no-repeat local,
+    linear-gradient(transparent, var(--surface) 60%) bottom / 100% 36px no-repeat local,
+    linear-gradient(var(--line-2), transparent) top / 100% 16px no-repeat scroll,
+    linear-gradient(transparent, var(--line-2)) bottom / 100% 16px no-repeat scroll,
+    var(--surface);
 }
 
 .menu[data-placement='up'] .menu-list {

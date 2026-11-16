@@ -78,7 +78,7 @@ export default function TemplatesPage({ did }) {
       <PostingHeader page="templates" />
       <div className="page-body hub">
         {!canWrite && (
-          <div className="callout callout--warn" role="status">
+          <div className="callout callout--warn hub-notice" role="status">
             <span>Virga needs permission to save templates in your repo. Sign in again to grant it.</span>
             <Button size="sm" onClick={() => requestReauth(did, { immediate: true })}>
               Sign in again
@@ -116,7 +116,7 @@ export default function TemplatesPage({ did }) {
                 <p className="card-sub">Type a template’s /shortcut in the composer, or find it in the library.</p>
               </div>
               <button type="button" className="link-action" onClick={newTemplate} disabled={!canWrite}>
-                <Plus aria-hidden="true" />
+                <Plus size={14} aria-hidden="true" />
                 New template
               </button>
             </div>
@@ -135,7 +135,7 @@ export default function TemplatesPage({ did }) {
                       usedLine(usage[t.rkey]),
                     ].filter(Boolean);
                     return (
-                      <li key={t.rkey} className="hub-row tpl-row-item has-corner-menu">
+                      <li key={t.rkey} className="hub-row tpl-row-item">
                         <div className="hub-row-main">
                           <p className="tpl-name">
                             {/* The name is the way into the editor; Use is the row's one button. */}

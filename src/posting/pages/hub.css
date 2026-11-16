@@ -2,8 +2,9 @@
    only. Nothing here is a box: a page is its lists, each under a rule in
    ink, hairlines between the rows, the rows on the section's own edges. A
    row shows at most one small outline and a ⋯ (the kit's .row-actions); on
-   a phone the ⋯ goes to the row's corner and the outline under its words
-   (.has-corner-menu), so the words keep the width. */
+   a phone the ⋯ of a row led by its words goes to the row's corner and the
+   outline under them (.has-corner-menu), so the words keep the width. A
+   template, led by its name, keeps both on that name's line. */
 
 /* ---- the overview ----------------------------------------------------- */
 
@@ -161,8 +162,8 @@
   font-size: var(--text-sm);
 }
 
-/* A date and its hour, each kept whole, so a narrow column breaks between
-   them. */
+/* An hour and how it goes out, or a date and its hour, each kept whole, so
+   a narrow column breaks between them. */
 .hub-when-time > span {
   white-space: nowrap;
 }
@@ -199,8 +200,10 @@
   cursor: default;
 }
 
-/* Each kept on one line, so a finger's reach (below) is one box. */
+/* Each kept on one line, so a finger's reach (below) is one box, and that
+   box the line's height, as the button's is. */
 a.hub-inline-action {
+  display: inline-block;
   white-space: nowrap;
 }
 
@@ -227,8 +230,23 @@ a.hub-inline-action {
   flex: 1 1 0;
 }
 
-.card--flush > .hub-error,
-.card--flush > .hub-pad > .hub-error {
+/* A notice and its one way out: the button beside the words where both
+   fit, under them where they don't (a phone), as the notice that asks for
+   the posting permission has it, rather than the words squeezed into a
+   column beside it. */
+.hub-notice {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.hub-notice > span {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.card--flush > .hub-error {
   margin-top: 16px;
 }
 
@@ -316,6 +334,52 @@ a.hub-inline-action {
 }
 
 /* ---- Templates -------------------------------------------------------- */
+
+/* A template is led by its name, as an account is, so Use and its ⋯ stay
+   on the name's line at every size, centred on it, and its words and facts
+   take the row's whole width under them. On a phone the button then needs
+   no line of its own. */
+.tpl-row-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 16px;
+}
+
+.tpl-row-item > .hub-row-main {
+  display: contents;
+}
+
+.tpl-row-item .tpl-name {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.tpl-row-item .hub-row-text,
+.tpl-row-item .meta {
+  grid-column: 1 / -1;
+}
+
+/* Centred on the name's line, as the kit's .row-actions are on a row's
+   first line; what reaches below it keeps the words under it clear of the
+   button. */
+.tpl-row-item > .row-actions {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+/* On a phone the ⋯'s dots end on the column's edge, as every row's
+   corner ⋯ does there. */
+@media (max-width: 560px) {
+  .tpl-row-item .row-menu {
+    margin-right: -7px;
+  }
+}
+
+@media (max-width: 560px) and (pointer: coarse) {
+  .tpl-row-item .row-menu {
+    margin-right: -14px;
+  }
+}
 
 /* A template's name, which opens it in the editor, and its /shortcut. */
 .tpl-name {

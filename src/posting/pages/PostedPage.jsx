@@ -234,6 +234,8 @@ export default function PostedPage({ did }) {
   // "30 of 1,031" only when that is the whole of it: before the archive is
   // built, Bluesky has more than the list knows of.
   const knownTotal = built || !feedCursor;
+  // Nothing could be read at all: no list to search, count or head.
+  const failed = !loading && fresh.status === 'error' && !built && !all.length;
 
   return (
     <>
@@ -253,97 +255,97 @@ export default function PostedPage({ did }) {
           </p>
         )}
 
-        <section className="card card--flush hub-card" aria-labelledby="posted-title">
-          {/* What narrows the list sits over its heading, so the count is
-              right over the rows it counts. */}
-          <div className="list-toolbar">
-            <label className="search">
-              <Search aria-hidden="true" />
-              <span className="visually-hidden">Search your posts</span>
-              <input className="input" type="search" placeholder="Search your posts" value={query} onChange={(e) => setQuery(e.target.value)} />
-            </label>
-            <Segmented size="sm" label="Show" options={POSTED_FILTERS} value={filter} onChange={setFilter} />
-          </div>
-          <div className="card-head">
-            <div>
-              <h2 id="posted-title" className="card-title">
-                {loading ? 'Your posts' : countPhrase(rows.length, 'post')}
-              </h2>
-              <p className="card-sub">Newest first.</p>
+        {failed ? (
+          <LoadError message="Your posts couldn’t be read from Bluesky." onRetry={fresh.reload} />
+        ) : (
+          <section className="card card--flush hub-card" aria-labelledby="posted-title">
+            {/* What narrows the list sits over its heading, so the count is
+                right over the rows it counts. */}
+            <div className="list-toolbar">
+              <label className="search">
+                <Search aria-hidden="true" />
+                <span className="visually-hidden">Search your posts</span>
+                <input className="input" type="search" placeholder="Search your posts" value={query} onChange={(e) => setQuery(e.target.value)} />
+              </label>
+              <Segmented size="sm" label="Show" options={POSTED_FILTERS} value={filter} onChange={setFilter} />
             </div>
-          </div>
+            <div className="card-head">
+              <div>
+                <h2 id="posted-title" className="card-title">
+                  {loading ? 'Your posts' : countPhrase(rows.length, 'post')}
+                </h2>
+                <p className="card-sub">Newest first.</p>
+              </div>
+            </div>
 
-          {loading ? (
-            <RowSkeleton rows={6} />
-          ) : fresh.status === 'error' && !built && !rows.length ? (
-            <div className="hub-pad">
-              <LoadError message="Your posts couldn’t be read from Bluesky." onRetry={fresh.reload} />
-            </div>
-          ) : visible.length ? (
-            <ul className="hub-list hub-list--rows">
-              {visible.map((row) => {
-                const busy = working === row.uri;
-                // A post in a thread of the account's own is filed with its
-                // posts, so it isn't called a reply.
-                const meta = isReplyRow(row, did) ? row : { ...row, replyTo: null };
-                return (
-                  <li key={row.uri} className="hub-row posted-row has-corner-menu" aria-busy={busy || undefined}>
-                    <div className="hub-row-main">
-                      <a className="hub-row-text hub-row-link" href={bskyUrlFor(row.uri)} target="_blank" rel="noopener noreferrer" title="Open on Bluesky">
-                        {row.text?.trim() || <span className="muted">{row.hasMedia ? 'A post with media' : 'No text'}</span>}
-                      </a>
-                      {row.fresh && built ? (
-                        <span className="meta num">
-                          <PostMeta post={meta} />
-                          <span>Not in the archive yet</span>
-                        </span>
-                      ) : (
-                        <PostMeta post={meta} className="num" />
-                      )}
-                    </div>
-                    <div className="row-actions">
-                      {/* The kit's ⋯ (MoreMenu), with a spinner in place of
-                          the dots while the post is read for an action. */}
-                      <Menu label={`More for the post from ${formatDateShort(row.at)}`} icon variant="ghost" className="row-menu" items={menuItems(row)}>
-                        {busy ? <span className="hub-spinner" aria-hidden="true" /> : <MoreHorizontal size={16} aria-hidden="true" />}
-                      </Menu>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="empty-block">
-              <p className="empty">
-                {query || filter !== 'all' ? 'Nothing matches. Clear the search or choose All.' : 'Nothing posted yet. New post starts one.'}
-              </p>
-            </div>
-          )}
+            {loading ? (
+              <RowSkeleton rows={6} />
+            ) : visible.length ? (
+              <ul className="hub-list hub-list--rows">
+                {visible.map((row) => {
+                  const busy = working === row.uri;
+                  // A post in a thread of the account's own is filed with its
+                  // posts, so it isn't called a reply.
+                  const meta = isReplyRow(row, did) ? row : { ...row, replyTo: null };
+                  return (
+                    <li key={row.uri} className="hub-row posted-row has-corner-menu" aria-busy={busy || undefined}>
+                      <div className="hub-row-main">
+                        <a className="hub-row-text hub-row-link" href={bskyUrlFor(row.uri)} target="_blank" rel="noopener noreferrer" title="Open on Bluesky">
+                          {row.text?.trim() || <span className="muted">{row.hasMedia ? 'A post with media' : 'No text'}</span>}
+                        </a>
+                        {row.fresh && built ? (
+                          <span className="meta num">
+                            <PostMeta post={meta} />
+                            <span>Not in the archive yet</span>
+                          </span>
+                        ) : (
+                          <PostMeta post={meta} className="num" />
+                        )}
+                      </div>
+                      <div className="row-actions">
+                        {/* The kit's ⋯ (MoreMenu), with a spinner in place of
+                            the dots while the post is read for an action. */}
+                        <Menu label={`More for the post from ${formatDateShort(row.at)}`} icon variant="ghost" className="row-menu" items={menuItems(row)}>
+                          {busy ? <span className="hub-spinner" aria-hidden="true" /> : <MoreHorizontal size={16} aria-hidden="true" />}
+                        </Menu>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div className="empty-block">
+                <p className="empty">
+                  {query || filter !== 'all' ? 'Nothing matches. Clear the search or choose All.' : 'Nothing posted yet. New post starts one.'}
+                </p>
+              </div>
+            )}
 
-          {!loading && (rows.length > shown || (!built && feedCursor)) && (
-            <div className="card-foot">
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={feedPages.loadingMore}
-                aria-busy={feedPages.loadingMore || undefined}
-                onClick={() => (rows.length > shown ? setShown((n) => n + STEP) : loadMoreFeed())}
-              >
-                {feedPages.loadingMore
-                  ? 'Loading…'
-                  : rows.length > shown
-                    ? `Show ${Math.min(STEP, rows.length - shown).toLocaleString(activeLocale())} more`
-                    : 'Show more'}
-              </Button>
-              {knownTotal && (
-                <span className="num">
-                  {visible.length.toLocaleString(activeLocale())} of {rows.length.toLocaleString(activeLocale())}
-                </span>
-              )}
-            </div>
-          )}
-          {!caps.canSchedule && <p className="card-caption">Putting a post on a timer needs a long session. Settings › Account offers one.</p>}
-        </section>
+            {!loading && (rows.length > shown || (!built && feedCursor)) && (
+              <div className="card-foot">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={feedPages.loadingMore}
+                  aria-busy={feedPages.loadingMore || undefined}
+                  onClick={() => (rows.length > shown ? setShown((n) => n + STEP) : loadMoreFeed())}
+                >
+                  {feedPages.loadingMore
+                    ? 'Loading…'
+                    : rows.length > shown
+                      ? `Show ${Math.min(STEP, rows.length - shown).toLocaleString(activeLocale())} more`
+                      : 'Show more'}
+                </Button>
+                {knownTotal && (
+                  <span className="num">
+                    {visible.length.toLocaleString(activeLocale())} of {rows.length.toLocaleString(activeLocale())}
+                  </span>
+                )}
+              </div>
+            )}
+            {!caps.canSchedule && <p className="card-caption">Putting a post on a timer needs a long session. Settings › Account offers one.</p>}
+          </section>
+        )}
       </div>
 
       <GatesDialog state={gates} did={did} onClose={() => setGates(null)} onSaved={() => toast?.('Saved. Bluesky shows the change at once.')} />

@@ -232,15 +232,18 @@
 }
 
 /* What the shelf is, and its own controls, over the rule in ink that
-   opens the list. */
+   opens the list. Beside the chosen item it is as tall as that item's head
+   (a title and a line under it), its words on the line nearest the rule,
+   so the two rules in ink are one line across the page. */
 .lib-list-head {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-end;
   align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
-  min-height: 42px;
-  padding-bottom: 10px;
+  min-height: calc(var(--text-md) * 1.25 + 4px + var(--text-sm) * 1.45 + 13px);
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -258,10 +261,19 @@
   font-size: var(--text-sm);
 }
 
+/* A shelf or a search that didn't answer, and Try again: beside the words
+   where both fit, under them where they don't. */
 .lib-status {
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 10px 16px;
   margin-top: 12px;
+}
+
+.lib-status > span {
+  flex: 1 1 260px;
+  min-width: 0;
 }
 
 .lib-options {
@@ -300,7 +312,7 @@
   position: relative;
   display: flex;
   gap: 12px;
-  padding: 11px 8px 11px 0;
+  padding: var(--row-pad) 8px var(--row-pad) 0;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
 }
@@ -350,18 +362,23 @@
   min-width: 0;
 }
 
+/* A post's title is its first line, which may be the whole post: two lines
+   at most, as in every list of posts. A template's /shortcut follows its
+   name on the same line. */
 .lib-row-title {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+  display: -webkit-box;
   min-width: 0;
+  overflow: hidden;
   font-size: var(--text-md);
   font-weight: 500;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .lib-row-shortcut {
-  flex: none;
+  margin-left: 8px;
+  white-space: nowrap;
   color: var(--muted);
   font-size: var(--text-sm);
   font-weight: 400;
@@ -473,11 +490,16 @@
   font-weight: 500;
 }
 
+/* One line: a post's title is its first line, which the preview under it
+   shows whole, and at one line the head stays as tall as the list's beside
+   it, so their two rules in ink stay one line across. */
 .lib-item-title {
   margin: 0;
+  overflow: hidden;
   font-size: var(--text-md);
   font-weight: 600;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lib-item-effect {
@@ -1024,6 +1046,13 @@
     min-height: 48px;
   }
 
+  /* The chosen item takes the list's place here, so there is no head
+     beside it to keep level with. */
+  .lib-list-head {
+    min-height: 42px;
+    padding-bottom: 10px;
+  }
+
   .lib-questions-actions {
     position: sticky;
     bottom: 0;
@@ -1031,9 +1060,13 @@
     background: var(--surface);
   }
 
-  /* On the page the sheet under it is the page itself. */
+  /* On the page it is the form's last line, where the page puts it: held
+     to the screen's foot it would sit under the tab bar, and over the sky
+     as a band of its own. */
   .lib-panel[data-mode='page'] .lib-questions-actions {
-    background: var(--bg);
+    position: static;
+    padding: 0;
+    background: none;
   }
 
   /* The one thing to do here, under the thumb, the width of the column. */

@@ -269,7 +269,18 @@ function ScheduledRow({
           </p>
         )}
         {meta.length > 0 && <p className="meta">{meta}</p>}
-        {status.detail && <p className="sched-row-why">{status.detail}</p>}
+        {/* Red once: a failed post's reason, under a heading that says it
+            didn't go out. A thread part way out has its badge for that, so
+            its line stays in ink. */}
+        {status.detail && (
+          <p
+            className={
+              status.tone === 'danger' ? 'sched-row-why' : 'sched-row-note'
+            }
+          >
+            {status.detail}
+          </p>
+        )}
       </div>
       <div className="row-actions">
         {actions.retry ? (
@@ -800,21 +811,27 @@ export default function ScheduledPage({ did }) {
               {timerNotes.map((row) => {
                 const facts = rowFacts(row);
                 const note = timerNoteActions(row);
+                const day = dayInZone(row.scheduledFor, tz, now);
+                const hour = timeInZone(row.scheduledFor, tz);
                 return (
                   <li
                     key={row.id}
                     className="sched-row has-corner-menu"
                     aria-busy={busy[row.id] || undefined}
                   >
-                    {/* When it went out, the day over the hour, as in the
-                        list of those that didn't. */}
+                    {/* "Went out" where a time would lead, over when: in a
+                        page of times still to come, this one is past. The
+                        day and the hour are each kept whole, so the column
+                        breaks between them, as the overview's does. */}
                     <div className="sched-when-cell">
-                      <time className="sched-time" dateTime={row.scheduledFor}>
-                        {dayInZone(row.scheduledFor, tz, now)}
+                      <span className="sched-time">Went out</span>
+                      <time
+                        className="sched-rel sched-when-past"
+                        dateTime={row.scheduledFor}
+                      >
+                        <span>{hour ? `${day},` : day}</span>
+                        {hour && <> <span>{hour}</span></>}
                       </time>
-                      <span className="sched-rel">
-                        {timeInZone(row.scheduledFor, tz)}
-                      </span>
                     </div>
                     <div className="hub-row-main sched-row-main">
                       <p className="hub-row-text">

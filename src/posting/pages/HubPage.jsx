@@ -207,12 +207,20 @@ export default function HubPage({ did }) {
                 <ul className="hub-list">
                   {nextRows.map((row) => {
                     const [day, hour] = whenParts(whenLabel(row.scheduledFor, now));
-                    const time = [hour, row.queued && 'Queue', row.status === 'publishing' && 'Going out now'].filter(Boolean).join(' · ');
+                    // The hour and how it goes out, as a meta line, so its dot
+                    // is spaced as every other one is.
+                    const time = [hour, row.queued && 'Queue', row.status === 'publishing' && 'Going out now'].filter(Boolean);
                     return (
                       <li key={row.id} className="hub-row hub-row--when">
                         <time className="hub-when" dateTime={row.scheduledFor}>
                           <span className="hub-when-day">{day}</span>
-                          {time && <span className="hub-when-time">{time}</span>}
+                          {time.length > 0 && (
+                            <span className="hub-when-time meta">
+                              {time.map((part) => (
+                                <span key={part}>{part}</span>
+                              ))}
+                            </span>
+                          )}
                         </time>
                         <div className="hub-row-main">
                           <p className="hub-row-text">{scheduledSnippet(row)}</p>
@@ -227,10 +235,12 @@ export default function HubPage({ did }) {
                       <li key={row.id} className="hub-row hub-row--when" aria-busy={retrying === row.id || undefined}>
                         <div className="hub-when">
                           <span className="hub-when-day hub-when-failed">{rowStatus(row).label}</span>
-                          {/* Its day and its hour each kept whole, so a narrow
-                              column breaks between them. */}
-                          <time className="hub-when-time" dateTime={row.scheduledFor}>
-                            <span>{hour ? `${day},` : day}</span> {hour && <span>{hour}</span>}
+                          {/* Its day and its hour as a meta line, as the hour is
+                              under every other row's day: each kept whole, so a
+                              narrow column breaks between them. */}
+                          <time className="hub-when-time meta" dateTime={row.scheduledFor}>
+                            <span>{day}</span>
+                            {hour && <span>{hour}</span>}
                           </time>
                         </div>
                         <div className="hub-row-main">
@@ -264,7 +274,15 @@ export default function HubPage({ did }) {
                 <RowSkeleton rows={3} />
               ) : drafts.status === 'error' ? (
                 isMissingScopeError(drafts.error) ? (
-                  <PostingPermissionNotice did={did} force />
+                  // The notice at the top of the page already asks for the
+                  // permission when posting lacks it too; it isn't said twice.
+                  caps.canPost ? (
+                    <PostingPermissionNotice did={did} force />
+                  ) : (
+                    <div className="empty-block">
+                      <p className="empty">Your drafts can’t be read until Virga has permission.</p>
+                    </div>
+                  )
                 ) : (
                   <LoadError message="Your drafts couldn’t be read from Bluesky." onRetry={drafts.reload} />
                 )

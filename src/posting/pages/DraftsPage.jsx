@@ -235,6 +235,16 @@ export default function DraftsPage({ did, id = null }) {
               New post
             </Button>
           </div>
+        ) : list.status === 'error' ? (
+          // Nothing could be read, so no heading either: what went wrong,
+          // under the notice that says how to put it right.
+          scopeError ? (
+            <div className="empty-block">
+              <p className="empty">Your drafts can’t be read until Virga has permission.</p>
+            </div>
+          ) : (
+            <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
+          )
         ) : (
           <section className="card card--flush hub-card" aria-labelledby="drafts-title">
             <div className="card-head">
@@ -250,14 +260,6 @@ export default function DraftsPage({ did, id = null }) {
 
             {list.status === 'loading' ? (
               <RowSkeleton rows={4} actions={1} />
-            ) : list.status === 'error' ? (
-              scopeError ? (
-                <p className="empty">Your drafts can’t be read until Virga has permission.</p>
-              ) : (
-                <div className="hub-pad">
-                  <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
-                </div>
-              )
             ) : (
               <ul className="hub-list hub-list--rows">
                 {rows.map((row) => {
