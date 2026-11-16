@@ -1,8 +1,16 @@
-// Pieces the Scheduled and Weekly schedule pages (and Settings › Posting)
-// share: the time-zone picker, the week ahead as a calendar, and an on/off
-// switch with its words.
+// Pieces the Scheduled, Weekly schedule and Timers pages (and Settings ›
+// Posting) share: the time-zone picker, the week ahead as a calendar, an
+// on/off switch with its words, the question before an action, and keeping
+// the focus on a list when a row goes.
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { buildCalendarDays } from '../schedule/queueCalendar.js';
@@ -288,6 +296,57 @@ export function QueueCalendar({
         </figcaption>
       )}
     </figure>
+  );
+}
+
+/**
+ * Keeps the focus on the list when a row that held it goes (removed,
+ * posted, dismissed, called off). Call the returned `keep(elementId)` just
+ * before acting on the row with that id. Once the list has been read again
+ * without it, and any dialog over it has closed, the focus moves to the row
+ * that took its place, or else the one before it, or else the page's main
+ * region, rather than falling back to the top of the page. It moves only
+ * when the focus has been lost: a person who has gone elsewhere stays there.
+ * `rowSelector` matches the page's rows (each with an id); `list` is what
+ * changes when the list is read again.
+ */
+export function useFocusAfterRemoval(rowSelector, list) {
+  const want = useRef(null);
+  useEffect(() => {
+    const w = want.current;
+    if (!w || document.getElementById(w.gone)) return;
+    want.current = null;
+    const settle = () => {
+      const at = document.activeElement;
+      if (at && at !== document.body && at.isConnected) return;
+      const row = [w.next, w.prev]
+        .map((id) => id && document.getElementById(id))
+        .find(Boolean);
+      const target =
+        row?.querySelector('.row-actions button') ||
+        row?.querySelector('button, a[href]') ||
+        document.getElementById('main');
+      target?.focus();
+    };
+    // A dialog hands the focus back to its opener as it closes; the opener
+    // may be in the row that has gone, so look once that has happened.
+    const open = document.querySelector('dialog[open]');
+    if (open)
+      open.addEventListener('close', () => setTimeout(settle, 0), {
+        once: true,
+      });
+    else settle();
+  }, [list]);
+  return useCallback(
+    (id) => {
+      const rows = [...document.querySelectorAll(rowSelector)];
+      const i = rows.findIndex((el) => el.id === id);
+      want.current =
+        i < 0
+          ? null
+          : { gone: id, next: rows[i + 1]?.id, prev: rows[i - 1]?.id };
+    },
+    [rowSelector],
   );
 }
 

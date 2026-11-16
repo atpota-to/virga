@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Copy, Plus, RotateCcw, Trash2, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { MoreMenu } from '../../components/Menu.jsx';
@@ -84,10 +84,32 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
   const [adding, setAdding] = useState(false);
   const [time, setTime] = useState('09:00');
   const id = useId();
+  const addRef = useRef(null);
+  const listRef = useRef(null);
+  // What held the focus can go (the form, a time, the ⋯ of a day just
+  // cleared), so the focus is put back in the band: on the + once the form
+  // closes or the day is cleared; after a time is taken off, on the time
+  // that took its place, the one before it, or the + when none is left.
+  const refocus = useRef(null);
+  useEffect(() => {
+    const at = refocus.current;
+    if (at === null) return;
+    refocus.current = null;
+    const removes = listRef.current?.querySelectorAll('.token-remove') || [];
+    const target =
+      at === 'add'
+        ? addRef.current
+        : removes[Math.min(at, removes.length - 1)] || addRef.current;
+    target?.focus();
+  });
+  const close = () => {
+    refocus.current = 'add';
+    setAdding(false);
+  };
   const add = () => {
     if (!time) return;
     onAdd(time);
-    setAdding(false);
+    close();
   };
   const copyItems = [
     ...COPY_TARGETS.map((t) => ({
@@ -113,15 +135,22 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
         {times.length === 0 && !adding && (
           <span className="sched-day-none">No posting times</span>
         )}
-        <ul className="sched-day-list" aria-labelledby={`${id}-name`}>
-          {times.map((t) => (
+        <ul
+          className="sched-day-list"
+          aria-labelledby={`${id}-name`}
+          ref={listRef}
+        >
+          {times.map((t, i) => (
             <li key={t} className="token">
               {slotLabel(t)}
               <button
                 type="button"
                 className="token-remove"
                 aria-label={`Remove ${slotLabel(t)} on ${LONG_DAY[day.key]}`}
-                onClick={() => onRemove(t)}
+                onClick={() => {
+                  refocus.current = i;
+                  onRemove(t);
+                }}
               >
                 <X size={14} aria-hidden="true" />
               </button>
@@ -130,6 +159,7 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
         </ul>
         {!adding && (
           <Button
+            ref={addRef}
             size="sm"
             variant="ghost"
             icon
@@ -162,7 +192,7 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   e.preventDefault();
-                  setAdding(false);
+                  close();
                 }
               }}
               // The field is what was asked for; it takes the focus.
@@ -171,7 +201,7 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
             <Button size="sm" variant="primary" type="submit">
               Add
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>
+            <Button size="sm" variant="ghost" onClick={close}>
               Cancel
             </Button>
           </form>
@@ -189,7 +219,10 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
               label: 'Clear this day',
               tone: 'danger',
               icon: Trash2,
-              onSelect: onClear,
+              onSelect: () => {
+                refocus.current = 'add';
+                onClear();
+              },
             },
           ]}
         />

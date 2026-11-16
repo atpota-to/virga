@@ -75,7 +75,11 @@ import {
   timeInZone,
   timerNoteActions,
 } from './scheduleModel.js';
-import { ActionDialog, QueueCalendar } from './scheduleParts.jsx';
+import {
+  ActionDialog,
+  QueueCalendar,
+  useFocusAfterRemoval,
+} from './scheduleParts.jsx';
 import './hub.css';
 import './schedule.css';
 
@@ -390,6 +394,10 @@ export default function ScheduledPage({ did }) {
   const [confirm, setConfirm] = useState(null);
   const [timerFor, setTimerFor] = useState(null);
   const listRef = useRef(null);
+  const keepFocus = useFocusAfterRemoval(
+    '.sched-page .sched-row[id]',
+    list.data,
+  );
   const busyRef = useRef(false);
   busyRef.current = Object.keys(busy).length > 0 || Boolean(drag);
 
@@ -604,6 +612,7 @@ export default function ScheduledPage({ did }) {
       kind: 'cancel',
       row,
       run: async () => {
+        keepFocus(`sched-row-${row.id}`);
         try {
           await cancelScheduled(req, row.id);
           toast?.(
@@ -612,6 +621,7 @@ export default function ScheduledPage({ did }) {
               : 'Removed from the schedule.',
           );
         } catch (err) {
+          keepFocus(null);
           if (err?.code === 'NOT_CANCELLABLE' || err?.status === 409)
             list.reload();
           throw new Error(scheduleErrorMessage(err));
@@ -631,6 +641,7 @@ export default function ScheduledPage({ did }) {
             import('../schedule/scheduleSerialize.js'),
           ]);
         setRowBusy(row.id, true);
+        keepFocus(`sched-row-${row.id}`);
         try {
           const out = await postScheduledNow(row, {
             did,
@@ -656,6 +667,7 @@ export default function ScheduledPage({ did }) {
             ms: out.notes.length ? 9000 : 4200,
           });
         } catch (err) {
+          keepFocus(null);
           throw new Error(
             err?.code && err.message ? err.message : scheduleErrorMessage(err),
           );
@@ -670,6 +682,7 @@ export default function ScheduledPage({ did }) {
       kind: 'skip',
       row,
       run: async () => {
+        keepFocus(`sched-row-${row.id}`);
         try {
           const out = await skipScheduled(req, row.id);
           toast?.(
@@ -679,6 +692,7 @@ export default function ScheduledPage({ did }) {
             { ms: 7000 },
           );
         } catch (err) {
+          keepFocus(null);
           if (err?.status === 409) list.reload();
           throw new Error(scheduleErrorMessage(err));
         }
@@ -706,9 +720,11 @@ export default function ScheduledPage({ did }) {
 
   const acknowledge = async (row) => {
     setRowBusy(row.id, true);
+    keepFocus(`sched-row-${row.id}`);
     try {
       await acknowledgeTimerNote(req, row.id);
     } catch (err) {
+      keepFocus(null);
       setMessage({ tone: 'danger', text: scheduleErrorMessage(err) });
     } finally {
       setRowBusy(row.id, false);
@@ -816,6 +832,7 @@ export default function ScheduledPage({ did }) {
                 return (
                   <li
                     key={row.id}
+                    id={`sched-row-${row.id}`}
                     className="sched-row has-corner-menu"
                     aria-busy={busy[row.id] || undefined}
                   >

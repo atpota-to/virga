@@ -537,18 +537,19 @@ export default function LibraryPanel({
         {showDetail && (
           <section ref={detailRef} className="lib-detail" aria-label="Chosen item" aria-live="polite">
             {narrow && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="lib-back"
+              // A link action, as every verb in the page that isn't a
+              // row's one button is.
+              <button
+                type="button"
+                className="link-action lib-back"
                 onClick={() => {
                   setPhoneDetail(false);
                   setSelectedId(null);
                 }}
               >
-                <ArrowLeft size={15} aria-hidden="true" />
+                <ArrowLeft size={14} aria-hidden="true" />
                 Back to the list
-              </Button>
+              </button>
             )}
             {shown ? (
               <ItemDetail

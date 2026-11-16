@@ -40,7 +40,7 @@ import {
   timerRowModel,
   timerSections,
 } from './scheduleModel.js';
-import { ActionDialog } from './scheduleParts.jsx';
+import { ActionDialog, useFocusAfterRemoval } from './scheduleParts.jsx';
 import './hub.css';
 import './schedule.css';
 
@@ -59,7 +59,11 @@ function TimerRow({ row, now, busy, onCancel }) {
     <span className="muted">A post with no words of its own</span>
   );
   return (
-    <li className="sched-row sched-timer" aria-busy={busy || undefined}>
+    <li
+      id={`timer-row-${row.id}`}
+      className="sched-row sched-timer"
+      aria-busy={busy || undefined}
+    >
       <div className="hub-row-main sched-row-main">
         <p className="hub-row-text">
           {url ? (
@@ -320,12 +324,17 @@ export default function TimersPage({ did }) {
     timerUsage({ liveRows, scheduledRows: scheduled.data?.rows || [] }),
   );
   const full = fullTimerBuckets(scheduled.data?.limits);
+  const keepFocus = useFocusAfterRemoval(
+    '.sched-page .sched-timer[id]',
+    timers.data,
+  );
 
   const cancel = (row) =>
     setConfirm({
       row,
       run: async () => {
         setBusy((b) => ({ ...b, [row.id]: true }));
+        keepFocus(`timer-row-${row.id}`);
         try {
           await cancelTimer(req, row.id);
           toast?.(
@@ -334,6 +343,7 @@ export default function TimersPage({ did }) {
               : 'The timer is off. The post stays up.',
           );
         } catch (err) {
+          keepFocus(null);
           // The worker may hold it: what's on screen is reloaded, never patched.
           timers.reload();
           throw new Error(
