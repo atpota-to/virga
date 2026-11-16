@@ -7,7 +7,6 @@
 // Scheduling and timers are done by Virga's server, so those cards need a
 // long session and say so on an account without one.
 
-import Button from '../../components/Button.jsx';
 import { fmtInt } from '../../lib/locale.js';
 import { Link } from '../../lib/router.jsx';
 import { useComposer } from '../../posting/composer/ComposerContext.jsx';
@@ -23,6 +22,12 @@ import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { Stat, rowsFor } from './parts.jsx';
 
 const NEEDS = 'Needs a long session';
+
+/** "Tomorrow, 10:00 AM" as its day and its hour, for a row that leads with them. */
+function whenParts(label) {
+  const at = label.lastIndexOf(', ');
+  return at < 0 ? [label, ''] : [label.slice(0, at), label.slice(at + 2)];
+}
 
 /** The account's requester for Virga's server, or null on a browser session. */
 function useBackend(did) {
@@ -93,6 +98,11 @@ function StatTimers({ archive, def, title }) {
   );
 }
 
+/**
+ * The posts going out soonest, each led by its day and hour in the column
+ * the Scheduled page and the Posting overview give them (posting/pages/
+ * hub.css), with a queued one saying so after its hour.
+ */
 function PostingNext({ archive, size, def, rows = null }) {
   const n = rowsFor(size, rows);
   const { req, status, data, reload } = useScheduled(archive.did, n);
@@ -111,30 +121,35 @@ function PostingNext({ archive, size, def, rows = null }) {
   return (
     <>
       <ul className="hub-list">
-        {data.next.map((row) => (
-          <li key={row.id} className="hub-row">
-            <div className="hub-row-main">
-              <span className="hub-row-text">{scheduledSnippet(row)}</span>
-              <span className="hub-row-meta">
-                <time dateTime={row.scheduledFor}>{whenLabel(row.scheduledFor, now)}</time>
-                {row.queued && <span className="badge badge--outline">Queue</span>}
-                {row.status === 'publishing' && <span>Going out now</span>}
-              </span>
-            </div>
-          </li>
-        ))}
+        {data.next.map((row) => {
+          const [day, hour] = whenParts(whenLabel(row.scheduledFor, now));
+          const time = [hour, row.queued && 'Queue', row.status === 'publishing' && 'Going out now'].filter(Boolean);
+          return (
+            <li key={row.id} className="hub-row hub-row--when">
+              <time className="hub-when" dateTime={row.scheduledFor}>
+                <span className="hub-when-day">{day}</span>
+                {time.length > 0 && (
+                  <span className="hub-when-time meta">
+                    {time.map((part) => (
+                      <span key={part}>{part}</span>
+                    ))}
+                  </span>
+                )}
+              </time>
+              <div className="hub-row-main">
+                <p className="hub-row-text">{scheduledSnippet(row)}</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
-      {(data.waiting > data.next.length || data.failed > 0) && (
-        <p className="widget-foot">
-          {data.failed > 0 ? `${countPhrase(data.failed, 'post')} didn’t go out. ` : ''}
-          <Link to={def.href}>See all {fmtInt(data.waiting)}</Link>
-        </p>
-      )}
+      {data.failed > 0 && <p className="widget-foot">{countPhrase(data.failed, 'post')} didn’t go out.</p>}
     </>
   );
 }
 
-function PostingDrafts({ archive, size, def, rows = null }) {
+/** The newest drafts, each with Open, as the Posting overview lists them. */
+function PostingDrafts({ archive, size, rows = null }) {
   const did = archive.did;
   const n = rowsFor(size, rows);
   const composer = useComposer();
@@ -147,36 +162,34 @@ function PostingDrafts({ archive, size, def, rows = null }) {
     },
     { key: did, did, events: [DRAFTS_CHANGED_EVENT] },
   );
-  if (status === 'loading') return <RowSkeleton rows={Math.min(n, 3)} actions={1} />;
+  if (status === 'loading') return <RowSkeleton rows={Math.min(n, 3)} />;
   if (status === 'error') return <LoadError message="Your drafts couldn’t be read from Bluesky." onRetry={reload} />;
   if (!data.rows.length) return <p className="empty">No drafts. In the composer, Save draft keeps a post here until you’re ready.</p>;
-  const shown = data.rows.slice(0, n);
   return (
-    <>
-      <ul className="hub-list">
-        {shown.map((row) => (
-          <li key={row.id} className="hub-row">
-            <div className="hub-row-main">
-              <span className="hub-row-text">{row.text.trim() || <span className="muted">No text yet</span>}</span>
-              <span className="hub-row-meta">{draftMeta(row).slice(0, 3).join(' · ')}</span>
-            </div>
-            <div className="hub-row-actions">
-              <Button size="sm" onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}>
-                Open
-              </Button>
-            </div>
-          </li>
-        ))}
-      </ul>
-      {(data.rows.length > shown.length || data.more) && (
-        <p className="widget-foot">
-          <Link to={def.href}>
-            See all {fmtInt(data.rows.length)}
-            {data.more ? '+' : ''}
-          </Link>
-        </p>
-      )}
-    </>
+    <ul className="hub-list">
+      {data.rows.slice(0, n).map((row) => (
+        <li key={row.id} className="hub-row hub-row--open">
+          <div className="hub-row-main">
+            <p className="hub-row-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
+            <p className="meta">
+              {draftMeta(row)
+                .slice(0, 3)
+                .map((part) => (
+                  <span key={part}>{part}</span>
+                ))}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="link-action"
+            aria-label={`Open the draft “${row.text.trim().slice(0, 40) || 'with no text'}”`}
+            onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}
+          >
+            Open
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 

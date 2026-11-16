@@ -4,13 +4,15 @@
 // folded away under "How this is counted"; each can add its main chart to a
 // dashboard and export what it shows.
 //
-// Under a report's title is one line of its own: what narrows it (the kinds
-// of engagement, a direction) at the left, and what can be done with it
-// (Export, Post this chart, Add to dashboard) at the right, as words with a
-// line under them. Add to dashboard opens a strip in that place, which asks
-// which dashboard and how wide, rather than a menu that hangs over the page.
+// The header holds the period alone. What narrows a report (the kinds of
+// engagement, a direction) is the first row of its body, as small
+// segmented keys that scroll sideways when they don't fit. What can be done
+// with it (Export, Post this chart, Add to dashboard) sits on the line under
+// its lead chart, after Show as table, since that is what they act on; on
+// a phone they fold into a ⋯ at that line's end. Add to dashboard asks which
+// dashboard and how wide in a dialog.
 
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -20,7 +22,6 @@ import {
   ImageUp,
   LayoutDashboard,
   MessageCircle,
-  MessagesSquare,
   Quote,
   Repeat2,
 } from 'lucide-react';
@@ -29,9 +30,11 @@ import ChartTable from '../charts/ChartTable.jsx';
 import SeriesChart from '../charts/SeriesChart.jsx';
 import { fmtFigure, fmtRate, unitNoun } from '../charts/format.js';
 import Button from '../components/Button.jsx';
+import Dialog from '../components/Dialog.jsx';
 import Figures from '../components/Figures.jsx';
 import { FollowerCountTip } from '../components/InfoTip.jsx';
-import Segmented from '../components/Segmented.jsx';
+import { MoreMenu } from '../components/Menu.jsx';
+import Segmented, { useOverflowEdge } from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportPosts, exportRows } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -43,7 +46,8 @@ import { ENGAGEMENT_KINDS, EVENT_KINDS, bucketLabel, engagementOf } from '../lib
 import { Link, navigate, usePath } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PersonRow, useFollow, useWantActors } from '../people/people.jsx';
-import { PageHeader, PeriodPicker, periodPhrase, usePeriod, useToast } from '../shell/bits.jsx';
+import { PageHeader, PeriodPicker, periodPhrase, useIsNarrow, usePeriod, useToast } from '../shell/bits.jsx';
+import { kindsLine } from '../tools/interactionModel.js';
 import {
   GIVEN_NOUN,
   atmosphereModel,
@@ -61,7 +65,7 @@ import {
 import ChartNotes from './ChartNotes.jsx';
 import ContentReport from './ContentReport.jsx';
 import PostRow, { postText } from './PostRow.jsx';
-import { Card, HowCounted, ModeToggle, fig, unitOptions } from './parts.jsx';
+import { Card, HowCounted, ModeToggle, SyncEmpty, fig, unitOptions } from './parts.jsx';
 import { REPORTS, REPORT_BY_KEY } from './registry.js';
 import { useChartMarks } from './useAnnotations.js';
 import './reports.css';
@@ -108,17 +112,18 @@ export default function ReportPage({ reportKey }) {
   const [kind, setKind] = useState('all');
   const [relation, setRelation] = useState('all');
   const [share, setShare] = useState(null);
+  const phone = useIsNarrow('(max-width: 560px)');
 
   if (!report) {
     return (
-      <div className="page-body">
-        <div className="empty-page">
-          <h1 className="page-title">There’s no report called “{reportKey}”</h1>
-          <div>
+      <>
+        <PageHeader title={`There’s no report called “${reportKey}”`} />
+        <div className="page-body">
+          <div className="empty-block">
             <Button onClick={() => navigate('/reports')}>See every report</Button>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -126,11 +131,13 @@ export default function ReportPage({ reportKey }) {
   const kinds = reportKey === 'people' ? EVENT_KINDS : ENGAGEMENT_KINDS;
   const showKind = reportKey === 'engagement' || reportKey === 'people';
   const nowMs = archive.nowMs;
+  const canPost = widget && canShare(widget.type) && direction !== 'given';
 
-  const filters = (
+  const filters = showKind && (
     <>
       {reportKey === 'engagement' && (
         <Segmented
+          size="sm"
           label="Direction"
           value={direction}
           onChange={setDirection}
@@ -140,160 +147,195 @@ export default function ReportPage({ reportKey }) {
           ]}
         />
       )}
-      {showKind && (
-        <Segmented
-          className="kind-filter"
-          label="Engagement type"
-          value={kind}
-          onChange={setKind}
-          options={kinds.map((k) => ({ value: k.key, label: k.label, icon: KIND_ICON[k.key], title: k.label }))}
-        />
-      )}
+      {reportKey === 'engagement' && <span className="report-filters-rule" aria-hidden="true" />}
+      <Segmented
+        size="sm"
+        className="kind-filter"
+        label="Engagement type"
+        value={kind}
+        onChange={setKind}
+        options={kinds.map((k) => ({ value: k.key, label: k.label, icon: KIND_ICON[k.key], title: k.label }))}
+      />
       {reportKey === 'people' && archive.meta.following && (
-        <Segmented
-          label="Show people"
-          value={relation}
-          onChange={setRelation}
-          options={[
-            { value: 'all', label: 'Everyone' },
-            { value: 'not', label: 'Not following' },
-            { value: 'following', label: 'Following' },
-          ]}
-        />
+        <>
+          <span className="report-filters-rule" aria-hidden="true" />
+          <Segmented
+            size="sm"
+            label="Show people"
+            value={relation}
+            onChange={setRelation}
+            options={[
+              { value: 'all', label: 'Everyone' },
+              { value: 'not', label: 'Not following' },
+              { value: 'following', label: 'Following' },
+            ]}
+          />
+        </>
       )}
     </>
   );
 
-  const canPost = widget && canShare(widget.type) && direction !== 'given';
-  const hasFilters = showKind || reportKey === 'engagement';
+  // What can be done with the report's lead chart: words with a line under
+  // them on the line under it, or a ⋯ at that line's end on a phone.
+  const exportIt = () => exportReport(archive, reportKey, period, nowMs);
+  const postIt = () => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} });
+  const chartActions = phone ? (
+    <MoreMenu
+      label={reportKey === 'people' ? 'More for this report' : 'More for this chart'}
+      items={[
+        { key: 'export', label: 'Export', icon: Download, onSelect: exportIt },
+        canPost && { key: 'post', label: 'Post this chart as a picture', icon: ImageUp, onSelect: postIt },
+        widget && { key: 'add', label: 'Add to dashboard', icon: LayoutDashboard, onSelect: () => setAdding(true) },
+      ]}
+    />
+  ) : (
+    <>
+      <button type="button" className="link-action" onClick={exportIt}>
+        <Download size={14} aria-hidden="true" />
+        Export
+      </button>
+      {canPost && (
+        <button type="button" className="link-action" title={`${widget.name}, as a picture with its description`} onClick={postIt}>
+          <ImageUp size={14} aria-hidden="true" />
+          Post this chart
+        </button>
+      )}
+      {widget && (
+        <button type="button" className="link-action" aria-haspopup="dialog" onClick={() => setAdding(true)}>
+          <LayoutDashboard size={14} aria-hidden="true" />
+          Add to dashboard
+        </button>
+      )}
+    </>
+  );
+  const props = { archive, period, nowMs, actions: chartActions };
 
   return (
     <>
-      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={report.label} sub={report.desc} actions={<PeriodPicker />}>
-        <div className="report-bar">
-          {hasFilters && <div className="report-filters">{filters}</div>}
-          <div className="report-actions">
-            <button type="button" className="link-action" onClick={() => exportReport(archive, reportKey, period, nowMs)}>
-              <Download size={14} aria-hidden="true" />
-              Export
-            </button>
-            {canPost && (
-              <button
-                type="button"
-                className="link-action"
-                title={`${widget.name}, as a picture with its description`}
-                onClick={() => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} })}
-              >
-                <ImageUp size={14} aria-hidden="true" />
-                Post this chart
-              </button>
-            )}
-            {widget && (
-              <button type="button" className="link-action" aria-expanded={adding} aria-controls="add-to-dashboard" onClick={() => setAdding((v) => !v)}>
-                <LayoutDashboard size={14} aria-hidden="true" />
-                Add to dashboard
-              </button>
-            )}
-          </div>
-        </div>
-        {/* Keyed by the report, so a strip left open doesn't follow to the next one. */}
-        {widget && adding && <AddToDashboard key={reportKey} widget={widget} onClose={() => setAdding(false)} />}
-      </PageHeader>
+      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={report.label} sub={report.desc} actions={<PeriodPicker />} />
       <div className="page-body">
-        {reportKey === 'followers' && <FollowersReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'blocks' && <BlocksReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'posts' && <PostsReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'content' && <ContentReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'engagement' && direction !== 'given' && (
-          <EngagementReport archive={archive} period={period} nowMs={nowMs} kind={kind === 'mention' ? 'all' : kind} />
-        )}
-        {reportKey === 'engagement' && direction === 'given' && (
-          <GivenReport archive={archive} period={period} nowMs={nowMs} kind={kind === 'mention' ? 'all' : kind} />
-        )}
-        {reportKey === 'people' && (
-          <PeopleReport archive={archive} period={period} nowMs={nowMs} kind={kind} relation={archive.meta.following ? relation : 'all'} />
-        )}
-        {reportKey === 'atmosphere' && <AtmosphereReport archive={archive} period={period} nowMs={nowMs} />}
+        {/* People has no chart to put its actions under, so they end its
+            filter row instead. */}
+        {filters && <ReportFilters actions={reportKey === 'people' ? chartActions : null}>{filters}</ReportFilters>}
+        {reportKey === 'followers' && <FollowersReport {...props} />}
+        {reportKey === 'blocks' && <BlocksReport {...props} />}
+        {reportKey === 'posts' && <PostsReport {...props} />}
+        {reportKey === 'content' && <ContentReport {...props} />}
+        {reportKey === 'engagement' && direction !== 'given' && <EngagementReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
+        {reportKey === 'engagement' && direction === 'given' && <GivenReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
+        {reportKey === 'people' && <PeopleReport {...props} kind={kind} relation={archive.meta.following ? relation : 'all'} />}
+        {reportKey === 'atmosphere' && <AtmosphereReport {...props} />}
       </div>
+      {/* Keyed by the report, so it asks afresh which dashboard on the next one. */}
+      {widget && adding && <AddToDashboard key={reportKey} widget={widget} onClose={() => setAdding(false)} />}
       <ShareDialog share={share} archive={archive} period={period} nowMs={nowMs} onClose={() => setShare(null)} />
     </>
   );
 }
 
 /**
- * The strip Add to dashboard opens: which dashboard (or a new one), how wide,
- * and the button that does it. The first dashboard that doesn't have the
- * chart yet is the one picked to start with.
+ * The first row of a report that can be narrowed: its groups of small keys,
+ * a hairline between groups, in one row that scrolls sideways rather than
+ * wrap. Alone on its line it runs to the screen's edges; with `actions`
+ * after it (People's), it stops short of them and they keep the line's end.
+ */
+function ReportFilters({ actions = null, children }) {
+  const ref = useRef(null);
+  useOverflowEdge(ref);
+  const row = (
+    <div ref={ref} className={`report-filters scroll-row${actions ? '' : ' scroll-row--bleed'}`}>
+      {children}
+    </div>
+  );
+  if (!actions) return row;
+  return (
+    <div className="report-filter-bar">
+      {row}
+      <div className="report-filter-actions">{actions}</div>
+    </div>
+  );
+}
+
+/**
+ * Add to dashboard: which dashboard (or a new one), how wide, and the
+ * button that does it. The first dashboard that doesn't have the chart yet
+ * is the one picked to start with.
  */
 function AddToDashboard({ widget, onClose }) {
   const { dashboards, addDashboard, addWidget } = useDashboards();
   const toast = useToast();
+  const formId = useId();
   const has = (d) => d.widgets.some((w) => w.type === widget.type);
   const [target, setTarget] = useState(() => (dashboards.find((d) => !has(d)) || dashboards[0])?.id || 'new');
   const [size, setSize] = useState(widget.defaultSize);
   const chosen = dashboards.find((d) => d.id === target) || null;
   const targetName = chosen ? chosen.name : 'a new dashboard';
+  const choices = [...dashboards.map((d) => ({ id: d.id, label: d.name, desc: has(d) ? 'Already on it' : null })), { id: 'new', label: 'A new dashboard', desc: null }];
   return (
-    <form
-      id="add-to-dashboard"
-      className="add-strip"
-      aria-label={`Add ${widget.name} to a dashboard`}
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (chosen) {
-          addWidget(chosen.id, widget.type, null, size);
-          toast?.(`${widget.name} added to ${chosen.name}.`);
-        } else {
-          // The new dashboard is named for the chart it starts with.
-          const id = newId('d');
-          addDashboard({ name: widget.name, id });
-          addWidget(id, widget.type, null, size);
-          toast?.(
-            <>
-              {widget.name} is on a new dashboard. <Link to={`/dashboard/${id}`}>Open it</Link>
-            </>,
-          );
-        }
-        onClose();
-      }}
+    <Dialog
+      open
+      onClose={onClose}
+      // The footer names the dashboard, which can be too long for half a
+      // phone's width.
+      className="dialog--stack-actions"
+      title={`Add ${widget.name} to a dashboard`}
+      actions={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" form={formId}>
+            Add to {targetName}
+          </Button>
+        </>
+      }
     >
-      <fieldset className="add-strip-where">
-        <legend className="add-strip-title">Add {widget.name} to</legend>
-        {dashboards.map((d) => (
-          <label key={d.id} className="check">
-            <input type="radio" name="add-to" checked={target === d.id} onChange={() => setTarget(d.id)} />
-            <span>
-              {d.name}
-              {has(d) && <span className="muted">, already on it</span>}
-            </span>
-          </label>
-        ))}
-        <label className="check">
-          <input type="radio" name="add-to" checked={target === 'new'} onChange={() => setTarget('new')} />
-          A new dashboard
-        </label>
-      </fieldset>
-      {widget.sizes.length > 1 && (
-        <span className="add-strip-size">
-          <span id="add-strip-size">Size</span>
-          <span className="size-keys" role="group" aria-labelledby="add-strip-size">
-            {widget.sizes.map((k) => (
-              <button key={k} type="button" className="size-key" aria-pressed={size === k} title={SIZES[k].name} aria-label={SIZES[k].name} onClick={() => setSize(k)}>
-                {SIZES[k].label}
-              </button>
-            ))}
-          </span>
-        </span>
-      )}
-      <span className="add-strip-actions">
-        <Button variant="text" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button variant="primary" type="submit">
-          Add to {targetName}
-        </Button>
-      </span>
-    </form>
+      <form
+        id={formId}
+        className="dialog-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (chosen) {
+            addWidget(chosen.id, widget.type, null, size);
+            toast?.(`${widget.name} added to ${chosen.name}.`);
+          } else {
+            // The new dashboard is named for the chart it starts with.
+            const id = newId('d');
+            addDashboard({ name: widget.name, id });
+            addWidget(id, widget.type, null, size);
+            toast?.(
+              <>
+                {widget.name} is on a new dashboard. <Link to={`/dashboard/${id}`}>Open it</Link>
+              </>,
+            );
+          }
+          onClose();
+        }}
+      >
+        <fieldset className="field choice-list">
+          <legend className="field-label">Dashboard</legend>
+          {choices.map((c) => (
+            <label key={c.id} className="choice" data-on={target === c.id || undefined}>
+              <input type="radio" name="add-to" checked={target === c.id} onChange={() => setTarget(c.id)} data-autofocus={target === c.id || undefined} />
+              <span>
+                <span className="choice-label">{c.label}</span>
+                {c.desc && <span className="choice-desc">{c.desc}</span>}
+              </span>
+            </label>
+          ))}
+        </fieldset>
+        {widget.sizes.length > 1 && (
+          <div className="field">
+            <span className="field-label">Size</span>
+            <Segmented
+              size="sm"
+              label="Size"
+              value={size}
+              onChange={setSize}
+              options={widget.sizes.map((k) => ({ value: k, label: SIZES[k].label, title: SIZES[k].name, ariaLabel: SIZES[k].name }))}
+            />
+          </div>
+        )}
+      </form>
+    </Dialog>
   );
 }
 
@@ -331,9 +373,9 @@ export function ReportsIndex() {
             const h = headline[r.key];
             return (
               <li key={r.key}>
-                <Link to={`/reports/${r.key}`} className="report-tile">
+                <Link to={`/reports/${r.key}`} className="report-tile" title={r.desc}>
                   <span className="report-tile-name">
-                    <Icon size={15} aria-hidden="true" />
+                    <Icon size={14} aria-hidden="true" />
                     {r.label}
                   </span>
                   {h && (
@@ -358,7 +400,7 @@ function contentHeadline(m) {
   const withTypical = m.formats.filter((f) => f.typical != null);
   if (withTypical.length > 1) {
     const best = withTypical.reduce((a, b) => (b.typical > a.typical ? b : a));
-    return [fmtRate(best.typical), `a typical ${best.label.toLowerCase()} post earns`];
+    return [fmtRate(best.typical), `a typical ${best.label.toLowerCase().replace(/ post$/, '')} post earns`];
   }
   return [m.typical == null ? '—' : fmtRate(m.typical), 'a typical post earns'];
 }
@@ -397,7 +439,7 @@ function exportReport(archive, key, period, nowMs) {
 /* Followers                                                            */
 /* ================================================================== */
 
-function FollowersReport({ archive, period, nowMs }) {
+function FollowersReport({ archive, period, nowMs, actions }) {
   const [mode, setMode] = useState('cumulative');
   const unitPick = mode !== 'cumulative' && mode !== 'together' ? mode : null;
   const m = followersModel(archive, period, nowMs, { unit: unitPick });
@@ -411,7 +453,7 @@ function FollowersReport({ archive, period, nowMs }) {
   const marks = useChartMarks(archive, series, m.unit, { milestones: true });
 
   if (!archive.followers.length) {
-    return <p className="card empty">Your followers haven’t been read yet. Run a sync to gather the list.</p>;
+    return <SyncEmpty archive={archive}>Your followers haven’t been read yet. Run a sync to gather the list.</SyncEmpty>;
   }
 
   const postsByDay = new Map();
@@ -482,6 +524,7 @@ function FollowersReport({ archive, period, nowMs }) {
           unit={m.unit}
           valueHead={cumulative ? 'Followers' : 'New followers'}
           secondaryHead={together ? 'Blocks' : null}
+          actions={actions}
         />
       </Card>
       <div className="report-split">
@@ -489,7 +532,7 @@ function FollowersReport({ archive, period, nowMs }) {
           {newest.length ? (
             <ul className="widget-rows report-rows">
               {newest.map((f) => (
-                <PersonRow key={f.did} archive={archive} did={f.did} meta={`followed ${relativeTime(f.atMs)}`} follow={follow} followLabel="Follow back" />
+                <PersonRow key={f.did} archive={archive} did={f.did} meta={`followed ${relativeTime(f.atMs)}`} follow={follow} followLabel="Follow back" rel={false} />
               ))}
             </ul>
           ) : (
@@ -547,12 +590,12 @@ function FollowersReport({ archive, period, nowMs }) {
 /* Blocks                                                               */
 /* ================================================================== */
 
-function BlocksReport({ archive, period, nowMs }) {
+function BlocksReport({ archive, period, nowMs, actions }) {
   const [mode, setMode] = useState('cumulative');
   const unitPick = !['cumulative', 'stacked', 'together'].includes(mode) ? mode : null;
   const m = blocksModel(archive, period, nowMs, { unit: unitPick });
   if (!archive.meta.blocks) {
-    return <p className="card empty">Blocks haven’t been read yet. Run a sync to build this timeline.</p>;
+    return <SyncEmpty archive={archive}>Blocks haven’t been read yet. Run a sync to build this timeline.</SyncEmpty>;
   }
   const together = mode === 'together';
   const stacked = mode === 'stacked';
@@ -607,6 +650,7 @@ function BlocksReport({ archive, period, nowMs }) {
           unit={m.unit}
           valueHead={together ? 'Followers' : stacked ? 'Direct' : cumulative ? 'Block reach' : 'New blocks'}
           secondaryHead={secondary?.label || null}
+          actions={actions}
         />
       </Card>
       <HowCounted>
@@ -630,11 +674,11 @@ function BlocksReport({ archive, period, nowMs }) {
 /* Posts                                                                */
 /* ================================================================== */
 
-function PostsReport({ archive, period, nowMs }) {
+function PostsReport({ archive, period, nowMs, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const m = postsModel(archive, period, nowMs, { unit: unitPick });
   const marks = useChartMarks(archive, m.counts, m.unit);
-  if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
+  if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   const pct = (n) => (m.count ? Math.round((n / m.count) * 100) : 0);
   return (
     <>
@@ -658,7 +702,7 @@ function PostsReport({ archive, period, nowMs }) {
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, 'Posts')} />}
         >
           <SeriesChart series={m.counts} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`Posts per ${m.unit} over ${periodPhrase(period)}`} />
-          <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" />
+          <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" actions={actions} />
         </Card>
         <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString(activeLocale())} in the window`}>
           <BarList
@@ -689,13 +733,13 @@ function PostsReport({ archive, period, nowMs }) {
 /* Engagement                                                           */
 /* ================================================================== */
 
-function EngagementReport({ archive, period, nowMs, kind }) {
+function EngagementReport({ archive, period, nowMs, kind, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const [rateUnitPick, setRateUnitPick] = useState(null);
   const m = engagementModel(archive, period, nowMs, { kind, unit: unitPick, rateUnit: rateUnitPick });
   const marks = useChartMarks(archive, m.series, m.unit);
   const rateMarks = useChartMarks(archive, m.rate, m.rateUnit);
-  if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
+  if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label;
   const lower = (head || '').toLowerCase();
   return (
@@ -725,7 +769,7 @@ function EngagementReport({ archive, period, nowMs, kind }) {
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, head)} />}
         >
           <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`${head} on posts made each ${m.unit}, over ${periodPhrase(period)}`} />
-          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} />
+          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} actions={actions} />
         </Card>
         {kind === 'all' && (
           <Card title="By type" sub={`Of ${m.total.toLocaleString(activeLocale())} in the window`}>
@@ -775,11 +819,11 @@ function EngagementReport({ archive, period, nowMs, kind }) {
   );
 }
 
-function GivenReport({ archive, period, nowMs, kind }) {
+function GivenReport({ archive, period, nowMs, kind, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const m = givenModel(archive, period, nowMs, { kind, unit: unitPick });
   if (!archive.posts.length && !archive.outbound.length) {
-    return <p className="card empty">Nothing given on record yet. Run a sync to build the archive.</p>;
+    return <SyncEmpty archive={archive}>Nothing given on record yet. Run a sync to build the archive.</SyncEmpty>;
   }
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label || 'Engagement';
   const coverageMs = archive.meta.outbound?.coverageMs || 0;
@@ -799,7 +843,7 @@ function GivenReport({ archive, period, nowMs, kind }) {
       <div className="report-split report-split--wide">
         <Card title={`${head} given per ${unitNoun(m.unit)}`} sub="Counted on the day you gave it" tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, `${head} given`)} />}>
           <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`${head} given per ${m.unit} over ${periodPhrase(period)}`} />
-          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={`${head} given`} />
+          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={`${head} given`} actions={actions} />
         </Card>
         {kind === 'all' && (
           <Card title="By type">
@@ -855,13 +899,11 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
     },
   };
 
-  const detail = (r) =>
-    Object.entries(r.byKind)
-      .sort((a, b) => b[1] - a[1])
-      .map(([k, n]) => `${n} ${k}${n === 1 ? '' : 's'}`)
-      .join(', ');
+  const detail = (r) => kindsLine(r.byKind, { byCount: true });
 
-  const list = (rows, ranked, side, empty) => (
+  // `note` is a word about the whole list, which sits in its foot, so both
+  // headings are one line and their rules line up side by side.
+  const list = (rows, ranked, side, empty, note = null) => (
     <>
       {rows.length ? (
         <ul className="widget-rows report-rows">
@@ -872,13 +914,20 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
       ) : (
         <p className="empty">{empty}</p>
       )}
-      {ranked.length > rows.length && (
+      {(ranked.length > rows.length || note) && (
         <div className="card-foot">
-          <Button size="sm" variant="ghost" onClick={() => setLimits((l) => ({ ...l, [side]: l[side] + PEOPLE_PAGE }))}>
-            Show {Math.min(PEOPLE_PAGE, ranked.length - rows.length)} more
-          </Button>
-          <span className="num">
-            {rows.length.toLocaleString(activeLocale())} of {ranked.length.toLocaleString(activeLocale())}
+          {ranked.length > rows.length && (
+            <Button size="sm" variant="ghost" onClick={() => setLimits((l) => ({ ...l, [side]: l[side] + PEOPLE_PAGE }))}>
+              Show {Math.min(PEOPLE_PAGE, ranked.length - rows.length)} more
+            </Button>
+          )}
+          <span className="meta report-foot-meta">
+            {note && <span>{note}</span>}
+            {ranked.length > rows.length && (
+              <span className="num">
+                {rows.length.toLocaleString(activeLocale())} of {ranked.length.toLocaleString(activeLocale())}
+              </span>
+            )}
           </span>
         </div>
       )}
@@ -893,26 +942,17 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
   return (
     <>
       <div className="report-split">
-        <Card
-          title={
-            <>
-              <MessagesSquare size={16} aria-hidden="true" /> They engage with you
-            </>
-          }
-          sub={archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow` : null}
-          className="card--flush"
-        >
-          {list(inTop, inRanked, 'in', relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.')}
+        <Card title="They engage with you" className="card--flush">
+          {list(
+            inTop,
+            inRanked,
+            'in',
+            relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.',
+            archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow` : null,
+          )}
           {inCoverage && <p className="card-caption">{inCoverage}</p>}
         </Card>
-        <Card
-          title={
-            <>
-              <Heart size={16} aria-hidden="true" /> You engage with them
-            </>
-          }
-          className="card--flush"
-        >
+        <Card title="You engage with them" className="card--flush">
           {kind === 'mention'
             ? <p className="empty">Mentions are counted inbound only.</p>
             : list(outTop, outRanked, 'out', relation === 'not' && m.outbound.length ? 'You already follow everyone you engaged with in this window.' : 'You haven’t engaged with anyone in this window.')}
@@ -937,26 +977,16 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
 /* Atmosphere                                                           */
 /* ================================================================== */
 
-function AtmosphereReport({ archive, period, nowMs }) {
+function AtmosphereReport({ archive, period, nowMs, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const [more, setMore] = useState(false);
   const m = atmosphereModel(archive, period, nowMs, { unit: unitPick });
   if (!m) {
     return (
-      <div className="card empty-page">
-        <h2 className="card-title">The whole repo, not just Bluesky</h2>
-        <p className="card-sub">
-          A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got
-          written when. {archive.sync ? 'Syncing now…' : ''}
-        </p>
-        {!archive.sync && (
-          <div>
-            <Button variant="primary" onClick={() => archive.runSync('incremental')}>
-              Sync now
-            </Button>
-          </div>
-        )}
-      </div>
+      <SyncEmpty archive={archive}>
+        A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got written
+        when.
+      </SyncEmpty>
     );
   }
   const shown = more ? m.ranked : m.ranked.slice(0, 16);
@@ -973,7 +1003,7 @@ function AtmosphereReport({ archive, period, nowMs }) {
       />
       <Card title={`Records written per ${unitNoun(m.unit)}`} sub="Every app, every collection" tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, 'Records')} />}>
         <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`Records written to the repo per ${m.unit} over ${periodPhrase(period)}`} />
-        <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead="Records" />
+        <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead="Records" actions={actions} />
       </Card>
       <Card title="By collection" sub="Which apps write to your repo, and how much">
         {shown.length ? (

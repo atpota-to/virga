@@ -42,7 +42,7 @@ export default function NewDashboardDialog({ open, onClose, onCreate }) {
       >
         <label className="field">
           <span className="field-label">Name</span>
-          <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Weekly check-in" maxLength={60} autoFocus />
+          <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Weekly check-in" maxLength={60} data-autofocus />
         </label>
         <fieldset className="field choice-list">
           <legend className="field-label">Start from</legend>

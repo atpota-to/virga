@@ -80,8 +80,9 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
   return (
     <Button
       size={size}
-      // Follow is an outline in ink; once done it is the word alone
-      // (dashboards.css .follow-button, and the kit's .is-on).
+      // Follow is the kit's small outline; once done it is the word alone
+      // (the kit's .is-on), in a column of one width on a wide screen
+      // (dashboards.css .follow-button).
       on={on}
       disabled={busy}
       aria-busy={busy || undefined}
@@ -100,7 +101,8 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
  * One person in a list. `meta` is the line under the name (after the
  * handle); `value` sits at the right before the button (a count). After it
  * comes a small link to the Interaction lookup for this person, unless
- * `history` is false. The handle is left out when it is already the name
+ * `history` is false; a phone leaves it out, for the room the name needs
+ * (dashboards.css). The handle is left out when it is already the name
  * (someone with no display name), and "follows you" when `rel` is false: a
  * list where everyone follows you (your newest followers, the follow-back
  * queue) would say it on every row.
@@ -153,9 +155,7 @@ export function PersonRow({
       {history && did !== archive.did && (
         <Link
           to={lookupHref(did)}
-          // A row that already carries a button of its own gives the link up
-          // on a phone, where there isn't room for both and a name.
-          className={buttonClass({ variant: 'ghost', size: 'sm', icon: true, className: `person-history${extra ? ' person-history--spare' : ''}` })}
+          className={buttonClass({ variant: 'ghost', size: 'sm', icon: true, className: 'person-history' })}
           title={`See your history with ${name}`}
           aria-label={`See your history with ${name}`}
         >

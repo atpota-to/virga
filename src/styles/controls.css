@@ -721,8 +721,11 @@
   margin-top: var(--space-3);
 }
 
+/* A ⋯ at the line's end (a phone's) is let out by the room beside its
+   dots, so they end on the column's edge, as a row's corner ⋯ does. */
 .chart-foot > .menu:last-child:has(> .btn--icon) {
   margin-left: auto;
+  margin-right: -7px;
 }
 
 /* ---- figures ------------------------------------------------------ */
@@ -1843,6 +1846,10 @@ input[type='radio'] {
 
   .chart-foot .link-action::after {
     inset: 0 -6px;
+  }
+
+  .chart-foot > .menu:last-child:has(> .btn--icon) {
+    margin-right: -14px;
   }
 
   .info-tip-button {

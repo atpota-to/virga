@@ -802,14 +802,15 @@
   line-height: 1.1;
 }
 
-/* A 36px icon centred on the title's first line (44px on touch, below),
-   reaching out above and below it without making the line any taller. */
+/* A medium icon (--control-h: 36px, 32 in Compact; 44px on touch, below)
+   centred on the title's first line, reaching out above and below it
+   without making the line any taller. */
 .page-title-tools {
   display: flex;
   flex: none;
   align-items: center;
   gap: 4px;
-  margin-block: calc((var(--text-title) * 1.1 - 36px) / 2);
+  margin-block: calc((var(--text-title) * 1.1 - var(--control-h)) / 2);
 }
 
 .page-sub {
@@ -854,6 +855,14 @@
      the same. */
   .page-actions {
     margin-top: calc((var(--text-title) * 1.1 - 44px) / 2);
+  }
+}
+
+/* A row with no picker in it holds buttons (Customize's Done), 40px on
+   touch, so it is drawn up by half of that instead. */
+@media (pointer: coarse) and (min-width: 561px) {
+  .page-actions:not(:has(> .segmented)) {
+    margin-top: calc((var(--text-title) * 1.1 - 40px) / 2);
   }
 }
 

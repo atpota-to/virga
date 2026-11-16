@@ -1,81 +1,73 @@
-/* Reports: the line under the title (what narrows a report, and what can be
-   done with it), the strip that adds a chart to a dashboard, the bands of a
-   report, the index, and the notes. A report is a column of sections with
-   no boxes: figures under their rules, charts under their titles, lists
-   under a rule in ink. */
+/* Reports: the row that narrows a report, the bands of a report, the
+   index, and the notes. A report is a column of sections with no boxes:
+   figures under their rules, charts under their titles, lists under a rule
+   in ink. What can be done with a report sits on the line under its lead
+   chart (the kit's .chart-foot), and Add to dashboard is a dialog. */
 
-/* ---- under the title -------------------------------------------------- */
+/* ---- the row that narrows a report ------------------------------------- */
 
-.report-bar,
-.add-strip {
-  width: calc(100% - var(--page-pad) * 2);
-  max-width: var(--page-max, var(--content-max));
-  margin: 0 auto;
-}
-
-.report-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px 32px;
-  margin-top: 18px;
-}
-
+/* The first row of Engagement and People: small segmented keys, one row
+   that scrolls sideways rather than wrap, with a hairline between groups.
+   The next band is 16px under it, not a band's gap, since it narrows
+   that band rather than being one. */
 .report-filters {
+  align-items: center;
+}
+
+/* Drawn as an edge rather than a fill, so forced colours keep it. */
+.report-filters-rule {
+  align-self: center;
+  width: 0;
+  height: 16px;
+  margin: 0 16px;
+  border-left: 1px solid var(--line);
+}
+
+.page-body > .report-filters,
+.page-body > .report-filter-bar {
+  margin-bottom: calc(16px - var(--section-gap));
+}
+
+/* People's: the filters, then what can be done with the report at the
+   line's end, since it has no chart to put them under. Where both don't
+   fit, the words go to a line of their own under the filters rather than
+   leave a group of filters out of sight: sideways scrolling is a phone's
+   habit, not a mouse's. On a phone they are a ⋯, which keeps the line. */
+.report-filter-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 32px;
+  gap: 12px 32px;
   min-width: 0;
 }
 
-/* Export, Post this chart, Add to dashboard: words with a line under them,
-   at the far end of the line from the filters. */
-.report-actions {
+.report-filter-bar > .report-filters {
+  flex: 0 1 auto;
+}
+
+.report-filter-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 26px;
+  flex: none;
+  align-items: center;
+  gap: 24px;
   margin-left: auto;
 }
 
-.link-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: var(--control-h);
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: none;
-  color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-  white-space: nowrap;
-  cursor: pointer;
-}
+@media (max-width: 560px) {
+  .report-filter-bar {
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
 
-.link-action svg {
-  flex: none;
-}
-
-.link-action[aria-expanded='true'] {
-  font-weight: 600;
-  text-decoration-thickness: 2px;
-}
-
-@media (hover: hover) {
-  .link-action:hover {
-    text-decoration-thickness: 2px;
+  /* The ⋯'s dots end on the column's edge, as under a chart. */
+  .report-filter-actions > .menu:has(> .btn--icon) {
+    margin-right: -7px;
   }
 }
 
-@media (pointer: coarse) {
-  .link-action {
-    min-height: 44px;
+@media (pointer: coarse) and (max-width: 560px) {
+  .report-filter-actions > .menu:has(> .btn--icon) {
+    margin-right: -14px;
   }
 }
 
@@ -92,80 +84,6 @@
 
   .kind-filter .segmented-key.has-icon {
     min-width: 32px;
-  }
-
-  .report-actions {
-    margin-left: 0;
-  }
-}
-
-/* ---- the strip that adds a chart to a dashboard ------------------------ */
-
-/* One of the few things on a page with an edge: it has been opened, so it
-   is ringed in the accent like anything else that is chosen. */
-.add-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 26px;
-  margin-top: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  background: var(--accent-tint);
-  box-shadow: 0 0 0 0.5px var(--accent);
-}
-
-.add-strip-where {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 22px;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.add-strip-title {
-  float: left;
-  margin-right: 22px;
-  padding: 0;
-  font-weight: 600;
-}
-
-.add-strip-size {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--ink-2);
-}
-
-.add-strip-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-@media (max-width: 560px) {
-  .add-strip-where {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .add-strip-title {
-    float: none;
-    margin: 0 0 4px;
-  }
-
-  .add-strip .check {
-    min-height: 36px;
-  }
-
-  .add-strip-actions {
-    width: 100%;
-    justify-content: flex-end;
   }
 }
 
@@ -191,28 +109,18 @@
   margin: 0;
 }
 
-.card .card-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* A section with nothing in it yet is a line of words, not a box. */
-.card.empty {
-  padding: 0;
-}
-
-.fig-note {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 6px;
+/* People's list foot: what the list leaves out, then "12 of 64" at the
+   right, where every foot has it; on a narrow screen the words wrap toward
+   that edge too. */
+.report-foot-meta {
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .fig-unit {
   margin-left: 3px;
   color: var(--muted);
-  font-size: 0.45em;
+  font-size: 0.4em;
   font-weight: 500;
   letter-spacing: 0;
 }
@@ -274,8 +182,11 @@
 
 /* ---- the index --------------------------------------------------------- */
 
-/* Each report by the number it leads with, under a rule of its own: the
-   same figure as on a dashboard, as the way in. */
+/* Each report by the number it leads with, as a figure: a rule, its name,
+   the number and a note, the same anatomy and size as a dashboard's and a
+   report's own figures. The number is the way in. Two to a row on a phone,
+   where the description goes (it stays as the link's tooltip), and four on
+   a wide screen. */
 .report-index {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
@@ -285,10 +196,23 @@
   list-style: none;
 }
 
+@media (min-width: 1000px) {
+  .report-index {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .report-index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--grid-gap) 20px;
+  }
+}
+
 .report-tile {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   height: 100%;
   padding: 16px 0 0;
   border-top: 2px solid var(--line);
@@ -312,9 +236,10 @@
 .report-tile-name {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: var(--text-md);
-  font-weight: 600;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .report-tile-name svg {
@@ -329,20 +254,35 @@
 }
 
 .report-tile-value {
-  font-size: clamp(2.25rem, 1.6rem + 1.6vw, 3rem);
+  font-size: var(--figure-size);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1;
 }
 
 .report-tile-note {
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-}
-
-.report-tile-desc {
   color: var(--muted);
   font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+/* A little further from the note than the note is from its number, so
+   the note reads with the figure and this as what the report is about. */
+.report-tile-desc {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+@media (max-width: 560px) {
+  .report-tile {
+    padding-top: 12px;
+  }
+
+  .report-tile-desc {
+    display: none;
+  }
 }
 
 /* ---- chart notes --------------------------------------------------- */
@@ -396,10 +336,6 @@
 }
 
 @media (max-width: 760px) {
-  .chart-notes-form > .btn {
-    width: 100%;
-  }
-
   .chart-notes-list li {
     grid-template-columns: 84px minmax(0, 1fr) auto;
   }

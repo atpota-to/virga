@@ -12,6 +12,14 @@ export function rowsFor(size, rows) {
   return rows || ROWS[size] || ROWS.m;
 }
 
+// A list of bars is shorter a row than a list of names, so it shows more.
+const MORE_ROWS = { 'repo-collections': 3 };
+
+/** How many rows a card of this type shows, as rowsFor, for a list that shows more. */
+export function rowsShown(type, size, rows) {
+  return rows || (ROWS[size] || ROWS.m) + (MORE_ROWS[type] || 0);
+}
+
 /**
  * A figure: its label, the number set large, and a line under it (the change
  * against the window before, and a note). A card wide enough to have the

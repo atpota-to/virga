@@ -41,7 +41,7 @@ export default function ChartNotes({ did }) {
             onChange={(e) => setLabel(e.target.value)}
           />
         </label>
-        <Button type="submit" variant="primary" disabled={!ready}>
+        <Button type="submit" disabled={!ready}>
           <Plus size={15} aria-hidden="true" />
           Add note
         </Button>
