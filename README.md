@@ -52,6 +52,20 @@ their own tests on PGlite. That the five hosts offered for a new account answer,
 they take a request for their make-an-account page (their
 `/.well-known/oauth-authorization-server`, read that day).
 
+Changed over to the Quiet sky look on 2026-11-16 (The look, below), and checked in the
+harness by screenshot. Every page (41 addresses: the dashboards and customizing one, each
+report, each posting page, each tool, each settings section, the legal pages, the front
+page and an address that names nothing) at 360, 390, 820, 1180, 1440 and 1920 wide by
+day, at 390 and 1440 at night, at 1180 at dusk and at 820 at dawn, with no console errors
+and no page that scrolls sideways. The composer, its menus and dialogs and the adviser,
+the sign-in a step at a time, the agreement screen, the account menu, the command
+palette, a build under way and the first run, at phone and desktop sizes. High contrast
+by day and at night, compact density, the folded sidebar and the other five accents were
+looked at on the dashboard and on a few pages of each part, not on every page. Not
+looked at: forced colours beyond one dashboard, a real on-screen keyboard over the
+phone's composer, dragging a card or a report on a touch screen, a queue with more than
+one post in it, the live sky on real graphics hardware, and any browser but Chromium.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
 Vercel, the adviser against the real AI gateway, an account actually made at one of the
@@ -102,8 +116,8 @@ the address it was started from.
 
 ## What it shows
 
-Virga is a workspace with five parts, in the sidebar on a desk and in the tab bar on a
-phone.
+Virga is a workspace with five parts. On a desk they are the sidebar; on a phone four of
+them are the bar along the bottom, and Settings is behind the account.
 
 **Dashboards** are sets of report cards you arrange yourself. Three come to start with
 (Overview, Growth, Content); make more, rename, duplicate, reorder or delete them.

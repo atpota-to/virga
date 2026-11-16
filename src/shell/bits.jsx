@@ -47,10 +47,11 @@ export function useSkyTaps() {
 
 /**
  * The top of a page, set straight on the sky: where it sits (crumbs, shown
- * where the sidebar isn't there to say it), its title, a line under it, and
- * the page's own controls at the right.
+ * where the sidebar isn't there to say it), its title, a line under it, what
+ * the page can touch (`badges`, under that line, so they never crowd the
+ * controls), and the page's own controls at the right.
  */
-export function PageHeader({ crumbs = null, title, sub = null, actions = null, children = null }) {
+export function PageHeader({ crumbs = null, title, sub = null, badges = null, actions = null, children = null }) {
   return (
     <header className="page-header">
       <div className="page-header-in">
@@ -67,6 +68,7 @@ export function PageHeader({ crumbs = null, title, sub = null, actions = null, c
           )}
           <h1 className="page-title">{title}</h1>
           {sub && <p className="page-sub">{sub}</p>}
+          {badges && <div className="page-badges">{badges}</div>}
         </div>
         {actions && <div className="page-actions">{actions}</div>}
       </div>

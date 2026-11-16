@@ -633,6 +633,14 @@
   font-size: var(--text-base);
 }
 
+/* What the page can touch, in a word or two each, under its line. */
+.page-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
 .page-actions {
   display: flex;
   flex-wrap: wrap;

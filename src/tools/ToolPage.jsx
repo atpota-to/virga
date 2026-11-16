@@ -44,12 +44,8 @@ export function ToolHeader({ tool, actions = null, sub = null, children = null }
       crumbs={[{ label: 'Tools', to: '/tools' }]}
       title={tool.name}
       sub={sub || tool.desc}
-      actions={
-        <>
-          <AccessBadge access={tool.access} />
-          {actions}
-        </>
-      }
+      badges={<AccessBadge access={tool.access} />}
+      actions={actions}
     >
       {children}
     </PageHeader>
