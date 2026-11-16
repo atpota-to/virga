@@ -1,5 +1,4 @@
 import { useId, useMemo, useRef, useState } from 'react';
-import { Check } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { initialAnswers, missingAnswers, templateQuestions } from '../templates/postTemplates.js';
 import { itemFromTemplate, previewFor } from './model.js';
@@ -14,6 +13,8 @@ const isPlainEnter = (e) =>
  * A radio group of buttons with one tab stop: the arrow keys move and
  * choose, as native radios do. Choosing the chosen option again clears it
  * when `allowClear` is set, so an optional question can be left blank again.
+ * The answers are drawn as chips, the chosen one filled, as every value
+ * picked in a form is.
  */
 export function ChoiceGroup({ id, options, value, onChange, labelledBy, describedBy, required = false, allowClear = false }) {
   const ref = useRef(null);
@@ -25,7 +26,7 @@ export function ChoiceGroup({ id, options, value, onChange, labelledBy, describe
       ref={ref}
       id={id}
       role="radiogroup"
-      className="lib-choices"
+      className="lib-answers"
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
       aria-required={required || undefined}
@@ -39,7 +40,7 @@ export function ChoiceGroup({ id, options, value, onChange, labelledBy, describe
             role="radio"
             aria-checked={on}
             tabIndex={i === stop ? 0 : -1}
-            className="lib-choice"
+            className="chip"
             onClick={() => onChange(allowClear && on ? '' : option)}
             onKeyDown={(e) => {
               const n = options.length;
@@ -54,8 +55,7 @@ export function ChoiceGroup({ id, options, value, onChange, labelledBy, describe
               focusAt(next);
             }}
           >
-            <span className="lib-choice-label">{option}</span>
-            <Check size={15} aria-hidden="true" className="lib-choice-check" />
+            {option}
           </button>
         );
       })}

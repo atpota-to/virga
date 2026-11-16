@@ -403,12 +403,8 @@ describe('limits lines', () => {
       },
       caps: { scheduledPosts: 50, timers: 200 },
     });
-    expect(scheduledLimitsLine(flat)).toBe(
-      'No limit on scheduled posts, beyond the 50 that can wait at a time.',
-    );
-    expect(timerLimitsLine(flat)).toBe(
-      'No limit on timers, beyond the 200 that can count down at a time.',
-    );
+    expect(scheduledLimitsLine(flat)).toBe('Up to 50 can wait at a time.');
+    expect(timerLimitsLine(flat)).toBe('Up to 200 can count down at a time.');
     const member = normalizeLimits({
       policy: 'membership',
       isMember: true,

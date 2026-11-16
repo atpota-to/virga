@@ -1,15 +1,7 @@
 import { useId, useMemo, useState } from 'react';
-import {
-  CalendarClock,
-  Copy,
-  Lightbulb,
-  ListRestart,
-  Plus,
-  RotateCcw,
-  X,
-} from 'lucide-react';
+import { Copy, Plus, RotateCcw, Trash2, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
-import Menu from '../../components/Menu.jsx';
+import { MoreMenu } from '../../components/Menu.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useArchive, isBuilt } from '../../archive/ArchiveContext.jsx';
@@ -47,10 +39,8 @@ import {
   addSlot,
   clearDay,
   copyDay,
-  formatInZone,
   isDefaultWeek,
   moveToZone,
-  nextOpenSlots,
   offScheduleRows,
   removeSlot,
   slotLabel,
@@ -85,7 +75,11 @@ const LONG_DAY = {
   sun: 'Sundays',
 };
 
-/** One weekday's times, with a way to add one, copy them, or clear the day. */
+/**
+ * One weekday's times as a band: its name, its times as tokens with a + to
+ * add one after them, and a ⋯ to copy them or clear the day, offered only
+ * when there is something to copy or clear.
+ */
 function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
   const [adding, setAdding] = useState(false);
   const [time, setTime] = useState('09:00');
@@ -106,6 +100,7 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
     ...orderedWeekdays().filter((d) => d.key !== day.key).map((d) => ({
       key: d.key,
       label: `Copy to ${d.label}`,
+      icon: Copy,
       onSelect: () => onCopy([d.key]),
     })),
   ];
@@ -114,25 +109,38 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
       <h3 className="sched-day-name" id={`${id}-name`}>
         {day.label}
       </h3>
-      <div className="sched-day-times">
+      <div className="sched-day-times tokens">
         {times.length === 0 && !adding && (
-          <span className="field-hint">No posting times</span>
+          <span className="sched-day-none">No posting times</span>
         )}
-        <ul className="sched-slot-list" aria-labelledby={`${id}-name`}>
+        <ul className="sched-day-list" aria-labelledby={`${id}-name`}>
           {times.map((t) => (
-            <li key={t} className="sched-slot">
-              <span>{slotLabel(t)}</span>
+            <li key={t} className="token">
+              {slotLabel(t)}
               <button
                 type="button"
-                className="sched-slot-x"
+                className="token-remove"
                 aria-label={`Remove ${slotLabel(t)} on ${LONG_DAY[day.key]}`}
                 onClick={() => onRemove(t)}
               >
-                <X size={13} aria-hidden="true" />
+                <X size={14} aria-hidden="true" />
               </button>
             </li>
           ))}
         </ul>
+        {!adding && (
+          <Button
+            size="sm"
+            variant="ghost"
+            icon
+            className="sched-day-add"
+            onClick={() => setAdding(true)}
+            aria-label={`Add a time on ${LONG_DAY[day.key]}`}
+            title={`Add a time on ${LONG_DAY[day.key]}`}
+          >
+            <Plus size={16} aria-hidden="true" />
+          </Button>
+        )}
         {adding && (
           <form
             className="sched-add"
@@ -169,47 +177,23 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
           </form>
         )}
       </div>
-      <div className="sched-day-actions">
-        {!adding && (
-          <Button
-            size="sm"
-            onClick={() => setAdding(true)}
-            aria-label={`Add a time on ${LONG_DAY[day.key]}`}
-          >
-            <Plus size={14} aria-hidden="true" />
-            <span className="sched-hide-narrow">Add a time</span>
-          </Button>
-        )}
-        <Menu
+      {times.length > 0 && (
+        <MoreMenu
+          className="sched-day-menu"
           label={`More for ${LONG_DAY[day.key]}`}
-          icon
-          size="sm"
-          items={
-            times.length
-              ? [
-                  ...copyItems,
-                  { separator: true, key: 'sep' },
-                  {
-                    key: 'clear',
-                    label: 'Clear this day',
-                    tone: 'danger',
-                    icon: X,
-                    onSelect: onClear,
-                  },
-                ]
-              : [
-                  {
-                    key: 'clear',
-                    label: 'Clear this day',
-                    icon: X,
-                    onSelect: onClear,
-                  },
-                ]
-          }
-        >
-          <Copy size={15} aria-hidden="true" />
-        </Menu>
-      </div>
+          items={[
+            ...copyItems,
+            { separator: true, key: 'sep' },
+            {
+              key: 'clear',
+              label: 'Clear this day',
+              tone: 'danger',
+              icon: Trash2,
+              onSelect: onClear,
+            },
+          ]}
+        />
+      )}
     </li>
   );
 }
@@ -233,10 +217,10 @@ function useSuggestions(did, schedule, enabled) {
 
 /**
  * The weekly schedule: the times each week a queued post goes out, the zone
- * they're read in, what the next open times are, and suggestions from the
- * account's best times. Every change is saved as it's made, in this browser.
- * Posts already queued keep their times until the queue is moved onto the
- * new ones.
+ * they're read in, the week ahead as a grid of what's open, and suggestions
+ * from the account's best times. Every change is saved as it's made, in this
+ * browser. Posts already queued keep their times until the queue is moved
+ * onto the new ones.
  */
 export default function WeeklySchedulePage({ did }) {
   const toast = useToast();
@@ -263,7 +247,6 @@ export default function WeeklySchedulePage({ did }) {
     (r) => r.queued && (r.status === 'pending' || r.status === 'publishing'),
   );
   const summary = summarizeQueue(rows);
-  const open = nextOpenSlots(schedule, queued, now, 5);
   const off = offScheduleRows(schedule, rows, now);
   const suggestions = useSuggestions(did, schedule, settings.suggestBestTimes);
 
@@ -324,14 +307,14 @@ export default function WeeklySchedulePage({ did }) {
 
   return (
     <>
+      {/* The page is reached from Scheduled posts, so that is the way back
+          up; there is nothing to press in the header. */}
       <PostingHeader
         page="schedule"
-        actions={
-          <Link to={postingPath('scheduled')} className="btn">
-            <CalendarClock size={15} aria-hidden="true" />
-            Scheduled posts
-          </Link>
-        }
+        crumbs={[
+          { label: 'Posting', to: postingPath('hub') },
+          { label: 'Scheduled posts', to: postingPath('scheduled') },
+        ]}
       />
       <div className="page-body sched-page">
         {error && (
@@ -360,57 +343,51 @@ export default function WeeklySchedulePage({ did }) {
             className="sched-suggest"
             aria-labelledby="sched-suggest-title"
           >
-            <span className="sched-suggest-icon" aria-hidden="true">
-              <Lightbulb size={17} />
-            </span>
-            <div className="sched-suggest-text">
-              <h2 className="card-title" id="sched-suggest-title">
-                Times your posts have done well
-              </h2>
-              <p className="card-sub">
-                From your posts over the last year, in {zoneLabel(device)} time:{' '}
-                {[...suggestions.items]
-                  .sort(
-                    (a, b) =>
-                      orderedWeekdays().findIndex((d) => d.key === a.dayKey) -
-                        orderedWeekdays().findIndex((d) => d.key === b.dayKey) ||
-                      a.time.localeCompare(b.time),
+            <h2 className="card-title" id="sched-suggest-title">
+              Times your posts have done well
+            </h2>
+            <p className="card-sub">
+              From your posts over the last year, in {zoneLabel(device)} time:{' '}
+              {[...suggestions.items]
+                .sort(
+                  (a, b) =>
+                    orderedWeekdays().findIndex((d) => d.key === a.dayKey) -
+                      orderedWeekdays().findIndex((d) => d.key === b.dayKey) ||
+                    a.time.localeCompare(b.time),
+                )
+                .map(
+                  (s) =>
+                    `${WEEKDAYS.find((d) => d.key === s.dayKey)?.label} ${slotLabel(s.time)}`,
+                )
+                .join(', ')}
+              .
+              {shippedOrEmpty
+                ? ' They can replace the starting times.'
+                : ' They can be added beside your own.'}
+            </p>
+            <div className="sched-suggest-actions">
+              <Button
+                size="sm"
+                onClick={() =>
+                  save(
+                    shippedOrEmpty
+                      ? scheduleFromSuggestions(suggestions.items, device)
+                      : mergeSuggestionsIntoSchedule(
+                          schedule,
+                          suggestions.missing,
+                        ),
                   )
-                  .map(
-                    (s) =>
-                      `${WEEKDAYS.find((d) => d.key === s.dayKey)?.label} ${slotLabel(s.time)}`,
-                  )
-                  .join(', ')}
-                .
-                {shippedOrEmpty
-                  ? ' They can replace the starting times.'
-                  : ' They can be added beside your own.'}
-              </p>
-              <div className="sched-suggest-actions">
-                <Button
-                  size="sm"
-                  variant="primary"
-                  onClick={() =>
-                    save(
-                      shippedOrEmpty
-                        ? scheduleFromSuggestions(suggestions.items, device)
-                        : mergeSuggestionsIntoSchedule(
-                            schedule,
-                            suggestions.missing,
-                          ),
-                    )
-                  }
-                >
-                  {shippedOrEmpty ? 'Use these times' : 'Add these times'}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => update({ suggestBestTimes: false })}
-                >
-                  Stop suggesting
-                </Button>
-              </div>
+                }
+              >
+                {shippedOrEmpty ? 'Use these times' : 'Add these times'}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => update({ suggestBestTimes: false })}
+              >
+                Stop suggesting
+              </Button>
             </div>
           </section>
         )}
@@ -463,119 +440,94 @@ export default function WeeklySchedulePage({ did }) {
             <div className="card-foot sched-week-foot">
               <span>Saved as you go, in this browser.</span>
               {!isDefaultWeek(schedule) && (
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <button
+                  type="button"
+                  className="link-action"
                   onClick={() => setResetting(true)}
                 >
                   <RotateCcw size={14} aria-hidden="true" />
                   Start again from the default
-                </Button>
+                </button>
               )}
             </div>
           </section>
 
+          {/* Its heading has a line under the title, as the week's has, so
+              the two rules in ink line up side by side. */}
           <div className="sched-week-side">
-            <section className="card" aria-labelledby="sched-next-title">
-              <div className="sched-side-head">
-                <h2 className="card-title" id="sched-next-title">
-                  Next open times
-                </h2>
-                <p className="card-sub">
-                  Where the next posts added to the queue go
-                  {list.status === 'ready'
-                    ? ', stepping round what’s already queued.'
-                    : '.'}
-                </p>
-              </div>
-              {empty ? (
-                <p className="empty">
-                  No posting times yet. Add a time to a day and the next ones
-                  show here.
-                </p>
-              ) : list.status === 'loading' ? (
-                <ul className="sched-next" aria-hidden="true">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <li key={i}>
-                      <span
-                        className="hub-bone"
-                        style={{ width: `${[70, 60, 66, 54, 62][i]}%` }}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              ) : open.length ? (
-                <ol className="sched-next">
-                  {open.map((slot) => (
-                    <li key={slot.getTime()}>{formatInZone(slot, tz, now)}</li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="empty">No open times in the next 90 days.</p>
-              )}
-              {list.status === 'error' && (
-                <p className="field-hint">
-                  Couldn’t read what’s already queued, so these may be taken.
-                </p>
-              )}
-              {list.status === 'ready' && (
-                <p className="card-caption">
-                  {summary.queuedCount === 1
-                    ? '1 post is'
-                    : `${summary.queuedCount} posts are`}{' '}
-                  in the queue
-                  {summary.scheduledCount
-                    ? `, and ${summary.scheduledCount} at a set time`
-                    : ''}
-                  . <Link to={postingPath('scheduled')}>See them</Link>
-                </p>
-              )}
-            </section>
-
-            {off.length > 0 && (
-              <section className="card" aria-labelledby="sched-off-title">
-                <div className="sched-side-head">
-                  <h2 className="card-title" id="sched-off-title">
-                    {off.length === 1
-                      ? '1 queued post is off these times'
-                      : `${off.length} queued posts are off these times`}
+            <section
+              className="card card--flush"
+              aria-labelledby="sched-preview-title"
+            >
+              <div className="card-head">
+                <div>
+                  <h2 className="card-title" id="sched-preview-title">
+                    The week ahead
                   </h2>
                   <p className="card-sub">
-                    Posts already in the queue keep the times they were given.
-                    Move them onto the week’s times, in the order they’re in now.
+                    Open times over the next seven days.
                   </p>
                 </div>
-                <div className="sched-side-actions">
-                  <Button
-                    size="sm"
-                    onClick={repack}
-                    disabled={repacking || empty}
-                    aria-busy={repacking || undefined}
-                  >
-                    <ListRestart size={14} aria-hidden="true" />
-                    {repacking ? 'Moving…' : 'Move them onto these times'}
-                  </Button>
-                </div>
-              </section>
-            )}
-
-            <section className="card" aria-labelledby="sched-preview-title">
-              <div className="sched-side-head">
-                <h2 className="card-title" id="sched-preview-title">
-                  The week ahead
-                </h2>
               </div>
               {empty ? (
-                <p className="empty">No posting times yet.</p>
+                <div className="empty-block">
+                  <p className="empty">No posting times yet.</p>
+                </div>
               ) : (
                 <QueueCalendar
                   schedule={schedule}
                   rows={queued.filter((r) => r.status === 'pending')}
                   now={now}
                   occupancy={list.status === 'ready'}
+                  lead={
+                    list.status === 'ready' ? (
+                      <>
+                        {summary.queuedCount === 1
+                          ? '1 post is'
+                          : `${summary.queuedCount} posts are`}{' '}
+                        in the queue
+                        {summary.scheduledCount
+                          ? `, and ${summary.scheduledCount} at a set time`
+                          : ''}
+                        . <Link to={postingPath('scheduled')}>See them</Link>.
+                      </>
+                    ) : null
+                  }
                 />
               )}
+              {list.status === 'error' && (
+                <p className="field-hint">
+                  Couldn’t read what’s already queued, so these may be taken.
+                </p>
+              )}
             </section>
+
+            {off.length > 0 && (
+              <section className="card" aria-labelledby="sched-off-title">
+                <div className="card-head">
+                  <div>
+                    <h2 className="card-title" id="sched-off-title">
+                      {off.length === 1
+                        ? '1 queued post is off these times'
+                        : `${off.length} queued posts are off these times`}
+                    </h2>
+                    <p className="card-sub">
+                      Posts already in the queue keep the times they were
+                      given. Move them onto the week’s times, in the order
+                      they’re in now.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={repack}
+                  disabled={repacking || empty}
+                  aria-busy={repacking || undefined}
+                >
+                  {repacking ? 'Moving…' : 'Move them onto these times'}
+                </Button>
+              </section>
+            )}
 
             {!settings.suggestBestTimes && (
               <div className="sched-suggest-off">

@@ -462,6 +462,14 @@ describe('templateShelf', () => {
     ]);
   });
 
+  it('names what is offered here when the other kind is set apart under a heading', () => {
+    const templates = [t('a', { name: 'Alpha', use: 'post' }), t('c', { name: 'Gamma', use: 'reply' })];
+    const forPosts = templateShelf(templates, { context, embeds: new Map(), replying: false });
+    expect(forPosts.sections.map((s) => s.heading)).toEqual(['For new posts', 'For replies']);
+    const forReplies = templateShelf(templates, { context, embeds: new Map(), replying: true });
+    expect(forReplies.sections.map((s) => s.heading)).toEqual(['For replies', 'For new posts']);
+  });
+
   it('gives each template the view of what it quotes', () => {
     const quoted = postUri(SELF, 'q');
     const embeds = new Map([

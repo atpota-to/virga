@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarClock, FileText, Send, SquarePen, Trash2 } from 'lucide-react';
+import { CalendarClock, MoreHorizontal, Send, SquarePen, Trash2 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
+import Menu from '../../components/Menu.jsx';
 import { navigate } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
@@ -196,18 +197,26 @@ export default function DraftsPage({ did, id = null }) {
   };
 
   const scopeError = list.status === 'error' && isMissingScopeError(list.error);
+  const empty = list.status === 'ready' && !rows.length;
+
+  // What a draft can do beyond Open: post it, schedule it, and deleting it
+  // last. A step that can't be taken just now isn't offered; the line under
+  // the draft says why.
+  const menuItems = (row, { postBlock, scheduleBlock }) => {
+    const items = [
+      !postBlock && { key: 'post', label: 'Post now', icon: Send, onSelect: () => postNow(row) },
+      !scheduleBlock && { key: 'schedule', label: 'Schedule…', icon: CalendarClock, onSelect: () => !busy && setScheduling(row) },
+    ].filter(Boolean);
+    if (caps.canPost) {
+      if (items.length) items.push({ separator: true });
+      items.push({ key: 'delete', label: 'Delete draft', icon: Trash2, tone: 'danger', onSelect: () => !busy && setDeleting(row) });
+    }
+    return items;
+  };
 
   return (
     <>
-      <PostingHeader
-        page="drafts"
-        actions={
-          <Button variant="primary" onClick={() => composer.open({ asDid: did })}>
-            <SquarePen size={15} aria-hidden="true" />
-            New post
-          </Button>
-        }
-      />
+      <PostingHeader page="drafts" />
       <div className="page-body hub">
         <PostingPermissionNotice did={did} force={scopeError || Boolean(notice?.scope)} />
         {notice && !notice.scope && (
@@ -216,112 +225,101 @@ export default function DraftsPage({ did, id = null }) {
           </p>
         )}
 
-        <section className="card card--flush hub-card" aria-labelledby="drafts-title">
-          <div className="card-head">
-            <div>
-              <h2 id="drafts-title" className="card-title">
-                {list.status === 'ready' && rows.length
-                  ? `${rows.length.toLocaleString(activeLocale())}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
-                  : 'Drafts'}
-              </h2>
-              <p className="card-sub">The latest edit first. Pictures stay on the device that saved them.</p>
-            </div>
+        {empty ? (
+          // Nothing to list, so no heading over nothing: the sentence and
+          // the way to start one.
+          <div className="empty-block">
+            <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
+            <Button onClick={() => composer.open({ asDid: did })}>
+              <SquarePen size={15} aria-hidden="true" />
+              New post
+            </Button>
           </div>
-
-          {list.status === 'loading' ? (
-            <RowSkeleton rows={4} actions={3} />
-          ) : list.status === 'error' ? (
-            scopeError ? (
-              <p className="empty">Your drafts can’t be read until Virga has permission.</p>
-            ) : (
-              <div className="hub-pad">
-                <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
+        ) : (
+          <section className="card card--flush hub-card" aria-labelledby="drafts-title">
+            <div className="card-head">
+              <div>
+                <h2 id="drafts-title" className="card-title">
+                  {list.status === 'ready' && rows.length
+                    ? `${rows.length.toLocaleString(activeLocale())}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
+                    : 'Drafts'}
+                </h2>
+                <p className="card-sub">The latest edit first. Pictures stay on the device that saved them.</p>
               </div>
-            )
-          ) : rows.length ? (
-            <ul className="hub-list hub-list--rows">
-              {rows.map((row) => {
-                const postBlock = draftPostBlock(row, { canPost: caps.canPost });
-                const scheduleBlock = draftScheduleBlock(row, { canSchedule: caps.canSchedule });
-                const disabled = Boolean(busy);
-                const working = busy === row.id;
-                return (
-                  <li key={row.id} className="hub-row draft-row" aria-busy={working || undefined}>
-                    <div className="hub-row-main">
-                      <p className="hub-row-text draft-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
-                      <p className="hub-row-meta">{draftMeta(row).join(' · ')}</p>
-                      {row.mediaElsewhere && (
-                        <p className="hub-row-note">Its pictures were saved on another device. Open it to attach them again before posting.</p>
-                      )}
-                    </div>
-                    <div className="hub-row-actions draft-actions">
-                      <Button size="sm" disabled={disabled} onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}>
-                        <FileText size={14} aria-hidden="true" />
-                        Open
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={disabled || Boolean(postBlock)}
-                        title={postBlock || 'Post it now, as it is'}
-                        aria-busy={working || undefined}
-                        onClick={() => postNow(row)}
-                      >
-                        <Send size={14} aria-hidden="true" />
-                        {working ? 'Working…' : 'Post now'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={disabled || Boolean(scheduleBlock)}
-                        title={scheduleBlock || 'Choose when it goes out'}
-                        onClick={() => setScheduling(row)}
-                      >
-                        <CalendarClock size={14} aria-hidden="true" />
-                        Schedule
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        icon
-                        className="hub-danger"
-                        disabled={disabled || !caps.canPost}
-                        aria-label={`Delete the draft “${row.text.trim().slice(0, 40) || 'with no text'}”`}
-                        title="Delete this draft"
-                        onClick={() => setDeleting(row)}
-                      >
-                        <Trash2 size={15} aria-hidden="true" />
-                      </Button>
-                    </div>
-                    {(postBlock || scheduleBlock) && !row.mediaElsewhere && (
-                      <p className="hub-row-why">{[postBlock, scheduleBlock && caps.canSchedule ? scheduleBlock : ''].filter(Boolean).join(' ')}</p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="hub-empty">
-              <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
-              <Button onClick={() => composer.open({ asDid: did })}>
-                <SquarePen size={15} aria-hidden="true" />
-                Write a post
-              </Button>
             </div>
-          )}
 
-          {list.status === 'ready' && list.cursor && (
-            <div className="hub-more-row">
-              <Button size="sm" onClick={list.loadMore} disabled={list.more} aria-busy={list.more || undefined}>
-                {list.more ? 'Loading…' : 'Load more drafts'}
-              </Button>
-            </div>
-          )}
-          {list.status === 'ready' && rows.length >= MANY_DRAFTS && (
-            <p className="card-caption">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
-          )}
-          {!caps.canSchedule && rows.length > 0 && (
-            <p className="card-caption">Scheduling a draft needs a long session. Settings › Account offers one.</p>
-          )}
-        </section>
+            {list.status === 'loading' ? (
+              <RowSkeleton rows={4} actions={1} />
+            ) : list.status === 'error' ? (
+              scopeError ? (
+                <p className="empty">Your drafts can’t be read until Virga has permission.</p>
+              ) : (
+                <div className="hub-pad">
+                  <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
+                </div>
+              )
+            ) : (
+              <ul className="hub-list hub-list--rows">
+                {rows.map((row) => {
+                  const postBlock = draftPostBlock(row, { canPost: caps.canPost });
+                  const scheduleBlock = draftScheduleBlock(row, { canSchedule: caps.canSchedule });
+                  const working = busy === row.id;
+                  const items = menuItems(row, { postBlock, scheduleBlock });
+                  const why = [postBlock, scheduleBlock && caps.canSchedule ? scheduleBlock : ''].filter(Boolean).join(' ');
+                  const name = row.text.trim().slice(0, 40) || 'with no text';
+                  return (
+                    <li key={row.id} className="hub-row draft-row has-corner-menu" aria-busy={working || undefined}>
+                      <div className="hub-row-main">
+                        <p className="hub-row-text draft-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
+                        <p className="meta">
+                          {draftMeta(row).map((part) => (
+                            <span key={part}>{part}</span>
+                          ))}
+                        </p>
+                        {row.mediaElsewhere ? (
+                          <p className="hub-row-note">Its pictures were saved on another device. Open it to attach them again before posting.</p>
+                        ) : (
+                          why && <p className="hub-row-why">{why}</p>
+                        )}
+                      </div>
+                      <div className="row-actions">
+                        <Button
+                          size="sm"
+                          disabled={Boolean(busy)}
+                          aria-label={`Open the draft “${name}”`}
+                          onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}
+                        >
+                          Open
+                        </Button>
+                        {items.length > 0 && (
+                          // The kit's ⋯ (MoreMenu), with a spinner in place of
+                          // the dots while the draft goes out.
+                          <Menu label={`More for the draft “${name}”`} icon variant="ghost" className="row-menu" items={items}>
+                            {working ? <span className="hub-spinner" aria-hidden="true" /> : <MoreHorizontal size={16} aria-hidden="true" />}
+                          </Menu>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {list.status === 'ready' && list.cursor && (
+              <div className="card-foot">
+                <Button size="sm" variant="ghost" onClick={list.loadMore} disabled={list.more} aria-busy={list.more || undefined}>
+                  {list.more ? 'Loading…' : 'Show more'}
+                </Button>
+              </div>
+            )}
+            {list.status === 'ready' && rows.length >= MANY_DRAFTS && (
+              <p className="card-caption">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
+            )}
+            {!caps.canSchedule && rows.length > 0 && (
+              <p className="card-caption">Scheduling a draft needs a long session. Settings › Account offers one.</p>
+            )}
+          </section>
+        )}
       </div>
 
       <ConfirmDialog

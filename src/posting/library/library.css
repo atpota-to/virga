@@ -93,8 +93,26 @@
   right: 4px;
 }
 
-.lib-panel[data-mode='page'] .lib-search {
-  max-width: 520px;
+/* On the page the search sits over the shelves and the list it searches,
+   as wide as both, with the chosen item beside them from the top. */
+.lib-panel[data-mode='page'] .lib-top {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
+
+.lib-panel[data-mode='page'] .lib-rail {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.lib-panel[data-mode='page'] .lib-list {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.lib-panel[data-mode='page'] .lib-detail {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .lib-body {
@@ -107,7 +125,7 @@
 
 .lib-panel[data-mode='page'] .lib-body {
   grid-template-columns: 168px minmax(0, 1fr) minmax(0, 360px);
-  gap: 40px;
+  gap: 20px 40px;
   align-items: start;
 }
 
@@ -266,36 +284,50 @@
    under a heading of their own rather than faded (fading takes their small
    text under 4.5:1 in both themes). */
 .lib-section-head {
-  padding: 18px 0 8px 12px;
+  padding: 18px 0 8px;
   border-bottom: 1px solid var(--line);
   color: var(--ink-2);
   font-size: var(--text-sm);
   font-weight: 600;
 }
 
-/* A thing on the shelf: a row between hairlines. The one the keys are on
-   has a tint; the chosen one has a rule in the accent down its side. */
+/* A thing on the shelf: a row between hairlines, its words on the list's
+   own edge. The chosen one has a rule in the accent just outside that
+   edge. The one the arrow keys are on has a tint, only while the list has
+   the keys (and let out to the rule, so the words don't touch its side);
+   a row has no fill under the pointer, as no row in the page does. */
 .lib-row {
+  position: relative;
   display: flex;
   gap: 12px;
-  padding: 11px 8px 11px 12px;
+  padding: 11px 8px 11px 0;
   border-bottom: 1px solid var(--line);
-  box-shadow: inset 2px 0 0 transparent;
   cursor: pointer;
 }
 
-@media (hover: hover) {
-  .lib-row:hover {
-    background: var(--tint);
-  }
-}
-
-.lib-row[data-active] {
+/* The search box drives the list too (the arrow keys move from it), so
+   it counts as the list having the keys. */
+.lib-list:focus-within .lib-row[data-active],
+.lib-panel:has(.lib-search > .input:focus) .lib-row[data-active] {
   background: var(--tint);
+  box-shadow: -10px 0 0 var(--tint);
 }
 
-.lib-row[aria-selected='true'] {
-  box-shadow: inset 2px 0 0 var(--accent);
+.lib-row[aria-selected='true']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -12px;
+  width: 2px;
+  background: var(--accent);
+}
+
+/* In the dialog the list scrolls by itself, which would clip that rule:
+   its box is let out to make room for it. */
+.lib-panel[data-mode='dialog'] .lib-list {
+  margin-left: -12px;
+  padding-left: 12px;
 }
 
 .lib-row[aria-selected='true'] .lib-row-title {
@@ -365,9 +397,9 @@
   padding: 0;
 }
 
-.lib-more {
-  display: flex;
-  padding: 16px 0 8px;
+/* Show more, under the list, a little off the dialog's foot. */
+.lib-list > .card-foot {
+  padding-bottom: 8px;
 }
 
 /* ---- loading ---------------------------------------------------------- */
@@ -381,7 +413,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 14px 12px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -519,8 +551,24 @@
   gap: 8px;
 }
 
-/* A few answers to pick between: rows between hairlines, the picked one in
-   ink with a tick, and a rule in the accent down its side. */
+/* A question's answers, as chips to pick from (the kit's .chip, pressed
+   when chosen). A long answer wraps inside its chip rather than running
+   out of the column. */
+.lib-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lib-answers > .chip {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* The template editor's list of posts to quote: rows between hairlines,
+   the picked one in ink with a rule in the accent down its side. */
 .lib-choices {
   display: flex;
   flex-direction: column;
@@ -565,15 +613,6 @@
 .lib-choice-label {
   min-width: 0;
   overflow-wrap: anywhere;
-}
-
-.lib-choice-check {
-  flex: none;
-  visibility: hidden;
-}
-
-.lib-choice[aria-checked='true'] .lib-choice-check {
-  visibility: visible;
 }
 
 /* The post as it will read: a hairline round it, as round any post shown
@@ -845,18 +884,14 @@
     gap: 16px 28px;
   }
 
+  /* The row itself scrolls (the list is a .scroll-row), fading at the
+     edge that has more behind it. */
   .lib-rail,
   .lib-panel[data-mode='page'] .lib-rail {
     position: static;
     grid-column: 1 / -1;
     max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-  }
-
-  .lib-rail::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
   }
 
   .lib-rail ul {
@@ -881,6 +916,31 @@
   .lib-shelf-label {
     overflow: visible;
   }
+
+  /* On the page: the search, the shelves under it, then the list and the
+     chosen item side by side. */
+  .lib-panel[data-mode='page'] .lib-body {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .lib-panel[data-mode='page'] .lib-top,
+  .lib-panel[data-mode='page'] .lib-rail {
+    grid-column: 1 / -1;
+  }
+
+  .lib-panel[data-mode='page'] .lib-rail {
+    grid-row: 2;
+  }
+
+  .lib-panel[data-mode='page'] .lib-list {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .lib-panel[data-mode='page'] .lib-detail {
+    grid-column: 2;
+    grid-row: 3;
+  }
 }
 
 /* Narrower still: the list and the chosen item take half each. */
@@ -901,10 +961,6 @@
     gap: 14px;
   }
 
-  .lib-panel[data-mode='page'] .lib-search {
-    max-width: none;
-  }
-
   .lib-panel[data-mode='page'] .lib-rail,
   .lib-panel[data-mode='page'] .lib-detail {
     position: static;
@@ -912,29 +968,29 @@
   }
 
   /* The shelves as a row to scroll: words, the one you are on in ink with
-     a line under it, as any row of tabs here. */
+     a line under it, as any row of tabs here. It runs out to the screen's
+     edges (the sheet's, in the dialog), its first shelf on the page's. */
   .lib-rail {
     flex: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    margin: 0 calc(var(--page-pad) * -1);
-    padding: 0 var(--page-pad);
-    scrollbar-width: none;
-  }
-
-  .lib-dialog .lib-rail {
-    margin: 0 -16px;
-    padding: 0 16px;
-  }
-
-  .lib-rail::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
   }
 
   .lib-rail ul {
     flex-direction: row;
     gap: 22px;
+    width: calc(100% + var(--page-pad) * 2);
+    max-width: none;
+    margin: 0 calc(var(--page-pad) * -1);
+    padding: 0 var(--page-pad);
     border-left: 0;
+    scroll-padding-inline: var(--page-pad);
+  }
+
+  .lib-dialog .lib-rail ul {
+    width: calc(100% + 32px);
+    margin: 0 -16px;
+    padding: 0 16px;
+    scroll-padding-inline: 16px;
   }
 
   .lib-shelf {
@@ -980,13 +1036,9 @@
     background: var(--bg);
   }
 
-  .lib-questions-actions > .btn {
+  /* The one thing to do here, under the thumb, the width of the column. */
+  .lib-questions-actions > .btn--primary {
     flex: 1;
-    min-height: 44px;
-  }
-
-  .tpl-actions > .btn {
-    min-height: 44px;
   }
 }
 

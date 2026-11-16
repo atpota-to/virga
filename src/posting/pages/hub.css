@@ -1,83 +1,28 @@
-/* The posting overview and the Drafts, Posted, Templates and Library pages.
-   Tokens only. Nothing here is a box: a page is its figures under rules
-   and its lists under a rule in ink, hairlines between the rows, the rows
-   on the section's own edges. On a phone the rows stack their actions
-   under the words, at thumb size, and the overview's columns become one. */
+/* The posting overview and the Drafts, Posted and Templates pages. Tokens
+   only. Nothing here is a box: a page is its lists, each under a rule in
+   ink, hairlines between the rows, the rows on the section's own edges. A
+   row shows at most one small outline and a ⋯ (the kit's .row-actions); on
+   a phone the ⋯ goes to the row's corner and the outline under its words
+   (.has-corner-menu), so the words keep the width. */
 
 /* ---- the overview ----------------------------------------------------- */
 
-/* Four figures, each under a rule of its own and each a way in to its
-   page. The number is as big as its column allows (the cell is a
-   container), as in the kit's .figures. */
-.hub-figures {
-  container-type: inline-size;
-}
-
-.hub-tiles {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0 var(--space-6);
-}
-
-/* Not room for four with their labels on one line (a phone, or a desk with
-   the sidebar open on a small screen): two by two. */
-@container (max-width: 760px) {
-  .hub-tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.hub-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-  padding: 16px 0 20px;
-  border-top: 2px solid var(--line);
-  color: var(--ink);
+/* The posting pages as a row of words under the header, where there is no
+   sidebar to list them: the kit's Segmented look, on links. A page's count
+   follows its name, quieter, and doesn't take the pressed key's weight. */
+.posting-nav .segmented-key {
   text-decoration: none;
-  container-type: inline-size;
-  transition: border-color 0.12s ease;
 }
 
-@media (hover: hover) {
-  .hub-tile:hover {
-    border-top-color: var(--ink);
-    text-decoration: none;
-  }
-}
-
-.hub-tile-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-.hub-tile-label > svg {
-  flex: none;
-}
-
-.hub-tile-value {
-  font-size: clamp(1.75rem, 24cqi, 3.75rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1;
-}
-
-.hub-tile-note {
+.posting-nav-count {
   color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: 1.35;
+  font-weight: 400;
 }
 
 .hub-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--grid-gap) calc(var(--grid-gap-x) + 16px);
+  gap: var(--grid-gap) var(--grid-gap-x);
   align-items: start;
 }
 
@@ -88,91 +33,10 @@
   min-width: 0;
 }
 
-/* A list's heading: its name, a line about it, and the way to the whole
-   of it at the right, as quiet words. */
-.hub-card .card-head {
-  flex-wrap: nowrap;
-  align-items: baseline;
-}
-
-.hub-card-link {
-  flex: none;
-  color: var(--muted);
-  font-size: var(--text-sm);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.hub-card-link:hover {
-  color: var(--ink);
-  text-decoration: underline;
-}
-
-.hub-card-note {
-  margin-top: 14px;
-}
-
 /* A section of the overview that holds something other than a list (the
    long-session notice) keeps the list's air under the rule. */
 .hub-card > .needs-backend {
   padding-top: 16px;
-}
-
-/* The rest of Posting, as rows to press. */
-.hub-more {
-  display: flex;
-  flex-direction: column;
-}
-
-.hub-more-title {
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--rule);
-}
-
-.hub-more-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.hub-more-link > svg {
-  flex: none;
-  color: var(--ink-2);
-}
-
-.hub-more-link > svg:last-child {
-  color: var(--muted);
-}
-
-.hub-more-link:hover {
-  text-decoration: none;
-}
-
-.hub-more-link:hover .hub-more-name {
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
-.hub-more-text {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.hub-more-name {
-  font-size: var(--text-md);
-  font-weight: 500;
-}
-
-.hub-more-desc {
-  color: var(--muted);
-  font-size: var(--text-sm);
 }
 
 /* ---- lists ------------------------------------------------------------ */
@@ -190,8 +54,8 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px 20px;
-  padding: 14px 0;
+  gap: 8px 16px;
+  padding: var(--row-pad) 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -207,6 +71,7 @@
   min-width: 0;
 }
 
+/* A post's words: two lines at most, as in every list of posts. */
 .hub-row-text {
   display: -webkit-box;
   margin: 0;
@@ -216,7 +81,24 @@
   white-space: pre-line;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* A draft is still being written, so it gets a line more. */
+.draft-text {
   -webkit-line-clamp: 3;
+}
+
+/* A post's words are the way to it on Bluesky, as in a report's list. */
+.hub-row-link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .hub-row-link:hover {
+    text-decoration: underline;
+  }
 }
 
 .hub-row-meta {
@@ -229,28 +111,33 @@
   font-size: var(--text-sm);
 }
 
+/* Something about a row to know before acting on it: why a draft can't be
+   posted or scheduled from here, or what to do about one that didn't go
+   out. A warning is in the warning's colour. */
 .hub-row-note,
 .hub-row-why {
   margin: 0;
-  color: var(--warn);
-  font-size: var(--text-sm);
-}
-
-.hub-row-why {
-  flex-basis: 100%;
   color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.45;
 }
 
+.hub-row-note {
+  color: var(--warn);
+}
+
+/* The actions of a row in a dashboard's posting card, which still lays its
+   rows out with these classes. */
 .hub-row-actions {
   display: flex;
   flex: none;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-/* On the overview a row that goes out at a time leads with it: the day in
-   ink, the hour under it. */
+/* A row that goes out at a time leads with it: the day over the hour, in a
+   column as wide as the Scheduled page's. */
 .hub-row--when {
   flex-wrap: nowrap;
   justify-content: flex-start;
@@ -260,38 +147,37 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  width: 132px;
+  width: var(--time-col);
   line-height: 1.35;
 }
 
 .hub-when-day {
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: 500;
 }
 
 .hub-when-time {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 6px;
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
-/* A draft on the overview: its words, and Open beside them at any width. */
-.hub-row--open {
-  flex-wrap: nowrap;
-  align-items: center;
+/* A date and its hour, each kept whole, so a narrow column breaks between
+   them. */
+.hub-when-time > span {
+  white-space: nowrap;
 }
 
-.hub-row--open .hub-row-main {
-  flex: 1 1 0;
+/* One that didn't go out says so where its day would be, once, in red. */
+.hub-when-failed {
+  color: var(--danger);
+  font-weight: 600;
 }
 
-/* Open, on the overview's drafts: a word to press, not a button. */
-.hub-open {
-  align-self: center;
-  padding: 6px 0;
+/* Retry and "see what happened", inside the sentence about a post that
+   didn't go out: words in ink with a line under them. */
+.hub-inline-action {
+  padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
   background: none;
   color: var(--ink);
   font: inherit;
@@ -303,61 +189,47 @@
 }
 
 @media (hover: hover) {
-  .hub-open:hover {
+  .hub-inline-action:hover:not(:disabled) {
     text-decoration-thickness: 2px;
   }
 }
 
-.hub-danger {
-  color: var(--danger);
+.hub-inline-action:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
-/* A list's own notes, under its last row. */
-.hub-list ~ .card-caption,
-.hub-more-row ~ .card-caption {
-  margin-top: 14px;
+/* Each kept on one line, so a finger's reach (below) is one box. */
+a.hub-inline-action {
+  white-space: nowrap;
+}
+
+@media (pointer: coarse) {
+  .hub-inline-action {
+    position: relative;
+  }
+
+  .hub-inline-action::after {
+    content: '';
+    position: absolute;
+    inset: -12px -6px;
+  }
+}
+
+/* A draft on the overview: its words, and Open beside them on their first
+   line, at any width. */
+.hub-row--open {
+  flex-wrap: nowrap;
+  align-items: baseline;
+}
+
+.hub-row--open .hub-row-main {
+  flex: 1 1 0;
 }
 
 .card--flush > .hub-error,
 .card--flush > .hub-pad > .hub-error {
   margin-top: 16px;
-}
-
-.hub-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  padding-bottom: var(--space-4);
-}
-
-.hub-empty .empty {
-  max-width: 56ch;
-  padding-bottom: 0;
-}
-
-.hub-more-row {
-  display: flex;
-  padding: 16px 0 0;
-}
-
-.hub-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.hub-search {
-  flex: 1 1 260px;
-  max-width: 420px;
-}
-
-.hub-search > .input {
-  width: 100%;
 }
 
 .hub-error {
@@ -414,11 +286,6 @@
   border-radius: var(--pill);
 }
 
-.hub-bone--figure {
-  width: 56px;
-  height: 40px;
-}
-
 @keyframes hub-pulse {
   50% {
     opacity: 0.45;
@@ -448,21 +315,9 @@
   }
 }
 
-/* ---- Posted ----------------------------------------------------------- */
-
-.posted-counts {
-  display: inline-flex;
-  gap: 12px;
-}
-
-.posted-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
 /* ---- Templates -------------------------------------------------------- */
 
+/* A template's name, which opens it in the editor, and its /shortcut. */
 .tpl-name {
   display: flex;
   flex-wrap: wrap;
@@ -470,7 +325,25 @@
   gap: 8px;
   margin: 0;
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
+}
+
+.tpl-name-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .tpl-name-button:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 .tpl-name + .hub-row-text {
@@ -496,6 +369,16 @@
   line-height: 1.35;
 }
 
+/* Where templates have groups, each group's name over its rows, as the
+   library's shelf of templates has them. */
+.tpl-group-head {
+  padding: 20px 0 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
 /* ---- narrower screens ------------------------------------------------- */
 
 @media (max-width: 1180px) {
@@ -504,57 +387,41 @@
   }
 }
 
-@media (max-width: 760px) {
-  .hub-tiles {
-    gap: 0 20px;
+/* On a phone a row that goes out at a time says it first, as the row's
+   first line of meta: the day a step louder, then the hour. */
+@media (max-width: 560px) {
+  .hub-row--when {
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .hub-tile {
-    gap: 6px;
-    padding: 12px 0 16px;
+  /* Down a column its basis would be a height. */
+  .hub-row--when > .hub-row-main {
+    flex: none;
   }
 
   .hub-when {
-    width: 104px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+    font-size: var(--text-sm);
+    line-height: 1.45;
   }
 
-  .hub-row-actions {
-    width: 100%;
+  .hub-when-day {
+    color: var(--ink-2);
+    font-size: var(--text-sm);
   }
 
-  .draft-actions > .btn:not(.btn--icon),
-  .posted-actions > .btn {
-    flex: 1;
+  .hub-when-failed {
+    color: var(--danger);
   }
 
-  .hub-row-actions > .btn {
-    min-height: 44px;
-  }
-
-  .hub-row-actions .menu-button,
-  .hub-row-actions > .btn--icon {
-    width: 44px;
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .hub-open,
-  .hub-card-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-
-  .hub-card .card-head {
-    align-items: center;
-  }
-
-  .hub-search {
-    max-width: none;
-  }
-
-  .hub-toolbar .segmented {
-    width: 100%;
+  .hub-when-day:not(:last-child)::after {
+    content: '·';
+    margin: 0 6px;
+    color: var(--muted);
+    font-weight: 400;
   }
 }
 

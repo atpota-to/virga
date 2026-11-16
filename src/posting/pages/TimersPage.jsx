@@ -1,16 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  ExternalLink,
-  Hourglass,
-  MinusCircle,
-  Pencil,
-  Timer,
-  X,
-} from 'lucide-react';
+import { CheckCircle2, MinusCircle } from 'lucide-react';
 import Button from '../../components/Button.jsx';
-import Segmented from '../../components/Segmented.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
@@ -57,37 +47,39 @@ import './schedule.css';
 // Deleted posts already passed to the archive this visit, per account.
 const reported = new Map();
 
+/**
+ * A timer: the post's words (a link to the post, so the row needs no button
+ * for that), when it acts as the line's key fact, what it does, and Call off.
+ * One that gave up says so in red, once.
+ */
 function TimerRow({ row, now, busy, onCancel }) {
   const m = timerRowModel(row, now);
   const url = timerPostUrl(row);
+  const words = m.text || (
+    <span className="muted">A post with no words of its own</span>
+  );
   return (
-    <li className="hub-row sched-timer" aria-busy={busy || undefined}>
-      <span
-        className={`sched-timer-icon${m.live ? ' is-live' : row.status === 'failed' ? ' is-failed' : ''}`}
-        aria-hidden="true"
-      >
-        {m.live ? (
-          <Hourglass size={16} />
-        ) : row.status === 'failed' ? (
-          <AlertTriangle size={16} />
-        ) : row.status === 'deleted' ? (
-          <X size={16} />
-        ) : (
-          <CheckCircle2 size={16} />
-        )}
-      </span>
-      <div className="hub-row-main">
+    <li className="sched-row sched-timer" aria-busy={busy || undefined}>
+      <div className="hub-row-main sched-row-main">
         <p className="hub-row-text">
-          {m.text || (
-            <span className="muted">A post with no words of its own</span>
+          {url ? (
+            <a
+              className="hub-row-link"
+              href={url}
+              target="_blank"
+              rel="noreferrer"
+              title="Open on Bluesky"
+            >
+              {words}
+            </a>
+          ) : (
+            words
           )}
         </p>
-        <p className="hub-row-meta">
-          <span
-            className={`badge ${m.live ? 'badge--accent' : row.status === 'failed' ? 'badge--danger' : ''}`}
-          >
-            {m.when}
-          </span>
+        {/* A timer that gave up sits under a heading that says so, and its
+            reason is in red: the line itself stays quiet. */}
+        <p className="meta">
+          <span className={m.live ? 'is-key' : undefined}>{m.when}</span>
           {m.live && row.checkAt && (
             <span>{formatInZone(row.checkAt, undefined, now)}</span>
           )}
@@ -117,28 +109,18 @@ function TimerRow({ row, now, busy, onCancel }) {
           </ul>
         )}
       </div>
-      <div className="hub-row-actions">
-        {url && (
-          <a
-            className="btn btn--sm btn--ghost"
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ExternalLink size={14} aria-hidden="true" />
-            Open the post
-          </a>
-        )}
-        {m.canCancel && (
+      {m.canCancel && (
+        <div className="row-actions">
           <Button size="sm" onClick={() => onCancel(row)} disabled={busy}>
             {m.cancelLabel}
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </li>
   );
 }
 
+/** A scheduled post that starts a timer when it goes out. */
 function WaitingRow({ row, tz, now, onEdit }) {
   const facts = rowFacts(row);
   const timer = readStoredTimer({
@@ -147,16 +129,13 @@ function WaitingRow({ row, tz, now, onEdit }) {
   }).timer;
   const actions = rowActions(row);
   return (
-    <li className="hub-row sched-timer">
-      <span className="sched-timer-icon" aria-hidden="true">
-        <Timer size={16} />
-      </span>
-      <div className="hub-row-main">
+    <li className="sched-row sched-timer">
+      <div className="hub-row-main sched-row-main">
         <p className="hub-row-text">
           {facts.text || <span className="muted">A post with media</span>}
         </p>
-        <p className="hub-row-meta">
-          <span className="badge">
+        <p className="meta">
+          <span className="is-key">
             {row.status === 'publishing'
               ? 'Going out now'
               : `Goes out ${formatInZone(row.scheduledFor, tz, now)}`}
@@ -169,23 +148,51 @@ function WaitingRow({ row, tz, now, onEdit }) {
           Its timer starts counting when it goes out.
         </p>
       </div>
-      <div className="hub-row-actions">
-        {actions.edit && row.status === 'pending' && (
+      {actions.edit && row.status === 'pending' && (
+        <div className="row-actions">
           <Button size="sm" onClick={() => onEdit(row)}>
-            <Pencil size={14} aria-hidden="true" />
             Edit
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </li>
   );
 }
 
+/** Hands the posts a timer deleted to the archive, once a visit each. */
+function reportDeleted(did, rows) {
+  const seen = reported.get(did) || new Set();
+  reported.set(did, seen);
+  const fresh = deletedPostUris(rows).filter(
+    (uri) => !seen.has(uri) && uri.startsWith(`at://${did}/`),
+  );
+  if (!fresh.length) return;
+  fresh.forEach((uri) => seen.add(uri));
+  try {
+    emitPostsChanged(did, { removed: fresh });
+  } catch {
+    // The archive catches up on its next sync.
+  }
+}
+
+/** '1 post counting down', '2 timers gave up, posts still up'. */
+function groupTitle(key, n) {
+  const posts = n === 1 ? '1 post' : `${n} posts`;
+  if (key === 'live') return `${posts} counting down`;
+  if (key === 'waiting') return `${posts} waiting to go out`;
+  if (key === 'failed')
+    return n === 1
+      ? '1 timer gave up, post still up'
+      : `${n} timers gave up, posts still up`;
+  return '';
+}
+
 /**
  * Posts on a timer: what's counting down (and when each acts), scheduled
- * posts that start a timer when they go out, timers that gave up, and what
- * the settled ones did. Calling a timer off keeps the post: nothing on this
- * page deletes anything.
+ * posts that start a timer when they go out, and timers that gave up, each
+ * a list headed by its count. What the settled ones did is behind a
+ * disclosure at the foot, read only when it's opened. Calling a timer off
+ * keeps the post: nothing on this page deletes anything.
  */
 export default function TimersPage({ did }) {
   const composer = useComposer();
@@ -200,12 +207,23 @@ export default function TimersPage({ did }) {
   const [busy, setBusy] = useState({});
   const [confirm, setConfirm] = useState(null);
 
-  const timers = useLoad((signal) => listTimers(req, { history, signal }), {
-    key: `${did}:${history}`,
+  const timers = useLoad((signal) => listTimers(req, { signal }), {
+    key: did,
     did,
     events: [TIMERS_CHANGED_EVENT],
     enabled: Boolean(req),
   });
+  // Every settled timer, read when the disclosure is opened. It is a read
+  // of its own, so the lists above stay on screen while it runs.
+  const settled = useLoad(
+    (signal) => listTimers(req, { history: true, signal }),
+    {
+      key: `${did}:settled`,
+      did,
+      events: [TIMERS_CHANGED_EVENT],
+      enabled: Boolean(req) && history,
+    },
+  );
   // A second read that may fail alone: the scheduled posts with a timer.
   const scheduled = useLoad(
     async (signal) => {
@@ -248,52 +266,51 @@ export default function TimersPage({ did }) {
   const liveIds = useRef(null);
   useEffect(() => {
     if (!req || !timers.data) return undefined;
-    const seen = reported.get(did) || new Set();
-    reported.set(did, seen);
-    const pass = (rows) => {
-      const fresh = deletedPostUris(rows).filter(
-        (uri) => !seen.has(uri) && uri.startsWith(`at://${did}/`),
-      );
-      if (!fresh.length) return;
-      fresh.forEach((uri) => seen.add(uri));
-      try {
-        emitPostsChanged(did, { removed: fresh });
-      } catch {
-        // The archive catches up on its next sync.
-      }
-    };
-    const rows = timers.data.rows || [];
     const live = new Set(
-      rows
+      (timers.data.rows || [])
         .filter((r) => r.status === 'armed' || r.status === 'checking')
         .map((r) => r.id),
     );
     const before = liveIds.current;
     liveIds.current = live;
-    if (history) {
-      pass(rows);
-      return undefined;
-    }
     const dropped = !before || [...before].some((id) => !live.has(id));
     if (!dropped) return undefined;
     let on = true;
     listTimers(req, { history: true }).then(
-      (out) => on && pass(out.rows),
+      (out) => on && reportDeleted(did, out.rows),
       () => {},
     );
     return () => {
       on = false;
     };
-  }, [timers.data, did, req, history]);
+  }, [timers.data, did, req]);
+  useEffect(() => {
+    if (settled.data) reportDeleted(did, settled.data.rows || []);
+  }, [settled.data, did]);
 
   const waiting = useMemo(
     () => waitingTimerRows(scheduled.data?.rows || []),
     [scheduled.data],
   );
+  // The lists on the page: counting down, waiting, gave up. The week's
+  // settled ones the default read brings go under the disclosure with the
+  // rest of the settled.
   const groups = useMemo(
     () =>
-      timerSections(groupTimers(timers.data?.rows || [], { history }), waiting),
-    [timers.data, history, waiting],
+      timerSections(
+        groupTimers(timers.data?.rows || []).filter(
+          (g) => g.key !== 'settled',
+        ),
+        waiting,
+      ),
+    [timers.data, waiting],
+  );
+  const settledRows = useMemo(
+    () =>
+      groupTimers(settled.data?.rows || [], { history: true }).find(
+        (g) => g.key === 'settled',
+      )?.rows || [],
+    [settled.data],
   );
   const liveRows = (timers.data?.rows || []).filter(
     (r) => r.status === 'armed' || r.status === 'checking',
@@ -335,38 +352,29 @@ export default function TimersPage({ did }) {
     });
 
   const loading = timers.status === 'loading';
+  const unreadable = timers.status === 'error' && !timers.data;
   const unavailable = timers.data?.unavailable;
-  const counting = liveRows.length;
+  const timerRow = (row) => (
+    <TimerRow
+      key={row.id}
+      row={row}
+      now={now}
+      busy={Boolean(busy[row.id])}
+      onCancel={cancel}
+    />
+  );
 
   return (
     <>
-      <PostingHeader
-        page="timers"
-        actions={
-          <Segmented
-            size="sm"
-            label="Which timers"
-            value={history ? 'history' : 'current'}
-            onChange={(v) => setHistory(v === 'history')}
-            options={[
-              { value: 'current', label: 'Now' },
-              { value: 'history', label: 'Everything settled' },
-            ]}
-          />
-        }
-      />
+      <PostingHeader page="timers" />
       <div className="page-body sched-page">
-        <p className="note">
-          Calling a timer off keeps the post. Nothing on this page deletes
-          anything.
-        </p>
         {full.map((line) => (
           <p key={line} className="callout callout--warn">
             {line}
           </p>
         ))}
 
-        {timers.status === 'error' && !timers.data ? (
+        {unreadable ? (
           <LoadError
             message={`Couldn’t read ${name}’s timers. ${scheduleErrorMessage(timers.error)}`}
             onRetry={timers.reload}
@@ -384,41 +392,37 @@ export default function TimersPage({ did }) {
             <RowSkeleton rows={3} actions={1} />
           </section>
         ) : groups.length === 0 ? (
-          <section className="card">
-            <div className="hub-empty">
-              <p className="empty">
-                {history
-                  ? 'No timer has settled in a while.'
-                  : 'No posts on a timer. Give a new post a timer in the composer, or put one that’s out on a timer from Posted.'}
-              </p>
-              <div className="sched-side-actions">
-                <Button
-                  size="sm"
-                  variant="primary"
-                  onClick={() => composer.open({ asDid: did })}
-                >
-                  New post
-                </Button>
-                <Link to={postingPath('posted')} className="btn btn--sm">
-                  Posted
-                </Link>
-              </div>
-            </div>
-          </section>
+          <div className="empty-block">
+            <p className="empty">
+              No posts on a timer. Give a new post a timer in the composer, or
+              put one that’s out on a timer from{' '}
+              <Link to={postingPath('posted')}>Posted</Link>.
+            </p>
+            <Button onClick={() => composer.open({ asDid: did })}>
+              New post
+            </Button>
+          </div>
         ) : (
-          groups.map((group) => (
+          groups.map((group, i) => (
             <section
               key={group.key}
-              className="card card--flush sched-section"
+              className="card card--flush"
               aria-labelledby={`timers-${group.key}`}
             >
               <div className="card-head">
-                <h2 className="card-title" id={`timers-${group.key}`}>
-                  {group.title}{' '}
-                  <span className="sched-count">{group.rows.length}</span>
-                </h2>
+                <div>
+                  <h2 className="card-title" id={`timers-${group.key}`}>
+                    {groupTitle(group.key, group.rows.length)}
+                  </h2>
+                  {i === 0 && (
+                    <p className="card-sub">
+                      Calling a timer off keeps the post. Nothing on this page
+                      deletes anything.
+                    </p>
+                  )}
+                </div>
               </div>
-              <ul className="hub-list hub-list--rows">
+              <ul className="hub-list sched-list">
                 {group.key === 'waiting'
                   ? group.rows.map((row) => (
                       <WaitingRow
@@ -431,15 +435,7 @@ export default function TimersPage({ did }) {
                         }
                       />
                     ))
-                  : group.rows.map((row) => (
-                      <TimerRow
-                        key={row.id}
-                        row={row}
-                        now={now}
-                        busy={Boolean(busy[row.id])}
-                        onCancel={cancel}
-                      />
-                    ))}
+                  : group.rows.map(timerRow)}
               </ul>
             </section>
           ))
@@ -451,16 +447,32 @@ export default function TimersPage({ did }) {
             they go out aren’t shown.
           </p>
         )}
-        {!loading && !unavailable && (counting > 0 || waiting.length > 0) && (
-          <p className="card-caption">
-            {counting === 1 ? '1 post is' : `${counting} posts are`} on a timer.
-            {waiting.length
-              ? ` ${waiting.length} more ${waiting.length === 1 ? 'starts' : 'start'} counting when ${waiting.length === 1 ? 'it goes' : 'they go'} out.`
-              : ''}
-          </p>
-        )}
         {limitsLine && (
           <p className="card-caption sched-limits">{limitsLine}</p>
+        )}
+
+        {!loading && !unreadable && !unavailable && (
+          <details
+            className="disclosure sched-settled"
+            onToggle={(e) => setHistory(e.currentTarget.open)}
+          >
+            <summary>Show settled timers</summary>
+            {history &&
+              (settled.status === 'error' && !settled.data ? (
+                <LoadError
+                  message={`Couldn’t read ${name}’s settled timers. ${scheduleErrorMessage(settled.error)}`}
+                  onRetry={settled.reload}
+                />
+              ) : !settled.data ? (
+                <RowSkeleton rows={2} />
+              ) : settledRows.length ? (
+                <ul className="hub-list sched-list">
+                  {settledRows.map(timerRow)}
+                </ul>
+              ) : (
+                <p className="empty">No timer has settled in a while.</p>
+              ))}
+          </details>
         )}
       </div>
 

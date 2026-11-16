@@ -401,8 +401,8 @@ export function applyAssignment(rows = [], assignment = []) {
 
 /**
  * The scheduled-posts line under the list: '2 of 3 scheduled posts in use.'
- * for a limited account, the server's
- * ceiling for one without a limit, '' when nothing is known.
+ * for a limited account, the server's ceiling for one without a limit ('Up
+ * to 50 can wait at a time.'), '' when nothing is known.
  */
 export function scheduledLimitsLine(limits) {
   if (!limits) return '';
@@ -414,8 +414,7 @@ export function scheduledLimitsLine(limits) {
     return `${Math.min(used, limit)} of ${limit} scheduled ${limit === 1 ? 'post' : 'posts'} in use.`;
   }
   const cap = limits.caps?.scheduledPosts;
-  if (Number.isFinite(cap))
-    return `No limit on scheduled posts, beyond the ${cap} that can wait at a time.`;
+  if (Number.isFinite(cap)) return `Up to ${cap} can wait at a time.`;
   if (limits.policy) return 'No limit on scheduled posts.';
   return '';
 }
@@ -448,7 +447,7 @@ export function timerLimitsLine(limits, fallbackUsage = null) {
   if (parts.length === 0) {
     const cap = limits.caps?.timers;
     if (Number.isFinite(cap))
-      return `No limit on timers, beyond the ${cap} that can count down at a time.`;
+      return `Up to ${cap} can count down at a time.`;
     return limits.policy ? 'No limit on timers.' : '';
   }
   return `In use: ${parts.join(' and ')}, counting scheduled posts with a timer.`;

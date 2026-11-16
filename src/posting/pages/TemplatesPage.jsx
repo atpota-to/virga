@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { LogIn, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
+import { MoreMenu } from '../../components/Menu.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { requestReauth } from '../../accounts/accountCopy.js';
@@ -11,6 +12,7 @@ import { readTemplateUsage, sortTemplatesForShelf } from '../templates/templateU
 import { useTemplates } from '../templates/useTemplates.js';
 import TemplateEditor from '../library/TemplateEditor.jsx';
 import PostingHeader from '../ui/PostingHeader.jsx';
+import { countPhrase } from './hubModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
@@ -69,28 +71,16 @@ export default function TemplatesPage({ did }) {
   }, [sorted]);
   const anyGroup = groups.some((g) => g.name);
 
+  const newTemplate = () => setEditing({ template: null });
+
   return (
     <>
-      <PostingHeader
-        page="templates"
-        actions={
-          <Button variant="primary" onClick={() => setEditing({ template: null })} disabled={!canWrite}>
-            <Plus size={15} aria-hidden="true" />
-            New template
-          </Button>
-        }
-      />
+      <PostingHeader page="templates" />
       <div className="page-body hub">
-        <p className="note">
-          Templates are saved in your repo as <span className="mono">{TEMPLATE_COLLECTION}</span> records, where anyone can read them, and
-          Anisota uses the same ones. Keep anything private out of them. In the composer, type a template’s shortcut after a slash, or find it
-          in the library.
-        </p>
         {!canWrite && (
           <div className="callout callout--warn" role="status">
             <span>Virga needs permission to save templates in your repo. Sign in again to grant it.</span>
-            <Button size="sm" variant="primary" onClick={() => requestReauth(did, { immediate: true })}>
-              <LogIn size={14} aria-hidden="true" />
+            <Button size="sm" onClick={() => requestReauth(did, { immediate: true })}>
               Sign in again
             </Button>
           </div>
@@ -101,83 +91,95 @@ export default function TemplatesPage({ did }) {
 
         {loading && !templates.length ? (
           <section className="card card--flush hub-card" aria-label="Templates">
-            <RowSkeleton rows={3} actions={2} />
+            <RowSkeleton rows={3} actions={1} />
           </section>
         ) : error && !templates.length ? (
           <LoadError message="Your templates couldn’t be read from your repo." onRetry={reload} />
         ) : !templates.length && ready ? (
-          <section className="hub-empty">
+          <div className="empty-block">
             <p className="empty">
               No templates yet. A template is a post or reply to start from, with blanks it asks you to fill in, such as the name of the person
               you’re answering.
             </p>
-            {/* The page's own New template is the filled button; this one is its echo. */}
-            <Button onClick={() => setEditing({ template: null })} disabled={!canWrite}>
+            <Button onClick={newTemplate} disabled={!canWrite}>
               <Plus size={15} aria-hidden="true" />
-              Make your first template
+              New template
             </Button>
-          </section>
+          </div>
         ) : (
-          groups.map((group) => (
-            <section key={group.name || '-'} className="card card--flush hub-card" aria-label={group.name || 'Templates'}>
-              {(anyGroup || group.name) && (
-                <div className="card-head">
-                  <h2 className="card-title">{group.name || 'Other templates'}</h2>
-                </div>
-              )}
-              <ul className="hub-list hub-list--rows">
-                {group.items.map((t) => {
-                  const facts = describeTemplate(t, null);
-                  const attach = templateEmbedKind(t.embed);
-                  return (
-                    <li key={t.rkey} className="hub-row tpl-row-item">
-                      <div className="hub-row-main">
-                        <p className="tpl-name">
-                          {t.name}
-                          {t.shortcut && <span className="mono tpl-shortcut-chip">/{t.shortcut}</span>}
-                        </p>
-                        <p className="hub-row-text">
-                          <TemplateText text={t.text} />
-                        </p>
-                        <p className="hub-row-meta">
-                          {[
-                            USE_WORDS[t.use] || USE_WORDS.any,
-                            facts.questions ? `Asks ${facts.questions === 1 ? 'a question' : `${facts.questions} questions`}` : '',
-                            attach ? ATTACH_WORDS[attach] : '',
-                            t.keywords?.length ? `Suggested for ${t.keywords.slice(0, 4).join(', ')}` : '',
-                            usedLine(usage[t.rkey]),
-                          ]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </p>
-                      </div>
-                      <div className="hub-row-actions">
-                        <Button size="sm" onClick={() => composer.open({ asDid: did, templateId: t.rkey })} disabled={!caps.canPost}>
-                          Use
-                        </Button>
-                        <Button size="sm" onClick={() => setEditing({ template: t })} disabled={!canWrite}>
-                          <Pencil size={14} aria-hidden="true" />
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          icon
-                          className="hub-danger"
-                          aria-label={`Delete “${t.name}”`}
-                          title="Delete this template"
-                          disabled={!canWrite}
-                          onClick={() => setDeleting(t)}
-                        >
-                          <Trash2 size={15} aria-hidden="true" />
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))
+          <section className="card card--flush hub-card" aria-labelledby="templates-title">
+            <div className="card-head">
+              <div>
+                <h2 id="templates-title" className="card-title">
+                  {countPhrase(templates.length, 'template')}
+                </h2>
+                <p className="card-sub">Type a template’s /shortcut in the composer, or find it in the library.</p>
+              </div>
+              <button type="button" className="link-action" onClick={newTemplate} disabled={!canWrite}>
+                <Plus aria-hidden="true" />
+                New template
+              </button>
+            </div>
+            {groups.map((group) => (
+              <div key={group.name || '-'} role={anyGroup ? 'group' : undefined} aria-label={anyGroup ? group.name || 'Other templates' : undefined}>
+                {anyGroup && <h3 className="tpl-group-head">{group.name || 'Other templates'}</h3>}
+                <ul className="hub-list hub-list--rows">
+                  {group.items.map((t) => {
+                    const facts = describeTemplate(t, null);
+                    const attach = templateEmbedKind(t.embed);
+                    const meta = [
+                      USE_WORDS[t.use] || USE_WORDS.any,
+                      facts.questions ? `Asks ${facts.questions === 1 ? 'a question' : `${facts.questions} questions`}` : '',
+                      attach ? ATTACH_WORDS[attach] : '',
+                      t.keywords?.length ? `Suggested for ${t.keywords.slice(0, 4).join(', ')}` : '',
+                      usedLine(usage[t.rkey]),
+                    ].filter(Boolean);
+                    return (
+                      <li key={t.rkey} className="hub-row tpl-row-item has-corner-menu">
+                        <div className="hub-row-main">
+                          <p className="tpl-name">
+                            {/* The name is the way into the editor; Use is the row's one button. */}
+                            {canWrite ? (
+                              <button type="button" className="tpl-name-button" onClick={() => setEditing({ template: t })}>
+                                {t.name}
+                              </button>
+                            ) : (
+                              <span>{t.name}</span>
+                            )}
+                            {t.shortcut && <span className="mono tpl-shortcut-chip">/{t.shortcut}</span>}
+                          </p>
+                          <p className="hub-row-text">
+                            <TemplateText text={t.text} />
+                          </p>
+                          <p className="meta">
+                            {meta.map((part) => (
+                              <span key={part}>{part}</span>
+                            ))}
+                          </p>
+                        </div>
+                        <div className="row-actions">
+                          <Button size="sm" onClick={() => composer.open({ asDid: did, templateId: t.rkey })} disabled={!caps.canPost}>
+                            Use
+                          </Button>
+                          {canWrite && (
+                            <MoreMenu
+                              className="row-menu"
+                              label={`More for “${t.name}”`}
+                              items={[
+                                { key: 'edit', label: 'Edit', icon: Pencil, onSelect: () => setEditing({ template: t }) },
+                                { separator: true },
+                                { key: 'delete', label: 'Delete', icon: Trash2, tone: 'danger', onSelect: () => setDeleting(t) },
+                              ]}
+                            />
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </section>
         )}
       </div>
 

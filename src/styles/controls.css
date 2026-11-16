@@ -682,6 +682,12 @@
     transform: translateY(-50%);
   }
 
+  /* The transform makes the ⋯ a layer of its own, which the rows after it
+     would paint over; an open one is lifted above them, list and all. */
+  .has-corner-menu .row-menu:has(> [aria-expanded='true']) {
+    z-index: 2;
+  }
+
   .has-corner-menu > .row-actions {
     flex-basis: 100%;
     margin-top: 0;
@@ -1188,6 +1194,29 @@ input[type='radio'] {
   gap: 12px;
 }
 
+/* A meta line that carries on after another one (PostMeta, then "Not in
+   the archive yet"): the inner line's items join the outer's, and the dot
+   after the inner line's last item is the one between the two. */
+.meta > .meta {
+  display: contents;
+}
+
+.meta > .meta::after {
+  content: none;
+}
+
+.meta > .meta:not(:last-child) > :last-child::after {
+  content: '·';
+  margin: 0 6px 0 1px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* After a post's counts the dot is inside their 12px spacing. */
+.meta > .meta:not(:last-child) > .meta-group:last-child::after {
+  margin-left: -6px;
+}
+
 /* A row's key fact, a step louder than the rest (Acts in 2 days). */
 .meta .is-key {
   color: var(--ink-2);
@@ -1242,13 +1271,16 @@ input[type='radio'] {
 }
 
 @media (hover: hover) {
-  .chip:hover:not([aria-pressed='true']):not(:disabled) {
+  .chip:hover:not([aria-pressed='true'], [aria-checked='true']):not(:disabled) {
     border-color: var(--ink);
     color: var(--ink);
   }
 }
 
-.chip[aria-pressed='true'] {
+/* A chip that is one of a radio group's choices (a template's answers) is
+   pressed by aria-checked rather than aria-pressed. */
+.chip[aria-pressed='true'],
+.chip[role='radio'][aria-checked='true'] {
   border-color: var(--btn);
   background: var(--btn);
   color: var(--on-btn);
