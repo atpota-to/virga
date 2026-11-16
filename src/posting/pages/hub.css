@@ -9,10 +9,22 @@
 /* Four figures, each under a rule of its own and each a way in to its
    page. The number is as big as its column allows (the cell is a
    container), as in the kit's .figures. */
+.hub-figures {
+  container-type: inline-size;
+}
+
 .hub-tiles {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0 var(--space-6);
+}
+
+/* Not room for four with their labels on one line (a phone, or a desk with
+   the sidebar open on a small screen): two by two. */
+@container (max-width: 760px) {
+  .hub-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .hub-tile {
@@ -494,7 +506,6 @@
 
 @media (max-width: 760px) {
   .hub-tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 20px;
   }
 

@@ -840,6 +840,8 @@
   .lib-body,
   .lib-panel[data-mode='page'] .lib-body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+    /* The shelves' row is as tall as its words; the rest is the list's. */
+    grid-template-rows: auto minmax(0, 1fr);
     gap: 16px 28px;
   }
 

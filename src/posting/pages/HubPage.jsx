@@ -139,57 +139,61 @@ export default function HubPage({ did }) {
       <div className="page-body hub">
         <PostingPermissionNotice did={did} />
 
-        <div className="hub-tiles">
-          <Tile
-            to={postingPath('drafts')}
-            icon={FileText}
-            label="Drafts"
-            loading={drafts.status === 'loading'}
-            value={drafts.status === 'error' ? '–' : draftCount}
-            note={drafts.status === 'error' ? 'Couldn’t read them' : 'Private, on your Bluesky account'}
-          />
-          <Tile
-            to={postingPath('scheduled')}
-            icon={CalendarClock}
-            label="Scheduled"
-            loading={Boolean(req) && scheduled.status === 'loading'}
-            value={!req ? '–' : scheduled.data ? scheduled.data.waiting : '–'}
-            note={
-              !req
-                ? 'Needs a long session'
-                : scheduled.data?.failed
-                  ? `${countPhrase(scheduled.data.failed, 'post')} didn’t go out`
-                  : scheduled.data
-                    ? `${scheduled.data.queued.toLocaleString(activeLocale())} in the queue`
-                    : scheduled.status === 'error'
+        {/* The wrapper is what the figures measure themselves against: four
+            across where there is room, two by two where there isn't. */}
+        <div className="hub-figures">
+          <div className="hub-tiles">
+            <Tile
+              to={postingPath('drafts')}
+              icon={FileText}
+              label="Drafts"
+              loading={drafts.status === 'loading'}
+              value={drafts.status === 'error' ? '–' : draftCount}
+              note={drafts.status === 'error' ? 'Couldn’t read them' : 'Private, on your Bluesky account'}
+            />
+            <Tile
+              to={postingPath('scheduled')}
+              icon={CalendarClock}
+              label="Scheduled"
+              loading={Boolean(req) && scheduled.status === 'loading'}
+              value={!req ? '–' : scheduled.data ? scheduled.data.waiting : '–'}
+              note={
+                !req
+                  ? 'Needs a long session'
+                  : scheduled.data?.failed
+                    ? `${countPhrase(scheduled.data.failed, 'post')} didn’t go out`
+                    : scheduled.data
+                      ? `${scheduled.data.queued.toLocaleString(activeLocale())} in the queue`
+                      : scheduled.status === 'error'
+                        ? 'Couldn’t read them'
+                        : ''
+              }
+            />
+            <Tile
+              to={postingPath('timers')}
+              icon={Timer}
+              label="Timers counting down"
+              loading={Boolean(req) && timers.status === 'loading'}
+              value={!req ? '–' : timers.data ? timers.data.live : '–'}
+              note={
+                !req
+                  ? 'Needs a long session'
+                  : timers.data?.nextCheck
+                    ? `Next check ${relativeWhen(timers.data.nextCheck)}`
+                    : timers.status === 'error'
                       ? 'Couldn’t read them'
                       : ''
-            }
-          />
-          <Tile
-            to={postingPath('timers')}
-            icon={Timer}
-            label="Timers counting down"
-            loading={Boolean(req) && timers.status === 'loading'}
-            value={!req ? '–' : timers.data ? timers.data.live : '–'}
-            note={
-              !req
-                ? 'Needs a long session'
-                : timers.data?.nextCheck
-                  ? `Next check ${relativeWhen(timers.data.nextCheck)}`
-                  : timers.status === 'error'
-                    ? 'Couldn’t read them'
-                    : ''
-            }
-          />
-          <Tile
-            to={postingPath('templates')}
-            icon={LayoutTemplate}
-            label="Templates"
-            loading={templates.loading && !templates.templates.length}
-            value={templates.templates.length}
-            note="In your repo"
-          />
+              }
+            />
+            <Tile
+              to={postingPath('templates')}
+              icon={LayoutTemplate}
+              label="Templates"
+              loading={templates.loading && !templates.templates.length}
+              value={templates.templates.length}
+              note="In your repo"
+            />
+          </div>
         </div>
 
         <div className="hub-columns">

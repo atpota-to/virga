@@ -352,6 +352,18 @@
   font-size: var(--text-sm);
 }
 
+/* A quiet button that starts the foot ("Show 10 more") is let out by its
+   own padding, so its words sit on the section's edge. */
+.card-foot > .btn--ghost:first-child,
+.card-foot > .btn--text:first-child {
+  margin-left: -16px;
+}
+
+.card-foot > .btn--ghost.btn--sm:first-child,
+.card-foot > .btn--text.btn--sm:first-child {
+  margin-left: -12px;
+}
+
 /* ---- figures ------------------------------------------------------ */
 
 /* A row of figures: label, number, note, each under a rule of its own.
@@ -910,13 +922,13 @@ input[type='radio'] {
   text-align: right;
 }
 
-/* A chosen row: a wash, let out a little past the table's sides so the
-   words don't touch its edge. */
+/* A chosen row: a tint of the accent, let out a little past the table's
+   sides so the words don't touch its edge. */
 .table tr.is-selected {
-  background: var(--accent-wash);
+  background: var(--accent-tint);
   box-shadow:
-    -10px 0 0 var(--accent-wash),
-    10px 0 0 var(--accent-wash);
+    -10px 0 0 var(--accent-tint),
+    10px 0 0 var(--accent-tint);
 }
 
 /* ---- empty states and notes --------------------------------------- */
