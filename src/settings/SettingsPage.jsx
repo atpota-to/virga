@@ -46,7 +46,7 @@ export default function SettingsPage({ section }) {
   const current = named || SECTIONS[0];
   return (
     <>
-      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }, { label: current.label }]} title={current.label} sub={current.desc} />
+      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }]} title={current.label} sub={current.desc} />
       <div className="page-body settings-body">
         {current.key === 'account' && <AccountsSettings />}
         {current.key === 'data' && <DataSection />}

@@ -169,7 +169,7 @@ export default function ReportPage({ reportKey }) {
 
   return (
     <>
-      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }, { label: report.label }]} title={report.label} sub={report.desc} actions={<PeriodPicker />}>
+      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={report.label} sub={report.desc} actions={<PeriodPicker />}>
         <div className="report-bar">
           {hasFilters && <div className="report-filters">{filters}</div>}
           <div className="report-actions">
