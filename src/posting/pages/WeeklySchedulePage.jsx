@@ -327,8 +327,8 @@ export default function WeeklySchedulePage({ did }) {
       <PostingHeader
         page="schedule"
         actions={
-          <Link to={postingPath('scheduled')} className="btn btn--sm">
-            <CalendarClock size={14} aria-hidden="true" />
+          <Link to={postingPath('scheduled')} className="btn">
+            <CalendarClock size={15} aria-hidden="true" />
             Scheduled posts
           </Link>
         }
@@ -357,7 +357,7 @@ export default function WeeklySchedulePage({ did }) {
 
         {showSuggestions && (
           <section
-            className="card sched-suggest"
+            className="sched-suggest"
             aria-labelledby="sched-suggest-title"
           >
             <span className="sched-suggest-icon" aria-hidden="true">
@@ -417,7 +417,7 @@ export default function WeeklySchedulePage({ did }) {
 
         <div className="sched-week-layout">
           <section
-            className="card sched-week"
+            className="card card--flush sched-week"
             aria-labelledby="sched-week-title"
           >
             <div className="card-head">
@@ -477,15 +477,17 @@ export default function WeeklySchedulePage({ did }) {
 
           <div className="sched-week-side">
             <section className="card" aria-labelledby="sched-next-title">
-              <h2 className="card-title" id="sched-next-title">
-                Next open times
-              </h2>
-              <p className="card-sub">
-                Where the next posts added to the queue go
-                {list.status === 'ready'
-                  ? ', stepping round what’s already queued.'
-                  : '.'}
-              </p>
+              <div className="sched-side-head">
+                <h2 className="card-title" id="sched-next-title">
+                  Next open times
+                </h2>
+                <p className="card-sub">
+                  Where the next posts added to the queue go
+                  {list.status === 'ready'
+                    ? ', stepping round what’s already queued.'
+                    : '.'}
+                </p>
+              </div>
               {empty ? (
                 <p className="empty">
                   No posting times yet. Add a time to a day and the next ones
@@ -532,15 +534,17 @@ export default function WeeklySchedulePage({ did }) {
 
             {off.length > 0 && (
               <section className="card" aria-labelledby="sched-off-title">
-                <h2 className="card-title" id="sched-off-title">
-                  {off.length === 1
-                    ? '1 queued post is off these times'
-                    : `${off.length} queued posts are off these times`}
-                </h2>
-                <p className="card-sub">
-                  Posts already in the queue keep the times they were given.
-                  Move them onto the week’s times, in the order they’re in now.
-                </p>
+                <div className="sched-side-head">
+                  <h2 className="card-title" id="sched-off-title">
+                    {off.length === 1
+                      ? '1 queued post is off these times'
+                      : `${off.length} queued posts are off these times`}
+                  </h2>
+                  <p className="card-sub">
+                    Posts already in the queue keep the times they were given.
+                    Move them onto the week’s times, in the order they’re in now.
+                  </p>
+                </div>
                 <div className="sched-side-actions">
                   <Button
                     size="sm"
@@ -556,9 +560,11 @@ export default function WeeklySchedulePage({ did }) {
             )}
 
             <section className="card" aria-labelledby="sched-preview-title">
-              <h2 className="card-title" id="sched-preview-title">
-                The week ahead
-              </h2>
+              <div className="sched-side-head">
+                <h2 className="card-title" id="sched-preview-title">
+                  The week ahead
+                </h2>
+              </div>
               {empty ? (
                 <p className="empty">No posting times yet.</p>
               ) : (

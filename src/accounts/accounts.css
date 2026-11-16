@@ -3,21 +3,25 @@
 
 /* ---- the account menu ----------------------------------------------- */
 
-/* The sidebar scrolls, which clips anything that hangs out of it sideways.
-   Beside the full sidebar the list takes the button's width and wraps; from
-   the folded rail it is placed against the viewport instead. */
+/* The list hangs from the account button. Beside the open sidebar it is
+   let out wider than the button, over the page, so a name and the line
+   under it have room; from the folded rail it is placed against the
+   viewport instead. */
 .sidebar .account-menu:not(.account-menu--compact) .menu-list {
-  left: 0;
-  right: 0;
-  width: auto;
+  left: -6px;
+  right: auto;
+  width: 304px;
   min-width: 0;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100svh - 120px);
+  overflow-y: auto;
 }
 
 .sidebar[data-collapsed] .account-menu .menu-list {
   position: fixed;
   top: auto;
   bottom: 12px;
-  left: calc(var(--rail-w) + 8px);
+  left: calc(var(--rail-w) + 4px);
   max-height: calc(100svh - 24px);
   overflow-y: auto;
 }
@@ -28,12 +32,13 @@
   margin-top: 0;
 }
 
+/* The account that is open: a dot in the accent after its name. */
 .account-row.is-active .menu-item-label::after {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 6px;
+  width: 7px;
+  height: 7px;
+  margin-left: 8px;
   border-radius: 50%;
   background: var(--accent);
   vertical-align: middle;
@@ -41,11 +46,17 @@
 
 /* ---- Settings › Account --------------------------------------------- */
 
-.accounts-list {
+/* Each account is a row of the section: who it is at the left, what can be
+   done with it at the right. The list is a child of the section's body
+   (settings.css), which would give it a row's air; the rows have their own,
+   so it is taken back here. */
+.accounts-list,
+.settings-section-body > ul.accounts-list {
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
+  border: 0;
   list-style: none;
 }
 
@@ -53,33 +64,28 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line-soft);
-}
-
-.accounts-row:first-child {
-  border-top: 0;
-  padding-top: 0;
+  gap: 12px 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .accounts-row-text {
   display: flex;
-  flex: 1 1 200px;
+  flex: 1 1 220px;
   flex-direction: column;
   gap: 1px;
   min-width: 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .accounts-row-name {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 8px;
+  gap: 4px 10px;
   color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 620;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
@@ -89,16 +95,29 @@
 
 .accounts-row-meta {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .accounts-row-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
-@media (max-width: 560px) {
+/* A kind of sign-in and what it means: the name at the left, a few lines
+   about it at the right, both from the top. */
+.settings-row.accounts-fact {
+  align-items: flex-start;
+}
+
+.accounts-note {
+  max-width: 62ch;
+  color: var(--ink-2);
+  font-size: var(--text-base);
+}
+
+@media (max-width: 760px) {
   .accounts-row-actions {
     flex-basis: 100%;
   }
@@ -106,6 +125,8 @@
 
 /* ---- the front page's remembered accounts --------------------------- */
 
+/* "Continue as": the accounts this browser knows, as rows under a rule in
+   ink. Each is the whole row to press, with a way to forget it at its end. */
 .remembered {
   display: flex;
   flex-direction: column;
@@ -116,9 +137,9 @@
 .remembered-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--rule);
   list-style: none;
 }
 
@@ -126,9 +147,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
 
 .remembered-open {
@@ -137,20 +156,18 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  min-height: 56px;
-  padding: 8px 12px;
+  min-height: 68px;
+  padding: 10px 0;
   border: 0;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink);
   text-align: left;
   cursor: pointer;
 }
 
-@media (hover: hover) {
-  .remembered-open:hover {
-    background: var(--hover);
-  }
+.remembered-open:focus-visible {
+  outline-offset: -2px;
 }
 
 .remembered-open:disabled {
@@ -161,20 +178,21 @@
 .remembered-text {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   min-width: 0;
   line-height: 1.3;
 }
 
 .remembered-name {
-  font-size: var(--text-sm);
-  font-weight: 620;
+  font-size: var(--text-md);
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
 /* Wraps rather than truncates: a long handle shouldn't widen the page. */
 .remembered-meta {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   overflow-wrap: anywhere;
 }
 
@@ -182,14 +200,28 @@
   flex: none;
   margin-left: auto;
   color: var(--muted);
+  transition:
+    color 0.12s ease,
+    transform 0.12s var(--ease);
 }
 
-.remembered-row > .btn {
-  margin-right: 6px;
+/* Pointed at, the row says it goes somewhere: its arrow darkens and leans. */
+@media (hover: hover) {
+  .remembered-open:hover:not(:disabled) .remembered-chevron {
+    color: var(--ink);
+    transform: translateX(3px);
+  }
+
+  .remembered-open:hover:not(:disabled) .remembered-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
 }
 
 /* ---- notices about the sign-in -------------------------------------- */
 
+/* These float over whatever page is up, so they have what floats has. */
 .session-notices {
   position: fixed;
   z-index: 70;
@@ -207,22 +239,28 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  padding: 10px 12px 10px 14px;
+  padding: 10px 10px 10px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--surface);
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   box-shadow: var(--shadow-lg);
 }
 
+/* The words give way first, so on a phone a button and the way to dismiss
+   the notice stay on its first line beside them. */
 .session-notice > span {
-  flex: 1 1 240px;
+  flex: 1 1 160px;
   min-width: 0;
 }
 
+/* Something went wrong: the words in the danger colour, and a rule of it
+   down the side, so it isn't the colour of the words alone that says so. */
 .session-notice[data-tone='danger'] {
-  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+  box-shadow:
+    inset 3px 0 0 var(--danger),
+    var(--shadow-lg);
   color: var(--danger);
 }
 
@@ -245,4 +283,10 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.posting-permission > span {
+  flex: 1 1 260px;
+  min-width: 0;
 }

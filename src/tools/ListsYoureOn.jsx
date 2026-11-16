@@ -50,7 +50,7 @@ export default function ListsYoureOn({ tool }) {
       />
       <div className="page-body">
         {!archive.meta.lists ? (
-          <p className="card empty">Lists are read at the next sync, along with blocks.</p>
+          <p className="empty">Lists are read at the next sync, along with blocks.</p>
         ) : (
           <>
             <Figures
@@ -62,9 +62,9 @@ export default function ListsYoureOn({ tool }) {
                 { key: 'cur', label: 'Curation lists', value: lists.length - mod.length, note: 'Reading lists, feeds and starter packs' },
               ]}
             />
-            <section className="card card--flush table-card" aria-label="The lists">
+            <section className="table-card" aria-label="The lists">
               <div className="table-bar">
-                <div className="library-cats" role="group" aria-label="Show">
+                <div className="tool-chips" role="group" aria-label="Show">
                   {[
                     ['all', 'All'],
                     ['moderation', 'Moderation'],
@@ -76,36 +76,51 @@ export default function ListsYoureOn({ tool }) {
                   ))}
                 </div>
               </div>
+              {/* Set as blocks on a phone (tools.css); the roles keep it a table for a screen reader. */}
               <div className="table-scroll">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">List</th>
-                      <th scope="col">Made by</th>
-                      <th scope="col">Kind</th>
-                      <th scope="col" className="is-num">
+                <table className="table table--stack lists-table" role="table">
+                  <thead role="rowgroup">
+                    <tr role="row">
+                      <th scope="col" role="columnheader">
+                        List
+                      </th>
+                      <th scope="col" role="columnheader">
+                        Made by
+                      </th>
+                      <th scope="col" role="columnheader">
+                        Kind
+                      </th>
+                      <th scope="col" role="columnheader" className="is-num">
                         Subscribers
                       </th>
-                      <th scope="col">You were added</th>
+                      <th scope="col" role="columnheader">
+                        You were added
+                      </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody role="rowgroup">
                     {shown.map((l) => {
                       const owner = cardFor(archive, l.owner);
                       return (
-                        <tr key={l.uri}>
-                          <td>
+                        <tr key={l.uri} role="row">
+                          <td role="cell" className="col-main">
                             <a href={listUrl(l, owner?.handle)} target="_blank" rel="noopener noreferrer" className="table-link">
                               {l.name || 'Untitled list'}
                               <ExternalLink size={12} aria-hidden="true" />
                             </a>
                           </td>
-                          <td>{owner?.handle ? `@${owner.handle}` : <span className="muted mono">{l.owner}</span>}</td>
-                          <td>
+                          <td role="cell" data-label="Made by">
+                            {owner?.handle ? `@${owner.handle}` : <span className="muted mono lists-did">{l.owner}</span>}
+                          </td>
+                          <td role="cell" className="col-kind">
                             <span className={`badge${l.purpose === 'moderation' ? ' badge--danger' : ''}`}>{l.purpose}</span>
                           </td>
-                          <td className="is-num">{l.purpose === 'moderation' && l.subscribers != null ? l.subscribers.toLocaleString(activeLocale()) : '—'}</td>
-                          <td className="num">{l.memberAt ? formatDateShort(l.memberAt) : '—'}</td>
+                          <td role="cell" className="is-num" data-label="Subscribers" data-empty={l.purpose === 'moderation' && l.subscribers != null ? undefined : ''}>
+                            {l.purpose === 'moderation' && l.subscribers != null ? l.subscribers.toLocaleString(activeLocale()) : '—'}
+                          </td>
+                          <td role="cell" className="num" data-label="Added" data-empty={l.memberAt ? undefined : ''}>
+                            {l.memberAt ? formatDateShort(l.memberAt) : '—'}
+                          </td>
                         </tr>
                       );
                     })}

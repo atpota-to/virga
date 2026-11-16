@@ -1,5 +1,14 @@
-/* The composer: a dialog on a wide screen, a full-height sheet on a phone
-   with the send button at the bottom, under the thumb. Tokens only. */
+/* The composer: a dialog on a wide screen, and on a phone a sheet that
+   fills the screen, with Close, the title and the send button across its
+   top (where the keyboard can't cover them).
+
+   It floats, so the dialog keeps its edge. Inside it nothing is a box but
+   a field and what a post holds (a picture, a video, a link card, a quoted
+   post): the words are set large and plain, a rule in ink parts the post
+   from its settings, and the settings are words in a row (rows between
+   hairlines on a phone). The send button is ink; the accent is only the
+   line beside the post you are writing in, a count's bar and what is
+   chosen. Tokens only, but for the scrim laid over a picture. */
 
 /* ---- the dialog ------------------------------------------------------ */
 
@@ -22,14 +31,13 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-top: 8px;
+  padding-top: 6px;
 }
 
 .composer-dialog .dialog-actions {
   flex: none;
-  padding-top: 10px;
-  padding-bottom: 12px;
-  border-top-color: var(--line);
+  padding-top: 12px;
+  padding-bottom: 16px;
 }
 
 @media (max-width: 640px) {
@@ -47,16 +55,18 @@
     max-height: 100dvh;
   }
 
+  /* The sheet has a bar of its own (.composer-bar) in the dialog's place:
+     the title is still the dialog's name, read from here. */
   .composer-dialog .dialog-head {
-    padding: calc(10px + env(safe-area-inset-top)) 12px 6px 16px;
+    display: none;
   }
 
   .composer-dialog .dialog-body {
-    padding: 4px 16px 16px;
+    padding: 0 20px 20px;
   }
 
   .composer-dialog .dialog-actions {
-    padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom)) 20px;
   }
 }
 
@@ -64,8 +74,48 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
+}
+
+/* On a phone: Close, what this is, and the send button, held at the top of
+   the sheet while the post scrolls under it. */
+.composer-bar {
+  position: sticky;
+  z-index: 6;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  margin: 0 -20px -6px;
+  padding: calc(6px + env(safe-area-inset-top)) 12px 6px 20px;
+  background: var(--surface);
+}
+
+.composer-bar-close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.composer-bar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .composer-notice,
@@ -89,6 +139,8 @@
 
 /* ---- posting as ------------------------------------------------------ */
 
+/* One line: the picture, "Posting as", the name. With more than one
+   account it is a button, and says so with a caret. */
 .post-as {
   position: relative;
   align-self: flex-start;
@@ -100,47 +152,42 @@
   align-items: center;
   gap: 8px;
   max-width: 100%;
-  min-height: 40px;
-  padding: 4px 10px 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: var(--pill);
-  background: var(--surface);
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
   color: var(--ink);
+  font: inherit;
   text-align: left;
+}
+
+button.post-as-button {
   cursor: pointer;
 }
 
-.post-as-button--static {
-  border-color: transparent;
-  padding-left: 0;
-  cursor: default;
-}
-
-@media (hover: hover) {
-  button.post-as-button:hover {
-    background: var(--hover);
-  }
+.post-as-button .avatar {
+  width: 26px;
+  height: 26px;
 }
 
 .post-as-text {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
   gap: 0 6px;
   min-width: 0;
 }
 
 .post-as-label {
-  width: 100%;
+  flex: none;
   color: var(--muted);
-  font-size: var(--text-xs);
-  line-height: 1.2;
+  font-size: var(--text-sm);
 }
 
 .post-as-name {
   overflow: hidden;
   font-size: var(--text-sm);
-  font-weight: 620;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -148,14 +195,25 @@
 .post-as-handle {
   overflow: hidden;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Beside the name in the line; under it in the list of accounts. */
+.post-as-button .post-as-handle {
+  flex: 0 100 auto;
 }
 
 .post-as-caret {
   flex: none;
   color: var(--muted);
+}
+
+@media (hover: hover) {
+  button.post-as-button:hover .post-as-caret {
+    color: var(--ink);
+  }
 }
 
 .post-as-note {
@@ -167,7 +225,7 @@
   z-index: 40;
   top: calc(100% + 6px);
   left: 0;
-  width: min(22rem, calc(100vw - 32px));
+  width: min(22rem, calc(100vw - 40px));
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -182,9 +240,9 @@
 }
 
 .post-as-hint {
-  padding: 4px 8px 8px;
+  padding: 6px 10px 8px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.4;
 }
 
@@ -200,18 +258,21 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-  min-height: 44px;
-  padding: 6px 8px;
+  min-height: 48px;
+  padding: 6px 10px;
   border: 0;
   border-radius: var(--radius);
   background: transparent;
   color: var(--ink);
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-.post-as-option[aria-pressed='true'] {
-  background: var(--accent-wash);
+.post-as-option .post-as-text {
+  flex-direction: column;
+  align-items: stretch;
+  line-height: 1.3;
 }
 
 .post-as-option:disabled {
@@ -228,7 +289,7 @@
 .post-as-check {
   flex: none;
   margin-left: auto;
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 /* ---- the posts ------------------------------------------------------- */
@@ -244,6 +305,7 @@
 }
 
 .post-block {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -251,24 +313,38 @@
 }
 
 .post-blocks[data-thread] .post-block {
-  position: relative;
-  padding: 0 0 16px 18px;
+  padding: 0 0 18px 18px;
 }
 
-/* A thread is drawn as one line running down its posts. */
-.post-blocks[data-thread] .post-block::before {
+/* A line down the side of the post you are writing in, in the accent: with
+   the words set straight on the dialog there is no field's edge to light.
+   A thread is drawn as one such line running down its posts, quiet until
+   one of them is being written in. */
+.post-block::before {
   content: '';
   position: absolute;
   top: 4px;
-  bottom: 0;
-  left: 4px;
+  bottom: 4px;
+  left: -14px;
   width: 2px;
   border-radius: var(--pill);
+  background: transparent;
+  transition: background-color 0.12s ease;
+}
+
+.post-blocks[data-thread] .post-block::before {
+  bottom: 0;
+  left: 4px;
   background: var(--line-2);
 }
 
 .post-blocks[data-thread] .post-block:last-child::before {
-  bottom: 16px;
+  bottom: 18px;
+}
+
+.post-block:focus-within::before,
+.post-blocks[data-thread] .post-block:focus-within::before {
+  background: var(--focus-ring);
 }
 
 .post-block-head {
@@ -276,12 +352,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-height: 30px;
 }
 
 .post-block-number {
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .post-block-tools,
@@ -290,11 +367,17 @@
   gap: 2px;
 }
 
+/* The buttons that add to a post sit on its edge, not a button's padding in
+   from it. */
+.post-block-actions {
+  margin-left: -7px;
+}
+
 .post-block-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 8px 12px;
 }
 
 /* The character count under a post. Named with its field-hint class, because
@@ -357,30 +440,28 @@
   margin-top: -4px;
 }
 
-.add-post {
+/* Words with a plus before them, on the dialog's own edge. */
+.btn.add-post {
   align-self: flex-start;
+  margin: -4px 0 0 -12px;
+  color: var(--ink);
+  font-weight: 500;
 }
 
-/* ---- the text field: a transparent textarea over the coloured layer ---- */
+/* ---- the text: a transparent textarea over the layer that draws it ---- */
 
 .post-editor-wrap {
   position: relative;
 }
 
+/* No field: the words are set large, straight on the dialog. The line down
+   the post's side (.post-block::before) says where the caret is. */
 .post-editor {
   position: relative;
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.post-editor:focus-within {
-  border-color: var(--accent);
-  box-shadow: var(--focus);
 }
 
 .post-editor[data-disabled] {
-  background: var(--surface-2);
+  opacity: 0.6;
 }
 
 /* Both layers share every metric; only colour may differ between them, or
@@ -390,13 +471,14 @@
   box-sizing: border-box;
   width: 100%;
   margin: 0;
-  padding: 10px 12px;
+  padding: 2px 0;
   border: 0;
   font-family: var(--sans);
-  font-size: var(--text-md);
-  font-weight: 400;
-  letter-spacing: normal;
-  line-height: 1.5;
+  font-size: 1.25rem;
+  font-variant-numeric: normal;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.4;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: normal;
@@ -415,7 +497,7 @@
 .post-editor-input {
   position: relative;
   display: block;
-  min-height: 72px;
+  min-height: 88px;
   overflow: hidden;
   resize: none;
   background: transparent;
@@ -434,10 +516,15 @@
   color: transparent;
 }
 
+/* What Bluesky will make a link of (a mention, an address, a tag): ink with
+   a line under it, as a link is anywhere in Virga. Only a decoration, so the
+   letters keep their places over the textarea's. */
 .hl--mention,
 .hl--link,
 .hl--tag {
-  color: var(--accent-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
 .hl--syntax {
@@ -453,7 +540,7 @@
 .suggest-pop {
   margin-top: 6px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -461,7 +548,7 @@
 
 .suggest-list {
   margin: 0;
-  padding: 4px;
+  padding: 6px;
   list-style: none;
 }
 
@@ -478,7 +565,7 @@
   max-height: 16rem;
   overflow-y: auto;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-md);
 }
@@ -488,13 +575,14 @@
   align-items: center;
   gap: 10px;
   min-height: 40px;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  border-radius: var(--radius);
   cursor: pointer;
 }
 
+/* The one the arrow keys are on. */
 .suggest-item[aria-selected='true'] {
-  background: var(--accent-wash);
+  background: var(--hover);
 }
 
 @media (hover: hover) {
@@ -507,12 +595,13 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  line-height: 1.3;
 }
 
 .suggest-name {
   overflow: hidden;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -520,7 +609,7 @@
 .suggest-meta {
   overflow: hidden;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -530,7 +619,7 @@
 }
 
 .suggest-status {
-  padding: 10px 12px;
+  padding: 12px 14px;
   color: var(--muted);
   font-size: var(--text-sm);
 }
@@ -540,16 +629,23 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 40px;
-  padding: 8px 12px;
+  min-height: 42px;
+  padding: 8px 16px;
   border: 0;
-  border-top: 1px solid var(--line-soft);
-  background: var(--surface-2);
-  color: var(--accent-ink);
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
+}
+
+@media (hover: hover) {
+  .suggest-foot:hover {
+    background: var(--hover);
+  }
 }
 
 /* ---- images and video ------------------------------------------------ */
@@ -557,7 +653,7 @@
 .media-block {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .image-grid {
@@ -573,17 +669,24 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Three: the first stands as tall as the two beside it. */
 .image-grid[data-count='3'] > :first-child {
   grid-row: span 2;
+  height: 100%;
+  aspect-ratio: auto;
 }
 
+/* A picture keeps its edge: it is one of the things a post holds. The
+   scrim is what its buttons sit on, and is the same dark at night as by
+   day, since it is the picture behind it that has to be read through. */
 .image-tile {
+  --picture-scrim: rgb(15 27 51 / 0.72);
   position: relative;
   min-height: 96px;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface-3);
 }
 
@@ -608,35 +711,40 @@
   place-items: center;
   padding: 8px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-align: center;
 }
 
+/* "+ ALT" on the scrim until the picture is described; then a pill in the
+   dialog's own colours, with a tick. */
 .image-alt {
   position: absolute;
-  bottom: 6px;
-  left: 6px;
+  bottom: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   min-height: 28px;
-  padding: 2px 8px;
+  padding: 0 10px;
   border: 0;
-  border-radius: var(--radius-sm);
-  background: var(--scrim);
-  color: var(--on-accent);
+  border-radius: var(--pill);
+  background: var(--picture-scrim);
+  color: #ffffff;
   font-size: var(--text-xs);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
 }
 
 .image-alt[data-done] {
-  background: color-mix(in srgb, var(--ink) 75%, transparent);
-  color: var(--bg);
+  background: var(--surface);
+  color: var(--ink);
 }
 
 .image-tools {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 8px;
+  right: 8px;
   display: inline-flex;
   gap: 4px;
 }
@@ -649,14 +757,22 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--scrim);
-  color: var(--on-accent);
+  background: var(--picture-scrim);
+  color: #ffffff;
   cursor: pointer;
 }
 
 .image-tool:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/* On a picture the ring needs its own ground to show against. */
+.image-alt:focus-visible,
+.image-tool:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 0;
+  box-shadow: 0 0 0 4px var(--picture-scrim);
 }
 
 @media (pointer: coarse) {
@@ -671,17 +787,15 @@
 }
 
 .video-block {
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  gap: 10px;
 }
 
 .video-preview {
   display: block;
   width: 100%;
   max-height: 320px;
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
   background: var(--surface-3);
 }
 
@@ -718,22 +832,22 @@
 
 /* ---- quotes, records and link cards ----------------------------------- */
 
+/* What a post holds besides its words keeps an edge, as it will where the
+   post is read. */
 .embed-card {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
-  padding: 10px 12px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border-radius: var(--radius-lg);
 }
 
 .embed-card--post {
   padding: 0;
   border: 0;
-  background: transparent;
 }
 
 .embed-card.embed-card--post .post-preview {
@@ -754,9 +868,9 @@
   height: 40px;
   place-items: center;
   overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  color: var(--ink-2);
 }
 
 .embed-icon img {
@@ -780,8 +894,8 @@
 
 .embed-title {
   overflow: hidden;
-  font-size: var(--text-sm);
-  font-weight: 620;
+  font-size: var(--text-base);
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -789,7 +903,7 @@
 .embed-sub {
   overflow: hidden;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -805,13 +919,14 @@
   display: inline-flex;
   flex: none;
   gap: 2px;
+  margin: -4px -4px 0 0;
 }
 
 .link-thumb {
   flex: none;
   width: 72px;
   height: 72px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: var(--surface-3);
   object-fit: cover;
 }
@@ -820,7 +935,7 @@
   display: grid;
   place-items: center;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .link-thumb--lg {
@@ -839,6 +954,13 @@
   display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+@media (max-width: 420px) {
+  .link-thumb:not(.link-thumb--lg) {
+    width: 56px;
+    height: 56px;
+  }
 }
 
 /* ---- replying to ----------------------------------------------------- */
@@ -862,53 +984,217 @@
   gap: 6px;
   color: var(--muted);
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
 }
 
-/* ---- the options under the posts ------------------------------------ */
+/* ---- the settings under the posts ------------------------------------ */
 
+/* A rule in ink parts the post from what is set for it. On a wide screen
+   those are words in a row, each with its picture; pressing one opens it. */
 .composer-options {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line-soft);
+  gap: 2px 18px;
+  padding: 10px 40px 0 0;
+  border-top: 1px solid var(--rule);
 }
 
-.composer-options > .btn {
+.composer-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   max-width: 100%;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.composer-option > svg {
+  flex: none;
+}
+
+@media (hover: hover) {
+  .composer-option:hover:not(:disabled) {
+    color: var(--ink);
+  }
+}
+
+/* The one whose field is open under the row (Tags). */
+.composer-option[aria-pressed='true'] {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.composer-option:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.composer-option-short {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Holds the "More for this post" menu so its place can be measured. */
+/* A phone's row has the setting's name and its value apart; a wide screen
+   has the one short phrase. */
+.composer-option-label,
+.composer-option-value,
+.composer-option-chevron {
+  display: none;
+}
+
+/* Holds the "More for this post" menu so its place can be measured. It
+   keeps the row's right-hand corner, however the words before it wrap. */
 .composer-more {
+  position: absolute;
+  top: 11px;
+  right: -7px;
   display: inline-flex;
 }
 
-.composer-options .btn[aria-pressed='true'] {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+/* The tags field opens under the row it belongs to: after the whole row on
+   a wide screen, right under its own on a phone. */
+.composer-options > .tags-field {
+  flex: 1 1 100%;
+  order: 9;
+  padding: 6px 0 2px;
+}
+
+@media (max-width: 640px) {
+  .composer-options {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+  }
+
+  .composer-option {
+    gap: 12px;
+    min-height: 52px;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    color: var(--ink);
+    font-size: var(--text-base);
+  }
+
+  .composer-option > svg:first-child {
+    color: var(--ink-2);
+  }
+
+  .composer-option-short {
+    display: none;
+  }
+
+  .composer-option-label {
+    display: block;
+    flex: none;
+    font-weight: 500;
+  }
+
+  .composer-option-value {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-weight: 400;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .composer-option-chevron {
+    display: block;
+    color: var(--muted);
+  }
+
+  .composer-options > .tags-field {
+    order: 0;
+    padding: 14px 0 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* More is the last row, with its name beside the dots. */
+  .composer-more {
+    position: static;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .composer-more > .menu {
+    display: flex;
+    width: 100%;
+  }
+
+  .composer-more .menu-button {
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    padding: 0;
+    border-radius: 0;
+    color: var(--ink);
+    font-size: var(--text-base);
+    font-weight: 500;
+  }
+
+  .composer-more .menu-button:hover:not(:disabled) {
+    background: none;
+  }
+
+  .composer-more .menu-button > svg {
+    color: var(--ink-2);
+  }
+
+  .composer-more .composer-option-label {
+    flex: 1;
+    text-align: left;
+  }
+
+  .composer-more .menu-list {
+    right: auto;
+    left: 0;
+  }
 }
 
 .composer-timer-note {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   margin-top: -4px;
 }
 
+/* A thing to press that reads as words: ink, with a line under it. */
 .link-button {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent-ink);
+  color: var(--ink);
   font: inherit;
-  font-weight: 560;
+  font-weight: 500;
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
   cursor: pointer;
+}
+
+@media (hover: hover) {
+  .link-button:hover:not(:disabled) {
+    text-decoration-thickness: 2px;
+  }
 }
 
 .tags-field,
@@ -932,18 +1218,18 @@
   min-width: 0;
 }
 
+/* A tag or a language that has been chosen, with the way to take it off. */
 .lang-chip {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  min-height: 28px;
-  padding: 0 4px 0 10px;
+  min-height: 30px;
+  padding: 0 4px 0 12px;
   border: 1px solid var(--line-2);
   border-radius: var(--pill);
-  background: var(--surface-2);
-  color: var(--ink-2);
+  color: var(--ink);
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
 }
 
 .lang-chip-remove {
@@ -967,6 +1253,10 @@
 }
 
 @media (pointer: coarse) {
+  .lang-chip {
+    min-height: 38px;
+  }
+
   .lang-chip-remove {
     width: 32px;
     height: 32px;
@@ -975,21 +1265,21 @@
 
 /* ---- when it goes out ------------------------------------------------ */
 
+/* Chosen, so it has the rule down its side that a chosen thing has. */
 .when-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  background: var(--accent-wash);
+  gap: 10px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--accent);
 }
 
 .when-panel-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px 8px;
 }
 
 /* ---- busy, and the action bar ---------------------------------------- */
@@ -999,10 +1289,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
 }
 
 .composer-busy-bar {
@@ -1015,12 +1301,14 @@
   font-size: var(--text-sm);
 }
 
+/* The foot: why the main button is off (when it is), the two other ways to
+   send it that get a button of their own, and the main button. */
 .composer-actions {
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px 12px;
   min-width: 0;
 }
 
@@ -1028,10 +1316,25 @@
   flex: 1;
   min-width: 0;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
+.composer-also {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Save as draft is words alone; Schedule is the outline. */
+.btn.composer-also-draft {
+  padding: 0 10px;
+  color: var(--ink);
+}
+
+/* The main button and the caret that lists the rest: one ink pill, with a
+   seam between its halves. */
 .publish-split {
   position: relative;
   display: inline-flex;
@@ -1039,17 +1342,31 @@
 }
 
 .publish-main {
-  min-width: 96px;
+  min-width: 88px;
+  padding-right: 14px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 .publish-caret {
-  width: var(--control-h);
-  padding: 0;
-  border-left: 1px solid color-mix(in srgb, var(--on-accent) 35%, transparent);
+  width: 40px;
+  padding: 0 4px 0 0;
+  border-left: 1px solid color-mix(in srgb, var(--on-btn) 28%, transparent);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+/* The main half can be off while the caret is not (its list says why), so
+   it keeps the pill's ink and only its words go faint: the two halves stay
+   one button. */
+.publish-main:disabled {
+  opacity: 1;
+  color: color-mix(in srgb, var(--on-btn) 55%, transparent);
+}
+
+.publish-caret:disabled {
+  opacity: 1;
+  color: color-mix(in srgb, var(--on-btn) 55%, transparent);
 }
 
 .publish-menu {
@@ -1063,11 +1380,11 @@
 }
 
 .publish-foot {
-  margin: 4px 6px 2px;
-  padding: 8px 4px 4px;
-  border-top: 1px solid var(--line-soft);
+  margin: 6px 4px 2px;
+  padding: 8px 6px 4px;
+  border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.4;
 }
 
@@ -1079,38 +1396,35 @@
 .publish-menu .menu-item[aria-current='true'] .menu-item-label::after {
   content: ' · main button';
   color: var(--muted);
-  font-weight: 450;
+  font-weight: 400;
 }
 
 @media (max-width: 640px) {
+  /* The why takes the first line; the buttons sit under it, at the right. */
   .composer-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 44px;
+  }
+
+  .composer-why {
+    flex: 1 1 100%;
+    padding-right: 8px;
   }
 
   .composer-why:empty {
     display: none;
   }
 
-  /* The send button runs the width of the screen, under the thumb. */
-  .publish-split {
-    display: flex;
+  .composer-also .btn {
+    min-height: 44px;
   }
 
   .publish-main {
-    flex: 1;
-    min-height: 48px;
-    font-size: var(--text-md);
-  }
-
-  .publish-caret {
-    width: 52px;
-    min-height: 48px;
+    min-width: 0;
   }
 
   .publish-menu {
-    width: 100%;
+    width: min(18rem, calc(100vw - 24px));
   }
 }
 
@@ -1123,9 +1437,9 @@
   display: grid;
   place-items: center;
   border: 2px dashed var(--accent);
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--accent-wash) 92%, transparent);
-  color: var(--accent-ink);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  color: var(--ink);
   font-weight: 600;
   pointer-events: none;
 }
@@ -1133,13 +1447,16 @@
 .composer-skeleton {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .composer-skeleton .post-block {
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: 12px;
+  padding: 6px 0 4px;
+}
+
+.composer-skeleton .composer-options {
+  gap: 8px;
 }
 
 .composer-dialog .skeleton,
@@ -1151,7 +1468,7 @@
 }
 
 .skeleton-line {
-  height: 12px;
+  height: 14px;
   width: 100%;
 }
 
@@ -1161,7 +1478,8 @@
 
 .skeleton-chip {
   width: 96px;
-  height: 28px;
+  height: 24px;
+  border-radius: var(--pill);
 }
 
 .post-preview--skeleton {
@@ -1174,12 +1492,20 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .composer-dialog .skeleton,
+  .dialog .skeleton,
+  .image-tile--busy {
+    animation: none;
+  }
+}
+
 /* ---- continue a thread ---------------------------------------------- */
 
 .continue-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1190,15 +1516,17 @@
   width: 100%;
   padding: 0;
   border: 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: none;
+  color: inherit;
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 @media (hover: hover) {
   .continue-item:hover .post-preview {
-    border-color: var(--accent-line);
+    border-color: var(--ink);
   }
 }
 
@@ -1208,6 +1536,7 @@
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
+  gap: 14px;
 }
 
 .gates-editor--full .gates-quotes {
@@ -1217,17 +1546,21 @@
 .gates-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 6px;
 }
 
+/* The groups "Some people" is made of, hung on a hairline under the key
+   that opened them. */
 .gates-rules {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: 10px;
+  min-width: 0;
+  margin: 2px 0 0;
+  padding: 4px 0 4px 14px;
+  border: 0;
+  border-left: 1px solid var(--line);
 }
 
 .gates-rule {
@@ -1238,13 +1571,30 @@
   margin-top: 2px;
 }
 
-/* ---- settings (ComposerDefaults) ------------------------------------ */
-
-.settings-row.settings-row--stack {
-  flex-direction: column;
-  align-items: stretch;
+@media (pointer: coarse) {
+  .gates-rules {
+    gap: 14px;
+  }
 }
 
-.settings-row--stack .settings-row-text {
-  flex: none;
+/* ---- settings (ComposerDefaults) ------------------------------------ */
+
+/* A row whose control is taller than a line: the words at its left stay at
+   the top, and what is at its right is stacked. */
+.settings-row.settings-row--tall {
+  align-items: flex-start;
+}
+
+.settings-row-control.settings-row-control--stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.settings-row-control--stack > .lang-picker,
+.settings-row-control--stack > .gates-editor,
+.settings-row-control--stack > .field {
+  width: 100%;
+  max-width: 420px;
 }

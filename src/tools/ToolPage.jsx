@@ -1,13 +1,15 @@
 // The tools: small utilities for looking after an account, each saying what
-// it can touch. The hub lists them; each has a page of its own.
+// it can touch. The Tools page lists them, a row each under the heading of
+// its kind; each has a page of its own.
 
+import { ChevronRight } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { Link, navigate } from '../lib/router.jsx';
 import { followBackModel, followerLogModel, listsModel } from '../reports/models.js';
 import { PageHeader } from '../shell/bits.jsx';
 import Badge from '../components/AccessBadge.jsx';
-import { TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
+import { ACCESS, TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
 import FollowCleanup from './FollowCleanup.jsx';
 import UnfollowTracker from './UnfollowTracker.jsx';
 import FollowBack from './FollowBack.jsx';
@@ -60,9 +62,9 @@ export default function ToolPage({ toolKey }) {
   if (!tool || !Page) {
     return (
       <div className="page-body">
-        <div className="card empty-page">
-          <h1 className="card-title">{tool ? `${tool.name} isn’t built yet` : 'There’s no tool here'}</h1>
-          {tool && <p className="card-sub">{tool.desc}</p>}
+        <div className="empty-page">
+          <h1 className="page-title">{tool ? `${tool.name} isn’t built yet` : 'There’s no tool here'}</h1>
+          {tool && <p className="page-sub">{tool.desc}</p>}
           <div>
             <Button onClick={() => navigate('/tools')}>See every tool</Button>
           </div>
@@ -73,7 +75,7 @@ export default function ToolPage({ toolKey }) {
   return <Page tool={tool} />;
 }
 
-/** A line of what each tool has to say right now, for its tile. */
+/** A line of what each tool has to say right now, for its row. */
 function useToolStats(archive) {
   const built = Boolean(archive.meta.posts);
   if (!built) return {};
@@ -93,54 +95,77 @@ function useToolStats(archive) {
   };
 }
 
+/**
+ * What a tool can touch, as a quiet line under its description: the same
+ * words as the badge in its own header, without the pill.
+ */
+function AccessLine({ tool }) {
+  const access = ACCESS[tool.access];
+  if (!access) return null;
+  const Icon = access.icon;
+  return (
+    <span className="tool-row-access" data-access={tool.access}>
+      <Icon size={13} aria-hidden="true" />
+      {tool.planned ? `Not built yet. ${access.label}` : access.label}
+    </span>
+  );
+}
+
 export function ToolsIndex() {
   const archive = useArchive();
   const stats = useToolStats(archive);
   return (
     <>
-      <PageHeader title="Tools" sub="Small utilities for looking after your account. Each says what it can touch." />
-      <div className="page-body tools-index">
-        {TOOL_SECTIONS.map((section) => (
-          <section key={section.key} className="tools-section" aria-labelledby={`tools-${section.key}`}>
-            <div className="tools-section-head">
-              <h2 id={`tools-${section.key}`} className="card-title">
-                {section.title}
-              </h2>
-              <p className="card-sub">{section.desc}</p>
-            </div>
-            <div className="tool-grid">
-              {TOOLS.filter((t) => t.section === section.key).map((t) => {
-                const Icon = t.icon;
-                const inner = (
-                  <>
-                    <span className="tool-tile-top">
-                      <span className="tool-tile-icon" aria-hidden="true">
-                        <Icon size={18} />
+      <PageHeader title="Tools" sub="Small tools for looking after your account. Each says what it can touch before it touches it." />
+      <div className="page-body">
+        <div className="tools-sections">
+          {TOOL_SECTIONS.map((section) => (
+            <section key={section.key} className="tools-section" aria-labelledby={`tools-${section.key}`}>
+              <div className="tools-section-head">
+                <h2 id={`tools-${section.key}`} className="card-title">
+                  {section.title}
+                </h2>
+                <p className="card-sub">{section.desc}</p>
+              </div>
+              <ul className="tool-list">
+                {TOOLS.filter((t) => t.section === section.key).map((t) => {
+                  const Icon = t.icon;
+                  const inner = (
+                    <>
+                      <span className="tool-row-icon" aria-hidden="true">
+                        <Icon size={20} />
                       </span>
-                      <span className="tool-tile-text">
-                        <span className="tool-tile-name">{t.name}</span>
-                        <span className="tool-tile-desc">{t.desc}</span>
+                      <span className="tool-row-text">
+                        <span className="tool-row-name">{t.name}</span>
+                        <span className="tool-row-desc">{t.desc}</span>
+                        <span className="tool-row-meta">
+                          <AccessLine tool={t} />
+                          {!t.planned && stats[t.key] && <span className="tool-row-stat num">{stats[t.key]}</span>}
+                        </span>
                       </span>
-                    </span>
-                    <span className="tool-tile-foot">
-                      <AccessBadge access={t.access} />
-                      <span className="tool-tile-stat num">{t.planned ? 'Not built yet' : stats[t.key] || ''}</span>
-                    </span>
-                  </>
-                );
-                return t.planned ? (
-                  <div key={t.key} className="card tool-tile is-planned">
-                    {inner}
-                  </div>
-                ) : (
-                  <Link key={t.key} to={`/tools/${t.key}`} className="card tool-tile">
-                    {inner}
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+                      {!t.planned && (
+                        <span className="tool-row-go" aria-hidden="true">
+                          <ChevronRight size={16} />
+                        </span>
+                      )}
+                    </>
+                  );
+                  return (
+                    <li key={t.key}>
+                      {t.planned ? (
+                        <div className="tool-row is-planned">{inner}</div>
+                      ) : (
+                        <Link to={`/tools/${t.key}`} className="tool-row">
+                          {inner}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
     </>
   );

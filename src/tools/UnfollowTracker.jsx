@@ -59,9 +59,9 @@ export default function UnfollowTracker({ tool }) {
       />
       <div className="page-body">
         {!m.tracking ? (
-          <div className="card empty-page">
-            <h2 className="card-title">Counting starts with your next sync</h2>
-            <p className="card-sub">
+          <div className="tool-empty">
+            <h2 className="tool-empty-title">Counting starts with your next sync</h2>
+            <p className="tool-empty-text">
               Virga compares your follower list at each sync with the one before. Your archive has one list so far; the next sync will
               have a second to compare it with, and from then on every unfollow lands here.
             </p>

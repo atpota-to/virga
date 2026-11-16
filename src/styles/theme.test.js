@@ -1,16 +1,24 @@
 // The promise in the README is that the colours are checked, not eyeballed:
-// contrast against their own surface, and the two series on a chart still
-// apart for colour-blind eyes. This is the check. It reads theme.css the way
-// a browser would (which blocks apply to <html> for a theme, an accent and a
-// contrast setting, and which of them wins), and holds every combination to
-// the same numbers. A colour changed in theme.css, or an accent added to it,
-// has to pass here.
+// contrast against their own ground and against the sky, and the two series
+// on a chart still apart for colour-blind eyes. This is the check. It reads
+// theme.css the way a browser would (which blocks apply to <html> for a sky,
+// an accent and a contrast setting, and which of them wins), and holds every
+// combination to the same numbers. A colour changed in theme.css, or an
+// accent added to it, has to pass here.
 //
 // What is measured, and against what:
 //
 //   Contrast is WCAG 2's ratio. Words need 4.5:1 (AA), and 7:1 (AAA) in high
 //   contrast. Marks that are not words (a line on a chart, a focus ring, the
 //   edge of a control) need 3:1 (WCAG 1.4.11), and 4.5:1 in high contrast.
+//
+//   The grounds are the page (--bg), what floats over it (--surface), and
+//   the sky. The sky is a wash that fades from --sky-top through --sky-mid
+//   into the page, so a colour that holds against all three of those holds
+//   everywhere on it. A page's title and the words under it sit at the very
+//   top of the wash; its first chart starts further down, so marks are held
+//   to --sky-mid and the page. A colour with some transparency (the lines
+//   are a tint of the ink) is measured as it lands on the ground under it.
 //
 //   "Apart" is the distance between two colours in OKLab, times 100, once as
 //   they are and once each as protanopia, deuteranopia and tritanopia see
@@ -22,7 +30,8 @@
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ACCENT_CHOICES, themeColor } from '../lib/preferences.jsx';
+import { ACCENT_CHOICES, skyColor } from '../lib/preferences.jsx';
+import { SKY_PHASES, themeOf } from '../lib/sky.js';
 
 const WORDS = { normal: 4.5, high: 7 };
 const MARKS = { normal: 3, high: 4.5 };
@@ -32,8 +41,11 @@ const APART_COLOUR_BLIND = 15;
 /** The least two neighbouring steps of the heatmap ramp differ by, in OKLab lightness. */
 const RAMP_STEP = 0.03;
 
-const THEMES = ['light', 'dark'];
 const CONTRASTS = ['normal', 'high'];
+/** The grounds a word can sit on: the page, what floats, the quiet fills, and the two ends of the sky. */
+const GROUNDS = ['--bg', '--surface', '--surface-2', '--surface-3', '--hover', '--sky-top', '--sky-mid'];
+/** Where a chart, a switch or a chosen thing's edge can sit. */
+const MARK_GROUNDS = ['--bg', '--surface', '--sky-mid'];
 
 /** The tokens an accent gives. Every accent block has to declare all of them, or a stronger block's value leaks through. */
 const ACCENT_TOKENS = [
@@ -120,8 +132,8 @@ function parseSelector(selector) {
 
 const holds = (compound, attrs) => compound.every((p) => p.root || attrs[p.attr] === p.value);
 
-/** What <html> carries for a theme, an accent and a contrast setting. */
-const rootAttrs = ({ theme, accent, contrast }) => ({ 'data-theme': theme, 'data-accent': accent, 'data-contrast': contrast, 'data-density': 'comfortable' });
+/** What <html> carries for a sky (and the theme it brings), an accent and a contrast setting. */
+const rootAttrs = ({ sky, accent, contrast }) => ({ 'data-sky': sky, 'data-theme': themeOf(sky), 'data-accent': accent, 'data-contrast': contrast, 'data-density': 'comfortable' });
 
 /** Whether a selector picks out <html> in this state. */
 function matchesRoot(sel, state) {
@@ -190,9 +202,16 @@ const luminance = (rgb) => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
 
-/** WCAG 2's contrast ratio between two solid colours. */
+/** A colour as it lands on a solid ground: itself, or blended into the ground by its own transparency. */
+function over(value, ground) {
+  const top = parseColour(value);
+  const under = solid(ground);
+  return top.rgb.map((c, i) => c * top.alpha + under[i] * (1 - top.alpha));
+}
+
+/** WCAG 2's contrast ratio between a colour and the solid ground it is drawn on. */
 function contrast(a, b) {
-  const [hi, lo] = [luminance(solid(a)), luminance(solid(b))].sort((x, y) => y - x);
+  const [hi, lo] = [luminance(over(a, b)), luminance(solid(b))].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 }
 
@@ -238,8 +257,8 @@ function apart(a, b, kind = null) {
 
 /* ---- the checks ------------------------------------------------------- */
 
-const STATES = THEMES.flatMap((theme) => CONTRASTS.flatMap((contrast) => ACCENT_CHOICES.map((accent) => ({ theme, contrast, accent }))));
-const nameOf = ({ theme, contrast, accent }) => `${accent}, ${theme}${contrast === 'high' ? ', high contrast' : ''}`;
+const STATES = SKY_PHASES.flatMap((sky) => CONTRASTS.flatMap((contrast) => ACCENT_CHOICES.map((accent) => ({ sky, contrast, accent }))));
+const nameOf = ({ sky, contrast, accent }) => `${accent}, ${sky}${contrast === 'high' ? ', high contrast' : ''}`;
 
 /**
  * Run `check(tokens, state, need)` for every state, where `need(label, ratio,
@@ -260,16 +279,33 @@ function everyState(check, states = STATES) {
 describe('theme.css', () => {
   it('is read here the way a browser reads it', () => {
     // The plain page, and the strongest combination, against values known by heart.
-    expect(tokensFor({ theme: 'light', contrast: 'normal', accent: 'blue' })).toMatchObject({ '--bg': '#f5f6f8', '--accent': '#1d5ee0', '--chart-2': '#e8553a', '--up': '#1849b5' });
-    expect(tokensFor({ theme: 'dark', contrast: 'normal', accent: 'blue' })).toMatchObject({ '--bg': '#0c0e12', '--accent': '#2f6fd6', '--focus-ring': '#7ab0f5' });
-    const strongest = tokensFor({ theme: 'dark', contrast: 'high', accent: 'amber' });
+    expect(tokensFor({ sky: 'day', contrast: 'normal', accent: 'blue' })).toMatchObject({ '--bg': '#ffffff', '--sky-top': '#b9d5ff', '--accent': '#1d5ee0', '--chart-2': '#e8553a', '--up': '#1849b5', '--btn': '#0f1b33' });
+    expect(tokensFor({ sky: 'dusk', contrast: 'normal', accent: 'blue' })).toMatchObject({ '--bg': '#ffffff', '--sky-top': '#cbc5f4', '--ink': '#0f1b33' });
+    const night = tokensFor({ sky: 'night', contrast: 'normal', accent: 'blue' });
+    expect(night).toMatchObject({ '--bg': '#0d152b', '--sky-top': '#0e1a3a', '--ink': '#f2f5fc', '--on-btn': '#0d152b' });
+    expect(night['--focus-ring']).toBe(night['--accent-ink']);
+    const strongest = tokensFor({ sky: 'night', contrast: 'high', accent: 'amber' });
     expect(strongest['--bg']).toBe('#000000');
+    expect(strongest['--sky-top']).toBe('#000000');
     expect(strongest['--focus-ring']).toBe(strongest['--accent']);
     expect(strongest['--down']).toBe(strongest['--second-ink']);
   });
 
+  it('gives dawn, day and dusk the same page under different skies, and night a page of its own', () => {
+    const page = (sky) => {
+      const t = tokensFor({ sky, contrast: 'normal', accent: 'blue' });
+      const rest = Object.fromEntries(Object.entries(t).filter(([name]) => !name.startsWith('--sky-')));
+      return { top: t['--sky-top'], mid: t['--sky-mid'], rest: JSON.stringify(rest) };
+    };
+    const [dawn, day, dusk, night] = SKY_PHASES.map(page);
+    expect(dawn.rest).toBe(day.rest);
+    expect(dusk.rest).toBe(day.rest);
+    expect(night.rest).not.toBe(day.rest);
+    expect(new Set([dawn.top, day.top, dusk.top, night.top]).size).toBe(4);
+  });
+
   it('has an accent for every choice in Settings, and blue for a stamp it does not know', () => {
-    const light = (accent) => tokensFor({ theme: 'light', contrast: 'normal', accent })['--accent'];
+    const light = (accent) => tokensFor({ sky: 'day', contrast: 'normal', accent })['--accent'];
     expect(new Set(ACCENT_CHOICES.map(light)).size).toBe(ACCENT_CHOICES.length);
     expect(light('chartreuse')).toBe(light('blue'));
   });
@@ -294,7 +330,7 @@ describe('theme.css', () => {
   it('resolves every colour it is about to measure', () => {
     for (const state of STATES) {
       const t = tokensFor(state);
-      for (const name of [...ACCENT_TOKENS, '--bg', '--surface', '--ink', '--muted', '--line', '--focus-ring', '--up', '--down']) {
+      for (const name of [...ACCENT_TOKENS, ...GROUNDS, '--ink', '--muted', '--line', '--focus-ring', '--up', '--down', '--btn', '--on-btn']) {
         expect(() => parseColour(t[name]), `${nameOf(state)} ${name}`).not.toThrow();
       }
     }
@@ -302,17 +338,24 @@ describe('theme.css', () => {
 });
 
 describe('words', () => {
-  it('are readable on every ground: 4.5:1, and 7:1 in high contrast', () => {
+  it('are readable on every ground, the sky included: 4.5:1, and 7:1 in high contrast', () => {
     everyState((t, { contrast: c }, need) => {
-      for (const ground of ['--bg', '--surface', '--surface-2', '--surface-3', '--hover']) {
+      for (const ground of GROUNDS) {
         for (const ink of ['--ink', '--ink-2', '--muted']) need(`${ink} on ${ground}`, contrast(t[ink], t[ground]), WORDS[c]);
       }
     });
   });
 
-  it('in the accent are readable on the page, on a card and on their own wash', () => {
+  it('on a button are readable, pressed or pointed at', () => {
     everyState((t, { contrast: c }, need) => {
-      for (const ground of ['--bg', '--surface', '--accent-wash']) need(`--accent-ink on ${ground}`, contrast(t['--accent-ink'], t[ground]), WORDS[c]);
+      need('--on-btn on --btn', contrast(t['--on-btn'], t['--btn']), WORDS[c]);
+      need('--on-btn on --btn-hover', contrast(t['--on-btn'], t['--btn-hover']), WORDS[c]);
+    });
+  });
+
+  it('in the accent are readable on the page, on what floats, under the sky and on their own wash', () => {
+    everyState((t, { contrast: c }, need) => {
+      for (const ground of ['--bg', '--surface', '--sky-mid', '--accent-wash']) need(`--accent-ink on ${ground}`, contrast(t['--accent-ink'], t[ground]), WORDS[c]);
     });
   });
 
@@ -323,18 +366,19 @@ describe('words', () => {
     });
   });
 
-  it('in the second colour (a change downward) are readable on the page, on a card and on their own wash', () => {
+  it('in the second colour (a change downward) are readable on the page, on what floats, under the sky and on their own wash', () => {
     everyState((t, { contrast: c }, need) => {
-      for (const ground of ['--bg', '--surface', '--second-wash']) need(`--second-ink on ${ground}`, contrast(t['--second-ink'], t[ground]), WORDS[c]);
+      for (const ground of ['--bg', '--surface', '--sky-mid', '--second-wash']) need(`--second-ink on ${ground}`, contrast(t['--second-ink'], t[ground]), WORDS[c]);
     });
   });
 
-  it('that warn or report a failure are readable on a card and on their own wash', () => {
+  it('that warn or report a failure are readable on the page, on what floats and on their own wash', () => {
     everyState((t, { contrast: c }, need) => {
       for (const [ink, wash] of [
         ['--warn', '--warn-wash'],
         ['--danger', '--danger-wash'],
       ]) {
+        need(`${ink} on --bg`, contrast(t[ink], t['--bg']), WORDS[c]);
         need(`${ink} on --surface`, contrast(t[ink], t['--surface']), WORDS[c]);
         need(`${ink} on ${wash}`, contrast(t[ink], t[wash]), WORDS[c]);
       }
@@ -346,23 +390,21 @@ describe('words', () => {
     const charts = parseRules(read('../charts/charts.css'));
     const ground = (selector) => charts.find((rule) => rule.selectors.includes(selector)).decls.background;
     const grounds = { light: ground('.an-chart-tip'), dark: ground(":root[data-theme='dark'] .an-chart-tip") };
-    everyState((t, { theme }, need) => need('--second-tip on the tooltip', contrast(t['--second-tip'], grounds[theme]), WORDS.normal));
+    everyState((t, { sky }, need) => need('--second-tip on the tooltip', contrast(t['--second-tip'], grounds[themeOf(sky)]), WORDS.normal));
   });
 });
 
 describe('marks', () => {
-  it('in the accent show against the page and a card: a chosen thing’s border, a switch, the focus outline', () => {
+  it('in the accent show against the page, what floats and the sky: a chosen thing’s rule, a switch, the focus outline', () => {
     everyState((t, { contrast: c }, need) => {
-      need('--accent on --surface', contrast(t['--accent'], t['--surface']), MARKS[c]);
-      need('--accent on --bg', contrast(t['--accent'], t['--bg']), MARKS[c]);
+      for (const ground of [...MARK_GROUNDS, '--sky-top']) need(`--accent on ${ground}`, contrast(t['--accent'], t[ground]), MARKS[c]);
     });
   });
 
   it('have a focus ring that is a solid line at 3:1 or better, thicker and stronger in high contrast', () => {
     everyState((t, state, need) => {
       const c = state.contrast;
-      need('--focus-ring on --surface', contrast(t['--focus-ring'], t['--surface']), MARKS[c]);
-      need('--focus-ring on --bg', contrast(t['--focus-ring'], t['--bg']), MARKS[c]);
+      for (const ground of [...MARK_GROUNDS, '--sky-top']) need(`--focus-ring on ${ground}`, contrast(t['--focus-ring'], t[ground]), MARKS[c]);
       // --focus is a stack of rings ("0 0 0 <spread> <colour>"), innermost first. The ring in the solid
       // colour is the one that counts; a halo beside it is decoration.
       const rings = t['--focus'].split(/,(?![^(]*\))/).map((layer) => /^0 0 0 (\d+)px (.+)$/.exec(layer.trim()));
@@ -374,9 +416,11 @@ describe('marks', () => {
     });
   });
 
-  it('on a chart show against a card: 3:1, and 4.5:1 in high contrast', () => {
+  it('on a chart show against the page, what floats and the sky under the title: 3:1, and 4.5:1 in high contrast', () => {
     everyState((t, { contrast: c }, need) => {
-      for (const mark of ['--chart-1', '--chart-2', '--chart-ghost']) need(`${mark} on --surface`, contrast(t[mark], t['--surface']), MARKS[c]);
+      for (const ground of MARK_GROUNDS) {
+        for (const mark of ['--chart-1', '--chart-2', '--chart-ghost']) need(`${mark} on ${ground}`, contrast(t[mark], t[ground]), MARKS[c]);
+      }
     });
   });
 
@@ -389,14 +433,16 @@ describe('marks', () => {
   });
 
   it('on a heatmap run one way from "nothing" to "most", in steps that can be told apart', () => {
-    everyState((t, { theme }, need) => {
+    everyState((t, { sky }, need) => {
       const ramp = [0, 1, 2, 3, 4, 5, 6].map((i) => t[`--heat-${i}`]);
-      const toward = theme === 'light' ? -1 : 1;
+      const toward = themeOf(sky) === 'light' ? -1 : 1;
       for (let i = 1; i < ramp.length; i += 1) need(`--heat-${i} past --heat-${i - 1}`, (lightness(ramp[i]) - lightness(ramp[i - 1])) * toward, RAMP_STEP);
-      // "Nothing" sits next to the card; the two fullest steps are marks in their own right.
-      need('--heat-0 beside --surface (1 / contrast)', 1 / contrast(ramp[0], t['--surface']), 1 / 1.3);
-      need('--heat-5 on --surface', contrast(ramp[5], t['--surface']), MARKS.normal);
-      need('--heat-6 on --surface', contrast(ramp[6], t['--surface']), MARKS.normal);
+      // "Nothing" sits next to the page; the two fullest steps are marks in their own right.
+      for (const ground of ['--bg', '--surface']) {
+        need(`--heat-0 beside ${ground} (1 / contrast)`, 1 / contrast(ramp[0], t[ground]), 1 / 1.3);
+        need(`--heat-5 on ${ground}`, contrast(ramp[5], t[ground]), MARKS.normal);
+        need(`--heat-6 on ${ground}`, contrast(ramp[6], t[ground]), MARKS.normal);
+      }
     });
   });
 
@@ -430,23 +476,23 @@ describe('high contrast', () => {
   });
 
   it('is a step past the ordinary set, for every accent', () => {
-    for (const { theme, accent } of high) {
-      const plain = tokensFor({ theme, accent, contrast: 'normal' });
-      const strong = tokensFor({ theme, accent, contrast: 'high' });
+    for (const { sky, accent } of high) {
+      const plain = tokensFor({ sky, accent, contrast: 'normal' });
+      const strong = tokensFor({ sky, accent, contrast: 'high' });
       for (const [ink, ground] of [
         ['--muted', '--surface'],
         ['--accent-ink', '--surface'],
         ['--on-accent', '--accent'],
         ['--line', '--surface'],
       ]) {
-        expect(contrast(strong[ink], strong[ground]), `${accent}, ${theme}: ${ink} on ${ground}`).toBeGreaterThan(contrast(plain[ink], plain[ground]));
+        expect(contrast(strong[ink], strong[ground]), `${accent}, ${sky}: ${ink} on ${ground}`).toBeGreaterThan(contrast(plain[ink], plain[ground]));
       }
     }
   });
 });
 
 describe('a swatch', () => {
-  it('shows the accent it names, in the page’s own theme and contrast, whatever the page’s accent is', () => {
+  it('shows the accent it names, in the page’s own sky and contrast, whatever the page’s accent is', () => {
     for (const state of STATES) {
       for (const accent of ACCENT_CHOICES) {
         const shown = swatchTokens(state, accent);
@@ -457,10 +503,25 @@ describe('a swatch', () => {
   });
 });
 
-describe('the browser’s own chrome', () => {
-  it('is given the page ground of each theme', () => {
-    for (const theme of THEMES) {
-      for (const contrast of CONTRASTS) expect(themeColor(theme, contrast)).toBe(tokensFor({ theme, contrast, accent: 'blue' })['--bg']);
+describe('the sky', () => {
+  it('is a wash that fades into the page: three stops, the last of them the page’s own ground', () => {
+    const base = parseRules(read('./base.css'));
+    const body = base.find((rule) => rule.selectors.includes('body')).decls;
+    expect(body['background-image'].replace(/\s+/g, ' ')).toBe('linear-gradient(180deg, var(--sky-top) 0, var(--sky-mid) var(--sky-mid-at), var(--bg) var(--sky-end))');
+    expect(body['background-repeat']).toBe('no-repeat');
+  });
+
+  it('is gone in high contrast: the wash is the page’s flat ground', () => {
+    for (const state of STATES.filter((s) => s.contrast === 'high')) {
+      const t = tokensFor(state);
+      expect(t['--sky-top'], nameOf(state)).toBe(t['--bg']);
+      expect(t['--sky-mid'], nameOf(state)).toBe(t['--bg']);
+    }
+  });
+
+  it('gives the browser’s own chrome the colour at its top', () => {
+    for (const sky of SKY_PHASES) {
+      for (const contrast of CONTRASTS) expect(skyColor(sky, contrast)).toBe(tokensFor({ sky, contrast, accent: 'blue' })['--sky-top']);
     }
   });
 });

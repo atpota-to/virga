@@ -80,7 +80,9 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
   return (
     <Button
       size={size}
-      variant={on ? 'quiet' : 'primary'}
+      // Follow is an outline in ink; once done it is the word alone
+      // (dashboards.css .follow-button, and the kit's .is-on).
+      on={on}
       disabled={busy}
       aria-busy={busy || undefined}
       aria-pressed={on}

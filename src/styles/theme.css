@@ -1,60 +1,95 @@
 /*
-  Virga: a quiet, light workspace for your numbers (the Ledger direction).
+  Virga: your numbers under a quiet sky.
 
-  Plain grounds, one-pixel lines instead of shadows, small radii, and one
-  accent that means "the data, or what is pressed": blue, unless Settings
-  picks another of the six below. The second colour is the second thing on
-  a chart and the colour of a change downward: coral beside a cool accent,
-  blue beside a warm one. The live sky from the first version is still
-  here, behind a switch in Settings › Appearance: when it is on, the page
-  ground goes clear and the cards stay solid in front of it.
+  The page has no boxes. Things sit on the page itself, set apart by space
+  and by one-pixel rules: a rule in ink under a section's heading, hairlines
+  between its rows. Only what floats (a menu, a dialog, a popover) has an
+  edge and a shadow.
 
-  One typeface, Mona Sans, in sentence case. Monospace is for code only:
-  NSIDs, DIDs and record names. Numbers are set in the same face as the
-  words, in its ordinary figures (its tabular ones have a slashed zero).
+  Behind every page is a sky: a wash of colour at the top that fades into
+  the page's own ground. There are four, stamped on <html> as data-sky:
+  dawn, day, dusk and night. Dawn, day and dusk are light pages that differ
+  only in that wash. Night is the dark theme: its ground is deep blue and
+  its ink is light. The sky is picked in Settings, or follows the clock
+  (lib/sky.js). The live sky from the first version is still here, behind a
+  switch in Settings › Appearance: it draws its clouds in the same place.
 
-  Two themes, light and dark, chosen in Settings (or following the system),
-  and a high-contrast set of each, chosen there too (or following the
-  system's own setting). The chart colours are separate steps for every
-  one of them, not an inverted copy, and theme.test.js reads this file and
-  checks them all: contrast against their own surface, and the two series
+  Ink does the work that colour did. Buttons, the page you are on and the
+  pressed key of a control are drawn in ink. The accent means one thing,
+  "the data, or what is selected": blue, unless Settings picks another of
+  the six below. The second colour is the second thing on a chart and the
+  colour of a change downward: coral beside a cool accent, blue beside a
+  warm one.
+
+  One typeface, Instrument Sans, in sentence case, in three weights: 400
+  for reading, 500 for a label, 600 for a heading or a thing that is on.
+  Monospace is for code only: NSIDs, DIDs and record names. Numbers are set
+  in the same face as the words, in its tabular figures, so columns line up.
+
+  Two themes, light (dawn, day, dusk) and dark (night), and a high-contrast
+  set of each, chosen in Settings (or following the system's own setting).
+  The chart colours are separate steps for every one of them, not an
+  inverted copy, and theme.test.js reads this file and checks them all:
+  contrast against their own ground and against the sky, and the two series
   still apart for colour-blind eyes. A colour changed here has to pass it.
 
-  `data-theme`, `data-accent`, `data-contrast` and `data-density` on <html>
-  are set before the first paint by the inline script in index.html, and
-  kept in step by src/lib/preferences.jsx.
+  `data-sky`, `data-theme`, `data-accent`, `data-contrast` and
+  `data-density` on <html> are set before the first paint by the inline
+  script in index.html, and kept in step by src/lib/preferences.jsx.
 
   In this order, because the later blocks have to win: the plain tokens,
-  the dark set, the accents, high contrast, then the few rules that tokens
-  can't say (high contrast and forced colours).
+  the skies, the dark set, the accents, high contrast, then the few rules
+  that tokens can't say (high contrast and forced colours).
 */
 
 :root {
   color-scheme: light;
 
-  /* Grounds, back to front. */
-  --bg: #f5f6f8;
+  /* Grounds. The page, and what floats over it (--surface: a menu, a
+     dialog, a popover), are the same white by day. --surface-2 and -3 are
+     the quiet fills: a table's head, a field at rest, a bar's track. */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #fafafb;
-  --surface-3: #f2f4f7;
-  --hover: #eef0f3;
-  --scrim: rgb(16 24 40 / 0.4);
+  --surface-2: #f6f8fc;
+  --surface-3: #edf1f8;
+  --hover: #e6ebf5;
+  --scrim: rgb(15 27 51 / 0.42);
+  /* A faint fill for a thing pointed at, or the part you are in, where the
+     ground may be the sky: a tint of the ink, and one of the accent. */
+  --tint: rgb(15 27 51 / 0.06);
+  --accent-tint: color-mix(in srgb, var(--accent) 12%, transparent);
 
   /* Ink. --faint is for marks, never for text. */
-  --ink: #101828;
-  --ink-2: #344054;
-  --muted: #5d6b82;
-  --faint: #98a2b3;
+  --ink: #0f1b33;
+  --ink-2: #33415c;
+  --muted: #46536b;
+  --faint: #7c879b;
 
-  /* Lines. */
-  --line: #e4e7ec;
-  --line-2: #d0d5dd;
-  --line-soft: #f2f4f7;
+  /* Lines are a tint of the ink, so a hairline reads the same on the sky
+     as on the page under it. --rule is the line under a section's heading. */
+  --line: rgb(15 27 51 / 0.14);
+  --line-2: rgb(15 27 51 / 0.3);
+  --line-soft: rgb(15 27 51 / 0.08);
+  --rule: var(--ink);
 
-  /* The accent (the data, and whatever is pressed) and the second colour
+  /* The sky: its colour at the top of the page, the colour it has turned
+     by --sky-mid-at, and where it has faded into the page (--sky-end).
+     Day here; dawn, dusk and night below. base.css paints it. */
+  --sky-top: #b9d5ff;
+  --sky-mid: #e1edff;
+  --sky-mid-at: 240px;
+  --sky-end: 560px;
+
+  /* The accent (the data, and whatever is selected) and the second colour
      (the second series, and a change downward) are under Accents below:
      --accent*, --on-accent, --second*, --chart-1 to 4, --chart-area and
      the --heat ramp. */
+
+  /* A button that is the thing to do, and the pressed key of a control:
+     ink, with the page's own colour written on it. */
+  --btn: var(--ink);
+  --btn-hover: var(--ink-2);
+  --on-btn: var(--bg);
 
   /* A change against the window before says which way it went, not
      whether that is good: more blocks is "up" too. */
@@ -72,16 +107,16 @@
   --danger-wash: #fef3f2;
 
   /* The charts' chrome. Their colours come with the accent. */
-  --chart-grid: #eef0f3;
-  --chart-axis: #d0d5dd;
+  --chart-grid: rgb(15 27 51 / 0.1);
+  --chart-axis: rgb(15 27 51 / 0.3);
   --chart-ghost: #5d6b82;
 
   /* Avatars without a picture. */
-  --avatar-bg: #e4e7ec;
-  --avatar-ink: #344054;
+  --avatar-bg: #dfe7f5;
+  --avatar-ink: #33415c;
 
   /* Type. */
-  --sans: 'Mona Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Instrument Sans Variable', 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
@@ -91,6 +126,9 @@
   --text-xl: 1.375rem;
   --text-2xl: 1.75rem;
   --text-3xl: 2.25rem;
+  /* A page's title, and a figure that leads a page. */
+  --text-title: 2rem;
+  --text-figure: clamp(2.5rem, 1.6rem + 2.6vw, 3.75rem);
 
   /* Space. */
   --space-1: 4px;
@@ -101,21 +139,28 @@
   --space-6: 32px;
   --space-7: 48px;
 
-  /* Density: what Compact (Settings › Appearance) tightens. */
+  /* Density: what Compact (Settings › Appearance) tightens. --card-pad is
+     the inset of the few things that are still boxed; --grid-gap and
+     --grid-gap-x are the space between sections, which is all that sets
+     them apart; --section-gap is the space between the bands of a page. */
   --card-pad: 16px;
-  --grid-gap: 16px;
-  --page-pad: 28px;
-  --row-pad: 10px;
-  --control-h: 34px;
+  --grid-gap: 40px;
+  --grid-gap-x: 48px;
+  --section-gap: 40px;
+  --page-pad: clamp(28px, 4vw, 56px);
+  --page-top: 40px;
+  --row-pad: 12px;
+  --control-h: 36px;
 
-  /* Shape. */
+  /* Shape. Buttons and chips are pills; fields and what floats are gently
+     rounded. */
   --radius-sm: 6px;
   --radius: 8px;
   --radius-lg: 12px;
   --pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
-  --shadow-md: 0 4px 12px -2px rgb(16 24 40 / 0.1), 0 2px 4px -2px rgb(16 24 40 / 0.06);
-  --shadow-lg: 0 20px 40px -12px rgb(16 24 40 / 0.25), 0 0 0 1px rgb(16 24 40 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(15 27 51 / 0.08);
+  --shadow-md: 0 6px 16px -4px rgb(15 27 51 / 0.14), 0 2px 4px -2px rgb(15 27 51 / 0.06);
+  --shadow-lg: 0 24px 48px -16px rgb(15 27 51 / 0.28), 0 0 0 1px rgb(15 27 51 / 0.06);
 
   /* Focus, where a rule draws it as a shadow: a solid line in --focus-ring
      with a soft halo round it. The halo alone was 1.7:1 against a card, and
@@ -124,60 +169,91 @@
   --focus: 0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent);
 
   /* Layout. */
-  --sidebar-w: 248px;
-  --rail-w: 64px;
+  --sidebar-w: 272px;
+  --rail-w: 72px;
   --appbar-h: 56px;
   --tabbar-h: 64px;
-  --content-max: 1440px;
+  --content-max: 1040px;
+  --shell-max: 1560px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 :root[data-density='compact'] {
   --card-pad: 12px;
-  --grid-gap: 10px;
-  --page-pad: 20px;
-  --row-pad: 7px;
-  --control-h: 30px;
+  --grid-gap: 28px;
+  --grid-gap-x: 36px;
+  --section-gap: 28px;
+  --page-pad: clamp(24px, 3vw, 40px);
+  --page-top: 28px;
+  --row-pad: 8px;
+  --control-h: 32px;
+}
+
+/* ---- The skies --------------------------------------------------------
+
+   Day is above. Dawn and dusk change the wash and nothing else, so every
+   colour that is checked against the page is checked once for all three,
+   and the words and marks that can sit on the wash are checked against
+   each (theme.test.js). Night changes everything: it is the dark set,
+   next. lib/sky.js gives the browser's chrome the same --sky-top.
+*/
+
+:root[data-sky='dawn'] {
+  --sky-top: #ffd8c4;
+  --sky-mid: #e4ecff;
+}
+
+:root[data-sky='dusk'] {
+  --sky-top: #cbc5f4;
+  --sky-mid: #fbe9ee;
+}
+
+:root[data-sky='night'] {
+  --sky-top: #0e1a3a;
+  --sky-mid: #22315f;
+  --sky-end: 620px;
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: #0c0e12;
-  --surface: #14171d;
-  --surface-2: #101318;
-  --surface-3: #1b1f27;
-  --hover: #1e232c;
-  --scrim: rgb(0 0 0 / 0.6);
+  --bg: #0d152b;
+  --surface: #162140;
+  --surface-2: #111a34;
+  --surface-3: #1c284a;
+  --hover: #243257;
+  --scrim: rgb(3 7 18 / 0.66);
+  --tint: rgb(255 255 255 / 0.08);
+  --accent-tint: color-mix(in srgb, var(--accent) 16%, transparent);
 
-  --ink: #e7eaf0;
-  --ink-2: #c3cad6;
-  --muted: #959eae;
-  --faint: #5d6676;
+  --ink: #f2f5fc;
+  --ink-2: #d5ddf0;
+  --muted: #b4beda;
+  --faint: #7482a8;
 
-  --line: #252a33;
-  --line-2: #353c48;
-  --line-soft: #1c2028;
+  --line: rgb(255 255 255 / 0.16);
+  --line-2: rgb(255 255 255 / 0.32);
+  --line-soft: rgb(255 255 255 / 0.09);
 
   --ok: #2fbf71;
   --warn: #f5b454;
-  --warn-wash: #2c2210;
-  --danger: #f97066;
-  --danger-hover: #fda29b;
-  --danger-wash: #2d1513;
+  --warn-wash: #33290f;
+  --danger: #ff8a80;
+  --danger-hover: #ffb1aa;
+  --danger-wash: #3a1a1f;
 
-  --chart-grid: #1f242d;
-  --chart-axis: #353c48;
-  --chart-ghost: #959eae;
+  --chart-grid: rgb(255 255 255 / 0.1);
+  --chart-axis: rgb(255 255 255 / 0.32);
+  --chart-ghost: #a3aecb;
 
-  --avatar-bg: #252a33;
-  --avatar-ink: #c3cad6;
+  --avatar-bg: #2a3963;
+  --avatar-ink: #d5ddf0;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow-md: 0 6px 16px -4px rgb(0 0 0 / 0.6);
-  --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --shadow-md: 0 8px 20px -6px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.08);
 
-  /* On a dark card the lighter step of the accent is the one that shows. */
+  /* On a dark ground the lighter step of the accent is the one that shows. */
   --focus-ring: var(--accent-ink);
 }
 
@@ -201,7 +277,11 @@
    whatever the page's own is. Settings draws the choices with it.
 */
 
-/* Blue: the one Virga has always had, and the one it starts with. */
+/* Blue: the one Virga has always had, and the one it starts with. By day
+   an accent is a deep fill with white written on it. At night it turns
+   over, as it does in dark high contrast: a light fill with the page's own
+   dark written on it, because a fill deep enough for white words would not
+   show against the night sky. */
 :root,
 [data-accent='blue'] {
   --accent: #1d5ee0;
@@ -230,26 +310,26 @@
 
 :root[data-theme='dark'],
 [data-theme='dark'] [data-accent='blue'] {
-  --accent: #2f6fd6;
-  --accent-hover: #3373da;
+  --accent: #7ab0f5;
+  --accent-hover: #a2c8f9;
   --accent-ink: #7ab0f5;
-  --accent-wash: #16233a;
-  --accent-line: #284068;
-  --on-accent: #ffffff;
+  --accent-wash: #20304e;
+  --accent-line: #375079;
+  --on-accent: #0d152b;
   --second: #d95926;
   --second-ink: #f0906a;
-  --second-wash: #2e1a14;
+  --second-wash: #312a39;
   --second-tip: #b13a1f;
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-area: rgb(57 135 229 / 0.14);
-  --heat-0: #1a1f28;
-  --heat-1: #18304f;
-  --heat-2: #1c4373;
-  --heat-3: #235a9a;
-  --heat-4: #2d72c2;
+  --heat-0: #1a2748;
+  --heat-1: #213965;
+  --heat-2: #284b83;
+  --heat-3: #2e5ea2;
+  --heat-4: #3472c3;
   --heat-5: #3987e5;
   --heat-6: #7ab0f5;
 }
@@ -282,26 +362,26 @@
 
 [data-theme='dark'][data-accent='violet'],
 [data-theme='dark'] [data-accent='violet'] {
-  --accent: #7f56d3;
-  --accent-hover: #865ddb;
+  --accent: #b8a0fc;
+  --accent-hover: #ccbdfe;
   --accent-ink: #b8a0fc;
-  --accent-wash: #261f3b;
-  --accent-line: #433567;
-  --on-accent: #ffffff;
+  --accent-wash: #2b2d50;
+  --accent-line: #4e4a7b;
+  --on-accent: #0d152b;
   --second: #d95926;
   --second-ink: #f0906a;
-  --second-wash: #2e1a14;
+  --second-wash: #312a39;
   --second-tip: #b13a1f;
   --chart-1: #906be2;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-area: rgb(144 107 226 / 0.14);
-  --heat-0: #201d28;
-  --heat-1: #33294d;
-  --heat-2: #483770;
-  --heat-3: #614999;
-  --heat-4: #795cbd;
+  --heat-0: #1d2748;
+  --heat-1: #323464;
+  --heat-2: #484281;
+  --heat-3: #5f509f;
+  --heat-4: #775ebf;
   --heat-5: #8f6ddf;
   --heat-6: #b49df5;
 }
@@ -336,32 +416,33 @@
 
 [data-theme='dark'][data-accent='teal'],
 [data-theme='dark'] [data-accent='teal'] {
-  --accent: #0a7a8c;
-  --accent-hover: #098193;
+  --accent: #20c1da;
+  --accent-hover: #7dd4e6;
   --accent-ink: #20c1da;
-  --accent-wash: #002a31;
-  --accent-line: #044853;
-  --on-accent: #ffffff;
+  --accent-wash: #16334a;
+  --accent-line: #1d576f;
+  --on-accent: #0d152b;
   --second: #d95926;
   --second-ink: #f0906a;
-  --second-wash: #2e1a14;
+  --second-wash: #312a39;
   --second-tip: #b13a1f;
   --chart-1: #15b1c9;
   --chart-2: #d95926;
   --chart-3: #9085e9;
   --chart-4: #c98500;
   --chart-area: rgb(21 177 201 / 0.14);
-  --heat-0: #142225;
-  --heat-1: #023740;
-  --heat-2: #004d59;
-  --heat-3: #086675;
-  --heat-4: #0e7f91;
+  --heat-0: #182847;
+  --heat-1: #1b3d5a;
+  --heat-2: #1d526d;
+  --heat-3: #1c6881;
+  --heat-4: #187f96;
   --heat-5: #0b97ab;
   --heat-6: #32c2da;
 }
 
-/* Amber. On a light ground its buttons and words are the dark, bronze end
-   of it, which white words need; the charts keep the gold. Blue is its
+/* Amber. On a light ground its fills and words are the dark, bronze end
+   of it, which white words need; the charts keep the gold, a step deeper
+   than it might be so the line still shows under the sky. Blue is its
    second colour, and violet its fourth slot. */
 [data-accent='amber'] {
   --accent: #966105;
@@ -374,11 +455,11 @@
   --second-ink: #1c5cab;
   --second-wash: #eef3fd;
   --second-tip: #a9cdfb;
-  --chart-1: #bf8310;
+  --chart-1: #b47908;
   --chart-2: #2a78d6;
   --chart-3: #1baf7a;
   --chart-4: #6250d6;
-  --chart-area: rgb(191 131 16 / 0.08);
+  --chart-area: rgb(180 121 8 / 0.08);
   --heat-0: #f8f6ef;
   --heat-1: #f1e7d0;
   --heat-2: #e5cea2;
@@ -390,26 +471,26 @@
 
 [data-theme='dark'][data-accent='amber'],
 [data-theme='dark'] [data-accent='amber'] {
-  --accent: #9a6403;
-  --accent-hover: #a26a01;
+  --accent: #d9a648;
+  --accent-hover: #e5c185;
   --accent-ink: #d9a648;
-  --accent-wash: #361e08;
-  --accent-line: #5c3504;
-  --on-accent: #ffffff;
+  --accent-wash: #303037;
+  --accent-line: #5a4f41;
+  --on-accent: #0d152b;
   --second: #3987e5;
   --second-ink: #7ab0f5;
-  --second-wash: #16233a;
+  --second-wash: #1e2d4b;
   --second-tip: #1c5cab;
   --chart-1: #e3a41a;
   --chart-2: #3987e5;
   --chart-3: #199e70;
   --chart-4: #9085e9;
   --chart-area: rgb(227 164 26 / 0.14);
-  --heat-0: #261d16;
-  --heat-1: #45290b;
-  --heat-2: #623800;
-  --heat-3: #7f4e01;
-  --heat-4: #9a650c;
+  --heat-0: #1e2842;
+  --heat-1: #3a3942;
+  --heat-2: #56493f;
+  --heat-3: #745939;
+  --heat-4: #93682b;
   --heat-5: #b37802;
   --heat-6: #d6a54d;
 }
@@ -442,26 +523,26 @@
 
 [data-theme='dark'][data-accent='rose'],
 [data-theme='dark'] [data-accent='rose'] {
-  --accent: #c04068;
-  --accent-hover: #c8476f;
+  --accent: #f191a7;
+  --accent-hover: #f8b2c1;
   --accent-ink: #f191a7;
-  --accent-wash: #371a21;
-  --accent-line: #602d3a;
-  --on-accent: #ffffff;
+  --accent-wash: #352c42;
+  --accent-line: #64475d;
+  --on-accent: #0d152b;
   --second: #3987e5;
   --second-ink: #7ab0f5;
-  --second-wash: #16233a;
+  --second-wash: #1e2d4b;
   --second-tip: #1c5cab;
   --chart-1: #d05779;
   --chart-2: #3987e5;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-area: rgb(208 87 121 / 0.14);
-  --heat-0: #271c1e;
-  --heat-1: #48232c;
-  --heat-2: #682e3d;
-  --heat-3: #8d3b52;
-  --heat-4: #af4b67;
+  --heat-0: #202745;
+  --heat-1: #423350;
+  --heat-2: #633e5b;
+  --heat-3: #864865;
+  --heat-4: #a95170;
   --heat-5: #ce597a;
   --heat-6: #eb8fa4;
 }
@@ -494,26 +575,26 @@
 
 [data-theme='dark'][data-accent='graphite'],
 [data-theme='dark'] [data-accent='graphite'] {
-  --accent: #67707c;
-  --accent-hover: #6e7682;
+  --accent: #d3dce7;
+  --accent-hover: #e0e6ee;
   --accent-ink: #d3dce7;
-  --accent-wash: #2c2e31;
-  --accent-line: #4a4d52;
-  --on-accent: #ffffff;
+  --accent-wash: #2e374d;
+  --accent-line: #576174;
+  --on-accent: #0d152b;
   --second: #d95926;
   --second-ink: #f0906a;
-  --second-wash: #2e1a14;
+  --second-wash: #312a39;
   --second-tip: #b13a1f;
   --chart-1: #c5cfdb;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-area: rgb(197 207 219 / 0.14);
-  --heat-0: #1e1f20;
-  --heat-1: #2e3134;
-  --heat-2: #40444a;
-  --heat-3: #555b63;
-  --heat-4: #6b727c;
+  --heat-0: #1e2948;
+  --heat-1: #303b57;
+  --heat-2: #424d65;
+  --heat-3: #566074;
+  --heat-4: #6a7383;
   --heat-5: #7f8792;
   --heat-6: #a8afb7;
 }
@@ -522,9 +603,10 @@
 
    data-contrast='high' on <html>: asked for in Settings, or by the system
    (prefers-contrast: more). Words at 7:1 or better on every ground, lines
-   and borders at 3:1 or better, chart colours at 4.5:1 or better, one flat
-   ground with the cards outlined on it, and a thicker focus ring with a
-   gap inside it. The accents have their own steps here too, below.
+   and borders at 3:1 or better and solid, chart colours at 4.5:1 or better,
+   and a thicker focus ring with a gap inside it. There is no sky: its wash
+   is the page's own flat ground, white or black. The accents have their own
+   steps here too, below.
 */
 
 :root[data-contrast='high'] {
@@ -557,6 +639,9 @@
 
   --avatar-bg: #d0d5dd;
   --avatar-ink: #1d2534;
+
+  --sky-top: var(--bg);
+  --sky-mid: var(--bg);
 
   --focus-ring: var(--accent);
   --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
@@ -592,6 +677,9 @@
 
   --avatar-bg: #353c48;
   --avatar-ink: #ffffff;
+
+  --sky-top: var(--bg);
+  --sky-mid: var(--bg);
 
   --focus-ring: var(--accent);
   --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
@@ -646,7 +734,7 @@
   --chart-3: #3ecf9a;
   --chart-4: #f0b429;
   --chart-area: rgb(127 179 254 / 0.2);
-  --heat-0: #1c222b;
+  --heat-0: #191e26;
   --heat-1: #253d61;
   --heat-2: #315a97;
   --heat-3: #3f76c8;
@@ -699,7 +787,7 @@
   --chart-3: #3ecf9a;
   --chart-4: #f0b429;
   --chart-area: rgb(183 159 253 / 0.2);
-  --heat-0: #22202b;
+  --heat-0: #1e1c26;
   --heat-1: #40345f;
   --heat-2: #604b94;
   --heat-3: #7f62c4;
@@ -752,7 +840,7 @@
   --chart-3: #b3aaf5;
   --chart-4: #f0b429;
   --chart-area: rgb(13 212 241 / 0.2);
-  --heat-0: #162427;
+  --heat-0: #132022;
   --heat-1: #024550;
   --heat-2: #0a6675;
   --heat-3: #0d8698;
@@ -805,7 +893,7 @@
   --chart-3: #3ecf9a;
   --chart-4: #b3aaf5;
   --chart-area: rgb(250 192 68 / 0.2);
-  --heat-0: #291f18;
+  --heat-0: #241b15;
   --heat-1: #56340f;
   --heat-2: #7f4e03;
   --heat-3: #a16a09;
@@ -858,7 +946,7 @@
   --chart-3: #3ecf9a;
   --chart-4: #f0b429;
   --chart-area: rgb(243 90 136 / 0.2);
-  --heat-0: #2a1e20;
+  --heat-0: #251a1c;
   --heat-1: #5a2d38;
   --heat-2: #8a3f53;
   --heat-3: #b6516d;
@@ -911,7 +999,7 @@
   --chart-3: #3ecf9a;
   --chart-4: #f0b429;
   --chart-area: rgb(224 233 244 / 0.2);
-  --heat-0: #212223;
+  --heat-0: #1d1e1f;
   --heat-1: #3a3d42;
   --heat-2: #565b62;
   --heat-3: #717881;
@@ -920,9 +1008,33 @@
   --heat-6: #d3d8df;
 }
 
+/* A phone, and a tablet held upright (the widths where the sidebar gives
+   way to the app bar and the tabs): less room round the page, a smaller
+   title, and a shorter sky, so it has faded out by the first chart. */
+@media (max-width: 899px) {
+  :root {
+    --page-pad: 20px;
+    --page-top: 8px;
+    --grid-gap: 32px;
+    --section-gap: 28px;
+    --text-title: 1.75rem;
+    --sky-mid-at: 170px;
+    --sky-end: 420px;
+  }
+
+  :root[data-density='compact'] {
+    --page-pad: 16px;
+    --grid-gap: 24px;
+    --section-gap: 22px;
+  }
+
+  :root[data-sky='night'] {
+    --sky-end: 460px;
+  }
+}
+
 @media (max-width: 760px) {
   :root {
-    --page-pad: 16px;
     --text-base: 0.9375rem;
   }
 }
@@ -936,23 +1048,17 @@
    shape.
 */
 
-/* High contrast. A thicker focus ring. The pressed key of a segmented
-   control and a switch are drawn in ink and in the accent, with an edge
-   round them. A heatmap's cells are outlined, so "nothing" is still a
-   cell, and the page you are on is boxed as well as tinted. */
+/* High contrast. A thicker focus ring, and a thicker line under the
+   pressed key of a control and under the page you are on. A switch is
+   drawn in ink and in the accent, with an edge round it. A heatmap's cells
+   are outlined, so "nothing" is still a cell. */
 
 :root[data-contrast='high'] :focus-visible {
   outline-width: 3px;
 }
 
-:root[data-contrast='high'] .segmented {
-  box-shadow: inset 0 0 0 1px var(--line-2);
-}
-
 :root[data-contrast='high'] .segmented .segmented-key.is-on {
-  background: var(--ink);
-  color: var(--bg);
-  box-shadow: none;
+  box-shadow: inset 0 -3px 0 var(--ink);
 }
 
 :root[data-contrast='high'] .switch {
@@ -980,27 +1086,28 @@
   box-shadow: inset 0 0 0 1px var(--line-soft);
 }
 
-:root[data-contrast='high'] [aria-current='page'] {
-  box-shadow: inset 0 0 0 1px var(--accent-ink);
+/* A bar's track is a faint tint; here it gets an edge, so an empty track
+   is still a track. */
+:root[data-contrast='high'] .barlist-track {
+  box-shadow: inset 0 0 0 1px var(--line-soft);
 }
 
-/* A few things are written in white without asking what goes on their
-   ground. In dark high contrast the accent is a light fill and the
-   danger colour a light red, so the logo's lines and a failure toast's
-   words follow the ground, and the two labels the composer lays over a
-   picture (which borrow --on-accent for "white on a scrim") stay white. */
-
-:root[data-contrast='high'] .logo-mark path,
-:root[data-contrast='high'] .brand > svg path {
-  stroke: var(--on-accent);
+:root[data-contrast='high'] .nav-link[aria-current='page'],
+:root[data-contrast='high'] .nav-sub-link[aria-current='page'],
+:root[data-contrast='high'] .tabbar-item[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
-:root[data-contrast='high'] .toast[data-tone='danger'] {
-  color: var(--bg);
-}
+/* The two labels the composer lays over a picture borrow --on-accent for
+   "white on a scrim". At night and in dark high contrast the accent is a
+   light fill with dark words on it, so there they are told to stay white. */
 
 :root[data-contrast='high'] .image-alt:not([data-done]),
-:root[data-contrast='high'] .image-tool {
+:root[data-contrast='high'] .image-tool,
+:root[data-theme='dark'] .image-alt:not([data-done]),
+:root[data-theme='dark'] .image-tool {
   color: #ffffff;
 }
 

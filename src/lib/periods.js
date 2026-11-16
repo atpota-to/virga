@@ -105,6 +105,18 @@ export function periodPhrase(period) {
 }
 
 /** "Last 30 days", "All time", "Oct 1 – Oct 31, 2026": a card's own caption. */
+/**
+ * The window as a line under a page's title: "The last 30 days, Oct 17 to
+ * Nov 15", "The last year, Nov 16, 2025 to Nov 15, 2026", "Oct 1 to Oct 31"
+ * for a range that was picked, "All time".
+ */
+export function periodLine(period, nowMs = Date.now()) {
+  if (period?.custom) return rangeLabel(dayStartMs(period.from), dayStartMs(period.to), ' to ');
+  if (!period?.days) return 'All time';
+  const phrase = periodPhrase(period);
+  return `${phrase.charAt(0).toUpperCase()}${phrase.slice(1)}, ${rangeLabel(periodStart(period, nowMs), periodEnd(period, nowMs), ' to ')}`;
+}
+
 export function periodWindowWord(period) {
   if (period?.custom) return period.label;
   return period?.days ? `Last ${period.label.toLowerCase()}` : 'All time';

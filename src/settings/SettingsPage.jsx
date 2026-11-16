@@ -1,14 +1,18 @@
 // Settings: the account, the archive and its sync, the dashboards, posting,
-// how Virga looks (the live sky lives here, off until it's asked for), what
+// how Virga looks (the sky is picked here, and the live one turned on), what
 // the sign-in lets Virga do, and where the data comes from.
+//
+// Each section is a page of its own. On a desk the sidebar lists them; on a
+// phone, where there is no sidebar, /settings is that list.
 
 import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Download, HardDrive, Pencil, RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, HardDrive, Moon, Pencil, RefreshCw, RotateCcw, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
 import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
+import Figures from '../components/Figures.jsx';
 import Segmented from '../components/Segmented.jsx';
-import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
+import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
 import { coversCurrent, readAcceptance } from '../legal/acceptance.js';
 import { DOCUMENTS } from '../legal/documents.js';
@@ -18,73 +22,94 @@ import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
 import PostingSettingsSection from '../posting/PostingSettingsSection.jsx';
-import { ACCENT_CHOICES, usePreferences } from '../lib/preferences.jsx';
-import { useSkyPhase } from '../hillside/useSkyPhase.js';
+import { ACCENT_CHOICES, SKY_CHOICES, usePreferences } from '../lib/preferences.jsx';
 import { radioKeyTarget } from './radioKeys.js';
 import { Link, navigate } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
-import { PageHeader, useToast } from '../shell/bits.jsx';
+import { PageHeader, useIsNarrow, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
 import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
-// Exported for the command palette, which lists them (src/shell/CommandPalette.jsx).
-export const SECTIONS = [
-  { key: 'account', label: 'Account' },
-  { key: 'data', label: 'Data and sync' },
-  { key: 'dashboards', label: 'Dashboards' },
-  { key: 'posting', label: 'Posting' },
-  { key: 'appearance', label: 'Appearance' },
-  { key: 'permissions', label: 'Permissions' },
-  { key: 'about', label: 'About' },
-];
+import { SECTIONS } from './sections.js';
+
+export { SECTIONS };
 
 // `profile` and `onSignOut` are still passed by the shell; the account
 // section reads every account from the session itself.
 export default function SettingsPage({ section }) {
-  const current = SECTIONS.find((s) => s.key === section) ? section : 'account';
+  const narrow = useIsNarrow();
+  const named = SECTIONS.find((s) => s.key === section);
+  // On a phone the bare address is the list of sections. On a desk the
+  // sidebar is that list, so the bare address opens the first of them.
+  if (narrow && !named) return <SettingsIndex />;
+  const current = named || SECTIONS[0];
   return (
     <>
-      <PageHeader title="Settings" />
-      <div className="settings">
-        <nav className="settings-nav" aria-label="Settings">
-          {SECTIONS.map((s) => (
-            <Link key={s.key} to={`/settings/${s.key}`} className="settings-nav-item" aria-current={current === s.key ? 'page' : undefined}>
-              {s.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="settings-body">
-          {current === 'account' && <AccountsSettings />}
-          {current === 'data' && <DataSection />}
-          {current === 'dashboards' && <DashboardsSection />}
-          {current === 'posting' && <PostingSettingsSection />}
-          {current === 'appearance' && <AppearanceSection />}
-          {current === 'permissions' && <PermissionsSection />}
-          {current === 'about' && <AboutSection />}
-        </div>
+      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }, { label: current.label }]} title={current.label} sub={current.desc} />
+      <div className="page-body settings-body">
+        {current.key === 'account' && <AccountsSettings />}
+        {current.key === 'data' && <DataSection />}
+        {current.key === 'dashboards' && <DashboardsSection />}
+        {current.key === 'posting' && <PostingSettingsSection />}
+        {current.key === 'appearance' && <AppearanceSection />}
+        {current.key === 'permissions' && <PermissionsSection />}
+        {current.key === 'about' && <AboutSection />}
       </div>
     </>
   );
 }
 
-function Section({ title, sub = null, children, tone = null }) {
+/** The sections as a list, for a phone: each a row to press, with its line under it. */
+function SettingsIndex() {
   return (
-    <section className="card settings-section" data-tone={tone || undefined}>
-      <div className="settings-section-head">
-        <h2 className="card-title">{title}</h2>
-        {sub && <p className="card-sub">{sub}</p>}
+    <>
+      <PageHeader title="Settings" sub="For whoever is at this browser, and for the account that’s open." />
+      <div className="page-body settings-body">
+        <ul className="settings-index">
+          {SECTIONS.map((s) => (
+            <li key={s.key}>
+              <Link to={`/settings/${s.key}`} className="settings-index-item">
+                <span className="settings-index-text">
+                  <span className="settings-index-label">{s.label}</span>
+                  <span className="settings-index-desc">{s.desc}</span>
+                </span>
+                <ChevronRight size={16} aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-      {children}
+    </>
+  );
+}
+
+/**
+ * A band of a settings page: a heading with a rule in ink under it, then
+ * its rows. Without a title it is the rows alone, under the rule.
+ */
+function Section({ title = null, sub = null, children, tone = null }) {
+  return (
+    <section className="settings-section" data-tone={tone || undefined}>
+      {title && (
+        <div className="settings-section-head">
+          <h2 className="card-title">{title}</h2>
+          {sub && <p className="card-sub">{sub}</p>}
+        </div>
+      )}
+      <div className="settings-section-body">{children}</div>
     </section>
   );
 }
 
-function Row({ label, hint = null, children }) {
+/** One setting: what it is and a line about it at the left, its control at the right. */
+function Row({ label, hint = null, labelId = undefined, children }) {
   return (
     <div className="settings-row">
       <div className="settings-row-text">
-        <div className="settings-row-label">{label}</div>
+        <div className="settings-row-label" id={labelId}>
+          {label}
+        </div>
         {hint && <div className="settings-row-hint">{hint}</div>}
       </div>
       <div className="settings-row-control">{children}</div>
@@ -123,6 +148,16 @@ function DataSection() {
 
   return (
     <>
+      <Figures
+        label="Your archive in figures"
+        items={[
+          { key: 'posts', label: 'Posts', value: counts.posts },
+          { key: 'followers', label: 'Followers', value: counts.followers },
+          { key: 'records', label: 'Repo records', value: counts.records },
+          { key: 'blocked', label: 'Blocked by', value: counts.blockedBy },
+        ]}
+      />
+
       <Section title="Your archive" sub={syncWhen(archive)}>
         {archive.sync ? (
           <div className="settings-sync">
@@ -133,24 +168,6 @@ function DataSection() {
           </div>
         ) : (
           <>
-            <dl className="data-facts">
-              <div>
-                <dt>Posts</dt>
-                <dd className="num">{counts.posts.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Followers</dt>
-                <dd className="num">{counts.followers.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Repo records</dt>
-                <dd className="num">{counts.records.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Blocked by</dt>
-                <dd className="num">{counts.blockedBy.toLocaleString(activeLocale())}</dd>
-              </div>
-            </dl>
             {archive.syncError && (
               <div className="callout callout--danger" role="alert">
                 <span>
@@ -158,21 +175,23 @@ function DataSection() {
                 </span>
               </div>
             )}
-            <div className="settings-actions">
+            <Row
+              label={!pm ? 'Build' : pm.complete ? 'Sync' : 'Finish the build'}
+              hint="A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new."
+            >
               <Button variant="primary" onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
                 <RefreshCw size={15} aria-hidden="true" />
                 {!pm ? 'Build your archive' : pm.complete ? 'Sync now' : 'Resume the build'}
               </Button>
-              {built && (
+            </Row>
+            {built && (
+              <Row label="Rebuild" hint="Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh.">
                 <Button onClick={() => setConfirm('rebuild')}>
                   <RotateCcw size={15} aria-hidden="true" />
                   Rebuild posts
                 </Button>
-              )}
-            </div>
-            <p className="settings-text muted">
-              A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new.
-            </p>
+              </Row>
+            )}
           </>
         )}
       </Section>
@@ -337,7 +356,7 @@ function DashboardsSection() {
                   <Link to={`/dashboard/${d.id}`} className="dash-list-name">
                     {d.name}
                   </Link>
-                  <span className="muted num">
+                  <span className="dash-list-count num">
                     {d.widgets.length} {d.widgets.length === 1 ? 'report' : 'reports'}
                   </span>
                   <span className="dash-list-tools">
@@ -455,11 +474,9 @@ function regionName(tag) {
   }
 }
 
-const THEMES = [
-  { key: 'light', label: 'Light' },
-  { key: 'dark', label: 'Dark' },
-  { key: 'system', label: 'Match system' },
-];
+const SKY_NAMES = { clock: 'Follows the clock', dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' };
+const SKY_ICONS = { clock: Clock, dawn: Sunrise, day: Sun, dusk: Sunset, night: Moon };
+const SKIES = SKY_CHOICES.map((key) => ({ key, label: SKY_NAMES[key] }));
 
 const ACCENT_NAMES = { blue: 'Blue', violet: 'Violet', teal: 'Teal', amber: 'Amber', rose: 'Rose', graphite: 'Graphite' };
 const ACCENTS = ACCENT_CHOICES.map((key) => ({ key, label: ACCENT_NAMES[key] }));
@@ -497,184 +514,118 @@ function RadioButtons({ className, label = undefined, labelledBy = undefined, ch
 function AppearanceSection() {
   const prefs = usePreferences();
   const { setPref } = prefs;
-  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built: isBuilt(useArchive()) });
+  // What the clock comes to at the moment, said under its tile.
+  const now = SKY_NAMES[prefs.effectiveSky];
   return (
-    <>
-      <Section title="Theme" sub="Charts get their own colours in each, not an inverted copy.">
-        <RadioButtons className="theme-choices" label="Theme" choices={THEMES} value={prefs.theme} onChange={(v) => setPref('theme', v)}>
-          {(t, radio) => (
-            <button key={t.key} {...radio} className="theme-choice" data-theme-preview={t.key}>
-              <span className="theme-preview" aria-hidden="true">
-                <span className="theme-preview-side" />
-                <span className="theme-preview-main">
-                  <span />
-                  <span />
+    <Section>
+      <Row
+        labelId="sky-label"
+        label="Sky"
+        hint="The sky behind every page. Let it follow the clock, or keep it where you leave it. Night is also the dark theme, and a device set to dark stays on it."
+      >
+        <RadioButtons className="sky-choices" labelledBy="sky-label" choices={SKIES} value={prefs.sky} onChange={(v) => setPref('sky', v)}>
+          {(sky, radio) => {
+            const Icon = SKY_ICONS[sky.key];
+            return (
+              <button key={sky.key} {...radio} className="sky-choice" data-sky-choice={sky.key}>
+                <span className="sky-choice-swatch" aria-hidden="true">
+                  <Icon size={20} />
                 </span>
-              </span>
-              <span className="theme-choice-label">{t.label}</span>
+                <span className="sky-choice-text">
+                  <span className="sky-choice-label">{sky.label}</span>
+                  {sky.key === 'clock' && prefs.sky === 'clock' && (
+                    <span className="sky-choice-now">{prefs.systemDark ? 'Night, as your device asks' : `${now} now`}</span>
+                  )}
+                </span>
+              </button>
+            );
+          }}
+        </RadioButtons>
+      </Row>
+      <Row
+        labelId="accent-label"
+        label="Accent"
+        hint="The colour of your data, and of whatever is selected. The small dot is the second line on a chart. Each pair is checked for contrast and for colour-blind eyes, under every sky."
+      >
+        <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
+          {(a, radio) => (
+            // data-accent makes this button a swatch (theme.css): inside it, the accent tokens are this accent's.
+            <button key={a.key} {...radio} className="accent-choice" data-accent={a.key}>
+              <span className="accent-swatch" aria-hidden="true" />
+              <span className="accent-choice-label">{a.label}</span>
             </button>
           )}
         </RadioButtons>
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <div className="settings-row-label" id="accent-label">
-              Accent
-            </div>
-            <div className="settings-row-hint">
-              The colour of your numbers, and of whatever is pressed. The small dot is the second line on a chart. Each pair is checked for
-              contrast and for colour-blind eyes, in both themes.
-            </div>
-          </div>
-          <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
-            {(a, radio) => (
-              // data-accent makes this button a swatch (theme.css): inside it, the accent tokens are this accent's.
-              <button key={a.key} {...radio} className="accent-choice" data-accent={a.key}>
-                <span className="accent-swatch" aria-hidden="true" />
-                <span className="accent-choice-label">{a.label}</span>
-              </button>
-            )}
-          </RadioButtons>
-        </div>
-        <Row
+      </Row>
+      <Row
+        label="Contrast"
+        hint="High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting."
+      >
+        <Segmented
           label="Contrast"
-          hint="High darkens the words and lines, outlines the cards and thickens the focus ring. Match system follows your device’s own setting."
-        >
-          <Segmented
-            label="Contrast"
-            value={prefs.contrast}
-            onChange={(v) => setPref('contrast', v)}
-            options={[
-              { value: 'system', label: 'Match system' },
-              { value: 'normal', label: 'Standard' },
-              { value: 'high', label: 'High' },
-            ]}
-          />
-        </Row>
-        <Row label="Density" hint="Compact fits more reports on a screen.">
-          <Segmented
-            label="Density"
-            value={prefs.density}
-            onChange={(v) => setPref('density', v)}
-            options={[
-              { value: 'comfortable', label: 'Comfortable' },
-              { value: 'compact', label: 'Compact' },
-            ]}
-          />
-        </Row>
-        <Row label="Sidebar" hint="Folded, it’s a rail of icons. The button at its top does the same.">
-          <Segmented
-            label="Sidebar"
-            value={prefs.sidebar}
-            onChange={(v) => setPref('sidebar', v)}
-            options={[
-              { value: 'expanded', label: 'Open' },
-              { value: 'collapsed', label: 'Folded' },
-            ]}
-          />
-        </Row>
-      </Section>
-
-      <Section title="Numbers and dates" sub="Virga’s words are English. These choose how its figures, dates and times are written.">
-        <Row label="Format" hint={localeSample(activeLocale())}>
-          <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
-            <option value="system">This browser’s region ({regionName(systemLocale())})</option>
-            {LOCALE_CHOICES.map((tag) => (
-              <option key={tag} value={tag}>
-                {regionName(tag)}: {localeSample(tag)}
-              </option>
-            ))}
-          </select>
-        </Row>
-        <Row label="Week starts on" hint="For weekly charts, the best-time grid and the weekly schedule.">
-          {/* A select, not a segmented control: four keys with a day's name in each don't fit a phone. */}
-          <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
-            <option value="system">As in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
-            <option value="monday">Monday</option>
-            <option value="sunday">Sunday</option>
-            <option value="saturday">Saturday</option>
-          </select>
-        </Row>
-      </Section>
-
-      <Section title="Live sky">
-        <div className="sky-setting">
-          <div className="sky-preview" data-on={prefs.sky || undefined} data-time={sky} aria-hidden="true">
-            <svg viewBox="0 0 168 104" preserveAspectRatio="none">
-              <g className="sky-stars">
-                <circle cx="22" cy="14" r="1.2" />
-                <circle cx="58" cy="9" r="0.9" />
-                <circle cx="84" cy="24" r="1.1" />
-                <circle cx="118" cy="11" r="1.3" />
-                <circle cx="146" cy="30" r="0.9" />
-                <circle cx="70" cy="42" r="0.8" />
-                <circle cx="152" cy="8" r="1" />
-              </g>
-              <path className="sky-cloud" d="M18 36a8 8 0 0 1 4-15 11 11 0 0 1 20-3 9 9 0 0 1 16 5 7 7 0 0 1 4 13Z" fill="#fff" fillOpacity="0.85" />
-              <path className="sky-cloud" d="M96 30a6 6 0 0 1 3-11 8 8 0 0 1 15-2 7 7 0 0 1 12 4 5 5 0 0 1 3 9Z" fill="#fff" fillOpacity="0.7" />
-              <path className="sky-hill-1" d="M0 70C40 52 80 56 110 66S150 76 168 62V104H0Z" />
-              <path className="sky-hill-2" d="M0 86C50 74 100 82 130 88S160 90 168 84V104H0Z" />
-            </svg>
-          </div>
-          <div className="sky-setting-text">
-            <div className="settings-row-label">Show the live sky behind Virga</div>
-            <p className="settings-row-hint">
-              The 3D hillside from Virga’s first version: clouds drift, their shadows cross the hill, and the sun comes up once your archive
-              is built. It uses WebGL and some battery, and holds still if you’ve asked your device for reduced motion. Cards stay solid in
-              front of it so the numbers stay readable.
-            </p>
-            <p className="settings-row-hint">Off by default. Five taps on the Virga logo turn it on or off from anywhere.</p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            className="switch"
-            aria-checked={prefs.sky}
-            aria-label="Show the live sky"
-            onClick={() => setPref('sky', !prefs.sky)}
-          />
-        </div>
-        {prefs.sky && (
+          value={prefs.contrast}
+          onChange={(v) => setPref('contrast', v)}
+          options={[
+            { value: 'system', label: 'Match system' },
+            { value: 'normal', label: 'Standard' },
+            { value: 'high', label: 'High' },
+          ]}
+        />
+      </Row>
+      <Row label="Density" hint="Compact fits more on a screen.">
+        <Segmented
+          label="Density"
+          value={prefs.density}
+          onChange={(v) => setPref('density', v)}
+          options={[
+            { value: 'comfortable', label: 'Comfortable' },
+            { value: 'compact', label: 'Compact' },
+          ]}
+        />
+      </Row>
+      <Row label="Sidebar" hint="Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.">
+        <Segmented
+          label="Sidebar"
+          value={prefs.sidebar}
+          onChange={(v) => setPref('sidebar', v)}
+          options={[
+            { value: 'expanded', label: 'Open' },
+            { value: 'collapsed', label: 'Folded' },
+          ]}
+        />
+      </Row>
+      <Row
+        label="Numbers and dates"
+        hint={
           <>
-            <Row
-              label="Time of day"
-              hint={
-                <>
-                  With your archive, the sun comes up at the first build: dawn, then day. In the dark theme that is dusk, then night. With
-                  the clock, it is the time of day where you are.
-                  {(prefs.skyTime === 'archive' || prefs.skyTime === 'clock') && <> It is {sky} now.</>}
-                </>
-              }
-            >
-              <Segmented
-                className="sky-times"
-                label="Time of day"
-                value={prefs.skyTime}
-                onChange={(v) => setPref('skyTime', v)}
-                options={[
-                  { value: 'archive', label: 'Archive', ariaLabel: 'Follow the archive' },
-                  { value: 'clock', label: 'Clock', ariaLabel: 'Follow the clock' },
-                  { value: 'dawn', label: 'Dawn' },
-                  { value: 'day', label: 'Day' },
-                  { value: 'dusk', label: 'Dusk' },
-                  { value: 'night', label: 'Night' },
-                ]}
-              />
-            </Row>
-            <Row label="Where" hint="Reports, tools and settings can keep a plain background.">
-              <Segmented
-                label="Where the sky shows"
-                value={prefs.skyScope}
-                onChange={(v) => setPref('skyScope', v)}
-                options={[
-                  { value: 'dashboard', label: 'Dashboards only' },
-                  { value: 'everywhere', label: 'Everywhere' },
-                ]}
-              />
-            </Row>
+            Virga’s words are English. These choose how its figures, dates and times are written, and the day a week starts on.
+            <span className="settings-row-sample">{localeSample(activeLocale())}</span>
           </>
-        )}
-      </Section>
-    </>
+        }
+      >
+        <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
+          <option value="system">This browser’s region ({regionName(systemLocale())})</option>
+          {LOCALE_CHOICES.map((tag) => (
+            <option key={tag} value={tag}>
+              {regionName(tag)}: {localeSample(tag)}
+            </option>
+          ))}
+        </select>
+        {/* A select, not a row of keys: four keys with a day's name in each don't fit a phone. */}
+        <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
+          <option value="system">Week starts as in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
+          <option value="monday">Week starts Monday</option>
+          <option value="sunday">Week starts Sunday</option>
+          <option value="saturday">Week starts Saturday</option>
+        </select>
+      </Row>
+      <Row
+        label="Live sky"
+        hint="Clouds that drift across the sky at the top of the page: the 3D scene from Virga’s first version. It uses WebGL and some battery, holds still if you’ve asked your device for reduced motion, and is left out in high contrast. Five taps on the Virga mark turn it on or off from anywhere."
+      >
+        <button type="button" role="switch" className="switch" aria-checked={prefs.liveSky} aria-label="Show the live sky" onClick={() => setPref('liveSky', !prefs.liveSky)} />
+      </Row>
+    </Section>
   );
 }
 
@@ -687,15 +638,17 @@ function PermissionsSection() {
         <ul className="perm-list">
           {PERMISSION_GROUPS.map((group) => (
             <li key={group.key}>
-              <strong>{group.title}</strong> {group.text}{' '}
-              {/* The resource and its name; the full strings, audiences and
-                  all, are in src/config.js and the README. */}
-              {group.tokens.map((token, i) => (
-                <span key={token}>
-                  {i > 0 && ' '}
-                  <code>{token.split('?')[0]}</code>
-                </span>
-              ))}
+              <strong>{group.title}</strong> {group.text}
+              {/* The resource and its name, on a line of their own; the full
+                  strings, audiences and all, are in src/config.js and the README. */}
+              <span className="perm-codes">
+                {group.tokens.map((token, i) => (
+                  <span key={token}>
+                    {i > 0 && ' '}
+                    <code>{token.split('?')[0]}</code>
+                  </span>
+                ))}
+              </span>
             </li>
           ))}
         </ul>
@@ -756,13 +709,14 @@ function AboutSection() {
             </Button>
           </Row>
         ))}
-        <LegalDialog docKey={reading} onClose={() => setReading(null)} />
         {agreed && (
           <p className="settings-text muted">
             This account agreed to version {agreed.version} of both{agreed.at ? ` on ${formatDateShort(agreed.at)}` : ''}.
           </p>
         )}
       </Section>
+      {/* Outside the section: everything inside one is set as a row of it. */}
+      <LegalDialog docKey={reading} onClose={() => setReading(null)} />
       <Section title="Where the data comes from">
         <ul className="perm-list">
           <li>

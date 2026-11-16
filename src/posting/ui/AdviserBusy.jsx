@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { ADVISER_CHOICE_LABELS, ADVISER_CHOICES } from '../adviser/gate.js';
@@ -6,16 +6,25 @@ import { SLOW_READ_AFTER_MS, readExpectation } from '../adviser/context.js';
 import './adviser.css';
 
 /**
- * While the adviser reads a post: a quiet line in the composer, the goals it
- * is checking, how long it usually takes, and the ways out. The pre-publish
+ * While the adviser reads a post: a quiet line in the composer (with the rule
+ * down its side that something under way has), the goals it is checking, how
+ * long it usually takes, and the ways out. Neither way out is the ink
+ * button: that is the composer's own, and it is waiting on this. The pre-publish
  * check offers Publish anyway and Keep editing; a read from the "Check this
  * post" button only Keep editing (`onPublishAnyway` is null). The controller
  * holds a fast answer back (READ_MIN_MS) so this never flashes.
  */
 export default function AdviserBusy({ goals = [], startedAt, onPublishAnyway, onKeepEditing }) {
   const slow = useSlowAfter(startedAt, SLOW_READ_AFTER_MS);
+  const ref = useRef(null);
+  // It appears under the post's settings, which on a phone can be below the
+  // foot of the sheet: bring it into view, since it has the ways out.
+  useEffect(() => {
+    const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    ref.current?.scrollIntoView?.({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+  }, []);
   return (
-    <section className="adviser-busy" aria-label="The post adviser is reading" aria-busy="true">
+    <section ref={ref} className="adviser-busy" aria-label="The post adviser is reading" aria-busy="true">
       <div className="adviser-busy-head">
         <span className="adviser-busy-icon" aria-hidden="true">
           <Sparkles size={16} />
@@ -40,12 +49,12 @@ export default function AdviserBusy({ goals = [], startedAt, onPublishAnyway, on
       )}
       <div className="adviser-busy-actions">
         {onKeepEditing && (
-          <Button size="sm" onClick={onKeepEditing}>
+          <Button size="sm" variant="ghost" onClick={onKeepEditing}>
             {ADVISER_CHOICE_LABELS[ADVISER_CHOICES.EDIT]}
           </Button>
         )}
         {onPublishAnyway && (
-          <Button size="sm" variant="primary" onClick={onPublishAnyway}>
+          <Button size="sm" onClick={onPublishAnyway}>
             {ADVISER_CHOICE_LABELS[ADVISER_CHOICES.PUBLISH]}
           </Button>
         )}

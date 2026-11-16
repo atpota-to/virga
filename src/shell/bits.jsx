@@ -12,18 +12,14 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
 import Segmented from '../components/Segmented.jsx';
 
-/** The mark: a cloud's arc with rain falling from it that never lands. */
-export function LogoMark({ size = 26 }) {
+/**
+ * The mark: a cloud's arc with rain falling from it that never lands. Drawn
+ * in the colour of the words beside it, straight on the sky.
+ */
+export function LogoMark({ size = 22 }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className="logo-mark">
-      <rect width="24" height="24" rx="6" fill="var(--accent)" />
-      <path
-        d="M6 11a6 6 0 0 1 12 0M9 14l-1 4.5M12.5 14l-1 6M16 14l-1 3.5"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className="logo-mark" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <path d="M5 11a7 7 0 0 1 14 0M8.5 14.5l-1 4M12.3 14.5l-1.3 6M16 14.5l-.9 3.2" />
     </svg>
   );
 }
@@ -33,7 +29,7 @@ export function LogoMark({ size = 26 }) {
  * the last, turn the live sky on (or off again). Returns the click handler.
  */
 export function useSkyTaps() {
-  const { sky, setPref } = usePreferences();
+  const { liveSky, setPref } = usePreferences();
   const toast = useToast();
   const taps = useRef({ n: 0, at: 0 });
   return useCallback(() => {
@@ -43,15 +39,16 @@ export function useSkyTaps() {
     t.at = now;
     if (t.n >= 5) {
       t.n = 0;
-      setPref('sky', !sky);
-      toast?.(sky ? 'The sky is put away.' : 'The sky is out. Settings › Appearance puts it away again.');
+      setPref('liveSky', !liveSky);
+      toast?.(liveSky ? 'The live sky is put away.' : 'The live sky is out. Settings › Appearance puts it away again.');
     }
-  }, [sky, setPref, toast]);
+  }, [liveSky, setPref, toast]);
 }
 
 /**
- * The band at the top of a page: where it sits (crumbs), its title, a line
- * under it, and the page's own controls at the right.
+ * The top of a page, set straight on the sky: where it sits (crumbs, shown
+ * where the sidebar isn't there to say it), its title, a line under it, and
+ * the page's own controls at the right.
  */
 export function PageHeader({ crumbs = null, title, sub = null, actions = null, children = null }) {
   return (

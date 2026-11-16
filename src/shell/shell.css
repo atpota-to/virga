@@ -1,13 +1,22 @@
 /* The shell: sidebar, page header, the phone's bars, the sync's places,
-   dialogs and toasts. */
+   dialogs and toasts.
+
+   The shell paints nothing behind itself: the sky is the page's own
+   background (styles/base.css), and the sidebar and the page's title sit
+   straight on it. On a wide screen the whole of it (sidebar and page) is
+   held to --shell-max and centred, so the two stay together. */
 
 .shell {
+  position: relative;
   display: flex;
+  max-width: var(--shell-max);
   min-height: 100svh;
-  background: var(--bg);
+  margin: 0 auto;
 }
 
 .shell-main {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -21,50 +30,17 @@
 }
 
 .page-loading {
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
   padding: var(--space-7) var(--page-pad);
   color: var(--muted);
   font-size: var(--text-md);
 }
 
-/* ---- the live sky --------------------------------------------------- */
-
-.shell-sky {
-  --crest: calc(100svh - 150px);
-  --hill-blur: 6px;
-  position: fixed;
-  z-index: 0;
-  inset: 0;
-  pointer-events: none;
-}
-
-.shell[data-sky] {
-  background: transparent;
-}
-
-/* Both sit above the sky; the sidebar stays sticky, and above the page so a
-   menu hanging out of it isn't painted over. */
-.shell[data-sky] .shell-main {
-  position: relative;
-  z-index: 1;
-}
-
-.shell[data-sky] .sidebar {
-  z-index: 2;
-}
-
-.shell[data-sky] .page-header {
-  border-bottom-color: transparent;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(10px);
-}
-
-.shell[data-sky] .sidebar {
-  background: color-mix(in srgb, var(--surface-2) 94%, transparent);
-  backdrop-filter: blur(10px);
-}
-
 /* ---- sidebar -------------------------------------------------------- */
 
+/* No ground and no edge: it sits on the sky, and stays put while the page
+   scrolls under the sky and away. */
 .sidebar {
   position: sticky;
   z-index: 25;
@@ -72,12 +48,10 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   width: var(--sidebar-w);
   height: 100svh;
-  padding: 14px 12px 12px;
-  border-right: 1px solid var(--line);
-  background: var(--surface-2);
+  padding: 32px 16px 24px 36px;
 }
 
 /* Only the middle scrolls. The sidebar itself doesn't, so a menu hanging
@@ -86,32 +60,147 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   min-height: 0;
-  margin: 0 -12px;
-  padding: 0 12px 2px;
+  margin: 0 -16px 0 -36px;
+  padding: 0 16px 2px 36px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
-.sidebar[data-collapsed] .sidebar-scroll {
+.sidebar-top {
+  display: flex;
   align-items: center;
-  margin: 0 -10px;
-  padding: 0 10px 2px;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.brand-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.logo-mark {
+  flex: none;
+}
+
+/* Folding is a thing you do once in a while: its button waits until the
+   sidebar is pointed at, where there is a pointer to do that with. */
+.sidebar-fold {
+  margin-right: -6px;
+}
+
+@media (hover: hover) {
+  .sidebar-fold {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .sidebar:hover .sidebar-fold,
+  .sidebar-fold:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* The account button: avatar, name and handle, with no box round them. */
+.account-menu {
+  width: 100%;
+}
+
+.account-menu > .menu-button {
+  justify-content: flex-start;
+  gap: 10px;
+  width: calc(100% + 12px);
+  min-height: 42px;
+  margin: -6px;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 400;
+  text-align: left;
+}
+
+@media (hover: hover) {
+  .account-menu > .menu-button:hover:not(:disabled) {
+    background: var(--tint);
+  }
+}
+
+.account-menu > .menu-button .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--text-xs);
+}
+
+.account-menu--compact {
+  width: auto;
+}
+
+.account-menu--compact > .menu-button {
+  width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+}
+
+.account-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.account-name,
+.account-handle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.account-handle {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+/* New post, and the way into search. */
+.sidebar-do {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
 }
 
 .sidebar-new-post {
   flex: none;
-  width: 100%;
-}
-
-.sidebar[data-collapsed] .sidebar-new-post {
-  width: 40px;
-  height: 40px;
 }
 
 /* "Search or jump to": shaped like a field, because pressing it gives one
-   (the command palette), with the shortcut that does the same at its end. */
+   (the command palette), with the shortcut that does the same at its end.
+   A pale pane on the sky, and an outline on the page. */
 .sidebar-search {
   display: flex;
   flex: none;
@@ -119,15 +208,16 @@
   gap: 8px;
   width: 100%;
   min-height: var(--control-h);
-  margin-top: -8px;
-  padding: 0 6px 0 10px;
-  border: 1px solid var(--line);
+  padding: 0 8px 0 12px;
+  border: 0;
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
   color: var(--muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
+  transition: box-shadow 0.12s ease;
 }
 
 .sidebar-search > svg {
@@ -142,211 +232,195 @@
   white-space: nowrap;
 }
 
+.sidebar-search .kbd {
+  border: 0;
+  background: transparent;
+  font-size: var(--text-xs);
+}
+
 @media (hover: hover) {
   .sidebar-search:hover {
-    border-color: var(--line-2);
+    box-shadow: inset 0 0 0 1px var(--line-2);
     color: var(--ink-2);
   }
 }
 
-.sidebar-search-icon {
-  flex: none;
-  margin-top: -8px;
-}
-
-.sidebar[data-collapsed] {
-  align-items: center;
-  width: var(--rail-w);
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.sidebar-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.sidebar[data-collapsed] .sidebar-top {
-  flex-direction: column;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 2px 6px;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  cursor: pointer;
-}
-
-.brand-name {
-  font-size: var(--text-md);
-  font-weight: 680;
-  letter-spacing: -0.01em;
-}
-
-.logo-mark {
-  flex: none;
-}
-
 .sidebar-spacer {
   flex: 1;
+  min-height: 8px;
 }
 
-/* The account button: avatar, name and handle on one line. */
-.account-menu {
-  width: 100%;
-}
-
-.account-menu > .menu-button {
-  justify-content: flex-start;
-  gap: 10px;
-  width: 100%;
-  min-height: 48px;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  color: var(--ink);
-  text-align: left;
-}
-
-.account-menu--compact {
-  width: auto;
-}
-
-.account-menu--compact > .menu-button {
-  width: auto;
-  min-height: 0;
-  padding: 3px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.account-who {
+/* The five parts, as words. The one you are in is in ink and opened out
+   into its pages, on a hairline rail; the page you are on has a dot in the
+   accent on that rail. */
+.nav {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  line-height: 1.3;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-md);
 }
 
-.account-name,
-.account-handle {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.account-handle {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 450;
-}
-
-.nav-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.sidebar[data-collapsed] .nav-group {
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-group-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 26px;
-  padding: 0 4px 2px 8px;
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-}
-
-.nav-group-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.nav-group-link:hover {
-  color: var(--ink);
-}
-
-.nav-item {
+.nav-link {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 32px;
-  padding: 0 8px;
+  min-height: 34px;
   border-radius: var(--radius-sm);
   color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 480;
+  font-weight: 500;
   text-decoration: none;
+  transition: color 0.12s ease;
 }
 
-.sidebar[data-collapsed] .nav-item {
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-}
-
-@media (hover: hover) {
-  .nav-item:hover {
-    background: var(--hover);
-    color: var(--ink);
-  }
-}
-
-.nav-item[aria-current='page'] {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+.nav-link[data-active] {
+  color: var(--ink);
   font-weight: 600;
 }
 
 .nav-icon {
   flex: none;
-  color: currentColor;
-  opacity: 0.85;
 }
 
 .nav-label {
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.nav-count {
+.nav-sub {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 10px 7px;
+  padding: 0 0 0 18px;
+  border-left: 1px solid var(--line);
+  list-style: none;
+  font-size: var(--text-base);
+}
+
+.nav-sub-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.nav-sub-link[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Centred on the rail: the rail is one pixel wide, 18px to the left. */
+.nav-sub-link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -22px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+.nav-sub-action svg {
+  flex: none;
+}
+
+@media (hover: hover) {
+  .nav-link:hover,
+  .nav-sub-link:hover {
+    color: var(--ink);
+    text-decoration: none;
+  }
+}
+
+/* Folded: a rail of icons. The part you are in sits on a tinted disc. */
+.sidebar[data-collapsed] {
+  align-items: center;
+  width: var(--rail-w);
+  padding: 32px 0 20px;
+}
+
+.sidebar[data-collapsed] .sidebar-top {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar[data-collapsed] .sidebar-fold {
+  margin-right: 0;
+  opacity: 1;
+}
+
+.sidebar[data-collapsed] .sidebar-do {
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar[data-collapsed] .sidebar-new-post,
+.sidebar[data-collapsed] .sidebar-search-icon {
+  width: 44px;
+  min-height: 44px;
+}
+
+.sidebar[data-collapsed] .sidebar-search-icon {
+  color: var(--ink);
+}
+
+.sidebar[data-collapsed] .sidebar-scroll {
+  align-items: center;
+  margin: 0;
+  padding: 0 0 2px;
+}
+
+.sidebar[data-collapsed] .nav {
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar[data-collapsed] .nav-link {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.sidebar[data-collapsed] .nav-link[data-active] {
+  background: var(--accent-tint);
+}
+
+@media (hover: hover) {
+  .sidebar[data-collapsed] .nav-link:hover:not([data-active]) {
+    background: var(--tint);
+  }
 }
 
 /* ---- the sync's places --------------------------------------------- */
 
+/* In the sidebar: a few quiet lines at its foot. */
 .sync-card {
   display: flex;
+  flex: none;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  align-items: flex-start;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
 
 .sync-card-row {
@@ -354,6 +428,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  width: 100%;
 }
 
 .sync-card-title {
@@ -361,37 +436,64 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 .sync-card-sub {
-  color: var(--muted);
-  font-size: var(--text-xs);
   line-height: 1.4;
 }
 
-.sync-card-link {
-  font-size: var(--text-xs);
+.sync-card .progress {
+  width: 100%;
+  margin: 4px 0;
 }
 
+/* Sync now, as a link: the sidebar has one filled button already. */
+.sync-card > .btn {
+  gap: 6px;
+  min-height: 24px;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .sync-card > .btn:hover:not(:disabled) {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Across the top of the page, where there is no sidebar to say it. */
 .sync-banner {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px var(--page-pad);
-  border-bottom: 1px solid var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  width: 100%;
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
+  padding: 8px var(--page-pad) 0;
+  color: var(--ink-2);
   font-size: var(--text-sm);
 }
 
 .sync-banner[data-tone='warn'] {
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
-  border-bottom-color: transparent;
-  background: var(--warn-wash);
   color: var(--warn);
+}
+
+.sync-banner[data-tone='warn'] a {
+  color: inherit;
 }
 
 .sync-banner-row {
@@ -406,10 +508,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.sync-banner .btn {
-  color: inherit;
 }
 
 .sync-steps-wrap {
@@ -452,7 +550,7 @@
 }
 
 .sync-step[data-state='done'] .progress-fill {
-  background: var(--accent-line);
+  background: var(--ink-2);
 }
 
 .sync-step[data-state='failed'] .progress-fill {
@@ -467,36 +565,43 @@
   display: inline;
 }
 
-/* ---- page header ---------------------------------------------------- */
+/* ---- the top of a page ---------------------------------------------- */
 
-.page-header {
-  position: sticky;
-  z-index: 10;
-  top: 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+/* A page is a column, centred in what the sidebar leaves: its title at
+   the top, on the sky, then its bands. --page-max is how wide the column
+   may get; a page that wants more than the usual (a dashboard being
+   arranged) says so on its own wrapper. */
+.page-header-in,
+.page-body {
+  width: 100%;
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
 }
 
 .page-header-in {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 12px 16px;
-  max-width: var(--content-max);
-  padding: 14px var(--page-pad);
+  gap: 16px 32px;
+  padding: var(--page-top) var(--page-pad) 0;
 }
 
 .page-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
 }
 
+/* Where the page sits. The open sidebar says this already, so the crumbs
+   are for a phone and for the folded rail (below). */
 .crumbs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .crumbs a {
@@ -509,31 +614,37 @@
   text-decoration: underline;
 }
 
+@media (min-width: 900px) {
+  .shell[data-sidebar='expanded'] .crumbs {
+    display: none;
+  }
+}
+
 .page-title {
-  font-size: var(--text-xl);
-  font-weight: 660;
-  letter-spacing: -0.018em;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
 }
 
 .page-sub {
-  margin-top: 2px;
+  max-width: 68ch;
   color: var(--muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .page-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 8px 20px;
 }
 
 .page-body {
   display: flex;
   flex-direction: column;
-  gap: var(--grid-gap);
-  max-width: var(--content-max);
-  padding: var(--space-5) var(--page-pad) var(--space-7);
+  gap: var(--section-gap);
+  padding: var(--section-gap) var(--page-pad) 72px;
 }
 
 .empty-page {
@@ -541,31 +652,41 @@
   flex-direction: column;
   gap: 12px;
   max-width: 520px;
+  padding-top: var(--space-5);
 }
 
 /* ---- the phone's bars ---------------------------------------------- */
 
+/* The top row is part of the page: the mark at the left, and search, sync
+   and the account at the right. It scrolls away with the sky. */
 .appbar {
-  position: sticky;
-  z-index: 20;
-  top: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   min-height: var(--appbar-h);
-  padding: 4px 8px 4px 10px;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+  padding: 0 8px 0 var(--page-pad);
 }
 
-.appbar-title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  font-size: var(--text-md);
-  font-weight: 650;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.appbar .brand {
+  min-height: 44px;
+}
+
+.appbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.appbar .btn--icon {
+  width: 44px;
+  min-height: 44px;
+  color: var(--ink);
+}
+
+.appbar .account-menu--compact > .menu-button .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--text-xs);
 }
 
 .appbar .is-spinning svg {
@@ -578,36 +699,67 @@
   }
 }
 
+/* The bottom row stays: the four parts as icons, the one you are in with
+   its name beside it on a tinted pill, and New post as a round button. */
 .tabbar {
   position: fixed;
   z-index: 30;
   right: 0;
   bottom: 0;
   left: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom)) 12px;
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--bg);
+}
+
+.tabbar-tabs {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  max-width: 440px;
 }
 
 .tabbar-item {
   display: flex;
-  flex-direction: column;
+  flex: none;
   align-items: center;
-  gap: 2px;
-  min-height: 52px;
-  padding: 6px 0;
-  border-radius: var(--radius);
+  justify-content: center;
+  gap: 8px;
+  min-width: 48px;
+  height: 48px;
+  border-radius: var(--pill);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 560;
+  font-size: var(--text-sm);
   text-decoration: none;
 }
 
 .tabbar-item[aria-current='page'] {
-  color: var(--accent-ink);
-  font-weight: 680;
+  height: 44px;
+  padding: 0 16px 0 14px;
+  background: var(--accent-tint);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tabbar-new-post {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--btn);
+  color: var(--on-btn);
+  cursor: pointer;
 }
 
 @media (max-width: 899px) {
@@ -615,41 +767,43 @@
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
   }
 
-  .page-header {
-    position: static;
-  }
-
   .page-header-in {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    align-items: flex-start;
+    gap: 6px 24px;
   }
 
   .page-actions {
     width: 100%;
+    gap: 4px 20px;
+  }
+
+  .page-body {
+    padding-bottom: 40px;
   }
 }
 
 /* ---- first run ------------------------------------------------------ */
 
 .first-run {
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6) var(--page-pad) var(--space-7);
+  width: 100%;
+  max-width: calc(var(--content-max) + var(--page-pad) * 2);
+  margin: 0 auto;
+  padding: var(--page-top) var(--page-pad) var(--space-7);
 }
 
 .first-run-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
-  max-width: 720px;
-  padding: 28px;
+  max-width: 640px;
 }
 
 .first-run-title {
-  font-size: var(--text-2xl);
-  font-weight: 680;
-  letter-spacing: -0.022em;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
 }
 
 .first-run-lede {
@@ -660,37 +814,40 @@
 .first-run-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--rule);
   list-style: none;
   color: var(--ink-2);
 }
 
 .first-run-list li {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .first-run-list svg {
   flex: none;
   margin-top: 3px;
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .first-run-list strong {
   color: var(--ink);
-  font-weight: 620;
+  font-weight: 600;
 }
 
 /* ---- dialog --------------------------------------------------------- */
 
+/* What floats is the one thing with an edge and a shadow. */
 .dialog {
   width: min(520px, calc(100vw - 32px));
   max-height: calc(100svh - 48px);
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-lg);
@@ -710,31 +867,47 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 16px 8px 20px;
+  padding: 20px 16px 8px 24px;
 }
 
 .dialog-title {
   font-size: var(--text-lg);
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 .dialog-body {
-  padding: 4px 20px 16px;
+  padding: 4px 24px 20px;
   color: var(--ink-2);
 }
 
 .dialog-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  padding: 12px 20px 16px;
-  border-top: 1px solid var(--line-soft);
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--line);
 }
 
 .dialog-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .dialog-head {
+    padding: 16px 10px 8px 18px;
+  }
+
+  .dialog-body {
+    padding: 4px 18px 16px;
+  }
+
+  .dialog-actions {
+    padding: 12px 18px 16px;
+  }
 }
 
 .choice-list {
@@ -747,23 +920,24 @@
   margin-bottom: 6px;
 }
 
+/* One of a few things to pick between: rows between hairlines, the picked
+   one marked by its radio and by a rule in the accent down its side. */
 .choice {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: 12px;
+  padding: 12px 0 12px 12px;
+  border-top: 1px solid var(--line);
+  box-shadow: inset 2px 0 0 transparent;
   cursor: pointer;
 }
 
-.choice + .choice {
-  margin-top: 6px;
+.choice:last-child {
+  border-bottom: 1px solid var(--line);
 }
 
 .choice[data-on] {
-  border-color: var(--accent);
-  background: var(--accent-wash);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .choice input {
@@ -773,7 +947,7 @@
 .choice-label {
   display: block;
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
 }
 
@@ -797,24 +971,20 @@
   pointer-events: none;
 }
 
+/* Ink, with the page's colour written on it: dark by day, light at night. */
 .toast {
   max-width: min(420px, calc(100vw - 32px));
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background: #101828;
-  color: #ffffff;
-  font-size: var(--text-sm);
+  padding: 11px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-size: var(--text-base);
   box-shadow: var(--shadow-lg);
   animation: toast-in 0.2s var(--ease);
 }
 
-:root[data-theme='dark'] .toast {
-  background: #e7eaf0;
-  color: #101828;
-}
-
 .toast[data-tone='danger'] {
-  background: var(--danger);
+  background: #b42318;
   color: #ffffff;
 }
 
@@ -822,7 +992,7 @@
    toast (the post that just went out) still takes a press. */
 .toast a {
   color: inherit;
-  font-weight: 650;
+  font-weight: 600;
   pointer-events: auto;
 }
 

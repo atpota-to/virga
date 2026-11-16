@@ -10,6 +10,7 @@ import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { bestTimeRows, bestTimeSentence, bestTimeWindow } from '../dashboards/widgets/index.jsx';
 import { BEST_TIME_MIN_POSTS, WEEKDAYS, WEEKDAYS_LONG as LONG, bestTimeModel, hourColumns, hourRange, weekdayOrder } from '../reports/models.js';
+import { Link } from '../lib/router.jsx';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
 import { activeLocale } from '../lib/locale.js';
@@ -26,6 +27,9 @@ export default function BestTime({ tool }) {
     <>
       <ToolHeader tool={tool} actions={<PeriodPicker />} />
       <div className="page-body">
+        {/* What the page found, in a sentence, before any of the charts it found it in. */}
+        <p className="tool-statement">{bestTimeSentence(m)}</p>
+
         <section className="card" aria-labelledby="bt-title">
           <div className="card-head">
             <div>
@@ -49,21 +53,24 @@ export default function BestTime({ tool }) {
               ]}
             />
           </div>
-          <p className="widget-insight">{bestTimeSentence(m)}</p>
-          <div className="best-heat">
-            <Heatmap rows={bestTimeRows(m)} columns={hourColumns(block)} summary={bestTimeSentence(m)} cellHeight={block === 1 ? 20 : 26} />
-          </div>
+          <Heatmap rows={bestTimeRows(m)} columns={hourColumns(block)} summary={bestTimeSentence(m)} cellHeight={block === 1 ? 22 : 30} />
           <p className="card-caption">
             Each slot shows its typical post (the median), so one post that went round doesn’t make its hour look like the best
             time forever. The ringed slot is the best. A slot with fewer than {BEST_TIME_MIN_POSTS} posts is left as an outline: too
             few to say anything. Posts from the last two days are still collecting engagement and are left out.
           </p>
         </section>
+
         <div className="report-split">
-          <section className="card" aria-labelledby="bt-top">
-            <h2 id="bt-top" className="card-title">
-              The best slots
-            </h2>
+          <section className="card card--flush" aria-labelledby="bt-top">
+            <div className="card-head">
+              <h2 id="bt-top" className="card-title">
+                The best slots
+              </h2>
+              <Link to="/posting/schedule" className="tool-head-link">
+                Use them in the weekly schedule
+              </Link>
+            </div>
             {m.best.length ? (
               <ol className="best-list">
                 {m.best.map((b, i) => (
@@ -73,7 +80,9 @@ export default function BestTime({ tool }) {
                       {LONG[b.day]}, {hourRange(b.col, block)}
                     </span>
                     <span className="best-avg num">{fmtRate(b.avg)} typical</span>
-                    <span className="muted num">{b.posts} posts</span>
+                    <span className="best-posts num">
+                      {b.posts} {b.posts === 1 ? 'post' : 'posts'}
+                    </span>
                   </li>
                 ))}
               </ol>
@@ -81,19 +90,25 @@ export default function BestTime({ tool }) {
               <p className="empty">Not enough posts in this window yet.</p>
             )}
           </section>
-          <section className="card" aria-labelledby="bt-days">
-            <h2 id="bt-days" className="card-title">
-              By weekday
-            </h2>
-            <BarList
-              ariaLabel="What a typical post earns, by weekday"
-              labelWidth="48px"
-              format={(v) => fmtRate(v)}
-              rows={weekdayOrder().map((day) => m.byDay[day]).map((d) => ({ key: d.day, label: WEEKDAYS[d.day], value: d.avg || 0, display: d.avg == null ? '—' : fmtRate(d.avg), title: `${d.posts} posts` }))}
-            />
+          <section className="card card--flush" aria-labelledby="bt-days">
+            <div className="card-head">
+              <h2 id="bt-days" className="card-title">
+                By weekday
+              </h2>
+              <span className="tool-head-note">What a typical post earns</span>
+            </div>
+            <div className="best-days">
+              <BarList
+                ariaLabel="What a typical post earns, by weekday"
+                labelWidth="48px"
+                format={(v) => fmtRate(v)}
+                rows={weekdayOrder().map((day) => m.byDay[day]).map((d) => ({ key: d.day, label: WEEKDAYS[d.day], value: d.avg || 0, display: d.avg == null ? '—' : fmtRate(d.avg), title: `${d.posts} posts` }))}
+              />
+            </div>
           </section>
         </div>
-        <details className="card disclosure how-counted">
+
+        <details className="disclosure how-counted">
           <summary>Every slot as a table</summary>
           <div className="table-scroll best-table">
             <table className="table">

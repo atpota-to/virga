@@ -161,13 +161,15 @@ export default function FollowCleanup({ tool }) {
           <p className="callout">Who you follow arrives with the next sync. Until then there’s nothing to tidy.</p>
         )}
 
-        <section className="card check-card" aria-label="Activity check">
+        <section className="check-card" aria-labelledby="cleanup-check">
           <div className="check-card-text">
-            <strong>{checkedCount ? `Activity checked for ${checkedCount.toLocaleString(activeLocale())} of ${rows.length.toLocaleString(activeLocale())} accounts` : 'When did they last post?'}</strong>
-            <span className="muted">
+            <h2 id="cleanup-check" className="card-title">
+              {checkedCount ? `Activity checked for ${checkedCount.toLocaleString(activeLocale())} of ${rows.length.toLocaleString(activeLocale())} accounts` : 'When did they last post?'}
+            </h2>
+            <p className="card-sub">
               Reads the newest post or repost of each account you follow from Bluesky’s public API, one request each. About a minute for
               800 accounts. Kept in this browser.
-            </span>
+            </p>
           </div>
           {checking ? (
             <div className="check-progress">
@@ -201,6 +203,7 @@ export default function FollowCleanup({ tool }) {
           )}
         </section>
 
+        {/* Four figures that are also the filter: the pressed one has its rule in the accent. */}
         <div className="filter-cards" role="group" aria-label="Which accounts">
           {FILTERS.map((f) => (
             <button
@@ -221,7 +224,7 @@ export default function FollowCleanup({ tool }) {
           ))}
         </div>
 
-        <section className="card card--flush table-card" aria-label="Accounts">
+        <section className="table-card" aria-label="Accounts">
           <div className="table-bar" data-selected={selectedLive.length ? '' : undefined}>
             {working ? (
               <span role="status">
@@ -287,42 +290,58 @@ export default function FollowCleanup({ tool }) {
               </>
             )}
           </div>
-          <div className="table-scroll">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col" className="col-check">
-                    <input
-                      type="checkbox"
-                      aria-label="Select every account shown"
-                      checked={live.length > 0 && live.every((r) => selected.has(r.did))}
-                      onChange={(e) => setSelected(e.target.checked ? new Set(live.map((r) => r.did)) : new Set())}
-                    />
+          {/* On a phone each row of this table is set as a small block (tools.css),
+              which takes the table's own layout away, and in some browsers its
+              meaning with it. The roles say again what each part is. */}
+          <div className="table-scroll table-scroll--bleed">
+            <table className="table table--stack cleanup-table" role="table">
+              <thead role="rowgroup">
+                <tr role="row">
+                  <th scope="col" role="columnheader" className="col-check">
+                    <label className="stack-all">
+                      <input
+                        type="checkbox"
+                        aria-label="Select every account shown"
+                        checked={live.length > 0 && live.every((r) => selected.has(r.did))}
+                        onChange={(e) => setSelected(e.target.checked ? new Set(live.map((r) => r.did)) : new Set())}
+                      />
+                      <span className="stack-all-label" aria-hidden="true">
+                        Select all shown
+                      </span>
+                    </label>
                   </th>
-                  <th scope="col">Account</th>
-                  <th scope="col">Follows you</th>
-                  <th scope="col">Last active</th>
-                  <th scope="col" className="is-num">
+                  <th scope="col" role="columnheader">
+                    Account
+                  </th>
+                  <th scope="col" role="columnheader">
+                    Follows you
+                  </th>
+                  <th scope="col" role="columnheader">
+                    Last active
+                  </th>
+                  <th scope="col" role="columnheader" className="is-num">
                     Interactions
                   </th>
-                  <th scope="col">Followed</th>
-                  <th scope="col">
+                  <th scope="col" role="columnheader">
+                    Followed
+                  </th>
+                  <th scope="col" role="columnheader" className="col-action">
                     <span className="visually-hidden">Action</span>
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody role="rowgroup">
                 {shown.map((r) => {
                   const card = cardFor(archive, r.did);
                   const name = displayName(card, r.did);
                   const following = follow.isFollowing(r.did);
                   const undone = undo.has(r.did) && !following;
                   return (
-                    <tr key={r.did} className={selected.has(r.did) ? 'is-selected' : undefined} data-gone={undone || undefined}>
-                      <td className="col-check">
+                    <tr key={r.did} role="row" className={selected.has(r.did) ? 'is-selected' : undefined} data-gone={undone || undefined}>
+                      <td role="cell" className="col-check">
                         <input type="checkbox" aria-label={`Select ${name}`} checked={selected.has(r.did)} disabled={!following} onChange={() => toggleRow(r.did)} />
                       </td>
-                      <td>
+                      <td role="cell" className="col-main">
                         <span className="table-person">
                           <Avatar src={card?.avatar} name={card?.displayName || card?.handle} size="sm" />
                           <span className="table-person-text">
@@ -334,16 +353,22 @@ export default function FollowCleanup({ tool }) {
                           {keep.has(r.did) && <span className="badge">Kept</span>}
                         </span>
                       </td>
-                      <td>{r.followsYou ? 'Yes' : <span className="muted">No</span>}</td>
-                      <td>
+                      <td role="cell" data-label="Follows you">
+                        {r.followsYou ? 'Yes' : <span className="muted">No</span>}
+                      </td>
+                      <td role="cell" data-label="Last active">
                         <span className="activity">
                           <span className={`dot${r.gone ? ' dot--danger' : !r.checked ? ' dot--idle' : r.lastActiveMs && r.lastActiveMs >= quietCut ? '' : ' dot--warn'}`} aria-hidden="true" />
                           {r.gone ? 'Gone' : !r.checked ? <span className="muted">Not checked</span> : r.lastActiveMs ? relativeTime(r.lastActiveMs) : 'Never posted'}
                         </span>
                       </td>
-                      <td className="is-num">{r.interactions.toLocaleString(activeLocale())}</td>
-                      <td className="num">{r.followedAt ? formatDateShort(r.followedAt) : '—'}</td>
-                      <td className="col-action">
+                      <td role="cell" className="is-num" data-label="Interactions">
+                        {r.interactions.toLocaleString(activeLocale())}
+                      </td>
+                      <td role="cell" className="num" data-label="Followed">
+                        {r.followedAt ? formatDateShort(r.followedAt) : '—'}
+                      </td>
+                      <td role="cell" className="col-action">
                         {following ? (
                           <Button size="sm" disabled={follow.busy(r.did)} onClick={() => follow.toggle(r.did, false).then((ok) => ok && setUndo((u) => new Set(u).add(r.did)))}>
                             Unfollow<span className="visually-hidden"> {name}</span>

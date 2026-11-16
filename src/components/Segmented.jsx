@@ -1,6 +1,7 @@
 /**
  * A segmented control (styles/controls.css .segmented): a row of mutually
- * exclusive keys, one of them always pressed. A group of toggle buttons with
+ * exclusive keys, one of them always pressed, drawn as words with a line
+ * under the pressed one. A group of toggle buttons with
  * aria-pressed rather than a radio group, because each key acts the moment
  * it's pressed and the arrow keys are left to the page.
  *
@@ -28,7 +29,11 @@ export default function Segmented({ options, value, onChange, label, size = 'md'
             onClick={() => onChange(o.value)}
           >
             {Icon && <Icon className="segmented-icon" size={15} aria-hidden="true" />}
-            <span className="segmented-label">{o.label}</span>
+            {/* data-label lets the stylesheet hold the key at the width of its
+                word in bold, so pressing one doesn't shift the others. */}
+            <span className="segmented-label" data-label={typeof o.label === 'string' ? o.label : undefined}>
+              {o.label}
+            </span>
           </button>
         );
       })}

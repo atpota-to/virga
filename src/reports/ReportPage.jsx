@@ -3,6 +3,12 @@
 // Each chart has a table twin; each page says how its numbers are counted,
 // folded away under "How this is counted"; each can add its main chart to a
 // dashboard and export what it shows.
+//
+// Under a report's title is one line of its own: what narrows it (the kinds
+// of engagement, a direction) at the left, and what can be done with it
+// (Export, Post this chart, Add to dashboard) at the right, as words with a
+// line under them. Add to dashboard opens a strip in that place, which asks
+// which dashboard and how wide, rather than a menu that hangs over the page.
 
 import { useMemo, useState } from 'react';
 import {
@@ -25,12 +31,12 @@ import { fmtFigure, fmtRate, unitNoun } from '../charts/format.js';
 import Button from '../components/Button.jsx';
 import Figures from '../components/Figures.jsx';
 import { FollowerCountTip } from '../components/InfoTip.jsx';
-import Menu from '../components/Menu.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportPosts, exportRows } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import { WIDGETS } from '../dashboards/catalog.js';
+import { SIZES, newId } from '../dashboards/layouts.js';
 import ShareDialog from '../share/ShareDialog.jsx';
 import { canShare } from '../share/shareSpec.js';
 import { ENGAGEMENT_KINDS, EVENT_KINDS, bucketLabel, engagementOf } from '../lib/analytics.js';
@@ -97,8 +103,7 @@ export default function ReportPage({ reportKey }) {
   const archive = useArchive();
   const [period] = usePeriod();
   const report = REPORT_BY_KEY[reportKey];
-  const { dashboards, addWidget } = useDashboards();
-  const toast = useToast();
+  const [adding, setAdding] = useState(false);
   const [direction, setDirection] = useSearchParam('direction', 'received');
   const [kind, setKind] = useState('all');
   const [relation, setRelation] = useState('all');
@@ -107,8 +112,8 @@ export default function ReportPage({ reportKey }) {
   if (!report) {
     return (
       <div className="page-body">
-        <div className="card empty-page">
-          <h1 className="card-title">There’s no report called “{reportKey}”</h1>
+        <div className="empty-page">
+          <h1 className="page-title">There’s no report called “{reportKey}”</h1>
           <div>
             <Button onClick={() => navigate('/reports')}>See every report</Button>
           </div>
@@ -159,47 +164,40 @@ export default function ReportPage({ reportKey }) {
     </>
   );
 
+  const canPost = widget && canShare(widget.type) && direction !== 'given';
+  const hasFilters = showKind || reportKey === 'engagement';
+
   return (
     <>
-      <PageHeader
-        crumbs={[{ label: 'Reports', to: '/reports' }]}
-        title={report.label}
-        sub={report.desc}
-        actions={
-          <>
-            <PeriodPicker />
-            <Button onClick={() => exportReport(archive, reportKey, period, nowMs)}>
-              <Download size={15} aria-hidden="true" />
+      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }, { label: report.label }]} title={report.label} sub={report.desc} actions={<PeriodPicker />}>
+        <div className="report-bar">
+          {hasFilters && <div className="report-filters">{filters}</div>}
+          <div className="report-actions">
+            <button type="button" className="link-action" onClick={() => exportReport(archive, reportKey, period, nowMs)}>
+              <Download size={14} aria-hidden="true" />
               Export
-            </Button>
-            {widget && canShare(widget.type) && direction !== 'given' && (
-              <Button onClick={() => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} })} title={`${widget.name}, as a picture with its description`}>
-                <ImageUp size={15} aria-hidden="true" />
+            </button>
+            {canPost && (
+              <button
+                type="button"
+                className="link-action"
+                title={`${widget.name}, as a picture with its description`}
+                onClick={() => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} })}
+              >
+                <ImageUp size={14} aria-hidden="true" />
                 Post this chart
-              </Button>
+              </button>
             )}
             {widget && (
-              <Menu
-                label="Add to dashboard"
-                size="md"
-                items={dashboards.map((d) => ({
-                  icon: LayoutDashboard,
-                  label: d.name,
-                  hint: d.widgets.some((w) => w.type === widget.type) ? `${widget.name} is already on it` : `Add ${widget.name}`,
-                  onSelect: () => {
-                    addWidget(d.id, widget.type);
-                    toast?.(`${widget.name} added to ${d.name}.`);
-                  },
-                }))}
-              >
-                <LayoutDashboard size={15} aria-hidden="true" />
+              <button type="button" className="link-action" aria-expanded={adding} aria-controls="add-to-dashboard" onClick={() => setAdding((v) => !v)}>
+                <LayoutDashboard size={14} aria-hidden="true" />
                 Add to dashboard
-              </Menu>
+              </button>
             )}
-          </>
-        }
-      >
-        {(showKind || reportKey === 'engagement') && <div className="report-filters">{filters}</div>}
+          </div>
+        </div>
+        {/* Keyed by the report, so a strip left open doesn't follow to the next one. */}
+        {widget && adding && <AddToDashboard key={reportKey} widget={widget} onClose={() => setAdding(false)} />}
       </PageHeader>
       <div className="page-body">
         {reportKey === 'followers' && <FollowersReport archive={archive} period={period} nowMs={nowMs} />}
@@ -219,6 +217,83 @@ export default function ReportPage({ reportKey }) {
       </div>
       <ShareDialog share={share} archive={archive} period={period} nowMs={nowMs} onClose={() => setShare(null)} />
     </>
+  );
+}
+
+/**
+ * The strip Add to dashboard opens: which dashboard (or a new one), how wide,
+ * and the button that does it. The first dashboard that doesn't have the
+ * chart yet is the one picked to start with.
+ */
+function AddToDashboard({ widget, onClose }) {
+  const { dashboards, addDashboard, addWidget } = useDashboards();
+  const toast = useToast();
+  const has = (d) => d.widgets.some((w) => w.type === widget.type);
+  const [target, setTarget] = useState(() => (dashboards.find((d) => !has(d)) || dashboards[0])?.id || 'new');
+  const [size, setSize] = useState(widget.defaultSize);
+  const chosen = dashboards.find((d) => d.id === target) || null;
+  const targetName = chosen ? chosen.name : 'a new dashboard';
+  return (
+    <form
+      id="add-to-dashboard"
+      className="add-strip"
+      aria-label={`Add ${widget.name} to a dashboard`}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (chosen) {
+          addWidget(chosen.id, widget.type, null, size);
+          toast?.(`${widget.name} added to ${chosen.name}.`);
+        } else {
+          // The new dashboard is named for the chart it starts with.
+          const id = newId('d');
+          addDashboard({ name: widget.name, id });
+          addWidget(id, widget.type, null, size);
+          toast?.(
+            <>
+              {widget.name} is on a new dashboard. <Link to={`/dashboard/${id}`}>Open it</Link>
+            </>,
+          );
+        }
+        onClose();
+      }}
+    >
+      <fieldset className="add-strip-where">
+        <legend className="add-strip-title">Add {widget.name} to</legend>
+        {dashboards.map((d) => (
+          <label key={d.id} className="check">
+            <input type="radio" name="add-to" checked={target === d.id} onChange={() => setTarget(d.id)} />
+            <span>
+              {d.name}
+              {has(d) && <span className="muted">, already on it</span>}
+            </span>
+          </label>
+        ))}
+        <label className="check">
+          <input type="radio" name="add-to" checked={target === 'new'} onChange={() => setTarget('new')} />
+          A new dashboard
+        </label>
+      </fieldset>
+      {widget.sizes.length > 1 && (
+        <span className="add-strip-size">
+          <span id="add-strip-size">Size</span>
+          <span className="size-keys" role="group" aria-labelledby="add-strip-size">
+            {widget.sizes.map((k) => (
+              <button key={k} type="button" className="size-key" aria-pressed={size === k} title={SIZES[k].name} aria-label={SIZES[k].name} onClick={() => setSize(k)}>
+                {SIZES[k].label}
+              </button>
+            ))}
+          </span>
+        </span>
+      )}
+      <span className="add-strip-actions">
+        <Button variant="text" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          Add to {targetName}
+        </Button>
+      </span>
+    </form>
   );
 }
 
@@ -249,27 +324,30 @@ export function ReportsIndex() {
     <>
       <PageHeader title="Reports" sub="Every number Virga works out, one page each." actions={<PeriodPicker />} />
       <div className="page-body">
-        <div className="report-index">
+        {/* Each report as its leading figure, under a rule: the number is the way in. */}
+        <ul className="report-index">
           {REPORTS.map((r) => {
             const Icon = r.icon;
             const h = headline[r.key];
             return (
-              <Link key={r.key} to={`/reports/${r.key}`} className="card report-tile">
-                <span className="report-tile-icon" aria-hidden="true">
-                  <Icon size={18} />
-                </span>
-                <span className="report-tile-name">{r.label}</span>
-                <span className="report-tile-desc">{r.desc}</span>
-                {h && (
-                  <span className="report-tile-figure">
-                    <span className="num">{h[0]}</span>
-                    <span className="muted">{h[1]}</span>
+              <li key={r.key}>
+                <Link to={`/reports/${r.key}`} className="report-tile">
+                  <span className="report-tile-name">
+                    <Icon size={15} aria-hidden="true" />
+                    {r.label}
                   </span>
-                )}
-              </Link>
+                  {h && (
+                    <span className="report-tile-figure">
+                      <span className="report-tile-value num">{h[0]}</span>
+                      <span className="report-tile-note num">{h[1]}</span>
+                    </span>
+                  )}
+                  <span className="report-tile-desc">{r.desc}</span>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </>
   );

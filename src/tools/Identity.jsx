@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
+import Figures from '../components/Figures.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { didWebDocumentUrl, getPlcHistory, resolvePds } from '../lib/atproto.js';
 import { PLC_DIRECTORY } from '../config.js';
@@ -101,36 +102,31 @@ export default function Identity({ tool }) {
     <>
       <ToolHeader tool={tool} />
       <div className="page-body">
-        <section className="card identity-card" aria-label="The account">
+        <section className="identity-card" aria-label="The account">
           <Avatar src={profile?.avatar} name={profile?.displayName || profile?.handle} size="lg" />
           <div className="identity-main">
             <span className="identity-name">{profile?.displayName || (profile?.handle ? `@${profile.handle}` : did)}</span>
             {profile?.handle && <span className="muted">@{profile.handle}</span>}
           </div>
-          <dl className="identity-facts">
-            <div>
-              <dt>Followers</dt>
-              <dd className="num">{profile?.followersCount != null ? profile.followersCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Following</dt>
-              <dd className="num">{profile?.followsCount != null ? profile.followsCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Posts</dt>
-              <dd className="num">{profile?.postsCount != null ? profile.postsCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Account created</dt>
-              <dd className="num">{created ? formatDateShort(created) : '—'}</dd>
-            </div>
-          </dl>
         </section>
 
-        <section className="card" aria-labelledby="id-ids">
-          <h2 id="id-ids" className="card-title">
-            Identifiers
-          </h2>
+        {/* The year leads the last figure, with the day under it: a whole date set that large would not fit its column. */}
+        <Figures
+          label="The account in figures"
+          items={[
+            { key: 'followers', label: 'Followers', value: profile?.followersCount ?? '—' },
+            { key: 'following', label: 'Following', value: profile?.followsCount ?? '—' },
+            { key: 'posts', label: 'Posts', value: profile?.postsCount ?? '—' },
+            { key: 'created', label: 'Account created', value: created ? String(new Date(created).getFullYear()) : '—', note: created ? formatDateShort(created) : null },
+          ]}
+        />
+
+        <section className="card card--flush" aria-labelledby="id-ids">
+          <div className="card-head">
+            <h2 id="id-ids" className="card-title">
+              Identifiers
+            </h2>
+          </div>
           <dl className="kv">
             <div className="kv-row">
               <dt>DID</dt>
@@ -170,11 +166,15 @@ export default function Identity({ tool }) {
         </section>
 
         <div className="report-split">
-          <section className="card" aria-labelledby="id-history">
-            <h2 id="id-history" className="card-title">
-              Handle and server history
-            </h2>
-            <p className="card-sub">From the PLC directory’s log of this DID</p>
+          <section className="card card--flush" aria-labelledby="id-history">
+            <div className="card-head">
+              <div>
+                <h2 id="id-history" className="card-title">
+                  Handle and server history
+                </h2>
+                <p className="card-sub">From the PLC directory’s log of this DID</p>
+              </div>
+            </div>
             {history === undefined ? (
               <p className="empty">Reading the log…</p>
             ) : history === null ? (
@@ -190,11 +190,15 @@ export default function Identity({ tool }) {
               </ol>
             )}
           </section>
-          <section className="card" aria-labelledby="id-repo">
-            <h2 id="id-repo" className="card-title">
-              The repo
-            </h2>
-            <p className="card-sub">As of the last sync</p>
+          <section className="card card--flush" aria-labelledby="id-repo">
+            <div className="card-head">
+              <div>
+                <h2 id="id-repo" className="card-title">
+                  The repo
+                </h2>
+                <p className="card-sub">As of the last sync</p>
+              </div>
+            </div>
             <dl className="kv">
               <div className="kv-row">
                 <dt>Records</dt>

@@ -85,9 +85,9 @@ function RememberedAccounts({ accounts, opening, disabled, onOpen, onForget }) {
  * host chosen from a short list. The steps and their words are in flow.js;
  * this holds the timers, the lookups and the page.
  *
- * `variant` is 'page' (the front page, in a card of its own) or 'dialog'
- * (inside Add an account, which brings its own title and frame). `remembered`
- * lists the accounts this browser knows above the field.
+ * `variant` is 'page' (the front page, straight on the sky under the lede)
+ * or 'dialog' (inside Add an account, which brings its own title and frame).
+ * `remembered` lists the accounts this browser knows above the field.
  */
 export default function SignInFlow({ variant = 'page', remembered = false, composing = false }) {
   const { signIn, switchAccount, removeAccount, accounts, authMode } = useAtprotoSession();
@@ -507,7 +507,10 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
                 <span className="signin-host-text">
                   <span className="signin-host-name">
                     {host.name}
-                    {host.recommended && <span className="signin-host-note"> · most people start here</span>}
+                    {/* The space stands outside the note, which is a box of its own (so the
+                        line that underlines the name on hover stops at the name). */}
+                    {host.recommended && ' '}
+                    {host.recommended && <span className="signin-host-note">· most people start here</span>}
                   </span>
                   <span className="signin-host-meta">
                     {host.domain} · {host.region}

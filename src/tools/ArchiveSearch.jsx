@@ -87,7 +87,7 @@ export default function ArchiveSearch({ tool }) {
         }
       />
       <div className="page-body">
-        <section className="card search-card" aria-label="Search">
+        <section className="search-card" aria-label="Search">
           <label className="search search--lg">
             <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
               <path d="M3 11a8 8 0 1 0 16 0a8 8 0 1 0-16 0M21 21l-4.3-4.3" />
@@ -105,7 +105,7 @@ export default function ArchiveSearch({ tool }) {
             />
           </label>
           <div className="search-filters">
-            <div className="library-cats" role="group" aria-label="Kind of post">
+            <div className="tool-chips" role="group" aria-label="Kind of post">
               {[
                 ['all', 'All'],
                 ['posts', 'Posts'],
@@ -132,15 +132,17 @@ export default function ArchiveSearch({ tool }) {
         </section>
         <section className="card card--flush" aria-label="Results">
           <div className="card-head">
-            <p className="card-sub num" role="status">
-              {results.length.toLocaleString(activeLocale())} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
-              {q ? ` matching “${query.trim()}”` : ''}
-            </p>
-            {!contentReady(archive) && (
-              <p className="card-sub">
-                Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.
-              </p>
-            )}
+            <div>
+              <h2 className="card-title num" role="status">
+                {results.length.toLocaleString(activeLocale())} {results.length === 1 ? 'post' : 'posts'} in {periodPhrase(period)}
+                {q ? ` matching “${query.trim()}”` : ''}
+              </h2>
+              {!contentReady(archive) && (
+                <p className="card-sub">
+                  Until your next sync, older posts are searched by their first 200 characters only, and not by tag or site.
+                </p>
+              )}
+            </div>
           </div>
           {shown.length ? (
             <ol className="widget-rows report-rows">

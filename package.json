@@ -27,7 +27,7 @@
     "@atproto/oauth-client-browser": "^0.3.42",
     "@atproto/oauth-client-node": "0.3.16",
     "@atproto/xrpc": "^0.7.7",
-    "@fontsource-variable/mona-sans": "^5.2.8",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
     "@supabase/supabase-js": "^2.119.0",
     "browser-image-compression": "^2.0.2",
     "lucide-react": "^1.14.0",

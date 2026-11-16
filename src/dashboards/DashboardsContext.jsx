@@ -69,8 +69,8 @@ export function DashboardsProvider({ did, children }) {
       moveDashboard: (id, to) => apply((prev) => L.moveDashboard(prev, id, to)),
       resetDashboard: (id) => apply((prev) => L.resetDashboard(prev, id)),
       resetAll: () => setLayout(L.defaultLayout()),
-      addWidget: (dashboardId, type, index = null) =>
-        apply((prev) => L.addWidget(prev, dashboardId, type, WIDGETS[type], { index })),
+      addWidget: (dashboardId, type, index = null, size = null) =>
+        apply((prev) => L.addWidget(prev, dashboardId, type, WIDGETS[type], { index, size })),
       removeWidget: (dashboardId, widgetId) => apply((prev) => L.removeWidget(prev, dashboardId, widgetId)),
       resizeWidget: (dashboardId, widgetId, size) => apply((prev) => L.resizeWidget(prev, dashboardId, widgetId, size)),
       moveWidget: (dashboardId, widgetId, to) => apply((prev) => L.moveWidget(prev, dashboardId, widgetId, to)),

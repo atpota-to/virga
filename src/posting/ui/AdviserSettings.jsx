@@ -36,11 +36,11 @@ const WRITING_CHECKS = [
 ];
 
 /**
- * Settings › Posting: the post adviser for one account. Off until it's
- * turned on; the first time, it comes on with a recommended setup (every
- * check, both general goals) that the rest of the card can change. Only for
- * an account signed in through Virga's server (D16). Says what is sent, and
- * to whom.
+ * Settings › Posting: the post adviser for one account, as rows like the
+ * rest of Settings. Off until it's turned on; the first time, it comes on
+ * with a recommended setup (every check, both general goals) that the rows
+ * under it can change. Only for an account signed in through Virga's server
+ * (D16). Says what is sent, and to whom.
  */
 // eslint-disable-next-line no-unused-vars
 export default function AdviserSettings({ open, onClose, did }) {
@@ -51,10 +51,13 @@ export default function AdviserSettings({ open, onClose, did }) {
   const ids = {
     enabled: useId(),
     gate: useId(),
+    scope: useId(),
     room: useId(),
     topic: useId(),
     goals: useId(),
+    goalsTitle: useId(),
     notes: useId(),
+    proofTitle: useId(),
   };
   const canUseAi = Boolean(did && capabilitiesFor(did).canUseAi);
   const adviser = normalizeAdviserSettings(settings.adviser);
@@ -129,24 +132,28 @@ export default function AdviserSettings({ open, onClose, did }) {
           </SettingsRow>
 
           {adviser.checkBeforePublish && (
-            <div className="adviser-set-group">
-              <div className="adviser-set-row">
+            <>
+              <SettingsRow label="Stop me" hint="“When something’s off” stops for a post that goes against a goal, or a slip in the writing.">
+                <Segmented label="When the check stops a post" value={adviser.reviewMode} onChange={(v) => patch({ reviewMode: v })} options={REVIEW_OPTIONS} />
+              </SettingsRow>
+              {/* Radios, not a row of keys: three choices this long don't fit one. */}
+              <div className="settings-row adviser-set-row" role="radiogroup" aria-labelledby={ids.scope}>
                 <div className="settings-row-text">
-                  <div className="settings-row-label">Stop me</div>
-                  <div className="settings-row-hint">
-                    “When something’s off” stops for a post that goes against a goal, or a slip in the writing.
+                  <div className="settings-row-label" id={ids.scope}>
+                    Which posts
                   </div>
-                </div>
-                <Segmented label="When the check stops a post" size="sm" value={adviser.reviewMode} onChange={(v) => patch({ reviewMode: v })} options={REVIEW_OPTIONS} />
-              </div>
-              <div className="adviser-set-row">
-                <div className="settings-row-text">
-                  <div className="settings-row-label">Which posts</div>
                   <div className="settings-row-hint">A reply to your own post counts as one of your threads. The button checks any post.</div>
                 </div>
-                <Segmented label="Which posts are checked" size="sm" className="adviser-scope" value={adviser.checkScope} onChange={(v) => patch({ checkScope: v })} options={SCOPE_OPTIONS} />
+                <div className="settings-row-control adviser-set-radios">
+                  {SCOPE_OPTIONS.map((o) => (
+                    <label key={o.value} className="check">
+                      <input type="radio" name={ids.scope} checked={adviser.checkScope === o.value} onChange={() => patch({ checkScope: o.value })} />
+                      <span>{o.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           <SettingsRow
@@ -164,103 +171,117 @@ export default function AdviserSettings({ open, onClose, did }) {
             />
           </SettingsRow>
 
-          <fieldset className="adviser-set-fieldset">
-            <legend className="settings-row-label">Your goals</legend>
-            {GOAL_PRESETS.map((g) => (
-              <label key={g.key} className="adviser-check">
-                <input type="checkbox" checked={adviser.goals.presets[g.key]} onChange={(e) => patchPresets({ [g.key]: e.target.checked })} />
-                <span>
-                  <span className="adviser-check-label">{g.label}</span>
-                  <span className="adviser-check-hint">{g.hint}</span>
-                </span>
-              </label>
-            ))}
-            <label className="adviser-check">
-              <input
-                type="checkbox"
-                checked={topic.enabled}
-                onChange={(e) => patchPresets({ limitTopic: { ...topic, enabled: e.target.checked } })}
-              />
-              <span>
-                <span className="adviser-check-label">Post less about some topics</span>
-                <span className="adviser-check-hint">Flag a post that leans on them. Separate topics with commas.</span>
-              </span>
-            </label>
-            {topic.enabled && (
-              <div className="field adviser-indent">
-                <label className="visually-hidden" htmlFor={ids.topic}>
-                  Topics to post less about
+          <div className="settings-row adviser-set-row" role="group" aria-labelledby={ids.goalsTitle}>
+            <div className="settings-row-text">
+              <div className="settings-row-label" id={ids.goalsTitle}>
+                Your goals
+              </div>
+              <div className="settings-row-hint">What a post is read against. The adviser says when one goes against them; it doesn’t rewrite it.</div>
+            </div>
+            <div className="settings-row-control adviser-set-stack">
+              {GOAL_PRESETS.map((g) => (
+                <label key={g.key} className="adviser-check">
+                  <input type="checkbox" checked={adviser.goals.presets[g.key]} onChange={(e) => patchPresets({ [g.key]: e.target.checked })} />
+                  <span>
+                    <span className="adviser-check-label">{g.label}</span>
+                    <span className="adviser-check-hint">{g.hint}</span>
+                  </span>
                 </label>
+              ))}
+              <label className="adviser-check">
                 <input
-                  id={ids.topic}
-                  className="input"
-                  value={topic.topic}
-                  maxLength={ADVISER_TEXT_LIMITS.topic}
-                  placeholder="For example: politics, the news"
-                  onChange={(e) => patchPresets({ limitTopic: { ...topic, topic: e.target.value } })}
+                  type="checkbox"
+                  checked={topic.enabled}
+                  onChange={(e) => patchPresets({ limitTopic: { ...topic, enabled: e.target.checked } })}
                 />
-              </div>
-            )}
-            <div className="field">
-              <label className="adviser-check-label" htmlFor={ids.goals}>
-                Goals in your own words
-              </label>
-              <textarea
-                id={ids.goals}
-                className="input"
-                rows={2}
-                value={adviser.goals.customText}
-                maxLength={ADVISER_TEXT_LIMITS.goalsText}
-                placeholder="For example: keep it warm and curious; double-check anything I state as fact"
-                onChange={(e) => patchGoals({ customText: e.target.value })}
-              />
-              <span className="field-hint">
-                {adviser.goals.customText.length} of {ADVISER_TEXT_LIMITS.goalsText}
-              </span>
-            </div>
-          </fieldset>
-
-          <fieldset className="adviser-set-fieldset">
-            <legend className="settings-row-label">Proofread</legend>
-            {WRITING_CHECKS.map((c) => (
-              <label key={c.key} className="adviser-check">
-                <input type="checkbox" checked={adviser.writingChecks[c.key]} onChange={(e) => patchWriting({ [c.key]: e.target.checked })} />
                 <span>
-                  <span className="adviser-check-label">{c.label}</span>
-                  <span className="adviser-check-hint">{c.hint}</span>
+                  <span className="adviser-check-label">Post less about some topics</span>
+                  <span className="adviser-check-hint">Flag a post that leans on them. Separate topics with commas.</span>
                 </span>
               </label>
-            ))}
-            <div className="field">
-              <label className="adviser-check-label" htmlFor={ids.notes}>
-                Notes for the proofread
-              </label>
-              <textarea
-                id={ids.notes}
-                className="input"
-                rows={2}
-                value={adviser.writingChecks.customText}
-                maxLength={ADVISER_TEXT_LIMITS.writingNotes}
-                placeholder="For example: I skip apostrophes on purpose; never flag “gonna”"
-                onChange={(e) => patchWriting({ customText: e.target.value })}
-              />
-              <span className="field-hint">These come before everything else the proofread goes by.</span>
-            </div>
-            <div className="adviser-style">
-              <div className="settings-row-text">
-                <div className="adviser-check-label">Your writing style</div>
-                <div className="adviser-check-hint">
-                  {profile.summary.trim()
-                    ? `${styleProfileLine(profile) || 'Written by hand'}. The proofread treats these habits as yours.`
-                    : 'Not learned yet. It can be read from your recent posts, so your habits aren’t flagged as slips.'}
+              {topic.enabled && (
+                <div className="field adviser-indent">
+                  <label className="visually-hidden" htmlFor={ids.topic}>
+                    Topics to post less about
+                  </label>
+                  <input
+                    id={ids.topic}
+                    className="input"
+                    value={topic.topic}
+                    maxLength={ADVISER_TEXT_LIMITS.topic}
+                    placeholder="For example: politics, the news"
+                    onChange={(e) => patchPresets({ limitTopic: { ...topic, topic: e.target.value } })}
+                  />
                 </div>
+              )}
+              <div className="field">
+                <label className="adviser-check-label" htmlFor={ids.goals}>
+                  Goals in your own words
+                </label>
+                <textarea
+                  id={ids.goals}
+                  className="input"
+                  rows={2}
+                  value={adviser.goals.customText}
+                  maxLength={ADVISER_TEXT_LIMITS.goalsText}
+                  placeholder="For example: keep it warm and curious; double-check anything I state as fact"
+                  onChange={(e) => patchGoals({ customText: e.target.value })}
+                />
+                <span className="field-hint">
+                  {adviser.goals.customText.length} of {ADVISER_TEXT_LIMITS.goalsText}
+                </span>
               </div>
-              <Button size="sm" onClick={() => setStyleOpen(true)}>
-                <BookOpenText size={14} aria-hidden="true" />
-                {profile.summary.trim() ? 'See or change it' : 'Learn my style'}
-              </Button>
             </div>
-          </fieldset>
+          </div>
+
+          <div className="settings-row adviser-set-row" role="group" aria-labelledby={ids.proofTitle}>
+            <div className="settings-row-text">
+              <div className="settings-row-label" id={ids.proofTitle}>
+                Proofread
+              </div>
+              <div className="settings-row-hint">The slips it looks for. It offers a fix for each; taking one is up to you.</div>
+            </div>
+            <div className="settings-row-control adviser-set-stack">
+              {WRITING_CHECKS.map((c) => (
+                <label key={c.key} className="adviser-check">
+                  <input type="checkbox" checked={adviser.writingChecks[c.key]} onChange={(e) => patchWriting({ [c.key]: e.target.checked })} />
+                  <span>
+                    <span className="adviser-check-label">{c.label}</span>
+                    <span className="adviser-check-hint">{c.hint}</span>
+                  </span>
+                </label>
+              ))}
+              <div className="field">
+                <label className="adviser-check-label" htmlFor={ids.notes}>
+                  Notes for the proofread
+                </label>
+                <textarea
+                  id={ids.notes}
+                  className="input"
+                  rows={2}
+                  value={adviser.writingChecks.customText}
+                  maxLength={ADVISER_TEXT_LIMITS.writingNotes}
+                  placeholder="For example: I skip apostrophes on purpose; never flag “gonna”"
+                  onChange={(e) => patchWriting({ customText: e.target.value })}
+                />
+                <span className="field-hint">These come before everything else the proofread goes by.</span>
+              </div>
+              <div className="adviser-style">
+                <div>
+                  <div className="adviser-check-label">Your writing style</div>
+                  <div className="adviser-check-hint">
+                    {profile.summary.trim()
+                      ? `${styleProfileLine(profile) || 'Written by hand'}. The proofread treats these habits as yours.`
+                      : 'Not learned yet. It can be read from your recent posts, so your habits aren’t flagged as slips.'}
+                  </div>
+                </div>
+                <Button size="sm" onClick={() => setStyleOpen(true)}>
+                  <BookOpenText size={14} aria-hidden="true" />
+                  {profile.summary.trim() ? 'See or change it' : 'Learn my style'}
+                </Button>
+              </div>
+            </div>
+          </div>
         </>
       )}
 

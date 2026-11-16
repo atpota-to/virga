@@ -1,11 +1,15 @@
-// The sidebar: the account, New post, the dashboards, the reports, posting,
-// the tools, the archive's state, and Settings. Folds to a rail of icons; on
-// a phone it is replaced by the app bar and the tab bar (MobileNav.jsx).
+// The sidebar: the account, New post, search, and the five parts of Virga as
+// words down the side. Only the part you are in is opened out into its
+// pages, so the list stays short; the rest are one word each. Under them,
+// the archive's state. Folds to a rail of icons; on a phone it is replaced
+// by the app bar and the tab bar (MobileNav.jsx).
 //
-// Only the middle part scrolls, so a menu hanging from the account button
-// (at the top, or at the foot of the rail) is never clipped by the scroll.
+// It has no ground and no edge of its own: it sits on the sky, and on the
+// page once the sky has scrolled away. Only the middle part scrolls, so a
+// menu hanging from the account button (at the top, or at the foot of the
+// rail) is never clipped by the scroll.
 
-import { LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings, SquarePen, Wrench } from 'lucide-react';
+import { BarChart3, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Search, Send, Settings, SquarePen, Wrench } from 'lucide-react';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import Button from '../components/Button.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -13,38 +17,57 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
 import { REPORTS } from '../reports/registry.js';
 import { POSTING_PAGES } from '../posting/routes.js';
-import { TOOLS, TOOL_BY_KEY } from '../tools/registry.js';
+import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
+import { TOOLS } from '../tools/registry.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { SyncCard } from './SyncStatus.jsx';
 import { paletteShortcutAria, paletteShortcutLabel } from './shortcuts.js';
 
-const PINNED_TOOLS = ['follow-cleanup', 'unfollow-tracker', 'best-time'];
+/** The posting pages the sidebar lists: the overview, then the pinned ones. */
+const POSTING_LINKS = POSTING_PAGES.filter((p) => p.key === 'hub' || p.pinned);
+const TOOL_LINKS = TOOLS.filter((t) => !t.planned);
 
-function NavItem({ to, icon: Icon, label, count = null, current = false, collapsed = false }) {
+/**
+ * One of the five parts: its word, and, while it is the part you are in,
+ * its pages under it. `current` marks the word itself as the page (the
+ * part's own front page); `open` is being anywhere inside it.
+ */
+function NavSection({ to, icon: Icon, label, open, current = false, collapsed = false, children = null }) {
   return (
-    <Link
-      to={to}
-      className="nav-item"
-      aria-current={current ? 'page' : undefined}
-      title={collapsed ? label : undefined}
-      aria-label={collapsed ? label : undefined}
-    >
-      <Icon className="nav-icon" size={16} aria-hidden="true" />
-      {!collapsed && <span className="nav-label">{label}</span>}
-      {!collapsed && count != null && <span className="nav-count num">{count}</span>}
-    </Link>
+    <li className="nav-section" data-open={open || undefined}>
+      <Link
+        to={to}
+        className="nav-link"
+        data-active={open || undefined}
+        aria-current={current ? 'page' : undefined}
+        title={collapsed ? label : undefined}
+        aria-label={collapsed ? label : undefined}
+      >
+        <Icon className="nav-icon" size={collapsed ? 18 : 16} aria-hidden="true" />
+        {!collapsed && <span className="nav-label">{label}</span>}
+      </Link>
+      {open && !collapsed && children && <ul className="nav-sub">{children}</ul>}
+    </li>
   );
 }
 
-const PINNED_POSTING = POSTING_PAGES.filter((p) => p.pinned);
+function NavSubLink({ to, label, current }) {
+  return (
+    <li>
+      <Link to={to} className="nav-sub-link" aria-current={current ? 'page' : undefined}>
+        <span className="nav-label">{label}</span>
+      </Link>
+    </li>
+  );
+}
 
 export default function Sidebar({ archive, route, profile, did, onSignOut, onNewDashboard, onNewPost, onSearch }) {
   const { dashboards } = useDashboards();
   const { sidebar, setPref } = usePreferences();
   const tapLogo = useSkyTaps();
   const collapsed = sidebar === 'collapsed';
-  const toolCount = TOOLS.filter((t) => !t.planned).length;
   const firstDashboard = dashboards[0]?.id;
+  const { section, page } = route;
 
   return (
     <nav className="sidebar" aria-label="Main" data-collapsed={collapsed || undefined}>
@@ -58,8 +81,8 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
           size="sm"
           icon
           className="sidebar-fold"
-          aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
-          title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
+          aria-label={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
+          title={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
           onClick={() => setPref('sidebar', collapsed ? 'expanded' : 'collapsed')}
         >
           {collapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
@@ -68,115 +91,90 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
 
       {!collapsed && <AccountMenu profile={profile} did={did} onSignOut={onSignOut} />}
 
-      <Button
-        variant="primary"
-        icon={collapsed}
-        className="sidebar-new-post"
-        aria-label={collapsed ? 'New post' : undefined}
-        title={collapsed ? 'New post (n)' : 'Shortcut: n'}
-        aria-keyshortcuts="n"
-        onClick={onNewPost}
-      >
-        <SquarePen size={16} aria-hidden="true" />
-        {!collapsed && 'New post'}
-      </Button>
-
-      {/* The command palette, and where its shortcut is written down. */}
-      {collapsed ? (
+      <div className="sidebar-do">
         <Button
-          variant="ghost"
-          icon
-          className="sidebar-search-icon"
-          aria-label="Search or jump to"
-          title={`Search or jump to (${paletteShortcutLabel()})`}
-          aria-keyshortcuts={paletteShortcutAria()}
-          onClick={onSearch}
+          variant="primary"
+          icon={collapsed}
+          className="sidebar-new-post"
+          aria-label={collapsed ? 'New post' : undefined}
+          title={collapsed ? 'New post (n)' : 'Shortcut: n'}
+          aria-keyshortcuts="n"
+          onClick={onNewPost}
         >
-          <Search size={16} aria-hidden="true" />
+          <SquarePen size={collapsed ? 17 : 15} aria-hidden="true" />
+          {!collapsed && 'New post'}
         </Button>
-      ) : (
-        <button type="button" className="sidebar-search" aria-keyshortcuts={paletteShortcutAria()} onClick={onSearch}>
-          <Search size={15} aria-hidden="true" />
-          <span className="sidebar-search-label">Search or jump to…</span>
-          <kbd className="kbd">{paletteShortcutLabel()}</kbd>
-        </button>
-      )}
+
+        {/* The command palette, and where its shortcut is written down. */}
+        {collapsed ? (
+          <Button
+            variant="ghost"
+            icon
+            className="sidebar-search-icon"
+            aria-label="Search or jump to"
+            title={`Search or jump to (${paletteShortcutLabel()})`}
+            aria-keyshortcuts={paletteShortcutAria()}
+            onClick={onSearch}
+          >
+            <Search size={18} aria-hidden="true" />
+          </Button>
+        ) : (
+          <button type="button" className="sidebar-search" aria-keyshortcuts={paletteShortcutAria()} onClick={onSearch}>
+            <Search size={15} aria-hidden="true" />
+            <span className="sidebar-search-label">Search or jump to…</span>
+            <kbd className="kbd">{paletteShortcutLabel()}</kbd>
+          </button>
+        )}
+      </div>
 
       <div className="sidebar-scroll">
-        {collapsed ? (
-          <div className="nav-group">
-            <NavItem collapsed to={`/dashboard/${route.dashboard || firstDashboard}`} icon={LayoutDashboard} label="Dashboards" current={route.section === 'dashboard'} />
-            {REPORTS.map((r) => (
-              <NavItem key={r.key} collapsed to={`/reports/${r.key}`} icon={r.icon} label={r.label} current={route.section === 'reports' && route.page === r.key} />
+        <ul className="nav">
+          <NavSection
+            collapsed={collapsed}
+            to={`/dashboard/${route.dashboard || firstDashboard}`}
+            icon={LayoutDashboard}
+            label="Dashboards"
+            open={section === 'dashboard'}
+          >
+            {dashboards.map((d) => (
+              <NavSubLink key={d.id} to={`/dashboard/${d.id}`} label={d.name} current={route.dashboard === d.id} />
             ))}
-            <NavItem collapsed to="/posting" icon={SquarePen} label="Posting" current={route.section === 'posting'} />
-            <NavItem collapsed to="/tools" icon={Wrench} label="Tools" current={route.section === 'tools'} />
-          </div>
-        ) : (
-          <>
-            <div className="nav-group">
-              <div className="nav-group-head">
-                <span>Dashboards</span>
-                <Button variant="ghost" size="sm" icon aria-label="New dashboard" title="New dashboard" onClick={onNewDashboard}>
-                  <Plus size={14} aria-hidden="true" />
-                </Button>
-              </div>
-              {dashboards.map((d) => (
-                <NavItem
-                  key={d.id}
-                  to={`/dashboard/${d.id}`}
-                  icon={LayoutDashboard}
-                  label={d.name}
-                  count={d.widgets.length}
-                  current={route.section === 'dashboard' && route.dashboard === d.id}
-                />
-              ))}
-            </div>
+            <li>
+              <button type="button" className="nav-sub-link nav-sub-action" onClick={onNewDashboard}>
+                <Plus size={14} aria-hidden="true" />
+                <span className="nav-label">New dashboard</span>
+              </button>
+            </li>
+          </NavSection>
 
-            <div className="nav-group">
-              <div className="nav-group-head">
-                <Link to="/reports" className="nav-group-link">
-                  Reports
-                </Link>
-              </div>
-              {REPORTS.map((r) => (
-                <NavItem key={r.key} to={`/reports/${r.key}`} icon={r.icon} label={r.label} current={route.section === 'reports' && route.page === r.key} />
-              ))}
-            </div>
+          <NavSection collapsed={collapsed} to="/reports" icon={BarChart3} label="Reports" open={section === 'reports'} current={section === 'reports' && !page}>
+            {REPORTS.map((r) => (
+              <NavSubLink key={r.key} to={`/reports/${r.key}`} label={r.label} current={page === r.key} />
+            ))}
+          </NavSection>
 
-            <div className="nav-group">
-              <div className="nav-group-head">
-                <Link to="/posting" className="nav-group-link" aria-current={route.section === 'posting' && route.page === 'hub' ? 'page' : undefined}>
-                  Posting
-                </Link>
-              </div>
-              {PINNED_POSTING.map((p) => (
-                <NavItem key={p.key} to={p.path} icon={p.icon} label={p.label} current={route.section === 'posting' && route.page === p.key} />
-              ))}
-            </div>
+          <NavSection collapsed={collapsed} to="/posting" icon={Send} label="Posting" open={section === 'posting'}>
+            {POSTING_LINKS.map((p) => (
+              <NavSubLink key={p.key} to={p.path} label={p.label} current={page === p.key} />
+            ))}
+          </NavSection>
 
-            <div className="nav-group">
-              <div className="nav-group-head">
-                <Link to="/tools" className="nav-group-link">
-                  Tools
-                </Link>
-              </div>
-              {PINNED_TOOLS.map((key) => {
-                const t = TOOL_BY_KEY[key];
-                return <NavItem key={key} to={`/tools/${key}`} icon={t.icon} label={t.name} current={route.section === 'tools' && route.page === key} />;
-              })}
-              <NavItem to="/tools" icon={Wrench} label="All tools" count={toolCount} current={route.section === 'tools' && !route.page} />
-            </div>
-          </>
-        )}
+          <NavSection collapsed={collapsed} to="/tools" icon={Wrench} label="Tools" open={section === 'tools'} current={section === 'tools' && !page}>
+            {TOOL_LINKS.map((t) => (
+              <NavSubLink key={t.key} to={`/tools/${t.key}`} label={t.name} current={page === t.key} />
+            ))}
+          </NavSection>
+
+          <NavSection collapsed={collapsed} to="/settings" icon={Settings} label="Settings" open={section === 'settings'}>
+            {SETTINGS_SECTIONS.map((s) => (
+              <NavSubLink key={s.key} to={`/settings/${s.key}`} label={s.label} current={(page || 'account') === s.key} />
+            ))}
+          </NavSection>
+        </ul>
 
         <div className="sidebar-spacer" />
 
         {!collapsed && <SyncCard archive={archive} />}
-
-        <div className="nav-group">
-          <NavItem collapsed={collapsed} to="/settings" icon={Settings} label="Settings" current={route.section === 'settings'} />
-        </div>
       </div>
       {collapsed && <AccountMenu compact profile={profile} did={did} onSignOut={onSignOut} placement="up" />}
     </nav>

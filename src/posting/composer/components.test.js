@@ -242,7 +242,7 @@ describe('GatesEditor', () => {
     );
     expect(html).toContain('Who can reply');
     expect(html).toMatch(
-      /aria-pressed="true"[^>]*><span class="segmented-label">Some people/,
+      /aria-pressed="true"[^>]*><span class="segmented-label"[^>]*>Some people/,
     );
     expect(html).toContain('People you mention');
     expect(html).toContain('Allow quote posts');

@@ -83,6 +83,15 @@ import { ActionDialog, QueueCalendar } from './scheduleParts.jsx';
 import './hub.css';
 import './schedule.css';
 
+/** 'Fri, Nov 13' from 'Fri, Nov 13, 6:00 PM': the date a moment falls on in `tz`, without its hour. */
+function dayInZone(value, tz, now) {
+  const full = formatInZone(value, tz, now);
+  const clock = timeInZone(value, tz);
+  return clock && full.endsWith(clock)
+    ? full.slice(0, -clock.length).replace(/[,\s]+$/, '')
+    : full;
+}
+
 const reducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -178,11 +187,18 @@ function ScheduledRow({
         </span>
       ) : null}
       <div className="sched-when-cell">
-        <time className="sched-time" dateTime={row.scheduledFor}>
-          {showDate
-            ? formatInZone(row.scheduledFor, tz, now)
-            : timeInZone(row.scheduledFor, tz)}
-        </time>
+        {showDate ? (
+          // A row out of its day's run says its day too: the day in ink,
+          // the hour under it.
+          <time className="sched-time sched-time--dated" dateTime={row.scheduledFor}>
+            <span>{dayInZone(row.scheduledFor, tz, now)}</span>{' '}
+            <span className="sched-rel">{timeInZone(row.scheduledFor, tz)}</span>
+          </time>
+        ) : (
+          <time className="sched-time" dateTime={row.scheduledFor}>
+            {timeInZone(row.scheduledFor, tz)}
+          </time>
+        )}
         {row.status === 'pending' && (
           <span className="sched-rel">
             {relativeWhen(row.scheduledFor, now)}
@@ -726,16 +742,15 @@ export default function ScheduledPage({ did }) {
 
   const headerActions = (
     <>
-      <Link to={postingPath('schedule')} className="btn btn--sm">
-        <CalendarRange size={14} aria-hidden="true" />
+      <Link to={postingPath('schedule')} className="btn">
+        <CalendarRange size={15} aria-hidden="true" />
         Weekly schedule
       </Link>
       <Button
-        size="sm"
         variant="primary"
         onClick={() => composer.open({ asDid: did, mode: 'schedule' })}
       >
-        <CalendarClock size={14} aria-hidden="true" />
+        <CalendarClock size={15} aria-hidden="true" />
         Schedule a post
       </Button>
     </>
@@ -866,7 +881,7 @@ export default function ScheduledPage({ did }) {
         >
           {loading ? (
             <>
-              <div className="sched-cal-skeleton hub-pad" aria-hidden="true">
+              <div className="sched-cal-skeleton" aria-hidden="true">
                 {Array.from({ length: 7 }, (_, i) => (
                   <span key={i} className="hub-bone" />
                 ))}
@@ -877,15 +892,13 @@ export default function ScheduledPage({ did }) {
             list.data && (
               <>
                 {!isScheduleEmpty(schedule) && (
-                  <div className="hub-pad">
-                    <QueueCalendar
-                      schedule={schedule}
-                      rows={queueAll.filter((r) => r.status === 'pending')}
-                      now={now}
-                      onPick={pick}
-                      highlight={lit}
-                    />
-                  </div>
+                  <QueueCalendar
+                    schedule={schedule}
+                    rows={queueAll.filter((r) => r.status === 'pending')}
+                    now={now}
+                    onPick={pick}
+                    highlight={lit}
+                  />
                 )}
                 {queueAll.length === 0 ? (
                   <div className="hub-empty">
@@ -919,7 +932,7 @@ export default function ScheduledPage({ did }) {
                   </ul>
                 )}
                 {busy.reorder && (
-                  <p className="card-caption hub-pad">Saving the new order…</p>
+                  <p className="card-caption">Saving the new order…</p>
                 )}
               </>
             )

@@ -299,7 +299,7 @@ export default function DraftsPage({ did, id = null }) {
               })}
             </ul>
           ) : (
-            <div className="hub-empty hub-pad">
+            <div className="hub-empty">
               <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
               <Button onClick={() => composer.open({ asDid: did })}>
                 <SquarePen size={15} aria-hidden="true" />
@@ -316,10 +316,10 @@ export default function DraftsPage({ did, id = null }) {
             </div>
           )}
           {list.status === 'ready' && rows.length >= MANY_DRAFTS && (
-            <p className="card-caption hub-pad">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
+            <p className="card-caption">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
           )}
           {!caps.canSchedule && rows.length > 0 && (
-            <p className="card-caption hub-pad">Scheduling a draft needs a long session. Settings › Account offers one.</p>
+            <p className="card-caption">Scheduling a draft needs a long session. Settings › Account offers one.</p>
           )}
         </section>
       </div>
@@ -394,6 +394,7 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
       open={open}
       onClose={busy ? undefined : onClose}
       title="Schedule this draft"
+      className="when-dialog"
       actions={
         <>
           <Button onClick={onClose} disabled={busy}>

@@ -1,15 +1,17 @@
-// The composer: one dialog (a full-height sheet on a phone) for writing a
-// post or a thread, as any of the accounts in this browser, and sending it
-// now, at a time, into the weekly queue, or to Bluesky's drafts. It lives
-// above the per-account key in App.jsx, so switching accounts leaves it, and
-// what's written in it, alone (D17).
+// The composer: one dialog for writing a post or a thread, as any of the
+// accounts in this browser, and sending it now, at a time, into the weekly
+// queue, or to Bluesky's drafts. On a phone it is a sheet that fills the
+// screen, with Close, its title and the send button across the top, where
+// the keyboard can't cover them. It lives above the per-account key in
+// App.jsx, so switching accounts leaves it, and what's written in it, alone
+// (D17).
 //
 // State is one ComposerState (lib/composerModel.js) moved by its reducer.
 // What isn't the post's own (who it goes out as, defaults, uploads in
 // flight, what the intent asked to load) is held beside it here.
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Clock, Hash, Languages, ListTree, MessageSquareReply, MoreHorizontal, Plus, Sparkles, X } from 'lucide-react';
+import { CalendarClock, ChevronRight, Clock, Hash, Languages, ListTree, MessageSquareReply, MoreHorizontal, Plus, Sparkles, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import Menu from '../../components/Menu.jsx';
@@ -97,7 +99,7 @@ import TagsField from './TagsField.jsx';
 import { LinkCardDialog } from './EmbedCards.jsx';
 import { ConfirmDialog, ContinueThreadDialog, GatesDialog, LifespanDialog, MetaDialog, VideoAltDialog } from './ComposerDialogs.jsx';
 import { normalizeIntent, intentLoads, seedFromIntent, readTargetRef } from './intent.js';
-import { composerActions } from './actions.js';
+import { actionLabel, composerActions, EMPTY_HINT, MEDIA_MISSING_HINT, OVER_LIMIT_HINT, VIDEO_PENDING_HINT } from './actions.js';
 import { defaultTimerFor, gatesSourceLine, gatesSummary, NO_FREE_TIMER, TIMER_NEEDS_SERVER } from './defaults.js';
 import { pastedImageFiles, sortIncomingFiles, IMAGE_INPUT_ACCEPT } from './media.js';
 import { removeLinkFromText } from './editing.js';
@@ -132,6 +134,11 @@ import './composer.css';
 import { activeLocale, fmtInt } from '../../lib/locale.js';
 
 const DISMISS_SPLIT_KEY = 'virga:composer-split-dismissed';
+// Why a way of sending can be off for the moment (nothing written yet, a
+// post too long): it still gets its button at the foot, greyed. One that is
+// off for good for this account (no long session to schedule with) is left
+// to the main button's menu, which says why.
+const PASSING_BLOCKS = [EMPTY_HINT, OVER_LIMIT_HINT, MEDIA_MISSING_HINT, VIDEO_PENDING_HINT];
 const GATES_CACHE_MS = 5 * 60 * 1000;
 const GATES_FAILURE_CACHE_MS = 30 * 1000;
 // The widest a Menu's list grows (22rem in controls.css) and the page's gutter.
@@ -207,6 +214,14 @@ export default function Composer({ open, intent, onClose }) {
   const [recordLoading, setRecordLoading] = useState({}); // postId → true
   const [mediaNote, setMediaNote] = useState('');
   const [whenOpen, setWhenOpen] = useState(false);
+  const whenRef = useRef(null);
+  // The schedule opens under the post's settings, which on a phone can be
+  // below the foot of the sheet: bring it into view when it does.
+  useEffect(() => {
+    if (!whenOpen) return;
+    const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(() => whenRef.current?.scrollIntoView?.({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' }));
+  }, [whenOpen]);
   const [queuePreview, setQueuePreview] = useState({ status: 'idle', at: null });
   const [showTags, setShowTags] = useState(false);
   const [dialogs, setDialogs] = useState({}); // which of the small dialogs is up
@@ -1902,28 +1917,69 @@ export default function Composer({ open, intent, onClose }) {
     { key: 'over', label: 'Start over', tone: 'danger', onSelect: () => startOver(true) },
   ];
 
+  // Saving a draft and scheduling get a button of their own at the foot,
+  // beside the main one, unless one of them is the main one already.
+  const also = ['draft', 'schedule'].filter((action) => {
+    const a = model.actions[action];
+    return action !== model.primary && (!a.disabled || PASSING_BLOCKS.includes(a.reason));
+  });
+  const sendBusy = !!busy || adviserReading;
+  const publishButton = (placement) => (
+    <PublishButton state={state} model={model} busy={sendBusy} onAction={runAction} placement={placement} footnote={usageLine ? `${usageLine}.` : ''} />
+  );
+  const closeComposer = () => {
+    autosaver.flush();
+    onClose?.();
+  };
+
   const actions = (
     <div className="composer-actions">
       <p className="composer-why" aria-live="polite">
         {busy ? '' : primaryReason || (model.draftFallback ? 'Over 300 characters: it can be saved as a draft.' : '')}
       </p>
-      <PublishButton
-        state={state}
-        model={model}
-        busy={!!busy || adviserReading}
-        onAction={runAction}
-        footnote={usageLine ? `${usageLine}.` : ''}
-      />
+      {also.length > 0 && (
+        <span className="composer-also">
+          {also.includes('draft') && (
+            <Button variant="ghost" className="composer-also-draft" disabled={sendBusy || model.actions.draft.disabled} title={model.actions.draft.reason || undefined} onClick={() => runAction('draft')}>
+              {actionLabel('draft', state)}
+            </Button>
+          )}
+          {also.includes('schedule') && (
+            <Button disabled={sendBusy || model.actions.schedule.disabled} title={model.actions.schedule.reason || undefined} onClick={() => runAction('schedule')}>
+              <CalendarClock size={15} aria-hidden="true" />
+              {actionLabel('schedule', state, { short: true })}
+            </Button>
+          )}
+        </span>
+      )}
+      {/* On a phone the main button is in the bar at the top of the sheet. */}
+      {!narrow && publishButton('up')}
     </div>
   );
 
+  // What each setting is called on a phone's row, and what it is set to.
+  const tagsValue = state.tags.length ? state.tags.map((t) => `#${t}`).join(', ') : 'None';
+  const langsValue = `${langsSummary(state.langs)}${state.labels.length ? ` · ${labelsSummary(state.labels)}` : ''}`;
+  const gatesShort = gatesSummary(state.gates);
+  const gatesValue = gatesShort.replace(/^Replies: /, '').replace(' can reply', '').replace(/^./, (c) => c.toUpperCase());
+  const timerValue = state.lifespan?.enabled ? timerChipLabel(state.lifespan) : 'No timer';
+
   return (
     <>
-      <Dialog open={open} onClose={() => {
-        autosaver.flush();
-        onClose?.();
-      }} title={title} className="composer-dialog" actions={actions}>
+      <Dialog open={open} onClose={closeComposer} title={title} className="composer-dialog" actions={actions}>
         <div ref={composerRef} className="composer" onKeyDown={onKeyDown} data-drag={dragOver || undefined} {...dropProps}>
+          {narrow && (
+            <div className="composer-bar">
+              <button type="button" className="composer-bar-close" onClick={closeComposer}>
+                Close
+              </button>
+              {/* The dialog is named by its own title, which is out of sight on a phone. */}
+              <span className="composer-bar-title" aria-hidden="true">
+                {title}
+              </span>
+              {publishButton('down')}
+            </div>
+          )}
           <PostAsPicker
             asDid={asDid}
             activeDid={activeDid}
@@ -2084,41 +2140,56 @@ export default function Composer({ open, intent, onClose }) {
                 </p>
               )}
 
-              {(showTags || state.tags.length > 0) && <TagsField tags={state.tags} disabled={disabled} onChange={(tags) => dispatch({ type: 'setTags', tags })} />}
-
+              {/* Each setting is a button with three sets of words in it, of
+                  which the stylesheet shows the ones for the screen: its
+                  name and its value apart for a phone's row, one short
+                  phrase for the row of words on a wide screen. */}
               <div className="composer-options" role="group" aria-label="Post settings">
-                <Button size="sm" variant="ghost" aria-pressed={showTags || state.tags.length > 0} onClick={() => setShowTags((v) => !v)} disabled={disabled}>
-                  <Hash size={15} aria-hidden="true" />
-                  {state.tags.length ? `${state.tags.length} ${state.tags.length === 1 ? 'tag' : 'tags'}` : 'Tags'}
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setDialogs((d) => ({ ...d, meta: true }))} disabled={disabled}>
-                  <Languages size={15} aria-hidden="true" />
-                  {langsSummary(state.langs)}
-                  {state.labels.length ? ` · ${labelsSummary(state.labels)}` : ''}
-                </Button>
+                <button type="button" className="composer-option" aria-pressed={showTags || state.tags.length > 0} onClick={() => setShowTags((v) => !v)} disabled={disabled}>
+                  <Hash size={16} aria-hidden="true" />
+                  <span className="composer-option-short">{state.tags.length ? `${state.tags.length} ${state.tags.length === 1 ? 'tag' : 'tags'}` : 'Tags'}</span>
+                  <span className="composer-option-label">Tags</span>
+                  <span className="composer-option-value">{tagsValue}</span>
+                  <ChevronRight className="composer-option-chevron" size={15} aria-hidden="true" />
+                </button>
+                {(showTags || state.tags.length > 0) && <TagsField tags={state.tags} disabled={disabled} onChange={(tags) => dispatch({ type: 'setTags', tags })} />}
+                <button type="button" className="composer-option" onClick={() => setDialogs((d) => ({ ...d, meta: true }))} disabled={disabled}>
+                  <Languages size={16} aria-hidden="true" />
+                  <span className="composer-option-short">{langsValue}</span>
+                  <span className="composer-option-label">Language</span>
+                  <span className="composer-option-value">{langsValue}</span>
+                  <ChevronRight className="composer-option-chevron" size={15} aria-hidden="true" />
+                </button>
                 {!replying && (
-                  <Button size="sm" variant="ghost" onClick={() => setDialogs((d) => ({ ...d, gates: true }))} disabled={disabled} title={gatesLine}>
-                    <MessageSquareReply size={15} aria-hidden="true" />
-                    {gatesSummary(state.gates)}
-                  </Button>
+                  <button type="button" className="composer-option" onClick={() => setDialogs((d) => ({ ...d, gates: true }))} disabled={disabled} title={gatesLine}>
+                    <MessageSquareReply size={16} aria-hidden="true" />
+                    <span className="composer-option-short">{gatesShort}</span>
+                    <span className="composer-option-label">Replies</span>
+                    <span className="composer-option-value">{gatesValue}</span>
+                    <ChevronRight className="composer-option-chevron" size={15} aria-hidden="true" />
+                  </button>
                 )}
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <button
+                  type="button"
+                  className="composer-option"
                   onClick={() => setDialogs((d) => ({ ...d, timer: true }))}
                   disabled={disabled}
                   title={timerNote || undefined}
                   aria-label={state.lifespan?.enabled ? `Timer: ${timerChipLabel(state.lifespan)}` : 'Timer: none'}
                 >
-                  <Clock size={15} aria-hidden="true" />
-                  {state.lifespan?.enabled ? timerChipLabel(state.lifespan) : 'No timer'}
-                </Button>
+                  <Clock size={16} aria-hidden="true" />
+                  <span className="composer-option-short">{timerValue}</span>
+                  <span className="composer-option-label">Timer</span>
+                  <span className="composer-option-value">{timerValue}</span>
+                  <ChevronRight className="composer-option-chevron" size={15} aria-hidden="true" />
+                </button>
                 {adviser.enabled && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
+                  <button
+                    type="button"
+                    className="composer-option"
                     disabled={disabled}
                     title={adviser.usageLine || 'Ask the post adviser what it thinks'}
+                    aria-label="Check this post"
                     onClick={async () => {
                       const decision = await adviser.check(stateRef.current, { mode: 'manual' });
                       if (decision === 'publish') submitPost({ skipAdviser: true });
@@ -2126,15 +2197,20 @@ export default function Composer({ open, intent, onClose }) {
                       else refocusAfterAdviser();
                     }}
                   >
-                    <Sparkles size={15} aria-hidden="true" />
-                    Check this post
-                  </Button>
+                    <Sparkles size={16} aria-hidden="true" />
+                    <span className="composer-option-short">Check this post</span>
+                    <span className="composer-option-label">Check this post</span>
+                  </button>
                 )}
-                {/* The list hangs toward whichever side has room: on a phone the
-                    row wraps and this button can sit at the left edge. */}
+                {/* The list hangs toward whichever side has room: on a wide
+                    screen this button sits at the row's right edge, and on a
+                    phone it is the last row, at the left. */}
                 <span className="composer-more" ref={moreRef} onPointerDownCapture={placeMore} onFocusCapture={placeMore}>
                   <Menu label="More for this post" icon variant="ghost" placement="up" align={moreAlign} items={moreItems.filter(Boolean)}>
                     <MoreHorizontal size={16} aria-hidden="true" />
+                    <span className="composer-option-label" aria-hidden="true">
+                      More
+                    </span>
                   </Menu>
                 </span>
               </div>
@@ -2146,7 +2222,7 @@ export default function Composer({ open, intent, onClose }) {
               )}
 
               {whenOpen && (state.schedule?.mode === 'at' || state.schedule?.mode === 'queue') && (
-                <section className="when-panel" aria-label="When it goes out">
+                <section ref={whenRef} className="when-panel" aria-label="When it goes out">
                   <div className="when-panel-head">
                     <span className="field-label">{state.schedule.mode === 'queue' ? 'Into your weekly queue' : 'Schedule for later'}</span>
                     <Button

@@ -1,24 +1,26 @@
-/* The post adviser and AI alt text: the busy line in the composer, the sheet
-   with the marked-up post, the alt-text and style dialogs, and the settings
-   card. On a phone each dialog is a full-height sheet with its buttons at
-   the bottom. Tokens only. */
+/* The post adviser and AI alt text: the line in the composer while it reads,
+   the sheet with the marked-up post, the alt-text and style dialogs, and
+   the adviser's rows in Settings › Posting. Each dialog floats and keeps
+   its edge; on a phone it is a sheet that fills the screen, with its
+   buttons at the bottom. Inside them nothing is a box: a rule in ink over
+   the post, hairlines between what it noticed. The accent is the bar of a
+   read under way and the passage a note points at. Tokens only. */
 
 /* ---- reading your draft (inline in the composer) ---------------------- */
 
+/* Something under way, so it has the rule down its side. */
 .adviser-busy {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  background: var(--accent-wash);
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--accent);
   color: var(--ink-2);
 }
 
 .adviser-busy-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
 }
 
@@ -26,11 +28,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--accent-ink);
+  height: 20px;
+  color: var(--ink-2);
 }
 
 .adviser-busy-text {
@@ -42,17 +41,13 @@
 
 .adviser-busy-title {
   color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 640;
+  font-size: var(--text-base);
+  font-weight: 600;
 }
 
 .adviser-busy-line {
   color: var(--muted);
-  font-size: var(--text-xs);
-}
-
-.adviser-busy-bar {
-  height: 3px;
+  font-size: var(--text-sm);
 }
 
 .adviser-busy-goals {
@@ -69,16 +64,15 @@
   align-items: baseline;
   gap: 6px;
   max-width: 100%;
-  padding: 3px 9px;
+  padding: 2px 10px;
   border: 1px solid var(--line);
   border-radius: var(--pill);
-  background: var(--surface);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .adviser-busy-goal {
   color: var(--ink-2);
-  font-weight: 560;
+  font-weight: 500;
 }
 
 .adviser-busy-detail {
@@ -97,10 +91,12 @@
 
 /* ---- the sheet -------------------------------------------------------- */
 
+/* As wide as the composer they open over, so its edges don't show at
+   their sides. */
 .dialog.adviser-sheet,
 .dialog.alt-dialog,
 .dialog.style-dialog {
-  width: min(600px, calc(100vw - 32px));
+  width: min(640px, calc(100vw - 32px));
 }
 
 .dialog.adviser-sheet[open],
@@ -139,9 +135,11 @@
 .adviser-skeleton {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
+/* What it made of the post, in a line. The picture carries the state's
+   colour; the words beside it say the same. */
 .adviser-verdict {
   display: flex;
   align-items: center;
@@ -149,7 +147,7 @@
   margin: 0;
   color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 640;
+  font-weight: 600;
 }
 
 .adviser-verdict svg {
@@ -168,14 +166,14 @@
   color: var(--danger);
 }
 
+/* The post, marked up: under a rule in ink, with what kind of post it is
+   and its tone over it and the count of slips under it. */
 .adviser-draft {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
 }
 
 .adviser-draft-meta {
@@ -184,13 +182,13 @@
   justify-content: space-between;
   gap: 4px 12px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .adviser-draft-text {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   max-height: 40vh;
   overflow-y: auto;
 }
@@ -198,17 +196,17 @@
 .adviser-draft-post {
   margin: 0;
   color: var(--ink);
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .adviser-draft-index {
-  margin-right: 6px;
+  margin-right: 8px;
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 /* A flagged passage: the rule sits on the plain runs, so a fix inside it
@@ -234,9 +232,10 @@
   text-decoration-color: var(--warn);
 }
 
+/* The passage a note was pressed for: picked out in the accent, briefly. */
 .adviser-mark.is-shown {
-  background: var(--accent-wash);
-  outline: 2px solid var(--accent-line);
+  background: var(--accent-tint);
+  outline: 2px solid var(--accent);
   animation: adviser-flash 1.6s var(--ease);
 }
 
@@ -245,7 +244,7 @@
     background: var(--accent-line);
   }
   to {
-    background: var(--accent-wash);
+    background: var(--accent-tint);
   }
 }
 
@@ -253,7 +252,7 @@
   margin-left: 1px;
   color: var(--muted);
   font-size: 0.7em;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .adviser-mark-number[data-tone='conflict'] {
@@ -264,23 +263,23 @@
   color: var(--warn);
 }
 
-/* A slip with its fix beside it: press to take it. */
+/* A slip with its fix beside it: press to take it. The slip is struck
+   through and quiet; the fix is ink. */
 .adviser-fix {
-  padding: 1px 2px;
-  border-radius: 3px;
-  background: var(--accent-wash);
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--surface-3);
   cursor: pointer;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
 .adviser-fix del {
-  color: var(--down);
-  text-decoration-color: var(--down);
+  color: var(--muted);
 }
 
 .adviser-fix ins {
-  color: var(--accent-ink);
+  color: var(--ink);
   font-weight: 600;
   text-decoration: none;
 }
@@ -292,7 +291,7 @@
 
 @media (hover: hover) {
   .adviser-fix:hover {
-    background: var(--accent-line);
+    background: var(--hover);
   }
 }
 
@@ -306,33 +305,38 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line-soft);
+  min-height: 30px;
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
+/* What it noticed: rows between hairlines. A numbered one is a button that
+   shows its passage in the post above. */
 .adviser-notes {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--line);
   list-style: none;
+}
+
+.adviser-note {
+  border-bottom: 1px solid var(--line);
 }
 
 .adviser-note-row {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 7px 8px;
+  padding: 11px 0;
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink-2);
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   text-align: left;
 }
 
@@ -341,28 +345,25 @@ button.adviser-note-row {
 }
 
 @media (hover: hover) {
-  button.adviser-note-row:hover {
-    background: var(--hover);
+  button.adviser-note-row:hover .adviser-note-label {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
-}
-
-button.adviser-note-row:focus-visible {
-  outline: none;
-  box-shadow: var(--focus);
 }
 
 .adviser-note-marker {
   display: grid;
   flex: none;
   place-items: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 22px;
+  height: 22px;
   padding: 0 4px;
   border-radius: var(--pill);
   background: var(--surface-3);
   color: var(--ink-2);
   font-size: var(--text-xs);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .adviser-note[data-tone='conflict'] .adviser-note-marker {
@@ -417,12 +418,12 @@ button.adviser-note-row:focus-visible {
 .adviser-met li {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 9px;
+  gap: 5px;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
   border-radius: var(--pill);
-  background: var(--surface-3);
   color: var(--ink-2);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .adviser-met li svg {
@@ -447,7 +448,7 @@ button.adviser-note-row:focus-visible {
 .style-usage {
   margin: 0;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .adviser-notice p {
@@ -465,11 +466,12 @@ button.adviser-note-row:focus-visible {
   gap: 6px;
   padding: 8px 0 4px;
   color: var(--ink-2);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .adviser-empty svg {
-  color: var(--accent-ink);
+  margin-bottom: 4px;
+  color: var(--ink-2);
 }
 
 .adviser-empty p {
@@ -480,7 +482,7 @@ button.adviser-note-row:focus-visible {
 .adviser-empty-title {
   color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 640;
+  font-weight: 600;
 }
 
 /* The read's shape while it loads. */
@@ -529,16 +531,17 @@ button.adviser-note-row:focus-visible {
 .style-body {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
+/* The picture being described keeps its edge. */
 .alt-dialog-preview {
   display: block;
   max-width: 100%;
   max-height: 240px;
   margin: 0 auto;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface-3);
   object-fit: contain;
 }
@@ -551,13 +554,13 @@ button.adviser-note-row:focus-visible {
 }
 
 .alt-revise {
-  padding-top: 12px;
-  border-top: 1px solid var(--line-soft);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
 .alt-optional {
   color: var(--muted);
-  font-weight: 450;
+  font-weight: 400;
 }
 
 .alt-chips {
@@ -582,6 +585,7 @@ button.adviser-note-row:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+  min-height: 30px;
 }
 
 .alt-field-tools {
@@ -618,14 +622,14 @@ button.adviser-note-row:focus-visible {
 .alt-disclosure {
   margin: 0;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 /* ---- your writing style ---------------------------------------------- */
 
 .style-intro {
   margin: 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   max-width: 65ch;
 }
 
@@ -633,7 +637,7 @@ button.adviser-note-row:focus-visible {
 .style-result {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .style-start .segmented {
@@ -656,28 +660,28 @@ button.adviser-note-row:focus-visible {
   min-width: 112px;
 }
 
+/* The steps of a reading, down a hairline: done ones ticked off in green,
+   the one under way marked in the accent. */
 .style-progress {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  padding: 4px 0 4px 14px;
+  border-left: 1px solid var(--line);
   list-style: none;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .style-progress li {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .style-progress li[data-state='done'] {
-  color: var(--muted);
+  color: var(--ink-2);
 }
 
 .style-progress li[data-state='now'] {
@@ -687,8 +691,8 @@ button.adviser-note-row:focus-visible {
 
 .style-progress-dot {
   flex: none;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--line-2);
 }
@@ -709,42 +713,33 @@ button.adviser-note-row:focus-visible {
 
 /* ---- Settings › Posting › Post adviser -------------------------------- */
 
-.adviser-set-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 0 0 16px;
-  border-left: 2px solid var(--line-soft);
+/* The adviser's settings are rows like the rest of Settings (its .settings-
+   row classes, from src/settings/settings.css): what a thing is at the
+   left, its control at the right. A row with several things in it (the
+   goals, the proofread) stacks them at the right, top-aligned. */
+.settings-row.adviser-set-row {
+  align-items: flex-start;
 }
 
-.adviser-set-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
+.settings-row-control.adviser-set-stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 14px;
 }
 
-.adviser-set-fieldset {
-  display: flex;
+/* Held to a line's length inside the column, not by narrowing the column:
+   that would hand the room to the words at the left, and this row's
+   controls would start further in than every other row's. */
+.adviser-set-stack > * {
+  max-width: 520px;
+}
+
+.settings-row-control.adviser-set-radios {
   flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
   gap: 10px;
-  min-width: 0;
-  margin: 0;
-  padding: 12px 0 0;
-  border: 0;
-  border-top: 1px solid var(--line-soft);
-}
-
-.adviser-set-fieldset > legend {
-  float: left;
-  width: 100%;
-  margin-bottom: 2px;
-  padding: 0;
-}
-
-.adviser-set-fieldset > legend + * {
-  clear: both;
 }
 
 .adviser-check {
@@ -768,8 +763,8 @@ button.adviser-note-row:focus-visible {
 
 .adviser-check-label {
   color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 560;
+  font-size: var(--text-base);
+  font-weight: 500;
 }
 
 .adviser-check-hint {
@@ -781,35 +776,39 @@ button.adviser-note-row:focus-visible {
   padding-left: 26px;
 }
 
-.adviser-set-fieldset .field {
+.adviser-set-stack .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
+/* Your writing style, under the proofread's own checks: a hairline over it,
+   the words and the way to change them. */
 .adviser-style {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px 24px;
-  padding-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.adviser-style > div {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .adviser-set-usage {
-  padding-top: 12px;
-  border-top: 1px solid var(--line-soft);
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
 .adviser-set-usage p {
   margin: 0;
-}
-
-.adviser-sent {
-  padding-top: 12px;
-  border-top: 1px solid var(--line-soft);
 }
 
 .adviser-sent-body {
@@ -834,7 +833,7 @@ button.adviser-note-row:focus-visible {
   padding-left: 18px;
 }
 
-/* ---- phone: full-height sheets, buttons under the thumb --------------- */
+/* ---- phone: sheets that fill the screen, buttons under the thumb ------- */
 
 @media (max-width: 640px) {
   .dialog.adviser-sheet,
@@ -859,19 +858,19 @@ button.adviser-note-row:focus-visible {
   .adviser-sheet .dialog-head,
   .alt-dialog .dialog-head,
   .style-dialog .dialog-head {
-    padding: calc(10px + env(safe-area-inset-top)) 12px 6px 16px;
+    padding: calc(12px + env(safe-area-inset-top)) 10px 6px 20px;
   }
 
   .adviser-sheet .dialog-body,
   .alt-dialog .dialog-body,
   .style-dialog .dialog-body {
-    padding: 4px 16px 16px;
+    padding: 6px 20px 20px;
   }
 
   .adviser-sheet .dialog-actions,
   .alt-dialog .dialog-actions,
   .style-dialog .dialog-actions {
-    padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+    padding: 10px 20px calc(12px + env(safe-area-inset-bottom));
   }
 
   .adviser-sheet .dialog-actions > .btn,
@@ -902,20 +901,12 @@ button.adviser-note-row:focus-visible {
     flex: 1 1 0;
     min-height: 44px;
   }
+}
 
-  .adviser-set-group {
-    padding-left: 12px;
-  }
-
-  .adviser-scope {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  .adviser-scope .segmented-key {
-    justify-content: flex-start;
-    min-height: 36px;
+@media (pointer: coarse) {
+  .adviser-check,
+  .adviser-set-radios .check {
+    min-height: 32px;
   }
 }
 

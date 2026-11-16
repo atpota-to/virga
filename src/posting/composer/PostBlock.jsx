@@ -125,7 +125,8 @@ export default function PostBlock({
             </span>
           </label>
           <span className="callout-actions">
-            <Button size="sm" variant="primary" onClick={() => api.split(post.id, splitOptions)} disabled={disabled}>
+            {/* An outline: the one ink button in the composer is the one that sends. */}
+            <Button size="sm" onClick={() => api.split(post.id, splitOptions)} disabled={disabled}>
               Split into a thread
             </Button>
             <Button size="sm" variant="ghost" onClick={() => api.dismissSplit()}>

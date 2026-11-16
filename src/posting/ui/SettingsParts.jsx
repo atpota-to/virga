@@ -1,16 +1,22 @@
 // The pieces Settings › Posting is built from, in the same markup as the rest
-// of Settings (src/settings/settings.css), for the settings components the
-// posting section mounts there.
+// of Settings (src/settings/settings.css): a band with its heading, a rule in
+// ink under it, and its rows between hairlines. The settings components the
+// posting section mounts there all use these, so the page reads as one with
+// Settings › Appearance.
 
-/** A card with a title and an optional line under it. */
+/**
+ * A band of the page: a title, an optional line under it, then its rows.
+ * What isn't a row (a paragraph, an editor) gets a row's air and a hairline
+ * under it from settings.css.
+ */
 export function SettingsCard({ title, sub = null, tone = null, children }) {
   return (
-    <section className="card settings-section" data-tone={tone || undefined}>
+    <section className="settings-section" data-tone={tone || undefined}>
       <div className="settings-section-head">
         <h2 className="card-title">{title}</h2>
         {sub && <p className="card-sub">{sub}</p>}
       </div>
-      {children}
+      <div className="settings-section-body">{children}</div>
     </section>
   );
 }

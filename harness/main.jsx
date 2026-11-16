@@ -3,7 +3,7 @@
 // and screenshots are stable. Nothing here ships; see harness/README.md.
 
 import ReactDOM from 'react-dom/client';
-import '@fontsource-variable/mona-sans/wdth.css';
+import '@fontsource-variable/instrument-sans/wght.css';
 import { AtprotoSessionProvider } from '../src/session/useAtprotoSession.jsx';
 import '../src/styles/theme.css';
 import '../src/styles/base.css';

@@ -12,7 +12,8 @@ import '../composer/composer.css';
  * Settings › Posting: what a new post starts with, for one account: its
  * languages, who can reply and quote, what the main button does, and three
  * habits (requiring alt text, offering to split a long post, numbering the
- * posts of a split). Kept in this browser, per account.
+ * posts of a split). Each is a row like the rest of Settings: what it is at
+ * the left, its control at the right. Kept in this browser, per account.
  */
 export default function ComposerDefaults({ did }) {
   const { settings, update } = usePostingSettings(did);
@@ -30,16 +31,17 @@ export default function ComposerDefaults({ did }) {
 
   return (
     <SettingsCard title="New posts" sub="What the composer starts with for this account. Each post can still change it.">
-      <div className="settings-row settings-row--stack">
-        <LanguagePicker
-          label="Languages"
-          hint="Bluesky uses these to show your posts to people who read them. Up to three."
-          value={settings.langs}
-          onChange={(langs) => save({ langs })}
-        />
+      <div className="settings-row settings-row--tall">
+        <div className="settings-row-text">
+          <div className="settings-row-label">Languages</div>
+          <div className="settings-row-hint">Bluesky uses these to show your posts to people who read them. Up to three.</div>
+        </div>
+        <div className="settings-row-control settings-row-control--stack">
+          <LanguagePicker bare label="Languages" value={settings.langs} onChange={(langs) => save({ langs })} />
+        </div>
       </div>
 
-      <div className="settings-row settings-row--stack">
+      <div className="settings-row settings-row--tall">
         <div className="settings-row-text">
           <div className="settings-row-label">Who can reply and quote</div>
           <div className="settings-row-hint">
@@ -48,17 +50,18 @@ export default function ComposerDefaults({ did }) {
               : 'New posts use the setting you chose in Bluesky. If it can’t be read, anyone can reply and quote.'}
           </div>
         </div>
-        <Segmented
-          label="Where the reply settings come from"
-          size="sm"
-          value={ownGates ? 'here' : 'bluesky'}
-          onChange={(v) => save({ gates: v === 'here' ? settings.gates || { ...EVERYONE_GATES } : null })}
-          options={[
-            { value: 'bluesky', label: 'My Bluesky setting' },
-            { value: 'here', label: 'Choose here' },
-          ]}
-        />
-        {ownGates && <GatesEditor did={did} value={settings.gates} onChange={(gates) => save({ gates })} />}
+        <div className="settings-row-control settings-row-control--stack">
+          <Segmented
+            label="Where the reply settings come from"
+            value={ownGates ? 'here' : 'bluesky'}
+            onChange={(v) => save({ gates: v === 'here' ? settings.gates || { ...EVERYONE_GATES } : null })}
+            options={[
+              { value: 'bluesky', label: 'My Bluesky setting' },
+              { value: 'here', label: 'Choose here' },
+            ]}
+          />
+          {ownGates && <GatesEditor did={did} value={settings.gates} onChange={(gates) => save({ gates })} />}
+        </div>
       </div>
 
       <SettingsRow label="Main button" hint="What the composer’s main button does. The others stay in its menu." htmlFor={ids.action}>

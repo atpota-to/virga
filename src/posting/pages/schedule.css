@@ -1,13 +1,15 @@
 /* Scheduled posts, the weekly schedule, timers, and the pickers they share
-   (the time picker, the timer editor and the timer dialog). Tokens only. On
-   a phone the queue's rows move with their arrow buttons instead of a drag
-   handle, the actions sit under the words at thumb size, and the timer
-   dialog is a full-height sheet. */
+   (the time picker, the timer editor and the timer dialog). Tokens only.
+   The pages are lists under a rule in ink with hairlines between the rows;
+   the week is a grid of times on hairlines. On a phone the queue's rows
+   move with their arrow buttons instead of a drag handle, the actions sit
+   under the words at thumb size, and the timer dialog is a full-height
+   sheet. */
 
 .sched-page {
   display: flex;
   flex-direction: column;
-  gap: var(--grid-gap);
+  gap: var(--section-gap);
 }
 
 .sched-message {
@@ -19,17 +21,30 @@
 }
 
 .sched-section .card-head {
-  padding: 0 var(--card-pad);
+  flex-wrap: nowrap;
+  align-items: flex-end;
+}
+
+.sched-section .card-head > .btn {
+  flex: none;
 }
 
 .sched-count {
   margin-left: 4px;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 400;
 }
 
-.sched-limits {
-  margin-top: 0;
+/* The page's closing lines sit close under its last section, and close
+   to each other: the gap between sections is too much air for a note. */
+.sched-page > .card-caption,
+.sched-page > .field-hint {
+  margin-top: calc(var(--section-gap) * -1 + 20px);
+}
+
+.sched-page > .card-caption + .card-caption,
+.sched-page > .field-hint + .card-caption {
+  margin-top: calc(var(--section-gap) * -1 + 6px);
 }
 
 /* ---- the list --------------------------------------------------------- */
@@ -42,43 +57,43 @@
   list-style: none;
 }
 
+/* The day a run of rows goes out on, between them. */
 .sched-group-label {
-  padding: 10px var(--card-pad) 4px;
-  border-top: 1px solid var(--line-soft);
-}
-
-.sched-group-label:first-child {
-  border-top: 0;
+  padding: 18px 0 8px;
+  border-bottom: 1px solid var(--line);
 }
 
 .sched-group-label h3 {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 620;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .sched-row {
+  position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 8px 14px;
-  padding: 10px var(--card-pad);
+  gap: 8px 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
   transition: background-color 0.25s ease;
 }
 
-.hub-list--rows > .sched-row,
-.sched-row + .sched-row {
-  border-top: 1px solid var(--line-soft);
-}
-
+/* A row picked out from the calendar, and one being moved: a tint let out
+   a little past the row's sides, so the words don't touch its edge. */
 .sched-row.is-lit {
-  background: var(--accent-wash);
+  background: var(--accent-tint);
+  box-shadow:
+    -10px 0 0 var(--accent-tint),
+    10px 0 0 var(--accent-tint);
 }
 
 .sched-row.is-dragging {
-  background: var(--surface-2);
-  box-shadow: inset 3px 0 0 var(--accent);
+  z-index: 1;
+  background: var(--tint);
+  box-shadow:
+    -10px 0 0 var(--tint),
+    10px 0 0 var(--tint);
 }
 
 .sched-row[aria-busy='true'] {
@@ -91,7 +106,7 @@
   place-items: center;
   width: 28px;
   height: 36px;
-  margin-left: -6px;
+  margin: -6px -4px 0 -6px;
   padding: 0;
   border: 0;
   border-radius: var(--radius-sm);
@@ -102,13 +117,13 @@
 }
 
 .sched-handle:hover {
-  background: var(--hover);
+  background: var(--tint);
   color: var(--ink);
 }
 
 .sched-handle[aria-pressed='true'] {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  box-shadow: 0 0 0 2px var(--accent);
+  color: var(--ink);
   cursor: grabbing;
 }
 
@@ -137,19 +152,28 @@
   flex: none;
   flex-direction: column;
   gap: 2px;
-  width: 92px;
-  padding-top: 1px;
+  width: 104px;
+  line-height: 1.35;
 }
 
 .sched-time {
   font-size: var(--text-base);
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
 .sched-rel {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
+}
+
+.sched-time--dated {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sched-time--dated .sched-rel {
+  font-weight: 400;
 }
 
 .sched-row .hub-row-main {
@@ -166,12 +190,12 @@
 .sched-repeat-tag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .sched-repeat-tag {
-  color: var(--accent-ink);
-  font-weight: 560;
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 /* What a scheduled reply answers: who, and the start of what they said. */
@@ -213,20 +237,28 @@
 
 /* ---- the calendar ------------------------------------------------------ */
 
+/* The week ahead: a column a day, a time to a line, on hairlines. An open
+   time is muted; one with a post in it is in ink over a line in the
+   accent, since that is the data here. */
+
 .sched-cal {
   margin: 0 0 8px;
+}
+
+.sched-section .sched-cal,
+.sched-section .sched-cal-skeleton {
+  margin-top: 18px;
 }
 
 .sched-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0 12px;
 }
 
 .sched-cal-day {
   display: flex;
   flex-direction: column;
-  gap: 6px;
   min-width: 0;
 }
 
@@ -235,64 +267,66 @@
   flex-direction: column;
   align-items: center;
   gap: 1px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--line-soft);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-2);
 }
 
 .sched-cal-dow {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .sched-cal-date {
   font-size: var(--text-md);
-  font-weight: 620;
-  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .sched-cal-cells {
   display: flex;
   flex-direction: column;
-  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .sched-cal-none {
+  padding: 6px 0;
   color: var(--faint);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-align: center;
 }
 
 .sched-cal-cell {
   display: block;
   width: 100%;
-  min-height: 26px;
-  padding: 3px 2px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  min-height: 30px;
+  padding: 6px 2px 5px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
   color: var(--muted);
   font: inherit;
-  font-size: var(--text-xs);
-  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  line-height: 1.35;
   text-align: center;
 }
 
 .sched-cal-cell.is-filled {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  border-bottom-color: var(--accent);
+  box-shadow: inset 0 -1px 0 var(--accent);
+  color: var(--ink);
   font-weight: 600;
 }
 
+/* A post whose time isn't one of the week's any more. */
 .sched-cal-cell.is-off {
-  border-style: dashed;
+  border-bottom-style: dashed;
+  box-shadow: none;
 }
 
 .sched-cal-cell.is-lit {
-  box-shadow: var(--focus);
+  background: var(--accent-tint);
 }
 
 button.sched-cal-cell {
@@ -300,22 +334,23 @@ button.sched-cal-cell {
 }
 
 button.sched-cal-cell:hover {
-  border-color: var(--accent);
+  background: var(--tint);
 }
 
 button.sched-cal-cell:focus-visible {
-  outline: none;
-  box-shadow: var(--focus);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .sched-cal-caption {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .sched-cal-skeleton {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0 12px;
   margin-bottom: 12px;
 }
 
@@ -328,7 +363,7 @@ button.sched-cal-cell:focus-visible {
 .sched-week-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: var(--grid-gap);
+  gap: var(--grid-gap) calc(var(--grid-gap-x) + 16px);
   align-items: start;
 }
 
@@ -339,9 +374,17 @@ button.sched-cal-cell:focus-visible {
   min-width: 0;
 }
 
+/* A section of the side column that isn't a list: its heading over a rule
+   in ink, like the lists beside it. */
+.sched-side-head {
+  margin-bottom: 14px;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
+}
+
 .sched-tz-field {
   max-width: 420px;
-  margin-bottom: 8px;
+  padding: 16px 0;
 }
 
 .sched-days {
@@ -349,6 +392,7 @@ button.sched-cal-cell:focus-visible {
   flex-direction: column;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--line);
   list-style: none;
 }
 
@@ -357,13 +401,14 @@ button.sched-cal-cell:focus-visible {
   grid-template-columns: 104px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 12px;
+  min-height: 56px;
   padding: 10px 0;
-  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line);
 }
 
 .sched-day-name {
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: 500;
 }
 
 .sched-day-times {
@@ -381,17 +426,16 @@ button.sched-cal-cell:focus-visible {
   list-style: none;
 }
 
+/* A posting time, with the way to take it off. */
 .sched-slot {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  min-height: 28px;
-  padding: 0 4px 0 10px;
+  min-height: 30px;
+  padding: 0 4px 0 12px;
   border: 1px solid var(--line-2);
   border-radius: var(--pill);
-  background: var(--surface);
   font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums;
 }
 
 .sched-slot-x {
@@ -408,7 +452,7 @@ button.sched-cal-cell:focus-visible {
 }
 
 .sched-slot-x:hover {
-  background: var(--hover);
+  background: var(--tint);
   color: var(--danger);
 }
 
@@ -436,40 +480,57 @@ button.sched-cal-cell:focus-visible {
 
 .sched-week-foot {
   flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px solid var(--line-soft);
+  margin-top: 14px;
 }
 
 .sched-next {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 10px 0 0;
-  padding-left: 20px;
-  font-variant-numeric: tabular-nums;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: sched-next;
+}
+
+.sched-next > li {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  counter-increment: sched-next;
+}
+
+.sched-next > li:first-child {
+  padding-top: 0;
+}
+
+ol.sched-next > li::before {
+  content: counter(sched-next);
+  width: 14px;
+  color: var(--muted);
 }
 
 .sched-side-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
+/* Times worth a look: a rule in the accent down the side, like any other
+   thing to know before going on. */
 .sched-suggest {
   display: flex;
-  gap: 14px;
+  gap: 12px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--accent);
 }
 
 .sched-suggest-icon {
-  display: grid;
+  display: flex;
   flex: none;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  margin-top: 2px;
+  color: var(--ink-2);
 }
 
 .sched-suggest-text {
@@ -479,22 +540,23 @@ button.sched-cal-cell:focus-visible {
   min-width: 0;
 }
 
+.sched-suggest-text .card-sub {
+  max-width: 80ch;
+  margin-top: 0;
+}
+
 .sched-suggest-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 4px;
-}
-
-.sched-suggest-off {
-  padding: 0 4px;
+  margin-top: 6px;
 }
 
 /* ---- timers ------------------------------------------------------------ */
 
 .sched-timer {
   flex-wrap: nowrap;
-  gap: 12px;
+  gap: 14px;
 }
 
 .sched-timer .hub-row-main {
@@ -505,25 +567,20 @@ button.sched-cal-cell:focus-visible {
   align-self: center;
 }
 
+/* What state the timer is in, as a small picture beside the words: in
+   ink, with nothing behind it. One that failed is in the colour of that. */
 .sched-timer-icon {
-  display: grid;
+  display: flex;
   flex: none;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-top: 2px;
-  border-radius: 50%;
-  background: var(--surface-3);
-  color: var(--ink-2);
+  margin-top: 3px;
+  color: var(--muted);
 }
 
 .sched-timer-icon.is-live {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .sched-timer-icon.is-failed {
-  background: var(--danger-wash);
   color: var(--danger);
 }
 
@@ -601,9 +658,8 @@ button.sched-cal-cell:focus-visible {
   margin: 0;
 }
 
-.sched-settings-editor {
-  padding: 12px 0 4px;
-  border-top: 1px solid var(--line-soft);
+.sched-settings-note > .card-caption {
+  margin-top: 0;
 }
 
 /* ---- the time picker --------------------------------------------------- */
@@ -635,15 +691,15 @@ button.sched-cal-cell:focus-visible {
 .sched-problem {
   margin: 0;
   color: var(--danger);
-  font-weight: 560;
+  font-weight: 500;
 }
 
 .sched-repeat {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line-soft);
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
 }
 
 .sched-repeat-fields {
@@ -664,21 +720,21 @@ button.sched-cal-cell:focus-visible {
   margin: 0;
 }
 
+/* The other way to pick a time: the queue's next open one. A row under a
+   hairline, not a box. */
 .sched-when-queue {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
   font-size: var(--text-sm);
 }
 
 .sched-when-queue > svg {
   flex: none;
-  color: var(--accent-ink);
+  color: var(--ink-2);
 }
 
 .sched-when-queue-text {
@@ -702,7 +758,7 @@ button.sched-cal-cell:focus-visible {
 }
 
 .lse-switch-label {
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   font-weight: 600;
   cursor: pointer;
 }
@@ -726,7 +782,7 @@ button.sched-cal-cell:focus-visible {
   margin-bottom: 8px;
   padding: 0;
   font-size: var(--text-sm);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .lse-chips {
@@ -767,11 +823,11 @@ button.sched-cal-cell:focus-visible {
   gap: 8px;
 }
 
+/* What a timer can count, a line each, between hairlines. */
 .lse-metrics {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-top: 1px solid var(--line);
 }
 
 .lse-metric {
@@ -779,26 +835,22 @@ button.sched-cal-cell:focus-visible {
   grid-template-columns: minmax(0, 1fr) 150px 96px;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
-}
-
-.lse-metric + .lse-metric {
-  border-top: 1px solid var(--line-soft);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .lse-metric-name {
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
 }
 
 .lse-op {
-  min-height: 30px;
+  min-height: 32px;
   font-size: var(--text-sm);
 }
 
 .lse-value {
-  min-height: 30px;
-  font-variant-numeric: tabular-nums;
+  min-height: 32px;
 }
 
 .lse-checks {
@@ -837,11 +889,11 @@ button.sched-cal-cell:focus-visible {
   width: auto;
 }
 
+/* The rule as a sentence: a line in the accent down its side, as a
+   thing to read before going on. */
 .lse-summary {
-  padding: 10px 12px;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  background: var(--accent-wash);
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--accent);
 }
 
 .lse-sentence {
@@ -865,11 +917,15 @@ button.sched-cal-cell:focus-visible {
   width: min(640px, calc(100vw - 32px));
 }
 
-.timer-dialog .dialog-in {
+/* Both dialogs can be taller than a phone: their words scroll, and the
+   buttons at the foot stay where they are. */
+.timer-dialog .dialog-in,
+.when-dialog .dialog-in {
   max-height: calc(100svh - 48px);
 }
 
-.timer-dialog .dialog-body {
+.timer-dialog .dialog-body,
+.when-dialog .dialog-body {
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -893,7 +949,7 @@ button.sched-cal-cell:focus-visible {
 
 /* ---- narrower screens --------------------------------------------------- */
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   .sched-week-layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -922,6 +978,20 @@ button.sched-cal-cell:focus-visible {
     align-items: baseline;
     gap: 8px;
     width: 100%;
+  }
+
+  .sched-section .card-head {
+    flex-wrap: wrap;
+  }
+
+  .sched-section .card-head > .btn {
+    min-height: 44px;
+  }
+
+  .sched-time--dated {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
   }
 
   .sched-row .hub-row-main {
@@ -964,13 +1034,17 @@ button.sched-cal-cell:focus-visible {
 
   .sched-cal-grid,
   .sched-cal-skeleton {
-    gap: 3px;
+    gap: 0 4px;
+  }
+
+  .sched-cal-dow,
+  .sched-cal-cell {
+    font-size: var(--text-xs);
   }
 
   .sched-cal-cell {
-    min-height: 30px;
-    padding: 4px 0;
-    font-size: 11px;
+    min-height: 32px;
+    padding: 7px 0 6px;
   }
 
   .sched-day {
@@ -1001,8 +1075,12 @@ button.sched-cal-cell:focus-visible {
     height: 30px;
   }
 
-  .sched-suggest {
-    flex-direction: column;
+  .sched-suggest-icon {
+    display: none;
+  }
+
+  .sched-day {
+    min-height: 0;
   }
 
   .lse-metric {

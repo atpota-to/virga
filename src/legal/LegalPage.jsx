@@ -40,7 +40,7 @@ export default function LegalPage({ docKey }) {
     <div className="landing legal">
       <header className="landing-bar">
         <Link to="/" className="brand" aria-label={`${APP_NAME}, to the front page`}>
-          <LogoMark size={28} />
+          <LogoMark />
           <span className="brand-name">{APP_NAME}</span>
         </Link>
         <nav className="legal-nav" aria-label="Legal documents">

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ArrowRight, CalendarClock, CalendarRange, FileText, LayoutTemplate, Library, Send, SquarePen, Timer } from 'lucide-react';
+import { CalendarClock, CalendarRange, ChevronRight, FileText, LayoutTemplate, Library, Send, SquarePen, Timer } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useArchive, isBuilt } from '../../archive/ArchiveContext.jsx';
@@ -24,44 +24,49 @@ import { LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
 
+/** A figure under its own rule, and the way in to its page: what it counts, the number, a line about it. */
 function Tile({ to, icon: Icon, label, value, note, loading }) {
   return (
-    <Link to={to} className="card hub-tile">
-      <span className="hub-tile-icon" aria-hidden="true">
-        <Icon size={17} />
+    <Link to={to} className="hub-tile">
+      <span className="hub-tile-label">
+        <Icon size={14} aria-hidden="true" />
+        {label}
       </span>
-      <span className="hub-tile-text">
-        <span className="hub-tile-label">{label}</span>
-        {loading ? (
-          <span className="hub-bone hub-bone--figure" aria-hidden="true" />
-        ) : (
-          <span className="hub-tile-value num">{value}</span>
-        )}
-        {note && !loading && <span className="hub-tile-note">{note}</span>}
-        {loading && <span className="visually-hidden">Loading</span>}
-      </span>
+      {loading ? (
+        <span className="hub-bone hub-bone--figure" aria-hidden="true" />
+      ) : (
+        <span className="hub-tile-value num">{value}</span>
+      )}
+      {note && !loading && <span className="hub-tile-note">{note}</span>}
+      {loading && <span className="visually-hidden">Loading</span>}
     </Link>
   );
 }
 
+/** A list of the overview: its name over a rule in ink, and the way to the whole of it. */
 function SectionCard({ title, sub, to, linkLabel, children }) {
   return (
-    <section className="card hub-card" aria-label={title}>
+    <section className="card card--flush hub-card" aria-label={title}>
       <div className="card-head">
         <div>
           <h2 className="card-title">{title}</h2>
           {sub && <p className="card-sub">{sub}</p>}
         </div>
         {to && (
-          <Link to={to} className="btn btn--sm btn--ghost hub-card-link">
+          <Link to={to} className="hub-card-link">
             {linkLabel}
-            <ArrowRight size={14} aria-hidden="true" />
           </Link>
         )}
       </div>
       {children}
     </section>
   );
+}
+
+/** "Tomorrow, 10:00 AM" as its day and its hour, for a row that leads with them. */
+function whenParts(label) {
+  const at = label.lastIndexOf(', ');
+  return at < 0 ? [label, ''] : [label.slice(0, at), label.slice(at + 2)];
 }
 
 /**
@@ -205,18 +210,24 @@ export default function HubPage({ did }) {
                 <p className="empty">Scheduling isn’t available on Virga’s server just now.</p>
               ) : scheduled.data.next.length ? (
                 <ul className="hub-list">
-                  {scheduled.data.next.map((row) => (
-                    <li key={row.id} className="hub-row">
-                      <div className="hub-row-main">
-                        <span className="hub-row-text">{scheduledSnippet(row)}</span>
-                        <span className="hub-row-meta">
-                          <time dateTime={row.scheduledFor}>{whenLabel(row.scheduledFor, now)}</time>
-                          {row.queued && <span className="badge badge--outline">Queue</span>}
-                          {row.status === 'publishing' && <span>Going out now</span>}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
+                  {scheduled.data.next.map((row) => {
+                    const [day, hour] = whenParts(whenLabel(row.scheduledFor, now));
+                    return (
+                      <li key={row.id} className="hub-row hub-row--when">
+                        <time className="hub-when" dateTime={row.scheduledFor}>
+                          <span className="hub-when-day">{day}</span>
+                          <span className="hub-when-time">
+                            {hour && <span>{hour}</span>}
+                            {row.queued && <span>· Queue</span>}
+                            {row.status === 'publishing' && <span>· Going out now</span>}
+                          </span>
+                        </time>
+                        <div className="hub-row-main">
+                          <span className="hub-row-text">{scheduledSnippet(row)}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <div className="hub-empty">
@@ -225,8 +236,11 @@ export default function HubPage({ did }) {
               )}
               {req && scheduled.data?.failed > 0 && (
                 <p className="callout callout--warn hub-card-note">
-                  {countPhrase(scheduled.data.failed, 'scheduled post')} didn’t go out.{' '}
-                  <Link to={postingPath('scheduled')}>See what happened</Link>
+                  {/* One run of words, so the link wraps with them and not beside them. */}
+                  <span>
+                    {countPhrase(scheduled.data.failed, 'scheduled post')} didn’t go out.{' '}
+                    <Link to={postingPath('scheduled')}>See what happened</Link>
+                  </span>
                 </p>
               )}
             </SectionCard>
@@ -243,16 +257,19 @@ export default function HubPage({ did }) {
               ) : drafts.data.rows.length ? (
                 <ul className="hub-list">
                   {drafts.data.rows.slice(0, 3).map((row) => (
-                    <li key={row.id} className="hub-row">
+                    <li key={row.id} className="hub-row hub-row--open">
                       <div className="hub-row-main">
                         <span className="hub-row-text">{row.text.trim() || <span className="muted">No text yet</span>}</span>
                         <span className="hub-row-meta">{draftMeta(row).slice(0, 3).join(' · ')}</span>
                       </div>
-                      <div className="hub-row-actions">
-                        <Button size="sm" onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}>
-                          Open
-                        </Button>
-                      </div>
+                      <button
+                        type="button"
+                        className="hub-open"
+                        aria-label={`Open the draft “${row.text.trim().slice(0, 40) || 'with no text'}”`}
+                        onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}
+                      >
+                        Open
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -292,27 +309,33 @@ export default function HubPage({ did }) {
               )}
             </SectionCard>
 
-            <nav className="hub-more" aria-label="More in Posting">
+            <nav className="hub-more" aria-labelledby="hub-more-title">
+              <h2 className="card-title hub-more-title" id="hub-more-title">
+                More in Posting
+              </h2>
               <Link to={postingPath('schedule')} className="hub-more-link">
-                <CalendarRange size={16} aria-hidden="true" />
-                <span>
+                <CalendarRange size={18} aria-hidden="true" />
+                <span className="hub-more-text">
                   <span className="hub-more-name">Weekly schedule</span>
                   <span className="hub-more-desc">{req ? 'The times your queue posts go out.' : 'Needs a long session.'}</span>
                 </span>
+                <ChevronRight size={16} aria-hidden="true" />
               </Link>
               <Link to={postingPath('library')} className="hub-more-link">
-                <Library size={16} aria-hidden="true" />
-                <span>
+                <Library size={18} aria-hidden="true" />
+                <span className="hub-more-text">
                   <span className="hub-more-name">Library</span>
                   <span className="hub-more-desc">Your posts, saved posts, links, feeds and lists to attach.</span>
                 </span>
+                <ChevronRight size={16} aria-hidden="true" />
               </Link>
               <Link to={postingPath('posted')} className="hub-more-link">
-                <Send size={16} aria-hidden="true" />
-                <span>
+                <Send size={18} aria-hidden="true" />
+                <span className="hub-more-text">
                   <span className="hub-more-name">Posted</span>
                   <span className="hub-more-desc">Everything you’ve posted, to search and manage.</span>
                 </span>
+                <ChevronRight size={16} aria-hidden="true" />
               </Link>
             </nav>
           </div>

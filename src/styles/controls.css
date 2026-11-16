@@ -1,7 +1,13 @@
-/* The kit: buttons, segmented controls, menus, fields, switches, cards,
-   section heads, figures, tables and the small marks (badges, avatars).
-   Everything here is drawn from the tokens in theme.css, so it follows the
-   theme and the density without a second rule. */
+/* The kit: buttons, tabs, menus, fields, switches, sections, figures, tables
+   and the small marks (badges, avatars). Everything here is drawn from the
+   tokens in theme.css, so it follows the sky, the accent and the density
+   without a second rule.
+
+   Nothing here is a box. A section (.card) is its heading and what is
+   under it, set apart from its neighbours by space; a list's heading has a
+   rule in ink under it and hairlines between its rows. Buttons and chips
+   are pills. The thing to do is filled with ink; the rest are outlines or
+   plain words. */
 
 /* ---- button ------------------------------------------------------- */
 
@@ -9,15 +15,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   min-height: var(--control-h);
-  padding: 0 12px;
+  padding: 0 16px;
   border: 1px solid var(--line-2);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 580;
+  border-radius: var(--pill);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--text-base);
+  font-weight: 500;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
@@ -34,22 +40,24 @@
 
 @media (hover: hover) {
   .btn:hover:not(:disabled) {
-    background: var(--surface-3);
-    color: var(--ink);
+    border-color: var(--ink);
+    text-decoration: none;
   }
 }
 
+/* The thing to do: one per view. */
 .btn--primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border-color: var(--btn);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-weight: 600;
 }
 
 @media (hover: hover) {
   .btn--primary:hover:not(:disabled) {
-    border-color: var(--accent-hover);
-    background: var(--accent-hover);
-    color: var(--on-accent);
+    border-color: var(--btn-hover);
+    background: var(--btn-hover);
+    color: var(--on-btn);
   }
 }
 
@@ -57,6 +65,7 @@
   border-color: var(--danger);
   background: var(--danger);
   color: #ffffff;
+  font-weight: 600;
 }
 
 :root[data-theme='dark'] .btn--danger {
@@ -77,12 +86,12 @@
   }
 }
 
-/* No box until it is pointed at: toolbars, card corners. */
+/* No edge until it is pointed at: toolbars, the corner of a section. */
 .btn--ghost,
 .btn--text {
   border-color: transparent;
   background: transparent;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 
 @media (hover: hover) {
@@ -95,43 +104,53 @@
 }
 
 .btn--sm {
-  min-height: 28px;
-  padding: 0 9px;
-  font-size: var(--text-xs);
-  border-radius: var(--radius-sm);
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: var(--text-sm);
 }
 
 .btn--lg {
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 44px;
+  padding: 0 22px;
   font-size: var(--text-md);
 }
 
-/* A square button holding an icon alone. */
+/* A round button holding an icon alone. */
 .btn--icon {
   width: var(--control-h);
   padding: 0;
 }
 
 .btn--icon.btn--sm {
-  width: 28px;
+  width: 30px;
 }
 
-/* A button that is a state (Following): pressed, in the blue wash. */
-.btn.is-on {
-  border-color: var(--line-2);
-  background: var(--surface);
-  color: var(--ink-2);
+.btn--icon.btn--lg {
+  width: 44px;
 }
 
+/* A button that is a state (Following): the word alone, quiet, since the
+   thing has been done. Pointing at it brings its edge back. */
+.btn.is-on,
 .btn--primary.is-on {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+@media (hover: hover) {
+  .btn.is-on:hover:not(:disabled),
+  .btn--primary.is-on:hover:not(:disabled) {
+    border-color: var(--line-2);
+    background: transparent;
+    color: var(--ink);
+  }
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: default;
 }
 
@@ -139,7 +158,7 @@
   cursor: progress;
 }
 
-/* Fingers get the full 44px whatever the size says. */
+/* Fingers get more to press, whatever the size says. */
 @media (pointer: coarse) {
   .btn,
   .btn--sm {
@@ -154,15 +173,15 @@
 
 /* ---- segmented ---------------------------------------------------- */
 
-/* A track with its keys in it; the pressed key is lifted onto a white chip. */
+/* A row of words, one of them pressed: the pressed one is in ink, with a
+   line under it. No track and no chip. Each key keeps the width of its
+   word in bold (the ::after holds it), so pressing one doesn't nudge the
+   rest along. */
 .segmented {
   position: relative;
   display: inline-flex;
   max-width: 100%;
-  padding: 3px;
-  gap: 2px;
-  border-radius: var(--radius);
-  background: var(--surface-3);
+  gap: 18px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -173,23 +192,38 @@
 
 .segmented-key {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: calc(var(--control-h) - 6px);
-  padding: 0 10px;
+  min-height: var(--control-h);
+  padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: var(--text-sm);
-  font-weight: 560;
+  font-size: var(--text-base);
+  font-weight: 400;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    background-color 0.12s ease,
-    color 0.12s ease;
+  transition: color 0.12s ease;
+}
+
+.segmented-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.segmented-label::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  font-weight: 600;
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
 @media (hover: hover) {
@@ -199,13 +233,16 @@
 }
 
 .segmented-key.is-on {
-  background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 
-:root[data-theme='dark'] .segmented-key.is-on {
-  background: var(--line-2);
+/* The outline sits inside the key, so the row's own clipping (it scrolls
+   sideways when it has to) never cuts it off. */
+.segmented-key:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .segmented-icon {
@@ -214,15 +251,23 @@
   height: 15px;
 }
 
+.segmented--sm {
+  gap: 16px;
+}
+
 .segmented--sm .segmented-key {
-  min-height: 24px;
-  padding: 0 8px;
-  font-size: var(--text-xs);
+  min-height: 28px;
+  font-size: var(--text-sm);
 }
 
 @media (pointer: coarse) {
-  .segmented-key {
-    min-height: 36px;
+  .segmented {
+    gap: 22px;
+  }
+
+  .segmented-key,
+  .segmented--sm .segmented-key {
+    min-height: 44px;
   }
 }
 
@@ -242,7 +287,7 @@
   align-items: center;
   gap: 8px;
   font-size: var(--text-md);
-  font-weight: 620;
+  font-weight: 600;
 }
 
 .section-head-meta {
@@ -252,14 +297,13 @@
   font-size: var(--text-sm);
 }
 
-/* ---- card --------------------------------------------------------- */
+/* ---- section (.card) ---------------------------------------------- */
 
+/* A section of a page: a heading and what is under it. It has no edge and
+   no ground of its own; the space round it sets it apart. The class is
+   still .card, as the markup has it. */
 .card {
   min-width: 0;
-  padding: var(--card-pad);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
 
 .card-head {
@@ -267,13 +311,14 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-3);
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .card-title {
   font-size: var(--text-md);
-  font-weight: 620;
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
 .card-sub {
@@ -289,16 +334,12 @@
   max-width: 78ch;
 }
 
-/* A card whose rows run edge to edge. */
-.card--flush {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.card--flush > .card-head,
-.card--flush > .card-caption,
-.card--flush > .card-foot {
-  padding: 0 var(--card-pad);
+/* A section that is a list or a table: the rule in ink under its heading
+   is the top of the first row, and its rows run the section's full width. */
+.card--flush > .card-head {
+  margin-bottom: 0;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
 }
 
 .card-foot {
@@ -306,38 +347,57 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
 /* ---- figures ------------------------------------------------------ */
 
-/* A strip of figures: label, number, note. One card, the cells set apart by
-   a hairline; they wrap two to a row on a phone. */
+/* A row of figures: label, number, note, each under a rule of its own.
+   The number is as big as its column allows, so four to a row are large
+   and six still fit; two to a row on a phone. The row is a container, and
+   Figures.jsx says how many figures it holds (--figures-count), which is
+   how a cell knows its share of the width. */
 .figures {
+  --figures-cols: var(--figures-count, 4);
+  container-type: inline-size;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(168px, 100%), 1fr));
+  gap: 0 var(--space-6);
   margin: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  overflow: hidden;
 }
 
 .figures-cell {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
   min-width: 0;
-  margin: 0 0 0 -1px;
-  padding: var(--card-pad) calc(var(--card-pad) + 2px);
-  border-left: 1px solid var(--line-soft);
+  margin: 0;
+  padding: 16px 0 20px;
+  border-top: 2px solid var(--line);
+}
+
+/* Where the browser can, each cell borrows the rows of the grid it sits in
+   (label, number, note), so a label that takes two lines in one cell
+   doesn't leave its number lower than its neighbour's. */
+@supports (grid-template-rows: subgrid) {
+  .figures {
+    grid-auto-rows: auto;
+  }
+
+  .figures-cell {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    align-content: start;
+    row-gap: 8px;
+  }
 }
 
 .figures-label {
   order: 1;
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: var(--text-sm);
   font-weight: 500;
 }
@@ -345,10 +405,11 @@
 .figures-value {
   order: 2;
   margin: 0;
-  font-size: var(--text-2xl);
-  font-weight: 620;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-size: clamp(1.75rem, calc(100cqi / var(--figures-cols) * 0.26), 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .figures-note {
@@ -361,45 +422,32 @@
 
 @media (max-width: 560px) {
   .figures {
+    --figures-cols: 2;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
   }
 
   .figures-cell {
-    border-top: 1px solid var(--line-soft);
-  }
-
-  .figures-value {
-    font-size: var(--text-xl);
+    gap: 6px;
+    row-gap: 6px;
+    padding: 12px 0 16px;
   }
 }
 
-/* A change against the window before. */
+/* A change against the window before: the figure, in ink, with its sign.
+   Which way it went is the sign's to say; no colour is spent on it. */
 .delta {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 1px 7px;
-  border-radius: var(--pill);
-  background: var(--surface-3);
-  color: var(--muted);
-  font-size: var(--text-xs);
+  color: var(--ink);
+  font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
 }
 
-.delta.is-up {
-  background: var(--up-wash);
-  color: var(--up);
-}
-
-.delta.is-down {
-  background: var(--down-wash);
-  color: var(--down);
-}
-
 .delta--plain {
-  padding: 0;
-  background: none !important;
+  font-size: inherit;
 }
 
 /* ---- menu --------------------------------------------------------- */
@@ -418,7 +466,7 @@
   min-width: 13rem;
   max-width: min(22rem, calc(100vw - 32px));
   margin: 0;
-  padding: 4px;
+  padding: 6px;
   list-style: none;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -445,6 +493,7 @@
   border: 0;
   border-radius: var(--radius);
   background: transparent;
+  color: var(--ink);
   text-align: left;
   cursor: pointer;
 }
@@ -463,8 +512,8 @@
   flex: none;
   width: 16px;
   height: 16px;
-  margin-top: 1px;
-  color: var(--muted);
+  margin-top: 2px;
+  color: var(--ink-2);
 }
 
 .menu-item[data-tone='danger'] .menu-item-icon {
@@ -479,19 +528,19 @@
 }
 
 .menu-item-label {
-  font-size: var(--text-sm);
-  font-weight: 560;
+  font-size: var(--text-base);
+  font-weight: 500;
 }
 
 .menu-item-hint {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
 .menu-sep {
   height: 1px;
-  margin: 4px 6px;
+  margin: 6px 4px;
   background: var(--line);
 }
 
@@ -513,15 +562,21 @@
   font-size: var(--text-sm);
 }
 
+/* A field's ground lets a little of what is behind it through, so on the
+   sky it is a pale pane and on the page it is the page; its edge is what
+   says it is a field. */
 .input {
   width: 100%;
   min-height: var(--control-h);
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
   color: var(--ink);
   font-size: var(--text-base);
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .input::placeholder {
@@ -529,15 +584,21 @@
   opacity: 1;
 }
 
+@media (hover: hover) {
+  .input:hover:not(:disabled):not(:focus-visible) {
+    border-color: var(--muted);
+  }
+}
+
 .input:focus-visible {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--focus-ring);
   box-shadow: var(--focus);
 }
 
 .input--lg {
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: 46px;
+  padding: 0 16px;
   font-size: var(--text-md);
 }
 
@@ -546,12 +607,13 @@
 textarea.input {
   display: block;
   min-height: calc(var(--control-h) * 2.5);
-  padding: 8px 10px;
+  padding: 9px 12px;
   line-height: 1.5;
   resize: vertical;
 }
 
 .input:disabled {
+  border-color: var(--line);
   background: var(--surface-2);
   color: var(--muted);
   cursor: not-allowed;
@@ -575,7 +637,7 @@ textarea.input {
 input[type='datetime-local'].input,
 input[type='date'].input,
 input[type='time'].input {
-  padding-right: 6px;
+  padding-right: 8px;
 }
 
 /* A search field: the glass sits inside the left edge. */
@@ -587,7 +649,7 @@ input[type='time'].input {
 
 .search > svg {
   position: absolute;
-  left: 10px;
+  left: 12px;
   width: 16px;
   height: 16px;
   color: var(--muted);
@@ -595,19 +657,20 @@ input[type='time'].input {
 }
 
 .search > .input {
-  padding-left: 32px;
+  padding-left: 36px;
 }
 
 select.input {
-  padding-right: 28px;
+  padding-right: 30px;
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%),
+    linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position:
-    calc(100% - 15px) 50%,
-    calc(100% - 10px) 50%;
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
   background-size: 5px 5px;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 input[type='checkbox'],
@@ -642,15 +705,20 @@ input[type='radio'] {
   height: 20px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgb(16 24 40 / 0.25);
-  transition: transform 0.15s var(--ease);
+  box-shadow: 0 1px 2px rgb(15 27 51 / 0.3);
+  transition:
+    transform 0.15s var(--ease),
+    background-color 0.15s ease;
 }
 
 .switch[aria-checked='true'] {
   background: var(--accent);
 }
 
+/* At night the accent is a light fill, so the knob takes the colour that
+   is written on it. */
 .switch[aria-checked='true']::after {
+  background: var(--on-accent);
   transform: translateX(16px);
 }
 
@@ -661,17 +729,20 @@ input[type='radio'] {
 
 /* ---- badges, chips, avatars --------------------------------------- */
 
+/* A word or two that says what a thing is: an outline, no fill. The
+   toned ones (a warning, a failure) keep a wash, since they have to be
+   found. */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
+  gap: 5px;
+  padding: 1px 9px;
+  border: 1px solid var(--line);
   border-radius: var(--pill);
-  background: var(--surface-3);
   color: var(--ink-2);
   font-size: var(--text-xs);
-  font-weight: 580;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1.5;
   white-space: nowrap;
 }
 
@@ -681,50 +752,63 @@ input[type='radio'] {
 }
 
 .badge--accent {
-  background: var(--accent-wash);
+  border-color: var(--accent-line);
   color: var(--accent-ink);
 }
 
 .badge--warn {
+  border-color: transparent;
   background: var(--warn-wash);
   color: var(--warn);
 }
 
 .badge--danger {
+  border-color: transparent;
   background: var(--danger-wash);
   color: var(--danger);
 }
 
 .badge--outline {
-  border: 1px solid var(--line-2);
-  background: transparent;
+  border-color: var(--line-2);
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 0 11px;
+  min-height: 30px;
+  padding: 0 13px;
   border: 1px solid var(--line-2);
   border-radius: var(--pill);
-  background: var(--surface);
+  background: transparent;
   color: var(--ink-2);
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+@media (hover: hover) {
+  .chip:hover:not([aria-pressed='true']):not(:disabled) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
 }
 
 .chip[aria-pressed='true'] {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--bg);
+  border-color: var(--btn);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-weight: 600;
 }
 
 @media (pointer: coarse) {
   .chip {
-    min-height: 36px;
+    min-height: 38px;
   }
 }
 
@@ -732,13 +816,13 @@ input[type='radio'] {
   display: grid;
   flex: none;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--avatar-bg);
   color: var(--avatar-ink);
   font-size: var(--text-sm);
-  font-weight: 650;
+  font-weight: 600;
   object-fit: cover;
   overflow: hidden;
 }
@@ -759,8 +843,8 @@ input[type='radio'] {
 .dot {
   display: inline-block;
   flex: none;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--ok);
 }
@@ -786,49 +870,61 @@ input[type='radio'] {
   overflow-x: auto;
 }
 
+/* A table has no sides: its first and last columns sit on the section's
+   own edges. A rule in ink under the head, hairlines between the rows. */
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .table th,
 .table td {
   padding: var(--row-pad) 12px;
-  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
 }
 
-.table thead th {
-  border-top: 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  white-space: nowrap;
+.table th:first-child,
+.table td:first-child {
+  padding-left: 0;
 }
 
-.table tbody tr:hover {
-  background: var(--surface-2);
+.table th:last-child,
+.table td:last-child {
+  padding-right: 0;
+}
+
+.table thead th {
+  padding-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .table .is-num {
   text-align: right;
 }
 
+/* A chosen row: a wash, let out a little past the table's sides so the
+   words don't touch its edge. */
 .table tr.is-selected {
   background: var(--accent-wash);
+  box-shadow:
+    -10px 0 0 var(--accent-wash),
+    10px 0 0 var(--accent-wash);
 }
 
 /* ---- empty states and notes --------------------------------------- */
 
 .empty {
-  padding: var(--space-5) var(--space-3);
+  padding: var(--space-5) 0;
   color: var(--muted);
-  font-size: var(--text-sm);
-  text-align: center;
+  font-size: var(--text-base);
 }
 
 .note {
@@ -837,15 +933,15 @@ input[type='radio'] {
   max-width: 80ch;
 }
 
+/* Something to know before going on: a rule in the accent down its side.
+   A warning or a failure has a wash as well, since it has to be found. */
 .callout {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-2);
   font-size: var(--text-sm);
 }
 
@@ -857,25 +953,33 @@ input[type='radio'] {
 }
 
 .callout--warn {
-  border-color: transparent;
+  padding: 12px 14px;
+  border-left-color: var(--warn);
+  border-radius: 0 var(--radius) var(--radius) 0;
   background: var(--warn-wash);
   color: var(--warn);
 }
 
 .callout--danger {
-  border-color: transparent;
+  padding: 12px 14px;
+  border-left-color: var(--danger);
+  border-radius: 0 var(--radius) var(--radius) 0;
   background: var(--danger-wash);
   color: var(--danger);
+}
+
+.callout a {
+  color: inherit;
 }
 
 /* A plain details/summary disclosure. */
 .disclosure > summary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--ink-2);
+  gap: 8px;
+  color: var(--ink);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   list-style: none;
 }
@@ -901,9 +1005,9 @@ input[type='radio'] {
 /* A progress bar, determinate or moving. */
 .progress {
   position: relative;
-  height: 4px;
+  height: 3px;
   border-radius: var(--pill);
-  background: var(--surface-3);
+  background: var(--line);
   overflow: hidden;
 }
 
@@ -958,18 +1062,20 @@ input[type='radio'] {
   }
 }
 
+/* Ink, with the page's colour written on it: dark by day, light at night. */
 .info-tip-pop {
   position: absolute;
   z-index: 45;
   top: calc(100% + 6px);
   left: -10px;
   width: min(280px, calc(100vw - 32px));
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: var(--radius);
-  background: #101828;
-  color: #e7eaf0;
-  font-size: var(--text-xs);
-  font-weight: 450;
+  background: var(--btn);
+  color: var(--on-btn);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1.45;
   text-align: left;
   white-space: normal;
@@ -980,12 +1086,6 @@ input[type='radio'] {
 /* Out of the layout until it's open, so a closed one never widens the page. */
 .info-tip:not(:hover):not(:focus-within):not([data-open]) .info-tip-pop {
   display: none;
-}
-
-
-:root[data-theme='dark'] .info-tip-pop {
-  background: #e7eaf0;
-  color: #101828;
 }
 
 @media (pointer: coarse) {

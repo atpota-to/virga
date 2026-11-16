@@ -1,10 +1,16 @@
 // A dashboard: its cards on a twelve-column grid, answering for the period
-// in the header unless a card has been given one of its own. Customize turns
-// the cards into things to arrange: drag a card by its handle (or move it
-// with the arrows, from the keyboard), pick a size, open its settings (a
-// title, its own period, one kind of engagement, how many rows), take it
-// off, or add reports from the library beside the grid. Changes are saved
-// as they're made.
+// in the header unless a card has been given one of its own. On the page a
+// card has no edge: it is a figure under a rule, a chart under its title, or
+// a list under a rule in ink.
+//
+// Customize turns the cards into things to arrange. Each gets a dashed
+// outline and a handle; the one you point at, press or tab into is the
+// chosen one, and shows its tools: a size (a quarter, a third, half, two
+// thirds or the whole row), its settings (a title, its own period, one kind
+// of engagement, how many rows), the arrows that move it from the keyboard
+// or a phone, and Remove. Reports come in from the library beside the grid,
+// by their plus or by being dragged to where they should go. Changes are
+// saved as they're made.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -21,16 +27,16 @@ import {
   RotateCcw,
   Search,
   Settings2,
-  SlidersHorizontal,
   Trash2,
   X,
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
 import Menu from '../components/Menu.jsx';
+import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { ANALYTICS_PERIODS } from '../lib/analytics.js';
-import { periodWindowWord, presetPeriod } from '../lib/periods.js';
+import { periodLine, periodWindowWord, presetPeriod } from '../lib/periods.js';
 import { Link, navigate } from '../lib/router.jsx';
 import { PageHeader, PeriodPicker, useIsNarrow, usePeriod, useToast } from '../shell/bits.jsx';
 import ShareDialog from '../share/ShareDialog.jsx';
@@ -51,7 +57,9 @@ export default function DashboardPage({ dashboard }) {
   const [editing, setEditing] = useState(() => new URLSearchParams(window.location.search).get('edit') === '1');
   const [dialog, setDialog] = useState(null); // 'rename' | 'delete' | 'new'
   const [dragId, setDragId] = useState(null);
+  const [dragType, setDragType] = useState(null); // a report being dragged in from the library
   const [dropIndex, setDropIndex] = useState(null);
+  const [chosen, setChosen] = useState(null); // the card whose tools are out, while customizing
   const [justAdded, setJustAdded] = useState(null);
   const [settingsFor, setSettingsFor] = useState(null); // the id of the card whose settings are open
   const [share, setShare] = useState(null); // the card being made into a picture: { type, options, period }
@@ -73,6 +81,7 @@ export default function DashboardPage({ dashboard }) {
     if (lastId.current !== dashboard.id) {
       lastId.current = dashboard.id;
       setEditing(false);
+      setChosen(null);
     }
   }, [dashboard.id]);
 
@@ -80,8 +89,8 @@ export default function DashboardPage({ dashboard }) {
   const id = dashboard.id;
   const nowMs = archive.nowMs;
 
-  function addReport(type) {
-    actions.addWidget(id, type);
+  function addReport(type, index = null) {
+    actions.addWidget(id, type, index);
     setJustAdded(type);
     toast?.(`${WIDGETS[type].name} added to ${dashboard.name}.`);
   }
@@ -94,140 +103,178 @@ export default function DashboardPage({ dashboard }) {
     setJustAdded(null);
   }, [justAdded, widgets.length]);
 
+  const dragging = dragId != null || dragType != null;
+  const endDrag = () => {
+    setDragId(null);
+    setDragType(null);
+    setDropIndex(null);
+  };
+  // A card let go of moves to where the mark is; a report from the library
+  // is added there (or at the end, let go of anywhere else on the grid).
   const onDrop = () => {
     if (dragId != null && dropIndex != null) {
       const from = widgets.findIndex((w) => w.id === dragId);
       actions.moveWidget(id, dragId, dropIndex > from ? dropIndex - 1 : dropIndex);
+    } else if (dragType != null) {
+      addReport(dragType, dropIndex);
     }
-    setDragId(null);
-    setDropIndex(null);
+    endDrag();
   };
 
   return (
-    <>
+    // A wrapper only so the header and the grid share one width: while
+    // customizing, the page takes more of the screen for the library.
+    <div className="dash-page" data-editing={editing || undefined}>
       <PageHeader
         crumbs={[{ label: 'Dashboards' }]}
-        title={dashboard.name}
-        sub={editing ? null : `${widgets.length} ${widgets.length === 1 ? 'report' : 'reports'} · saved in this browser`}
-        actions={
-          <>
-            <PeriodPicker />
-            <Button
-              variant={editing ? 'primary' : 'quiet'}
-              aria-pressed={editing}
-              onClick={() => setEditing((v) => !v)}
-            >
-              {editing ? <Check size={15} aria-hidden="true" /> : <SlidersHorizontal size={15} aria-hidden="true" />}
-              {editing ? 'Done' : 'Customize'}
-            </Button>
-            <Menu
-              label="Dashboard options"
-              icon
-              size="md"
-              items={[
-                { icon: Pencil, label: 'Rename', onSelect: () => setDialog('rename') },
-                {
-                  icon: Copy,
-                  label: 'Duplicate',
-                  onSelect: () => {
-                    const copy = actions.duplicateDashboard(id);
-                    if (copy) navigate(`/dashboard/${copy}`);
-                  },
-                },
-                { icon: Plus, label: 'New dashboard', onSelect: () => setDialog('new') },
-                { separator: true },
-                {
-                  icon: RotateCcw,
-                  label: dashboard.template ? 'Reset to the original reports' : 'Clear every report',
-                  onSelect: () => {
-                    actions.resetDashboard(id);
-                    toast?.(`${dashboard.name} is back to how it started.`);
-                  },
-                },
-                actions.dashboards.length > 1 && { icon: Trash2, label: 'Delete dashboard', tone: 'danger', onSelect: () => setDialog('delete') },
-              ]}
-            >
-              <Ellipsis size={18} aria-hidden="true" />
-            </Menu>
-          </>
-        }
-      >
-        {editing && (
-          <div className="edit-banner" role="status">
-            <span>
-              Editing <strong>{dashboard.name}</strong>.{' '}
-              {narrow
-                ? 'Move cards with the arrows, pick a size, or add reports below.'
-                : 'Drag a card by its handle (or use the arrows), pick a size, remove it, or add reports from the library.'}{' '}
-              Changes save as you go.
+        title={
+          editing ? (
+            <span className="dash-title">
+              {dashboard.name}
+              <Button variant="ghost" size="sm" icon aria-label="Rename this dashboard" title="Rename" onClick={() => setDialog('rename')}>
+                <Pencil size={15} aria-hidden="true" />
+              </Button>
             </span>
-          </div>
-        )}
-      </PageHeader>
+          ) : (
+            dashboard.name
+          )
+        }
+        sub={
+          editing
+            ? `Customizing. ${
+                narrow
+                  ? 'Press a card to move it with its arrows, give it a size or remove it, and add reports from the library below.'
+                  : 'Drag a card by its handle, give it a size, or bring one in from the library.'
+              } Changes save as you go.`
+            : periodLine(period, nowMs)
+        }
+        actions={
+          editing ? (
+            <Button
+              variant="primary"
+              aria-pressed="true"
+              onClick={() => {
+                setEditing(false);
+                setChosen(null);
+              }}
+            >
+              <Check size={15} aria-hidden="true" />
+              Done
+            </Button>
+          ) : (
+            <>
+              <PeriodPicker />
+              <Button variant="text" className="dash-customize" aria-pressed="false" onClick={() => setEditing(true)}>
+                Customize
+              </Button>
+              <Menu
+                label="Dashboard options"
+                icon
+                size="md"
+                variant="ghost"
+                items={[
+                  { icon: Pencil, label: 'Rename', onSelect: () => setDialog('rename') },
+                  {
+                    icon: Copy,
+                    label: 'Duplicate',
+                    onSelect: () => {
+                      const copy = actions.duplicateDashboard(id);
+                      if (copy) navigate(`/dashboard/${copy}`);
+                    },
+                  },
+                  { icon: Plus, label: 'New dashboard', onSelect: () => setDialog('new') },
+                  { separator: true },
+                  {
+                    icon: RotateCcw,
+                    label: dashboard.template ? 'Reset to the original reports' : 'Clear every report',
+                    onSelect: () => {
+                      actions.resetDashboard(id);
+                      toast?.(`${dashboard.name} is back to how it started.`);
+                    },
+                  },
+                  actions.dashboards.length > 1 && { icon: Trash2, label: 'Delete dashboard', tone: 'danger', onSelect: () => setDialog('delete') },
+                ]}
+              >
+                <Ellipsis size={18} aria-hidden="true" />
+              </Menu>
+            </>
+          )
+        }
+      />
 
       <div className="dash-wrap" data-editing={editing || undefined}>
-        <div
-          className="dash-grid"
-          onDragOver={(e) => {
-            if (dragId) e.preventDefault();
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            onDrop();
-          }}
-        >
-          {widgets.length === 0 && (
-            <div className="dash-empty card">
-              <h2 className="card-title">This dashboard is empty</h2>
-              <p className="card-sub">Add the reports you want to see each time you open it.</p>
-              {!editing && (
-                <div>
-                  <Button variant="primary" onClick={() => setEditing(true)}>
-                    <Plus size={15} aria-hidden="true" />
-                    Add reports
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-          {widgets.map((w, index) => (
-            <WidgetFrame
-              key={w.id}
-              card={w}
-              index={index}
-              count={widgets.length}
-              editing={editing}
-              archive={archive}
-              period={period}
-              nowMs={nowMs}
-              dragging={dragId === w.id}
-              dropBefore={dropIndex === index && dragId !== w.id}
-              onDragStart={() => setDragId(w.id)}
-              onDragEnd={() => {
-                setDragId(null);
-                setDropIndex(null);
-              }}
-              onDragOverCard={(e) => {
-                if (!dragId) return;
-                e.preventDefault();
-                const rect = e.currentTarget.getBoundingClientRect();
-                const after = e.clientX > rect.left + rect.width / 2 || e.clientY > rect.top + rect.height * 0.75;
-                setDropIndex(after ? index + 1 : index);
-              }}
-              onMove={(to) => actions.moveWidget(id, w.id, to)}
-              onResize={(size) => actions.resizeWidget(id, w.id, size)}
-              onSettings={() => setSettingsFor(w.id)}
-              onShare={(cardPeriod) => setShare({ type: w.type, options: w.options || {}, period: cardPeriod })}
-              onRemove={() => {
-                actions.removeWidget(id, w.id);
-                toast?.(`${WIDGETS[w.type].name} removed.`);
-              }}
-            />
-          ))}
-          {editing && dropIndex === widgets.length && <div className="drop-end" aria-hidden="true" />}
+        {/* The grid's own box is a container: how many cards sit side by
+            side goes by the room the grid has, not by the screen. */}
+        <div className="dash-grid-box">
+          <div
+            className="dash-grid"
+            data-dragging={dragging || undefined}
+            onDragOver={(e) => {
+              if (dragging) e.preventDefault();
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              onDrop();
+            }}
+          >
+            {widgets.length === 0 && (
+              <div className="dash-empty" data-drop={dragType != null || undefined}>
+                <h2 className="card-title">This dashboard is empty</h2>
+                <p className="card-sub">
+                  {editing ? 'Bring in the reports you want to see each time you open it, from the library.' : 'Add the reports you want to see each time you open it.'}
+                </p>
+                {!editing && (
+                  <div>
+                    <Button variant="primary" onClick={() => setEditing(true)}>
+                      <Plus size={15} aria-hidden="true" />
+                      Add reports
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+            {widgets.map((w, index) => (
+              <WidgetFrame
+                key={w.id}
+                card={w}
+                index={index}
+                count={widgets.length}
+                editing={editing}
+                chosen={editing && chosen === w.id}
+                onChoose={() => setChosen(w.id)}
+                archive={archive}
+                period={period}
+                nowMs={nowMs}
+                dragging={dragId === w.id}
+                dropBefore={dragging && dropIndex === index && dragId !== w.id}
+                onDragStart={() => setDragId(w.id)}
+                onDragEnd={endDrag}
+                onDragOverCard={(e) => {
+                  if (!dragging) return;
+                  e.preventDefault();
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const after = e.clientX > rect.left + rect.width / 2 || e.clientY > rect.top + rect.height * 0.75;
+                  setDropIndex(after ? index + 1 : index);
+                }}
+                onMove={(to) => actions.moveWidget(id, w.id, to)}
+                onResize={(size) => actions.resizeWidget(id, w.id, size)}
+                onSettings={() => setSettingsFor(w.id)}
+                onShare={(cardPeriod) => setShare({ type: w.type, options: w.options || {}, period: cardPeriod })}
+                onRemove={() => {
+                  actions.removeWidget(id, w.id);
+                  toast?.(`${WIDGETS[w.type].name} removed.`);
+                }}
+              />
+            ))}
+            {editing && dragging && dropIndex === widgets.length && widgets.length > 0 && (
+              <div className="drop-end" aria-hidden="true">
+                {dragType != null ? `Let go to add ${WIDGETS[dragType].name} here` : 'Let go to move it to the end'}
+              </div>
+            )}
+          </div>
         </div>
 
-        {editing && <Library dashboard={dashboard} onAdd={addReport} />}
+        {editing && <Library dashboard={dashboard} onAdd={addReport} onDragStart={setDragType} onDragEnd={endDrag} />}
       </div>
 
       <ShareDialog share={share} archive={archive} period={share?.period || period} nowMs={nowMs} onClose={() => setShare(null)} />
@@ -280,7 +327,7 @@ export default function DashboardPage({ dashboard }) {
           if (newId) navigate(`/dashboard/${newId}${template ? '' : '?edit=1'}`);
         }}
       />
-    </>
+    </div>
   );
 }
 
@@ -289,6 +336,8 @@ function WidgetFrame({
   index,
   count,
   editing,
+  chosen,
+  onChoose,
   archive,
   period,
   nowMs,
@@ -308,6 +357,9 @@ function WidgetFrame({
   const [handleDown, setHandleDown] = useState(false);
   if (!def || !Body) return null;
   const isStat = def.kind === 'stat';
+  // A card that takes a number of rows is a list: its heading gets the rule
+  // in ink that is the top of its first row.
+  const isList = !isStat && Boolean(def.options?.includes('rows'));
   const headingId = `w-${card.id}`;
   // The card's own settings: its title, a period that isn't the header's,
   // one kind of engagement, a number of rows.
@@ -316,15 +368,19 @@ function WidgetFrame({
   const name = options.title || def.name;
   return (
     <section
-      className={`widget${isStat ? ' widget--stat' : ''}`}
+      className={`widget${isStat ? ' widget--stat' : ''}${isList ? ' widget--list' : ''}`}
       data-size={card.size}
       data-widget-type={card.type}
       data-editing={editing || undefined}
+      data-chosen={chosen || undefined}
       data-dragging={dragging || undefined}
       data-drop-before={dropBefore || undefined}
       aria-labelledby={isStat ? undefined : headingId}
       aria-label={isStat ? name : undefined}
       draggable={editing && handleDown}
+      // Pressing a card, or tabbing into it, chooses it: its tools come out.
+      onPointerDown={editing ? onChoose : undefined}
+      onFocus={editing ? onChoose : undefined}
       onDragStart={(e) => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', card.id);
@@ -348,41 +404,45 @@ function WidgetFrame({
           >
             <GripVertical size={16} aria-hidden="true" />
           </button>
-          <div className="widget-edit-tools">
-            {def.sizes.length > 1 && (
-              <div className="segmented segmented--sm" role="group" aria-label={`Size of ${def.name}`}>
-                {def.sizes.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    className={`segmented-key${card.size === s ? ' is-on' : ''}`}
-                    aria-pressed={card.size === s}
-                    title={SIZES[s].name}
-                    aria-label={`${SIZES[s].label}: ${SIZES[s].name}`}
-                    onClick={() => onResize(s)}
-                  >
-                    {SIZES[s].label}
-                  </button>
-                ))}
-              </div>
-            )}
-            <span className="widget-edit-actions">
-            {def.options?.length > 0 && (
-              <Button variant="ghost" size="sm" icon aria-label={`Settings for ${name}`} title="Card settings" onClick={onSettings}>
-                <Settings2 size={15} aria-hidden="true" />
-              </Button>
-            )}
-            <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} earlier`} title="Move earlier" disabled={index === 0} onClick={() => onMove(index - 1)}>
-              <ChevronLeft size={15} aria-hidden="true" />
-            </Button>
-            <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} later`} title="Move later" disabled={index === count - 1} onClick={() => onMove(index + 1)}>
-              <ChevronRight size={15} aria-hidden="true" />
-            </Button>
-            <Button variant="ghost" size="sm" icon className="widget-remove" aria-label={`Remove ${def.name}`} title="Remove" onClick={onRemove}>
-              <X size={15} aria-hidden="true" />
-            </Button>
-            </span>
-          </div>
+          {/* The chosen card's tools. Pressing a card or tabbing onto its
+              handle chooses it, so they are there by the next Tab. */}
+          {chosen && (
+            <div className="widget-edit-tools">
+              {def.sizes.length > 1 && (
+                <div className="size-keys" role="group" aria-label={`Size of ${def.name}`}>
+                  {def.sizes.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="size-key"
+                      aria-pressed={card.size === s}
+                      title={SIZES[s].name}
+                      aria-label={SIZES[s].name}
+                      onClick={() => onResize(s)}
+                    >
+                      {SIZES[s].label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <span className="widget-edit-actions">
+                {def.options?.length > 0 && (
+                  <Button variant="ghost" size="sm" icon aria-label={`Settings for ${name}`} title="Card settings" onClick={onSettings}>
+                    <Settings2 size={15} aria-hidden="true" />
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} earlier`} title="Move earlier" disabled={index === 0} onClick={() => onMove(index - 1)}>
+                  <ChevronLeft size={15} aria-hidden="true" />
+                </Button>
+                <Button variant="ghost" size="sm" icon aria-label={`Move ${def.name} later`} title="Move later" disabled={index === count - 1} onClick={() => onMove(index + 1)}>
+                  <ChevronRight size={15} aria-hidden="true" />
+                </Button>
+              </span>
+            </div>
+          )}
+          <Button variant="ghost" size="sm" icon className="widget-remove" aria-label={`Remove ${def.name}`} title="Remove" onClick={onRemove}>
+            <X size={15} aria-hidden="true" />
+          </Button>
         </div>
       )}
       {!isStat && (
@@ -439,7 +499,12 @@ function WidgetFrame({
   );
 }
 
-function Library({ dashboard, onAdd }) {
+/**
+ * Every report a dashboard can hold, as a ruled list beside the grid: search
+ * it, narrow it to a kind, and bring a report in by its plus (it lands at the
+ * end) or by dragging it to where it should go.
+ */
+function Library({ dashboard, onAdd, onDragStart, onDragEnd }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const onBoard = useMemo(() => {
@@ -452,45 +517,62 @@ function Library({ dashboard, onAdd }) {
     (w) => (category === 'all' || w.category === category) && (!q || w.name.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q)),
   );
   return (
-    <aside className="library card" aria-labelledby="library-title">
+    <aside className="library" aria-labelledby="library-title">
       <div className="library-head">
         <h2 id="library-title" className="card-title">
           Report library
         </h2>
-        <span className="muted num">{dashboard.widgets.length} on this dashboard</span>
+        <p className="card-sub num">
+          {WIDGET_LIST.length} reports, {dashboard.widgets.length} of them on this dashboard. Drag one onto the grid, or press its plus.
+        </p>
       </div>
       <label className="search">
         <Search aria-hidden="true" />
         <span className="visually-hidden">Search reports</span>
         <input className="input" type="search" placeholder="Search reports" value={query} onChange={(e) => setQuery(e.target.value)} />
       </label>
-      <div className="library-cats" role="group" aria-label="Category">
-        {[{ key: 'all', label: 'All' }, ...CATEGORIES].map((c) => (
-          <button key={c.key} type="button" className="chip" aria-pressed={category === c.key} onClick={() => setCategory(c.key)}>
-            {c.label}
-          </button>
-        ))}
-      </div>
+      <Segmented
+        className="library-cats"
+        size="sm"
+        label="Kind of report"
+        value={category}
+        onChange={setCategory}
+        options={[{ value: 'all', label: 'All' }, ...CATEGORIES.map((c) => ({ value: c.key, label: c.label }))]}
+      />
       <ul className="library-list">
         {shown.map((w) => {
           const Icon = w.icon;
           const n = onBoard.get(w.type) || 0;
           return (
-            <li key={w.type} className="library-item">
+            <li
+              key={w.type}
+              className="library-item"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = 'copy';
+                e.dataTransfer.setData('text/plain', w.type);
+                onDragStart(w.type);
+              }}
+              onDragEnd={onDragEnd}
+            >
               <span className="library-icon" aria-hidden="true">
                 <Icon size={16} />
               </span>
               <span className="library-text">
                 <span className="library-name">
                   {w.name}
-                  {w.kind === 'stat' && <span className="badge">Figure</span>}
+                  {w.kind === 'stat' && <span className="library-kind">Figure</span>}
                 </span>
                 <span className="library-desc">{w.desc}</span>
-                {n > 0 && <span className="library-on">On this dashboard{n > 1 ? ` ×${n}` : ''}</span>}
+                {n > 0 && (
+                  <span className="library-on">
+                    <Check size={12} aria-hidden="true" />
+                    On this dashboard{n > 1 ? ` ×${n}` : ''}
+                  </span>
+                )}
               </span>
-              <Button size="sm" variant={n ? 'quiet' : 'primary'} onClick={() => onAdd(w.type)} aria-label={`Add ${w.name}`}>
-                <Plus size={14} aria-hidden="true" />
-                Add
+              <Button size="sm" icon className="library-add" onClick={() => onAdd(w.type)} aria-label={`Add ${w.name}`} title={`Add ${w.name}`}>
+                <Plus size={15} aria-hidden="true" />
               </Button>
             </li>
           );

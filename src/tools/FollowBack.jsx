@@ -3,6 +3,7 @@
 // back; Dismiss keeps someone out of the queue for good, in this browser.
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PersonRow, useFollow, useWantActors } from '../people/people.jsx';
@@ -79,8 +80,11 @@ export default function FollowBack({ tool }) {
                   follow={followTracked}
                   followLabel="Follow back"
                   extra={
-                    <Button size="sm" variant="ghost" onClick={() => dismissed.add([r.did])} aria-label="Dismiss from the queue" title="Don’t suggest again">
-                      Dismiss
+                    // The word on a desk; on a phone, where the row has a name to
+                    // fit as well, a cross (tools.css). Its name is the same either way.
+                    <Button size="sm" variant="ghost" className="queue-dismiss" onClick={() => dismissed.add([r.did])} aria-label="Dismiss from the queue" title="Don’t suggest again">
+                      <X size={16} aria-hidden="true" />
+                      <span className="queue-dismiss-word">Dismiss</span>
                     </Button>
                   }
                 />

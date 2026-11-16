@@ -258,7 +258,7 @@ export function AccountMenu({ profile, did, onSignOut, compact = false, placemen
       label: 'Open your profile on Bluesky',
       onSelect: () => window.open(`https://bsky.app/profile/${encodeURIComponent(handle || did)}`, '_blank', 'noopener'),
     },
-    { key: 'settings', icon: Settings, label: 'Accounts and settings', onSelect: () => navigate('/settings/account') },
+    { key: 'settings', icon: Settings, label: 'Accounts and settings', onSelect: () => navigate('/settings') },
     { separator: true },
     {
       key: 'sign-out',

@@ -256,7 +256,7 @@ function PersonSearch({ directory, onChoose, hint = null }) {
   };
 
   return (
-    <section className="card lookup-search" aria-label="Choose an account">
+    <section className="lookup-search" aria-label="Choose an account">
       <div className="lookup-combo">
         <label className="search search--lg">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
@@ -378,7 +378,7 @@ function StartingPoint({ archive, onChoose }) {
       }
     >
       {shown.length ? (
-        <ol className="widget-rows report-rows">
+        <ol className="tool-rows">
           {shown.map((r) => {
             const card = cardFor(archive, r.did);
             const name = displayName(card, r.did);
@@ -445,7 +445,7 @@ function PersonCard({ archive, who, model, onClear }) {
   const name = displayName(card, who);
   const rel = model.relationship;
   return (
-    <section className="card lookup-person" aria-label="The account">
+    <section className="lookup-person" aria-label="The account">
       <div className="lookup-person-top">
         <Avatar src={card?.avatar} name={card?.displayName || card?.handle || '?'} size="lg" />
         <div className="lookup-person-main">
@@ -631,7 +631,7 @@ function EngagedPosts({ model }) {
   const shown = engagedPosts.rows.slice(0, limit);
   if (!engagedPosts.known) {
     return (
-      <section className="card" aria-label="Your posts they engaged with most">
+      <section className="card lookup-cannot-card" aria-label="Your posts they engaged with most">
         <h2 className="card-title">Your posts they engaged with most</h2>
         <p className="card-sub lookup-cannot">
           {engagedPosts.of
@@ -781,7 +781,7 @@ function Events({ model, shown: filtered, direction, kind, onDirection, onKind }
         />
       </div>
       {rows.length ? (
-        <ol className="widget-rows report-rows lookup-events">
+        <ol className="tool-rows lookup-events">
           {rows.map((event) => (
             <EventRow key={event.key} event={event} />
           ))}
@@ -806,7 +806,7 @@ function Events({ model, shown: filtered, direction, kind, onDirection, onKind }
 function HowCounted({ model }) {
   const { coverage, totals, engagedPosts } = model;
   return (
-    <details className="card disclosure how-counted">
+    <details className="disclosure how-counted">
       <summary>How this is counted</summary>
       <div className="how-counted-body">
         <p>
@@ -888,9 +888,9 @@ function Chosen({ tool, archive, who, search, onClear }) {
         {search}
         <PersonCard archive={archive} who={who} model={model} onClear={onClear} />
         {model.self ? (
-          <p className="card empty">This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.</p>
+          <p className="empty">This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.</p>
         ) : model.events.length === 0 ? (
-          <p className="card empty">
+          <p className="empty">
             Nothing on record between you and {name}
             {model.coverage.inboundSinceMs != null ? `. Your notifications reach back to ${formatDateShort(model.coverage.inboundSinceMs)}; anything before that wouldn’t show.` : '.'}
           </p>
@@ -982,7 +982,7 @@ export default function InteractionLookup({ tool }) {
           hint="Suggestions are the people your archive knows. To look up anyone else, type their whole handle or their DID."
         />
         {state === 'looking' && (
-          <p className="card empty" role="status">
+          <p className="empty" role="status">
             Looking up {named}…
           </p>
         )}

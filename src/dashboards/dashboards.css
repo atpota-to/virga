@@ -1,29 +1,46 @@
-/* Dashboards: the grid, the cards, the editing controls and the library.
-   Also the rows every list on a card uses (people, posts, lists). */
+/* Dashboards: the grid, the cards on it, Customize and the library. Also
+   the rows every list uses, here and in the reports and tools (people,
+   posts, lists).
 
-.edit-banner {
-  max-width: var(--content-max);
-  padding: 8px var(--page-pad);
-  border-top: 1px solid var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
-  font-size: var(--text-sm);
+   On the page a card has no edge. A figure is a number under a two-pixel
+   rule; a chart is its title and the chart; a list is its title over a
+   rule in ink, then rows between hairlines. The space between the cards is
+   what sets them apart, so the grid's gaps are wide. */
+
+/* Customizing wants the library beside the grid, so the page (its title
+   and the grid alike) takes more of the screen while it lasts. */
+.dash-page[data-editing] {
+  --page-max: 1320px;
 }
 
 .dash-wrap {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: var(--grid-gap);
-  max-width: var(--content-max);
-  padding: var(--space-5) var(--page-pad) var(--space-7);
+  gap: var(--section-gap) 40px;
+  width: 100%;
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
+  padding: var(--section-gap) var(--page-pad) 72px;
+}
+
+.dash-wrap[data-editing] {
+  padding-top: 28px;
+}
+
+/* The grid's own box is a container: how many cards sit side by side goes
+   by the room the grid has (less with the library open, or the sidebar),
+   not by the width of the screen. */
+.dash-grid-box {
+  container: dash / inline-size;
+  flex: 999 1 560px;
+  min-width: 0;
 }
 
 .dash-grid {
   display: grid;
-  flex: 999 1 620px;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--grid-gap);
+  gap: var(--grid-gap) clamp(20px, 4.6cqi, var(--grid-gap-x));
   min-width: 0;
 }
 
@@ -32,7 +49,21 @@
   grid-column: 1 / -1;
   flex-direction: column;
   gap: 10px;
-  padding: 28px;
+  padding: 24px 0;
+  border-top: 2px solid var(--line);
+}
+
+.dash-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Customize, in the header: a word, not a button with an edge. */
+.btn.dash-customize {
+  margin: 0 -4px;
+  padding: 0 4px;
+  color: var(--ink);
 }
 
 /* ---- a card on the grid ---------------------------------------------- */
@@ -43,10 +74,6 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: var(--card-pad);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
 
 .widget[data-size='xs'] {
@@ -65,10 +92,9 @@
   grid-column: span 12;
 }
 
-@media (max-width: 1240px) {
-  .widget[data-size='xs'] {
-    grid-column: span 6;
-  }
+/* With less room, a third becomes a half and two thirds the whole row.
+   Four figures still fit side by side. */
+@container dash (max-width: 860px) {
   .widget[data-size='s'] {
     grid-column: span 6;
   }
@@ -77,7 +103,8 @@
   }
 }
 
-@media (max-width: 760px) {
+/* On a phone every card has the row, and figures go two to a row. */
+@container dash (max-width: 620px) {
   .dash-grid .widget {
     grid-column: 1 / -1;
   }
@@ -87,63 +114,30 @@
   }
 }
 
-/* A small figure card drops the window label (the header says the period)
-   and steps its number down, so the label beside it isn't cut short. */
-@container widget (max-width: 250px) {
-  .stat-window {
-    display: none;
-  }
-
-  .stat-value {
-    font-size: var(--text-xl);
-  }
-
-  .widget-edit {
-    margin-left: calc(var(--card-pad) * -1 + 4px);
-    margin-right: calc(var(--card-pad) * -1 + 4px);
-  }
-}
-
-@media (max-width: 340px) {
+@container dash (max-width: 280px) {
   .dash-grid .widget--stat {
     grid-column: 1 / -1;
   }
-}
-
-.widget[data-editing] {
-  border-style: dashed;
-  border-color: var(--accent-line);
-}
-
-.widget[data-dragging] {
-  opacity: 0.45;
-}
-
-.widget[data-drop-before]::before,
-.drop-end {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--grid-gap) / -2 - 2px);
-  width: 4px;
-  border-radius: 2px;
-  background: var(--accent);
-}
-
-.drop-end {
-  position: relative;
-  left: 0;
-  grid-column: span 1;
-  min-height: 80px;
 }
 
 .widget-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* A list's heading sits on a rule in ink: the top of its first row. */
+.widget--list > .widget-head {
+  margin-bottom: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* What isn't rows under that rule (bars, a line of words) stands off it. */
+.widget--list > .widget-body > :not(.widget-rows):not(.empty):first-child {
+  margin-top: 16px;
 }
 
 .widget-titles {
@@ -152,11 +146,12 @@
 
 .widget-title {
   font-size: var(--text-md);
-  font-weight: 620;
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
 .widget-desc {
-  margin-top: 1px;
+  margin-top: 2px;
   color: var(--muted);
   font-size: var(--text-sm);
 }
@@ -165,7 +160,8 @@
   display: flex;
   flex: none;
   gap: 2px;
-  margin: -4px -6px 0 0;
+  margin: -5px -8px 0 0;
+  color: var(--muted);
 }
 
 .widget-body {
@@ -178,13 +174,13 @@
 .widget-tools {
   display: flex;
   justify-content: flex-end;
-  margin: -6px 0 6px;
+  margin: -4px 0 8px;
 }
 
 .widget-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .widget-headline {
@@ -192,13 +188,16 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 8px;
+  color: var(--muted);
   font-size: var(--text-sm);
 }
 
 .widget-figure {
-  font-size: var(--text-xl);
-  font-weight: 640;
-  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-size: var(--text-2xl);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
 }
 
 .widget-insight {
@@ -208,81 +207,30 @@
 
 .widget-foot {
   margin-top: auto;
-  padding-top: 8px;
+  padding-top: 10px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
-/* The edit strip across the top of a card. */
-.widget-edit {
+/* A card that keeps its own period or one kind of engagement says so. */
+.widget-own {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 2px;
-  margin: calc(var(--card-pad) * -1 + 6px) calc(var(--card-pad) * -1 + 6px) 10px;
-  padding: 4px 4px 4px 2px;
-  border-radius: var(--radius);
-  background: var(--accent-wash);
-}
-
-.widget-grip {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--accent-ink);
-  cursor: grab;
-}
-
-.widget-grip:active {
-  cursor: grabbing;
-}
-
-.widget-edit .btn--icon.btn--sm {
-  width: 26px;
-}
-
-/* The controls take what room there is and wrap onto a second line on a
-   small card, rather than spilling out of it. */
-.widget-edit-tools {
-  display: flex;
-  flex: 1 1 auto;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 2px 4px;
-  min-width: 0;
-}
-
-.widget-edit-actions {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-}
-
-.widget-edit .segmented {
-  background: var(--surface);
-}
-
-.widget-edit .btn--ghost {
-  color: var(--accent-ink);
-}
-
-.widget-edit .widget-remove {
-  color: var(--danger);
+  gap: 6px;
+  margin: 8px 0 0;
 }
 
 /* ---- figures (stat cards) ------------------------------------------- */
 
+/* The label, the number as large as the card allows, and a line under it.
+   The rule over it is what marks it off as a figure. */
 .stat {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 10px;
   min-width: 0;
+  padding: 16px 0 4px;
+  border-top: 2px solid var(--line);
 }
 
 .stat-head {
@@ -290,8 +238,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .stat-label {
@@ -318,28 +267,40 @@
   text-decoration: underline;
 }
 
+/* The window a figure answers for ("Now", "Last 30 days"). The line under
+   the page's title says it for every card, so a narrow one leaves it out. */
 .stat-window {
   flex: none;
-  font-size: var(--text-xs);
+  color: var(--muted);
+  font-weight: 400;
 }
 
 .stat-line {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .stat-value {
-  font-size: var(--text-2xl);
-  font-weight: 640;
-  letter-spacing: -0.022em;
-  line-height: 1.2;
+  font-size: clamp(1.75rem, 26cqi, 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.stat-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
 
 .stat-sub {
-  color: var(--muted);
-  font-size: var(--text-sm);
+  min-width: 0;
 }
 
 .stat-sub-info {
@@ -349,32 +310,394 @@
   gap: 2px;
 }
 
+/* The trend beside the number, where a card is wide enough to give it
+   room: a third of a row or more. */
 .stat .sparkline {
-  margin-top: 8px;
+  display: none;
+  flex: 0 1 46%;
+  width: auto;
+  min-width: 0;
+  height: 40px;
+  margin-bottom: 4px;
 }
 
-/* ---- rows on cards and in reports ------------------------------------ */
+@container widget (min-width: 300px) {
+  .stat .sparkline {
+    display: block;
+  }
+
+  .stat-value {
+    font-size: clamp(2.25rem, 15cqi, 3.75rem);
+  }
+}
+
+@container widget (max-width: 250px) {
+  .stat-window {
+    display: none;
+  }
+}
+
+/* ---- customizing ----------------------------------------------------- */
+
+/* The cards draw in closer and each gets an outline, so the grid they sit
+   on can be seen. The chosen one is outlined in the accent. */
+.dash-wrap[data-editing] .dash-grid {
+  gap: 12px;
+}
+
+.widget[data-editing] {
+  padding: 6px 12px 14px;
+  border: 1px dashed var(--faint);
+  border-radius: 10px;
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.widget[data-editing][data-chosen] {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  box-shadow: 0 0 0 0.5px var(--accent);
+}
+
+.widget[data-dragging] {
+  opacity: 0.4;
+}
+
+/* Where a card being dragged would land: a bar in the accent in the gap
+   before the card under the pointer. */
+.widget[data-drop-before]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -8px;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* The end of the grid, as a place to let go. */
+.drop-end,
+.dash-empty[data-drop] {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 16px;
+  border: 1.5px dashed var(--accent);
+  border-radius: 10px;
+  background: var(--accent-tint);
+  font-weight: 500;
+}
+
+.dash-empty[data-drop] {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* While editing, a figure steps down so four still fit with their outlines. */
+.widget[data-editing] .stat {
+  gap: 6px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.widget[data-editing] .stat-value {
+  font-size: clamp(1.5rem, 20cqi, 2.25rem);
+}
+
+.widget[data-editing] .widget-head {
+  margin-bottom: 12px;
+}
+
+.widget[data-editing].widget--list > .widget-head {
+  margin-bottom: 0;
+}
+
+/* The strip across the top of a card: its handle at one end and Remove at
+   the other. The chosen card has its tools between them: its size, its
+   settings, and the arrows that move it. */
+.widget-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  min-height: 30px;
+  margin: 0 -6px 4px;
+}
+
+.widget-grip {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.widget[data-chosen] .widget-grip {
+  color: var(--ink);
+}
+
+.widget-grip:active {
+  cursor: grabbing;
+}
+
+/* The controls take what room there is and wrap onto a second line on a
+   small card, rather than spilling out of it. */
+.widget-edit-tools {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px 6px;
+  min-width: 0;
+}
+
+.widget-edit .widget-remove {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.widget[data-chosen] .widget-edit .widget-remove {
+  margin-left: 0;
+  color: var(--ink);
+}
+
+/* On a card too narrow for one line, the handle and Remove keep the top
+   line and the tools take the lines under it. */
+@container widget (max-width: 300px) {
+  .widget-edit-tools {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: space-between;
+  }
+
+  .widget[data-chosen] .widget-edit .widget-remove {
+    margin-left: auto;
+  }
+}
+
+@media (hover: hover) {
+  .widget[data-editing]:hover:not([data-chosen]) {
+    border-color: var(--muted);
+  }
+}
+
+.widget-edit-actions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+
+.widget-edit .btn--icon.btn--sm {
+  width: 28px;
+  min-height: 28px;
+  color: var(--ink);
+}
+
+/* A card's size: the shares of a row it can take, the one it has in ink. */
+.size-keys {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.size-key {
+  min-width: 30px;
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.size-key[aria-pressed='true'] {
+  background: var(--btn);
+  color: var(--on-btn);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .size-key:hover:not([aria-pressed='true']) {
+    background: var(--tint);
+    color: var(--ink);
+  }
+}
+
+@media (pointer: coarse) {
+  .widget-edit {
+    min-height: 40px;
+  }
+
+  .widget-grip,
+  .widget-edit .btn--icon.btn--sm {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .size-key {
+    min-width: 40px;
+    height: 36px;
+  }
+}
+
+/* ---- the library ------------------------------------------------------ */
+
+/* Beside the grid on a wide screen, and holding still while the grid
+   scrolls; under it on a narrow one. A ruled list, not a panel. */
+.library {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex: 1 1 300px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  max-width: 420px;
+  max-height: calc(100svh - 48px);
+}
+
+.library-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Nine kinds don't fit one line beside the grid, so they wrap. */
+.library-cats {
+  flex: none;
+  flex-wrap: wrap;
+  gap: 0 14px;
+  overflow: visible;
+}
+
+.library-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.library-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 2px 11px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+}
+
+.library-item:active {
+  cursor: grabbing;
+}
+
+.library-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--ink-2);
+}
+
+.library-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.library-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  font-weight: 500;
+}
+
+.library-kind {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.library-desc {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.library-on {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.library-add {
+  flex: none;
+  border-color: var(--ink);
+}
+
+@media (max-width: 1099px) {
+  .library {
+    position: static;
+    max-width: none;
+    max-height: none;
+  }
+
+  .library-list {
+    overflow: visible;
+  }
+}
+
+/* ---- rows on cards, in reports and in tools --------------------------- */
 
 .widget-rows {
   display: flex;
   flex-direction: column;
-  margin: 0 calc(var(--card-pad) * -1);
+  margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.widget-rows > li {
-  padding-left: var(--card-pad);
-  padding-right: var(--card-pad);
 }
 
 .person-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-top: var(--row-pad);
-  padding-bottom: var(--row-pad);
-  border-top: 1px solid var(--line-soft);
+  gap: 14px;
+  padding: var(--row-pad) 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .person-main {
@@ -382,13 +705,14 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
+  line-height: 1.35;
 }
 
 .person-name {
   overflow: hidden;
   color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: 500;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -401,7 +725,7 @@
 .person-meta {
   overflow: hidden;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -412,34 +736,47 @@
 
 .person-error {
   color: var(--danger);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .person-value {
   flex: none;
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 560;
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 600;
 }
 
+/* Follow is an outline in ink; Following is the word alone (the kit's
+   .is-on). The slot is one width, so the column of them lines up. */
 .follow-button {
   flex: none;
-  min-width: 84px;
+  min-width: 92px;
+}
+
+.follow-button:not(.is-on) {
+  border-color: var(--ink);
+  background: transparent;
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .follow-button:not(.is-on):hover:not(:disabled) {
+    background: var(--btn);
+    color: var(--on-btn);
+  }
 }
 
 .post-row {
   display: flex;
-  gap: 10px;
-  padding-top: var(--row-pad);
-  padding-bottom: var(--row-pad);
-  border-top: 1px solid var(--line-soft);
+  gap: 14px;
+  padding: var(--row-pad) 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .post-rank {
   flex: none;
-  width: 18px;
+  width: 16px;
   color: var(--muted);
-  font-size: var(--text-sm);
 }
 
 .post-main {
@@ -454,8 +791,10 @@
   display: -webkit-box;
   overflow: hidden;
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
+  line-height: 1.4;
   text-decoration: none;
+  text-wrap: pretty;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
@@ -470,7 +809,7 @@
   align-items: center;
   gap: 4px 12px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .post-count {
@@ -480,24 +819,23 @@
 }
 
 .post-count.is-dim {
-  opacity: 0.45;
+  opacity: 0.5;
 }
 
 .list-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-top: var(--row-pad);
-  padding-bottom: var(--row-pad);
-  border-top: 1px solid var(--line-soft);
-  font-size: var(--text-sm);
+  gap: 12px;
+  padding: var(--row-pad) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-base);
 }
 
 .list-row-name {
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  font-weight: 560;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -505,106 +843,7 @@
 .list-row-subs {
   flex: none;
   color: var(--muted);
-  font-size: var(--text-xs);
-}
-
-/* ---- the library ------------------------------------------------------ */
-
-.library {
-  position: sticky;
-  top: 96px;
-  display: flex;
-  flex: 1 1 300px;
-  flex-direction: column;
-  gap: 12px;
-  max-height: calc(100svh - 120px);
-  overflow: hidden;
-}
-
-.library-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
   font-size: var(--text-sm);
-}
-
-.library-cats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.library-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 -4px;
-  padding: 0 4px 4px;
-  list-style: none;
-  overflow-y: auto;
-}
-
-.library-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
-.library-icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
-}
-
-.library-text {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.library-name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.library-desc {
-  color: var(--muted);
-  font-size: var(--text-xs);
-}
-
-.library-on {
-  color: var(--accent-ink);
-  font-size: var(--text-xs);
-  font-weight: 560;
-}
-
-@media (max-width: 1000px) {
-  .library {
-    position: static;
-    max-height: none;
-  }
-}
-
-/* A card that keeps its own period or one kind of engagement says so. */
-.widget-own {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 6px 0 0;
 }
 
 /* The one dialog action that sits apart from the others, at the start. */

@@ -156,61 +156,90 @@ export default function AccountsSettings() {
   const signedIn = accounts.filter((a) => a.status !== 'needsSignIn');
   const ordered = [...accounts].sort((a, b) => (a.did === did ? -1 : b.did === did ? 1 : 0));
 
+  // The sections are Settings' own (src/settings/settings.css): a heading,
+  // a rule in ink, then rows between hairlines.
   return (
     <>
-      <section className="card settings-section">
+      <section className="settings-section">
         <div className="settings-section-head">
           <h2 className="card-title">Accounts</h2>
           <p className="card-sub">Each account keeps its own archive and its own dashboards in this browser. Switching doesn’t sign anyone out.</p>
         </div>
-        <ul className="accounts-list">
-          {ordered.map((a) => (
-            <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} signOutGuard={signOutGuard} />
-          ))}
-        </ul>
-        <div className="settings-actions">
-          <Button onClick={() => setAdding(true)}>
-            <UserPlus size={15} aria-hidden="true" />
-            Add an account
-          </Button>
-          {signedIn.length > 1 && (
-            <Button variant="danger" onClick={() => setSigningOutAll(true)}>
-              Sign out of all {signedIn.length} accounts
+        <div className="settings-section-body">
+          <ul className="accounts-list">
+            {ordered.map((a) => (
+              <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} signOutGuard={signOutGuard} />
+            ))}
+          </ul>
+          <div className="settings-actions">
+            <Button variant="primary" onClick={() => setAdding(true)}>
+              <UserPlus size={15} aria-hidden="true" />
+              Add an account
             </Button>
-          )}
+            {signedIn.length > 1 && (
+              <Button onClick={() => setSigningOutAll(true)}>
+                <LogOut size={15} aria-hidden="true" />
+                Sign out of all {signedIn.length} accounts
+              </Button>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="card settings-section">
+      <section className="settings-section">
         <div className="settings-section-head">
           <h2 className="card-title">How long a sign-in lasts</h2>
+          <p className="card-sub">There are two kinds. Each account above says which it has.</p>
         </div>
-        <ul className="perm-list">
-          <li>
-            <strong>Browser session.</strong> The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as
-            long as that server allows an app that runs only in a browser, which is usually up to two weeks.
-          </li>
-          <li>
-            <strong>Long session through Virga’s server.</strong> The sign-in is held by Virga’s server ({backendHost()}), which passes your
-            requests on to your account and stays signed in for as long as you keep using it. Scheduled posts, post timers and the post
-            adviser need one, because they run while this browser is closed.
-          </li>
-        </ul>
-        <p className="settings-text">
-          Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and post
-          timers keep running while any browser or device is signed in to Virga with a long session for the account; signing out of the
-          last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
-          {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}
-        </p>
+        <div className="settings-section-body">
+          <div className="settings-row accounts-fact">
+            <div className="settings-row-text">
+              <div className="settings-row-label">Browser session</div>
+            </div>
+            <div className="settings-row-control">
+              <p className="accounts-note">
+                The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as long as that server allows
+                an app that runs only in a browser, which is usually up to two weeks.
+              </p>
+            </div>
+          </div>
+          <div className="settings-row accounts-fact">
+            <div className="settings-row-text">
+              <div className="settings-row-label">Long session through Virga’s server</div>
+            </div>
+            <div className="settings-row-control">
+              <p className="accounts-note">
+                The sign-in is held by Virga’s server ({backendHost()}), which passes your requests on to your account and stays signed in
+                for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while this
+                browser is closed.
+              </p>
+            </div>
+          </div>
+          <div className="settings-row accounts-fact">
+            <div className="settings-row-text">
+              <div className="settings-row-label">Signing out</div>
+            </div>
+            <div className="settings-row-control">
+              <p className="accounts-note">
+                Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and
+                post timers keep running while any browser or device is signed in to Virga with a long session for the account; signing
+                out of the last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
+                {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="card settings-section">
+      <section className="settings-section">
         <div className="settings-section-head">
           <h2 className="card-title">Identity</h2>
         </div>
-        <p className="settings-text">
-          Your DID, your PDS and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
-        </p>
+        <div className="settings-section-body">
+          <p className="settings-text">
+            Your DID, your PDS and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
+          </p>
+        </div>
       </section>
 
       <AddAccountDialog open={adding} onClose={() => setAdding(false)} />

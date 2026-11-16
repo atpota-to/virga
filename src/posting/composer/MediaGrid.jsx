@@ -1,10 +1,11 @@
-import { ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import { formatDuration, missingAltCount } from './media.js';
 
 /**
  * A post's images, up to four, in the order they'll appear: each with its
- * alt text button, a move earlier / later pair and remove. Tiles for images
+ * alt text button (ticked once the image is described), a move earlier /
+ * later pair and remove. Tiles for images
  * still being prepared show as placeholders the same size. `requireAltText`
  * turns the line under the grid into a count of what's left to describe.
  */
@@ -32,7 +33,14 @@ export function ImageGrid({ images, processing = 0, requireAltText = false, disa
               onClick={() => onAlt?.(img.id)}
               aria-label={img.alt?.trim() ? `Edit alt text for image ${i + 1}` : `Add alt text to image ${i + 1}`}
             >
-              {img.alt?.trim() ? 'ALT' : '+ ALT'}
+              {img.alt?.trim() ? (
+                <>
+                  <Check size={12} aria-hidden="true" />
+                  ALT
+                </>
+              ) : (
+                '+ ALT'
+              )}
             </button>
             <span className="image-tools">
               {count > 1 && (

@@ -12,23 +12,32 @@ export function rowsFor(size, rows) {
   return rows || ROWS[size] || ROWS.m;
 }
 
+/**
+ * A figure: its label, the number set large, and a line under it (the change
+ * against the window before, and a note). A card wide enough to have the
+ * room also draws its trend beside the number; a quarter of a row doesn't.
+ */
 export function Stat({ icon: Icon, label, window, value, delta, deltaTitle, sub, spark = null, to = null }) {
   return (
     <div className="stat">
       <div className="stat-head">
         <span className="stat-label">
-          {Icon && <Icon size={15} aria-hidden="true" />}
+          {Icon && <Icon size={14} aria-hidden="true" />}
           {to ? <Link to={to}>{label}</Link> : label}
         </span>
         {window && <span className="stat-window">{window}</span>}
       </div>
       <div className="stat-line">
         <span className="stat-value num">{value}</span>
-        {delta}
-        {deltaTitle && <span className="visually-hidden">{deltaTitle}</span>}
+        {spark && <Sparkline values={spark} />}
       </div>
-      {sub && <div className="stat-sub num">{sub}</div>}
-      {spark && <Sparkline values={spark} />}
+      {(delta || sub) && (
+        <div className="stat-note num">
+          {delta}
+          {deltaTitle && <span className="visually-hidden">{deltaTitle}</span>}
+          {sub && <span className="stat-sub">{sub}</span>}
+        </div>
+      )}
     </div>
   );
 }

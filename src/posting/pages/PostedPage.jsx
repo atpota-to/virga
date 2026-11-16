@@ -330,7 +330,7 @@ export default function PostedPage({ did }) {
               })}
             </ul>
           ) : (
-            <div className="hub-empty hub-pad">
+            <div className="hub-empty">
               <p className="empty">
                 {query || filter !== 'all' ? 'Nothing matches. Clear the search or choose All.' : 'Nothing posted yet. New post starts one.'}
               </p>
@@ -349,7 +349,7 @@ export default function PostedPage({ did }) {
               </Button>
             </div>
           )}
-          {!caps.canSchedule && <p className="card-caption hub-pad">Putting a post on a timer needs a long session. Settings › Account offers one.</p>}
+          {!caps.canSchedule && <p className="card-caption">Putting a post on a timer needs a long session. Settings › Account offers one.</p>}
         </section>
       </div>
 

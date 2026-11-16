@@ -11,14 +11,15 @@
   gap: 14px;
 }
 
+/* The picture is a thing in its own right, so it keeps an edge. */
 .share-preview {
   display: grid;
   place-items: center;
   overflow: hidden;
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
 }
 
 .share-preview img {

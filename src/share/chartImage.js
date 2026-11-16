@@ -1,6 +1,6 @@
 // A card as a picture: the title, whose numbers they are, the headline
 // figure and the chart, drawn on a canvas at a size Bluesky shows whole
-// (16:9), in the colours of the theme on screen.
+// (16:9), under the sky that is on screen and in its colours.
 //
 // The layout is worked out by pure functions (tested); the drawing itself
 // needs a real canvas and is looked at in the browser.
@@ -15,24 +15,30 @@ const PAD = 56;
 const PLOT = { left: PAD, right: SHARE_WIDTH - PAD, top: 236, bottom: SHARE_HEIGHT - 118 };
 /** Room at the right for the dashed reach to a reference the line can't arrive at. */
 const GHOST_GUTTER = 70;
-const FONT = '"Mona Sans Variable", "Mona Sans", system-ui, -apple-system, "Segoe UI", sans-serif';
+const FONT = '"Instrument Sans Variable", "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif';
 
-/** The theme's colours, read off the page so the picture matches the screen. */
+/**
+ * The page's colours, read off it so the picture matches the screen: the
+ * ground, the two colours of the sky over it, the ink and the chart's own.
+ */
 export function readShareTheme(root = document.documentElement) {
   const css = getComputedStyle(root);
   const v = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+  const ground = v('--bg', '#ffffff');
   return {
-    surface: v('--surface', '#ffffff'),
-    ink: v('--ink', '#101828'),
-    ink2: v('--ink-2', '#344054'),
-    muted: v('--muted', '#667085'),
-    line: v('--line', '#e4e7ec'),
-    grid: v('--chart-grid', '#eaecf0'),
-    chart1: v('--chart-1', '#2563eb'),
-    chart2: v('--chart-2', '#e8590c'),
-    area: v('--chart-area', 'rgba(37, 99, 235, 0.10)'),
-    track: v('--surface-3', '#f2f4f7'),
-    accent: v('--accent', '#2563eb'),
+    surface: ground,
+    skyTop: v('--sky-top', ground),
+    skyMid: v('--sky-mid', ground),
+    ink: v('--ink', '#0f1b33'),
+    ink2: v('--ink-2', '#33415c'),
+    muted: v('--muted', '#46536b'),
+    line: v('--line', 'rgba(15, 27, 51, 0.14)'),
+    grid: v('--chart-grid', 'rgba(15, 27, 51, 0.1)'),
+    chart1: v('--chart-1', '#1d5ee0'),
+    chart2: v('--chart-2', '#e8553a'),
+    area: v('--chart-area', 'rgba(29, 94, 224, 0.08)'),
+    track: v('--tint', 'rgba(15, 27, 51, 0.06)'),
+    accent: v('--accent', '#1d5ee0'),
   };
 }
 
@@ -97,51 +103,52 @@ function drawHead(ctx, spec, theme) {
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
   ctx.fillStyle = theme.ink;
-  ctx.font = `650 40px ${FONT}`;
+  ctx.font = `600 40px ${FONT}`;
   ctx.fillText(fitText(ctx, spec.title, SHARE_WIDTH - PAD * 2), PAD, PAD + 36);
   ctx.fillStyle = theme.muted;
-  ctx.font = `450 22px ${FONT}`;
+  ctx.font = `400 22px ${FONT}`;
   ctx.fillText(fitText(ctx, spec.subtitle || '', SHARE_WIDTH - PAD * 2), PAD, PAD + 72);
   if (spec.figure) {
+    // The figure as the app sets one: large, medium weight, drawn in close.
     ctx.fillStyle = theme.ink;
-    ctx.font = `680 60px ${FONT}`;
+    ctx.font = `500 64px ${FONT}`;
+    const tight = 'letterSpacing' in ctx;
+    if (tight) ctx.letterSpacing = '-2.5px';
     const value = String(spec.figure.value);
-    ctx.fillText(value, PAD, PAD + 150);
+    ctx.fillText(value, PAD, PAD + 152);
     const after = PAD + ctx.measureText(value).width + 16;
+    if (tight) ctx.letterSpacing = '0px';
     ctx.fillStyle = theme.ink2;
-    ctx.font = `450 24px ${FONT}`;
+    ctx.font = `400 24px ${FONT}`;
     ctx.fillText(fitText(ctx, spec.figure.label, SHARE_WIDTH - PAD - after), after, PAD + 148);
   }
 }
 
 function drawFoot(ctx, theme) {
-  // The mark: the cloud's arc with rain that never lands, as in the app.
+  // The mark: the cloud's arc with rain that never lands, in ink, as in the app.
   const s = 30;
-  const x = PAD;
+  const x = PAD - 4;
   const y = SHARE_HEIGHT - PAD - s + 6;
-  ctx.fillStyle = theme.accent;
-  roundRect(ctx, x, y, s, s, 7.5);
-  ctx.fill();
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(s / 24, s / 24);
-  ctx.strokeStyle = '#ffffff';
+  ctx.strokeStyle = theme.ink;
   ctx.lineWidth = 1.8;
   ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.arc(12, 11, 6, Math.PI, 0);
-  ctx.moveTo(9, 14);
-  ctx.lineTo(8, 18.5);
-  ctx.moveTo(12.5, 14);
-  ctx.lineTo(11.5, 20);
-  ctx.moveTo(16, 14);
-  ctx.lineTo(15, 17.5);
+  ctx.arc(12, 11, 7, Math.PI, 0);
+  ctx.moveTo(8.5, 14.5);
+  ctx.lineTo(7.5, 18.5);
+  ctx.moveTo(12.3, 14.5);
+  ctx.lineTo(11, 20.5);
+  ctx.moveTo(16, 14.5);
+  ctx.lineTo(15.1, 17.7);
   ctx.stroke();
   ctx.restore();
-  ctx.fillStyle = theme.ink2;
+  ctx.fillStyle = theme.ink;
   ctx.font = `600 22px ${FONT}`;
   ctx.textAlign = 'left';
-  ctx.fillText('Virga', x + s + 10, y + 22);
+  ctx.fillText('Virga', x + s + 8, y + 22);
 }
 
 function drawSeries(ctx, spec, theme) {
@@ -149,7 +156,7 @@ function drawSeries(ctx, spec, theme) {
   const { series, unit, mode, trend, marks } = spec;
 
   ctx.lineWidth = 1;
-  ctx.font = `450 18px ${FONT}`;
+  ctx.font = `400 18px ${FONT}`;
   ctx.textAlign = 'left';
   for (const tick of L.ticks) {
     const ty = Math.round(L.y(tick)) + 0.5;
@@ -264,7 +271,7 @@ function drawSeries(ctx, spec, theme) {
   }
 
   ctx.fillStyle = theme.muted;
-  ctx.font = `450 18px ${FONT}`;
+  ctx.font = `400 18px ${FONT}`;
   for (const label of axisLabels(series, unit)) {
     ctx.textAlign = label.align;
     // Under the measured curve: the axis stops where the buckets do, short of a ghost's gutter.
@@ -289,14 +296,14 @@ function drawBars(ctx, spec, theme) {
     ctx.font = `500 24px ${FONT}`;
     ctx.fillText(fitText(ctx, String(r.label), labelW - 20), PAD, cy);
     ctx.fillStyle = theme.track;
-    roundRect(ctx, trackX, cy - 8, trackW, 16, 8);
+    roundRect(ctx, trackX, cy - 6, trackW, 12, 6);
     ctx.fill();
     ctx.fillStyle = theme.chart1;
-    roundRect(ctx, trackX, cy - 8, Math.max(16, (r.value / top) * trackW), 16, 8);
+    roundRect(ctx, trackX, cy - 6, Math.max(12, (r.value / top) * trackW), 12, 6);
     ctx.fill();
     ctx.textAlign = 'right';
     ctx.fillStyle = theme.ink;
-    ctx.font = `650 24px ${FONT}`;
+    ctx.font = `600 24px ${FONT}`;
     ctx.fillText(String(r.display), SHARE_WIDTH - PAD, cy);
   });
   ctx.textBaseline = 'alphabetic';
@@ -306,6 +313,16 @@ function drawBars(ctx, spec, theme) {
 export function drawShareImage(ctx, spec, theme) {
   ctx.fillStyle = theme.surface;
   ctx.fillRect(0, 0, SHARE_WIDTH, SHARE_HEIGHT);
+  // The sky, as on the page: a wash over the title that has faded into the
+  // ground by the time the chart starts. In high contrast it is the ground.
+  if (theme.skyTop && theme.skyTop !== theme.surface && ctx.createLinearGradient) {
+    const sky = ctx.createLinearGradient(0, 0, 0, PLOT.top + 120);
+    sky.addColorStop(0, theme.skyTop);
+    sky.addColorStop(0.45, theme.skyMid || theme.skyTop);
+    sky.addColorStop(1, theme.surface);
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, SHARE_WIDTH, PLOT.top + 120);
+  }
   drawHead(ctx, spec, theme);
   if (spec.kind === 'bars') drawBars(ctx, spec, theme);
   else drawSeries(ctx, spec, theme);
@@ -318,7 +335,7 @@ export function drawShareImage(ctx, spec, theme) {
  */
 export async function renderShareImage(spec, { theme = readShareTheme() } = {}) {
   try {
-    await Promise.all([document.fonts?.load(`650 40px ${FONT}`), document.fonts?.load(`450 22px ${FONT}`)]);
+    await Promise.all([document.fonts?.load(`600 40px ${FONT}`), document.fonts?.load(`400 22px ${FONT}`), document.fonts?.load(`500 64px ${FONT}`)]);
   } catch {
     // The fallback face draws the same picture.
   }

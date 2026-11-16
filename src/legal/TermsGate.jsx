@@ -72,12 +72,16 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
   }
 
   return (
-    <div className="landing landing--center terms-gate">
-      <main className="card return-card terms-card" aria-labelledby={titleId}>
-        <div className="terms-brand" aria-hidden="true">
-          <LogoMark size={28} />
+    <div className="landing terms-gate">
+      {/* The mark where the app has it. Not a link: there is nowhere to go
+          from here but on, or out. */}
+      <header className="landing-bar">
+        <div className="brand" aria-hidden="true">
+          <LogoMark />
           <span className="brand-name">{APP_NAME}</span>
         </div>
+      </header>
+      <main className="landing-narrow terms-card" aria-labelledby={titleId}>
         <h1 id={titleId} className="return-title">
           Before you start
         </h1>
@@ -144,7 +148,7 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
             </span>
           </p>
         )}
-        <Button variant="primary" size="lg" onClick={agree} aria-busy={busy || undefined} disabled={leaving}>
+        <Button variant="primary" size="lg" className="terms-agree" onClick={agree} aria-busy={busy || undefined} disabled={leaving}>
           {busy ? 'Recording…' : 'Agree and continue'}
         </Button>
         <p className="note">

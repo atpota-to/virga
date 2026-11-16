@@ -106,12 +106,13 @@ export default function TemplatesPage({ did }) {
         ) : error && !templates.length ? (
           <LoadError message="Your templates couldn’t be read from your repo." onRetry={reload} />
         ) : !templates.length && ready ? (
-          <section className="card hub-empty">
+          <section className="hub-empty">
             <p className="empty">
               No templates yet. A template is a post or reply to start from, with blanks it asks you to fill in, such as the name of the person
               you’re answering.
             </p>
-            <Button variant="primary" onClick={() => setEditing({ template: null })} disabled={!canWrite}>
+            {/* The page's own New template is the filled button; this one is its echo. */}
+            <Button onClick={() => setEditing({ template: null })} disabled={!canWrite}>
               <Plus size={15} aria-hidden="true" />
               Make your first template
             </Button>
@@ -151,7 +152,7 @@ export default function TemplatesPage({ did }) {
                         </p>
                       </div>
                       <div className="hub-row-actions">
-                        <Button size="sm" variant="primary" onClick={() => composer.open({ asDid: did, templateId: t.rkey })} disabled={!caps.canPost}>
+                        <Button size="sm" onClick={() => composer.open({ asDid: did, templateId: t.rkey })} disabled={!caps.canPost}>
                           Use
                         </Button>
                         <Button size="sm" onClick={() => setEditing({ template: t })} disabled={!canWrite}>

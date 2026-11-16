@@ -28,7 +28,7 @@ const context = (overrides = {}) => ({
   activeDid: MIRA.did,
   periods: ANALYTICS_PERIODS,
   period: '30d',
-  theme: 'system',
+  sky: 'clock',
   route: { section: 'dashboard', dashboard: 'd1' },
   archive: { built: true, complete: true, syncing: false },
   ...overrides,
@@ -85,12 +85,13 @@ describe('buildCommands', () => {
     expect(byId(out, `account:${LAB.did}`)).toMatchObject({ title: 'Switch to @lab.example.org', hint: 'Signed out. Opens the sign-in.' });
   });
 
-  it('sets the period and the theme, marking the one in use', () => {
+  it('sets the period and the sky, marking the one in use', () => {
     expect(titles(commands.filter((c) => c.group === 'Period'))).toEqual(['Last 7 days', 'Last 30 days', 'Last 90 days', 'Last year', 'All time']);
     expect(byId(commands, 'period:30d')).toMatchObject({ do: 'period', arg: '30d', current: true });
     expect(byId(commands, 'period:7d').current).toBe(false);
-    expect(titles(commands.filter((c) => c.group === 'Theme'))).toEqual(['Light theme', 'Dark theme', 'Match the system theme']);
-    expect(byId(commands, 'theme:system').current).toBe(true);
+    expect(titles(commands.filter((c) => c.group === 'Sky'))).toEqual(['Sky by the clock', 'Dawn sky', 'Day sky', 'Dusk sky', 'Night sky']);
+    expect(byId(commands, 'sky:clock').current).toBe(true);
+    expect(byId(commands, 'sky:night')).toMatchObject({ do: 'sky', arg: 'night', current: false });
     // A custom range is none of them.
     expect(buildCommands(context({ period: 'custom' })).filter((c) => c.group === 'Period' && c.current)).toEqual([]);
     expect(periodTitle({ key: '1y', days: 365, label: 'Year' })).toBe('Last year');
@@ -111,7 +112,7 @@ describe('buildCommands', () => {
   });
 
   it('builds from nothing without falling over', () => {
-    expect(titles(buildCommands())).toEqual(['New post', 'Build your archive', 'New dashboard', 'Terms of Service', 'Privacy Policy', 'Light theme', 'Dark theme', 'Match the system theme']);
+    expect(titles(buildCommands())).toEqual(['New post', 'Build your archive', 'New dashboard', 'Terms of Service', 'Privacy Policy', 'Sky by the clock', 'Dawn sky', 'Day sky', 'Dusk sky', 'Night sky']);
   });
 });
 
@@ -135,8 +136,9 @@ describe('rankCommands', () => {
   it('needs every typed word, in any order, across title, group and keywords', () => {
     expect(first('settings data')).toBe('Data and sync');
     expect(first('data settings')).toBe('Data and sync');
-    expect(first('dark')).toBe('Dark theme');
-    expect(first('appearance dark')).toBe('Dark theme');
+    expect(first('dark')).toBe('Night sky');
+    expect(first('appearance dark')).toBe('Night sky');
+    expect(first('theme night')).toBe('Night sky');
     expect(first('compose')).toBe('New post');
     expect(first('lab')).toBe('Switch to Field Lab');
     expect(rankCommands(commands, 'followers zebra')).toEqual([]);
@@ -177,9 +179,9 @@ describe('paletteGroups', () => {
   });
 
   it('puts what was used recently first, once', () => {
-    const groups = paletteGroups(commands, '', { recent: ['theme:dark', 'go:/reports/followers', 'gone:command'] });
+    const groups = paletteGroups(commands, '', { recent: ['sky:night', 'go:/reports/followers', 'gone:command'] });
     expect(groups[0].group).toBe(RECENT_GROUP);
-    expect(titles(groups[0].items)).toEqual(['Dark theme', 'Followers']);
+    expect(titles(groups[0].items)).toEqual(['Night sky', 'Followers']);
     const all = groups.flatMap((g) => g.items.map((c) => c.id));
     expect(new Set(all).size).toBe(all.length);
     expect(all).toHaveLength(commands.length);
@@ -188,7 +190,7 @@ describe('paletteGroups', () => {
   });
 
   it('groups the matches of a query, the best match’s group first', () => {
-    const groups = paletteGroups(commands, 'follow', { recent: ['theme:dark'] });
+    const groups = paletteGroups(commands, 'follow', { recent: ['sky:night'] });
     expect(groups.map((g) => g.group)).toEqual(['Reports', 'Tools']);
     expect(titles(groups[0].items)).toEqual(['Followers']);
     // Titles first; a tool that only mentions follows in its description comes after.
