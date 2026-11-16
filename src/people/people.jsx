@@ -100,15 +100,31 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
  * One person in a list. `meta` is the line under the name (after the
  * handle); `value` sits at the right before the button (a count). After it
  * comes a small link to the Interaction lookup for this person, unless
- * `history` is false.
+ * `history` is false. The handle is left out when it is already the name
+ * (someone with no display name), and "follows you" when `rel` is false: a
+ * list where everyone follows you (your newest followers, the follow-back
+ * queue) would say it on every row.
  */
-export function PersonRow({ archive, did, card: given = null, meta = null, value = null, valueTitle = null, follow = null, followLabel, extra = null, history = true }) {
+export function PersonRow({
+  archive,
+  did,
+  card: given = null,
+  meta = null,
+  value = null,
+  valueTitle = null,
+  follow = null,
+  followLabel,
+  extra = null,
+  history = true,
+  rel = true,
+}) {
   // A card passed in (someone who has since left the follower list, as the
   // log remembers them) stands in until a fresher one is resolved.
   const resolved = cardFor(archive, did);
   const card = resolved?.handle ? resolved : given?.handle ? given : resolved || given;
   const name = displayName(card, did);
-  const followsYou = relationSets(archive).followers.has(did);
+  const handle = card?.handle && name.replace(/^@/, '') !== card.handle ? card.handle : null;
+  const followsYou = rel && relationSets(archive).followers.has(did);
   return (
     <li className="person-row">
       <Avatar src={card?.avatar} name={card?.displayName || card?.handle || '?'} />
@@ -116,11 +132,13 @@ export function PersonRow({ archive, did, card: given = null, meta = null, value
         <a className="person-name" href={profileUrl(card, did)} target="_blank" rel="noopener noreferrer">
           {name}
         </a>
-        <span className="person-meta">
-          {card?.handle && <span className="person-handle">@{card.handle}</span>}
-          {followsYou && <span className="person-rel">{card?.handle ? ' · ' : ''}follows you</span>}
-          {meta && <span>{card?.handle || followsYou ? ' · ' : ''}{meta}</span>}
-        </span>
+        {(handle || followsYou || meta) && (
+          <span className="person-meta">
+            {handle && <span className="person-handle">@{handle}</span>}
+            {followsYou && <span className="person-rel">{handle ? ' · ' : ''}follows you</span>}
+            {meta && <span>{handle || followsYou ? ' · ' : ''}{meta}</span>}
+          </span>
+        )}
         {follow?.error(did) && (
           <span className="person-error" role="alert">
             {follow.error(did)}

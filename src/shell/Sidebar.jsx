@@ -1,17 +1,21 @@
 // The sidebar: the account, New post, search, and the five parts of Virga as
 // words down the side. Only the part you are in is opened out into its
-// pages, so the list stays short; the rest are one word each. Under them,
-// the archive's state. Folds to a rail of icons; on a phone it is replaced
-// by the app bar and the tab bar (MobileNav.jsx).
+// pages, so the list stays short; the rest are one word each. At its foot,
+// the archive's state. On a screen too short for the whole list, the list
+// scrolls and fades at the edge that has more behind it. Folds to a rail of icons, with the button that opens
+// it again at the foot over the account; on a phone it is replaced by the
+// app bar and the tab bar (MobileNav.jsx).
 //
 // It has no ground and no edge of its own: it sits on the sky, and on the
 // page once the sky has scrolled away. Only the middle part scrolls, so a
 // menu hanging from the account button (at the top, or at the foot of the
-// rail) is never clipped by the scroll.
+// rail) is never clipped by the scroll, and the archive's lines stay put.
 
-import { BarChart3, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Search, Send, Settings, SquarePen, Wrench } from 'lucide-react';
+import { useRef } from 'react';
+import { BarChart3, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Search, Send, Settings, SquarePen, Wrench } from 'lucide-react';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 import Button from '../components/Button.jsx';
+import { useOverflowEdge } from '../components/Segmented.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
@@ -61,13 +65,33 @@ function NavSubLink({ to, label, current }) {
   );
 }
 
-export default function Sidebar({ archive, route, profile, did, onSignOut, onNewDashboard, onNewPost, onSearch }) {
+/**
+ * `firstRun` is true while the page is the first build's (FirstRun.jsx),
+ * which shows the sync's every step itself: the archive's lines at the foot
+ * are then only their first.
+ */
+export default function Sidebar({ archive, route, profile, did, firstRun = false, onSignOut, onNewDashboard, onNewPost, onSearch }) {
   const { dashboards } = useDashboards();
   const { sidebar, setPref } = usePreferences();
   const tapLogo = useSkyTaps();
+  const scrollRef = useRef(null);
+  useOverflowEdge(scrollRef, 'y');
   const collapsed = sidebar === 'collapsed';
   const firstDashboard = dashboards[0]?.id;
   const { section, page } = route;
+  const fold = (
+    <Button
+      variant="ghost"
+      size={collapsed ? 'md' : 'sm'}
+      icon
+      className="sidebar-fold"
+      aria-label={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
+      title={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
+      onClick={() => setPref('sidebar', collapsed ? 'expanded' : 'collapsed')}
+    >
+      {collapsed ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
+    </Button>
+  );
 
   return (
     <nav className="sidebar" aria-label="Main" data-collapsed={collapsed || undefined}>
@@ -76,17 +100,7 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
           <LogoMark />
           {!collapsed && <span className="brand-name">Virga</span>}
         </button>
-        <Button
-          variant="ghost"
-          size="sm"
-          icon
-          className="sidebar-fold"
-          aria-label={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
-          title={collapsed ? 'Open the sidebar' : 'Fold the sidebar'}
-          onClick={() => setPref('sidebar', collapsed ? 'expanded' : 'collapsed')}
-        >
-          {collapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
-        </Button>
+        {!collapsed && fold}
       </div>
 
       {!collapsed && <AccountMenu profile={profile} did={did} onSignOut={onSignOut} />}
@@ -127,7 +141,7 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
         )}
       </div>
 
-      <div className="sidebar-scroll">
+      <div ref={scrollRef} className="sidebar-scroll">
         <ul className="nav">
           <NavSection
             collapsed={collapsed}
@@ -141,7 +155,6 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
             ))}
             <li>
               <button type="button" className="nav-sub-link nav-sub-action" onClick={onNewDashboard}>
-                <Plus size={14} aria-hidden="true" />
                 <span className="nav-label">New dashboard</span>
               </button>
             </li>
@@ -171,12 +184,16 @@ export default function Sidebar({ archive, route, profile, did, onSignOut, onNew
             ))}
           </NavSection>
         </ul>
-
-        <div className="sidebar-spacer" />
-
-        {!collapsed && <SyncCard archive={archive} />}
       </div>
-      {collapsed && <AccountMenu compact profile={profile} did={did} onSignOut={onSignOut} placement="up" />}
+
+      {collapsed ? (
+        <div className="sidebar-foot">
+          {fold}
+          <AccountMenu compact archive={archive} profile={profile} did={did} onSignOut={onSignOut} placement="up" />
+        </div>
+      ) : (
+        <SyncCard archive={archive} brief={firstRun} />
+      )}
     </nav>
   );
 }

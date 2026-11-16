@@ -10,6 +10,7 @@ import { CUSTOM_PERIOD, customPeriod, dayKey, periodPhrase, periodWindowWord, re
 import { activeLocale } from '../lib/locale.js';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
+import { AccessLine } from '../components/AccessBadge.jsx';
 import Segmented from '../components/Segmented.jsx';
 
 /**
@@ -46,33 +47,60 @@ export function useSkyTaps() {
 }
 
 /**
- * The top of a page, set straight on the sky: where it sits (crumbs, shown
- * where the sidebar isn't there to say it), its title, a line under it, what
- * the page can touch (`badges`, under that line, so they never crowd the
- * controls), and the page's own controls at the right.
+ * The top of a page, set straight on the sky, the same shape on every page:
+ * its title, one line under it (`sub`), what the page can touch, and at
+ * most one row of controls.
+ *
+ * - `crumbs` say where it sits. They show only beside the folded rail: the
+ *   open sidebar says it already, and on a phone the app bar's back link
+ *   does.
+ * - `access` is a list of ACCESS kinds (components/AccessBadge.jsx), drawn
+ *   as one muted line under the sub. This is the only place a page says it.
+ * - `titleTools` is drawn on the title's line, after the <h1> and outside
+ *   it, so its name stays out of the heading's: the dashboard's ⋯, or ✎
+ *   Rename while customizing. Give it a medium (36px) ghost icon; the line
+ *   centres one that size.
+ * - `actions` sit at the right of the title's line, centred on it, and wrap
+ *   under the text when there isn't room. On a phone they are one row that
+ *   never wraps, with the period picker first (it scrolls sideways when it
+ *   must) and the rest at its far end. A row with no picker in it wraps
+ *   instead, rather than push the page sideways.
+ * - `children` go under all of that, 12px down, inside the page's column
+ *   (the posting nav row on a phone).
+ *
+ * A header's controls are only ever the period picker (always the last of
+ * `actions`), Customize and Done. Anything else a page can do belongs by
+ * what it acts on: Export over the list it exports, a chart's actions under
+ * the chart, an add at the head of the list it adds to. New post is the
+ * chrome's.
  */
-export function PageHeader({ crumbs = null, title, sub = null, badges = null, actions = null, children = null }) {
+export function PageHeader({ crumbs = null, title, sub = null, access = null, titleTools = null, actions = null, children = null }) {
   return (
     <header className="page-header">
       <div className="page-header-in">
-        <div className="page-header-text">
-          {crumbs && (
-            <nav className="crumbs" aria-label="Breadcrumb">
-              {crumbs.map((c, i) => (
-                <span key={c.label}>
-                  {c.to ? <Link to={c.to}>{c.label}</Link> : c.label}
-                  {i < crumbs.length - 1 && <span aria-hidden="true"> / </span>}
-                </span>
-              ))}
-            </nav>
-          )}
-          <h1 className="page-title">{title}</h1>
-          {sub && <p className="page-sub">{sub}</p>}
-          {badges && <div className="page-badges">{badges}</div>}
+        {crumbs && (
+          <nav className="crumbs" aria-label="Breadcrumb">
+            {crumbs.map((c, i) => (
+              <span key={c.label}>
+                {c.to ? <Link to={c.to}>{c.label}</Link> : c.label}
+                {i < crumbs.length - 1 && <span aria-hidden="true"> / </span>}
+              </span>
+            ))}
+          </nav>
+        )}
+        <div className="page-header-row">
+          <div className="page-header-text">
+            <div className="page-title-row">
+              <h1 className="page-title">{title}</h1>
+              {titleTools && <div className="page-title-tools">{titleTools}</div>}
+            </div>
+            {sub && <p className="page-sub">{sub}</p>}
+            {access?.length > 0 && <AccessLine kinds={access} className="page-access meta" />}
+          </div>
+          {actions && <div className="page-actions">{actions}</div>}
         </div>
-        {actions && <div className="page-actions">{actions}</div>}
+        {children && <div className="page-header-extra">{children}</div>}
       </div>
-      {children}
     </header>
   );
 }
@@ -91,31 +119,45 @@ export function usePeriod() {
   return [value, (key) => setPref('period', key), setCustom];
 }
 
-export function PeriodPicker() {
+/**
+ * The page's window, in its header: the presets and Custom, which opens a
+ * range of dates. Pressing one sets the window every chart answers for.
+ *
+ * `options` are the keys to offer ('7d' … 'all', and 'custom'), for a page
+ * that only answers for some of them; every one by default. `effective` is
+ * the key to show pressed when the page reads a window other than the one
+ * chosen (Best time needs at least 90 days, so under it shows 90d pressed),
+ * without changing the choice the other pages read.
+ *
+ * On a phone the Custom key is its calendar alone (shell.css); its words,
+ * the range's dates once there is one, stay in the markup as its name.
+ */
+export function PeriodPicker({ options = null, effective = null }) {
   const [period, setPeriod, setCustom] = usePeriod();
   const [picking, setPicking] = useState(false);
+  const offered = (key) => !options || options.includes(key);
   return (
     <>
       <Segmented
         className="period-picker"
         label="Period"
-        value={period.custom ? CUSTOM_PERIOD : period.key}
+        value={effective ?? (period.custom ? CUSTOM_PERIOD : period.key)}
         onChange={(key) => (key === CUSTOM_PERIOD ? setPicking(true) : setPeriod(key))}
         options={[
-          ...ANALYTICS_PERIODS.map((p) => ({
+          ...ANALYTICS_PERIODS.filter((p) => offered(p.key)).map((p) => ({
             value: p.key,
             label: SHORT[p.key] || p.label,
             title: periodWindowWord(p),
             ariaLabel: periodWindowWord(p),
           })),
-          {
+          offered(CUSTOM_PERIOD) && {
             value: CUSTOM_PERIOD,
             icon: CalendarRange,
             label: period.custom ? period.label : 'Custom',
             title: period.custom ? `${period.label}. Press to change the dates.` : 'Pick a range of dates',
             ariaLabel: period.custom ? `Custom range: ${period.label}. Change the dates` : 'Custom range of dates',
           },
-        ]}
+        ].filter(Boolean)}
       />
       <RangeDialog
         open={picking}

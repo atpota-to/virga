@@ -36,6 +36,7 @@ import {
   interactionIndex,
   interactionModel,
   isDid,
+  kindsLine,
   lookupHref,
   matchPeople,
   parseActorInput,
@@ -46,7 +47,6 @@ const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Q
 const DIRECTION_ICON = { in: ArrowDownLeft, out: ArrowUpRight };
 const DIRECTION_LABEL = { in: 'Them to you', out: 'You to them' };
 const KIND_ONE = { like: 'a like', repost: 'a repost', reply: 'a reply', quote: 'a quote', mention: 'a mention' };
-const KIND_NOUN = { like: ['like', 'likes'], repost: ['repost', 'reposts'], reply: ['reply', 'replies'], quote: ['quote', 'quotes'], mention: ['mention', 'mentions'] };
 
 const START_PAGE = 12;
 const POSTS_PAGE = 5;
@@ -611,13 +611,6 @@ function Timeline({ model, name }) {
       {caption && <p className="card-caption">{caption}</p>}
     </Card>
   );
-}
-
-/** "2 likes, 1 reply": what an event count is made of. */
-function kindsLine(byKind) {
-  return LOOKUP_KINDS.filter((k) => byKind[k])
-    .map((k) => nounOf(byKind[k], ...KIND_NOUN[k]))
-    .join(', ');
 }
 
 /**

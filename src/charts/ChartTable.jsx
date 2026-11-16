@@ -1,15 +1,52 @@
+import { useId, useState } from 'react';
+import { Table2 } from 'lucide-react';
 import { bucketLabel } from '../lib/analytics.js';
 import { fmtCount } from './format.js';
 
 /**
- * Every chart's plain twin: the same buckets as a real table, behind a
- * disclosure, so no value is reachable only by pointer.
+ * The line under a chart (.chart-foot): "Show as table" first, a link
+ * action that opens the chart's table under the line, then `actions`, the
+ * other things to do with the chart (Export, Post this chart, Add to
+ * dashboard), as link actions. `children` is the table; it stays in the
+ * markup while closed, hidden, so it is there the moment it is asked for.
  */
-export default function ChartTable({ series, secondary = null, trend = null, unit, valueHead, secondaryHead = null, format = fmtCount }) {
+export function ShowAsTable({ actions = null, children }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <>
+      <div className="chart-foot">
+        <button type="button" className="link-action" aria-expanded={open} aria-controls={id} onClick={() => setOpen((v) => !v)}>
+          <Table2 size={14} aria-hidden="true" />
+          Show as table
+        </button>
+        {actions}
+      </div>
+      <div id={id} className="an-tableview" hidden={!open}>
+        {children}
+      </div>
+    </>
+  );
+}
+
+/**
+ * Every chart's plain twin: the same buckets as a real table, opened from
+ * the line under the chart (ShowAsTable), so no value is reachable only by
+ * pointer. `actions` go on that line after "Show as table".
+ */
+export default function ChartTable({
+  series,
+  secondary = null,
+  trend = null,
+  unit,
+  valueHead,
+  secondaryHead = null,
+  format = fmtCount,
+  actions = null,
+}) {
   if (!series || series.length === 0) return null;
   return (
-    <details className="an-tableview disclosure">
-      <summary>Show as table</summary>
+    <ShowAsTable actions={actions}>
       <div className="an-tableview-scroll">
         <table className="table">
           <thead>
@@ -35,6 +72,6 @@ export default function ChartTable({ series, secondary = null, trend = null, uni
           </tbody>
         </table>
       </div>
-    </details>
+    </ShowAsTable>
   );
 }

@@ -14,6 +14,56 @@
   margin: 0 auto;
 }
 
+/* The folded rail keeps to the screen's left edge, where it is reached
+   for; the page's column centres itself in what is left. */
+.shell[data-sidebar='collapsed'] {
+  max-width: none;
+}
+
+/* A figure's value (theme.css --figure-size) is sized from the page's
+   column, not from the cell it is in, so every figure on a page is the
+   same size: on a dashboard, a report and the index, four to a row or two.
+   It is 26% of the width a cell would have four to a row (32px between
+   them), up to --text-figure, and no smaller than a phone's 40px except on
+   a phone. The column is what the sidebar (or the rail) and the page's
+   margins leave, up to --content-max. Each step says the whole of it
+   again: a var() in a custom property is read where it is declared. */
+.shell {
+  --figure-size: min(
+    var(--text-figure),
+    max(2.5rem, calc((min(var(--content-max), 100vw - var(--sidebar-w) - var(--page-pad) * 2) - 96px) / 4 * 0.26))
+  );
+}
+
+.shell[data-sidebar='collapsed'] {
+  --figure-size: min(
+    var(--text-figure),
+    max(2.5rem, calc((min(var(--content-max), 100vw - var(--rail-w) - var(--page-pad) * 2) - 96px) / 4 * 0.26))
+  );
+}
+
+@media (max-width: 899px) {
+  .shell,
+  .shell[data-sidebar='collapsed'] {
+    --figure-size: min(var(--text-figure), max(2.5rem, calc((100vw - var(--page-pad) * 2 - 96px) / 4 * 0.26)));
+  }
+}
+
+/* Two to a row, 20px apart. */
+@media (max-width: 560px) {
+  .shell,
+  .shell[data-sidebar='collapsed'] {
+    --figure-size: min(var(--text-figure), calc((100vw - var(--page-pad) * 2 - 20px) / 2 * 0.26));
+  }
+}
+
+/* Customizing a dashboard asks for a wider column (dashboards.css): the
+   shell widens to hold it, so the cards and the library get that room on
+   a wide screen. */
+.shell:has(.dash-page[data-editing]) {
+  --shell-max: calc(var(--sidebar-w) + 1320px + var(--page-pad) * 2);
+}
+
 .shell-main {
   position: relative;
   z-index: 1;
@@ -40,7 +90,9 @@
 /* ---- sidebar -------------------------------------------------------- */
 
 /* No ground and no edge: it sits on the sky, and stays put while the page
-   scrolls under the sky and away. */
+   scrolls under the sky and away. It starts where the page's title does
+   (--page-top, which Compact tightens), so the mark and the title share a
+   line. */
 .sidebar {
   position: sticky;
   z-index: 25;
@@ -51,29 +103,64 @@
   gap: 24px;
   width: var(--sidebar-w);
   height: 100svh;
-  padding: 32px 16px 24px 36px;
+  padding: var(--page-top) 16px 24px 36px;
 }
 
 /* Only the middle scrolls. The sidebar itself doesn't, so a menu hanging
-   from the account button at its top (or the rail's foot) isn't clipped. */
+   from the account button at its top (or the rail's foot) isn't clipped,
+   and the archive's few lines stay pinned to its foot. It is let out on
+   every side (and padded back by as much), so a focus ring round the first
+   or last link isn't cut off by its clipping. When there is more of it
+   than shows (a short screen), the edge with more behind it fades:
+   Sidebar.jsx keeps data-overflow on it. */
 .sidebar-scroll {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: 24px;
   min-height: 0;
-  margin: 0 -16px 0 -36px;
-  padding: 0 16px 2px 36px;
+  margin: -4px -16px -2px -36px;
+  padding: 4px 16px 4px 36px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
+.sidebar-scroll[data-overflow='end'] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+}
+
+.sidebar-scroll[data-overflow='start'] {
+  -webkit-mask-image: linear-gradient(to top, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to top, #000 calc(100% - 24px), transparent);
+}
+
+.sidebar-scroll[data-overflow='both'] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+/* A laptop's short screen: the open sidebar's parts sit closer, and the
+   archive's card keeps its first line and Sync now, without the counts
+   (Settings › Data has them), so the parts' list stays whole as often as
+   it can. A sync's step stays. */
+@media (min-width: 900px) and (max-height: 860px) {
+  .sidebar:not([data-collapsed]) {
+    gap: 16px;
+  }
+
+  .sidebar .sync-card-counts {
+    display: none;
+  }
+}
+
+/* As tall as the page title's line, so the mark is centred on it. */
 .sidebar-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 30px;
+  min-height: 35px;
 }
 
 .brand {
@@ -186,16 +273,17 @@
   font-weight: 400;
 }
 
-/* New post, and the way into search. */
+/* New post, and the way into search: the same width, one under the other. */
 .sidebar-do {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
+  gap: 8px;
 }
 
 .sidebar-new-post {
   flex: none;
+  width: 100%;
 }
 
 /* "Search or jump to": shaped like a field, because pressing it gives one
@@ -243,11 +331,6 @@
     box-shadow: inset 0 0 0 1px var(--line-2);
     color: var(--ink-2);
   }
-}
-
-.sidebar-spacer {
-  flex: 1;
-  min-height: 8px;
 }
 
 /* The five parts, as words. The one you are in is in ink and opened out
@@ -338,10 +421,6 @@
   transform: translateY(-50%);
 }
 
-.nav-sub-action svg {
-  flex: none;
-}
-
 @media (hover: hover) {
   .nav-link:hover,
   .nav-sub-link:hover {
@@ -350,21 +429,30 @@
   }
 }
 
-/* Folded: a rail of icons. The part you are in sits on a tinted disc. */
+/* A finger gets a full row to press; the fold button reaches out above
+   and below without making the mark's line taller. */
+@media (pointer: coarse) {
+  .nav-link,
+  .sidebar-search {
+    min-height: 44px;
+  }
+
+  .nav-sub-link {
+    min-height: 40px;
+  }
+
+  .sidebar-top > .sidebar-fold {
+    margin-block: -5px;
+  }
+}
+
+/* Folded: a rail of icons. The part you are in sits on a tinted disc, and
+   the button that opens the sidebar again waits at the foot, over the
+   account. */
 .sidebar[data-collapsed] {
   align-items: center;
   width: var(--rail-w);
-  padding: 32px 0 20px;
-}
-
-.sidebar[data-collapsed] .sidebar-top {
-  flex-direction: column;
-  gap: 12px;
-}
-
-.sidebar[data-collapsed] .sidebar-fold {
-  margin-right: 0;
-  opacity: 1;
+  padding: var(--page-top) 0 20px;
 }
 
 .sidebar[data-collapsed] .sidebar-do {
@@ -373,19 +461,37 @@
 }
 
 .sidebar[data-collapsed] .sidebar-new-post,
-.sidebar[data-collapsed] .sidebar-search-icon {
+.sidebar[data-collapsed] .sidebar-search-icon,
+.sidebar[data-collapsed] .sidebar-fold {
   width: 44px;
   min-height: 44px;
+}
+
+.sidebar-foot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-foot .sidebar-fold {
+  margin: 0;
+  color: var(--ink-2);
+  opacity: 1;
 }
 
 .sidebar[data-collapsed] .sidebar-search-icon {
   color: var(--ink);
 }
 
+/* The rail's whole width, so a focus ring round a 44px disc has room on
+   both sides; the discs are centred in it. */
 .sidebar[data-collapsed] .sidebar-scroll {
+  align-self: stretch;
   align-items: center;
-  margin: 0;
-  padding: 0 0 2px;
+  margin: -4px 0 -2px;
+  padding: 4px 0;
 }
 
 .sidebar[data-collapsed] .nav {
@@ -472,42 +578,65 @@
   }
 }
 
-/* Across the top of the page, where there is no sidebar to say it. */
+/* Across the top of the page, where there is no sidebar to say it: one
+   36px row, what it is doing at the left and Cancel at the right, with the
+   progress as a hairline along its foot. On a phone that line runs the
+   screen's width; beside the folded rail it keeps to the page's column. */
 .sync-banner {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   width: 100%;
   max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
-  margin: 0 auto;
-  padding: 8px var(--page-pad) 0;
+  min-height: 36px;
+  margin: 0 auto 4px;
+  padding: 0 var(--page-pad);
   color: var(--ink-2);
   font-size: var(--text-sm);
 }
 
 .sync-banner[data-tone='warn'] {
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
   color: var(--warn);
 }
 
 .sync-banner[data-tone='warn'] a {
+  flex: none;
   color: inherit;
-}
-
-.sync-banner-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  font-weight: 500;
 }
 
 .sync-banner-text {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.sync-banner-step {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.sync-banner > .link-action {
+  flex: none;
+}
+
+.sync-banner > .progress {
+  position: absolute;
+  bottom: 0;
+  inset-inline: var(--page-pad);
+  height: 2px;
+  border-radius: 0;
+}
+
+@media (max-width: 899px) {
+  .sync-banner > .progress {
+    inset-inline: 0;
+  }
 }
 
 .sync-steps-wrap {
@@ -521,13 +650,21 @@
   color: var(--ink-2);
 }
 
+/* Three steps a line (two on the narrowest phones), so six steps make two
+   even lines rather than five and an orphan. */
 .sync-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 479px) {
+  .sync-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .sync-step {
@@ -578,24 +715,39 @@
   margin: 0 auto;
 }
 
+/* The header is a column: the crumbs (beside the folded rail only), then
+   the title's row, then whatever the page puts under it. The crumbs sit
+   outside the row, so the controls line up with the title and not with
+   them. */
 .page-header-in {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--page-top) var(--page-pad) 0;
+}
+
+/* The words at the left, the controls at the right of the title's line;
+   when the controls don't fit beside the words, they go under them, at the
+   left, 16px below. */
+.page-header-row {
+  display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px 32px;
-  padding: var(--page-top) var(--page-pad) 0;
 }
 
 .page-header-text {
   display: flex;
+  flex: 1 1 320px;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
-/* Where the page sits. The open sidebar says this already, so the crumbs
-   are for a phone and for the folded rail (below). */
+/* Where the page sits. The open sidebar says this already, and on a phone
+   or a tablet the app bar's back link does, so the crumbs are only for the
+   folded rail. */
 .crumbs {
   display: flex;
   flex-wrap: wrap;
@@ -618,13 +770,46 @@
   .shell[data-sidebar='expanded'] .crumbs {
     display: none;
   }
+
+  /* Beside the rail the crumbs take the room over the title rather than
+     push it down, so the title is on the same line on every page, and so
+     is the rail's mark, which is centred on it. */
+  .shell[data-sidebar='collapsed'] .page-header-in:has(> .crumbs) {
+    padding-top: max(0px, calc(var(--page-top) - var(--text-sm) * 1.45 - 4px));
+  }
+}
+
+@media (max-width: 899px) {
+  .page-header .crumbs {
+    display: none;
+  }
+}
+
+/* The title, and a tool or two for the thing it names (the dashboard's ⋯)
+   just after it, outside the heading. */
+.page-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
 }
 
 .page-title {
+  min-width: 0;
   font-size: var(--text-title);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.1;
+}
+
+/* A 36px icon centred on the title's first line (44px on touch, below),
+   reaching out above and below it without making the line any taller. */
+.page-title-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  margin-block: calc((var(--text-title) * 1.1 - 36px) / 2);
 }
 
 .page-sub {
@@ -633,19 +818,106 @@
   font-size: var(--text-base);
 }
 
-/* What the page can touch, in a word or two each, under its line. */
-.page-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+/* What the page can touch: the kit's meta line, one item a kind
+   (components/AccessBadge.jsx), under the page's line. */
+.page-access {
+  max-width: 68ch;
 }
 
+/* The controls: at least as tall as the title's line and centred in it,
+   so a picker or a link sits level with the title on every page, with or
+   without an access line under it. A control taller than the line (the
+   picker's 36px keys beside a tablet's 28px title) is drawn up by half
+   the difference, so its middle still meets the line's. */
 .page-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 20px;
+  gap: 12px 32px;
+  min-height: calc(var(--text-title) * 1.1);
+  margin-top: min(0px, calc((var(--text-title) * 1.1 - var(--control-h)) / 2));
+}
+
+/* Whatever the page puts under its header (the posting pages' row of
+   links on a phone): 12px under the row. */
+.page-header-extra {
+  min-width: 0;
+  margin-top: 8px;
+}
+
+@media (pointer: coarse) {
+  .page-title-tools {
+    margin-block: calc((var(--text-title) * 1.1 - 44px) / 2);
+  }
+
+  /* Touch keys are 44px, taller than the title's line: centred on it all
+     the same. */
+  .page-actions {
+    margin-top: calc((var(--text-title) * 1.1 - 44px) / 2);
+  }
+}
+
+/* A phone: the words, then at most one row of controls under them that
+   never wraps (the picker scrolls sideways in it instead), the period
+   picker first and anything else (Customize) at the row's far end. */
+@media (max-width: 560px) {
+  .page-header-row {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-header-text {
+    flex: none;
+  }
+
+  .page-actions {
+    flex-wrap: nowrap;
+    gap: 16px;
+    min-height: 0;
+    margin-top: 0;
+  }
+
+  .page-actions > :not(.period-picker) {
+    flex: none;
+    margin-left: auto;
+  }
+
+  /* The picker keeps the kit's own margins: on touch they let it out at
+     each end so its end keys can be pressed past their words. */
+  .page-actions > .period-picker {
+    flex: 1 1 auto;
+    order: -1;
+    min-width: 0;
+  }
+
+  /* Only a picker's row is held to one line, since a picker can scroll.
+     A row without one (a page still passing other buttons) wraps rather
+     than push the page sideways. */
+  .page-actions:not(:has(> .period-picker)) {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  /* The Custom key is its calendar alone, so the presets keep the line.
+     Its words (the range's dates, once there is one) stay in the markup
+     as its name. */
+  .period-picker .segmented-key.has-icon .segmented-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/* Under 375px the picker and Customize only share the line if Customize
+   is its word alone. */
+@media (max-width: 374px) {
+  .page-actions > .link-action svg {
+    display: none;
+  }
 }
 
 .page-body {
@@ -665,8 +937,9 @@
 
 /* ---- the phone's bars ---------------------------------------------- */
 
-/* The top row is part of the page: the mark at the left, and search, sync
-   and the account at the right. It scrolls away with the sky. */
+/* The top row is part of the page: the mark at the left (or, on a page
+   inside a part, the way back up to it), and search and the account at the
+   right. It scrolls away with the sky. */
 .appbar {
   display: flex;
   align-items: center;
@@ -680,8 +953,43 @@
   min-height: 44px;
 }
 
+/* ‹ Reports: the parent's name in ink, led by a chevron whose stroke (not
+   its box) starts on the page's edge, where the logo's does. */
+.appbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 44px;
+  margin-left: -6px;
+  padding-right: 8px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.appbar-back svg {
+  flex: none;
+}
+
+.appbar-back-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .appbar-back:hover .appbar-back-label {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 .appbar-actions {
   display: flex;
+  flex: none;
   align-items: center;
 }
 
@@ -697,18 +1005,11 @@
   font-size: var(--text-xs);
 }
 
-.appbar .is-spinning svg {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* The bottom row stays: the four parts as icons, the one you are in with
-   its name beside it on a tinted pill, and New post as a round button. */
+   its name beside it on a tinted pill, and New post as a round button. The
+   group is held to a phone's width and centred, so a tablet doesn't spread
+   it from edge to edge. 64px tall with its rule, and the home indicator's
+   room under that. */
 .tabbar {
   position: fixed;
   z-index: 30;
@@ -716,10 +1017,12 @@
   bottom: 0;
   left: 0;
   display: flex;
+  box-sizing: border-box;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
-  padding: 8px 16px calc(8px + env(safe-area-inset-bottom)) 12px;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding: 7px 12px calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: var(--bg);
 }
@@ -731,7 +1034,7 @@
   justify-content: space-between;
   gap: 4px;
   min-width: 0;
-  max-width: 440px;
+  max-width: 420px;
 }
 
 .tabbar-item {
@@ -749,11 +1052,28 @@
 }
 
 .tabbar-item[aria-current='page'] {
-  height: 44px;
   padding: 0 16px 0 14px;
   background: var(--accent-tint);
   color: var(--ink);
   font-weight: 600;
+}
+
+/* Too narrow for the name beside the icon (Dashboards would push New post
+   off the screen at 360): the part you are in is a tinted disc, and its
+   name is still read out. */
+@media (max-width: 374px) {
+  .tabbar-item[aria-current='page'] {
+    padding: 0;
+  }
+
+  .tabbar-item[aria-current='page'] .tabbar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .tabbar-new-post {
@@ -773,16 +1093,6 @@
 @media (max-width: 899px) {
   .shell-main {
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
-  }
-
-  .page-header-in {
-    align-items: flex-start;
-    gap: 6px 24px;
-  }
-
-  .page-actions {
-    width: 100%;
-    gap: 4px 20px;
   }
 
   .page-body {
@@ -889,18 +1199,28 @@
   color: var(--ink-2);
 }
 
+/* The buttons follow what they act on, with no rule between: the space
+   says they are the dialog's foot. */
 .dialog-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  padding: 14px 24px 20px;
-  border-top: 1px solid var(--line);
+  padding: 8px 24px 20px;
+  border-top: 0;
 }
 
 .dialog-form {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+/* Two fields side by side where there is room for both (the first and
+   last day of a range), one over the other where there isn't. */
+.range-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
@@ -914,7 +1234,24 @@
   }
 
   .dialog-actions {
-    padding: 12px 18px 16px;
+    padding: 8px 18px 16px;
+  }
+
+  /* A phone's dialog ends in equal halves, each a full 44px to press. */
+  .dialog-actions > .btn {
+    flex: 1 1 0;
+    min-height: 44px;
+  }
+
+  /* For a dialog whose buttons say too much to share a line: one under
+     the other, the one that does it first. */
+  .dialog--stack-actions .dialog-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dialog--stack-actions .dialog-actions > .btn--primary {
+    order: -1;
   }
 }
 

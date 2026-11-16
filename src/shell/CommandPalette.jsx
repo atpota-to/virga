@@ -197,7 +197,7 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
 
   return (
     <Dialog open={open} onClose={onClose} title="Search or jump to" className="palette-dialog">
-      <div className="palette">
+      <div className="palette" data-query={query ? 'some' : 'none'}>
         <div className="search palette-search">
           <Search aria-hidden="true" />
           <input

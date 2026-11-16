@@ -129,6 +129,19 @@
   /* A page's title, and a figure that leads a page. */
   --text-title: 2rem;
   --text-figure: clamp(2.5rem, 1.6rem + 2.6vw, 3.75rem);
+  /* A figure's value (.figures-value, .stat-value, .report-tile-value).
+     Inside the app the shell declares this again from the page's column
+     (shell.css), so the same number is the same size on a dashboard, a
+     report and the index. This is only for a figure drawn outside it: a
+     quarter of its container's width or so, never more than
+     --text-figure. */
+  --figure-size: min(var(--text-figure), 26cqi);
+  /* The statement that leads a tool's page (Best time, Identity): between a
+     heading and a figure. */
+  --text-lead: clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
+  /* The longest line a caption, a note or a hint is set to, about 75 to 80
+     characters in this face. */
+  --measure: 54ch;
 
   /* Space. */
   --space-1: 4px;
@@ -149,8 +162,14 @@
   --section-gap: 40px;
   --page-pad: clamp(28px, 4vw, 56px);
   --page-top: 40px;
+  /* A row of posts or data; and the roomier row of a setting, an account
+     or a link to somewhere else. */
   --row-pad: 12px;
+  --row-pad-lg: 16px;
   --control-h: 36px;
+  /* The column a time leads a row with (Going out next, Scheduled), so
+     the lists that share it line their words up. */
+  --time-col: 112px;
 
   /* Shape. Buttons and chips are pills; fields and what floats are gently
      rounded. */
@@ -174,7 +193,9 @@
   --appbar-h: 56px;
   --tabbar-h: 64px;
   --content-max: 1040px;
-  --shell-max: 1560px;
+  /* The sidebar and a page's column with its margins, and no wider, so on
+     a wide screen the two stay together instead of drifting apart. */
+  --shell-max: calc(var(--sidebar-w) + var(--content-max) + var(--page-pad) * 2);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -186,6 +207,7 @@
   --page-pad: clamp(24px, 3vw, 40px);
   --page-top: 28px;
   --row-pad: 8px;
+  --row-pad-lg: 12px;
   --control-h: 32px;
 }
 
@@ -1015,16 +1037,20 @@
   :root {
     --page-pad: 20px;
     --page-top: 8px;
-    --grid-gap: 32px;
+    --grid-gap: 28px;
     --section-gap: 28px;
     --text-title: 1.75rem;
     --sky-mid-at: 170px;
     --sky-end: 420px;
   }
 
+  /* Compact's 28px top is for a desk: under the app bar the page starts
+     8px down at either density, as Compact's own rule would otherwise
+     outrank the phone's. */
   :root[data-density='compact'] {
     --page-pad: 16px;
-    --grid-gap: 24px;
+    --page-top: 8px;
+    --grid-gap: 22px;
     --section-gap: 22px;
   }
 
@@ -1100,6 +1126,15 @@
   text-underline-offset: 4px;
 }
 
+/* Under 375px the current tab is a disc with its name hidden (shell.css),
+   so there is no word to underline, and the disc's pale tint alone is too
+   faint to say "you are here". It gets a ring in ink. */
+@media (max-width: 374px) {
+  :root[data-contrast='high'] .tabbar-item[aria-current='page'] {
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+}
+
 /* The two labels the composer lays over a picture borrow --on-accent for
    "white on a scrim". At night and in dark high contrast the accent is a
    light fill with dark words on it, so there they are told to stay white. */
@@ -1139,10 +1174,31 @@
      later, so everything below is marked important: in this mode it has to
      win. */
 
-  /* Focus that was only a shadow, with its outline turned off. */
+  /* Focus that was only a shadow, with its outline turned off. Inside a
+     row that scrolls sideways (a Segmented, a .scroll-row) the ring stays
+     inside the key, as it is drawn there in every mode, or the row's
+     clipping would cut it off. */
   :focus-visible {
     outline: 2px solid Highlight !important;
     outline-offset: 2px !important;
+  }
+
+  .segmented-key:focus-visible,
+  .scroll-row :focus-visible {
+    outline-offset: -2px !important;
+  }
+
+  /* A state's dot is a fill, which would be painted as the page's ground:
+     it is drawn in the text's colour, and the open one in the selection's.
+     (A badge loses its wash here too; its transparent edge, which this
+     mode draws, keeps it a pill: controls.css.) */
+  .dot {
+    forced-color-adjust: none;
+    background: CanvasText !important;
+  }
+
+  .dot--current {
+    background: Highlight !important;
   }
 
   .post-editor:focus-within {

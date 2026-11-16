@@ -20,6 +20,7 @@
 
 import { blockReach, bucketSeries, didFromAtUri, nextBucketMs, oldestEventMs } from '../lib/analytics.js';
 import { rkeyFromAtUri } from '../lib/atproto.js';
+import { fmtInt } from '../lib/locale.js';
 import { cached, relationSets } from '../reports/models.js';
 
 /** Where the tool lives. The chosen account is `?who=<did>` on it. */
@@ -49,6 +50,37 @@ export function keepsMentions(archive) {
 }
 
 export const KIND_LABEL = Object.freeze({ like: 'Likes', repost: 'Reposts', reply: 'Replies', quote: 'Quotes', mention: 'Mentions' });
+
+/** Each kind as a count's noun, one and many: "1 reply", "2 replies". */
+export const KIND_NOUN = Object.freeze({
+  like: ['like', 'likes'],
+  repost: ['repost', 'reposts'],
+  reply: ['reply', 'replies'],
+  quote: ['quote', 'quotes'],
+  mention: ['mention', 'mentions'],
+});
+
+/**
+ * "2 likes, 1 reply": what a count of interactions is made of, from a
+ * `{ kind: count }` map (a row's byKind). Kinds with none are left out. In
+ * the page's order of kinds, or the largest first with `byCount` (where the
+ * line follows a total, as on Follow-back and the People report). A kind
+ * this doesn't name keeps its own word, with an s for more than one.
+ */
+export function kindsLine(byKind, { byCount = false } = {}) {
+  const kinds = Object.keys(byKind || {}).filter((k) => byKind[k] > 0);
+  const order = (k) => {
+    const at = LOOKUP_KINDS.indexOf(k);
+    return at < 0 ? LOOKUP_KINDS.length : at;
+  };
+  kinds.sort((a, b) => (byCount ? byKind[b] - byKind[a] : 0) || order(a) - order(b));
+  return kinds
+    .map((k) => {
+      const [one, many] = KIND_NOUN[k] || [k, `${k}s`];
+      return `${fmtInt(byKind[k])} ${byKind[k] === 1 ? one : many}`;
+    })
+    .join(', ');
+}
 
 /** The direction filter. 'all' is the absence of a filter, as with kinds. */
 export const DIRECTIONS = Object.freeze([

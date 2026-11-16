@@ -38,7 +38,7 @@ export default function PostingPage({ pageKey, id = null, did }) {
   if (page.needsBackend && !capabilitiesFor(did).canSchedule) {
     return (
       <>
-        <PostingHeader page={page.key} />
+        <PostingHeader page={page.key} showAccess={false} />
         <div className="page-body">
           <NeedsBackend did={did} />
         </div>

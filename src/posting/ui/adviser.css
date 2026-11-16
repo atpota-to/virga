@@ -873,13 +873,6 @@ button.adviser-note-row {
     padding: 10px 20px calc(12px + env(safe-area-inset-bottom));
   }
 
-  .adviser-sheet .dialog-actions > .btn,
-  .alt-dialog .dialog-actions > .btn,
-  .style-dialog .dialog-actions > .btn {
-    flex: 1 1 0;
-    min-height: 44px;
-  }
-
   .style-dialog .dialog-actions .style-forget {
     flex-basis: 100%;
     margin-right: 0;

@@ -20,16 +20,35 @@ dialog.dialog.palette-dialog {
   max-height: min(580px, calc(100svh - 12vh - 32px));
 }
 
-/* The dialog's name is a label over the field, not a heading to read. */
+/* The field says what the palette is for, so the dialog's name is only
+   read out, not shown, and Close moves up onto the field's line. */
+.palette-dialog .dialog-in {
+  position: relative;
+}
+
 .palette-dialog .dialog-head {
-  padding: 14px 12px 0 20px;
+  --close-top: 11px;
+  position: absolute;
+  z-index: 1;
+  top: var(--close-top);
+  right: 12px;
+  padding: 0;
+}
+
+/* Close is 44px to a finger: still centred on the 52px field. */
+@media (pointer: coarse) {
+  .palette-dialog .dialog-head {
+    --close-top: 4px;
+  }
 }
 
 .palette-dialog .dialog-title {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .palette-dialog .dialog-body {
@@ -49,10 +68,10 @@ dialog.dialog.palette-dialog {
 
 /* The field is large and has no box: the words typed, on a line. The line
    is what shows it has focus (it always has, while the palette is open),
-   so it is in ink and two pixels deep. */
+   so it is in ink and two pixels deep. It stops short of Close. */
 .palette-search {
   flex: none;
-  margin: 0 20px;
+  margin: 0 56px 0 20px;
   border-bottom: 2px solid var(--ink);
 }
 
@@ -73,6 +92,23 @@ dialog.dialog.palette-dialog {
   background: none;
   box-shadow: none;
   font-size: var(--text-lg);
+  text-overflow: ellipsis;
+}
+
+/* Close shares the field's line, so on the narrowest phones the field is
+   shorter than its hint at 18px: there the words step down to 16px (no
+   smaller, or a phone zooms in on the field), which holds the hint whole.
+   A longer one ends in an ellipsis rather than half a word. */
+.palette-search > .input::placeholder {
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 374px) {
+  .palette-search > .input,
+  .palette-search > .input:hover,
+  .palette-search > .input:focus-visible {
+    font-size: 16px;
+  }
 }
 
 .palette-list {
@@ -223,7 +259,11 @@ dialog.dialog.palette-dialog {
   }
 
   .palette-dialog .dialog-head {
-    padding: calc(10px + env(safe-area-inset-top)) 10px 0 20px;
+    top: calc(var(--close-top) + env(safe-area-inset-top));
+  }
+
+  .palette-search {
+    margin-top: env(safe-area-inset-top);
   }
 
   .palette-list {
@@ -234,11 +274,17 @@ dialog.dialog.palette-dialog {
     min-height: 48px;
   }
 
-  /* One line each would cut both short: the hint goes under the title. */
+  /* One line each would cut both short: the hint goes under the title.
+     Before anything is typed the list is for scanning, so the hints wait
+     until a search, when they tell apart what matched. */
   .palette-option-text {
     flex-direction: column;
     align-items: stretch;
     gap: 1px;
+  }
+
+  .palette[data-query='none'] .palette-option-hint {
+    display: none;
   }
 
   /* No keys to press on a phone. */

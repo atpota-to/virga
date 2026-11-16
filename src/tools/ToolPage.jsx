@@ -8,7 +8,6 @@ import { useArchive } from '../archive/ArchiveContext.jsx';
 import { Link, navigate } from '../lib/router.jsx';
 import { followBackModel, followerLogModel, listsModel } from '../reports/models.js';
 import { PageHeader } from '../shell/bits.jsx';
-import Badge from '../components/AccessBadge.jsx';
 import { ACCESS, TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
 import FollowCleanup from './FollowCleanup.jsx';
 import UnfollowTracker from './UnfollowTracker.jsx';
@@ -33,10 +32,6 @@ const PAGES = {
   identity: Identity,
 };
 
-export function AccessBadge({ access }) {
-  return <Badge kind={access} />;
-}
-
 /** The header every tool page shares: where it is, what it does, what it touches. */
 export function ToolHeader({ tool, actions = null, sub = null, children = null }) {
   return (
@@ -44,7 +39,7 @@ export function ToolHeader({ tool, actions = null, sub = null, children = null }
       crumbs={[{ label: 'Tools', to: '/tools' }]}
       title={tool.name}
       sub={sub || tool.desc}
-      badges={<AccessBadge access={tool.access} />}
+      access={[tool.access]}
       actions={actions}
     >
       {children}

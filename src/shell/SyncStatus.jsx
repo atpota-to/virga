@@ -1,9 +1,13 @@
 // What the archive holds and how fresh it is, and the sync while it runs.
 //
-//   SyncCard    the sidebar's: when it was synced, Sync now, and the
-//               progress (one bar, the step named) while a sync runs.
-//   SyncBanner  the same, as a strip at the top of the page, for a phone
-//               (where there is no sidebar) and a folded sidebar.
+//   SyncCard    the sidebar's, pinned to its foot: when it was synced,
+//               Sync now, and the progress (one bar, the step named) while
+//               a sync runs. `brief` keeps it to its first line, beside
+//               the first build's page, which shows the steps itself.
+//   SyncBanner  the same as one 36px strip at the top of the page, for a
+//               phone (where there is no sidebar) and a folded sidebar:
+//               the words, Cancel, and the progress as a line along its
+//               foot.
 //   SyncSteps   every step, named, each with its own segment: the first
 //               build's page and Settings › Data show it in full.
 
@@ -55,7 +59,7 @@ function runFor(archive) {
   return () => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume');
 }
 
-export function SyncCard({ archive }) {
+export function SyncCard({ archive, brief = false }) {
   const { sync, syncError, meta } = archive;
   const counts = useArchiveCounts(archive);
   const frac = overallFraction(sync);
@@ -63,24 +67,29 @@ export function SyncCard({ archive }) {
     return (
       <section className="sync-card" aria-label="Sync">
         <div className="sync-card-row">
-          <span className="sync-card-title" role="status">
+          {/* While brief, the first build's page announces the progress: once is enough. */}
+          <span className="sync-card-title" role={brief ? undefined : 'status'}>
             {syncHeadline(sync)}
           </span>
           <Button variant="ghost" size="sm" icon aria-label="Cancel the sync" title="Cancel" onClick={archive.cancelSync}>
             <X size={14} aria-hidden="true" />
           </Button>
         </div>
-        <div className="progress" aria-hidden="true">
-          <div
-            className="progress-fill"
-            style={frac == null ? undefined : { width: `${Math.round(frac * 100)}%` }}
-            data-indeterminate={frac == null ? '' : undefined}
-          />
-        </div>
-        <span className="sync-card-sub num">
-          {syncStepText(sync)}
-          {sync.detail ? ` · ${sync.detail}` : ''}
-        </span>
+        {!brief && (
+          <div className="progress" aria-hidden="true">
+            <div
+              className="progress-fill"
+              style={frac == null ? undefined : { width: `${Math.round(frac * 100)}%` }}
+              data-indeterminate={frac == null ? '' : undefined}
+            />
+          </div>
+        )}
+        {!brief && (
+          <span className="sync-card-sub num">
+            {syncStepText(sync)}
+            {sync.detail ? ` · ${sync.detail}` : ''}
+          </span>
+        )}
       </section>
     );
   }
@@ -93,20 +102,22 @@ export function SyncCard({ archive }) {
           {syncError ? 'Last sync had problems' : syncWhen(archive)}
         </span>
       </div>
-      {pm && (
-        <span className="sync-card-sub num">
+      {!brief && pm && (
+        <span className="sync-card-sub sync-card-counts num">
           {counts.records.toLocaleString(activeLocale())} repo records and {counts.followers.toLocaleString(activeLocale())} followers, kept in this browser
         </span>
       )}
-      {syncError && (
+      {!brief && syncError && (
         <Link to="/settings/data" className="sync-card-link">
           See what failed
         </Link>
       )}
-      <Button size="sm" onClick={runFor(archive)}>
-        <RefreshCw size={14} aria-hidden="true" />
-        {!pm ? 'Build your archive' : pm.complete ? 'Sync now' : 'Resume the build'}
-      </Button>
+      {!brief && (
+        <Button size="sm" onClick={runFor(archive)}>
+          <RefreshCw size={14} aria-hidden="true" />
+          {!pm ? 'Build your archive' : pm.complete ? 'Sync now' : 'Resume the build'}
+        </Button>
+      )}
     </section>
   );
 }
@@ -118,22 +129,20 @@ export function SyncBanner({ archive }) {
   if (!sync) {
     return (
       <div className="sync-banner" data-tone="warn" role="alert">
-        <span>The last sync had problems.</span>
+        <span className="sync-banner-text">The last sync had problems.</span>
         <Link to="/settings/data">See what failed</Link>
       </div>
     );
   }
   return (
     <div className="sync-banner">
-      <div className="sync-banner-row">
-        <span role="status" className="sync-banner-text">
-          <strong>{syncHeadline(sync)}</strong>
-          <span className="num"> · {syncStepText(sync)}</span>
-        </span>
-        <Button variant="ghost" size="sm" onClick={archive.cancelSync}>
-          Cancel
-        </Button>
-      </div>
+      <span role="status" className="sync-banner-text">
+        {syncHeadline(sync)}
+        <span className="sync-banner-step num"> · {syncStepText(sync)}</span>
+      </span>
+      <button type="button" className="link-action" aria-label="Cancel the sync" onClick={archive.cancelSync}>
+        Cancel
+      </button>
       <div className="progress" aria-hidden="true">
         <div
           className="progress-fill"

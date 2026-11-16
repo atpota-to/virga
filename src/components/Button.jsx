@@ -1,14 +1,20 @@
 import { forwardRef } from 'react';
 
+/** The tiers a button can take, beyond the default outline ('quiet'). */
+const VARIANTS = new Set(['primary', 'ghost', 'danger']);
+
 /**
  * The app's one button (styles/controls.css). Tiers on one base:
- *   variant 'quiet' (default, outlined) · 'primary' (one per view) ·
- *   'ghost' (no box until pointed at) · 'danger' · 'text' (an alias of ghost)
- * and three sizes, 'sm', 'md' (default) and 'lg'. `icon` makes it square, for
- * a button holding a glyph alone (give it an aria-label). `on` gives it the
- * pressed look, for a button that is a state (Following). Renders a
- * <button type="button"> unless `as` names something else, such as 'a',
- * which then takes its own props (`href`).
+ *   variant 'quiet' (default, outlined) · 'primary' (ink: only where the
+ *   page has opened something to confirm) · 'ghost' (no edge until pointed
+ *   at: an icon alone, or Show N more) · 'danger' (a confirm dialog's red)
+ * and three sizes, 'sm', 'md' (default) and 'lg'. A variant it doesn't know
+ * draws the outline. A verb that is words alone is a link action
+ * (<button className="link-action">), not a button. `icon` makes it
+ * square, for a button holding a glyph alone (give it an aria-label). `on`
+ * gives it the pressed look, for a button that is a state (Following).
+ * Renders a <button type="button"> unless `as` names something else, such
+ * as 'a', which then takes its own props (`href`).
  *
  * The classes work without it too: <a className="btn btn--sm">.
  */
@@ -27,7 +33,7 @@ export default Button;
 export function buttonClass({ variant = 'quiet', size = 'md', on = false, icon = false, className = '' } = {}) {
   return [
     'btn',
-    variant !== 'quiet' && `btn--${variant}`,
+    VARIANTS.has(variant) && `btn--${variant}`,
     size !== 'md' && `btn--${size}`,
     icon && 'btn--icon',
     on && 'is-on',
