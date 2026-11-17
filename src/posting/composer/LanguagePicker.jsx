@@ -13,11 +13,13 @@ function preferredLanguages() {
 }
 
 /**
- * Up to three languages: the chosen ones as chips that can be taken off, and
+ * Up to three languages: the chosen ones as tokens that can be taken off, and
  * a search field that suggests more (by name or code). A combobox: ↑ and ↓
- * move through the suggestions, Enter adds one, Escape closes them.
+ * move through the suggestions, Enter adds one, Escape closes them. `bare`
+ * is for a place that already says what this is (a row in Settings): the
+ * label is kept for a screen reader and not drawn, and there is no hint.
  */
-export default function LanguagePicker({ value = [], onChange, label = 'Languages', hint = null, disabled = false }) {
+export default function LanguagePicker({ value = [], onChange, label = 'Languages', hint = null, disabled = false, bare = false }) {
   const id = useId();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -39,23 +41,23 @@ export default function LanguagePicker({ value = [], onChange, label = 'Language
 
   return (
     <div className="lang-picker">
-      <label className="field-label" htmlFor={`${id}-input`}>
+      <label className={bare ? 'visually-hidden' : 'field-label'} htmlFor={`${id}-input`}>
         {label}
       </label>
-      {hint && <p className="field-hint">{hint}</p>}
-      <div className="lang-chips" aria-live="polite">
+      {hint && !bare && <p className="field-hint">{hint}</p>}
+      <div className="tokens" aria-live="polite">
         {chosen.length === 0 && <span className="field-hint">None chosen</span>}
         {chosen.map((code) => (
-          <span key={code} className="lang-chip">
+          <span key={code} className="token">
             {languageName(code)}
             <button
               type="button"
-              className="lang-chip-remove"
+              className="token-remove"
               aria-label={`Remove ${languageName(code)}`}
               disabled={disabled}
               onClick={() => onChange?.(chosen.filter((c) => c !== code))}
             >
-              <X size={13} aria-hidden="true" />
+              <X size={14} aria-hidden="true" />
             </button>
           </span>
         ))}

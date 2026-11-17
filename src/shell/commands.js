@@ -12,17 +12,21 @@
 import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 
 /** The groups, in the order an empty palette lists them. */
-export const COMMAND_GROUPS = Object.freeze(['Actions', 'Dashboards', 'Reports', 'Posting', 'Tools', 'Settings', 'Period', 'Theme', 'Accounts']);
+export const COMMAND_GROUPS = Object.freeze(['Actions', 'Dashboards', 'Reports', 'Posting', 'Tools', 'Settings', 'Period', 'Sky', 'Accounts']);
 
 /** What the palette calls what was used last. */
 export const RECENT_GROUP = 'Recent';
 export const MAX_RECENT = 8;
 const SHOWN_RECENT = 4;
 
-const THEMES = Object.freeze([
-  { value: 'light', title: 'Light theme' },
-  { value: 'dark', title: 'Dark theme' },
-  { value: 'system', title: 'Match the system theme' },
+// The sky is the theme (lib/sky.js): night is the dark one, so "dark" and
+// "light" find a sky here as well as its own name does.
+const SKIES = Object.freeze([
+  { value: 'clock', title: 'Sky by the clock', keywords: 'automatic system time of day' },
+  { value: 'dawn', title: 'Dawn sky', keywords: 'light morning' },
+  { value: 'day', title: 'Day sky', keywords: 'light' },
+  { value: 'dusk', title: 'Dusk sky', keywords: 'light evening' },
+  { value: 'night', title: 'Night sky', keywords: 'dark' },
 ]);
 
 /** "Last 7 days", "Last year", "All time": a period as a command. */
@@ -50,12 +54,12 @@ function accountTitle(account) {
  * @param {string} [context.activeDid]
  * @param {Array<{ key: string, days: number | null, label: string }>} [context.periods]
  * @param {string} [context.period] - the key of the period in use
- * @param {'system'|'light'|'dark'} [context.theme]
+ * @param {'clock'|'dawn'|'day'|'dusk'|'night'} [context.sky] - the sky setting in use
  * @param {{ section?: string, dashboard?: string | null }} [context.route]
  * @param {{ built?: boolean, complete?: boolean, syncing?: boolean }} [context.archive]
  */
 export function buildCommands(context = {}) {
-  const { dashboards = [], reports = [], tools = [], postingPages = [], settingsSections = [], accounts = [], activeDid = null, periods = [], period = null, theme = null, route = {}, archive = {} } = context;
+  const { dashboards = [], reports = [], tools = [], postingPages = [], settingsSections = [], accounts = [], activeDid = null, periods = [], period = null, sky = null, route = {}, archive = {} } = context;
   const out = [];
   const add = (command) => out.push(command);
 
@@ -106,8 +110,8 @@ export function buildCommands(context = {}) {
     add({ id: `period:${p.key}`, group: 'Period', title: periodTitle(p), keywords: 'period range window charts show', do: 'period', arg: p.key, current: p.key === period });
   }
 
-  for (const t of THEMES) {
-    add({ id: `theme:${t.value}`, group: 'Theme', title: t.title, keywords: 'appearance mode colours colors', do: 'theme', arg: t.value, current: t.value === theme });
+  for (const k of SKIES) {
+    add({ id: `sky:${k.value}`, group: 'Sky', title: k.title, keywords: `appearance theme mode colours colors ${k.keywords}`, do: 'sky', arg: k.value, current: k.value === sky });
   }
 
   for (const a of accounts) {

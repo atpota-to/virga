@@ -1,9 +1,10 @@
 /* The command palette: a dialog near the top of a wide screen, so the field
    holds still while the list under it changes length; a full-height sheet
-   on a phone, like the other dialogs. Tokens only. */
+   on a phone, like the other dialogs. It floats, so it has the kit's edge
+   and shadow; inside it everything is plain. Tokens only. */
 
 dialog.dialog.palette-dialog {
-  width: min(600px, calc(100vw - 32px));
+  width: min(620px, calc(100vw - 32px));
   margin-top: 12vh;
 }
 
@@ -16,17 +17,38 @@ dialog.dialog.palette-dialog {
 .palette-dialog > .dialog-in {
   flex: 1;
   min-height: 0;
-  max-height: min(560px, calc(100svh - 12vh - 32px));
+  max-height: min(580px, calc(100svh - 12vh - 32px));
+}
+
+/* The field says what the palette is for, so the dialog's name is only
+   read out, not shown, and Close moves up onto the field's line. */
+.palette-dialog .dialog-in {
+  position: relative;
 }
 
 .palette-dialog .dialog-head {
-  padding-bottom: 4px;
+  --close-top: 11px;
+  position: absolute;
+  z-index: 1;
+  top: var(--close-top);
+  right: 12px;
+  padding: 0;
+}
+
+/* Close is 44px to a finger: still centred on the 52px field. */
+@media (pointer: coarse) {
+  .palette-dialog .dialog-head {
+    --close-top: 4px;
+  }
 }
 
 .palette-dialog .dialog-title {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .palette-dialog .dialog-body {
@@ -34,7 +56,7 @@ dialog.dialog.palette-dialog {
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: 4px 0 0;
+  padding: 0;
 }
 
 .palette {
@@ -44,23 +66,55 @@ dialog.dialog.palette-dialog {
   min-height: 0;
 }
 
+/* The field is large and has no box: the words typed, on a line. The line
+   is what shows it has focus (it always has, while the palette is open),
+   so it is in ink and two pixels deep. It stops short of Close. */
 .palette-search {
   flex: none;
-  margin: 0 16px 8px;
+  margin: 0 56px 0 20px;
+  border-bottom: 2px solid var(--ink);
 }
 
 .palette-search > svg {
-  left: 13px;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--ink-2);
 }
 
-.palette-search > .input {
-  padding-left: 38px;
+.palette-search > .input,
+.palette-search > .input:hover,
+.palette-search > .input:focus-visible {
+  min-height: 52px;
+  padding: 0 0 0 30px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-size: var(--text-lg);
+  text-overflow: ellipsis;
+}
+
+/* Close shares the field's line, so on the narrowest phones the field is
+   shorter than its hint at 18px: there the words step down to 16px (no
+   smaller, or a phone zooms in on the field), which holds the hint whole.
+   A longer one ends in an ellipsis rather than half a word. */
+.palette-search > .input::placeholder {
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 374px) {
+  .palette-search > .input,
+  .palette-search > .input:hover,
+  .palette-search > .input:focus-visible {
+    font-size: 16px;
+  }
 }
 
 .palette-list {
   flex: 1;
   min-height: 0;
-  padding: 0 8px 8px;
+  padding: 8px 10px 10px;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -68,34 +122,31 @@ dialog.dialog.palette-dialog {
 }
 
 .palette-group + .palette-group {
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .palette-group-head {
-  padding: 6px 10px 4px;
+  padding: 8px 10px 4px;
   color: var(--muted);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .palette-option {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 38px;
+  min-height: 40px;
   padding: 5px 10px;
   border-radius: var(--radius);
   color: var(--ink);
   cursor: pointer;
-  scroll-margin: 30px 0 8px;
+  scroll-margin: 32px 0 8px;
 }
 
-/* The highlighted option is the one Enter runs: the blue of what is
-   pressed, and a bar at its edge so it doesn't rest on colour alone. */
+/* The highlighted option is the one Enter runs: a fill, and no colour. */
 .palette-option[aria-selected='true'] {
-  background: var(--accent-wash);
-  box-shadow: inset 2px 0 0 var(--accent);
-  color: var(--accent-ink);
+  background: var(--hover);
 }
 
 .palette-option-icon {
@@ -104,11 +155,11 @@ dialog.dialog.palette-dialog {
   align-items: center;
   justify-content: center;
   width: 24px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 
 .palette-option[aria-selected='true'] .palette-option-icon {
-  color: inherit;
+  color: var(--ink);
 }
 
 .palette-option-text {
@@ -123,8 +174,8 @@ dialog.dialog.palette-dialog {
   flex: none;
   max-width: 100%;
   overflow: hidden;
-  font-size: var(--text-base);
-  font-weight: 560;
+  font-size: var(--text-md);
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -139,15 +190,16 @@ dialog.dialog.palette-dialog {
   white-space: nowrap;
 }
 
+/* What is in use now (this dashboard, this period, this sky): a tick, in ink. */
 .palette-option-mark {
   display: inline-flex;
   flex: none;
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .palette-empty {
   margin: 0;
-  padding: 24px 12px 28px;
+  padding: 28px 12px 32px;
   color: var(--muted);
   font-size: var(--text-base);
   text-align: center;
@@ -156,10 +208,10 @@ dialog.dialog.palette-dialog {
 .palette-foot {
   display: flex;
   flex: none;
-  gap: 16px;
+  gap: 18px;
   margin: 0;
-  padding: 8px 18px 10px;
-  border-top: 1px solid var(--line-soft);
+  padding: 9px 20px 11px;
+  border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: var(--text-xs);
 }
@@ -185,7 +237,7 @@ dialog.dialog.palette-dialog {
   color: var(--muted);
   font-family: inherit;
   font-size: var(--text-xs);
-  font-weight: 560;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
 }
@@ -207,7 +259,11 @@ dialog.dialog.palette-dialog {
   }
 
   .palette-dialog .dialog-head {
-    padding: calc(10px + env(safe-area-inset-top)) 12px 6px 16px;
+    top: calc(var(--close-top) + env(safe-area-inset-top));
+  }
+
+  .palette-search {
+    margin-top: env(safe-area-inset-top);
   }
 
   .palette-list {
@@ -215,14 +271,20 @@ dialog.dialog.palette-dialog {
   }
 
   .palette-option {
-    min-height: 46px;
+    min-height: 48px;
   }
 
-  /* One line each would cut both short: the hint goes under the title. */
+  /* One line each would cut both short: the hint goes under the title.
+     Before anything is typed the list is for scanning, so the hints wait
+     until a search, when they tell apart what matched. */
   .palette-option-text {
     flex-direction: column;
     align-items: stretch;
     gap: 1px;
+  }
+
+  .palette[data-query='none'] .palette-option-hint {
+    display: none;
   }
 
   /* No keys to press on a phone. */

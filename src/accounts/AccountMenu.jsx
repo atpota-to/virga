@@ -1,9 +1,11 @@
 // The account button at the top of the sidebar (and in the phone's app bar):
 // every account signed in here, to switch between in place, and the ways to
-// add, lengthen, end or recover a sign-in.
+// add, lengthen, end or recover a sign-in. In its compact form (the app bar,
+// the folded rail), where there is no sync card beside it, it also holds
+// Sync now.
 
 import { useMemo, useState } from 'react';
-import { ExternalLink, LogIn, LogOut, Settings, Timer, UserPlus, Users } from 'lucide-react';
+import { ExternalLink, LogIn, LogOut, RefreshCw, Settings, Timer, UserPlus, Users } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
@@ -15,6 +17,7 @@ import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { offersLongerSession, pendingWorkWarning, requestReauth, showSessionNotice, statusLabel } from './accountCopy.js';
 import AddAccountDialog from './AddAccountDialog.jsx';
 import { hasPendingWork, readPendingWork, usePendingWork } from './pendingWork.js';
+import { syncWhen } from '../shell/SyncStatus.jsx';
 import './accounts.css';
 
 /** The name for the open account's profile: display name, else @handle, else a short DID. */
@@ -201,7 +204,11 @@ export function SignOutAllDialog({ open, onClose }) {
   );
 }
 
-export function AccountMenu({ profile, did, onSignOut, compact = false, placement = 'down' }) {
+/**
+ * `archive` is passed by the compact forms, which then offer Sync now (once
+ * there is an archive to sync; the first build has its own page).
+ */
+export function AccountMenu({ profile, did, onSignOut, archive = null, compact = false, placement = 'down' }) {
   const { accounts, switching, mode, authMode } = useAtprotoSession();
   const actions = useAccountActions();
   const signOutGuard = useSignOutGuard();
@@ -233,9 +240,24 @@ export function AccountMenu({ profile, did, onSignOut, compact = false, placemen
         })
       : [];
 
+  const pm = archive?.meta?.posts;
+  const syncing = Boolean(archive?.sync);
+  const syncItem =
+    compact && pm
+      ? {
+          key: 'sync',
+          icon: RefreshCw,
+          label: syncing ? 'Syncing…' : 'Sync now',
+          hint: syncing ? null : syncWhen(archive),
+          onSelect: syncing ? undefined : () => archive.runSync(pm.complete ? 'incremental' : 'resume'),
+        }
+      : null;
+
   const items = [
     ...accountItems,
     accountItems.length > 0 && { separator: true },
+    syncItem,
+    syncItem && { separator: true },
     { key: 'add', icon: UserPlus, label: 'Add an account', onSelect: () => setAdding(true) },
     activeRow &&
       offersLongerSession(activeRow, authMode) && {
@@ -258,16 +280,14 @@ export function AccountMenu({ profile, did, onSignOut, compact = false, placemen
       label: 'Open your profile on Bluesky',
       onSelect: () => window.open(`https://bsky.app/profile/${encodeURIComponent(handle || did)}`, '_blank', 'noopener'),
     },
-    { key: 'settings', icon: Settings, label: 'Accounts and settings', onSelect: () => navigate('/settings/account') },
+    { key: 'settings', icon: Settings, label: 'Accounts and settings', onSelect: () => navigate('/settings') },
     { separator: true },
+    // No hint: when signing out would stop scheduled posts or timers, the
+    // guard asks first and says so, and otherwise there is nothing to warn of.
     {
       key: 'sign-out',
       icon: LogOut,
       label: signedIn.length > 1 ? `Sign out of ${name}` : 'Sign out',
-      hint:
-        mode === 'backend'
-          ? 'Ends the long session in this browser. Scheduled posts and timers stop if no other browser is signed in. Your archive stays here.'
-          : 'Your archive stays in this browser for next time.',
       onSelect: () => signOutGuard.guard(activeRow || { did, mode }, onSignOut),
     },
     signedIn.length > 1 && {

@@ -4,7 +4,7 @@
 //
 // The page says where the hill's crest goes by setting --crest on this or an
 // ancestor (a length from the top, so it can follow the page's own layout and
-// breakpoints). `phase` is the sky: 'dawn', 'day', 'dusk' or 'night' (phase.js
+// breakpoints). `phase` is the sky: 'dawn', 'day', 'dusk' or 'night' (lib/sky.js
 // chooses it from the settings); the scene eases from whichever it is showing
 // to the next. `day` is the older way to ask, kept for the front page: under
 // a half is dawn, the rest is day. While `active` is
@@ -21,7 +21,7 @@
 // behind the Thread and Daylight directions.
 
 import { useEffect, useRef, useState } from 'react';
-import { SKY_PHASES } from './phase.js';
+import { SKY_PHASES } from '../lib/sky.js';
 import './hillside.css';
 
 export default function Hillside({

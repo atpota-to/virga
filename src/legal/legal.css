@@ -1,38 +1,45 @@
 /* The legal documents (/terms, /privacy and the dialog on the agreement
    screen), and the agreement screen itself. The only long-form reading in
-   the app, so it sets its own measure and rhythm. */
+   the app, so it sets its own measure and rhythm: one column of about 68
+   characters, on the sky like every other page, with nothing in a box. */
 
 .legal-main {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
+  max-width: calc(var(--landing-max) + var(--page-pad) * 2);
   margin: 0 auto;
-  padding: 16px 28px 56px;
+  padding: clamp(28px, 7svh, 64px) var(--page-pad) 64px;
 }
 
+/* The measure is counted in the text's own size. */
 .legal-doc {
-  max-width: 72ch;
+  max-width: 68ch;
   margin: 0 auto;
+  font-size: var(--text-md);
 }
 
 .legal-nav,
 .landing-foot-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 16px;
+  gap: 4px 20px;
 }
 
+/* Terms and Privacy, as two words: the one being read is in ink, with a
+   line under it, as a pressed tab is anywhere in Virga. */
 .legal-nav a {
-  padding: 4px 2px;
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 580;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  color: var(--muted);
+  font-size: var(--text-base);
   text-decoration: none;
 }
 
 .legal-nav a[aria-current='page'] {
   color: var(--ink);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 
 @media (hover: hover) {
@@ -64,7 +71,7 @@ a.brand {
 
 .legal-text strong {
   color: var(--ink);
-  font-weight: 620;
+  font-weight: 600;
 }
 
 .legal-text code {
@@ -74,11 +81,12 @@ a.brand {
 }
 
 .legal-h1 {
+  margin-bottom: 4px;
   color: var(--ink);
-  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 .legal-h2 {
@@ -87,8 +95,8 @@ a.brand {
   border-top: 1px solid var(--line);
   color: var(--ink);
   font-size: var(--text-xl);
-  font-weight: 660;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   line-height: 1.25;
   /* Clear of the top of the window when a link lands on it. */
   scroll-margin-top: 16px;
@@ -98,7 +106,7 @@ a.brand {
   margin-top: 8px;
   color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 650;
+  font-weight: 600;
   scroll-margin-top: 16px;
 }
 
@@ -123,12 +131,13 @@ a.brand {
   border-top: 1px solid var(--line);
 }
 
+/* The sections, listed: under a rule in ink, over a hairline. */
 .legal-contents {
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  font-size: var(--text-sm);
+  margin-top: 6px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-base);
   line-height: 1.5;
 }
 
@@ -136,26 +145,42 @@ a.brand {
 .legal-contents ol {
   display: block;
   columns: 2 240px;
-  column-gap: 32px;
+  column-gap: 40px;
   padding-left: 1.8em;
 }
 
 .legal-contents li {
-  padding: 2px 0;
+  padding: 3px 0;
   break-inside: avoid;
 }
 
-/* A wide table scrolls in its own box rather than widening the page. It is
-   also what its heading row is placed against when that row is hidden (the
-   narrow layout below): without a positioned box of its own, the row would
-   be placed against whatever holds the document, and in a dialog that makes
-   the dialog itself scroll. */
+.legal-contents a {
+  text-decoration-color: var(--line-2);
+}
+
+/* The first section follows the contents' own hairline, so it brings none. */
+.legal-contents + .legal-h2 {
+  margin-top: 14px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+@media (hover: hover) {
+  .legal-contents a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* A table has no sides, as a table has none anywhere in Virga: a rule in
+   ink under its head, hairlines between its rows. A wide one scrolls in
+   its own box rather than widening the page. That box is also what the
+   heading row is placed against when the row is hidden (the narrow layout
+   below): without a positioned box of its own, the row would be placed
+   against whatever holds the document, and in a dialog that makes the
+   dialog itself scroll. */
 .legal-table {
   position: relative;
   max-width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
   overflow-x: auto;
 }
 
@@ -163,26 +188,40 @@ a.brand {
   width: 100%;
   min-width: 520px;
   border-collapse: collapse;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   line-height: 1.5;
 }
 
 .legal-table th,
 .legal-table td {
-  padding: 9px 12px;
-  border-bottom: 1px solid var(--line-soft);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
 }
 
+.legal-table th:first-child,
+.legal-table td:first-child {
+  padding-left: 0;
+}
+
+.legal-table th:last-child,
+.legal-table td:last-child {
+  padding-right: 0;
+}
+
 .legal-table th {
-  color: var(--ink);
-  font-weight: 620;
+  padding-top: 0;
+  border-bottom-color: var(--rule);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
   white-space: nowrap;
 }
 
-.legal-table tr:last-child td {
-  border-bottom: 0;
+.legal-table td:first-child {
+  color: var(--ink);
+  font-weight: 500;
 }
 
 /* ---- in a dialog ---------------------------------------------------- */
@@ -212,6 +251,12 @@ a.brand {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+/* The dialog sets the width here, so the column fills it. */
+.legal-doc--dialog {
+  max-width: none;
+  font-size: var(--text-base);
 }
 
 .legal-doc--dialog .legal-text {
@@ -244,20 +289,14 @@ a.brand {
 /* ---- the agreement screen ------------------------------------------- */
 
 .terms-card {
-  gap: 14px;
-}
-
-.terms-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
 .terms-check {
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   color: var(--ink);
-  font-weight: 560;
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -268,6 +307,11 @@ a.brand {
   margin-top: 1px;
 }
 
+/* The way on, as wide as its words; the whole width on a phone. */
+.terms-agree {
+  align-self: flex-start;
+}
+
 /* In a sentence, a document's name is a link in the sentence's own size. */
 .signin-link.terms-doc-link {
   font-size: inherit;
@@ -275,20 +319,20 @@ a.brand {
 
 @media (max-width: 760px) {
   .legal-main {
-    padding: 8px 16px 40px;
+    padding-top: 20px;
+    padding-bottom: 40px;
   }
 
+  .legal-doc,
   .legal-text {
     font-size: var(--text-base);
   }
 
-  /* Three columns of sentences don't fit a phone. Each row becomes a card:
-     its first cell is the card's name, and the rest sit under it with the
-     column's heading above each. */
+  /* Three columns of sentences don't fit a phone. Each row becomes a
+     block between hairlines: its first cell is the block's name, and the
+     rest sit under it with the column's heading above each. */
   .legal-table {
-    border: 0;
-    border-radius: 0;
-    background: none;
+    border-top: 1px solid var(--rule);
     overflow: visible;
   }
 
@@ -308,15 +352,12 @@ a.brand {
   .legal-table tbody {
     display: flex;
     flex-direction: column;
-    gap: 8px;
   }
 
   .legal-table tr {
     display: block;
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
   }
 
   .legal-table td {
@@ -334,13 +375,12 @@ a.brand {
     display: block;
     margin-bottom: 2px;
     color: var(--muted);
-    font-size: var(--text-xs);
-    font-weight: 620;
+    font-size: var(--text-sm);
+    font-weight: 500;
   }
 
   .legal-table td:first-child {
-    color: var(--ink);
-    font-weight: 620;
+    font-weight: 600;
   }
 
   .legal-table td:first-child::before {
@@ -359,15 +399,17 @@ a.brand {
   }
 
   .legal-dialog .dialog-head {
-    padding: calc(10px + env(safe-area-inset-top)) 12px 6px 16px;
+    padding: calc(10px + env(safe-area-inset-top)) 12px 6px 18px;
   }
 
   .legal-dialog .dialog-body {
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
+}
 
-  .terms-card {
-    padding: 20px;
+@media (max-width: 560px) {
+  .terms-agree {
+    align-self: stretch;
   }
 }
 
@@ -385,11 +427,12 @@ a.brand {
 
   .terms-check {
     min-height: 44px;
-    align-items: center;
   }
 
   .landing-foot-links a,
   .legal-nav a {
-    padding: 10px 2px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }

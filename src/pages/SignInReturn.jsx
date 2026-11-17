@@ -1,5 +1,7 @@
+import { APP_NAME } from '../config.js';
 import { callbackErrorMessage } from '../lib/oauthClient.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
+import { LogoMark } from '../shell/bits.jsx';
 
 /**
  * A sign-in that came back without a session: declined at the consent
@@ -12,8 +14,14 @@ export default function SignInReturn({ error }) {
   const { session } = useAtprotoSession();
   const detail = error?.params?.get?.('error_description') || error?.message || String(error);
   return (
-    <div className="landing landing--center">
-      <main className="card return-card">
+    <div className="landing">
+      <header className="landing-bar">
+        <a href="/" className="brand" aria-label={`${APP_NAME}, to the front page`}>
+          <LogoMark />
+          <span className="brand-name">{APP_NAME}</span>
+        </a>
+      </header>
+      <main className="landing-narrow">
         <h1 className="return-title">Sign-in didn’t complete</h1>
         <p className="landing-lede">{callbackErrorMessage(error)}</p>
         <p>

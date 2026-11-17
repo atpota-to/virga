@@ -3,18 +3,27 @@
 // Each chart has a table twin; each page says how its numbers are counted,
 // folded away under "How this is counted"; each can add its main chart to a
 // dashboard and export what it shows.
+//
+// The header holds the period alone. What narrows a report (the kinds of
+// engagement, a direction) is the first row of its body, as small
+// segmented keys that scroll sideways when they don't fit. What can be done
+// with it (Export, Post this chart, Add to dashboard) sits on the line under
+// its lead chart, after Show as table, since that is what they act on; on
+// a phone they fold into a ⋯ at that line's end. Add to dashboard asks which
+// dashboard and how wide in a dialog.
 
-import { useMemo, useState } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownLeft,
   ArrowUpRight,
   AtSign,
+  ChevronDown,
+  ChevronUp,
   Download,
   Heart,
   ImageUp,
   LayoutDashboard,
   MessageCircle,
-  MessagesSquare,
   Quote,
   Repeat2,
 } from 'lucide-react';
@@ -23,21 +32,24 @@ import ChartTable from '../charts/ChartTable.jsx';
 import SeriesChart from '../charts/SeriesChart.jsx';
 import { fmtFigure, fmtRate, unitNoun } from '../charts/format.js';
 import Button from '../components/Button.jsx';
+import Dialog from '../components/Dialog.jsx';
 import Figures from '../components/Figures.jsx';
 import { FollowerCountTip } from '../components/InfoTip.jsx';
-import Menu from '../components/Menu.jsx';
-import Segmented from '../components/Segmented.jsx';
+import { MoreMenu } from '../components/Menu.jsx';
+import Segmented, { useOverflowEdge } from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportPosts, exportRows } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import { WIDGETS } from '../dashboards/catalog.js';
+import { SIZES, newId } from '../dashboards/layouts.js';
 import ShareDialog from '../share/ShareDialog.jsx';
 import { canShare } from '../share/shareSpec.js';
 import { ENGAGEMENT_KINDS, EVENT_KINDS, bucketLabel, engagementOf } from '../lib/analytics.js';
 import { Link, navigate, usePath } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
 import { PersonRow, useFollow, useWantActors } from '../people/people.jsx';
-import { PageHeader, PeriodPicker, periodPhrase, usePeriod, useToast } from '../shell/bits.jsx';
+import { PageHeader, PeriodPicker, periodPhrase, useIsNarrow, usePeriod, useToast } from '../shell/bits.jsx';
+import { kindsLine } from '../tools/interactionModel.js';
 import {
   GIVEN_NOUN,
   atmosphereModel,
@@ -55,7 +67,7 @@ import {
 import ChartNotes from './ChartNotes.jsx';
 import ContentReport from './ContentReport.jsx';
 import PostRow, { postText } from './PostRow.jsx';
-import { Card, HowCounted, ModeToggle, fig, unitOptions } from './parts.jsx';
+import { Card, HowCounted, ModeToggle, SyncEmpty, fig, unitOptions } from './parts.jsx';
 import { REPORTS, REPORT_BY_KEY } from './registry.js';
 import { useChartMarks } from './useAnnotations.js';
 import './reports.css';
@@ -97,23 +109,23 @@ export default function ReportPage({ reportKey }) {
   const archive = useArchive();
   const [period] = usePeriod();
   const report = REPORT_BY_KEY[reportKey];
-  const { dashboards, addWidget } = useDashboards();
-  const toast = useToast();
+  const [adding, setAdding] = useState(false);
   const [direction, setDirection] = useSearchParam('direction', 'received');
   const [kind, setKind] = useState('all');
   const [relation, setRelation] = useState('all');
   const [share, setShare] = useState(null);
+  const phone = useIsNarrow('(max-width: 560px)');
 
   if (!report) {
     return (
-      <div className="page-body">
-        <div className="card empty-page">
-          <h1 className="card-title">There’s no report called “{reportKey}”</h1>
-          <div>
+      <>
+        <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={`There’s no report called “${reportKey}”`} />
+        <div className="page-body">
+          <div className="empty-block">
             <Button onClick={() => navigate('/reports')}>See every report</Button>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -121,11 +133,13 @@ export default function ReportPage({ reportKey }) {
   const kinds = reportKey === 'people' ? EVENT_KINDS : ENGAGEMENT_KINDS;
   const showKind = reportKey === 'engagement' || reportKey === 'people';
   const nowMs = archive.nowMs;
+  const canPost = widget && canShare(widget.type) && direction !== 'given';
 
-  const filters = (
+  const filters = showKind && (
     <>
       {reportKey === 'engagement' && (
         <Segmented
+          size="sm"
           label="Direction"
           value={direction}
           onChange={setDirection}
@@ -135,90 +149,233 @@ export default function ReportPage({ reportKey }) {
           ]}
         />
       )}
-      {showKind && (
-        <Segmented
-          className="kind-filter"
-          label="Engagement type"
-          value={kind}
-          onChange={setKind}
-          options={kinds.map((k) => ({ value: k.key, label: k.label, icon: KIND_ICON[k.key], title: k.label }))}
-        />
-      )}
+      {reportKey === 'engagement' && <span className="report-filters-rule" aria-hidden="true" />}
+      <Segmented
+        size="sm"
+        className="kind-filter"
+        label="Engagement type"
+        value={kind}
+        onChange={setKind}
+        options={kinds.map((k) => ({ value: k.key, label: k.label, icon: KIND_ICON[k.key], title: k.label }))}
+      />
       {reportKey === 'people' && archive.meta.following && (
-        <Segmented
-          label="Show people"
-          value={relation}
-          onChange={setRelation}
-          options={[
-            { value: 'all', label: 'Everyone' },
-            { value: 'not', label: 'Not following' },
-            { value: 'following', label: 'Following' },
-          ]}
-        />
+        <>
+          <span className="report-filters-rule" aria-hidden="true" />
+          <Segmented
+            size="sm"
+            label="Show people"
+            value={relation}
+            onChange={setRelation}
+            options={[
+              { value: 'all', label: 'Everyone' },
+              { value: 'not', label: 'Not following' },
+              { value: 'following', label: 'Following' },
+            ]}
+          />
+        </>
       )}
     </>
   );
 
+  // What can be done with the report's lead chart: words with a line under
+  // them on the line under it, or a ⋯ at that line's end on a phone.
+  const exportIt = () => exportReport(archive, reportKey, period, nowMs);
+  const postIt = () => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} });
+  const moreActions = (
+    <MoreMenu
+      label={reportKey === 'people' ? 'More for this report' : 'More for this chart'}
+      items={[
+        { key: 'export', label: 'Export', icon: Download, onSelect: exportIt },
+        canPost && { key: 'post', label: 'Post this chart as a picture', icon: ImageUp, onSelect: postIt },
+        widget && { key: 'add', label: 'Add to dashboard', icon: LayoutDashboard, onSelect: () => setAdding(true) },
+      ]}
+    />
+  );
+  const wordActions = (
+    <>
+      <button type="button" className="link-action" onClick={exportIt}>
+        <Download size={14} aria-hidden="true" />
+        Export
+      </button>
+      {canPost && (
+        <button type="button" className="link-action" title={`${widget.name}, as a picture with its description`} onClick={postIt}>
+          <ImageUp size={14} aria-hidden="true" />
+          Post this chart
+        </button>
+      )}
+      {widget && (
+        <button type="button" className="link-action" aria-haspopup="dialog" onClick={() => setAdding(true)}>
+          <LayoutDashboard size={14} aria-hidden="true" />
+          Add to dashboard
+        </button>
+      )}
+    </>
+  );
+  const props = { archive, period, nowMs, actions: phone ? moreActions : wordActions };
+  const people = reportKey === 'people';
+
   return (
     <>
-      <PageHeader
-        crumbs={[{ label: 'Reports', to: '/reports' }]}
-        title={report.label}
-        sub={report.desc}
-        actions={
-          <>
-            <PeriodPicker />
-            <Button onClick={() => exportReport(archive, reportKey, period, nowMs)}>
-              <Download size={15} aria-hidden="true" />
-              Export
-            </Button>
-            {widget && canShare(widget.type) && direction !== 'given' && (
-              <Button onClick={() => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} })} title={`${widget.name}, as a picture with its description`}>
-                <ImageUp size={15} aria-hidden="true" />
-                Post this chart
-              </Button>
-            )}
-            {widget && (
-              <Menu
-                label="Add to dashboard"
-                size="md"
-                items={dashboards.map((d) => ({
-                  icon: LayoutDashboard,
-                  label: d.name,
-                  hint: d.widgets.some((w) => w.type === widget.type) ? `${widget.name} is already on it` : `Add ${widget.name}`,
-                  onSelect: () => {
-                    addWidget(d.id, widget.type);
-                    toast?.(`${widget.name} added to ${d.name}.`);
-                  },
-                }))}
-              >
-                <LayoutDashboard size={15} aria-hidden="true" />
-                Add to dashboard
-              </Menu>
-            )}
-          </>
-        }
-      >
-        {(showKind || reportKey === 'engagement') && <div className="report-filters">{filters}</div>}
-      </PageHeader>
+      <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={report.label} sub={report.desc} actions={<PeriodPicker />} />
       <div className="page-body">
-        {reportKey === 'followers' && <FollowersReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'blocks' && <BlocksReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'posts' && <PostsReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'content' && <ContentReport archive={archive} period={period} nowMs={nowMs} />}
-        {reportKey === 'engagement' && direction !== 'given' && (
-          <EngagementReport archive={archive} period={period} nowMs={nowMs} kind={kind === 'mention' ? 'all' : kind} />
+        {/* People has no chart to put its actions under, so they end its
+            filter row instead. */}
+        {filters && (
+          <ReportFilters actions={people ? wordActions : null} more={people ? moreActions : null} fold={phone}>
+            {filters}
+          </ReportFilters>
         )}
-        {reportKey === 'engagement' && direction === 'given' && (
-          <GivenReport archive={archive} period={period} nowMs={nowMs} kind={kind === 'mention' ? 'all' : kind} />
-        )}
-        {reportKey === 'people' && (
-          <PeopleReport archive={archive} period={period} nowMs={nowMs} kind={kind} relation={archive.meta.following ? relation : 'all'} />
-        )}
-        {reportKey === 'atmosphere' && <AtmosphereReport archive={archive} period={period} nowMs={nowMs} />}
+        {reportKey === 'followers' && <FollowersReport {...props} />}
+        {reportKey === 'blocks' && <BlocksReport {...props} />}
+        {reportKey === 'posts' && <PostsReport {...props} />}
+        {reportKey === 'content' && <ContentReport {...props} />}
+        {reportKey === 'engagement' && direction !== 'given' && <EngagementReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
+        {reportKey === 'engagement' && direction === 'given' && <GivenReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
+        {reportKey === 'people' && <PeopleReport {...props} kind={kind} relation={archive.meta.following ? relation : 'all'} />}
+        {reportKey === 'atmosphere' && <AtmosphereReport {...props} />}
       </div>
+      {/* Keyed by the report, so it asks afresh which dashboard on the next one. */}
+      {widget && adding && <AddToDashboard key={reportKey} widget={widget} onClose={() => setAdding(false)} />}
       <ShareDialog share={share} archive={archive} period={period} nowMs={nowMs} onClose={() => setShare(null)} />
     </>
+  );
+}
+
+/**
+ * The first row of a report that can be narrowed: its groups of small keys,
+ * a hairline between groups, in one row that scrolls sideways rather than
+ * wrap. Alone on its line it runs to the screen's edges; with `actions`
+ * after it (People's), it stops short of them and they keep the line's end.
+ *
+ * The actions are words where the filters leave room for them, and `more`,
+ * a ⋯ holding the same, where they don't (and always when `fold`, on a
+ * phone). Either way the line stays one line: the words never push a group
+ * of filters out of sight, and never drop to a line of their own between
+ * the filters and the list they narrow.
+ */
+function ReportFilters({ actions = null, more = null, fold = false, children }) {
+  const rowRef = useRef(null);
+  const barRef = useRef(null);
+  const wordsRef = useRef(null);
+  // The words' width, kept from when they were last shown, so the ⋯ can
+  // tell when there is room to give them back.
+  const wordsWidth = useRef(0);
+  const [cramped, setCramped] = useState(false);
+  useOverflowEdge(rowRef);
+  const hasActions = Boolean(actions);
+  useLayoutEffect(() => {
+    const bar = barRef.current;
+    const row = rowRef.current;
+    if (!hasActions || !bar || !row) return undefined;
+    const check = () => {
+      if (wordsRef.current) wordsWidth.current = wordsRef.current.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(bar).columnGap) || 0;
+      setCramped(row.scrollWidth + gap + wordsWidth.current > bar.clientWidth + 0.5);
+    };
+    check();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(check);
+    observer.observe(bar);
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [hasActions]);
+  const row = (
+    <div ref={rowRef} className={`report-filters scroll-row${hasActions ? '' : ' scroll-row--bleed'}`}>
+      {children}
+    </div>
+  );
+  if (!hasActions) return row;
+  const folded = fold || cramped;
+  return (
+    <div ref={barRef} className="report-filter-bar">
+      {row}
+      <div ref={folded ? null : wordsRef} className="report-filter-actions">
+        {folded ? more : actions}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Add to dashboard: which dashboard (or a new one), how wide, and the
+ * button that does it. The first dashboard that doesn't have the chart yet
+ * is the one picked to start with.
+ */
+function AddToDashboard({ widget, onClose }) {
+  const { dashboards, addDashboard, addWidget } = useDashboards();
+  const toast = useToast();
+  const formId = useId();
+  const has = (d) => d.widgets.some((w) => w.type === widget.type);
+  const [target, setTarget] = useState(() => (dashboards.find((d) => !has(d)) || dashboards[0])?.id || 'new');
+  const [size, setSize] = useState(widget.defaultSize);
+  const chosen = dashboards.find((d) => d.id === target) || null;
+  const targetName = chosen ? chosen.name : 'a new dashboard';
+  const choices = [...dashboards.map((d) => ({ id: d.id, label: d.name, desc: has(d) ? 'Already on it' : null })), { id: 'new', label: 'A new dashboard', desc: null }];
+  return (
+    <Dialog
+      open
+      onClose={onClose}
+      // The footer names the dashboard, which can be too long for half a
+      // phone's width.
+      className="dialog--stack-actions"
+      title={`Add ${widget.name} to a dashboard`}
+      actions={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" form={formId}>
+            Add to {targetName}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id={formId}
+        className="dialog-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (chosen) {
+            addWidget(chosen.id, widget.type, null, size);
+            toast?.(`${widget.name} added to ${chosen.name}.`);
+          } else {
+            // The new dashboard is named for the chart it starts with.
+            const id = newId('d');
+            addDashboard({ name: widget.name, id });
+            addWidget(id, widget.type, null, size);
+            toast?.(
+              <>
+                {widget.name} is on a new dashboard. <Link to={`/dashboard/${id}`}>Open it</Link>
+              </>,
+            );
+          }
+          onClose();
+        }}
+      >
+        <fieldset className="field choice-list">
+          <legend className="field-label">Dashboard</legend>
+          {choices.map((c) => (
+            <label key={c.id} className="choice" data-on={target === c.id || undefined}>
+              <input type="radio" name="add-to" checked={target === c.id} onChange={() => setTarget(c.id)} data-autofocus={target === c.id || undefined} />
+              <span>
+                <span className="choice-label">{c.label}</span>
+                {c.desc && <span className="choice-desc">{c.desc}</span>}
+              </span>
+            </label>
+          ))}
+        </fieldset>
+        {widget.sizes.length > 1 && (
+          <div className="field">
+            <span className="field-label">Size</span>
+            <Segmented
+              size="sm"
+              label="Size"
+              value={size}
+              onChange={setSize}
+              options={widget.sizes.map((k) => ({ value: k, label: SIZES[k].label, title: SIZES[k].name, ariaLabel: SIZES[k].name }))}
+            />
+          </div>
+        )}
+      </form>
+    </Dialog>
   );
 }
 
@@ -249,27 +406,30 @@ export function ReportsIndex() {
     <>
       <PageHeader title="Reports" sub="Every number Virga works out, one page each." actions={<PeriodPicker />} />
       <div className="page-body">
-        <div className="report-index">
+        {/* Each report as its leading figure, under a rule: the number is the way in. */}
+        <ul className="report-index">
           {REPORTS.map((r) => {
             const Icon = r.icon;
             const h = headline[r.key];
             return (
-              <Link key={r.key} to={`/reports/${r.key}`} className="card report-tile">
-                <span className="report-tile-icon" aria-hidden="true">
-                  <Icon size={18} />
-                </span>
-                <span className="report-tile-name">{r.label}</span>
-                <span className="report-tile-desc">{r.desc}</span>
-                {h && (
-                  <span className="report-tile-figure">
-                    <span className="num">{h[0]}</span>
-                    <span className="muted">{h[1]}</span>
+              <li key={r.key}>
+                <Link to={`/reports/${r.key}`} className="report-tile" title={r.desc}>
+                  <span className="report-tile-name">
+                    <Icon size={14} aria-hidden="true" />
+                    {r.label}
                   </span>
-                )}
-              </Link>
+                  {h && (
+                    <span className="report-tile-figure">
+                      <span className="report-tile-value num">{h[0]}</span>
+                      <span className="report-tile-note num">{h[1]}</span>
+                    </span>
+                  )}
+                  <span className="report-tile-desc">{r.desc}</span>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </>
   );
@@ -280,7 +440,7 @@ function contentHeadline(m) {
   const withTypical = m.formats.filter((f) => f.typical != null);
   if (withTypical.length > 1) {
     const best = withTypical.reduce((a, b) => (b.typical > a.typical ? b : a));
-    return [fmtRate(best.typical), `a typical ${best.label.toLowerCase()} post earns`];
+    return [fmtRate(best.typical), `a typical ${best.label.toLowerCase().replace(/ post$/, '')} post earns`];
   }
   return [m.typical == null ? '—' : fmtRate(m.typical), 'a typical post earns'];
 }
@@ -319,7 +479,7 @@ function exportReport(archive, key, period, nowMs) {
 /* Followers                                                            */
 /* ================================================================== */
 
-function FollowersReport({ archive, period, nowMs }) {
+function FollowersReport({ archive, period, nowMs, actions }) {
   const [mode, setMode] = useState('cumulative');
   const unitPick = mode !== 'cumulative' && mode !== 'together' ? mode : null;
   const m = followersModel(archive, period, nowMs, { unit: unitPick });
@@ -333,7 +493,7 @@ function FollowersReport({ archive, period, nowMs }) {
   const marks = useChartMarks(archive, series, m.unit, { milestones: true });
 
   if (!archive.followers.length) {
-    return <p className="card empty">Your followers haven’t been read yet. Run a sync to gather the list.</p>;
+    return <SyncEmpty archive={archive}>Your followers haven’t been read yet. Run a sync to gather the list.</SyncEmpty>;
   }
 
   const postsByDay = new Map();
@@ -404,6 +564,7 @@ function FollowersReport({ archive, period, nowMs }) {
           unit={m.unit}
           valueHead={cumulative ? 'Followers' : 'New followers'}
           secondaryHead={together ? 'Blocks' : null}
+          actions={actions}
         />
       </Card>
       <div className="report-split">
@@ -411,7 +572,7 @@ function FollowersReport({ archive, period, nowMs }) {
           {newest.length ? (
             <ul className="widget-rows report-rows">
               {newest.map((f) => (
-                <PersonRow key={f.did} archive={archive} did={f.did} meta={`followed ${relativeTime(f.atMs)}`} follow={follow} followLabel="Follow back" />
+                <PersonRow key={f.did} archive={archive} did={f.did} meta={`followed ${relativeTime(f.atMs)}`} follow={follow} followLabel="Follow back" rel={false} />
               ))}
             </ul>
           ) : (
@@ -469,12 +630,12 @@ function FollowersReport({ archive, period, nowMs }) {
 /* Blocks                                                               */
 /* ================================================================== */
 
-function BlocksReport({ archive, period, nowMs }) {
+function BlocksReport({ archive, period, nowMs, actions }) {
   const [mode, setMode] = useState('cumulative');
   const unitPick = !['cumulative', 'stacked', 'together'].includes(mode) ? mode : null;
   const m = blocksModel(archive, period, nowMs, { unit: unitPick });
   if (!archive.meta.blocks) {
-    return <p className="card empty">Blocks haven’t been read yet. Run a sync to build this timeline.</p>;
+    return <SyncEmpty archive={archive}>Blocks haven’t been read yet. Run a sync to build this timeline.</SyncEmpty>;
   }
   const together = mode === 'together';
   const stacked = mode === 'stacked';
@@ -529,6 +690,7 @@ function BlocksReport({ archive, period, nowMs }) {
           unit={m.unit}
           valueHead={together ? 'Followers' : stacked ? 'Direct' : cumulative ? 'Block reach' : 'New blocks'}
           secondaryHead={secondary?.label || null}
+          actions={actions}
         />
       </Card>
       <HowCounted>
@@ -552,11 +714,11 @@ function BlocksReport({ archive, period, nowMs }) {
 /* Posts                                                                */
 /* ================================================================== */
 
-function PostsReport({ archive, period, nowMs }) {
+function PostsReport({ archive, period, nowMs, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const m = postsModel(archive, period, nowMs, { unit: unitPick });
   const marks = useChartMarks(archive, m.counts, m.unit);
-  if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
+  if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   const pct = (n) => (m.count ? Math.round((n / m.count) * 100) : 0);
   return (
     <>
@@ -580,12 +742,11 @@ function PostsReport({ archive, period, nowMs }) {
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, 'Posts')} />}
         >
           <SeriesChart series={m.counts} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`Posts per ${m.unit} over ${periodPhrase(period)}`} />
-          <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" />
+          <ChartTable series={m.counts} trend={m.trend} unit={m.unit} valueHead="Posts" actions={actions} />
         </Card>
         <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString(activeLocale())} in the window`}>
           <BarList
             ariaLabel="Posts by kind"
-            labelWidth="110px"
             max={m.count || 1}
             rows={[
               { key: 'standalone', label: 'Standalone', value: m.originals - m.quotes },
@@ -611,13 +772,13 @@ function PostsReport({ archive, period, nowMs }) {
 /* Engagement                                                           */
 /* ================================================================== */
 
-function EngagementReport({ archive, period, nowMs, kind }) {
+function EngagementReport({ archive, period, nowMs, kind, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const [rateUnitPick, setRateUnitPick] = useState(null);
   const m = engagementModel(archive, period, nowMs, { kind, unit: unitPick, rateUnit: rateUnitPick });
   const marks = useChartMarks(archive, m.series, m.unit);
   const rateMarks = useChartMarks(archive, m.rate, m.rateUnit);
-  if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
+  if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label;
   const lower = (head || '').toLowerCase();
   return (
@@ -647,11 +808,11 @@ function EngagementReport({ archive, period, nowMs, kind }) {
           tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, head)} />}
         >
           <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} marks={marks} ariaLabel={`${head} on posts made each ${m.unit}, over ${periodPhrase(period)}`} />
-          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} />
+          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={head} actions={actions} />
         </Card>
         {kind === 'all' && (
           <Card title="By type" sub={`Of ${m.total.toLocaleString(activeLocale())} in the window`}>
-            <BarList ariaLabel="Engagement by type" labelWidth="96px" rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))} />
+            <BarList ariaLabel="Engagement by type" rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))} />
           </Card>
         )}
       </div>
@@ -697,11 +858,11 @@ function EngagementReport({ archive, period, nowMs, kind }) {
   );
 }
 
-function GivenReport({ archive, period, nowMs, kind }) {
+function GivenReport({ archive, period, nowMs, kind, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const m = givenModel(archive, period, nowMs, { kind, unit: unitPick });
   if (!archive.posts.length && !archive.outbound.length) {
-    return <p className="card empty">Nothing given on record yet. Run a sync to build the archive.</p>;
+    return <SyncEmpty archive={archive}>Nothing given on record yet. Run a sync to build the archive.</SyncEmpty>;
   }
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label || 'Engagement';
   const coverageMs = archive.meta.outbound?.coverageMs || 0;
@@ -721,13 +882,12 @@ function GivenReport({ archive, period, nowMs, kind }) {
       <div className="report-split report-split--wide">
         <Card title={`${head} given per ${unitNoun(m.unit)}`} sub="Counted on the day you gave it" tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, `${head} given`)} />}>
           <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`${head} given per ${m.unit} over ${periodPhrase(period)}`} />
-          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={`${head} given`} />
+          <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead={`${head} given`} actions={actions} />
         </Card>
         {kind === 'all' && (
           <Card title="By type">
             <BarList
               ariaLabel="Engagement given by type"
-              labelWidth="96px"
               rows={m.byKind.map((k) => ({ key: k.kind, label: GIVEN_NOUN[k.kind].charAt(0).toUpperCase() + GIVEN_NOUN[k.kind].slice(1), icon: KIND_ICON[k.kind], value: k.count }))}
             />
           </Card>
@@ -777,12 +937,11 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
     },
   };
 
-  const detail = (r) =>
-    Object.entries(r.byKind)
-      .sort((a, b) => b[1] - a[1])
-      .map(([k, n]) => `${n} ${k}${n === 1 ? '' : 's'}`)
-      .join(', ');
+  const detail = (r) => kindsLine(r.byKind, { byCount: true });
 
+  // Under each list the same foot, Show 12 more and then "12 of 64". What
+  // is worth saying about a whole list is a caption under it, so both
+  // headings are one line and their rules line up side by side.
   const list = (rows, ranked, side, empty) => (
     <>
       {rows.length ? (
@@ -807,34 +966,28 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
     </>
   );
 
-  const inCoverage =
+  const inCaption = [
+    archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow.` : null,
     m.inOldest != null && period.days && m.inOldest > m.inT0
       ? `Notifications reach back to ${formatDateShort(m.inOldest)} so far, so earlier events in this window are outside them.`
-      : null;
+      : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <>
       <div className="report-split">
-        <Card
-          title={
-            <>
-              <MessagesSquare size={16} aria-hidden="true" /> They engage with you
-            </>
-          }
-          sub={archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow` : null}
-          className="card--flush"
-        >
-          {list(inTop, inRanked, 'in', relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.')}
-          {inCoverage && <p className="card-caption">{inCoverage}</p>}
+        <Card title="They engage with you" className="card--flush">
+          {list(
+            inTop,
+            inRanked,
+            'in',
+            relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.',
+          )}
+          {inCaption && <p className="card-caption">{inCaption}</p>}
         </Card>
-        <Card
-          title={
-            <>
-              <Heart size={16} aria-hidden="true" /> You engage with them
-            </>
-          }
-          className="card--flush"
-        >
+        <Card title="You engage with them" className="card--flush">
           {kind === 'mention'
             ? <p className="empty">Mentions are counted inbound only.</p>
             : list(outTop, outRanked, 'out', relation === 'not' && m.outbound.length ? 'You already follow everyone you engaged with in this window.' : 'You haven’t engaged with anyone in this window.')}
@@ -859,26 +1012,16 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
 /* Atmosphere                                                           */
 /* ================================================================== */
 
-function AtmosphereReport({ archive, period, nowMs }) {
+function AtmosphereReport({ archive, period, nowMs, actions }) {
   const [unitPick, setUnitPick] = useState(null);
   const [more, setMore] = useState(false);
   const m = atmosphereModel(archive, period, nowMs, { unit: unitPick });
   if (!m) {
     return (
-      <div className="card empty-page">
-        <h2 className="card-title">The whole repo, not just Bluesky</h2>
-        <p className="card-sub">
-          A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got
-          written when. {archive.sync ? 'Syncing now…' : ''}
-        </p>
-        {!archive.sync && (
-          <div>
-            <Button variant="primary" onClick={() => archive.runSync('incremental')}>
-              Sync now
-            </Button>
-          </div>
-        )}
-      </div>
+      <SyncEmpty archive={archive}>
+        A sync downloads your repo’s own archive, every record in every collection back to the very first, and charts what got written
+        when.
+      </SyncEmpty>
     );
   }
   const shown = more ? m.ranked : m.ranked.slice(0, 16);
@@ -895,19 +1038,22 @@ function AtmosphereReport({ archive, period, nowMs }) {
       />
       <Card title={`Records written per ${unitNoun(m.unit)}`} sub="Every app, every collection" tools={<ModeToggle value={m.unit} onChange={setUnitPick} options={unitOptions(m.units, 'Records')} />}>
         <SeriesChart series={m.series} trend={m.trend} mode="bars" unit={m.unit} height={260} ariaLabel={`Records written to the repo per ${m.unit} over ${periodPhrase(period)}`} />
-        <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead="Records" />
+        <ChartTable series={m.series} trend={m.trend} unit={m.unit} valueHead="Records" actions={actions} />
       </Card>
       <Card title="By collection" sub="Which apps write to your repo, and how much">
         {shown.length ? (
-          <BarList ariaLabel="Records by collection" labelWidth="1.6fr" rows={shown.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))} />
+          <BarList ariaLabel="Records by collection" rows={shown.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))} />
         ) : (
           <p className="empty">No records written in this window.</p>
         )}
+        {/* A bar list's line under it, as Content's have: every bar is one
+            more thing to do with the chart, not a list's "Show N more". */}
         {m.ranked.length > 16 && (
-          <div className="card-foot">
-            <Button size="sm" variant="ghost" onClick={() => setMore((v) => !v)}>
+          <div className="chart-foot">
+            <button type="button" className="link-action" onClick={() => setMore((v) => !v)}>
+              {more ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
               {more ? 'Show fewer' : `Show all ${m.ranked.length} collections`}
-            </Button>
+            </button>
           </div>
         )}
       </Card>

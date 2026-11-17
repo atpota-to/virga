@@ -1,12 +1,12 @@
 // The signed-in app: sidebar (or, on a phone, an app bar and tabs), the page
 // the address names, and the sync's state wherever there is room for it.
-// Behind it all, only when it has been asked for, the live sky. Toasts and
-// the composer are mounted above it in App.jsx, so they outlive a switch of
-// account, which remounts this.
+// The sky behind it is the page's own background (styles/base.css); the live
+// one, only when it has been asked for, is drawn over the top of that.
+// Toasts and the composer are mounted above it in App.jsx, so they outlive a
+// switch of account, which remounts this.
 
 import { useEffect, useRef, useState } from 'react';
-import Hillside from '../hillside/Hillside.jsx';
-import { useSkyPhase } from '../hillside/useSkyPhase.js';
+import LiveSky from '../hillside/LiveSky.jsx';
 import Button from '../components/Button.jsx';
 import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
@@ -27,8 +27,8 @@ import FirstRun from './FirstRun.jsx';
 import Sidebar from './Sidebar.jsx';
 import { AppBar, TabBar } from './MobileNav.jsx';
 import { SyncBanner } from './SyncStatus.jsx';
-import { useIsNarrow } from './bits.jsx';
-import { needsArchive as routeNeedsArchive, opensBeforeArchive, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
+import { PageHeader, useIsNarrow } from './bits.jsx';
+import { needsArchive as routeNeedsArchive, opensBeforeArchive, parentOf, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
 import { isNewPostShortcut, isPaletteShortcut } from './shortcuts.js';
 import CommandPalette from './CommandPalette.jsx';
 import './shell.css';
@@ -64,8 +64,9 @@ export default function Shell({ profile, did, onSignOut }) {
 
   const built = isBuilt(archive);
   const needsArchive = routeNeedsArchive(route);
-  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built });
-  const skyHere = prefs.sky && (prefs.skyScope === 'everywhere' || route.section === 'dashboard');
+  // The first build's own page shows every step of the sync, so the strip
+  // and the sidebar's progress would only say it twice.
+  const firstRun = archive.loaded && needsArchive && !built;
 
   let page;
   if (opensBeforeArchive(route)) {
@@ -78,7 +79,7 @@ export default function Shell({ profile, did, onSignOut }) {
         <PostingPage pageKey={route.page} id={route.id} did={did} />
       );
   } else if (!archive.loaded) page = <p className="page-loading">Opening your archive…</p>;
-  else if (needsArchive && !built) page = <FirstRun archive={archive} />;
+  else if (firstRun) page = <FirstRun archive={archive} />;
   else if (route.section === 'dashboard') page = dashboard ? <DashboardPage key={customizing} dashboard={dashboard} /> : null;
   else if (route.section === 'reports') page = route.page ? <ReportPage reportKey={route.page} /> : <ReportsIndex />;
   else if (route.section === 'tools') page = route.page ? <ToolPage toolKey={route.page} /> : <ToolsIndex />;
@@ -101,21 +102,18 @@ export default function Shell({ profile, did, onSignOut }) {
   }, [title]);
 
   return (
-    <div className="shell" data-sidebar={prefs.sidebar} data-sky={skyHere || undefined}>
+    <div className="shell" data-sidebar={prefs.sidebar}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      {skyHere && (
-        <div className="shell-sky" aria-hidden="true">
-          <Hillside phase={sky} depth={0.8} />
-        </div>
-      )}
+      {prefs.liveSky && <LiveSky />}
       {!narrow && (
         <Sidebar
           archive={archive}
           route={{ ...route, dashboard: dashboard?.id || route.dashboard }}
           profile={profile}
           did={did}
+          firstRun={firstRun}
           onSignOut={onSignOut}
           onNewDashboard={() => setCreating(true)}
           onNewPost={() => composer.open({})}
@@ -123,23 +121,13 @@ export default function Shell({ profile, did, onSignOut }) {
         />
       )}
       <div className="shell-main">
-        {narrow && (
-          <AppBar
-            archive={archive}
-            title={route.section === 'posting' ? postingTitle(route) : SECTION_TITLE[route.section]}
-            profile={profile}
-            did={did}
-            onSignOut={onSignOut}
-            onNewPost={() => composer.open({})}
-            onSearch={() => setSearching(true)}
-          />
-        )}
-        {(narrow || prefs.sidebar === 'collapsed') && <SyncBanner archive={archive} />}
+        {narrow && <AppBar archive={archive} profile={profile} did={did} back={parentOf(route)} onSignOut={onSignOut} onSearch={() => setSearching(true)} />}
+        {(narrow || prefs.sidebar === 'collapsed') && !firstRun && <SyncBanner archive={archive} />}
         <main id="main" className="shell-content" tabIndex={-1}>
           {page}
         </main>
       </div>
-      {narrow && <TabBar route={route} dashboardId={dashboard?.id || lastDashboard || dashboards[0]?.id} />}
+      {narrow && <TabBar route={route} dashboardId={dashboard?.id || lastDashboard || dashboards[0]?.id} onNewPost={() => composer.open({})} />}
       <NewDashboardDialog
         open={creating}
         onClose={() => setCreating(false)}
@@ -241,18 +229,16 @@ function useLastDashboard(route, dashboards) {
   return last && dashboards.some((d) => d.id === last) ? last : null;
 }
 
+/** An address that names nothing: the usual header, and the one way on. */
 function NotFound() {
   return (
-    <div className="page-body">
-      <div className="card empty-page">
-        <h1 className="card-title">There’s nothing at this address</h1>
-        <p className="card-sub">It may have been a dashboard that was since deleted.</p>
-        <div>
-          <Button variant="primary" onClick={() => navigate('/')}>
-            Go to your dashboard
-          </Button>
+    <>
+      <PageHeader title="There’s nothing at this address" sub="It may have been a dashboard that was since deleted." />
+      <div className="page-body">
+        <div className="empty-block">
+          <Button onClick={() => navigate('/')}>Go to your dashboard</Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

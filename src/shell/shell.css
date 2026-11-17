@@ -1,13 +1,72 @@
 /* The shell: sidebar, page header, the phone's bars, the sync's places,
-   dialogs and toasts. */
+   dialogs and toasts.
+
+   The shell paints nothing behind itself: the sky is the page's own
+   background (styles/base.css), and the sidebar and the page's title sit
+   straight on it. On a wide screen the whole of it (sidebar and page) is
+   held to --shell-max and centred, so the two stay together. */
 
 .shell {
+  position: relative;
   display: flex;
+  max-width: var(--shell-max);
   min-height: 100svh;
-  background: var(--bg);
+  margin: 0 auto;
+}
+
+/* The folded rail keeps to the screen's left edge, where it is reached
+   for; the page's column centres itself in what is left. */
+.shell[data-sidebar='collapsed'] {
+  max-width: none;
+}
+
+/* A figure's value (theme.css --figure-size) is sized from the page's
+   column, not from the cell it is in, so every figure on a page is the
+   same size: on a dashboard, a report and the index, four to a row or two.
+   It is 26% of the width a cell would have four to a row (32px between
+   them), up to --text-figure, and no smaller than a phone's 40px except on
+   a phone. The column is what the sidebar (or the rail) and the page's
+   margins leave, up to --content-max. Each step says the whole of it
+   again: a var() in a custom property is read where it is declared. */
+.shell {
+  --figure-size: min(
+    var(--text-figure),
+    max(2.5rem, calc((min(var(--content-max), 100vw - var(--sidebar-w) - var(--page-pad) * 2) - 96px) / 4 * 0.26))
+  );
+}
+
+.shell[data-sidebar='collapsed'] {
+  --figure-size: min(
+    var(--text-figure),
+    max(2.5rem, calc((min(var(--content-max), 100vw - var(--rail-w) - var(--page-pad) * 2) - 96px) / 4 * 0.26))
+  );
+}
+
+@media (max-width: 899px) {
+  .shell,
+  .shell[data-sidebar='collapsed'] {
+    --figure-size: min(var(--text-figure), max(2.5rem, calc((100vw - var(--page-pad) * 2 - 96px) / 4 * 0.26)));
+  }
+}
+
+/* Two to a row, 20px apart. */
+@media (max-width: 560px) {
+  .shell,
+  .shell[data-sidebar='collapsed'] {
+    --figure-size: min(var(--text-figure), calc((100vw - var(--page-pad) * 2 - 20px) / 2 * 0.26));
+  }
+}
+
+/* Customizing a dashboard asks for a wider column (dashboards.css): the
+   shell widens to hold it, so the cards and the library get that room on
+   a wide screen. */
+.shell:has(.dash-page[data-editing]) {
+  --shell-max: calc(var(--sidebar-w) + 1320px + var(--page-pad) * 2);
 }
 
 .shell-main {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -21,50 +80,19 @@
 }
 
 .page-loading {
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
   padding: var(--space-7) var(--page-pad);
   color: var(--muted);
   font-size: var(--text-md);
 }
 
-/* ---- the live sky --------------------------------------------------- */
-
-.shell-sky {
-  --crest: calc(100svh - 150px);
-  --hill-blur: 6px;
-  position: fixed;
-  z-index: 0;
-  inset: 0;
-  pointer-events: none;
-}
-
-.shell[data-sky] {
-  background: transparent;
-}
-
-/* Both sit above the sky; the sidebar stays sticky, and above the page so a
-   menu hanging out of it isn't painted over. */
-.shell[data-sky] .shell-main {
-  position: relative;
-  z-index: 1;
-}
-
-.shell[data-sky] .sidebar {
-  z-index: 2;
-}
-
-.shell[data-sky] .page-header {
-  border-bottom-color: transparent;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(10px);
-}
-
-.shell[data-sky] .sidebar {
-  background: color-mix(in srgb, var(--surface-2) 94%, transparent);
-  backdrop-filter: blur(10px);
-}
-
 /* ---- sidebar -------------------------------------------------------- */
 
+/* No ground and no edge: it sits on the sky, and stays put while the page
+   scrolls under the sky and away. It starts where the page's title does
+   (--page-top, which Compact tightens), so the mark and the title share a
+   line. */
 .sidebar {
   position: sticky;
   z-index: 25;
@@ -72,32 +100,185 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   width: var(--sidebar-w);
   height: 100svh;
-  padding: 14px 12px 12px;
-  border-right: 1px solid var(--line);
-  background: var(--surface-2);
+  padding: var(--page-top) 16px 24px 36px;
 }
 
 /* Only the middle scrolls. The sidebar itself doesn't, so a menu hanging
-   from the account button at its top (or the rail's foot) isn't clipped. */
+   from the account button at its top (or the rail's foot) isn't clipped,
+   and the archive's few lines stay pinned to its foot. It is let out on
+   every side (and padded back by as much), so a focus ring round the first
+   or last link isn't cut off by its clipping. When there is more of it
+   than shows (a short screen), the edge with more behind it fades:
+   Sidebar.jsx keeps data-overflow on it. */
 .sidebar-scroll {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   min-height: 0;
-  margin: 0 -12px;
-  padding: 0 12px 2px;
+  margin: -4px -16px -2px -36px;
+  padding: 4px 16px 4px 36px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
-.sidebar[data-collapsed] .sidebar-scroll {
+.sidebar-scroll[data-overflow='end'] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+}
+
+.sidebar-scroll[data-overflow='start'] {
+  -webkit-mask-image: linear-gradient(to top, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to top, #000 calc(100% - 24px), transparent);
+}
+
+.sidebar-scroll[data-overflow='both'] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+/* A laptop's short screen: the open sidebar's parts sit closer, and the
+   archive's card keeps its first line and Sync now, without the counts
+   (Settings › Data has them), so the parts' list stays whole as often as
+   it can. A sync's step stays. */
+@media (min-width: 900px) and (max-height: 860px) {
+  .sidebar:not([data-collapsed]) {
+    gap: 16px;
+  }
+
+  .sidebar .sync-card-counts {
+    display: none;
+  }
+}
+
+/* As tall as the page title's line, so the mark is centred on it. */
+.sidebar-top {
+  display: flex;
   align-items: center;
-  margin: 0 -10px;
-  padding: 0 10px 2px;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 35px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.brand-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.logo-mark {
+  flex: none;
+}
+
+/* Folding is a thing you do once in a while: its button waits until the
+   sidebar is pointed at, where there is a pointer to do that with. */
+.sidebar-fold {
+  margin-right: -6px;
+}
+
+@media (hover: hover) {
+  .sidebar-fold {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .sidebar:hover .sidebar-fold,
+  .sidebar-fold:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* The account button: avatar, name and handle, with no box round them. */
+.account-menu {
+  width: 100%;
+}
+
+.account-menu > .menu-button {
+  justify-content: flex-start;
+  gap: 10px;
+  width: calc(100% + 12px);
+  min-height: 42px;
+  margin: -6px;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 400;
+  text-align: left;
+}
+
+@media (hover: hover) {
+  .account-menu > .menu-button:hover:not(:disabled) {
+    background: var(--tint);
+  }
+}
+
+.account-menu > .menu-button .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--text-xs);
+}
+
+.account-menu--compact {
+  width: auto;
+}
+
+.account-menu--compact > .menu-button {
+  width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+}
+
+.account-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.account-name,
+.account-handle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.account-handle {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+/* New post, and the way into search: the same width, one under the other. */
+.sidebar-do {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .sidebar-new-post {
@@ -105,13 +286,9 @@
   width: 100%;
 }
 
-.sidebar[data-collapsed] .sidebar-new-post {
-  width: 40px;
-  height: 40px;
-}
-
 /* "Search or jump to": shaped like a field, because pressing it gives one
-   (the command palette), with the shortcut that does the same at its end. */
+   (the command palette), with the shortcut that does the same at its end.
+   A pale pane on the sky, and an outline on the page. */
 .sidebar-search {
   display: flex;
   flex: none;
@@ -119,15 +296,16 @@
   gap: 8px;
   width: 100%;
   min-height: var(--control-h);
-  margin-top: -8px;
-  padding: 0 6px 0 10px;
-  border: 1px solid var(--line);
+  padding: 0 8px 0 12px;
+  border: 0;
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
   color: var(--muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
+  transition: box-shadow 0.12s ease;
 }
 
 .sidebar-search > svg {
@@ -142,211 +320,213 @@
   white-space: nowrap;
 }
 
+.sidebar-search .kbd {
+  border: 0;
+  background: transparent;
+  font-size: var(--text-xs);
+}
+
 @media (hover: hover) {
   .sidebar-search:hover {
-    border-color: var(--line-2);
+    box-shadow: inset 0 0 0 1px var(--line-2);
     color: var(--ink-2);
   }
 }
 
-.sidebar-search-icon {
-  flex: none;
-  margin-top: -8px;
-}
-
-.sidebar[data-collapsed] {
-  align-items: center;
-  width: var(--rail-w);
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.sidebar-top {
+/* The five parts, as words. The one you are in is in ink and opened out
+   into its pages, on a hairline rail; the page you are on has a dot in the
+   accent on that rail. */
+.nav {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.sidebar[data-collapsed] .sidebar-top {
   flex-direction: column;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 2px 6px;
-  border: 0;
-  border-radius: var(--radius);
-  background: transparent;
-  cursor: pointer;
-}
-
-.brand-name {
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   font-size: var(--text-md);
-  font-weight: 680;
-  letter-spacing: -0.01em;
 }
 
-.logo-mark {
-  flex: none;
-}
-
-.sidebar-spacer {
-  flex: 1;
-}
-
-/* The account button: avatar, name and handle on one line. */
-.account-menu {
-  width: 100%;
-}
-
-.account-menu > .menu-button {
-  justify-content: flex-start;
-  gap: 10px;
-  width: 100%;
-  min-height: 48px;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  color: var(--ink);
-  text-align: left;
-}
-
-.account-menu--compact {
-  width: auto;
-}
-
-.account-menu--compact > .menu-button {
-  width: auto;
-  min-height: 0;
-  padding: 3px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.account-who {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.3;
-}
-
-.account-name,
-.account-handle {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.account-handle {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 450;
-}
-
-.nav-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.sidebar[data-collapsed] .nav-group {
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-group-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 26px;
-  padding: 0 4px 2px 8px;
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-}
-
-.nav-group-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.nav-group-link:hover {
-  color: var(--ink);
-}
-
-.nav-item {
+.nav-link {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 32px;
-  padding: 0 8px;
+  min-height: 34px;
   border-radius: var(--radius-sm);
   color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 480;
+  font-weight: 500;
   text-decoration: none;
+  transition: color 0.12s ease;
 }
 
-.sidebar[data-collapsed] .nav-item {
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-}
-
-@media (hover: hover) {
-  .nav-item:hover {
-    background: var(--hover);
-    color: var(--ink);
-  }
-}
-
-.nav-item[aria-current='page'] {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+.nav-link[data-active] {
+  color: var(--ink);
   font-weight: 600;
 }
 
 .nav-icon {
   flex: none;
-  color: currentColor;
-  opacity: 0.85;
 }
 
 .nav-label {
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.nav-count {
+.nav-sub {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 10px 7px;
+  padding: 0 0 0 18px;
+  border-left: 1px solid var(--line);
+  list-style: none;
+  font-size: var(--text-base);
+}
+
+.nav-sub-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.nav-sub-link[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Centred on the rail: the rail is one pixel wide, 18px to the left. */
+.nav-sub-link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -22px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+@media (hover: hover) {
+  .nav-link:hover,
+  .nav-sub-link:hover {
+    color: var(--ink);
+    text-decoration: none;
+  }
+}
+
+/* A finger gets a full row to press; the fold button reaches out above
+   and below without making the mark's line taller. */
+@media (pointer: coarse) {
+  .nav-link,
+  .sidebar-search {
+    min-height: 44px;
+  }
+
+  .nav-sub-link {
+    min-height: 40px;
+  }
+
+  .sidebar-top > .sidebar-fold {
+    margin-block: -5px;
+  }
+}
+
+/* Folded: a rail of icons. The part you are in sits on a tinted disc, and
+   the button that opens the sidebar again waits at the foot, over the
+   account. */
+.sidebar[data-collapsed] {
+  align-items: center;
+  width: var(--rail-w);
+  padding: var(--page-top) 0 20px;
+}
+
+.sidebar[data-collapsed] .sidebar-do {
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar[data-collapsed] .sidebar-new-post,
+.sidebar[data-collapsed] .sidebar-search-icon,
+.sidebar[data-collapsed] .sidebar-fold {
+  width: 44px;
+  min-height: 44px;
+}
+
+.sidebar-foot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-foot .sidebar-fold {
+  margin: 0;
+  color: var(--ink-2);
+  opacity: 1;
+}
+
+.sidebar[data-collapsed] .sidebar-search-icon {
+  color: var(--ink);
+}
+
+/* The rail's whole width, so a focus ring round a 44px disc has room on
+   both sides; the discs are centred in it. */
+.sidebar[data-collapsed] .sidebar-scroll {
+  align-self: stretch;
+  align-items: center;
+  margin: -4px 0 -2px;
+  padding: 4px 0;
+}
+
+.sidebar[data-collapsed] .nav {
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar[data-collapsed] .nav-link {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.sidebar[data-collapsed] .nav-link[data-active] {
+  background: var(--accent-tint);
+}
+
+@media (hover: hover) {
+  .sidebar[data-collapsed] .nav-link:hover:not([data-active]) {
+    background: var(--tint);
+  }
 }
 
 /* ---- the sync's places --------------------------------------------- */
 
+/* In the sidebar: a few quiet lines at its foot. */
 .sync-card {
   display: flex;
+  flex: none;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  align-items: flex-start;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
 
 .sync-card-row {
@@ -354,6 +534,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  width: 100%;
 }
 
 .sync-card-title {
@@ -361,55 +542,108 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 .sync-card-sub {
-  color: var(--muted);
-  font-size: var(--text-xs);
   line-height: 1.4;
 }
 
-.sync-card-link {
-  font-size: var(--text-xs);
+.sync-card .progress {
+  width: 100%;
+  margin: 4px 0;
 }
 
-.sync-banner {
-  display: flex;
-  flex-direction: column;
+/* Sync now, as a link: the sidebar has one filled button already. */
+.sync-card > .btn {
   gap: 6px;
-  padding: 8px var(--page-pad);
-  border-bottom: 1px solid var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  min-height: 24px;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .sync-card > .btn:hover:not(:disabled) {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Across the top of the page, where there is no sidebar to say it: one
+   36px row, what it is doing at the left and Cancel at the right, with the
+   progress as a hairline along its foot. On a phone that line runs the
+   screen's width; beside the folded rail it keeps to the page's column. */
+.sync-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  min-height: 36px;
+  margin: 0 auto 4px;
+  padding: 0 var(--page-pad);
+  color: var(--ink-2);
   font-size: var(--text-sm);
 }
 
 .sync-banner[data-tone='warn'] {
-  flex-direction: row;
-  justify-content: space-between;
-  border-bottom-color: transparent;
-  background: var(--warn-wash);
   color: var(--warn);
 }
 
-.sync-banner-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+.sync-banner[data-tone='warn'] a {
+  flex: none;
+  color: inherit;
+  font-weight: 500;
 }
 
 .sync-banner-text {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.sync-banner .btn {
-  color: inherit;
+.sync-banner-step {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* The dot between the headline and the step, 6px from both, as a meta
+   line's: drawn here, it can't lose a space at the edge of its box. */
+.sync-banner-step::before {
+  content: '·';
+  margin: 0 6px;
+}
+
+.sync-banner > .link-action {
+  flex: none;
+}
+
+.sync-banner > .progress {
+  position: absolute;
+  bottom: 0;
+  inset-inline: var(--page-pad);
+  height: 2px;
+  border-radius: 0;
+}
+
+@media (max-width: 899px) {
+  .sync-banner > .progress {
+    inset-inline: 0;
+  }
 }
 
 .sync-steps-wrap {
@@ -423,13 +657,21 @@
   color: var(--ink-2);
 }
 
+/* Three steps a line (two on the narrowest phones), so six steps make two
+   even lines rather than five and an orphan. */
 .sync-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 479px) {
+  .sync-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .sync-step {
@@ -452,7 +694,7 @@
 }
 
 .sync-step[data-state='done'] .progress-fill {
-  background: var(--accent-line);
+  background: var(--ink-2);
 }
 
 .sync-step[data-state='failed'] .progress-fill {
@@ -467,36 +709,58 @@
   display: inline;
 }
 
-/* ---- page header ---------------------------------------------------- */
+/* ---- the top of a page ---------------------------------------------- */
 
-.page-header {
-  position: sticky;
-  z-index: 10;
-  top: 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+/* A page is a column, centred in what the sidebar leaves: its title at
+   the top, on the sky, then its bands. --page-max is how wide the column
+   may get; a page that wants more than the usual (a dashboard being
+   arranged) says so on its own wrapper. */
+.page-header-in,
+.page-body {
+  width: 100%;
+  max-width: calc(var(--page-max, var(--content-max)) + var(--page-pad) * 2);
+  margin: 0 auto;
 }
 
+/* The header is a column: the crumbs (beside the folded rail only), then
+   the title's row, then whatever the page puts under it. The crumbs sit
+   outside the row, so the controls line up with the title and not with
+   them. */
 .page-header-in {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--page-top) var(--page-pad) 0;
+}
+
+/* The words at the left, the controls at the right of the title's line;
+   when the controls don't fit beside the words, they go under them, at the
+   left, 16px below. */
+.page-header-row {
+  display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px 16px;
-  max-width: var(--content-max);
-  padding: 14px var(--page-pad);
+  gap: 16px 32px;
 }
 
 .page-header-text {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: 6px;
   min-width: 0;
 }
 
+/* Where the page sits. The open sidebar says this already, and on a phone
+   or a tablet the app bar's back link does, so the crumbs are only for the
+   folded rail. */
 .crumbs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .crumbs a {
@@ -509,105 +773,361 @@
   text-decoration: underline;
 }
 
+@media (min-width: 900px) {
+  .shell[data-sidebar='expanded'] .crumbs {
+    display: none;
+  }
+
+  /* Beside the rail the crumbs take the room over the title rather than
+     push it down, so the title is on the same line on every page, and so
+     is the rail's mark, which is centred on it. */
+  .shell[data-sidebar='collapsed'] .page-header-in:has(> .crumbs) {
+    padding-top: max(0px, calc(var(--page-top) - var(--text-sm) * 1.45 - 4px));
+  }
+}
+
+@media (max-width: 899px) {
+  .page-header .crumbs {
+    display: none;
+  }
+}
+
+/* The title, and a tool or two for the thing it names (the dashboard's ⋯)
+   just after it, outside the heading. */
+.page-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
 .page-title {
-  font-size: var(--text-xl);
-  font-weight: 660;
-  letter-spacing: -0.018em;
+  min-width: 0;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+/* A medium icon (--control-h: 36px, 32 in Compact; 44px on touch, below)
+   centred on the title's first line, reaching out above and below it
+   without making the line any taller. */
+.page-title-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  margin-block: calc((var(--text-title) * 1.1 - var(--control-h)) / 2);
 }
 
 .page-sub {
-  margin-top: 2px;
+  max-width: 68ch;
   color: var(--muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
+/* What the page can touch: the kit's meta line, one item a kind
+   (components/AccessBadge.jsx), under the page's line. */
+.page-access {
+  max-width: 68ch;
+}
+
+/* The controls: at least as tall as the title's line and centred in it,
+   so a picker or a link sits level with the title on every page, with or
+   without an access line under it. A control taller than the line (the
+   picker's 36px keys beside a tablet's 28px title) is drawn up by half
+   the difference, so its middle still meets the line's. */
 .page-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 12px 32px;
+  min-height: calc(var(--text-title) * 1.1);
+  margin-top: min(0px, calc((var(--text-title) * 1.1 - var(--control-h)) / 2));
+}
+
+/* Whatever the page puts under its header (the posting pages' row of
+   links on a phone): 12px under the row. */
+.page-header-extra {
+  min-width: 0;
+  margin-top: 8px;
+}
+
+@media (pointer: coarse) {
+  .page-title-tools {
+    margin-block: calc((var(--text-title) * 1.1 - 44px) / 2);
+  }
+
+  /* Touch keys are 44px, taller than the title's line: centred on it all
+     the same. */
+  .page-actions {
+    margin-top: calc((var(--text-title) * 1.1 - 44px) / 2);
+  }
+}
+
+/* A row with no picker in it holds buttons (Customize's Done), 40px on
+   touch, so it is drawn up by half of that instead. */
+@media (pointer: coarse) and (min-width: 561px) {
+  .page-actions:not(:has(> .segmented)) {
+    margin-top: calc((var(--text-title) * 1.1 - 40px) / 2);
+  }
+}
+
+/* A phone: the words, then at most one row of controls under them that
+   never wraps (the picker scrolls sideways in it instead), the period
+   picker first and anything else (Customize) at the row's far end. */
+@media (max-width: 560px) {
+  .page-header-row {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-header-text {
+    flex: none;
+  }
+
+  .page-actions {
+    flex-wrap: nowrap;
+    gap: 16px;
+    min-height: 0;
+    margin-top: 0;
+  }
+
+  .page-actions > :not(.period-picker) {
+    flex: none;
+    margin-left: auto;
+  }
+
+  /* The picker keeps the kit's own margins: on touch they let it out at
+     each end so its end keys can be pressed past their words. */
+  .page-actions > .period-picker {
+    flex: 1 1 auto;
+    order: -1;
+    min-width: 0;
+  }
+
+  /* Only a picker's row is held to one line, since a picker can scroll.
+     A row without one (a page still passing other buttons) wraps rather
+     than push the page sideways. */
+  .page-actions:not(:has(> .period-picker)) {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  /* The Custom key is its calendar alone, so the presets keep the line.
+     Its words (the range's dates, once there is one) stay in the markup
+     as its name. */
+  .period-picker .segmented-key.has-icon .segmented-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/* A phone's header whose only control is Customize's Done keeps it beside
+   the title, centred on the title's line, the way a sheet's Done sits,
+   rather than alone at the end of a row of its own under the words. The
+   lines under the title still take the whole width. */
+@media (max-width: 560px) {
+  .page-header-row:has(> .page-actions > .btn--primary:only-child) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 16px;
+  }
+
+  .page-header-row:has(> .page-actions > .btn--primary:only-child) > .page-header-text {
+    display: contents;
+  }
+
+  .page-header-row:has(> .page-actions > .btn--primary:only-child) > .page-header-text > :not(.page-title-row) {
+    grid-column: 1 / -1;
+  }
+
+  .page-actions:has(> .btn--primary:only-child) {
+    grid-row: 1;
+    grid-column: 2;
+    margin-block: calc((var(--text-title) * 1.1 - var(--control-h)) / 2);
+  }
+}
+
+@media (max-width: 560px) and (pointer: coarse) {
+  .page-actions:has(> .btn--primary:only-child) {
+    margin-block: calc((var(--text-title) * 1.1 - 40px) / 2);
+  }
+}
+
+/* Under 375px the picker and Customize only share the line if Customize
+   is its word alone. */
+@media (max-width: 374px) {
+  .page-actions > .link-action svg {
+    display: none;
+  }
 }
 
 .page-body {
   display: flex;
   flex-direction: column;
-  gap: var(--grid-gap);
-  max-width: var(--content-max);
-  padding: var(--space-5) var(--page-pad) var(--space-7);
-}
-
-.empty-page {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 520px;
+  gap: var(--section-gap);
+  padding: var(--section-gap) var(--page-pad) 72px;
 }
 
 /* ---- the phone's bars ---------------------------------------------- */
 
+/* The top row is part of the page: the mark at the left (or, on a page
+   inside a part, the way back up to it), and search and the account at the
+   right. It scrolls away with the sky. */
 .appbar {
-  position: sticky;
-  z-index: 20;
-  top: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   min-height: var(--appbar-h);
-  padding: 4px 8px 4px 10px;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+  padding: 0 8px 0 var(--page-pad);
 }
 
-.appbar-title {
-  flex: 1;
+.appbar .brand {
+  min-height: 44px;
+}
+
+/* ‹ Reports: the parent's name in ink, led by a chevron whose stroke (not
+   its box) starts on the page's edge, where the logo's does. */
+.appbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   min-width: 0;
-  overflow: hidden;
+  min-height: 44px;
+  margin-left: -6px;
+  padding-right: 8px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 650;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.appbar-back svg {
+  flex: none;
+}
+
+.appbar-back-label {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.appbar .is-spinning svg {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@media (hover: hover) {
+  .appbar-back:hover .appbar-back-label {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 }
 
+.appbar-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.appbar .btn--icon {
+  width: 44px;
+  min-height: 44px;
+  color: var(--ink);
+}
+
+.appbar .account-menu--compact > .menu-button .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: var(--text-xs);
+}
+
+/* The bottom row stays: the four parts as icons, the one you are in with
+   its name beside it on a tinted pill, and New post as a round button. The
+   group is held to a phone's width and centred, so a tablet doesn't spread
+   it from edge to edge. 64px tall with its rule, and the home indicator's
+   room under that. */
 .tabbar {
   position: fixed;
   z-index: 30;
   right: 0;
   bottom: 0;
   left: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding: 7px 12px calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--bg);
+}
+
+.tabbar-tabs {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  max-width: 420px;
 }
 
 .tabbar-item {
   display: flex;
-  flex-direction: column;
+  flex: none;
   align-items: center;
-  gap: 2px;
-  min-height: 52px;
-  padding: 6px 0;
-  border-radius: var(--radius);
+  justify-content: center;
+  gap: 8px;
+  min-width: 48px;
+  height: 48px;
+  border-radius: var(--pill);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 560;
+  font-size: var(--text-sm);
   text-decoration: none;
 }
 
 .tabbar-item[aria-current='page'] {
-  color: var(--accent-ink);
-  font-weight: 680;
+  padding: 0 16px 0 14px;
+  background: var(--accent-tint);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Too narrow for the name beside the icon (Dashboards would push New post
+   off the screen at 360): the part you are in is a tinted disc, and its
+   name is still read out. */
+@media (max-width: 374px) {
+  .tabbar-item[aria-current='page'] {
+    padding: 0;
+  }
+
+  .tabbar-item[aria-current='page'] .tabbar-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.tabbar-new-post {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--btn);
+  color: var(--on-btn);
+  cursor: pointer;
 }
 
 @media (max-width: 899px) {
@@ -615,41 +1135,33 @@
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
   }
 
-  .page-header {
-    position: static;
-  }
-
-  .page-header-in {
-    padding-top: 12px;
-    padding-bottom: 12px;
-  }
-
-  .page-actions {
-    width: 100%;
+  .page-body {
+    padding-bottom: 40px;
   }
 }
 
 /* ---- first run ------------------------------------------------------ */
 
 .first-run {
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6) var(--page-pad) var(--space-7);
+  width: 100%;
+  max-width: calc(var(--content-max) + var(--page-pad) * 2);
+  margin: 0 auto;
+  padding: var(--page-top) var(--page-pad) var(--space-7);
 }
 
 .first-run-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
-  max-width: 720px;
-  padding: 28px;
+  max-width: 640px;
 }
 
 .first-run-title {
-  font-size: var(--text-2xl);
-  font-weight: 680;
-  letter-spacing: -0.022em;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
 }
 
 .first-run-lede {
@@ -660,37 +1172,40 @@
 .first-run-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--rule);
   list-style: none;
   color: var(--ink-2);
 }
 
 .first-run-list li {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .first-run-list svg {
   flex: none;
   margin-top: 3px;
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .first-run-list strong {
   color: var(--ink);
-  font-weight: 620;
+  font-weight: 600;
 }
 
 /* ---- dialog --------------------------------------------------------- */
 
+/* What floats is the one thing with an edge and a shadow. */
 .dialog {
   width: min(520px, calc(100vw - 32px));
   max-height: calc(100svh - 48px);
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-lg);
@@ -710,31 +1225,74 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 16px 8px 20px;
+  padding: 20px 16px 8px 24px;
 }
 
 .dialog-title {
   font-size: var(--text-lg);
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 .dialog-body {
-  padding: 4px 20px 16px;
+  padding: 4px 24px 20px;
   color: var(--ink-2);
 }
 
+/* The buttons follow what they act on, with no rule between: the space
+   says they are the dialog's foot. */
 .dialog-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  padding: 12px 20px 16px;
-  border-top: 1px solid var(--line-soft);
+  padding: 8px 24px 20px;
+  border-top: 0;
 }
 
 .dialog-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Two fields side by side where there is room for both (the first and
+   last day of a range), one over the other where there isn't. */
+.range-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .dialog-head {
+    padding: 16px 10px 8px 18px;
+  }
+
+  .dialog-body {
+    padding: 4px 18px 16px;
+  }
+
+  .dialog-actions {
+    padding: 8px 18px 16px;
+  }
+
+  /* A phone's dialog ends in equal halves, each a full 44px to press. */
+  .dialog-actions > .btn {
+    flex: 1 1 0;
+    min-height: 44px;
+  }
+
+  /* For a dialog whose buttons say too much to share a line: one under
+     the other, the one that does it first. */
+  .dialog--stack-actions .dialog-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dialog--stack-actions .dialog-actions > .btn--primary {
+    order: -1;
+  }
 }
 
 .choice-list {
@@ -747,23 +1305,24 @@
   margin-bottom: 6px;
 }
 
+/* One of a few things to pick between: rows between hairlines, the picked
+   one marked by its radio and by a rule in the accent down its side. */
 .choice {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: 12px;
+  padding: 12px 0 12px 12px;
+  border-top: 1px solid var(--line);
+  box-shadow: inset 2px 0 0 transparent;
   cursor: pointer;
 }
 
-.choice + .choice {
-  margin-top: 6px;
+.choice:last-child {
+  border-bottom: 1px solid var(--line);
 }
 
 .choice[data-on] {
-  border-color: var(--accent);
-  background: var(--accent-wash);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .choice input {
@@ -773,7 +1332,7 @@
 .choice-label {
   display: block;
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
 }
 
@@ -797,24 +1356,20 @@
   pointer-events: none;
 }
 
+/* Ink, with the page's colour written on it: dark by day, light at night. */
 .toast {
   max-width: min(420px, calc(100vw - 32px));
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background: #101828;
-  color: #ffffff;
-  font-size: var(--text-sm);
+  padding: 11px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-size: var(--text-base);
   box-shadow: var(--shadow-lg);
   animation: toast-in 0.2s var(--ease);
 }
 
-:root[data-theme='dark'] .toast {
-  background: #e7eaf0;
-  color: #101828;
-}
-
 .toast[data-tone='danger'] {
-  background: var(--danger);
+  background: #b42318;
   color: #ffffff;
 }
 
@@ -822,7 +1377,7 @@
    toast (the post that just went out) still takes a press. */
 .toast a {
   color: inherit;
-  font-weight: 650;
+  font-weight: 600;
   pointer-events: auto;
 }
 

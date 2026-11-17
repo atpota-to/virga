@@ -1,7 +1,9 @@
-import { useEffect, useId, useMemo, useState } from 'react';
-import { CalendarClock, ListTree, Repeat } from 'lucide-react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { ListTree, Repeat } from 'lucide-react';
 import Button from '../../components/Button.jsx';
+import { useOverflowEdge } from '../../components/Segmented.jsx';
 import { Link } from '../../lib/router.jsx';
+import { useIsNarrow } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { usePostingSettings } from '../settings.js';
 import {
@@ -68,6 +70,11 @@ export default function WhenPicker({
   const device = resolveTimezone(null);
   const baseId = useId();
   const [now, setNow] = useState(() => Date.now());
+  // The quick picks are one line that scrolls sideways on a phone, and wrap
+  // where there is room.
+  const picksRef = useRef(null);
+  const picksScroll = useIsNarrow('(max-width: 760px)');
+  useOverflowEdge(picksRef);
 
   // The clock moves on while the picker is open; the bounds and picks follow.
   useEffect(() => {
@@ -207,7 +214,12 @@ export default function WhenPicker({
       </div>
 
       {picks.length > 0 && (
-        <div className="sched-picks" role="group" aria-label="Quick picks">
+        <div
+          ref={picksRef}
+          className={`sched-picks${picksScroll ? ' scroll-row' : ''}`}
+          role="group"
+          aria-label="Quick picks"
+        >
           {picks.map((p) => {
             const on = instant(value) === p.at.getTime();
             return (
@@ -240,7 +252,10 @@ export default function WhenPicker({
           </>
         )}
         {Number.isFinite(instant(value)) && !problem && (
-          <> Goes out {formatInZone(value, tz, now)}.</>
+          <>
+            {' '}
+            Goes out <span className="when-at">{formatInZone(value, tz, now)}</span>.
+          </>
         )}
       </p>
       {problem && (
@@ -265,7 +280,11 @@ export default function WhenPicker({
                 className="input"
                 value={every}
                 disabled={Boolean(repeatBlock)}
-                aria-describedby={`${baseId}-repeat-note`}
+                aria-describedby={
+                  repeatBlock || repeatWrong || every
+                    ? `${baseId}-repeat-note`
+                    : undefined
+                }
                 onChange={(e) =>
                   setRepeat(
                     e.target.value
@@ -338,17 +357,19 @@ export default function WhenPicker({
               </label>
             )}
           </div>
-          <p
-            className={`field-hint${repeatWrong ? ' sched-problem' : ''}`}
-            id={`${baseId}-repeat-note`}
-            role={repeatWrong ? 'alert' : undefined}
-          >
-            {repeatBlock ||
-              repeatWrong ||
-              (every
-                ? `${repeatSummary(normalizeRepeat(repeat), value, tz)}${occurrence > 1 ? ` This is number ${occurrence}; the change applies to it and the ones after.` : ' Each one is a post of its own, with the same words and pictures.'}`
-                : 'It goes out once.')}
-          </p>
+          {/* Said only once there is something to say: a repeat chosen,
+              or why there can't be one. */}
+          {(repeatBlock || repeatWrong || every) && (
+            <p
+              className={`field-hint${repeatWrong ? ' sched-problem' : ''}`}
+              id={`${baseId}-repeat-note`}
+              role={repeatWrong ? 'alert' : undefined}
+            >
+              {repeatBlock ||
+                repeatWrong ||
+                `${repeatSummary(normalizeRepeat(repeat), value, tz)}${occurrence > 1 ? ` This is number ${occurrence}; the change applies to it and the ones after.` : ' Each one is a post of its own, with the same words and pictures.'}`}
+            </p>
+          )}
         </div>
       )}
 
@@ -369,7 +390,7 @@ export default function WhenPicker({
             ) : slot ? (
               <span>
                 Next open time in your queue:{' '}
-                <strong>{formatInZone(slot, tz, now)}</strong>
+                <strong className="when-at">{formatInZone(slot, tz, now)}</strong>
                 {taken.status === 'error' && (
                   <span className="field-hint">
                     {' '}
@@ -385,7 +406,6 @@ export default function WhenPicker({
           </div>
           {onQueue && slot && (
             <Button size="sm" onClick={onQueue}>
-              <CalendarClock size={14} aria-hidden="true" />
               Use this time
             </Button>
           )}

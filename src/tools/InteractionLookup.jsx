@@ -23,7 +23,7 @@ import { getProfile } from '../lib/atproto.js';
 import { activeLocale, fmtInt } from '../lib/locale.js';
 import { formatDateShort } from '../lib/time.js';
 import { cardFor, displayName, profileUrl, useWantActors } from '../people/people.jsx';
-import PostRow, { postText } from '../reports/PostRow.jsx';
+import PostRow, { postText, postWhen } from '../reports/PostRow.jsx';
 import { ToolHeader } from './ToolPage.jsx';
 import {
   DIRECTIONS,
@@ -36,6 +36,7 @@ import {
   interactionIndex,
   interactionModel,
   isDid,
+  kindsLine,
   lookupHref,
   matchPeople,
   parseActorInput,
@@ -46,7 +47,6 @@ const KIND_ICON = { like: Heart, repost: Repeat2, reply: MessageCircle, quote: Q
 const DIRECTION_ICON = { in: ArrowDownLeft, out: ArrowUpRight };
 const DIRECTION_LABEL = { in: 'Them to you', out: 'You to them' };
 const KIND_ONE = { like: 'a like', repost: 'a repost', reply: 'a reply', quote: 'a quote', mention: 'a mention' };
-const KIND_NOUN = { like: ['like', 'likes'], repost: ['repost', 'reposts'], reply: ['reply', 'replies'], quote: ['quote', 'quotes'], mention: ['mention', 'mentions'] };
 
 const START_PAGE = 12;
 const POSTS_PAGE = 5;
@@ -122,9 +122,15 @@ function PickLink({ did, onChoose, children, ...rest }) {
 /* Small pieces                                                         */
 /* ------------------------------------------------------------------ */
 
-function Card({ title, sub = null, tools = null, children, className = '' }) {
+/**
+ * A section: its heading, with `tools` at the heading's right, and
+ * `toolbar` (what narrows the list under it) over the heading, so the
+ * heading's count sits right over the rows it counts.
+ */
+function Card({ title, sub = null, tools = null, toolbar = null, children, className = '' }) {
   return (
     <section className={`card ${className}`.trim()} aria-label={title}>
+      {toolbar}
       <div className="card-head">
         <div>
           <h2 className="card-title">{title}</h2>
@@ -137,17 +143,22 @@ function Card({ title, sub = null, tools = null, children, className = '' }) {
   );
 }
 
-/** How many there are each way, as two counts that never touch. */
-function PairCount({ incoming, outgoing }) {
+/**
+ * How many there are each way, as two counts that never touch. In a list
+ * under a legend that names the two columns, the counts go without their
+ * arrows (`arrows={false}`); the suggestions under the field have no
+ * legend, so they keep them.
+ */
+function PairCount({ incoming, outgoing, arrows = true }) {
   return (
     <span className="lookup-pair num">
       <span data-dir="in" title={`${fmtInt(incoming)} them to you`}>
-        <ArrowDownLeft size={13} aria-hidden="true" />
+        {arrows && <ArrowDownLeft size={13} aria-hidden="true" />}
         {fmtInt(incoming)}
         <span className="visually-hidden"> them to you</span>
       </span>
       <span data-dir="out" title={`${fmtInt(outgoing)} you to them`}>
-        <ArrowUpRight size={13} aria-hidden="true" />
+        {arrows && <ArrowUpRight size={13} aria-hidden="true" />}
         {fmtInt(outgoing)}
         <span className="visually-hidden"> you to them</span>
       </span>
@@ -256,7 +267,7 @@ function PersonSearch({ directory, onChoose, hint = null }) {
   };
 
   return (
-    <section className="card lookup-search" aria-label="Choose an account">
+    <section className="lookup-search" aria-label="Choose an account">
       <div className="lookup-combo">
         <label className="search search--lg">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
@@ -363,7 +374,7 @@ function StartingPoint({ archive, onChoose }) {
     <Card
       title="People you interact with most"
       sub="Everything on record, each way. Choose someone to see your history with them."
-      className="card--flush"
+      className="card--flush lookup-start"
       tools={
         <span className="lookup-legend" aria-hidden="true">
           <span data-dir="in">
@@ -378,7 +389,7 @@ function StartingPoint({ archive, onChoose }) {
       }
     >
       {shown.length ? (
-        <ol className="widget-rows report-rows">
+        <ol className="tool-rows">
           {shown.map((r) => {
             const card = cardFor(archive, r.did);
             const name = displayName(card, r.did);
@@ -390,7 +401,7 @@ function StartingPoint({ archive, onChoose }) {
                     <span className="person-name">{name}</span>
                     <span className="person-meta">{card?.handle ? (card.displayName ? `@${card.handle}` : '') : card ? '' : 'Reading their name…'}</span>
                   </span>
-                  <PairCount incoming={r.in} outgoing={r.out} />
+                  <PairCount incoming={r.in} outgoing={r.out} arrows={false} />
                 </PickLink>
               </li>
             );
@@ -409,6 +420,10 @@ function StartingPoint({ archive, onChoose }) {
           </span>
         </div>
       )}
+      <p className="card-caption">
+        Them to you comes from your notifications, which reach back about a year at most. You to them comes from your repo and your posts,
+        and goes all the way back.
+      </p>
     </Card>
   );
 }
@@ -445,7 +460,7 @@ function PersonCard({ archive, who, model, onClear }) {
   const name = displayName(card, who);
   const rel = model.relationship;
   return (
-    <section className="card lookup-person" aria-label="The account">
+    <section className="lookup-person" aria-label="The account">
       <div className="lookup-person-top">
         <Avatar src={card?.avatar} name={card?.displayName || card?.handle || '?'} size="lg" />
         <div className="lookup-person-main">
@@ -454,29 +469,29 @@ function PersonCard({ archive, who, model, onClear }) {
           {/* Without a card the name above is the DID already. */}
           {card?.handle && <code className="kv-code lookup-did">{who}</code>}
         </div>
-        <div className="lookup-person-actions">
-          <Button as="a" size="sm" href={profileUrl(card, who)} target="_blank" rel="noopener noreferrer">
+        <div className="head-actions lookup-person-actions">
+          <a className="link-action" href={profileUrl(card, who)} target="_blank" rel="noopener noreferrer">
+            <ExternalLink size={14} aria-hidden="true" />
             Open on Bluesky
-            <ExternalLink size={13} aria-hidden="true" />
-          </Button>
-          <Button size="sm" variant="ghost" onClick={onClear}>
+          </a>
+          <button type="button" className="link-action" onClick={onClear}>
             <X size={14} aria-hidden="true" />
             Choose someone else
-          </Button>
+          </button>
         </div>
       </div>
       {!model.self && (
         <dl className="kv lookup-facts">
-          <div className="kv-row">
+          <div className="kv-row kv-row--inline">
             <dt>They follow you</dt>
             <dd>{theyFollowText(rel.theyFollow)}</dd>
           </div>
-          <div className="kv-row">
+          <div className="kv-row kv-row--inline">
             <dt>You follow them</dt>
             <dd>{youFollowText(rel.youFollow)}</dd>
           </div>
           {rel.theyBlock && (
-            <div className="kv-row">
+            <div className="kv-row kv-row--inline">
               <dt>They block you</dt>
               <dd>{theyBlockText(rel.theyBlock)}</dd>
             </div>
@@ -537,7 +552,7 @@ function Totals({ model }) {
   const { totals, first, latest } = model;
   const max = Math.max(1, ...LOOKUP_KINDS.flatMap((k) => [totals.in[k] || 0, totals.out[k] || 0]));
   return (
-    <Card title="By kind, each way" className="card--flush lookup-totals-card">
+    <Card title="By kind, each way" className="lookup-totals-card">
       <div className="table-scroll">
         <table className="table lookup-totals">
           <thead>
@@ -613,13 +628,6 @@ function Timeline({ model, name }) {
   );
 }
 
-/** "2 likes, 1 reply": what an event count is made of. */
-function kindsLine(byKind) {
-  return LOOKUP_KINDS.filter((k) => byKind[k])
-    .map((k) => nounOf(byKind[k], ...KIND_NOUN[k]))
-    .join(', ');
-}
-
 /**
  * Which of your posts they engaged with most. The archive can only say for
  * events that name their post, and today's don't, so until they do this is
@@ -631,7 +639,7 @@ function EngagedPosts({ model }) {
   const shown = engagedPosts.rows.slice(0, limit);
   if (!engagedPosts.known) {
     return (
-      <section className="card" aria-label="Your posts they engaged with most">
+      <section className="card lookup-cannot-card" aria-label="Your posts they engaged with most">
         <h2 className="card-title">Your posts they engaged with most</h2>
         <p className="card-sub lookup-cannot">
           {engagedPosts.of
@@ -656,11 +664,9 @@ function EngagedPosts({ model }) {
                 <a className="post-text" href={row.url} target="_blank" rel="noopener noreferrer" title="Open on Bluesky">
                   {row.post ? postText(row.post) : 'A post that isn’t in your archive'}
                 </a>
-                <span className="post-meta num">
-                  <span>
-                    {row.post ? `${formatDateShort(row.post.at)} · ` : ''}
-                    {kindsLine(row.byKind)}
-                  </span>
+                <span className="meta num">
+                  {row.post && <span title={formatDateShort(row.post.at)}>{postWhen(row.post.at)}</span>}
+                  <span>{kindsLine(row.byKind)}</span>
                 </span>
               </div>
             </li>
@@ -674,6 +680,9 @@ function EngagedPosts({ model }) {
           <Button size="sm" variant="ghost" onClick={() => setLimit((l) => l + POSTS_PAGE * 2)}>
             Show {Math.min(POSTS_PAGE * 2, engagedPosts.rows.length - shown.length)} more
           </Button>
+          <span className="num">
+            {fmtInt(shown.length)} of {fmtInt(engagedPosts.rows.length)}
+          </span>
         </div>
       )}
     </Card>
@@ -740,7 +749,7 @@ function EventRow({ event }) {
   );
 }
 
-function Events({ model, shown: filtered, direction, kind, onDirection, onKind }) {
+function Events({ model, name, shown: filtered, direction, kind, onDirection, onKind, onExport }) {
   const [limit, setLimit] = useState(EVENTS_PAGE);
   const total = model.events.length;
   const rows = filtered.slice(0, limit);
@@ -749,6 +758,34 @@ function Events({ model, shown: filtered, direction, kind, onDirection, onKind }
     kind === 'mention' && direction === 'out' && model.totals.out.mention == null
       ? 'Mentions you made aren’t on record.'
       : 'Nothing on record matches these filters.';
+  // Over what it exports: one file when the list is whole, a choice when
+  // the filters have narrowed it.
+  const exportTool = narrowed ? (
+    <Menu
+      variant="link"
+      label="Export"
+      icon={Download}
+      items={[
+        {
+          icon: Download,
+          label: `These ${nounOf(filtered.length, 'event', 'events')} (CSV)`,
+          hint: 'What the list shows, with its filters.',
+          onSelect: () => onExport(filtered),
+        },
+        {
+          icon: Download,
+          label: `All ${nounOf(total, 'event', 'events')} (CSV)`,
+          hint: `Everything on record with ${name}, each way.`,
+          onSelect: () => onExport(model.events),
+        },
+      ]}
+    />
+  ) : (
+    <button type="button" className="link-action" onClick={() => onExport(model.events)}>
+      <Download size={14} aria-hidden="true" />
+      Export
+    </button>
+  );
   return (
     <Card
       title="Every interaction"
@@ -758,30 +795,35 @@ function Events({ model, shown: filtered, direction, kind, onDirection, onKind }
         </span>
       }
       className="card--flush lookup-events-card"
+      tools={exportTool}
+      toolbar={
+        <div className="list-toolbar lookup-filters">
+          <Segmented
+            size="sm"
+            label="Direction"
+            value={direction}
+            onChange={(v) => {
+              onDirection(v);
+              setLimit(EVENTS_PAGE);
+            }}
+            options={DIRECTIONS.map((d) => ({ value: d.key, label: d.label, icon: DIRECTION_ICON[d.key] }))}
+          />
+          <Segmented
+            size="sm"
+            className="kind-filter"
+            label="Kind"
+            value={kind}
+            onChange={(v) => {
+              onKind(v);
+              setLimit(EVENTS_PAGE);
+            }}
+            options={[{ value: 'all', label: 'All' }, ...LOOKUP_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k], icon: KIND_ICON[k], title: KIND_LABEL[k] }))]}
+          />
+        </div>
+      }
     >
-      <div className="lookup-filters">
-        <Segmented
-          label="Direction"
-          value={direction}
-          onChange={(v) => {
-            onDirection(v);
-            setLimit(EVENTS_PAGE);
-          }}
-          options={DIRECTIONS.map((d) => ({ value: d.key, label: d.label, icon: DIRECTION_ICON[d.key] }))}
-        />
-        <Segmented
-          className="kind-filter"
-          label="Kind"
-          value={kind}
-          onChange={(v) => {
-            onKind(v);
-            setLimit(EVENTS_PAGE);
-          }}
-          options={[{ value: 'all', label: 'All' }, ...LOOKUP_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k], icon: KIND_ICON[k], title: KIND_LABEL[k] }))]}
-        />
-      </div>
       {rows.length ? (
-        <ol className="widget-rows report-rows lookup-events">
+        <ol className="tool-rows lookup-events">
           {rows.map((event) => (
             <EventRow key={event.key} event={event} />
           ))}
@@ -806,7 +848,7 @@ function Events({ model, shown: filtered, direction, kind, onDirection, onKind }
 function HowCounted({ model }) {
   const { coverage, totals, engagedPosts } = model;
   return (
-    <details className="card disclosure how-counted">
+    <details className="disclosure how-counted">
       <summary>How this is counted</summary>
       <div className="how-counted-body">
         <p>
@@ -849,48 +891,20 @@ function Chosen({ tool, archive, who, search, onClear }) {
   const card = cardFor(archive, who);
   const name = displayName(card, who);
   const filtered = useMemo(() => filterEvents(model.events, { direction, kind }), [model.events, direction, kind]);
-  const narrowed = filtered.length !== model.events.length;
 
   const exportEvents = (events) =>
     exportRows(archive, `interactions-${String(card?.handle || who).replace(/[^a-z0-9.-]+/gi, '-')}`, eventsCsvRows(events, { did: who, handle: card?.handle || '' }));
 
   return (
     <>
-      <ToolHeader
-        tool={tool}
-        actions={
-          model.events.length > 0 && (
-            <Menu
-              label="Export"
-              size="md"
-              items={[
-                narrowed && {
-                  icon: Download,
-                  label: `These ${nounOf(filtered.length, 'event', 'events')} (CSV)`,
-                  hint: 'What the list shows, with its filters.',
-                  onSelect: () => exportEvents(filtered),
-                },
-                {
-                  icon: Download,
-                  label: `All ${nounOf(model.events.length, 'event', 'events')} (CSV)`,
-                  hint: `Everything on record with ${name}, each way.`,
-                  onSelect: () => exportEvents(model.events),
-                },
-              ]}
-            >
-              <Download size={15} aria-hidden="true" />
-              Export
-            </Menu>
-          )
-        }
-      />
+      <ToolHeader tool={tool} />
       <div className="page-body">
         {search}
         <PersonCard archive={archive} who={who} model={model} onClear={onClear} />
         {model.self ? (
-          <p className="card empty">This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.</p>
+          <p className="empty">This is the account you’re signed in with. Replies to your own posts are threads, so there’s no history to show.</p>
         ) : model.events.length === 0 ? (
-          <p className="card empty">
+          <p className="empty">
             Nothing on record between you and {name}
             {model.coverage.inboundSinceMs != null ? `. Your notifications reach back to ${formatDateShort(model.coverage.inboundSinceMs)}; anything before that wouldn’t show.` : '.'}
           </p>
@@ -901,7 +915,7 @@ function Chosen({ tool, archive, who, search, onClear }) {
               <Timeline model={model} name={name} />
             </div>
             {model.engagedPosts.known ? (
-              <div className="report-split">
+              <div className="report-split lookup-posts">
                 <EngagedPosts model={model} />
                 <YourPosts archive={archive} model={model} who={who} />
               </div>
@@ -911,7 +925,7 @@ function Chosen({ tool, archive, who, search, onClear }) {
                 <YourPosts archive={archive} model={model} who={who} />
               </>
             )}
-            <Events model={model} shown={filtered} direction={direction} kind={kind} onDirection={setDirection} onKind={setKind} />
+            <Events model={model} name={name} shown={filtered} direction={direction} kind={kind} onDirection={setDirection} onKind={setKind} onExport={exportEvents} />
           </>
         )}
         {!model.self && <HowCounted model={model} />}
@@ -982,7 +996,7 @@ export default function InteractionLookup({ tool }) {
           hint="Suggestions are the people your archive knows. To look up anyone else, type their whole handle or their DID."
         />
         {state === 'looking' && (
-          <p className="card empty" role="status">
+          <p className="empty" role="status">
             Looking up {named}…
           </p>
         )}
@@ -992,10 +1006,6 @@ export default function InteractionLookup({ tool }) {
           </p>
         )}
         {state !== 'looking' && <StartingPoint archive={archive} onChoose={choose} />}
-        <p className="note">
-          Them to you comes from your notifications, which reach back about a year at most. You to them comes from your repo and your posts,
-          and goes all the way back.
-        </p>
       </div>
     </>
   );

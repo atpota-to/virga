@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   defaultTimerFor,
   gatesSourceLine,
+  gatesShortSummary,
   gatesSummary,
   TIMER_NEEDS_SERVER,
   TIMER_LIMITS_UNKNOWN,
@@ -121,5 +122,20 @@ describe('gatesSummary', () => {
         quotes: true,
       }),
     ).toBe('Replies: people you follow, people you mention, one list');
+  });
+});
+
+describe('gatesShortSummary', () => {
+  it('says who can reply in a few words', () => {
+    expect(gatesShortSummary({ reply: null, quotes: true })).toBe('Anyone');
+    expect(gatesShortSummary({ reply: [], quotes: false })).toBe('Nobody · No quotes');
+    expect(gatesShortSummary({ reply: [{ type: 'follower' }], quotes: true })).toBe('Your followers');
+    expect(gatesShortSummary({ reply: [{ type: 'following' }, { type: 'mention' }], quotes: true })).toBe('Followed or mentioned');
+    expect(
+      gatesShortSummary({
+        reply: [{ type: 'following' }, { type: 'list', list: 'at://l' }],
+        quotes: true,
+      }),
+    ).toBe('Some people');
   });
 });

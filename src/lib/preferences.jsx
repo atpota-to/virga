@@ -1,15 +1,17 @@
-// How Virga looks and behaves for whoever is at this browser: the theme, the
-// density, the live sky, the period every chart answers for, how numbers and
-// dates are written, and whether the sidebar is folded. Kept in localStorage, for every account on the browser
-// alike (the archive and the dashboards are per account; these are per
-// person at the keyboard).
+// How Virga looks and behaves for whoever is at this browser: the sky, the
+// accent, the density, the period every chart answers for, how numbers and
+// dates are written, and whether the sidebar is folded. Kept in localStorage,
+// for every account on the browser alike (the archive and the dashboards are
+// per account; these are per person at the keyboard).
 //
-// The theme, accent, contrast and density are also stamped on <html> as
-// data-theme, data-accent, data-contrast and data-density, which is what
-// the stylesheets read (rootAttributes below). index.html stamps them once
-// before the first paint, from the same key, so a dark-mode reader never
-// sees a white flash; preferences.test.js runs that script against
-// rootAttributes, so the two can't drift.
+// The sky is the theme (lib/sky.js): dawn, day and dusk are light pages,
+// night is the dark one, and the sky can follow the clock. The sky in force,
+// the theme it brings, the accent, the contrast and the density are stamped
+// on <html> as data-sky, data-theme, data-accent, data-contrast and
+// data-density, which is what the stylesheets read (rootAttributes below).
+// index.html stamps them once before the first paint, from the same key, so
+// a reader at night never sees a white flash; preferences.test.js runs that
+// script against rootAttributes, so the two can't drift.
 //
 // The formats (locale, first day of the week) are handed to lib/locale.js,
 // which the plain formatting functions read. `formats` in the context value
@@ -18,6 +20,9 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { LOCALE_CHOICES, WEEK_START_CHOICES, localeStamp, resolveLocale, resolveWeekStart, setActiveLocale, setActiveWeekStart } from './locale.js';
+import { SKY_CHOICES, hourOf, phaseAtHour, skyColor, skyFor, themeOf } from './sky.js';
+
+export { SKY_CHOICES, skyColor };
 
 export const PREFERENCES_KEY = 'virga:preferences';
 
@@ -30,15 +35,13 @@ export const PREFERENCES_KEY = 'virga:preferences';
 export const ACCENT_CHOICES = ['blue', 'violet', 'teal', 'amber', 'rose', 'graphite'];
 
 export const DEFAULT_PREFERENCES = Object.freeze({
-  theme: 'system', // 'system' | 'light' | 'dark'
+  // 'clock' (the time of day here; night on a device set to dark) | 'dawn' | 'day' | 'dusk' | 'night'.
+  // Night is the dark theme. lib/sky.js reads it.
+  sky: 'clock',
+  liveSky: false, // the 3D hillside, drawn in the sky at the top of the page
   accent: 'blue', // one of ACCENT_CHOICES
   contrast: 'system', // 'system' (high when the device asks for more contrast) | 'normal' | 'high'
   density: 'comfortable', // 'comfortable' | 'compact'
-  sky: false, // the live hillside behind the app
-  // 'archive' (dawn until the first build, then day; dusk, then night, in the dark theme)
-  // | 'clock' (the time of day here) | 'dawn' | 'day' | 'dusk' | 'night'. hillside/phase.js reads it.
-  skyTime: 'archive',
-  skyScope: 'dashboard', // 'dashboard' | 'everywhere'
   period: '30d', // a preset key, or 'custom' with the two days below
   periodFrom: '', // 'YYYY-MM-DD', the first day of a custom range
   periodTo: '', // 'YYYY-MM-DD', its last
@@ -48,12 +51,10 @@ export const DEFAULT_PREFERENCES = Object.freeze({
 });
 
 const CHOICES = {
-  theme: ['system', 'light', 'dark'],
+  sky: SKY_CHOICES,
   accent: ACCENT_CHOICES,
   contrast: ['system', 'normal', 'high'],
   density: ['comfortable', 'compact'],
-  skyTime: ['archive', 'clock', 'dawn', 'day', 'dusk', 'night'],
-  skyScope: ['dashboard', 'everywhere'],
   period: ['7d', '30d', '90d', '1y', 'all', 'custom'],
   sidebar: ['expanded', 'collapsed'],
   locale: ['system', ...LOCALE_CHOICES],
@@ -85,7 +86,15 @@ export function readPreferences(store = storage()) {
   for (const [key, allowed] of Object.entries(CHOICES)) {
     if (allowed.includes(raw[key])) out[key] = raw[key];
   }
-  if (typeof raw.sky === 'boolean') out.sky = raw.sky;
+  if (typeof raw.liveSky === 'boolean') out.liveSky = raw.liveSky;
+  // What an earlier version stored: `theme` was light, dark or the system's,
+  // and `sky` was the switch for the live hillside. A theme that was picked
+  // becomes the sky that looks like it, and the switch keeps its meaning.
+  if (!SKY_CHOICES.includes(raw.sky)) {
+    if (raw.theme === 'dark') out.sky = 'night';
+    else if (raw.theme === 'light') out.sky = 'day';
+    if (typeof raw.sky === 'boolean' && typeof raw.liveSky !== 'boolean') out.liveSky = raw.sky;
+  }
   for (const key of ['periodFrom', 'periodTo']) {
     if (typeof raw[key] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw[key])) out[key] = raw[key];
   }
@@ -112,12 +121,6 @@ export function applyFormats(prefs) {
   return localeStamp();
 }
 
-/** 'light' or 'dark', from the preference and what the system asks for. */
-export function effectiveTheme(theme, systemDark) {
-  if (theme === 'light' || theme === 'dark') return theme;
-  return systemDark ? 'dark' : 'light';
-}
-
 /** 'normal' or 'high', from the preference and whether the system asks for more contrast. */
 export function effectiveContrast(contrast, systemMore) {
   if (contrast === 'normal' || contrast === 'high') return contrast;
@@ -125,26 +128,21 @@ export function effectiveContrast(contrast, systemMore) {
 }
 
 /**
- * What <html> carries for the stylesheets, as its data-* attributes: the
- * theme and contrast in force (the preference, or the system's), the accent
- * and the density. `system` is what the device asks for.
+ * What <html> carries for the stylesheets, as its data-* attributes: the sky
+ * in force (the one picked, or the clock's) and the theme it brings, the
+ * contrast in force (the preference, or the system's), the accent and the
+ * density. The second argument is what the device says: whether it asks for
+ * a dark page or for more contrast, and its local hour.
  */
-export function rootAttributes(prefs, { dark = false, moreContrast = false } = {}) {
+export function rootAttributes(prefs, { dark = false, moreContrast = false, hour = 12 } = {}) {
+  const sky = skyFor(prefs?.sky, { dark, hour });
   return {
-    theme: effectiveTheme(prefs?.theme, dark),
+    sky,
+    theme: themeOf(sky),
     accent: ACCENT_CHOICES.includes(prefs?.accent) ? prefs.accent : DEFAULT_PREFERENCES.accent,
     contrast: effectiveContrast(prefs?.contrast, moreContrast),
     density: prefs?.density === 'compact' ? 'compact' : 'comfortable',
   };
-}
-
-/**
- * The page ground of a theme, for the browser's own chrome (a phone's
- * toolbar). The same as --bg in styles/theme.css; theme.test.js checks.
- */
-export function themeColor(theme, contrast = 'normal') {
-  if (contrast === 'high') return theme === 'dark' ? '#000000' : '#ffffff';
-  return theme === 'dark' ? '#0c0e12' : '#f5f6f8';
 }
 
 const Ctx = createContext(null);
@@ -162,25 +160,47 @@ function useSystemQuery(text) {
   return matches;
 }
 
+/**
+ * The local hour, looked at again each minute while `watching`, and only
+ * handed on when it moves the sky from one phase to the next: the page is
+ * not drawn again for a minute that changes nothing.
+ */
+function useSkyHour(watching) {
+  const [hour, setHour] = useState(() => hourOf());
+  useEffect(() => {
+    if (!watching) return undefined;
+    const look = () => {
+      const now = hourOf();
+      setHour((was) => (phaseAtHour(was) === phaseAtHour(now) ? was : now));
+    };
+    look();
+    const timer = window.setInterval(look, 60_000);
+    return () => window.clearInterval(timer);
+  }, [watching]);
+  return hour;
+}
+
 export function PreferencesProvider({ children }) {
   const [prefs, setState] = useState(() => readPreferences());
   const systemDark = useSystemQuery('(prefers-color-scheme: dark)');
   const systemMoreContrast = useSystemQuery('(prefers-contrast: more)');
-  const { theme, accent, contrast, density } = rootAttributes(prefs, { dark: systemDark, moreContrast: systemMoreContrast });
+  const hour = useSkyHour(prefs.sky === 'clock');
+  const { sky, theme, accent, contrast, density } = rootAttributes(prefs, { dark: systemDark, moreContrast: systemMoreContrast, hour });
   // In render, not in an effect: the formats have to be in place before the
   // first child formats a number, and an effect runs after they all have.
   const formats = useMemo(() => applyFormats({ locale: prefs.locale, weekStart: prefs.weekStart }), [prefs.locale, prefs.weekStart]);
 
   useEffect(() => {
     const root = document.documentElement;
+    root.dataset.sky = sky;
     root.dataset.theme = theme;
     root.dataset.accent = accent;
     root.dataset.contrast = contrast;
     root.dataset.density = density;
-    // The browser's own chrome (a phone's toolbar) follows the page ground.
+    // The browser's own chrome (a phone's toolbar) runs into the top of the sky.
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', themeColor(theme, contrast));
-  }, [theme, accent, contrast, density]);
+    if (meta) meta.setAttribute('content', skyColor(sky, contrast));
+  }, [sky, theme, accent, contrast, density]);
 
   const setPref = useCallback((key, value) => {
     setState((prev) => {
@@ -200,8 +220,8 @@ export function PreferencesProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ ...prefs, effectiveTheme: theme, effectiveContrast: contrast, formats, setPref, setPrefs }),
-    [prefs, theme, contrast, formats, setPref, setPrefs],
+    () => ({ ...prefs, effectiveSky: sky, effectiveTheme: theme, effectiveContrast: contrast, systemDark, formats, setPref, setPrefs }),
+    [prefs, sky, theme, contrast, systemDark, formats, setPref, setPrefs],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

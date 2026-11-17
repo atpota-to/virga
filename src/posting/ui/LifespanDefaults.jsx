@@ -47,20 +47,32 @@ export default function LifespanDefaults({ did }) {
     }
   };
   const usage = timerLimitsLine(limits);
+  const rule = describeTimer({ ...lifespan, enabled: true });
+  const editor = (
+    <div className="settings-rule-editor">
+      <LifespanEditor
+        value={{ ...lifespan, enabled: true }}
+        onChange={(next) => save({ ...next, enabled: lifespan.enabled })}
+        fit={{}}
+        limits={limits}
+        did={did}
+        allowExactTime={false}
+        showToggle={false}
+      />
+    </div>
+  );
 
   return (
     <SettingsCard
       title="Default timer"
       sub="A timer every new post starts with. Each post can change it or take it off."
     >
+      {/* On, the editor under this row ends with the rule in a sentence, so
+          the row says nothing more; off, it says what happens instead. */}
       <SettingsRow
         label="Start new posts with a timer"
         htmlFor={onId}
-        hint={
-          lifespan.enabled
-            ? `New posts start with: ${describeTimer({ ...lifespan, enabled: true })}`
-            : 'New posts start without one. The rule below is kept for when you turn this on.'
-        }
+        hint={lifespan.enabled ? null : 'New posts start without one. The rule is kept for when you turn this on.'}
       >
         <SwitchButton
           id={onId}
@@ -68,27 +80,32 @@ export default function LifespanDefaults({ did }) {
           onChange={(on) => save({ ...lifespan, enabled: on })}
         />
       </SettingsRow>
-      <div className="sched-settings-editor">
-        <LifespanEditor
-          value={{ ...lifespan, enabled: true }}
-          onChange={(rule) => save({ ...rule, enabled: lifespan.enabled })}
-          fit={{}}
-          limits={limits}
-          did={did}
-          allowExactTime={false}
-          showToggle={false}
-        />
-      </div>
-      <p className="card-caption">
-        {usage ? `${usage} ` : ''}When the account has no free timer of the kind
-        this rule needs, a new post starts without it, and the composer says
-        why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
-      </p>
+      {/* Off, the rule waits behind its sentence, closed, so the page
+          doesn't show an editor for something that isn't in use; it's still
+          there to change before turning the timer on. */}
+      {lifespan.enabled ? (
+        <SettingsRow block>{editor}</SettingsRow>
+      ) : (
+        <details className="disclosure settings-rule">
+          <summary>The rule it will use: {sentenceClause(rule)}</summary>
+          {editor}
+        </details>
+      )}
       {error && (
         <p className="callout callout--danger" role="alert">
           {error}
         </p>
       )}
+      <p className="card-caption">
+        {usage ? `${usage} ` : ''}When the account has no free timer of the
+        kind this rule needs, a new post starts without it, and the composer
+        says why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
+      </p>
     </SettingsCard>
   );
+}
+
+/** "Deletes itself 24 hours after it goes up." as the end of a sentence. */
+function sentenceClause(text) {
+  return text.charAt(0).toLowerCase() + text.slice(1).replace(/\.$/, '');
 }

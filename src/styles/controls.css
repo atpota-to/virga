@@ -1,23 +1,35 @@
-/* The kit: buttons, segmented controls, menus, fields, switches, cards,
-   section heads, figures, tables and the small marks (badges, avatars).
-   Everything here is drawn from the tokens in theme.css, so it follows the
-   theme and the density without a second rule. */
+/* The kit: buttons, tabs, menus, fields, switches, sections, figures, tables
+   and the small marks (badges, avatars). Everything here is drawn from the
+   tokens in theme.css, so it follows the sky, the accent and the density
+   without a second rule.
+
+   Nothing here is a box. A section (.card) is its heading and what is
+   under it, set apart from its neighbours by space; a list's heading has a
+   rule in ink under it and hairlines between its rows. Buttons and chips
+   are pills. The thing to do is filled with ink; the rest are outlines or
+   plain words.
+
+   Everything a finger presses is sized for one in a single block at the
+   end ("touch"), so the rules above it are the look on a desk. */
 
 /* ---- button ------------------------------------------------------- */
 
+/* A button's words stay at 14px when the body steps up to 15 on a phone:
+   a control is not prose, and the pills would otherwise grow wider than
+   the room they were given. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   min-height: var(--control-h);
-  padding: 0 12px;
+  padding: 0 16px;
   border: 1px solid var(--line-2);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink-2);
-  font-size: var(--text-sm);
-  font-weight: 580;
+  border-radius: var(--pill);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
@@ -34,22 +46,24 @@
 
 @media (hover: hover) {
   .btn:hover:not(:disabled) {
-    background: var(--surface-3);
-    color: var(--ink);
+    border-color: var(--ink);
+    text-decoration: none;
   }
 }
 
+/* The thing to do: one per view. */
 .btn--primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  border-color: var(--btn);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-weight: 600;
 }
 
 @media (hover: hover) {
   .btn--primary:hover:not(:disabled) {
-    border-color: var(--accent-hover);
-    background: var(--accent-hover);
-    color: var(--on-accent);
+    border-color: var(--btn-hover);
+    background: var(--btn-hover);
+    color: var(--on-btn);
   }
 }
 
@@ -57,6 +71,7 @@
   border-color: var(--danger);
   background: var(--danger);
   color: #ffffff;
+  font-weight: 600;
 }
 
 :root[data-theme='dark'] .btn--danger {
@@ -77,61 +92,86 @@
   }
 }
 
-/* No box until it is pointed at: toolbars, card corners. */
-.btn--ghost,
-.btn--text {
-  border-color: transparent;
-  background: transparent;
-  color: var(--muted);
+/* The one destructive button a page may show (Delete the archive): the
+   outline with its words in red, and its edge red when pointed at. Inside
+   a menu the same verb is a danger item instead. */
+.btn.is-danger {
+  color: var(--danger);
 }
 
 @media (hover: hover) {
-  .btn--ghost:hover:not(:disabled),
-  .btn--text:hover:not(:disabled) {
+  .btn.is-danger:hover:not(:disabled) {
+    border-color: var(--danger);
+  }
+}
+
+/* No edge until it is pointed at: an icon alone (⋯, ✕, a card's tools),
+   and the few quiet words that keep a button's shape (Show 10 more, Save as
+   draft). Any other verb is a link action. */
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-2);
+}
+
+@media (hover: hover) {
+  .btn--ghost:hover:not(:disabled) {
     border-color: transparent;
     background: var(--hover);
     color: var(--ink);
   }
 }
 
+/* Small: the one labelled action of a list row, a callout's action. It
+   carries words alone, no icon. */
 .btn--sm {
-  min-height: 28px;
-  padding: 0 9px;
-  font-size: var(--text-xs);
-  border-radius: var(--radius-sm);
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: var(--text-sm);
 }
 
 .btn--lg {
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 46px;
+  padding: 0 22px;
   font-size: var(--text-md);
 }
 
-/* A square button holding an icon alone. */
+/* A round button holding an icon alone. */
 .btn--icon {
   width: var(--control-h);
   padding: 0;
 }
 
 .btn--icon.btn--sm {
-  width: 28px;
+  width: 30px;
 }
 
-/* A button that is a state (Following): pressed, in the blue wash. */
-.btn.is-on {
-  border-color: var(--line-2);
-  background: var(--surface);
-  color: var(--ink-2);
+.btn--icon.btn--lg {
+  width: 46px;
 }
 
+/* A button that is a state (Following): the word alone, quiet, since the
+   thing has been done. Pointing at it brings its edge back. */
+.btn.is-on,
 .btn--primary.is-on {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+@media (hover: hover) {
+  .btn.is-on:hover:not(:disabled),
+  .btn--primary.is-on:hover:not(:disabled) {
+    border-color: var(--line-2);
+    background: transparent;
+    color: var(--ink);
+  }
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: default;
 }
 
@@ -139,30 +179,90 @@
   cursor: progress;
 }
 
-/* Fingers get the full 44px whatever the size says. */
-@media (pointer: coarse) {
-  .btn,
-  .btn--sm {
-    min-height: 40px;
-  }
+/* ---- link action and more link --------------------------------------- */
 
-  .btn--icon,
-  .btn--icon.btn--sm {
-    width: 40px;
+/* Every other verb: words in ink with a line under them, led by a 14px
+   icon (Show as table, Export, Add to queue, Customize). The box is the
+   line of words and no taller, so it sits on the line of whatever it is
+   beside; a finger gets its room from the ::after in the touch block. One
+   that opens something (Show as table) is heavier while it is open.
+
+   Its words give it its baseline, so in a heading they sit on the title's
+   (the icon, first in the box, would otherwise lend it its foot, and lift
+   the words); the icon is centred on their line. */
+.link-action {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.45;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.link-action svg {
+  flex: none;
+  align-self: center;
+  width: 14px;
+  height: 14px;
+}
+
+.link-action[aria-expanded='true'] {
+  font-weight: 600;
+  text-decoration-thickness: 2px;
+}
+
+@media (hover: hover) {
+  .link-action:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+.link-action:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The way to the whole of a list, at the right of its heading (All
+   scheduled, All posts): quieter than a verb, so it reads as a place to go
+   rather than a thing to do. */
+.more-link {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.45;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .more-link:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 }
 
 /* ---- segmented ---------------------------------------------------- */
 
-/* A track with its keys in it; the pressed key is lifted onto a white chip. */
+/* A row of words, one of them pressed: the pressed one is in ink, with a
+   line under it. No track and no chip. Each key keeps the width of its
+   word in bold (the ::after holds it), so pressing one doesn't nudge the
+   rest along. */
 .segmented {
   position: relative;
   display: inline-flex;
   max-width: 100%;
-  padding: 3px;
-  gap: 2px;
-  border-radius: var(--radius);
-  background: var(--surface-3);
+  gap: 18px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -173,23 +273,38 @@
 
 .segmented-key {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: calc(var(--control-h) - 6px);
-  padding: 0 10px;
+  min-height: var(--control-h);
+  padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: var(--text-sm);
-  font-weight: 560;
+  font-size: var(--text-base);
+  font-weight: 400;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    background-color 0.12s ease,
-    color 0.12s ease;
+  transition: color 0.12s ease;
+}
+
+.segmented-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.segmented-label::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  font-weight: 600;
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
 @media (hover: hover) {
@@ -199,13 +314,16 @@
 }
 
 .segmented-key.is-on {
-  background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 
-:root[data-theme='dark'] .segmented-key.is-on {
-  background: var(--line-2);
+/* The outline sits inside the key, so the row's own clipping (it scrolls
+   sideways when it has to) never cuts it off. */
+.segmented-key:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .segmented-icon {
@@ -214,130 +332,429 @@
   height: 15px;
 }
 
+/* Small: what narrows one list or one chart, over it. The medium size is
+   for the window of the whole page, in its header. */
+.segmented--sm {
+  gap: 16px;
+}
+
 .segmented--sm .segmented-key {
-  min-height: 24px;
-  padding: 0 8px;
-  font-size: var(--text-xs);
-}
-
-@media (pointer: coarse) {
-  .segmented-key {
-    min-height: 36px;
-  }
-}
-
-/* ---- section head ------------------------------------------------- */
-
-.section-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.section-head-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-md);
-  font-weight: 620;
-}
-
-.section-head-meta {
-  margin-left: auto;
-  min-width: 0;
-  color: var(--muted);
+  min-height: 28px;
   font-size: var(--text-sm);
 }
 
-/* ---- card --------------------------------------------------------- */
+/* ---- sideways scrollers ------------------------------------------------ */
 
-.card {
+/* A row that never wraps: when it doesn't fit, it scrolls sideways, with
+   no scrollbar, and fades at the edge that has more behind it.
+   useOverflowEdge (Segmented.jsx) says which edges those are in
+   data-overflow, and brings the pressed key into view when it mounts. A
+   Segmented scrolls this way of its own accord. */
+.scroll-row {
+  display: flex;
+  flex-wrap: nowrap;
   min-width: 0;
-  padding: var(--card-pad);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
+.scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-row > * {
+  flex: none;
+}
+
+/* Scrolling sideways clips the row above and below as well, so a focus
+   ring drawn outside a chip or a link in it would lose its top, bottom and
+   first edge. It is drawn inside instead, as a Segmented's keys draw theirs. */
+.scroll-row :focus-visible {
+  outline-offset: -2px;
+}
+
+/* A row alone on its line runs to the screen's edges, so it scrolls out
+   past the page's margin rather than stopping short of it; its first key
+   still starts on the page's edge. */
+.scroll-row--bleed {
+  width: calc(100% + var(--page-pad) * 2);
+  max-width: none;
+  margin-inline: calc(var(--page-pad) * -1);
+  padding-inline: var(--page-pad);
+  scroll-padding-inline: var(--page-pad);
+}
+
+/* The fades are masks, so whatever the sky is behind the row shows
+   through them. The black here is the mask's opacity, not a colour. */
+.scroll-row[data-overflow='end'],
+.segmented[data-overflow='end'] {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+}
+
+.scroll-row[data-overflow='start'],
+.segmented[data-overflow='start'] {
+  -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to left, #000 calc(100% - 24px), transparent);
+}
+
+.scroll-row[data-overflow='both'],
+.segmented[data-overflow='both'] {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+/* ---- section (.card) ---------------------------------------------- */
+
+/* A section of a page: a heading and what is under it. It has no edge and
+   no ground of its own; the space round it sets it apart. The class is
+   still .card, as the markup has it. */
+.card {
+  min-width: 0;
+}
+
+/* A section's heading: its title (and a line under it) at the left, and at
+   the right at most one thing: a more link, one or two link actions, a
+   small Segmented, or a few icon tools. They sit on the title's baseline,
+   so their words and the title's read as one line. */
 .card-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-3);
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* The title and its line take the room the right-hand group leaves, so a
+   long line under the title wraps beside the group rather than pushing the
+   group onto a line of its own, away from the title it belongs to. Only
+   when that room would be narrower than a short sentence does it wrap. */
+.card-head > :first-child:has(> .card-title) {
+  flex: 1 1 0;
+  min-width: min(100%, 16rem);
+}
+
+/* Link actions side by side in a heading. */
+.head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 24px;
+}
+
+/* An icon has no baseline to share, so a heading's icon tools (a card's ↗,
+   its ⋯) are centred on the title's line instead: a 30px button over a
+   19.5px line. .head-tools holds a few of them, 4px apart. */
+.head-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-head > .btn--icon,
+.card-head > .menu:has(> .btn--icon),
+.card-head > .head-tools {
+  align-self: flex-start;
+  margin-top: -5px;
+}
+
+/* A small Segmented's words are centred in a key taller than the title's
+   line, so on the shared baseline the key would push the title down
+   instead. It reaches out above and below by the difference, and the
+   title stays where every other heading has it. Not on a phone, where it
+   has a row of its own (below). */
+@media (min-width: 561px) {
+  .card-head > .segmented {
+    margin-block: -5px;
+  }
 }
 
 .card-title {
   font-size: var(--text-md);
-  font-weight: 620;
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
+/* The line under a section's title, held to the measure captions keep, so
+   a long one is read in lines of a comfortable length rather than across
+   the whole column. */
 .card-sub {
+  max-width: var(--measure);
   margin-top: 2px;
   color: var(--muted);
   font-size: var(--text-sm);
+  text-wrap: pretty;
 }
 
+/* What a list or a chart needs said about it, inside its section, 12px
+   under it. */
 .card-caption {
   margin-top: var(--space-3);
   color: var(--muted);
   font-size: var(--text-sm);
-  max-width: 78ch;
+  max-width: var(--measure);
 }
 
-/* A card whose rows run edge to edge. */
-.card--flush {
-  padding-left: 0;
-  padding-right: 0;
+/* On a phone a heading with something at its right keeps that beside the
+   title, on the title's line, and lets the line under the title run the
+   full width beneath both. A small Segmented (a chart's mode) goes under
+   the title instead, since it wouldn't fit beside it. */
+@media (max-width: 560px) {
+  .card-head:has(> :nth-child(2)) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 16px;
+    row-gap: 0;
+  }
+
+  .card-head:has(> :nth-child(2)) > :first-child:has(> .card-title) {
+    display: contents;
+  }
+
+  .card-head:has(> :nth-child(2)) .card-title {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .card-head:has(> :nth-child(2)) .card-sub {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .card-head:has(> :nth-child(2)) > :not(:first-child, .card-title, .card-sub, .segmented) {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .card-head:has(> :nth-child(2)) > .segmented {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: start;
+    margin-top: 8px;
+  }
+
+  /* Icon tools keep the title's line its own height. */
+  .card-head:has(> :nth-child(2)) > .btn--icon,
+  .card-head:has(> :nth-child(2)) > .menu:has(> .btn--icon),
+  .card-head:has(> :nth-child(2)) > .head-tools {
+    margin-block: -5px;
+  }
 }
 
-.card--flush > .card-head,
-.card--flush > .card-caption,
-.card--flush > .card-foot {
-  padding: 0 var(--card-pad);
+/* A section that is a list or a table: the rule in ink under its heading
+   is the top of the first row, and its rows run the section's full width. */
+.card--flush > .card-head {
+  margin-bottom: 0;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
 }
 
+/* Under a list: "Show 10 more" first, and "12 of 64" at the right. */
 .card-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
+/* A quiet button that starts the foot is let out by its own padding and
+   the side of its first letter, so its words sit on the section's edge. */
+.card-foot > .btn--ghost:first-child {
+  margin-left: -17px;
+}
+
+.card-foot > .btn--ghost.btn--sm:first-child {
+  margin-left: -13px;
+}
+
+/* ---- list toolbar and row actions ------------------------------------ */
+
+/* What searches or filters one list: over that list's heading, 16px from
+   it, so the heading's count sits right over the rows it counts. In this
+   order: the search, a small Segmented, then any selects (.field-inline;
+   two or more go in .list-toolbar-selects). 8px between controls, 32px
+   between those groups. */
+.list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 32px;
+  margin-bottom: var(--space-4);
+}
+
+.list-toolbar > .search {
+  flex: 1 1 240px;
+  max-width: 420px;
+}
+
+.list-toolbar-selects {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* On a phone: the search alone on the first line; the filter beside one
+   select on the second, the filter scrolling if it must; two selects or
+   more share a third line. */
+@media (max-width: 560px) {
+  .list-toolbar {
+    gap: 12px 16px;
+  }
+
+  .list-toolbar > .search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .list-toolbar > .segmented {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .list-toolbar > .field-inline {
+    flex: none;
+  }
+
+  .list-toolbar > .list-toolbar-selects {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .list-toolbar-selects > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* A row's actions: at most one small outline with words, and a ⋯. They
+   sit at the end of the row, centred on its first line (a 30px control on
+   a 21px line), and never stretch. */
+.row-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  margin-top: -5px;
+}
+
+/* On a phone a row led by its words keeps all of its width for them: the
+   ⋯ goes to the row's top corner, centred on the first line with its dots
+   ending on the column's edge, and the outline drops under the meta at its
+   own width. The row must not clip (overflow), or the menu is cut off. */
+@media (max-width: 560px) {
+  /* Raised by :root over an area's own rule for its row's padding, which
+     loads after the kit and would otherwise take the corner's room back. */
+  :root .has-corner-menu {
+    position: relative;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-right: 40px;
+  }
+
+  .has-corner-menu .row-menu {
+    position: absolute;
+    top: calc(var(--row-pad) + 11px);
+    right: -7px;
+    transform: translateY(-50%);
+  }
+
+  /* The transform makes the ⋯ a layer of its own, which the rows after it
+     would paint over; an open one is lifted above them, list and all. */
+  .has-corner-menu .row-menu:has(> [aria-expanded='true']) {
+    z-index: 2;
+  }
+
+  .has-corner-menu > .row-actions {
+    flex-basis: 100%;
+    margin-top: 0;
+  }
+
+  /* With nothing left in the line but the ⋯, there is no line. */
+  .has-corner-menu > .row-actions:not(:has(> :not(.row-menu))) {
+    display: contents;
+  }
+}
+
+/* ---- the chart foot ---------------------------------------------------- */
+
+/* The line under a chart: Show as table first, then what can be done with
+   the chart (Export, Post this chart, Add to dashboard), as link actions.
+   On a phone the second group folds into a ⋯ at the line's end. */
+.chart-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: var(--space-3);
+}
+
+/* A ⋯ at the line's end (a phone's) is let out by the room beside its
+   dots, so they end on the column's edge, as a row's corner ⋯ does. */
+.chart-foot > .menu:last-child:has(> .btn--icon) {
+  margin-left: auto;
+  margin-right: -7px;
+}
+
 /* ---- figures ------------------------------------------------------ */
 
-/* A strip of figures: label, number, note. One card, the cells set apart by
-   a hairline; they wrap two to a row on a phone. */
+/* A row of figures: label, number, note, each under a rule of its own.
+   Four to a row on a wide screen, two on a phone. Below it there is
+   nothing but the space between the page's bands.
+
+   The number is --figure-size, which the shell works out from the page's
+   column (shell.css), so every figure on a page is the same size whatever
+   its row holds: a dashboard's, a report's and the index's alike. */
 .figures {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(168px, 100%), 1fr));
+  /* Between two lines of figures (two to a row on a phone), the gap is the
+     space under a figure; under the last line there is none. */
+  gap: 20px var(--space-6);
   margin: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  overflow: hidden;
 }
 
 .figures-cell {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
   min-width: 0;
-  margin: 0 0 0 -1px;
-  padding: var(--card-pad) calc(var(--card-pad) + 2px);
-  border-left: 1px solid var(--line-soft);
+  margin: 0;
+  padding: 16px 0 0;
+  border-top: 2px solid var(--line);
+}
+
+/* Where the browser can, each cell borrows the rows of the grid it sits in
+   (label, number, note), so a label that takes two lines in one cell
+   doesn't leave its number lower than its neighbour's. */
+@supports (grid-template-rows: subgrid) {
+  .figures {
+    grid-auto-rows: auto;
+  }
+
+  .figures-cell {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    align-content: start;
+    row-gap: 8px;
+  }
 }
 
 .figures-label {
   order: 1;
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: var(--text-sm);
   font-weight: 500;
 }
@@ -345,10 +762,11 @@
 .figures-value {
   order: 2;
   margin: 0;
-  font-size: var(--text-2xl);
-  font-weight: 620;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-size: var(--figure-size);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .figures-note {
@@ -359,47 +777,67 @@
   line-height: 1.35;
 }
 
+/* A change and the words about it are one note: "+8.6% · 583 the 30 days
+   before". The dot is a mark, so it is faint. It belongs to the change, as
+   a meta line's dots belong to the word before them, so a note that wraps
+   never starts a line with it. The note runs as one line of text, so in a
+   narrow cell its words wrap one at a time after the change ("+8.4% · 583
+   the 30 days / before"), rather than leaving the change alone on a line
+   with its dot: whatever holds the change in the note flows inline. */
+.figures-note > :has(> .delta) {
+  display: inline;
+}
+
+.figures-note .delta:not(:last-child)::after {
+  content: '·';
+  margin: 0 6px 0 4px;
+  color: var(--faint);
+  font-weight: 400;
+}
+
+/* Five figures (Content's) keep to one line wherever four would fit,
+   rather than leaving the fifth alone under the other four: their numbers
+   are sized from the page's column, not the cell, so narrower cells only
+   wrap the words over and under them. */
+@media (min-width: 561px) {
+  .figures:has(> .figures-cell:nth-child(5):last-child) {
+    grid-template-columns: repeat(auto-fit, minmax(min(128px, 100%), 1fr));
+  }
+}
+
+/* Two to a row on a phone; an odd one out at the end takes the whole row
+   rather than leaving a hole beside it. */
 @media (max-width: 560px) {
   .figures {
+    column-gap: 20px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .figures-cell {
-    border-top: 1px solid var(--line-soft);
+    gap: 8px;
+    row-gap: 8px;
+    padding: 12px 0 0;
   }
 
-  .figures-value {
-    font-size: var(--text-xl);
+  .figures-cell:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 
-/* A change against the window before. */
+/* A change against the window before: the figure, in ink, with its sign.
+   Which way it went is the sign's to say; no colour is spent on it. */
 .delta {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 1px 7px;
-  border-radius: var(--pill);
-  background: var(--surface-3);
-  color: var(--muted);
-  font-size: var(--text-xs);
+  color: var(--ink);
+  font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
 }
 
-.delta.is-up {
-  background: var(--up-wash);
-  color: var(--up);
-}
-
-.delta.is-down {
-  background: var(--down-wash);
-  color: var(--down);
-}
-
 .delta--plain {
-  padding: 0;
-  background: none !important;
+  font-size: inherit;
 }
 
 /* ---- menu --------------------------------------------------------- */
@@ -418,12 +856,75 @@
   min-width: 13rem;
   max-width: min(22rem, calc(100vw - 32px));
   margin: 0;
-  padding: 4px;
+  padding: 6px;
   list-style: none;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-lg);
+}
+
+/* A list with no room to open whole scrolls inside the room it has (Menu
+   gives it a max-height). It shades the edge with more past it, so the
+   items beyond, the destructive one last among them, don't read as
+   missing: each shade stays put while a cover moves with the items, and
+   the cover hides its shade once that end is reached. */
+.menu-list[style*='max-height'] {
+  background:
+    linear-gradient(var(--surface) 40%, transparent) top / 100% 36px no-repeat local,
+    linear-gradient(transparent, var(--surface) 60%) bottom / 100% 36px no-repeat local,
+    linear-gradient(var(--line-2), transparent) top / 100% 16px no-repeat scroll,
+    linear-gradient(transparent, var(--line-2)) bottom / 100% 16px no-repeat scroll,
+    var(--surface);
+}
+
+/* A phone's list with no room to open whole beside its button rises from
+   the foot of the screen as a sheet, over the dialogs' scrim, so every item
+   is in reach without scrolling inside a popover (Menu decides when). */
+.menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--scrim);
+  touch-action: none;
+}
+
+.menu-list.menu-list--sheet {
+  position: fixed;
+  z-index: 81;
+  inset: auto 0 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  max-height: calc(100dvh - 72px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-width: 1px 0 0;
+  border-radius: 16px 16px 0 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-scrim {
+    animation: menu-scrim-in 0.16s var(--ease);
+  }
+
+  .menu-list--sheet {
+    animation: menu-sheet-in 0.2s var(--ease);
+  }
+}
+
+@keyframes menu-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes menu-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
 }
 
 .menu[data-placement='up'] .menu-list {
@@ -445,6 +946,7 @@
   border: 0;
   border-radius: var(--radius);
   background: transparent;
+  color: var(--ink);
   text-align: left;
   cursor: pointer;
 }
@@ -463,8 +965,8 @@
   flex: none;
   width: 16px;
   height: 16px;
-  margin-top: 1px;
-  color: var(--muted);
+  margin-top: 2px;
+  color: var(--ink-2);
 }
 
 .menu-item[data-tone='danger'] .menu-item-icon {
@@ -479,19 +981,19 @@
 }
 
 .menu-item-label {
-  font-size: var(--text-sm);
-  font-weight: 560;
+  font-size: var(--text-base);
+  font-weight: 500;
 }
 
 .menu-item-hint {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
 .menu-sep {
   height: 1px;
-  margin: 4px 6px;
+  margin: 6px 4px;
   background: var(--line);
 }
 
@@ -513,15 +1015,21 @@
   font-size: var(--text-sm);
 }
 
+/* A field's ground lets a little of what is behind it through, so on the
+   sky it is a pale pane and on the page it is the page; its edge is what
+   says it is a field. */
 .input {
   width: 100%;
   min-height: var(--control-h);
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
   color: var(--ink);
   font-size: var(--text-base);
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .input::placeholder {
@@ -529,15 +1037,35 @@
   opacity: 1;
 }
 
+@media (hover: hover) {
+  .input:hover:not(:disabled):not(:focus-visible):not([aria-invalid='true']) {
+    border-color: var(--muted);
+  }
+}
+
 .input:focus-visible {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--focus-ring);
   box-shadow: var(--focus);
 }
 
+/* A field that is the trouble (aria-invalid): its edge, and its focus
+   ring, in the danger colour. The ring (--focus) is worked out where the
+   theme sets it, from the accent, so it is said again here from
+   --focus-ring. */
+.input[aria-invalid='true'] {
+  --focus-ring: var(--danger);
+  --focus: 0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent);
+  border-color: var(--danger);
+}
+
+:root[data-contrast='high'] .input[aria-invalid='true'] {
+  --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
+}
+
 .input--lg {
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: 46px;
+  padding: 0 16px;
   font-size: var(--text-md);
 }
 
@@ -546,12 +1074,13 @@
 textarea.input {
   display: block;
   min-height: calc(var(--control-h) * 2.5);
-  padding: 8px 10px;
+  padding: 9px 12px;
   line-height: 1.5;
   resize: vertical;
 }
 
 .input:disabled {
+  border-color: var(--line);
   background: var(--surface-2);
   color: var(--muted);
   cursor: not-allowed;
@@ -575,7 +1104,7 @@ textarea.input {
 input[type='datetime-local'].input,
 input[type='date'].input,
 input[type='time'].input {
-  padding-right: 6px;
+  padding-right: 8px;
 }
 
 /* A search field: the glass sits inside the left edge. */
@@ -587,7 +1116,7 @@ input[type='time'].input {
 
 .search > svg {
   position: absolute;
-  left: 10px;
+  left: 12px;
   width: 16px;
   height: 16px;
   color: var(--muted);
@@ -595,19 +1124,20 @@ input[type='time'].input {
 }
 
 .search > .input {
-  padding-left: 32px;
+  padding-left: 36px;
 }
 
 select.input {
-  padding-right: 28px;
+  padding-right: 30px;
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%),
+    linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position:
-    calc(100% - 15px) 50%,
-    calc(100% - 10px) 50%;
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
   background-size: 5px 5px;
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 input[type='checkbox'],
@@ -642,15 +1172,20 @@ input[type='radio'] {
   height: 20px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgb(16 24 40 / 0.25);
-  transition: transform 0.15s var(--ease);
+  box-shadow: 0 1px 2px rgb(15 27 51 / 0.3);
+  transition:
+    transform 0.15s var(--ease),
+    background-color 0.15s ease;
 }
 
 .switch[aria-checked='true'] {
   background: var(--accent);
 }
 
+/* At night the accent is a light fill, so the knob takes the colour that
+   is written on it. */
 .switch[aria-checked='true']::after {
+  background: var(--on-accent);
   transform: translateX(16px);
 }
 
@@ -659,30 +1194,34 @@ input[type='radio'] {
   cursor: default;
 }
 
-/* ---- badges, chips, avatars --------------------------------------- */
+/* ---- badges, meta, chips, tokens, avatars ------------------------- */
 
+/* A badge is only for a problem the person has to find (Didn't go out,
+   Needs sign-in, This session only), so there are two: warn and danger, a
+   pill of wash with the words in its colour and no edge. Everything else
+   a row says about itself is meta: words, not a pill.
+
+   The edge is there, transparent: in forced colours the wash is dropped
+   and the edge is drawn, so a problem still reads as a pill and not as
+   one more word. */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
+  gap: 5px;
+  padding: 0 7px;
+  border: 1px solid transparent;
   border-radius: var(--pill);
-  background: var(--surface-3);
   color: var(--ink-2);
   font-size: var(--text-xs);
-  font-weight: 580;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 20px;
   white-space: nowrap;
 }
 
 .badge svg {
+  flex: none;
   width: 12px;
   height: 12px;
-}
-
-.badge--accent {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
 }
 
 .badge--warn {
@@ -695,50 +1234,203 @@ input[type='radio'] {
   color: var(--danger);
 }
 
-.badge--outline {
-  border: 1px solid var(--line-2);
-  background: transparent;
+/* The line of small facts under a row's title, or a page's: muted words
+   with a dot between them (date · kind · counts). The dot belongs to the
+   word before it, so a line that wraps never starts with one, and it sits
+   6px from both. A phrase that mustn't break is a child with nowrap. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.meta > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta > :not(:last-child)::after {
+  content: '·';
+  margin: 0 6px 0 1px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.meta svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+/* A few items that belong together, with space between them and no dots:
+   a post's counts (♥ 532 ⟲ 108). */
+.meta > .meta-group {
+  gap: 12px;
+}
+
+/* A meta line that carries on after another one (PostMeta, then "Not in
+   the archive yet"): the inner line's items join the outer's, and the dot
+   after the inner line's last item is the one between the two. */
+.meta > .meta {
+  display: contents;
+}
+
+.meta > .meta::after {
+  content: none;
+}
+
+.meta > .meta:not(:last-child) > :last-child::after {
+  content: '·';
+  margin: 0 6px 0 1px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* After a post's counts the dot is inside their 12px spacing. */
+.meta > .meta:not(:last-child) > .meta-group:last-child::after {
+  margin-left: -6px;
+}
+
+/* A row's key fact, a step louder than the rest (Acts in 2 days). */
+.meta .is-key {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* What a page or a tool can touch, as a meta line: an icon and its words
+   for each. Writing is said a little louder than reading; asking for a
+   new permission is a warning. No edge, no ground. */
+.access-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.access-item[data-access='post'],
+.access-item[data-access='follow'] {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.access-item[data-access='ask'] {
+  color: var(--warn);
+}
+
+.access-item svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 0 11px;
+  min-height: 30px;
+  padding: 0 13px;
   border: 1px solid var(--line-2);
   border-radius: var(--pill);
-  background: var(--surface);
+  background: transparent;
   color: var(--ink-2);
   font-size: var(--text-sm);
-  font-weight: 560;
+  font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
 }
 
-.chip[aria-pressed='true'] {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--bg);
-}
-
-@media (pointer: coarse) {
-  .chip {
-    min-height: 36px;
+@media (hover: hover) {
+  .chip:hover:not([aria-pressed='true'], [aria-checked='true']):not(:disabled) {
+    border-color: var(--ink);
+    color: var(--ink);
   }
+}
+
+/* A chip that is one of a radio group's choices (a template's answers) is
+   pressed by aria-checked rather than aria-pressed. */
+.chip[aria-pressed='true'],
+.chip[role='radio'][aria-checked='true'] {
+  border-color: var(--btn);
+  background: var(--btn);
+  color: var(--on-btn);
+  font-weight: 600;
+}
+
+/* A value that has been chosen, with a ✕ to take it back (a time in the
+   weekly schedule, a language, a tag). The ✕ is a small circle at the
+   pill's right end; a finger gets 44px round it from the touch block. */
+.token {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 4px 0 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--pill);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.token-remove {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.token-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (hover: hover) {
+  .token-remove:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+}
+
+/* A wrapping row of tokens. */
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
 .avatar {
   display: grid;
   flex: none;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--avatar-bg);
   color: var(--avatar-ink);
   font-size: var(--text-sm);
-  font-weight: 650;
+  font-weight: 600;
   object-fit: cover;
   overflow: hidden;
 }
@@ -759,8 +1451,8 @@ input[type='radio'] {
 .dot {
   display: inline-block;
   flex: none;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--ok);
 }
@@ -777,6 +1469,11 @@ input[type='radio'] {
   background: var(--faint);
 }
 
+/* The one that is open or chosen (Open now): rule 5's dot in the accent. */
+.dot--current {
+  background: var(--accent);
+}
+
 /* ---- tables ------------------------------------------------------- */
 
 /* Positioned, so the screen-reader-only labels inside a scrolling table
@@ -786,66 +1483,101 @@ input[type='radio'] {
   overflow-x: auto;
 }
 
+/* A table has no sides: its first and last columns sit on the section's
+   own edges. A rule in ink under the head, hairlines between the rows. */
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .table th,
 .table td {
   padding: var(--row-pad) 12px;
-  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
 }
 
-.table thead th {
-  border-top: 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  white-space: nowrap;
+.table th:first-child,
+.table td:first-child {
+  padding-left: 0;
 }
 
-.table tbody tr:hover {
-  background: var(--surface-2);
+.table th:last-child,
+.table td:last-child {
+  padding-right: 0;
+}
+
+.table thead th {
+  padding-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .table .is-num {
   text-align: right;
 }
 
+/* A chosen row: a tint of the accent, let out a little past the table's
+   sides so the words don't touch its edge. */
 .table tr.is-selected {
-  background: var(--accent-wash);
+  background: var(--accent-tint);
+  box-shadow:
+    -10px 0 0 var(--accent-tint),
+    10px 0 0 var(--accent-tint);
 }
 
 /* ---- empty states and notes --------------------------------------- */
 
 .empty {
-  padding: var(--space-5) var(--space-3);
+  padding: var(--space-5) 0;
   color: var(--muted);
-  font-size: var(--text-sm);
-  text-align: center;
+  font-size: var(--text-base);
 }
 
+/* Nothing here yet: one sentence, and at most one way to change that, an
+   outline button (New post, Sync now). No heading over it and no ink. */
+.empty-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.empty-block .empty {
+  max-width: 56ch;
+  padding: 0;
+}
+
+/* Under a ruled heading it keeps the air a first row would have. */
+.card--flush > .card-head ~ .empty-block {
+  padding-top: var(--space-4);
+}
+
+/* Prose about a setting. A note about a list is a .card-caption in its
+   section instead. */
 .note {
   color: var(--muted);
   font-size: var(--text-sm);
-  max-width: 80ch;
+  max-width: var(--measure);
 }
 
+/* Something to know before going on: a hairline down its side. A warning
+   or a failure has its colour and a wash as well, since it has to be
+   found. */
 .callout {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  max-width: var(--measure);
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--line-2);
+  color: var(--ink-2);
   font-size: var(--text-sm);
 }
 
@@ -857,25 +1589,33 @@ input[type='radio'] {
 }
 
 .callout--warn {
-  border-color: transparent;
+  padding: 12px 14px;
+  border-left-color: var(--warn);
+  border-radius: 0 var(--radius) var(--radius) 0;
   background: var(--warn-wash);
   color: var(--warn);
 }
 
 .callout--danger {
-  border-color: transparent;
+  padding: 12px 14px;
+  border-left-color: var(--danger);
+  border-radius: 0 var(--radius) var(--radius) 0;
   background: var(--danger-wash);
   color: var(--danger);
+}
+
+.callout a {
+  color: inherit;
 }
 
 /* A plain details/summary disclosure. */
 .disclosure > summary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--ink-2);
+  gap: 8px;
+  color: var(--ink);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   list-style: none;
 }
@@ -901,9 +1641,9 @@ input[type='radio'] {
 /* A progress bar, determinate or moving. */
 .progress {
   position: relative;
-  height: 4px;
+  height: 3px;
   border-radius: var(--pill);
-  background: var(--surface-3);
+  background: var(--line);
   overflow: hidden;
 }
 
@@ -958,18 +1698,20 @@ input[type='radio'] {
   }
 }
 
+/* Ink, with the page's colour written on it: dark by day, light at night. */
 .info-tip-pop {
   position: absolute;
   z-index: 45;
   top: calc(100% + 6px);
   left: -10px;
   width: min(280px, calc(100vw - 32px));
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: var(--radius);
-  background: #101828;
-  color: #e7eaf0;
-  font-size: var(--text-xs);
-  font-weight: 450;
+  background: var(--btn);
+  color: var(--on-btn);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1.45;
   text-align: left;
   white-space: normal;
@@ -982,16 +1724,210 @@ input[type='radio'] {
   display: none;
 }
 
+/* ---- touch --------------------------------------------------------------
 
-:root[data-theme='dark'] .info-tip-pop {
-  background: #e7eaf0;
-  color: #101828;
-}
+   Fingers get more to press, whatever the size says, and this is the one
+   place that says how much. A medium control grows to 40px and a field's
+   words to 16px (smaller, and a phone zooms in on it). A small one stays
+   visibly small, 32px, and is pressed through an ::after that reaches to
+   44px: so a row's button still reads as smaller than a header's, and two
+   rows of them 12px apart don't overlap. Words to press (a link action, a
+   more link, a Segmented's keys) keep their line and reach out the same
+   way. A ghost icon is simply 44px square, since it has no edge to give
+   its size away. */
 
 @media (pointer: coarse) {
+  .btn {
+    min-height: 40px;
+  }
+
+  .btn--lg {
+    min-height: 46px;
+  }
+
+  .btn--icon {
+    width: 40px;
+  }
+
+  .btn--sm {
+    position: relative;
+    min-height: 32px;
+  }
+
+  .btn--sm::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+
+  .btn--icon.btn--sm {
+    width: 32px;
+  }
+
+  .btn--icon.btn--sm::after {
+    inset: -6px;
+  }
+
+  .btn--ghost.btn--icon {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .btn--ghost.btn--icon::after {
+    content: none;
+  }
+
+  .chip,
+  .input {
+    min-height: 40px;
+  }
+
+  .input--lg {
+    min-height: 46px;
+  }
+
+  .input,
+  .input--lg,
+  textarea.input {
+    font-size: 16px;
+  }
+
+  .token {
+    min-height: 32px;
+  }
+
+  .tokens {
+    row-gap: 12px;
+  }
+
+  .token-remove {
+    position: relative;
+  }
+
+  .token-remove::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+  }
+
+  .link-action,
+  .more-link {
+    position: relative;
+  }
+
+  .link-action::after,
+  .more-link::after {
+    content: '';
+    position: absolute;
+    inset: -13px -6px;
+  }
+
+  /* The row is let out 11px at each end, its words held where they were by
+     as much padding, so the end keys' reach (below) is inside the row: not
+     clipped by it, and not counted as more to scroll to, so a row that fits
+     doesn't fade its last key. A row that runs to the screen's edges has
+     the page's margin for that already. */
+  .segmented {
+    gap: 22px;
+  }
+
+  .segmented:not(.scroll-row--bleed) {
+    max-width: calc(100% + 22px);
+    margin-inline: -11px;
+    padding-inline: 11px;
+  }
+
+  .segmented-key,
+  .segmented--sm .segmented-key {
+    position: relative;
+    min-height: 44px;
+  }
+
+  /* Out into half of the gap on each side, so the row has no dead space
+     between its keys. */
+  .segmented-key::before {
+    content: '';
+    position: absolute;
+    inset: 0 -11px;
+  }
+
+  .disclosure > summary,
+  .menu-item {
+    min-height: 44px;
+  }
+
+  /* An item of one line is centred in its taller box; one with a hint is
+     taller than 44px already and keeps its icon on the first line. */
+  .menu-item:not(:has(.menu-item-hint)) {
+    align-items: center;
+  }
+
+  .menu-item:not(:has(.menu-item-hint)) .menu-item-icon {
+    margin-top: 0;
+  }
+
+  /* A 44px icon over a heading's 19.5px line, centred on it. */
+  .card-head > .btn--icon,
+  .card-head > .menu:has(> .btn--icon),
+  .card-head > .head-tools {
+    margin-top: -12px;
+  }
+
+  /* A row's 32px outline over its 21px first line; the 44px ⋯ beside it
+     reaches out above and below without making the group taller. */
+  .row-actions {
+    margin-top: -6px;
+  }
+
+  .row-actions .btn--ghost.btn--icon {
+    margin-block: -6px;
+  }
+
+  /* Under a chart the link actions are a real 44px tall, with no gap
+     between wrapped lines, so one line's reach never covers the next. Their
+     words are centred in that height, since there is no title's baseline
+     to share there. */
+  .chart-foot {
+    row-gap: 0;
+  }
+
+  .chart-foot .link-action {
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .chart-foot .link-action::after {
+    inset: 0 -6px;
+  }
+
+  .chart-foot > .menu:last-child:has(> .btn--icon) {
+    margin-right: -14px;
+  }
+
   .info-tip-button {
     width: 32px;
     height: 32px;
     margin: -8px -6px;
+  }
+}
+
+/* A chart's mode in a heading: its 44px keys centred on the title's line,
+   as the 28px ones are on a fine pointer. */
+@media (pointer: coarse) and (min-width: 561px) {
+  .card-head > .segmented {
+    margin-block: -13px;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 560px) {
+  .card-head:has(> :nth-child(2)) > .btn--icon,
+  .card-head:has(> :nth-child(2)) > .menu:has(> .btn--icon),
+  .card-head:has(> :nth-child(2)) > .head-tools {
+    margin-block: -12px;
+  }
+
+  /* The ⋯'s 44px box, so its dots still end on the column's edge. */
+  .has-corner-menu .row-menu {
+    right: -14px;
   }
 }

@@ -36,41 +36,26 @@ export default function UnfollowTracker({ tool }) {
   }
 
   const syncNow = () => archive.runSync(archive.meta.posts?.complete ? 'incremental' : 'resume');
+  const exportLog = () =>
+    exportRows(archive, 'follower-changes', [
+      ['change', 'did', 'handle', 'display_name', 'noticed_at', 'since', 'followed_at'],
+      ...[...m.lost, ...m.gained].map((e) => [e.kind, e.did, e.handle, e.displayName, new Date(e.at).toISOString(), e.since ? new Date(e.since).toISOString() : '', e.followedAt || '']),
+    ]);
 
   return (
     <>
-      <ToolHeader
-        tool={tool}
-        actions={
-          m.tracking && (
-            <Button
-              onClick={() =>
-                exportRows(archive, 'follower-changes', [
-                  ['change', 'did', 'handle', 'display_name', 'noticed_at', 'since', 'followed_at'],
-                  ...[...m.lost, ...m.gained].map((e) => [e.kind, e.did, e.handle, e.displayName, new Date(e.at).toISOString(), e.since ? new Date(e.since).toISOString() : '', e.followedAt || '']),
-                ])
-              }
-            >
-              <Download size={15} aria-hidden="true" />
-              Export
-            </Button>
-          )
-        }
-      />
+      <ToolHeader tool={tool} />
       <div className="page-body">
         {!m.tracking ? (
-          <div className="card empty-page">
-            <h2 className="card-title">Counting starts with your next sync</h2>
-            <p className="card-sub">
+          <div className="empty-block">
+            <p className="empty">
               Virga compares your follower list at each sync with the one before. Your archive has one list so far; the next sync will
               have a second to compare it with, and from then on every unfollow lands here.
             </p>
-            <div>
-              <Button variant="primary" onClick={syncNow} disabled={Boolean(archive.sync)}>
-                <RefreshCw size={15} aria-hidden="true" />
-                {archive.sync ? 'Syncing…' : 'Sync now'}
-              </Button>
-            </div>
+            <Button onClick={syncNow} disabled={Boolean(archive.sync)}>
+              <RefreshCw size={15} aria-hidden="true" />
+              {archive.sync ? 'Syncing…' : 'Sync now'}
+            </Button>
           </div>
         ) : (
           <>
@@ -84,8 +69,11 @@ export default function UnfollowTracker({ tool }) {
               ]}
             />
             <section className="card card--flush" aria-label={side === 'lost' ? 'Who left' : 'Who arrived'}>
-              <div className="card-head">
+              {/* The two lists are the heading's words, as a pair of keys. Their
+                  counts are the figures right above, so the keys don't repeat them. */}
+              <div className="card-head change-head">
                 <Segmented
+                  size="sm"
                   label="Show"
                   value={side}
                   onChange={(v) => {
@@ -93,14 +81,21 @@ export default function UnfollowTracker({ tool }) {
                     setLimit(PAGE);
                   }}
                   options={[
-                    { value: 'lost', label: `Left (${m.lost.length.toLocaleString(activeLocale())})` },
-                    { value: 'gained', label: `Arrived (${m.gained.length.toLocaleString(activeLocale())})` },
+                    { value: 'lost', label: 'Left' },
+                    { value: 'gained', label: 'Arrived' },
                   ]}
                 />
-                <Button size="sm" onClick={syncNow} disabled={Boolean(archive.sync)}>
-                  <RefreshCw size={14} aria-hidden="true" />
-                  {archive.sync ? 'Syncing…' : 'Sync now'}
-                </Button>
+                {/* What to do with the log: read the next sync into it, or take it with you. */}
+                <div className="head-actions">
+                  <button type="button" className="link-action" onClick={syncNow} disabled={Boolean(archive.sync)}>
+                    <RefreshCw size={14} aria-hidden="true" />
+                    {archive.sync ? 'Syncing…' : 'Sync now'}
+                  </button>
+                  <button type="button" className="link-action" onClick={exportLog}>
+                    <Download size={14} aria-hidden="true" />
+                    Export
+                  </button>
+                </div>
               </div>
               {!entries.length && (
                 <p className="empty">
@@ -120,14 +115,18 @@ export default function UnfollowTracker({ tool }) {
                         archive={archive}
                         did={e.did}
                         card={{ handle: e.handle, displayName: e.displayName, avatar: e.avatar }}
+                        // The date is kept whole: on a phone the line runs on
+                        // under itself rather than lose the year (tools.css).
                         meta={
-                          side === 'lost'
-                            ? e.followedAt
-                              ? `had followed you since ${formatDateShort(e.followedAt)}`
-                              : null
-                            : e.followedAt
-                              ? `followed ${relativeTime(e.followedAt)}`
-                              : null
+                          side === 'lost' ? (
+                            e.followedAt ? (
+                              <>
+                                had followed you since <span className="change-date">{formatDateShort(e.followedAt)}</span>
+                              </>
+                            ) : null
+                          ) : e.followedAt ? (
+                            `followed ${relativeTime(e.followedAt)}`
+                          ) : null
                         }
                         follow={follow}
                       />
@@ -140,13 +139,16 @@ export default function UnfollowTracker({ tool }) {
                   <Button size="sm" variant="ghost" onClick={() => setLimit((l) => l + PAGE)}>
                     Show {Math.min(PAGE, entries.length - shown.length)} more
                   </Button>
+                  <span className="num">
+                    {shown.length.toLocaleString(activeLocale())} of {entries.length.toLocaleString(activeLocale())}
+                  </span>
                 </div>
               )}
+              <p className="card-caption">
+                A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and
+                followed again between two syncs never shows. The log is kept in this browser, up to 5,000 changes.
+              </p>
             </section>
-            <p className="note">
-              A change is noticed at the sync after it happened, so “noticed” is a window, not a moment. Someone who unfollowed and
-              followed again between two syncs never shows. The log is kept in this browser, up to 5,000 changes.
-            </p>
           </>
         )}
       </div>

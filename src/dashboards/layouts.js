@@ -14,16 +14,18 @@
 // card takes is its type's to say (catalog.js `options`).
 //
 // The sizes are spans of a twelve-column grid: xs 3, s 4, m 6, l 8, xl 12.
-// On a phone every card is full width; the order is the same everywhere.
+// Customize names them by what they are, a share of the row (¼ ⅓ ½ ⅔ Full),
+// rather than by a letter. On a phone every card is full width; the order
+// is the same everywhere.
 
 export const LAYOUT_VERSION = 1;
 
 export const SIZES = Object.freeze({
-  xs: { cols: 3, label: 'XS', name: 'A quarter of the row' },
-  s: { cols: 4, label: 'S', name: 'A third of the row' },
-  m: { cols: 6, label: 'M', name: 'Half the row' },
-  l: { cols: 8, label: 'L', name: 'Two thirds of the row' },
-  xl: { cols: 12, label: 'XL', name: 'The full row' },
+  xs: { cols: 3, label: '¼', name: 'A quarter of the row' },
+  s: { cols: 4, label: '⅓', name: 'A third of the row' },
+  m: { cols: 6, label: '½', name: 'Half the row' },
+  l: { cols: 8, label: '⅔', name: 'Two thirds of the row' },
+  xl: { cols: 12, label: 'Full', name: 'The full row' },
 });
 
 /** The dashboards a new account starts with. Types are WIDGETS keys. */
@@ -208,9 +210,10 @@ export function resetDashboard(layout, id) {
   }));
 }
 
-export function addWidget(layout, dashboardId, type, def, { id = newId('w'), index = null } = {}) {
+export function addWidget(layout, dashboardId, type, def, { id = newId('w'), index = null, size = null } = {}) {
   return mapDashboard(layout, dashboardId, (d) => {
-    const card = { id, type, size: def?.defaultSize || 'm' };
+    // A size that was asked for, if the card can take it; else the card's own.
+    const card = { id, type, size: size && def?.sizes?.includes(size) ? size : def?.defaultSize || 'm' };
     const widgets = [...d.widgets];
     widgets.splice(index == null ? widgets.length : Math.max(0, Math.min(widgets.length, index)), 0, card);
     return { ...d, widgets };

@@ -10,20 +10,17 @@ import { CUSTOM_PERIOD, customPeriod, dayKey, periodPhrase, periodWindowWord, re
 import { activeLocale } from '../lib/locale.js';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
+import { AccessLine } from '../components/AccessBadge.jsx';
 import Segmented from '../components/Segmented.jsx';
 
-/** The mark: a cloud's arc with rain falling from it that never lands. */
-export function LogoMark({ size = 26 }) {
+/**
+ * The mark: a cloud's arc with rain falling from it that never lands. Drawn
+ * in the colour of the words beside it, straight on the sky.
+ */
+export function LogoMark({ size = 22 }) {
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className="logo-mark">
-      <rect width="24" height="24" rx="6" fill="var(--accent)" />
-      <path
-        d="M6 11a6 6 0 0 1 12 0M9 14l-1 4.5M12.5 14l-1 6M16 14l-1 3.5"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className="logo-mark" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <path d="M5 11a7 7 0 0 1 14 0M8.5 14.5l-1 4M12.3 14.5l-1.3 6M16 14.5l-.9 3.2" />
     </svg>
   );
 }
@@ -33,7 +30,7 @@ export function LogoMark({ size = 26 }) {
  * the last, turn the live sky on (or off again). Returns the click handler.
  */
 export function useSkyTaps() {
-  const { sky, setPref } = usePreferences();
+  const { liveSky, setPref } = usePreferences();
   const toast = useToast();
   const taps = useRef({ n: 0, at: 0 });
   return useCallback(() => {
@@ -43,37 +40,67 @@ export function useSkyTaps() {
     t.at = now;
     if (t.n >= 5) {
       t.n = 0;
-      setPref('sky', !sky);
-      toast?.(sky ? 'The sky is put away.' : 'The sky is out. Settings › Appearance puts it away again.');
+      setPref('liveSky', !liveSky);
+      toast?.(liveSky ? 'The live sky is put away.' : 'The live sky is out. Settings › Appearance puts it away again.');
     }
-  }, [sky, setPref, toast]);
+  }, [liveSky, setPref, toast]);
 }
 
 /**
- * The band at the top of a page: where it sits (crumbs), its title, a line
- * under it, and the page's own controls at the right.
+ * The top of a page, set straight on the sky, the same shape on every page:
+ * its title, one line under it (`sub`), what the page can touch, and at
+ * most one row of controls.
+ *
+ * - `crumbs` say where it sits. They show only beside the folded rail: the
+ *   open sidebar says it already, and on a phone the app bar's back link
+ *   does.
+ * - `access` is a list of ACCESS kinds (components/AccessBadge.jsx), drawn
+ *   as one muted line under the sub. This is the only place a page says it.
+ * - `titleTools` is drawn on the title's line, after the <h1> and outside
+ *   it, so its name stays out of the heading's: the dashboard's ⋯, or ✎
+ *   Rename while customizing. Give it a medium (36px) ghost icon; the line
+ *   centres one that size.
+ * - `actions` sit at the right of the title's line, centred on it, and wrap
+ *   under the text when there isn't room. On a phone they are one row that
+ *   never wraps, with the period picker first (it scrolls sideways when it
+ *   must) and the rest at its far end. A row with no picker in it wraps
+ *   instead, rather than push the page sideways.
+ * - `children` go under all of that, 12px down, inside the page's column
+ *   (the posting nav row on a phone).
+ *
+ * A header's controls are only ever the period picker (always the last of
+ * `actions`), Customize and Done. Anything else a page can do belongs by
+ * what it acts on: Export over the list it exports, a chart's actions under
+ * the chart, an add at the head of the list it adds to. New post is the
+ * chrome's.
  */
-export function PageHeader({ crumbs = null, title, sub = null, actions = null, children = null }) {
+export function PageHeader({ crumbs = null, title, sub = null, access = null, titleTools = null, actions = null, children = null }) {
   return (
     <header className="page-header">
       <div className="page-header-in">
-        <div className="page-header-text">
-          {crumbs && (
-            <nav className="crumbs" aria-label="Breadcrumb">
-              {crumbs.map((c, i) => (
-                <span key={c.label}>
-                  {c.to ? <Link to={c.to}>{c.label}</Link> : c.label}
-                  {i < crumbs.length - 1 && <span aria-hidden="true"> / </span>}
-                </span>
-              ))}
-            </nav>
-          )}
-          <h1 className="page-title">{title}</h1>
-          {sub && <p className="page-sub">{sub}</p>}
+        {crumbs && (
+          <nav className="crumbs" aria-label="Breadcrumb">
+            {crumbs.map((c, i) => (
+              <span key={c.label}>
+                {c.to ? <Link to={c.to}>{c.label}</Link> : c.label}
+                {i < crumbs.length - 1 && <span aria-hidden="true"> / </span>}
+              </span>
+            ))}
+          </nav>
+        )}
+        <div className="page-header-row">
+          <div className="page-header-text">
+            <div className="page-title-row">
+              <h1 className="page-title">{title}</h1>
+              {titleTools && <div className="page-title-tools">{titleTools}</div>}
+            </div>
+            {sub && <p className="page-sub">{sub}</p>}
+            {access?.length > 0 && <AccessLine kinds={access} className="page-access meta" />}
+          </div>
+          {actions && <div className="page-actions">{actions}</div>}
         </div>
-        {actions && <div className="page-actions">{actions}</div>}
+        {children && <div className="page-header-extra">{children}</div>}
       </div>
-      {children}
     </header>
   );
 }
@@ -92,31 +119,45 @@ export function usePeriod() {
   return [value, (key) => setPref('period', key), setCustom];
 }
 
-export function PeriodPicker() {
+/**
+ * The page's window, in its header: the presets and Custom, which opens a
+ * range of dates. Pressing one sets the window every chart answers for.
+ *
+ * `options` are the keys to offer ('7d' … 'all', and 'custom'), for a page
+ * that only answers for some of them; every one by default. `effective` is
+ * the key to show pressed when the page reads a window other than the one
+ * chosen (Best time needs at least 90 days, so under it shows 90d pressed),
+ * without changing the choice the other pages read.
+ *
+ * On a phone the Custom key is its calendar alone (shell.css); its words,
+ * the range's dates once there is one, stay in the markup as its name.
+ */
+export function PeriodPicker({ options = null, effective = null }) {
   const [period, setPeriod, setCustom] = usePeriod();
   const [picking, setPicking] = useState(false);
+  const offered = (key) => !options || options.includes(key);
   return (
     <>
       <Segmented
         className="period-picker"
         label="Period"
-        value={period.custom ? CUSTOM_PERIOD : period.key}
+        value={effective ?? (period.custom ? CUSTOM_PERIOD : period.key)}
         onChange={(key) => (key === CUSTOM_PERIOD ? setPicking(true) : setPeriod(key))}
         options={[
-          ...ANALYTICS_PERIODS.map((p) => ({
+          ...ANALYTICS_PERIODS.filter((p) => offered(p.key)).map((p) => ({
             value: p.key,
             label: SHORT[p.key] || p.label,
             title: periodWindowWord(p),
             ariaLabel: periodWindowWord(p),
           })),
-          {
+          offered(CUSTOM_PERIOD) && {
             value: CUSTOM_PERIOD,
             icon: CalendarRange,
             label: period.custom ? period.label : 'Custom',
             title: period.custom ? `${period.label}. Press to change the dates.` : 'Pick a range of dates',
             ariaLabel: period.custom ? `Custom range: ${period.label}. Change the dates` : 'Custom range of dates',
           },
-        ]}
+        ].filter(Boolean)}
       />
       <RangeDialog
         open={picking}

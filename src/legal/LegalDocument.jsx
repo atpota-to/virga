@@ -92,10 +92,10 @@ export default function LegalDocument({ document: doc, onOpenDocument = null, co
     if (block.type === 'table') {
       const labels = block.head.map(inlineText);
       return (
-        // On a narrow screen each row is drawn as a card, its cells under
+        // On a narrow screen each row is drawn as a block, its cells under
         // one another with their headings (the data-label), which is why the
         // roles are spelled out: a table laid out as blocks is otherwise no
-        // longer announced as one. The box around it is only that: the
+        // longer announced as one. The wrapper round it is only that: the
         // column is always wide enough for the table, so there is nothing
         // in it for a keyboard to scroll to.
         <div key={index} className="legal-table">

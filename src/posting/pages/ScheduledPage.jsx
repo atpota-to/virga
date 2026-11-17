@@ -5,23 +5,20 @@ import {
   ArrowUp,
   Ban,
   CalendarClock,
-  CalendarRange,
   CornerDownRight,
   GripVertical,
   Hourglass,
   ListPlus,
   Lock,
-  MoreHorizontal,
   Pencil,
   Repeat,
-  RotateCcw,
   Send,
   SkipForward,
-  Timer,
   Trash2,
+  X,
 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
-import Menu from '../../components/Menu.jsx';
+import { MoreMenu } from '../../components/Menu.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
@@ -77,17 +74,33 @@ import {
   scheduledSections,
   timeInZone,
   timerNoteActions,
-  zoneLabel,
 } from './scheduleModel.js';
-import { ActionDialog, QueueCalendar } from './scheduleParts.jsx';
+import {
+  ActionDialog,
+  QueueCalendar,
+  useFocusAfterRemoval,
+} from './scheduleParts.jsx';
 import './hub.css';
 import './schedule.css';
+
+/** 'Fri, Nov 13' from 'Fri, Nov 13, 6:00 PM': the date a moment falls on in `tz`, without its hour (and without its weekday, given `{ weekday: false }`). */
+function dayInZone(value, tz, now, opts) {
+  const full = formatInZone(value, tz, now, opts);
+  const clock = timeInZone(value, tz);
+  return clock && full.endsWith(clock)
+    ? full.slice(0, -clock.length).replace(/[,\s]+$/, '')
+    : full;
+}
 
 const reducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/** A row of the list: its time, words, facts, state and what can be done. */
+/**
+ * A row of the list: its time, words, facts, state and what can be done.
+ * One action is in words (Retry for a post that didn't go out, otherwise
+ * Edit); the rest are in its ⋯, the one that takes it off last.
+ */
 function ScheduledRow({
   row,
   tz,
@@ -108,7 +121,15 @@ function ScheduledRow({
   const actions = rowActions(row, now);
   const tags = rowTags(facts);
   const series = rowRepeat(row, now);
+  const time = timeInZone(row.scheduledFor, tz);
   const menu = [];
+  if (actions.retry && actions.edit)
+    menu.push({
+      key: 'edit',
+      label: 'Edit',
+      icon: Pencil,
+      onSelect: () => onEdit(row),
+    });
   if (actions.postNow)
     menu.push({
       key: 'now',
@@ -132,7 +153,8 @@ function ScheduledRow({
       icon: Ban,
       onSelect: () => onStopRepeat(row),
     });
-  if (actions.cancel)
+  if (actions.cancel) {
+    if (menu.length) menu.push({ separator: true, key: 'sep' });
     menu.push({
       key: 'cancel',
       label:
@@ -145,10 +167,51 @@ function ScheduledRow({
       tone: 'danger',
       onSelect: () => onCancel(row),
     });
+  }
+  // The small facts, in a line with dots between them. A post going out
+  // now says so a step louder; part of a thread already out is a warning.
+  // A failed post says nothing here, since its section's heading does.
+  const meta = [
+    status.tone === 'busy' && (
+      <span key="status" className="is-key">
+        {status.label}
+      </span>
+    ),
+    status.tone === 'warn' && (
+      <span key="status">
+        <span className="badge badge--warn">{status.label}</span>
+      </span>
+    ),
+    series.repeats && (
+      <span key="repeat" className="is-key">
+        <Repeat aria-hidden="true" />
+        {series.label}
+        {series.progress ? `, ${series.progress}` : ''}
+        {series.last && !row.payload?.repeat?.count ? ', the last one' : ''}
+      </span>
+    ),
+    series.former && row.status === 'failed' && (
+      <span key="former">
+        From a repeating post
+        {row.occurrence ? `, number ${row.occurrence}` : ''}
+      </span>
+    ),
+    row.queued && row.status !== 'pending' && (
+      <span key="queued">From the queue</span>
+    ),
+    ...tags.map((t) => <span key={t}>{t}</span>),
+    facts.timer && (
+      <span key="timer" title={facts.timer}>
+        <Hourglass aria-hidden="true" />
+        Timer
+        <span className="visually-hidden">: {facts.timer}</span>
+      </span>
+    ),
+  ].filter(Boolean);
   return (
     <li
       id={`sched-row-${row.id}`}
-      className={`sched-row${lit ? ' is-lit' : ''}${drag?.active ? ' is-dragging' : ''}`}
+      className={`sched-row has-corner-menu${lit ? ' is-lit' : ''}${drag?.active ? ' is-dragging' : ''}`}
       data-movable={drag?.movable ? row.id : undefined}
       aria-busy={busy || undefined}
     >
@@ -177,19 +240,24 @@ function ScheduledRow({
           <span className="visually-hidden">Keeps its time</span>
         </span>
       ) : null}
+      {/* The time leads the row: the hour over how far off it is, or, for
+          a row out of its day's run, the day over the hour. On a phone it
+          is the row's first line instead. */}
       <div className="sched-when-cell">
         <time className="sched-time" dateTime={row.scheduledFor}>
-          {showDate
-            ? formatInZone(row.scheduledFor, tz, now)
-            : timeInZone(row.scheduledFor, tz)}
+          {showDate ? dayInZone(row.scheduledFor, tz, now) : time}
         </time>
-        {row.status === 'pending' && (
-          <span className="sched-rel">
-            {relativeWhen(row.scheduledFor, now)}
-          </span>
+        {showDate ? (
+          <span className="sched-rel">{time}</span>
+        ) : (
+          row.status === 'pending' && (
+            <span className="sched-rel">
+              {relativeWhen(row.scheduledFor, now)}
+            </span>
+          )
         )}
       </div>
-      <div className="hub-row-main">
+      <div className="hub-row-main sched-row-main">
         <p className="hub-row-text">
           {facts.text || <span className="muted">A post with media</span>}
         </p>
@@ -204,90 +272,63 @@ function ScheduledRow({
             )}
           </p>
         )}
-        <p className="hub-row-meta">
-          {series.repeats && (
-            <span className="sched-repeat-tag">
-              <Repeat size={12} aria-hidden="true" />
-              {series.label}
-              {series.progress ? `, ${series.progress}` : ''}
-              {series.last && !row.payload?.repeat?.count ? ', the last one' : ''}
-            </span>
-          )}
-          {series.former && row.status === 'failed' && (
-            <span>
-              From a repeating post
-              {row.occurrence ? `, number ${row.occurrence}` : ''}
-            </span>
-          )}
-          {status.tone !== 'wait' && (
-            <span
-              className={`badge ${status.tone === 'danger' ? 'badge--danger' : status.tone === 'warn' ? 'badge--warn' : 'badge--accent'}`}
-            >
-              {status.tone === 'danger' && <AlertTriangle aria-hidden="true" />}
-              {status.label}
-            </span>
-          )}
-          {row.queued && row.status !== 'pending' && (
-            <span className="badge">From the queue</span>
-          )}
-          {tags.map((t) => (
-            <span key={t}>{t}</span>
-          ))}
-          {facts.timer && (
-            <span className="sched-timer-tag" title={facts.timer}>
-              <Hourglass size={12} aria-hidden="true" />
-              Timer
-              <span className="visually-hidden">: {facts.timer}</span>
-            </span>
-          )}
-        </p>
-        {status.detail && <p className="sched-row-why">{status.detail}</p>}
+        {meta.length > 0 && <p className="meta">{meta}</p>}
+        {/* Red once: a failed post's reason, under a heading that says it
+            didn't go out. A thread part way out has its badge for that, so
+            its line stays in ink. */}
+        {status.detail && (
+          <p
+            className={
+              status.tone === 'danger' ? 'sched-row-why' : 'sched-row-note'
+            }
+          >
+            {status.detail}
+          </p>
+        )}
       </div>
-      <div className="hub-row-actions sched-row-actions">
+      <div className="row-actions">
+        {actions.retry ? (
+          <Button size="sm" onClick={() => onRetry(row)} disabled={busy}>
+            {row.partial ? 'Retry the rest' : 'Retry'}
+          </Button>
+        ) : (
+          actions.edit && (
+            <Button size="sm" onClick={() => onEdit(row)} disabled={busy}>
+              Edit
+            </Button>
+          )
+        )}
+        {/* A phone has no drag: the queue moves with these instead. */}
         {drag?.movable && (
           <span className="sched-steps">
             <Button
               size="sm"
+              variant="ghost"
               icon
               aria-label="Move earlier"
               disabled={drag.disabled || drag.first}
               onClick={() => drag.onStep(-1)}
             >
-              <ArrowUp size={15} aria-hidden="true" />
+              <ArrowUp size={16} aria-hidden="true" />
             </Button>
             <Button
               size="sm"
+              variant="ghost"
               icon
               aria-label="Move later"
               disabled={drag.disabled || drag.last}
               onClick={() => drag.onStep(1)}
             >
-              <ArrowDown size={15} aria-hidden="true" />
+              <ArrowDown size={16} aria-hidden="true" />
             </Button>
           </span>
         )}
-        {actions.retry && (
-          <Button size="sm" onClick={() => onRetry(row)} disabled={busy}>
-            <RotateCcw size={14} aria-hidden="true" />
-            {row.partial ? 'Retry the rest' : 'Retry'}
-          </Button>
-        )}
-        {actions.edit && (
-          <Button size="sm" onClick={() => onEdit(row)} disabled={busy}>
-            <Pencil size={14} aria-hidden="true" />
-            Edit
-          </Button>
-        )}
-        {!actions.edit && !actions.retry && actions.cancel && (
-          <Button size="sm" onClick={() => onCancel(row)} disabled={busy}>
-            <Trash2 size={14} aria-hidden="true" />
-            {row.status === 'failed' ? 'Dismiss' : 'Remove'}
-          </Button>
-        )}
-        {(actions.edit || actions.retry) && menu.length > 0 && (
-          <Menu label="More actions" icon items={menu} size="sm">
-            <MoreHorizontal size={16} aria-hidden="true" />
-          </Menu>
+        {menu.length > 0 && (
+          <MoreMenu
+            className="row-menu"
+            label={`More for the post at ${time}`}
+            items={menu}
+          />
         )}
       </div>
     </li>
@@ -296,7 +337,7 @@ function ScheduledRow({
 
 function Section({ title, sub, actions = null, children, id }) {
   return (
-    <section className="card card--flush sched-section" aria-labelledby={id}>
+    <section className="card card--flush" aria-labelledby={id}>
       <div className="card-head">
         <div>
           <h2 className="card-title" id={id}>
@@ -353,6 +394,10 @@ export default function ScheduledPage({ did }) {
   const [confirm, setConfirm] = useState(null);
   const [timerFor, setTimerFor] = useState(null);
   const listRef = useRef(null);
+  const keepFocus = useFocusAfterRemoval(
+    '.sched-page .sched-row[id]',
+    list.data,
+  );
   const busyRef = useRef(false);
   busyRef.current = Object.keys(busy).length > 0 || Boolean(drag);
 
@@ -567,6 +612,7 @@ export default function ScheduledPage({ did }) {
       kind: 'cancel',
       row,
       run: async () => {
+        keepFocus(`sched-row-${row.id}`);
         try {
           await cancelScheduled(req, row.id);
           toast?.(
@@ -575,6 +621,7 @@ export default function ScheduledPage({ did }) {
               : 'Removed from the schedule.',
           );
         } catch (err) {
+          keepFocus(null);
           if (err?.code === 'NOT_CANCELLABLE' || err?.status === 409)
             list.reload();
           throw new Error(scheduleErrorMessage(err));
@@ -594,6 +641,7 @@ export default function ScheduledPage({ did }) {
             import('../schedule/scheduleSerialize.js'),
           ]);
         setRowBusy(row.id, true);
+        keepFocus(`sched-row-${row.id}`);
         try {
           const out = await postScheduledNow(row, {
             did,
@@ -619,6 +667,7 @@ export default function ScheduledPage({ did }) {
             ms: out.notes.length ? 9000 : 4200,
           });
         } catch (err) {
+          keepFocus(null);
           throw new Error(
             err?.code && err.message ? err.message : scheduleErrorMessage(err),
           );
@@ -633,6 +682,7 @@ export default function ScheduledPage({ did }) {
       kind: 'skip',
       row,
       run: async () => {
+        keepFocus(`sched-row-${row.id}`);
         try {
           const out = await skipScheduled(req, row.id);
           toast?.(
@@ -642,6 +692,7 @@ export default function ScheduledPage({ did }) {
             { ms: 7000 },
           );
         } catch (err) {
+          keepFocus(null);
           if (err?.status === 409) list.reload();
           throw new Error(scheduleErrorMessage(err));
         }
@@ -669,9 +720,11 @@ export default function ScheduledPage({ did }) {
 
   const acknowledge = async (row) => {
     setRowBusy(row.id, true);
+    keepFocus(`sched-row-${row.id}`);
     try {
       await acknowledgeTimerNote(req, row.id);
     } catch (err) {
+      keepFocus(null);
       setMessage({ tone: 'danger', text: scheduleErrorMessage(err) });
     } finally {
       setRowBusy(row.id, false);
@@ -724,26 +777,12 @@ export default function ScheduledPage({ did }) {
       ...g.rows.map(render),
     ]);
 
-  const headerActions = (
-    <>
-      <Link to={postingPath('schedule')} className="btn btn--sm">
-        <CalendarRange size={14} aria-hidden="true" />
-        Weekly schedule
-      </Link>
-      <Button
-        size="sm"
-        variant="primary"
-        onClick={() => composer.open({ asDid: did, mode: 'schedule' })}
-      >
-        <CalendarClock size={14} aria-hidden="true" />
-        Schedule a post
-      </Button>
-    </>
-  );
-
+  // The header holds the page's name and nothing to press: each way to add
+  // a post sits at the head of the list it adds to, and the weekly
+  // schedule is reached from the week it draws.
   return (
     <>
-      <PostingHeader page="scheduled" actions={headerActions} />
+      <PostingHeader page="scheduled" />
       <div className="page-body sched-page">
         <p className="visually-hidden" aria-live="assertive">
           {announce}
@@ -784,45 +823,64 @@ export default function ScheduledPage({ did }) {
             title="A timer couldn’t be set"
             sub="These went out, but without the timer they were scheduled with. They stay up unless you set one or delete them."
           >
-            <ul className="hub-list hub-list--rows">
+            <ul className="hub-list sched-list">
               {timerNotes.map((row) => {
                 const facts = rowFacts(row);
                 const note = timerNoteActions(row);
+                const day = dayInZone(row.scheduledFor, tz, now, {
+                  weekday: false,
+                });
+                const hour = timeInZone(row.scheduledFor, tz);
                 return (
                   <li
                     key={row.id}
-                    className="hub-row"
+                    id={`sched-row-${row.id}`}
+                    className="sched-row has-corner-menu"
                     aria-busy={busy[row.id] || undefined}
                   >
-                    <div className="hub-row-main">
+                    {/* "Went out" where a time would lead, over when: in a
+                        page of times still to come, this one is past. The
+                        date without its weekday ("Nov 16, 8:00 AM") fits
+                        the column on one line; each part is kept whole, so
+                        a narrower one breaks between them. */}
+                    <div className="sched-when-cell">
+                      <span className="sched-time">Went out</span>
+                      <time
+                        className="sched-rel sched-when-past"
+                        dateTime={row.scheduledFor}
+                      >
+                        <span>{hour ? `${day},` : day}</span>
+                        {hour && <> <span>{hour}</span></>}
+                      </time>
+                    </div>
+                    <div className="hub-row-main sched-row-main">
                       <p className="hub-row-text">
                         {facts.text || (
                           <span className="muted">A post with media</span>
                         )}
                       </p>
-                      <p className="hub-row-meta">
-                        <span>
-                          Went out {formatInZone(row.scheduledFor, tz, now)}
-                        </span>
-                      </p>
                       {note.note && <p className="field-hint">{note.note}</p>}
                     </div>
-                    <div className="hub-row-actions">
+                    <div className="row-actions">
                       {note.arm && (
                         <Button size="sm" onClick={() => setTimerFor(note.arm)}>
-                          <Timer size={14} aria-hidden="true" />
                           Set a timer
                         </Button>
                       )}
                       {note.dismiss && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => acknowledge(row)}
-                          disabled={Boolean(busy[row.id])}
-                        >
-                          Dismiss
-                        </Button>
+                        <span className="row-menu">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon
+                            aria-label="Dismiss"
+                            title="Dismiss"
+                            onClick={() => acknowledge(row)}
+                            disabled={Boolean(busy[row.id])}
+                          >
+                            <X size={16} aria-hidden="true" />
+                          </Button>
+                        </span>
                       )}
                     </div>
                   </li>
@@ -838,7 +896,7 @@ export default function ScheduledPage({ did }) {
             title="Didn’t go out"
             sub="Retry sends it again as it is. Edit it to change it first."
           >
-            <ul className="hub-list hub-list--rows">
+            <ul className="hub-list sched-list">
               {sections.attention.map((row) => (
                 <ScheduledRow key={row.id} {...rowProps(row)} showDate />
               ))}
@@ -852,21 +910,22 @@ export default function ScheduledPage({ did }) {
           sub={
             isScheduleEmpty(schedule)
               ? 'Posts added to the queue go out at the weekly schedule’s next open time.'
-              : `Posts go out in order, at the weekly schedule’s next open times (${zoneLabel(tz)}).${canReorder ? ' Drag a post, or use its arrows, to change the order.' : ''}`
+              : `Posts go out in order, at the weekly schedule’s next open times.${canReorder ? ' Drag a post, or use its arrows, to change the order.' : ''}`
           }
           actions={
-            <Button
-              size="sm"
+            <button
+              type="button"
+              className="link-action"
               onClick={() => composer.open({ asDid: did, mode: 'queue' })}
             >
               <ListPlus size={14} aria-hidden="true" />
               Add to queue
-            </Button>
+            </button>
           }
         >
           {loading ? (
             <>
-              <div className="sched-cal-skeleton hub-pad" aria-hidden="true">
+              <div className="sched-cal-skeleton" aria-hidden="true">
                 {Array.from({ length: 7 }, (_, i) => (
                   <span key={i} className="hub-bone" />
                 ))}
@@ -877,29 +936,26 @@ export default function ScheduledPage({ did }) {
             list.data && (
               <>
                 {!isScheduleEmpty(schedule) && (
-                  <div className="hub-pad">
-                    <QueueCalendar
-                      schedule={schedule}
-                      rows={queueAll.filter((r) => r.status === 'pending')}
-                      now={now}
-                      onPick={pick}
-                      highlight={lit}
-                    />
-                  </div>
+                  <QueueCalendar
+                    schedule={schedule}
+                    rows={queueAll.filter((r) => r.status === 'pending')}
+                    now={now}
+                    onPick={pick}
+                    highlight={lit}
+                    after={
+                      <Link to={postingPath('schedule')}>Change the times</Link>
+                    }
+                  />
                 )}
                 {queueAll.length === 0 ? (
-                  <div className="hub-empty">
+                  <div className="empty-block">
                     <p className="empty">
                       {isScheduleEmpty(schedule)
                         ? 'Your week has no posting times yet. Set some, then add posts to the queue and they go out in turn.'
                         : 'Nothing in the queue. Every time above is open: add a post and it takes the next one.'}
                     </p>
                     {isScheduleEmpty(schedule) && (
-                      <Link
-                        to={postingPath('schedule')}
-                        className="btn btn--sm"
-                      >
-                        <CalendarRange size={14} aria-hidden="true" />
+                      <Link to={postingPath('schedule')} className="btn">
                         Set posting times
                       </Link>
                     )}
@@ -919,7 +975,7 @@ export default function ScheduledPage({ did }) {
                   </ul>
                 )}
                 {busy.reorder && (
-                  <p className="card-caption hub-pad">Saving the new order…</p>
+                  <p className="card-caption">Saving the new order…</p>
                 )}
               </>
             )
@@ -931,13 +987,14 @@ export default function ScheduledPage({ did }) {
           title="At a set time"
           sub="Posts with a time of their own, replies and repeating posts among them. They don’t move when the queue does."
           actions={
-            <Button
-              size="sm"
+            <button
+              type="button"
+              className="link-action"
               onClick={() => composer.open({ asDid: did, mode: 'schedule' })}
             >
               <CalendarClock size={14} aria-hidden="true" />
               Schedule a post
-            </Button>
+            </button>
           }
         >
           {loading ? (
@@ -945,7 +1002,7 @@ export default function ScheduledPage({ did }) {
           ) : (
             list.data &&
             (sections.timed.length === 0 ? (
-              <div className="hub-empty">
+              <div className="empty-block">
                 <p className="empty">
                   Nothing scheduled for a set time. Write a post and choose
                   Schedule to pick when it goes out.

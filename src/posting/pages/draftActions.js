@@ -12,7 +12,10 @@ import { blobCid } from '../lib/blobs.js';
 import { countPhrase } from './hubModel.js';
 import { activeLocale } from '../../lib/locale.js';
 
-/** The meta line under a draft in a list, as short parts joined with " · ". */
+/**
+ * The meta line under a draft in a list, as short parts: each is one item
+ * of a .meta line, which puts the dots between them.
+ */
 export function draftMeta(row, now = Date.now()) {
   if (!row) return [];
   const parts = [];

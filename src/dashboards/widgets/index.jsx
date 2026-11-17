@@ -6,9 +6,9 @@
 // A card is `({ archive, period, nowMs, size })`. Figures (kind 'stat')
 // return a <Stat>; the rest return their body, and the frame around them
 // (DashboardPage) draws the title, the link to the full report and the
-// editing controls.
+// editing controls. A card with something for its heading besides the title
+// (a count, its chart's modes) says what in WIDGET_HEADS, at the end.
 
-import { useState } from 'react';
 import { Heart, MessageCircle, Quote, Repeat2 } from 'lucide-react';
 import BarList from '../../charts/BarList.jsx';
 import Heatmap from '../../charts/Heatmap.jsx';
@@ -16,15 +16,14 @@ import SeriesChart from '../../charts/SeriesChart.jsx';
 import { fmtFigure, fmtRate, unitNoun } from '../../charts/format.js';
 import Delta from '../../components/Delta.jsx';
 import { FollowerCountTip } from '../../components/InfoTip.jsx';
-import Segmented from '../../components/Segmented.jsx';
 import { movingAverage } from '../../lib/analytics.js';
-import { Link } from '../../lib/router.jsx';
 import { relativeTime } from '../../lib/time.js';
 import { PersonRow, useFollow, useWantActors } from '../../people/people.jsx';
 import PostRow from '../../reports/PostRow.jsx';
 import { useChartMarks } from '../../reports/useAnnotations.js';
+import { kindsLine } from '../../tools/interactionModel.js';
 import { CONTENT_WIDGETS } from './content.jsx';
-import { HEIGHT, ROWS, Stat, rowsFor } from './parts.jsx';
+import { HEIGHT, Stat, rowsFor, rowsShown } from './parts.jsx';
 import { POSTING_WIDGETS } from './posting.jsx';
 import {
   WEEKDAYS,
@@ -62,6 +61,16 @@ function compareTitle(period, previous) {
   return period.days ? `${periodBefore(period, true)}: ${Math.round(previous).toLocaleString(activeLocale())}` : null;
 }
 
+/**
+ * The change against the window before, where there is one to give: a
+ * window with nothing before it (a new account, a range that starts with
+ * it) has no change worth a figure, only "new".
+ */
+function changeOf(period, compare) {
+  if (!period.days || !compare.previous) return null;
+  return <Delta pct={compare.pct} title={compareTitle(period, compare.previous)} />;
+}
+
 /* ------------------------------------------------------------------ */
 /* Figures                                                              */
 /* ------------------------------------------------------------------ */
@@ -82,10 +91,12 @@ function StatFollowers({ archive, period, nowMs, def, title }) {
       delta={<span className="delta is-up" title={`New in ${periodPhrase(period)}`}>+{m.gained.toLocaleString(activeLocale())}</span>}
       sub={
         differs ? (
-          <span className="stat-sub-info">
-            {m.total.toLocaleString(activeLocale())} can be listed
-            <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
-          </span>
+          <>
+            {m.total.toLocaleString(activeLocale())} can be{' '}
+            <span className="stat-keep">
+              listed <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
+            </span>
+          </>
         ) : null
       }
       spark={m.cumulative.map((p) => p.v)}
@@ -102,8 +113,14 @@ function StatNewFollowers({ archive, period, nowMs, def, title }) {
       to={def.href}
       window={windowWord(period)}
       value={fmtFigure(m.gained)}
-      delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
-      sub={period.days ? `${m.compare.previous.toLocaleString(activeLocale())} ${periodBefore(period)}` : `${fmtFigure(m.perDay, { decimals: true })} a day`}
+      delta={changeOf(period, m.compare)}
+      sub={
+        !period.days
+          ? `${fmtFigure(m.perDay, { decimals: true })} a day`
+          : m.compare.previous
+            ? `${m.compare.previous.toLocaleString(activeLocale())} ${periodBefore(period)}`
+            : `None ${periodBefore(period)}`
+      }
       spark={m.counts.map((p) => p.v)}
     />
   );
@@ -136,7 +153,7 @@ function StatEngagement({ archive, period, nowMs, def, title, kind = 'all' }) {
       to={def.href}
       window={windowWord(period)}
       value={fmtFigure(m.total)}
-      delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
+      delta={changeOf(period, m.compare)}
       sub={m.ownRate != null ? `${fmtRate(m.ownRate)} per post` : 'No posts in this window'}
       spark={m.series.map((p) => p.v)}
     />
@@ -168,7 +185,7 @@ function StatGiven({ archive, period, nowMs, def, title, kind = 'all' }) {
       to={def.href}
       window={windowWord(period)}
       value={fmtFigure(m.total)}
-      delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
+      delta={changeOf(period, m.compare)}
       sub={`To ${m.accounts.toLocaleString(activeLocale())} accounts`}
       spark={m.series.map((p) => p.v)}
     />
@@ -185,7 +202,7 @@ function StatPosts({ archive, period, nowMs, def, title }) {
       to={def.href}
       window={windowWord(period)}
       value={fmtFigure(m.count)}
-      delta={period.days ? <Delta pct={m.compare.pct} title={compareTitle(period, m.compare.previous)} /> : null}
+      delta={changeOf(period, m.compare)}
       sub={`${fmtFigure(m.perDay, { decimals: true })} a day · ${replies}% replies`}
       spark={m.counts.map((p) => p.v)}
     />
@@ -213,37 +230,23 @@ function StatBlocks({ archive, period, nowMs, def, title }) {
 /* Charts                                                               */
 /* ------------------------------------------------------------------ */
 
-function FollowerGrowth({ archive, period, nowMs, size }) {
-  const [mode, setMode] = useState('total');
+/** The total, or what was new each day; the frame draws the choice in the card's heading (WIDGET_HEADS). */
+function FollowerGrowth({ archive, period, nowMs, size, view = 'total' }) {
   const m = followersModel(archive, period, nowMs);
-  const total = mode === 'total';
+  const total = view !== 'new';
   const marks = useChartMarks(archive, total ? m.cumulative : m.counts, m.unit, { milestones: true });
   if (!archive.followers.length) return <p className="empty">Your followers haven’t been read yet.</p>;
   return (
-    <>
-      <div className="widget-tools">
-        <Segmented
-          size="sm"
-          label="Chart"
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: 'total', label: 'Total' },
-            { value: 'new', label: `New per ${unitNoun(m.unit)}` },
-          ]}
-        />
-      </div>
-      <SeriesChart
-        series={total ? m.cumulative : m.counts}
-        mode={total ? 'line' : 'bars'}
-        unit={m.unit}
-        zeroBase={!total}
-        height={HEIGHT[size]}
-        marks={marks}
-        ghost={total && m.counterGap > 0 ? { v: m.profileCount } : null}
-        ariaLabel={total ? `Followers over ${periodPhrase(period)}` : `New followers per ${m.unit} over ${periodPhrase(period)}`}
-      />
-    </>
+    <SeriesChart
+      series={total ? m.cumulative : m.counts}
+      mode={total ? 'line' : 'bars'}
+      unit={m.unit}
+      zeroBase={!total}
+      height={HEIGHT[size]}
+      marks={marks}
+      ghost={total && m.counterGap > 0 ? { v: m.profileCount } : null}
+      ariaLabel={total ? `Followers over ${periodPhrase(period)}` : `New followers per ${m.unit} over ${periodPhrase(period)}`}
+    />
   );
 }
 
@@ -298,17 +301,10 @@ function EngagementRate({ archive, period, nowMs, size, kind = 'all' }) {
 function EngagementByType({ archive, period, nowMs }) {
   const m = engagementModel(archive, period, nowMs);
   return (
-    <div className="widget-stack">
-      <div className="widget-headline">
-        <span className="widget-figure num">{m.total.toLocaleString(activeLocale())}</span>
-        <span className="muted">interactions{m.ownRate != null ? `, ${fmtRate(m.ownRate)} per post` : ''}</span>
-      </div>
-      <BarList
-        ariaLabel="Engagement by type"
-        labelWidth="96px"
-        rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))}
-      />
-    </div>
+    <BarList
+      ariaLabel="Engagement by type"
+      rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))}
+    />
   );
 }
 
@@ -432,13 +428,18 @@ function TopPosts({ archive, period, nowMs, size, kind = 'all', rows: want = nul
   return (
     <ol className="widget-rows">
       {rows.map((p, i) => (
-        <PostRow key={p.uri} post={p} did={archive.did} kind={kind} rank={i + 1} />
+        <PostRow key={p.uri} post={p} did={archive.did} kind={kind} rank={i + 1} breakdown={false} />
       ))}
     </ol>
   );
 }
 
-function PeopleList({ archive, rows, size, want = null, empty, value = (r) => r.total.toLocaleString(activeLocale()), meta = null, followLabel }) {
+/**
+ * People in a card. `rel` is false for a list where everyone follows you
+ * (your newest followers, the follow-back queue), which would otherwise say
+ * "follows you" on every row.
+ */
+function PeopleList({ archive, rows, size, want = null, empty, value = (r) => r.total.toLocaleString(activeLocale()), meta = null, followLabel, rel = true }) {
   const shown = rows.slice(0, rowsFor(size, want));
   useWantActors(archive, shown.map((r) => r.did));
   const follow = useFollow(archive);
@@ -455,17 +456,16 @@ function PeopleList({ archive, rows, size, want = null, empty, value = (r) => r.
           meta={meta?.(r)}
           follow={follow}
           followLabel={followLabel}
+          rel={rel}
         />
       ))}
     </ul>
   );
 }
 
+/** What a person's count is made of, the largest first: "84 likes, 12 replies". */
 function detailOf(row) {
-  return Object.entries(row.byKind || {})
-    .sort((a, b) => b[1] - a[1])
-    .map(([k, n]) => `${n} ${k}${n === 1 ? '' : 's'}`)
-    .join(', ');
+  return kindsLine(row.byKind, { byCount: true });
 }
 
 function TopEngagers({ archive, period, nowMs, size, kind = 'all', rows = null }) {
@@ -478,26 +478,20 @@ function YouEngageWith({ archive, period, nowMs, size, kind = 'all', rows = null
   return <PeopleList archive={archive} rows={m.outbound} size={size} want={rows} meta={detailOf} empty="You haven’t engaged with anyone in this window." />;
 }
 
-function FollowBack({ archive, period, nowMs, size, def, rows: want = null }) {
+function FollowBack({ archive, period, nowMs, size, rows: want = null }) {
   const rows = followBackModel(archive, period, nowMs);
   return (
-    <>
-      <PeopleList
-        archive={archive}
-        rows={rows}
-        size={size}
-        want={want}
-        meta={(r) => `${r.total} interaction${r.total === 1 ? '' : 's'}`}
-        value={() => null}
-        followLabel="Follow back"
-        empty="Everyone who follows you and engages, you already follow."
-      />
-      {rows.length > rowsFor(size, want) && (
-        <p className="widget-foot">
-          <Link to={def.href}>See all {rows.length.toLocaleString(activeLocale())}</Link>
-        </p>
-      )}
-    </>
+    <PeopleList
+      archive={archive}
+      rows={rows}
+      size={size}
+      want={want}
+      meta={(r) => `${r.total} interaction${r.total === 1 ? '' : 's'}`}
+      value={() => null}
+      followLabel="Follow back"
+      rel={false}
+      empty="Everyone who follows you and engages, you already follow."
+    />
   );
 }
 
@@ -513,79 +507,67 @@ function NewestFollowers({ archive, period, nowMs, size, rows: want = null }) {
       value={() => null}
       meta={(r) => `followed ${relativeTime(r.atMs)}`}
       followLabel="Follow back"
+      rel={false}
       empty="Nobody new in this window."
     />
   );
 }
 
-function Unfollows({ archive, size, def, rows: want = null }) {
+function Unfollows({ archive, size, rows: want = null }) {
   const m = followerLogModel(archive);
   if (!m.tracking) {
     return <p className="empty">Unfollows are found by comparing two syncs. Counting starts with your next one.</p>;
   }
-  const rows = m.lost.slice(0, rowsFor(size, want));
   return (
-    <>
-      <PeopleList
-        archive={archive}
-        rows={rows}
-        size={size}
-        want={want}
-        value={() => null}
-        meta={(r) => `noticed ${relativeTime(r.at)}`}
-        empty={`Nobody has unfollowed you since ${relativeTime(m.since)}.`}
-      />
-      {m.lost.length > rows.length && (
-        <p className="widget-foot">
-          <Link to={def.href}>See all {m.lost.length.toLocaleString(activeLocale())}</Link>
-        </p>
-      )}
-    </>
+    <PeopleList
+      archive={archive}
+      rows={m.lost}
+      size={size}
+      want={want}
+      value={() => null}
+      meta={(r) => `noticed ${relativeTime(r.at)}`}
+      empty={`Nobody has unfollowed you since ${relativeTime(m.since)}.`}
+    />
   );
 }
 
-function ListsOn({ archive, size, def, rows: want = null }) {
-  // One row fewer than a plain list of this size: the headline takes its place.
-  const n = want || ROWS[size] - 1;
+const PURPOSE_WORD = { moderation: 'Moderation', curation: 'Curation' };
+
+/**
+ * The lists you're on, each with what it is for and who subscribes. The
+ * count of them heads the card (WIDGET_HEADS). A moderation list is the one
+ * to know about, so its word is a step louder; it isn't a problem to find,
+ * so it carries no badge.
+ */
+function ListsOn({ archive, size, rows: want = null }) {
   if (!archive.meta.lists) return <p className="empty">Lists are read at the next sync.</p>;
   const lists = listsModel(archive);
   if (!lists.length) return <p className="empty">You aren’t on any lists.</p>;
-  const mod = lists.filter((l) => l.purpose === 'moderation').length;
   return (
-    <div className="widget-stack">
-      <div className="widget-headline">
-        <span className="widget-figure num">{lists.length.toLocaleString(activeLocale())}</span>
-        <span className="muted">lists, {mod.toLocaleString(activeLocale())} of them moderation lists</span>
-      </div>
-      <ul className="widget-rows">
-        {lists.slice(0, n).map((l) => (
-          <li key={l.uri} className="list-row">
-            <span className="list-row-name">{l.name || 'Untitled list'}</span>
-            <span className={`badge${l.purpose === 'moderation' ? ' badge--danger' : ''}`}>{l.purpose}</span>
-            <span className="list-row-subs num">{l.subscribers != null ? `${l.subscribers.toLocaleString(activeLocale())} subscribers` : ''}</span>
-          </li>
-        ))}
-      </ul>
-      {lists.length > n && (
-        <p className="widget-foot">
-          <Link to={def.href}>See all {lists.length.toLocaleString(activeLocale())}</Link>
-        </p>
-      )}
-    </div>
+    <ul className="widget-rows">
+      {lists.slice(0, rowsShown('lists-on', size, want)).map((l) => (
+        <li key={l.uri} className="list-row">
+          <span className="list-row-name">{l.name || 'Untitled list'}</span>
+          <span className="list-row-subs meta num">
+            <span className={l.purpose === 'moderation' ? 'is-key' : undefined}>{PURPOSE_WORD[l.purpose] || l.purpose}</span>
+            {l.subscribers != null && <span>{l.subscribers.toLocaleString(activeLocale())} subscribers</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 function RepoCollections({ archive, period, nowMs, size, rows: want = null }) {
   const m = atmosphereModel(archive, period, nowMs);
   if (!m) return <p className="empty">The repo is read at the next sync.</p>;
-  const n = want || ROWS[size] + 3;
+  const n = rowsShown('repo-collections', size, want);
   const rows = m.ranked.slice(0, n);
   if (!rows.length) return <p className="empty">No records written in this window.</p>;
   return (
     <div className="widget-stack">
       <BarList
         ariaLabel="Records by collection"
-        labelWidth="1.4fr"
         rows={rows.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))}
       />
       <p className="widget-foot num">
@@ -595,6 +577,34 @@ function RepoCollections({ archive, period, nowMs, size, rows: want = null }) {
     </div>
   );
 }
+
+/**
+ * What a card puts in its heading besides its title, for the few that have
+ * something: `sub`, a count that heads the list under it ("9 lists, 3 of them
+ * moderation lists"), or `views`, its chart's modes, which the frame draws as
+ * a small Segmented at the heading's right (`label` names it) and hands back
+ * to the card as `view`. Each reads the same cached model its card does.
+ */
+export const WIDGET_HEADS = {
+  'follower-growth': ({ archive, period, nowMs }) => {
+    if (!archive.followers.length) return null;
+    const m = followersModel(archive, period, nowMs);
+    return {
+      label: 'Chart',
+      views: [
+        { value: 'total', label: 'Total' },
+        { value: 'new', label: `New per ${unitNoun(m.unit)}` },
+      ],
+    };
+  },
+  'lists-on': ({ archive }) => {
+    if (!archive.meta.lists) return null;
+    const lists = listsModel(archive);
+    if (!lists.length) return null;
+    const mod = lists.filter((l) => l.purpose === 'moderation').length;
+    return { sub: `${lists.length.toLocaleString(activeLocale())} ${lists.length === 1 ? 'list' : 'lists'}, ${mod.toLocaleString(activeLocale())} of them moderation lists` };
+  },
+};
 
 export const WIDGET_COMPONENTS = {
   ...CONTENT_WIDGETS,

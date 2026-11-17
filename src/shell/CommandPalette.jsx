@@ -1,5 +1,5 @@
 // The command palette: one field that goes to any page and does the few
-// things done from everywhere (a new post, a sync, the period, the theme,
+// things done from everywhere (a new post, a sync, the period, the sky,
 // another account). ⌘K opens it, or Ctrl K off a Mac; the sidebar's "Search
 // or jump to" and the phone's app bar open it too.
 //
@@ -9,7 +9,7 @@
 // closes, and focus goes back where it was.
 
 import { useEffect, useId, useMemo, useState } from 'react';
-import { BarChart3, CalendarRange, Check, LayoutDashboard, Monitor, Moon, Plus, RefreshCw, Search, Settings, SlidersHorizontal, SquarePen, Sun, Wrench } from 'lucide-react';
+import { BarChart3, CalendarRange, Check, Clock, LayoutDashboard, Moon, Plus, RefreshCw, Search, Send, Settings, SlidersHorizontal, SquarePen, Sun, Sunrise, Sunset, Wrench } from 'lucide-react';
 import { useAccountActions } from '../accounts/AccountMenu.jsx';
 import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
 import Avatar from '../components/Avatar.jsx';
@@ -24,7 +24,7 @@ import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import { POSTING_PAGES } from '../posting/routes.js';
 import { REPORTS } from '../reports/registry.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
-import { SECTIONS as SETTINGS_SECTIONS } from '../settings/SettingsPage.jsx';
+import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
 import { TOOLS } from '../tools/registry.js';
 import { usePeriod, useToast } from './bits.jsx';
 import { buildCommands, moveActive, paletteGroups, parseRecent, rememberRecent } from './commands.js';
@@ -51,8 +51,8 @@ function writeRecent(list) {
 // A command without an icon of its own (the registries give most) gets its
 // kind's.
 const ACTION_ICONS = { newPost: SquarePen, sync: RefreshCw, customize: SlidersHorizontal, newDashboard: Plus, period: CalendarRange };
-const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor };
-const GROUP_ICONS = { Dashboards: LayoutDashboard, Reports: BarChart3, Tools: Wrench, Settings, Posting: SquarePen };
+const SKY_ICONS = { clock: Clock, dawn: Sunrise, day: Sun, dusk: Sunset, night: Moon };
+const GROUP_ICONS = { Dashboards: LayoutDashboard, Reports: BarChart3, Tools: Wrench, Settings, Posting: Send };
 
 function CommandIcon({ command, accounts }) {
   if (command.do === 'switchAccount') {
@@ -63,7 +63,7 @@ function CommandIcon({ command, accounts }) {
       </span>
     );
   }
-  const Icon = command.icon || (command.do === 'theme' ? THEME_ICONS[command.arg] : ACTION_ICONS[command.do]) || GROUP_ICONS[command.group] || Search;
+  const Icon = command.icon || (command.do === 'sky' ? SKY_ICONS[command.arg] : ACTION_ICONS[command.do]) || GROUP_ICONS[command.group] || Search;
   return (
     <span className="palette-option-icon" aria-hidden="true">
       <Icon size={16} />
@@ -79,7 +79,7 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
   const archive = useArchive();
   const composer = useComposer();
   const { dashboards } = useDashboards();
-  const { theme, setPref } = usePreferences();
+  const { sky, setPref } = usePreferences();
   const [period, setPeriod] = usePeriod();
   const { did, accounts } = useAtprotoSession();
   const accountActions = useAccountActions();
@@ -115,14 +115,14 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
             activeDid: did,
             periods: ANALYTICS_PERIODS,
             period: period.key,
-            theme,
+            sky,
             route,
             archive: { built: Boolean(pm), complete: pm ? Boolean(pm.complete) : undefined, syncing },
           })
         : [],
     // The route is a fresh object each render; its two parts are what count.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, dashboards, accounts, did, period.key, theme, route.section, route.dashboard, pm, syncing],
+    [open, dashboards, accounts, did, period.key, sky, route.section, route.dashboard, pm, syncing],
   );
   const groups = useMemo(() => paletteGroups(commands, query, { recent }), [commands, query, recent]);
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
@@ -165,8 +165,8 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
         if (chosen) toast?.(built ? `Charts now show ${periodPhrase(chosen)}.` : `Charts will show ${periodPhrase(chosen)}.`);
         break;
       }
-      case 'theme':
-        setPref('theme', command.arg);
+      case 'sky':
+        setPref('sky', command.arg);
         break;
       case 'switchAccount': {
         const account = accounts.find((a) => a.did === command.arg);
@@ -197,7 +197,7 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
 
   return (
     <Dialog open={open} onClose={onClose} title="Search or jump to" className="palette-dialog">
-      <div className="palette">
+      <div className="palette" data-query={query ? 'some' : 'none'}>
         <div className="search palette-search">
           <Search aria-hidden="true" />
           <input

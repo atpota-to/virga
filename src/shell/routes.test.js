@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hrefFor, pathParts } from '../lib/router.jsx';
 import { historyEvents } from '../tools/Identity.jsx';
-import { needsArchive, opensBeforeArchive, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
+import { needsArchive, opensBeforeArchive, parentOf, parseRoute, postingTitle, SECTION_TITLE } from './routes.js';
 
 describe('addresses', () => {
   it('split into their parts, decoded, without empties', () => {
@@ -62,6 +62,22 @@ describe('routes', () => {
     expect(postingTitle(parseRoute('/posting'))).toBe('Posting');
     expect(postingTitle(parseRoute('/posting/timers'))).toBe('Post timers');
     expect(postingTitle(parseRoute('/settings'))).toBeNull();
+  });
+
+  it('go back up one level from a page inside a part, and nowhere from its front page', () => {
+    const up = (path) => parentOf(parseRoute(path));
+    expect(up('/reports/followers')).toEqual({ label: 'Reports', to: '/reports' });
+    expect(up('/tools/archive')).toEqual({ label: 'Tools', to: '/tools' });
+    expect(up('/settings/appearance')).toEqual({ label: 'Settings', to: '/settings' });
+    expect(up('/posting/drafts')).toEqual({ label: 'Posting', to: '/posting' });
+    expect(up('/posting/drafts/xyz')).toEqual({ label: 'Posting', to: '/posting' });
+    expect(up('/posting/scheduled')).toEqual({ label: 'Posting', to: '/posting' });
+    // The weekly schedule is reached from Scheduled posts.
+    expect(up('/posting/schedule')).toEqual({ label: 'Scheduled posts', to: '/posting/scheduled' });
+    for (const path of ['/', '/dashboard/abc', '/reports', '/tools', '/settings', '/posting', '/intent/compose', '/nowhere']) {
+      expect(up(path)).toBeNull();
+    }
+    expect(parentOf(null)).toBeNull();
   });
 });
 

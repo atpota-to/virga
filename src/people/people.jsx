@@ -80,7 +80,10 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
   return (
     <Button
       size={size}
-      variant={on ? 'quiet' : 'primary'}
+      // Follow is the kit's small outline; once done it is the word alone
+      // (the kit's .is-on), in a column of one width on a wide screen
+      // (dashboards.css .follow-button).
+      on={on}
       disabled={busy}
       aria-busy={busy || undefined}
       aria-pressed={on}
@@ -95,18 +98,40 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
 }
 
 /**
- * One person in a list. `meta` is the line under the name (after the
- * handle); `value` sits at the right before the button (a count). After it
- * comes a small link to the Interaction lookup for this person, unless
- * `history` is false.
+ * One person in a list. `meta` is the row's own fact, the reason it is in
+ * the list ("followed 2d ago", "84 likes, 12 replies"), last on the line
+ * under the name, after the handle and "follows you"; in a list too narrow
+ * for the whole line, the fact is what stays (dashboards.css). `value` sits
+ * at the right before the button (a count). After it comes a small link to
+ * the Interaction lookup for this person, unless `history` is false; a
+ * phone leaves it out, for the room the name needs. `extra` comes last,
+ * after the follow button: a suggestion's ✕ (the follow-back queue), so the
+ * row reads, and tabs, [Follow back][✕]. The handle is left out when it is
+ * already the name (someone with no display name), and "follows you" when
+ * `rel` is false: a list where
+ * everyone follows you (your newest followers, the follow-back queue)
+ * would say it on every row.
  */
-export function PersonRow({ archive, did, card: given = null, meta = null, value = null, valueTitle = null, follow = null, followLabel, extra = null, history = true }) {
+export function PersonRow({
+  archive,
+  did,
+  card: given = null,
+  meta = null,
+  value = null,
+  valueTitle = null,
+  follow = null,
+  followLabel,
+  extra = null,
+  history = true,
+  rel = true,
+}) {
   // A card passed in (someone who has since left the follower list, as the
   // log remembers them) stands in until a fresher one is resolved.
   const resolved = cardFor(archive, did);
   const card = resolved?.handle ? resolved : given?.handle ? given : resolved || given;
   const name = displayName(card, did);
-  const followsYou = relationSets(archive).followers.has(did);
+  const handle = card?.handle && name.replace(/^@/, '') !== card.handle ? card.handle : null;
+  const followsYou = rel && relationSets(archive).followers.has(did);
   return (
     <li className="person-row">
       <Avatar src={card?.avatar} name={card?.displayName || card?.handle || '?'} />
@@ -114,11 +139,13 @@ export function PersonRow({ archive, did, card: given = null, meta = null, value
         <a className="person-name" href={profileUrl(card, did)} target="_blank" rel="noopener noreferrer">
           {name}
         </a>
-        <span className="person-meta">
-          {card?.handle && <span className="person-handle">@{card.handle}</span>}
-          {followsYou && <span className="person-rel">{card?.handle ? ' · ' : ''}follows you</span>}
-          {meta && <span>{card?.handle || followsYou ? ' · ' : ''}{meta}</span>}
-        </span>
+        {(handle || followsYou || meta) && (
+          <span className="person-meta">
+            {handle && <span className="person-handle">@{handle}</span>}
+            {followsYou && <span className="person-rel">follows you</span>}
+            {meta && <span className="person-fact">{meta}</span>}
+          </span>
+        )}
         {follow?.error(did) && (
           <span className="person-error" role="alert">
             {follow.error(did)}
@@ -133,17 +160,15 @@ export function PersonRow({ archive, did, card: given = null, meta = null, value
       {history && did !== archive.did && (
         <Link
           to={lookupHref(did)}
-          // A row that already carries a button of its own gives the link up
-          // on a phone, where there isn't room for both and a name.
-          className={buttonClass({ variant: 'ghost', size: 'sm', icon: true, className: `person-history${extra ? ' person-history--spare' : ''}` })}
+          className={buttonClass({ variant: 'ghost', size: 'sm', icon: true, className: 'person-history' })}
           title={`See your history with ${name}`}
           aria-label={`See your history with ${name}`}
         >
           <History size={15} aria-hidden="true" />
         </Link>
       )}
-      {extra}
       {follow && <FollowButton follow={follow} did={did} name={name} followLabel={followLabel} />}
+      {extra}
     </li>
   );
 }

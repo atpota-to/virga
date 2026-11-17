@@ -11,6 +11,28 @@ import { readCounter } from '../lib/threadSplit.js';
 import { fmtInt } from '../../lib/locale.js';
 
 /**
+ * The three ways to add to a post: pictures, a video, something from the
+ * library. Under each post on a wide screen; on a phone, once, at the left
+ * of the composer's bottom bar, for the post being written in.
+ */
+export function PostTools({ post, disabled = false, onImages, onVideo, onLibrary, className = '', size = 'sm', iconSize = 17 }) {
+  const hasMedia = post.images.length > 0 || !!post.video;
+  return (
+    <span className={className}>
+      <Button variant="ghost" size={size} icon aria-label="Add images" title="Add images" disabled={disabled || !!post.video || post.images.length >= 4} onClick={onImages}>
+        <ImagePlus size={iconSize} aria-hidden="true" />
+      </Button>
+      <Button variant="ghost" size={size} icon aria-label="Add a video" title="Add a video" disabled={disabled || hasMedia} onClick={onVideo}>
+        <Film size={iconSize} aria-hidden="true" />
+      </Button>
+      <Button variant="ghost" size={size} icon aria-label="Quote or attach from your library" title="Quote or attach from your library" disabled={disabled} onClick={onLibrary}>
+        <BookOpen size={iconSize} aria-hidden="true" />
+      </Button>
+    </span>
+  );
+}
+
+/**
  * One post of what's being written (a single post is a thread of one): its
  * text, what's attached, its own count, and in a thread its place and the
  * ways to move or remove it. A post over the limit offers to split itself
@@ -125,7 +147,8 @@ export default function PostBlock({
             </span>
           </label>
           <span className="callout-actions">
-            <Button size="sm" variant="primary" onClick={() => api.split(post.id, splitOptions)} disabled={disabled}>
+            {/* An outline: the one ink button in the composer is the one that sends. */}
+            <Button size="sm" onClick={() => api.split(post.id, splitOptions)} disabled={disabled}>
               Split into a thread
             </Button>
             <Button size="sm" variant="ghost" onClick={() => api.dismissSplit()}>
@@ -175,33 +198,14 @@ export default function PostBlock({
       )}
 
       <div className="post-block-foot">
-        <span className="post-block-actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            icon
-            aria-label="Add images"
-            title="Add images"
-            disabled={disabled || !!post.video || post.images.length >= 4}
-            onClick={() => api.pickImages(index)}
-          >
-            <ImagePlus size={17} aria-hidden="true" />
-          </Button>
-          <Button variant="ghost" size="sm" icon aria-label="Add a video" title="Add a video" disabled={disabled || hasMedia} onClick={() => api.pickVideo(index)}>
-            <Film size={17} aria-hidden="true" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon
-            aria-label="Quote or attach from your library"
-            title="Quote or attach from your library"
-            disabled={disabled}
-            onClick={() => api.openLibrary(index, null)}
-          >
-            <BookOpen size={17} aria-hidden="true" />
-          </Button>
-        </span>
+        <PostTools
+          className="post-block-actions"
+          post={post}
+          disabled={disabled}
+          onImages={() => api.pickImages(index)}
+          onVideo={() => api.pickVideo(index)}
+          onLibrary={() => api.openLibrary(index, null)}
+        />
         {!offerSplit && parts && (
           <button type="button" className="link-button post-split-link" disabled={disabled} onClick={() => api.split(post.id, splitOptions)}>
             Split into a thread

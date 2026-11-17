@@ -10,11 +10,11 @@ import {
   Search,
   Sparkles,
   LayoutTemplate,
-  RefreshCw,
+  Plus,
   X,
 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
-import Segmented from '../../components/Segmented.jsx';
+import Segmented, { useOverflowEdge } from '../../components/Segmented.jsx';
 import { useIsNarrow } from '../../shell/bits.jsx';
 import PostPreview from '../ui/PostPreview.jsx';
 import { templateQuestions } from '../templates/postTemplates.js';
@@ -82,11 +82,49 @@ function ItemRow({ item, id, active, selected, onPick }) {
         {item.reason ? (
           <span className="lib-row-reason">{item.reason}</span>
         ) : (
-          item.label && <span className="lib-row-label">{item.label}</span>
+          // Its kind and what it does, as a meta line, so the dots between
+          // them are spaced as every other one is.
+          item.label && (
+            <span className="lib-row-label meta">
+              {item.label.split(' · ').map((part, i) => (
+                <span key={i}>{part}</span>
+              ))}
+            </span>
+          )
         )}
         {item.excerpt && <span className="lib-row-excerpt">{item.excerpt}</span>}
       </span>
     </li>
+  );
+}
+
+/**
+ * The shelves: down a rail beside the list, or, where there isn't room, a
+ * row of words over it that scrolls sideways and fades at the edge that
+ * has more behind it. `current` is the shelf shown (null while searching).
+ */
+function ShelfRail({ shelves, current, onPick }) {
+  const ref = useRef(null);
+  useOverflowEdge(ref);
+  return (
+    <nav className="lib-rail" aria-label="Shelves">
+      <ul ref={ref} className="scroll-row">
+        {shelves.map((s) => {
+          const Icon = SHELF_ICONS[s.id] || FileText;
+          return (
+            <li key={s.id}>
+              <button type="button" className="lib-shelf" aria-current={s.id === current ? 'true' : undefined} onClick={() => onPick(s.id)}>
+                <Icon size={15} aria-hidden="true" />
+                <span className="lib-shelf-label">{s.label}</span>
+                {s.id !== 'search' && Number.isFinite(s.count) && s.count > 0 && (
+                  <span className="lib-shelf-count num">{s.count.toLocaleString(activeLocale())}</span>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }
 
@@ -96,7 +134,6 @@ function ShelfStatus({ shelf, onRetry }) {
     <div className="callout callout--danger lib-status" role="alert">
       <span>{errorText(shelf.error) || 'This shelf couldn’t be read.'}</span>
       <Button size="sm" onClick={onRetry}>
-        <RefreshCw size={14} aria-hidden="true" />
         Try again
       </Button>
     </div>
@@ -353,65 +390,45 @@ export default function LibraryPanel({
   const showDetail = !narrow || phoneDetail;
   const listboxLabel = searching ? `Results for ${trimmed}` : shelf?.label || 'Library';
 
+  // The search box: over the whole panel in the dialog; on the page, over
+  // the shelves and the list it searches, beside the chosen item.
+  const searchBox = showList && (
+    <div className="lib-top">
+      <label className="search lib-search">
+        <Search size={15} aria-hidden="true" />
+        <span className="visually-hidden">Search the library or paste a link</span>
+        <input
+          ref={inputRef}
+          className="input"
+          type="search"
+          value={query}
+          placeholder="Search, or paste a link"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded="true"
+          aria-controls={`${uid}-list`}
+          aria-autocomplete="list"
+          aria-activedescendant={activeId && ids.includes(activeId) ? optionId(activeId) : undefined}
+          data-autofocus={mode === 'dialog' ? true : undefined}
+          onChange={(e) => search.setQuery(e.target.value)}
+          onKeyDown={onSearchKey}
+        />
+        {query && (
+          <Button variant="ghost" size="sm" icon aria-label="Clear the search" title="Clear the search" onClick={() => search.setQuery('')}>
+            <X size={14} aria-hidden="true" />
+          </Button>
+        )}
+      </label>
+    </div>
+  );
+
   return (
     <div className="lib-panel" data-mode={mode} data-narrow={narrow || undefined} onKeyDown={onRootKey}>
-      {showList && (
-        <div className="lib-top">
-          <label className="search lib-search">
-            <Search size={15} aria-hidden="true" />
-            <span className="visually-hidden">Search the library or paste a link</span>
-            <input
-              ref={inputRef}
-              className="input"
-              type="search"
-              value={query}
-              placeholder="Search, or paste a link"
-              autoComplete="off"
-              role="combobox"
-              aria-expanded="true"
-              aria-controls={`${uid}-list`}
-              aria-autocomplete="list"
-              aria-activedescendant={activeId && ids.includes(activeId) ? optionId(activeId) : undefined}
-              data-autofocus={mode === 'dialog' ? true : undefined}
-              onChange={(e) => search.setQuery(e.target.value)}
-              onKeyDown={onSearchKey}
-            />
-            {query && (
-              <Button variant="ghost" size="sm" icon aria-label="Clear the search" title="Clear the search" onClick={() => search.setQuery('')}>
-                <X size={14} aria-hidden="true" />
-              </Button>
-            )}
-          </label>
-        </div>
-      )}
+      {mode !== 'page' && searchBox}
 
       <div className="lib-body">
-        {showList && (
-          <nav className="lib-rail" aria-label="Shelves">
-            <ul>
-              {shelves.map((s) => {
-                const Icon = SHELF_ICONS[s.id] || FileText;
-                const on = !searching && s.id === shelf?.id;
-                return (
-                  <li key={s.id}>
-                    <button
-                      type="button"
-                      className="lib-shelf"
-                      aria-current={on ? 'true' : undefined}
-                      onClick={() => pickShelf(s.id)}
-                    >
-                      <Icon size={15} aria-hidden="true" />
-                      <span className="lib-shelf-label">{s.label}</span>
-                      {s.id !== 'search' && Number.isFinite(s.count) && s.count > 0 && (
-                        <span className="lib-shelf-count num">{s.count.toLocaleString(activeLocale())}</span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        )}
+        {mode === 'page' && searchBox}
+        {showList && <ShelfRail shelves={shelves} current={searching ? null : shelf?.id} onPick={pickShelf} />}
 
         {showList && (
           <section className="lib-list" aria-label={listboxLabel}>
@@ -433,9 +450,10 @@ export default function LibraryPanel({
                 </label>
               )}
               {!searching && shelf?.id === 'templates' && onNewTemplate && (
-                <Button size="sm" onClick={onNewTemplate}>
+                <button type="button" className="link-action" onClick={onNewTemplate}>
+                  <Plus size={14} aria-hidden="true" />
                   New template
-                </Button>
+                </button>
               )}
             </div>
             {!searching && <ShelfStatus shelf={shelf} onRetry={() => lib.retry(shelf.id)} />}
@@ -501,14 +519,15 @@ export default function LibraryPanel({
               </p>
             )}
             {(searching ? search.remote.hasMore : !searching && shelf && lib.hasMore(shelf.id)) && (
-              <div className="lib-more">
+              <div className="card-foot">
                 <Button
                   size="sm"
+                  variant="ghost"
                   onClick={() => (searching ? search.remote.loadMore() : lib.loadMore(shelf.id))}
                   disabled={searching ? search.remote.loadingMore : shelf.loadingMore}
                   aria-busy={(searching ? search.remote.loadingMore : shelf.loadingMore) || undefined}
                 >
-                  {(searching ? search.remote.loadingMore : shelf.loadingMore) ? 'Loading…' : 'Load more'}
+                  {(searching ? search.remote.loadingMore : shelf.loadingMore) ? 'Loading…' : 'Show more'}
                 </Button>
               </div>
             )}
@@ -518,18 +537,19 @@ export default function LibraryPanel({
         {showDetail && (
           <section ref={detailRef} className="lib-detail" aria-label="Chosen item" aria-live="polite">
             {narrow && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="lib-back"
+              // A link action, as every verb in the page that isn't a
+              // row's one button is.
+              <button
+                type="button"
+                className="link-action lib-back"
                 onClick={() => {
                   setPhoneDetail(false);
                   setSelectedId(null);
                 }}
               >
-                <ArrowLeft size={15} aria-hidden="true" />
+                <ArrowLeft size={14} aria-hidden="true" />
                 Back to the list
-              </Button>
+              </button>
             )}
             {shown ? (
               <ItemDetail
@@ -544,7 +564,6 @@ export default function LibraryPanel({
                 busy={using === shown.id}
                 error={useError}
                 onUse={applyItem}
-                onCancel={narrow ? () => setPhoneDetail(false) : null}
               />
             ) : (
               <p className="empty lib-detail-empty">Choose something on the left to see what it adds.</p>
@@ -556,7 +575,7 @@ export default function LibraryPanel({
   );
 }
 
-function ItemDetail({ item, lib, state, postIndex, insertion, verb, replying, busy, error, onUse, onCancel }) {
+function ItemDetail({ item, lib, state, postIndex, insertion, verb, replying, busy, error, onUse }) {
   const context = lib.context;
   const label = verb || verbFor(item, { replying }) || 'Use it';
   const isTemplate = item.kind === 'template';
@@ -573,7 +592,6 @@ function ItemDetail({ item, lib, state, postIndex, insertion, verb, replying, bu
   return (
     <div className="lib-item">
       <div className="lib-item-head">
-        <span className="lib-eyebrow">{item.label}</span>
         <h3 className="lib-item-title">{item.title}</h3>
         <p className="lib-item-effect">{effectFor(item, context)}</p>
       </div>
@@ -611,17 +629,14 @@ function ItemDetail({ item, lib, state, postIndex, insertion, verb, replying, bu
           postIndex={postIndex}
           insertion={insertion}
           submitLabel={label}
-          cancelLabel="Back"
           busy={busy}
           onDone={(answers) => onUse(item, answers)}
-          onCancel={onCancel}
         />
       ) : (
         <>
           {(isTemplate || state) && <TemplatePreview preview={preview} label={replying ? 'Your reply will read' : 'Your post will read'} />}
           {!isTemplate && !state && preview.blocked && <p className="lib-preview-blocked">{preview.blocked}</p>}
           <div className="lib-questions-actions">
-            {onCancel && <Button onClick={onCancel}>Back</Button>}
             <Button
               variant="primary"
               data-detail-focus

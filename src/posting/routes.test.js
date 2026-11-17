@@ -17,7 +17,7 @@ describe('posting pages', () => {
   });
 
   it('never say both read only and can post', () => {
-    // AccessBadge draws 'read' as "Read only", which a page that writes
+    // AccessLine draws 'read' as "Read only", which a page that writes
     // contradicts.
     for (const page of POSTING_PAGES) {
       if (page.access.includes('read')) expect(page.access).not.toContain('post');

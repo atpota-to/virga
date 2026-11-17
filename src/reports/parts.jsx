@@ -1,8 +1,12 @@
 // The pieces every report page is built from: a figure for the strip at the
 // top, a titled card, the unit toggle a chart wears, the table a ranked
-// group can be read as, and the "How this is counted" fold.
+// group can be read as, what a report says before a sync has read it, and
+// the "How this is counted" fold.
 
+import { RefreshCw } from 'lucide-react';
+import { ShowAsTable } from '../charts/ChartTable.jsx';
 import { fmtFigure, unitLabel, unitNoun } from '../charts/format.js';
+import Button from '../components/Button.jsx';
 import Delta from '../components/Delta.jsx';
 import Segmented from '../components/Segmented.jsx';
 
@@ -51,6 +55,23 @@ export function Card({ title, sub = null, tools = null, children, className = ''
   );
 }
 
+/**
+ * A report with nothing to draw until a sync has read it: the sentence that
+ * says so, and Sync now, which reads "Syncing…" while one runs.
+ */
+export function SyncEmpty({ archive, children }) {
+  const syncing = Boolean(archive.sync);
+  return (
+    <div className="empty-block">
+      <p className="empty">{children}</p>
+      <Button disabled={syncing} onClick={() => archive.runSync('incremental')}>
+        <RefreshCw size={15} aria-hidden="true" />
+        {syncing ? 'Syncing…' : 'Sync now'}
+      </Button>
+    </div>
+  );
+}
+
 export function HowCounted({ children }) {
   return (
     <details className="card disclosure how-counted">
@@ -62,15 +83,15 @@ export function HowCounted({ children }) {
 
 /**
  * A bar list's plain twin, as ChartTable is a chart's: the same rows as a
- * real table behind "Show as table". `columns` are `{ head, cell(row), num? }`;
- * the first is the row's heading.
+ * real table, opened from "Show as table" on the line under the chart, with
+ * `actions` after it there. `columns` are `{ head, cell(row), num? }`; the
+ * first is the row's heading.
  */
-export function GroupTable({ rows, columns }) {
+export function GroupTable({ rows, columns, actions = null }) {
   if (!rows?.length) return null;
   const [first, ...rest] = columns;
   return (
-    <details className="an-tableview disclosure">
-      <summary>Show as table</summary>
+    <ShowAsTable actions={actions}>
       <div className="an-tableview-scroll">
         <table className="table">
           <thead>
@@ -96,6 +117,6 @@ export function GroupTable({ rows, columns }) {
           </tbody>
         </table>
       </div>
-    </details>
+    </ShowAsTable>
   );
 }

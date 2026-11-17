@@ -1,14 +1,18 @@
 // Settings: the account, the archive and its sync, the dashboards, posting,
-// how Virga looks (the live sky lives here, off until it's asked for), what
+// how Virga looks (the sky is picked here, and the live one turned on), what
 // the sign-in lets Virga do, and where the data comes from.
+//
+// Each section is a page of its own. On a desk the sidebar lists them; on a
+// phone, where there is no sidebar, /settings is that list.
 
-import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Download, HardDrive, Pencil, RefreshCw, RotateCcw, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, Moon, Pencil, Plus, RefreshCw, RotateCcw, ShieldCheck, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
 import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
+import { MoreMenu } from '../components/Menu.jsx';
 import Segmented from '../components/Segmented.jsx';
-import { isBuilt, useArchive } from '../archive/ArchiveContext.jsx';
+import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
 import { coversCurrent, readAcceptance } from '../legal/acceptance.js';
 import { DOCUMENTS } from '../legal/documents.js';
@@ -18,76 +22,106 @@ import { exportArchive, exportPosts } from '../archive/exports.js';
 import { useDashboards } from '../dashboards/DashboardsContext.jsx';
 import NewDashboardDialog from '../dashboards/NewDashboardDialog.jsx';
 import PostingSettingsSection from '../posting/PostingSettingsSection.jsx';
-import { ACCENT_CHOICES, usePreferences } from '../lib/preferences.jsx';
-import { useSkyPhase } from '../hillside/useSkyPhase.js';
+import { ACCENT_CHOICES, SKY_CHOICES, usePreferences } from '../lib/preferences.jsx';
 import { radioKeyTarget } from './radioKeys.js';
 import { Link, navigate } from '../lib/router.jsx';
 import { formatDateShort, relativeTime } from '../lib/time.js';
-import { PageHeader, useToast } from '../shell/bits.jsx';
+import { PageHeader, useIsNarrow, useToast } from '../shell/bits.jsx';
 import { SyncSteps, syncWhen, useArchiveCounts } from '../shell/SyncStatus.jsx';
 import './settings.css';
 import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
-// Exported for the command palette, which lists them (src/shell/CommandPalette.jsx).
-export const SECTIONS = [
-  { key: 'account', label: 'Account' },
-  { key: 'data', label: 'Data and sync' },
-  { key: 'dashboards', label: 'Dashboards' },
-  { key: 'posting', label: 'Posting' },
-  { key: 'appearance', label: 'Appearance' },
-  { key: 'permissions', label: 'Permissions' },
-  { key: 'about', label: 'About' },
-];
+import { SECTIONS } from './sections.js';
+
+export { SECTIONS };
 
 // `profile` and `onSignOut` are still passed by the shell; the account
 // section reads every account from the session itself.
 export default function SettingsPage({ section }) {
-  const current = SECTIONS.find((s) => s.key === section) ? section : 'account';
+  const narrow = useIsNarrow();
+  const named = SECTIONS.find((s) => s.key === section);
+  // On a phone the bare address is the list of sections. On a desk the
+  // sidebar is that list, so the bare address opens the first of them.
+  if (narrow && !named) return <SettingsIndex />;
+  const current = named || SECTIONS[0];
   return (
     <>
-      <PageHeader title="Settings" />
-      <div className="settings">
-        <nav className="settings-nav" aria-label="Settings">
-          {SECTIONS.map((s) => (
-            <Link key={s.key} to={`/settings/${s.key}`} className="settings-nav-item" aria-current={current === s.key ? 'page' : undefined}>
-              {s.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="settings-body">
-          {current === 'account' && <AccountsSettings />}
-          {current === 'data' && <DataSection />}
-          {current === 'dashboards' && <DashboardsSection />}
-          {current === 'posting' && <PostingSettingsSection />}
-          {current === 'appearance' && <AppearanceSection />}
-          {current === 'permissions' && <PermissionsSection />}
-          {current === 'about' && <AboutSection />}
-        </div>
+      <PageHeader crumbs={[{ label: 'Settings', to: '/settings' }]} title={current.label} sub={current.desc} />
+      <div className="page-body settings-body">
+        {current.key === 'account' && <AccountsSettings />}
+        {current.key === 'data' && <DataSection />}
+        {current.key === 'dashboards' && <DashboardsSection />}
+        {current.key === 'posting' && <PostingSettingsSection />}
+        {current.key === 'appearance' && <AppearanceSection />}
+        {current.key === 'permissions' && <PermissionsSection />}
+        {current.key === 'about' && <AboutSection />}
       </div>
     </>
   );
 }
 
-function Section({ title, sub = null, children, tone = null }) {
+/** The sections as a list, for a phone: each a row to press, with its line under it. */
+function SettingsIndex() {
   return (
-    <section className="card settings-section" data-tone={tone || undefined}>
-      <div className="settings-section-head">
-        <h2 className="card-title">{title}</h2>
-        {sub && <p className="card-sub">{sub}</p>}
+    <>
+      <PageHeader title="Settings" sub="For whoever is at this browser, and for the account that’s open." />
+      <div className="page-body settings-body">
+        <ul className="settings-index">
+          {SECTIONS.map((s) => (
+            <li key={s.key}>
+              <Link to={`/settings/${s.key}`} className="settings-index-item">
+                <span className="settings-index-text">
+                  <span className="settings-index-label">{s.label}</span>
+                  <span className="settings-index-desc">{s.desc}</span>
+                </span>
+                <ChevronRight size={16} aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-      {children}
+    </>
+  );
+}
+
+/**
+ * A band of a settings page: a heading with a rule in ink under it, then
+ * its rows. Without a title it is the rows alone, under the rule. `action`
+ * is what adds to the band's list (New dashboard), at the heading's right.
+ */
+function Section({ title = null, sub = null, action = null, children, tone = null }) {
+  return (
+    <section className="settings-section" data-tone={tone || undefined}>
+      {title && (
+        <div className="settings-section-head card-head">
+          <div>
+            <h2 className="card-title">{title}</h2>
+            {sub && <p className="card-sub">{sub}</p>}
+          </div>
+          {action}
+        </div>
+      )}
+      <div className="settings-section-body">{children}</div>
     </section>
   );
 }
 
-function Row({ label, hint = null, children }) {
+/**
+ * One setting: what it is and a line about it at the left, its control at
+ * the right, on the label's first line. A `block` row puts its control on a
+ * line of its own under them (tiles, two selects). A row with nothing to
+ * press is the words alone.
+ */
+function Row({ label, hint = null, labelId = undefined, block = false, children = null }) {
   return (
-    <div className="settings-row">
+    <div className={block ? 'settings-row settings-row--block' : 'settings-row'}>
       <div className="settings-row-text">
-        <div className="settings-row-label">{label}</div>
+        <div className="settings-row-label" id={labelId}>
+          {label}
+        </div>
         {hint && <div className="settings-row-hint">{hint}</div>}
       </div>
-      <div className="settings-row-control">{children}</div>
+      {children && <div className="settings-row-control">{children}</div>}
     </div>
   );
 }
@@ -112,6 +146,33 @@ function megabytes(bytes) {
   return bytes == null ? '—' : `${(bytes / 1048576).toFixed(bytes < 10 * 1048576 ? 1 : 0)} MB`;
 }
 
+/** "1,031 posts" or "1 post", in the reader's way of writing numbers. */
+function counted(n, one, many) {
+  return `${n.toLocaleString(activeLocale())} ${n === 1 ? one : many}`;
+}
+
+/**
+ * What the archive holds and how fresh it is, in a line: "1,031 posts,
+ * 9,732 repo records and 4,810 followers that can be listed · synced 4m
+ * ago". The followers are the ones a signed-in read can list, which can be
+ * fewer than the count on the profile. Before the first build, only when.
+ */
+function archiveLine(archive, counts) {
+  const when = syncWhen(archive);
+  if (!archive.meta.posts) return when;
+  const held = `${counted(counts.posts, 'post', 'posts')}, ${counted(counts.records, 'repo record', 'repo records')} and ${counted(counts.followers, 'follower', 'followers')} that can be listed`;
+  // The dot is spaced as a meta line's, and goes with the words before it
+  // when the line breaks there.
+  return (
+    <>
+      {held}
+      <span className="settings-dot">·</span>
+      <wbr />
+      <span className="settings-when">{when.charAt(0).toLowerCase() + when.slice(1)}</span>
+    </>
+  );
+}
+
 function DataSection() {
   const archive = useArchive();
   const toast = useToast();
@@ -123,7 +184,7 @@ function DataSection() {
 
   return (
     <>
-      <Section title="Your archive" sub={syncWhen(archive)}>
+      <Section title="Your archive" sub={archiveLine(archive, counts)}>
         {archive.sync ? (
           <div className="settings-sync">
             <SyncSteps sync={archive.sync} />
@@ -133,24 +194,6 @@ function DataSection() {
           </div>
         ) : (
           <>
-            <dl className="data-facts">
-              <div>
-                <dt>Posts</dt>
-                <dd className="num">{counts.posts.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Followers</dt>
-                <dd className="num">{counts.followers.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Repo records</dt>
-                <dd className="num">{counts.records.toLocaleString(activeLocale())}</dd>
-              </div>
-              <div>
-                <dt>Blocked by</dt>
-                <dd className="num">{counts.blockedBy.toLocaleString(activeLocale())}</dd>
-              </div>
-            </dl>
             {archive.syncError && (
               <div className="callout callout--danger" role="alert">
                 <span>
@@ -158,21 +201,23 @@ function DataSection() {
                 </span>
               </div>
             )}
-            <div className="settings-actions">
-              <Button variant="primary" onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
+            <Row
+              label={!pm ? 'Build' : pm.complete ? 'Sync' : 'Finish the build'}
+              hint="A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new."
+            >
+              <Button onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
                 <RefreshCw size={15} aria-hidden="true" />
                 {!pm ? 'Build your archive' : pm.complete ? 'Sync now' : 'Resume the build'}
               </Button>
-              {built && (
+            </Row>
+            {built && (
+              <Row label="Rebuild" hint="Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh.">
                 <Button onClick={() => setConfirm('rebuild')}>
                   <RotateCcw size={15} aria-hidden="true" />
                   Rebuild posts
                 </Button>
-              )}
-            </div>
-            <p className="settings-text muted">
-              A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new.
-            </p>
+              </Row>
+            )}
           </>
         )}
       </Section>
@@ -205,15 +250,13 @@ function DataSection() {
                 : 'In IndexedDB, in a database of its own for this account.'
           }
         >
-          <span className="badge">
-            <HardDrive aria-hidden="true" />
-            {archive.persistent ? 'IndexedDB' : 'This session only'}
-          </span>
+          {/* Only the case to find is marked; kept, the line says where. */}
+          {!archive.persistent && <span className="badge badge--warn">This session only</span>}
         </Row>
         {navigator.storage?.persist && (
           <Row label="Keep it when space runs low" hint="Asks the browser not to clear the archive to make room. It may say no.">
             {persisted ? (
-              <span className="badge badge--accent">Kept</span>
+              <span className="settings-row-state">Kept</span>
             ) : (
               <Button
                 onClick={async () => {
@@ -222,6 +265,7 @@ function DataSection() {
                   toast?.(ok ? 'The browser will keep the archive.' : 'The browser said no. It may ask again later, or decide by itself.');
                 }}
               >
+                <ShieldCheck size={15} aria-hidden="true" />
                 Ask the browser
               </Button>
             )}
@@ -231,12 +275,12 @@ function DataSection() {
 
       <Section title="Delete this archive" tone="danger">
         <Row
-          label="Remove everything Virga keeps for this account in this browser"
+          label="Everything Virga keeps for this account here"
           hint="Your account, your repo and your followers aren’t touched. The next build reads it all again."
         >
-          <Button variant="danger" onClick={() => setConfirm('delete')} disabled={!archive.loaded || Boolean(archive.sync)}>
+          <Button className="is-danger" onClick={() => setConfirm('delete')} disabled={!archive.loaded || Boolean(archive.sync)}>
             <Trash2 size={15} aria-hidden="true" />
-            Delete the archive
+            Delete the archive…
           </Button>
         </Row>
       </Section>
@@ -301,103 +345,108 @@ function DataSection() {
 function DashboardsSection() {
   const actions = useDashboards();
   const toast = useToast();
-  const [editing, setEditing] = useState(null);
+  const [renaming, setRenaming] = useState(null);
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
   const [creating, setCreating] = useState(false);
   const list = actions.dashboards;
+  // A row that moves, or goes, takes the focus on its ⋯ with it: the
+  // moved row's own, or the row that takes a deleted one's place.
+  const listRef = useRef(null);
+  const [refocus, setRefocus] = useState(null);
+  useEffect(() => {
+    if (refocus == null) return;
+    const rows = [...(listRef.current?.children || [])];
+    const row = typeof refocus === 'number' ? rows[Math.min(refocus, rows.length - 1)] : rows.find((r) => r.dataset.id === refocus);
+    row?.querySelector('.menu-button')?.focus();
+    setRefocus(null);
+  }, [list, refocus]);
+  const move = (d, to) => {
+    actions.moveDashboard(d.id, to);
+    setRefocus(d.id);
+  };
+  const rename = (e) => {
+    e.preventDefault();
+    actions.renameDashboard(renaming.id, name);
+    setRenaming(null);
+  };
   return (
     <>
-      <Section title="Your dashboards" sub="Each is a set of reports, arranged your way. Open one and press Customize to change it.">
-        <ul className="dash-list">
+      <Section
+        title="Your dashboards"
+        sub="Each is a set of reports, arranged your way. Open one and press Customize to change it."
+        action={
+          <button type="button" className="link-action" onClick={() => setCreating(true)}>
+            <Plus size={14} aria-hidden="true" />
+            New dashboard
+          </button>
+        }
+      >
+        <ul className="dash-list" ref={listRef}>
           {list.map((d, i) => (
-            <li key={d.id} className="dash-list-item">
-              {editing === d.id ? (
-                <form
-                  className="dash-list-rename"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    actions.renameDashboard(d.id, name);
-                    setEditing(null);
-                  }}
-                >
-                  <label className="visually-hidden" htmlFor={`rename-${d.id}`}>
-                    Name
-                  </label>
-                  <input id={`rename-${d.id}`} className="input" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} autoFocus />
-                  <Button type="submit" size="sm" variant="primary">
-                    Save
-                  </Button>
-                  <Button size="sm" onClick={() => setEditing(null)}>
-                    Cancel
-                  </Button>
-                </form>
-              ) : (
-                <>
-                  <Link to={`/dashboard/${d.id}`} className="dash-list-name">
-                    {d.name}
-                  </Link>
-                  <span className="muted num">
-                    {d.widgets.length} {d.widgets.length === 1 ? 'report' : 'reports'}
-                  </span>
-                  <span className="dash-list-tools">
-                    <Button size="sm" variant="ghost" icon aria-label={`Move ${d.name} up`} disabled={i === 0} onClick={() => actions.moveDashboard(d.id, i - 1)}>
-                      <ArrowUp size={14} aria-hidden="true" />
-                    </Button>
-                    <Button size="sm" variant="ghost" icon aria-label={`Move ${d.name} down`} disabled={i === list.length - 1} onClick={() => actions.moveDashboard(d.id, i + 1)}>
-                      <ArrowDown size={14} aria-hidden="true" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      icon
-                      aria-label={`Rename ${d.name}`}
-                      onClick={() => {
-                        setEditing(d.id);
+            <li key={d.id} className="dash-list-item" data-id={d.id}>
+              <span className="dash-list-text">
+                <Link to={`/dashboard/${d.id}`} className="dash-list-name">
+                  {d.name}
+                </Link>
+                <span className="dash-list-count num">
+                  {d.widgets.length} {d.widgets.length === 1 ? 'report' : 'reports'}
+                </span>
+              </span>
+              <div className="row-actions">
+                <MoreMenu
+                  className="row-menu"
+                  label={`More for ${d.name}`}
+                  items={[
+                    {
+                      label: 'Rename…',
+                      icon: Pencil,
+                      onSelect: () => {
                         setName(d.name);
-                      }}
-                    >
-                      <Pencil size={14} aria-hidden="true" />
-                    </Button>
-                    <Button size="sm" variant="ghost" icon aria-label={`Delete ${d.name}`} disabled={list.length <= 1} onClick={() => setConfirm(d)}>
-                      <Trash2 size={14} aria-hidden="true" />
-                    </Button>
-                  </span>
-                </>
-              )}
+                        setRenaming(d);
+                      },
+                    },
+                    i > 0 && { label: 'Move up', icon: ArrowUp, onSelect: () => move(d, i - 1) },
+                    i < list.length - 1 && { label: 'Move down', icon: ArrowDown, onSelect: () => move(d, i + 1) },
+                    // The last dashboard can't go: the app always opens on one.
+                    list.length > 1 && { separator: true },
+                    list.length > 1 && { label: 'Delete', icon: Trash2, tone: 'danger', onSelect: () => setConfirm(d) },
+                  ]}
+                />
+              </div>
             </li>
           ))}
         </ul>
-        <div className="settings-actions">
-          <Button onClick={() => setCreating(true)}>New dashboard</Button>
-          <Button variant="ghost" onClick={() => setConfirm('reset')}>
+        <div className="card-foot">
+          <button type="button" className="link-action" onClick={() => setConfirm('reset')}>
+            <RotateCcw size={14} aria-hidden="true" />
             Reset to the three starting dashboards
-          </Button>
+          </button>
         </div>
       </Section>
       <Section title="Where they’re kept">
-        <div className="choice-list">
-          <label className="choice" data-on>
-            <input type="radio" name="layout-store" checked readOnly />
-            <span>
-              <span className="choice-label">In this browser</span>
-              <span className="choice-desc">Like your archive. Another browser starts with the three starting dashboards.</span>
-            </span>
-          </label>
-          <label className="choice is-disabled">
-            <input type="radio" name="layout-store" disabled />
-            <span>
-              <span className="choice-label">
-                In your own repo <span className="badge badge--warn">Not yet</span>
-              </span>
-              <span className="choice-desc">
-                As a small record on your PDS, so your dashboards follow you to any browser. It would need permission to write that one
-                kind of record, which Virga doesn’t ask for today.
-              </span>
-            </span>
-          </label>
-        </div>
+        <p className="settings-text">Kept in this browser, like your archive. Another browser starts with the three starting dashboards.</p>
       </Section>
+      <Dialog
+        open={Boolean(renaming)}
+        onClose={() => setRenaming(null)}
+        title="Rename dashboard"
+        actions={
+          <>
+            <Button onClick={() => setRenaming(null)}>Cancel</Button>
+            <Button variant="primary" type="submit" form="rename-dashboard-form">
+              Save
+            </Button>
+          </>
+        }
+      >
+        <form id="rename-dashboard-form" className="dialog-form" onSubmit={rename}>
+          <label className="field">
+            <span className="field-label">Name</span>
+            <input className="input" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} onFocus={(e) => e.target.select()} data-autofocus />
+          </label>
+        </form>
+      </Dialog>
       <Dialog
         open={Boolean(confirm)}
         onClose={() => setConfirm(null)}
@@ -412,6 +461,7 @@ function DashboardsSection() {
                   actions.resetAll();
                   toast?.('Your dashboards are back to the three starting ones.');
                 } else {
+                  setRefocus(list.findIndex((d) => d.id === confirm.id));
                   actions.deleteDashboard(confirm.id);
                 }
                 setConfirm(null);
@@ -455,11 +505,9 @@ function regionName(tag) {
   }
 }
 
-const THEMES = [
-  { key: 'light', label: 'Light' },
-  { key: 'dark', label: 'Dark' },
-  { key: 'system', label: 'Match system' },
-];
+const SKY_NAMES = { clock: 'Follows the clock', dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' };
+const SKY_ICONS = { clock: Clock, dawn: Sunrise, day: Sun, dusk: Sunset, night: Moon };
+const SKIES = SKY_CHOICES.map((key) => ({ key, label: SKY_NAMES[key] }));
 
 const ACCENT_NAMES = { blue: 'Blue', violet: 'Violet', teal: 'Teal', amber: 'Amber', rose: 'Rose', graphite: 'Graphite' };
 const ACCENTS = ACCENT_CHOICES.map((key) => ({ key, label: ACCENT_NAMES[key] }));
@@ -496,72 +544,82 @@ function RadioButtons({ className, label = undefined, labelledBy = undefined, ch
 
 function AppearanceSection() {
   const prefs = usePreferences();
+  // A phone or a tablet has no sidebar to fold.
+  const narrow = useIsNarrow();
   const { setPref } = prefs;
-  const sky = useSkyPhase({ skyTime: prefs.skyTime, theme: prefs.effectiveTheme, built: isBuilt(useArchive()) });
+  // What the clock comes to at the moment, said under its tile.
+  const now = SKY_NAMES[prefs.effectiveSky];
   return (
-    <>
-      <Section title="Theme" sub="Charts get their own colours in each, not an inverted copy.">
-        <RadioButtons className="theme-choices" label="Theme" choices={THEMES} value={prefs.theme} onChange={(v) => setPref('theme', v)}>
-          {(t, radio) => (
-            <button key={t.key} {...radio} className="theme-choice" data-theme-preview={t.key}>
-              <span className="theme-preview" aria-hidden="true">
-                <span className="theme-preview-side" />
-                <span className="theme-preview-main">
-                  <span />
-                  <span />
+    <Section>
+      <Row
+        block
+        labelId="sky-label"
+        label="Sky"
+        hint="The sky behind every page. Let it follow the clock, or keep it where you leave it. Night is also the dark theme, and a device set to dark stays on it."
+      >
+        <RadioButtons className="sky-choices" labelledBy="sky-label" choices={SKIES} value={prefs.sky} onChange={(v) => setPref('sky', v)}>
+          {(sky, radio) => {
+            const Icon = SKY_ICONS[sky.key];
+            return (
+              <button key={sky.key} {...radio} className="sky-choice" data-sky-choice={sky.key}>
+                <span className="sky-choice-swatch" aria-hidden="true">
+                  <Icon size={20} />
                 </span>
-              </span>
-              <span className="theme-choice-label">{t.label}</span>
+                <span className="sky-choice-text">
+                  <span className="sky-choice-label">{sky.label}</span>
+                  {sky.key === 'clock' && prefs.sky === 'clock' && (
+                    <span className="sky-choice-now">{prefs.systemDark ? 'Night, as your device asks' : `${now} now`}</span>
+                  )}
+                </span>
+              </button>
+            );
+          }}
+        </RadioButtons>
+      </Row>
+      <Row
+        block
+        labelId="accent-label"
+        label="Accent"
+        hint="The colour of your data, and of whatever is selected. Each pair is checked for contrast and for colour-blind eyes, under every sky."
+      >
+        <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
+          {(a, radio) => (
+            // data-accent makes this button a swatch (theme.css): inside it, the accent tokens are this accent's.
+            <button key={a.key} {...radio} className="accent-choice" data-accent={a.key}>
+              <span className="accent-swatch" aria-hidden="true" />
+              <span className="accent-choice-label">{a.label}</span>
             </button>
           )}
         </RadioButtons>
-        <div className="settings-row">
-          <div className="settings-row-text">
-            <div className="settings-row-label" id="accent-label">
-              Accent
-            </div>
-            <div className="settings-row-hint">
-              The colour of your numbers, and of whatever is pressed. The small dot is the second line on a chart. Each pair is checked for
-              contrast and for colour-blind eyes, in both themes.
-            </div>
-          </div>
-          <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
-            {(a, radio) => (
-              // data-accent makes this button a swatch (theme.css): inside it, the accent tokens are this accent's.
-              <button key={a.key} {...radio} className="accent-choice" data-accent={a.key}>
-                <span className="accent-swatch" aria-hidden="true" />
-                <span className="accent-choice-label">{a.label}</span>
-              </button>
-            )}
-          </RadioButtons>
-        </div>
-        <Row
+      </Row>
+      <Row
+        label="Contrast"
+        hint="High darkens the words and the rules, takes the sky away and thickens the focus ring. Match system follows your device’s own setting."
+      >
+        <Segmented
           label="Contrast"
-          hint="High darkens the words and lines, outlines the cards and thickens the focus ring. Match system follows your device’s own setting."
-        >
-          <Segmented
-            label="Contrast"
-            value={prefs.contrast}
-            onChange={(v) => setPref('contrast', v)}
-            options={[
-              { value: 'system', label: 'Match system' },
-              { value: 'normal', label: 'Standard' },
-              { value: 'high', label: 'High' },
-            ]}
-          />
-        </Row>
-        <Row label="Density" hint="Compact fits more reports on a screen.">
-          <Segmented
-            label="Density"
-            value={prefs.density}
-            onChange={(v) => setPref('density', v)}
-            options={[
-              { value: 'comfortable', label: 'Comfortable' },
-              { value: 'compact', label: 'Compact' },
-            ]}
-          />
-        </Row>
-        <Row label="Sidebar" hint="Folded, it’s a rail of icons. The button at its top does the same.">
+          value={prefs.contrast}
+          onChange={(v) => setPref('contrast', v)}
+          options={[
+            { value: 'system', label: 'Match system' },
+            { value: 'normal', label: 'Standard' },
+            { value: 'high', label: 'High' },
+          ]}
+        />
+      </Row>
+      <Row label="Density" hint="Compact fits more on a screen.">
+        <Segmented
+          label="Density"
+          value={prefs.density}
+          onChange={(v) => setPref('density', v)}
+          options={[
+            { value: 'comfortable', label: 'Comfortable' },
+            { value: 'compact', label: 'Compact' },
+          ]}
+        />
+      </Row>
+      {!narrow && (
+        <Row label="Sidebar" hint="Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.">
           <Segmented
             label="Sidebar"
             value={prefs.sidebar}
@@ -572,109 +630,40 @@ function AppearanceSection() {
             ]}
           />
         </Row>
-      </Section>
-
-      <Section title="Numbers and dates" sub="Virga’s words are English. These choose how its figures, dates and times are written.">
-        <Row label="Format" hint={localeSample(activeLocale())}>
-          <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
-            <option value="system">This browser’s region ({regionName(systemLocale())})</option>
-            {LOCALE_CHOICES.map((tag) => (
-              <option key={tag} value={tag}>
-                {regionName(tag)}: {localeSample(tag)}
-              </option>
-            ))}
-          </select>
-        </Row>
-        <Row label="Week starts on" hint="For weekly charts, the best-time grid and the weekly schedule.">
-          {/* A select, not a segmented control: four keys with a day's name in each don't fit a phone. */}
-          <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
-            <option value="system">As in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
-            <option value="monday">Monday</option>
-            <option value="sunday">Sunday</option>
-            <option value="saturday">Saturday</option>
-          </select>
-        </Row>
-      </Section>
-
-      <Section title="Live sky">
-        <div className="sky-setting">
-          <div className="sky-preview" data-on={prefs.sky || undefined} data-time={sky} aria-hidden="true">
-            <svg viewBox="0 0 168 104" preserveAspectRatio="none">
-              <g className="sky-stars">
-                <circle cx="22" cy="14" r="1.2" />
-                <circle cx="58" cy="9" r="0.9" />
-                <circle cx="84" cy="24" r="1.1" />
-                <circle cx="118" cy="11" r="1.3" />
-                <circle cx="146" cy="30" r="0.9" />
-                <circle cx="70" cy="42" r="0.8" />
-                <circle cx="152" cy="8" r="1" />
-              </g>
-              <path className="sky-cloud" d="M18 36a8 8 0 0 1 4-15 11 11 0 0 1 20-3 9 9 0 0 1 16 5 7 7 0 0 1 4 13Z" fill="#fff" fillOpacity="0.85" />
-              <path className="sky-cloud" d="M96 30a6 6 0 0 1 3-11 8 8 0 0 1 15-2 7 7 0 0 1 12 4 5 5 0 0 1 3 9Z" fill="#fff" fillOpacity="0.7" />
-              <path className="sky-hill-1" d="M0 70C40 52 80 56 110 66S150 76 168 62V104H0Z" />
-              <path className="sky-hill-2" d="M0 86C50 74 100 82 130 88S160 90 168 84V104H0Z" />
-            </svg>
-          </div>
-          <div className="sky-setting-text">
-            <div className="settings-row-label">Show the live sky behind Virga</div>
-            <p className="settings-row-hint">
-              The 3D hillside from Virga’s first version: clouds drift, their shadows cross the hill, and the sun comes up once your archive
-              is built. It uses WebGL and some battery, and holds still if you’ve asked your device for reduced motion. Cards stay solid in
-              front of it so the numbers stay readable.
-            </p>
-            <p className="settings-row-hint">Off by default. Five taps on the Virga logo turn it on or off from anywhere.</p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            className="switch"
-            aria-checked={prefs.sky}
-            aria-label="Show the live sky"
-            onClick={() => setPref('sky', !prefs.sky)}
-          />
-        </div>
-        {prefs.sky && (
+      )}
+      <Row
+        block
+        label="Numbers and dates"
+        hint={
           <>
-            <Row
-              label="Time of day"
-              hint={
-                <>
-                  With your archive, the sun comes up at the first build: dawn, then day. In the dark theme that is dusk, then night. With
-                  the clock, it is the time of day where you are.
-                  {(prefs.skyTime === 'archive' || prefs.skyTime === 'clock') && <> It is {sky} now.</>}
-                </>
-              }
-            >
-              <Segmented
-                className="sky-times"
-                label="Time of day"
-                value={prefs.skyTime}
-                onChange={(v) => setPref('skyTime', v)}
-                options={[
-                  { value: 'archive', label: 'Archive', ariaLabel: 'Follow the archive' },
-                  { value: 'clock', label: 'Clock', ariaLabel: 'Follow the clock' },
-                  { value: 'dawn', label: 'Dawn' },
-                  { value: 'day', label: 'Day' },
-                  { value: 'dusk', label: 'Dusk' },
-                  { value: 'night', label: 'Night' },
-                ]}
-              />
-            </Row>
-            <Row label="Where" hint="Reports, tools and settings can keep a plain background.">
-              <Segmented
-                label="Where the sky shows"
-                value={prefs.skyScope}
-                onChange={(v) => setPref('skyScope', v)}
-                options={[
-                  { value: 'dashboard', label: 'Dashboards only' },
-                  { value: 'everywhere', label: 'Everywhere' },
-                ]}
-              />
-            </Row>
+            Virga’s words are English. These choose how its figures, dates and times are written, and the day a week starts on.
+            <span className="settings-row-sample">{localeSample(activeLocale())}</span>
           </>
-        )}
-      </Section>
-    </>
+        }
+      >
+        <select className="input" aria-label="Number and date format" value={prefs.locale} onChange={(e) => setPref('locale', e.target.value)}>
+          <option value="system">This browser’s region ({regionName(systemLocale())})</option>
+          {LOCALE_CHOICES.map((tag) => (
+            <option key={tag} value={tag}>
+              {regionName(tag)}: {localeSample(tag)}
+            </option>
+          ))}
+        </select>
+        {/* A select, not a row of keys: four keys with a day's name in each don't fit a phone. */}
+        <select className="input" aria-label="Week starts on" value={prefs.weekStart} onChange={(e) => setPref('weekStart', e.target.value)}>
+          <option value="system">Week starts as in this region ({WEEK_START_NAMES[regionWeekStart(activeLocale())]})</option>
+          <option value="monday">Week starts Monday</option>
+          <option value="sunday">Week starts Sunday</option>
+          <option value="saturday">Week starts Saturday</option>
+        </select>
+      </Row>
+      <Row
+        label="Live sky"
+        hint="Clouds that drift across the sky at the top of the page: the 3D scene from Virga’s first version. It uses WebGL and some battery, holds still if you’ve asked your device for reduced motion, and is left out in high contrast. Five taps on the Virga mark turn it on or off from anywhere."
+      >
+        <button type="button" role="switch" className="switch" aria-checked={prefs.liveSky} aria-label="Show the live sky" onClick={() => setPref('liveSky', !prefs.liveSky)} />
+      </Row>
+    </Section>
   );
 }
 
@@ -687,15 +676,17 @@ function PermissionsSection() {
         <ul className="perm-list">
           {PERMISSION_GROUPS.map((group) => (
             <li key={group.key}>
-              <strong>{group.title}</strong> {group.text}{' '}
-              {/* The resource and its name; the full strings, audiences and
-                  all, are in src/config.js and the README. */}
-              {group.tokens.map((token, i) => (
-                <span key={token}>
-                  {i > 0 && ' '}
-                  <code>{token.split('?')[0]}</code>
-                </span>
-              ))}
+              <strong>{group.title}</strong> {group.text}
+              {/* The resource and its name, on a line of their own; the full
+                  strings, audiences and all, are in src/config.js and the README. */}
+              <span className="perm-codes">
+                {group.tokens.map((token, i) => (
+                  <span key={token}>
+                    {i > 0 && ' '}
+                    <code>{token.split('?')[0]}</code>
+                  </span>
+                ))}
+              </span>
             </li>
           ))}
         </ul>
@@ -749,20 +740,23 @@ function AboutSection() {
         </p>
       </Section>
       <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
+        {/* Each opens in place, like a row of the settings list leads to its page. */}
         {Object.values(DOCUMENTS).map((doc) => (
-          <Row key={doc.key} label={doc.title}>
-            <Button onClick={() => setReading(doc.key)} aria-label={`Read the ${doc.title}`}>
-              Read
-            </Button>
-          </Row>
+          <button key={doc.key} type="button" className="settings-index-item" onClick={() => setReading(doc.key)} aria-haspopup="dialog">
+            <span className="settings-index-text">
+              <span className="settings-index-label">{doc.title}</span>
+            </span>
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
         ))}
-        <LegalDialog docKey={reading} onClose={() => setReading(null)} />
         {agreed && (
-          <p className="settings-text muted">
+          <p className="card-caption">
             This account agreed to version {agreed.version} of both{agreed.at ? ` on ${formatDateShort(agreed.at)}` : ''}.
           </p>
         )}
       </Section>
+      {/* Outside the section: everything inside one is set as a row of it. */}
+      <LegalDialog docKey={reading} onClose={() => setReading(null)} />
       <Section title="Where the data comes from">
         <ul className="perm-list">
           <li>
@@ -803,7 +797,7 @@ function AboutSection() {
           </li>
         </ul>
         {archive.meta.repo?.syncedAt && (
-          <p className="settings-text muted">
+          <p className="card-caption">
             Your repo was last read {relativeTime(archive.meta.repo.syncedAt)}, on {formatDateShort(archive.meta.repo.syncedAt)}.
           </p>
         )}

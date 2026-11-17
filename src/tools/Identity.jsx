@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
+import Figures from '../components/Figures.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { didWebDocumentUrl, getPlcHistory, resolvePds } from '../lib/atproto.js';
 import { PLC_DIRECTORY } from '../config.js';
@@ -32,7 +33,7 @@ function CopyButton({ text, label }) {
         }
       }}
     >
-      {done ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+      {done ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
     </Button>
   );
 }
@@ -101,36 +102,31 @@ export default function Identity({ tool }) {
     <>
       <ToolHeader tool={tool} />
       <div className="page-body">
-        <section className="card identity-card" aria-label="The account">
+        <section className="identity-card" aria-label="The account">
           <Avatar src={profile?.avatar} name={profile?.displayName || profile?.handle} size="lg" />
           <div className="identity-main">
             <span className="identity-name">{profile?.displayName || (profile?.handle ? `@${profile.handle}` : did)}</span>
             {profile?.handle && <span className="muted">@{profile.handle}</span>}
           </div>
-          <dl className="identity-facts">
-            <div>
-              <dt>Followers</dt>
-              <dd className="num">{profile?.followersCount != null ? profile.followersCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Following</dt>
-              <dd className="num">{profile?.followsCount != null ? profile.followsCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Posts</dt>
-              <dd className="num">{profile?.postsCount != null ? profile.postsCount.toLocaleString(activeLocale()) : '—'}</dd>
-            </div>
-            <div>
-              <dt>Account created</dt>
-              <dd className="num">{created ? formatDateShort(created) : '—'}</dd>
-            </div>
-          </dl>
         </section>
 
-        <section className="card" aria-labelledby="id-ids">
-          <h2 id="id-ids" className="card-title">
-            Identifiers
-          </h2>
+        {/* The year leads the last figure, with the day under it: a whole date set that large would not fit its column. */}
+        <Figures
+          label="The account in figures"
+          items={[
+            { key: 'followers', label: 'Followers', value: profile?.followersCount ?? '—' },
+            { key: 'following', label: 'Following', value: profile?.followsCount ?? '—' },
+            { key: 'posts', label: 'Posts', value: profile?.postsCount ?? '—' },
+            { key: 'created', label: 'Account created', value: created ? String(new Date(created).getFullYear()) : '—', note: created ? formatDateShort(created) : null },
+          ]}
+        />
+
+        <section className="card card--flush" aria-labelledby="id-ids">
+          <div className="card-head">
+            <h2 id="id-ids" className="card-title">
+              Identifiers
+            </h2>
+          </div>
           <dl className="kv">
             <div className="kv-row">
               <dt>DID</dt>
@@ -142,14 +138,14 @@ export default function Identity({ tool }) {
             <div className="kv-row">
               <dt>Handle</dt>
               <dd>
-                {profile?.handle ? <code className="kv-code">@{profile.handle}</code> : <span className="muted">Not verified right now</span>}
+                {profile?.handle ? <span className="kv-value">@{profile.handle}</span> : <span className="muted">Not verified right now</span>}
                 {profile?.handle && <CopyButton text={profile.handle} label="the handle" />}
               </dd>
             </div>
             <div className="kv-row">
               <dt>PDS</dt>
               <dd>
-                {pds === null ? <span className="muted">Looking it up…</span> : pds ? <code className="kv-code">{pds}</code> : <span className="muted">Couldn’t be resolved</span>}
+                {pds === null ? <span className="muted">Looking it up…</span> : pds ? <span className="kv-value">{pds}</span> : <span className="muted">Couldn’t be resolved</span>}
                 {pds && <CopyButton text={pds} label="the PDS address" />}
               </dd>
             </div>
@@ -170,11 +166,15 @@ export default function Identity({ tool }) {
         </section>
 
         <div className="report-split">
-          <section className="card" aria-labelledby="id-history">
-            <h2 id="id-history" className="card-title">
-              Handle and server history
-            </h2>
-            <p className="card-sub">From the PLC directory’s log of this DID</p>
+          <section className="card card--flush" aria-labelledby="id-history">
+            <div className="card-head">
+              <div>
+                <h2 id="id-history" className="card-title">
+                  Handle and server history
+                </h2>
+                <p className="card-sub">From the PLC directory’s log of this DID</p>
+              </div>
+            </div>
             {history === undefined ? (
               <p className="empty">Reading the log…</p>
             ) : history === null ? (
@@ -190,25 +190,29 @@ export default function Identity({ tool }) {
               </ol>
             )}
           </section>
-          <section className="card" aria-labelledby="id-repo">
-            <h2 id="id-repo" className="card-title">
-              The repo
-            </h2>
-            <p className="card-sub">As of the last sync</p>
+          <section className="card card--flush" aria-labelledby="id-repo">
+            <div className="card-head">
+              <div>
+                <h2 id="id-repo" className="card-title">
+                  The repo
+                </h2>
+                <p className="card-sub">As of the last sync</p>
+              </div>
+            </div>
             <dl className="kv">
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Records</dt>
                 <dd className="num">{repo.records.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Collections</dt>
                 <dd className="num">{repo.collections.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Apps writing to it</dt>
                 <dd className="num">{repo.apps.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Oldest record</dt>
                 <dd className="num">{repo.oldest ? formatDateShort(repo.oldest) : '—'}</dd>
               </div>

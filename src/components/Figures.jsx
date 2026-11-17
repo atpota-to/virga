@@ -14,7 +14,7 @@ export default function Figures({ items, label, className = '' }) {
   const shown = (items || []).filter((f) => f && f.value != null && f.value !== '');
   if (!shown.length) return null;
   return (
-    <dl className={`figures ${className}`.trim()} aria-label={label} style={{ '--figures-count': shown.length }}>
+    <dl className={`figures ${className}`.trim()} aria-label={label}>
       {shown.map((f) => (
         <div key={f.key || f.label} className="figures-cell">
           {/* The term comes first in the markup, as a <dl> wants; the

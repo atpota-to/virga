@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { customPeriod, dayKey, dayStartMs, periodBefore, periodEnd, periodPhrase, periodStart, periodWindowWord, presetPeriod, rangeLabel, resolvePeriod } from './periods.js';
+import { customPeriod, dayKey, dayStartMs, periodBefore, periodEnd, periodLine, periodPhrase, periodStart, periodWindowWord, presetPeriod, rangeLabel, resolvePeriod } from './periods.js';
 import { engagementModel, postsModel } from '../reports/models.js';
 
 // Local-time constructors throughout, so the tests hold in any time zone.
@@ -105,5 +105,19 @@ describe('a custom range in the report models', () => {
     // One bar a day, from the first of the month: no stray bar for the day before.
     expect(engagement.series).toHaveLength(31);
     expect(new Date(engagement.series[0].t).getDate()).toBe(1);
+  });
+});
+
+describe('periodLine', () => {
+  const now = new Date(2026, 10, 15, 12, 0).getTime();
+
+  it('names a preset and the days it covers, for the line under a page’s title', () => {
+    expect(periodLine(presetPeriod('30d'), now)).toBe('The last 30 days, Oct 16 to Nov 15, 2026');
+    expect(periodLine(presetPeriod('1y'), now)).toBe('The last year, Nov 15, 2025 to Nov 15, 2026');
+  });
+
+  it('is the range alone for one that was picked, and says all time for all time', () => {
+    expect(periodLine(customPeriod('2026-10-01', '2026-10-31', now), now)).toBe('Oct 1 to Oct 31, 2026');
+    expect(periodLine(presetPeriod('all'), now)).toBe('All time');
   });
 });

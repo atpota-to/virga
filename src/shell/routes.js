@@ -3,7 +3,7 @@
 // the top of src/lib/router.jsx.
 
 import { pathParts } from '../lib/router.jsx';
-import { POSTING_PAGE_BY_KEY, parsePostingRoute } from '../posting/routes.js';
+import { POSTING_BASE, POSTING_PAGE_BY_KEY, parsePostingRoute } from '../posting/routes.js';
 
 export function parseRoute(path) {
   const parts = pathParts(path);
@@ -45,6 +45,26 @@ export function needsArchive(route) {
  */
 export function opensBeforeArchive(route) {
   return route.section === 'posting' || route.section === 'intent';
+}
+
+/**
+ * The way up from a route, for the back link that takes the logo's place in
+ * the phone's app bar: `{ label, to }`, or null on a part's own front page
+ * (a dashboard, Reports, Posting, Tools, Settings), which the tab bar
+ * already reaches. The weekly schedule is reached from Scheduled posts, so
+ * that is where it goes back to.
+ */
+export function parentOf(route) {
+  const { section, page } = route || {};
+  if (!page) return null;
+  if (section === 'reports' || section === 'tools' || section === 'settings') {
+    return { label: SECTION_TITLE[section], to: `/${section}` };
+  }
+  if (section === 'posting' && page !== 'hub') {
+    if (page === 'schedule') return { label: POSTING_PAGE_BY_KEY.scheduled.title, to: POSTING_PAGE_BY_KEY.scheduled.path };
+    return { label: SECTION_TITLE.posting, to: POSTING_BASE };
+  }
+  return null;
 }
 
 /** The title of a posting route, for the tab and the phone's app bar. */

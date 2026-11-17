@@ -52,6 +52,32 @@ their own tests on PGlite. That the five hosts offered for a new account answer,
 they take a request for their make-an-account page (their
 `/.well-known/oauth-authorization-server`, read that day).
 
+Changed over to the Quiet sky look on 2026-11-16 (The look, below), and checked in the
+harness by screenshot. Every page (41 addresses: the dashboards and customizing one, each
+report, each posting page, each tool, each settings section, the legal pages, the front
+page and an address that names nothing) at 360, 390, 820, 1180, 1440 and 1920 wide by
+day, at 390 and 1440 at night, at 1180 at dusk and at 820 at dawn, with no console errors
+and no page that scrolls sideways. The composer, its menus and dialogs and the adviser,
+the sign-in a step at a time, the agreement screen, the account menu, the command
+palette, a build under way and the first run, at phone and desktop sizes. High contrast
+by day and at night, compact density, the folded sidebar and the other five accents were
+looked at on the dashboard and on a few pages of each part, not on every page. Not
+looked at: forced colours beyond one dashboard, a real on-screen keyboard over the
+phone's composer, dragging a card or a report on a touch screen, a queue with more than
+one post in it, the live sky on real graphics hardware, and any browser but Chromium.
+
+Fine-tuned on 2026-11-17 for calm and consistency, above all on phones. Every page was
+reviewed at each size and the findings became one set of rules: the controls the app may
+use and what each one is for, the shape of a page header and of a list row, and the type
+and spacing scales (The look, below). Each part of the app was then changed to follow
+them, reviewed by a second pair of eyes, and the whole app reviewed again. It was checked by
+measurement as well as by screenshot, with touch on for the phone sizes. Each header's
+height and the height of its rows and pages, the number of distinct control styles and
+type sizes in use, and the place each menu opens all stayed within set targets at 360, 390,
+820, 1180, 1440 and 1920, by day and at night, with Compact density, high contrast and
+forced colours looked at too. Not looked at, as before: a real on-screen keyboard,
+dragging on a touch screen, and any browser but Chromium.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
 Vercel, the adviser against the real AI gateway, an account actually made at one of the
@@ -102,14 +128,15 @@ the address it was started from.
 
 ## What it shows
 
-Virga is a workspace with five parts, in the sidebar on a desk and in the tab bar on a
-phone.
+Virga is a workspace with five parts. On a desk they are the sidebar; on a phone four of
+them are the bar along the bottom, and Settings is behind the account.
 
 **Dashboards** are sets of report cards you arrange yourself. Three come to start with
 (Overview, Growth, Content); make more, rename, duplicate, reorder or delete them.
 Customize turns a dashboard's cards into things to arrange: drag a card by its handle (or
 move it with the arrow buttons), pick a size (a quarter, a third, half, two thirds or the
-whole row), remove it, or add any of 36 cards from the report library beside the grid.
+whole row), remove it, or add any of 36 cards from the report library beside the grid,
+by its plus or by dragging it to where it should go.
 Every card answers for the period picked in the header (7 days to all time, or a range of
 dates you pick), and links to its full report. A card's settings, the gear in Customize,
 can give it a title, a period of its own (it then says which, and stays put when the
@@ -155,7 +182,7 @@ each one arrived. Those are counted from the followers the account has today, so
 real count got there on that day or a little before.
 
 **Post this chart** (on a report, or the picture button on a dashboard card) draws the
-card as a 1200 by 675 picture in the theme on screen, and writes its alt text from the
+card as a 1200 by 675 picture under the sky on screen, and writes its alt text from the
 chart's own numbers: what it shows, whose, over what window, where it starts and ends,
 its highest and lowest point, anything marked on it, and every value while the chart is
 short enough to list. The description can be edited; the picture can be saved, or opened
@@ -196,7 +223,7 @@ for a set time can repeat every day, week, two weeks or month, ending never, on 
 after a number of times.
 
 Ctrl K (⌘K on a Mac) opens a command palette: go to any dashboard, report, tool, posting
-page or settings section, start a post, sync, set the period or the theme, switch
+page or settings section, start a post, sync, set the period or the sky, switch
 account, or customize the dashboard you're on. The sidebar's Search or jump to opens it
 too, as does the search button in the phone's app bar.
 
@@ -225,8 +252,8 @@ can't repeat.
 
 **Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
-action, numbering a split thread, alt text, the weekly schedule, a default timer, the adviser), appearance (theme,
-accent, contrast, density, the sidebar, how numbers, dates and the week are written, the
+action, numbering a split thread, alt text, the weekly schedule, a default timer, the adviser), appearance (the sky,
+the accent, contrast, density, the sidebar, how numbers, dates and the week are written, the
 live sky), the permissions, and where the data comes from.
 
 The first build takes a minute or two for an account with thousands of posts. After
@@ -370,9 +397,9 @@ posting settings (`virga:posting:<did>`), an unsent post (`virga:composer-autosa
 for a day), a copy of its templates and how often each is used, this month's adviser
 allowance, the tools' Keep lists, its chart notes (`virga:annotations:<did>`), a note
 that the account agreed to the terms (`virga:terms-accepted:<did>`), and the preferences
-for whoever is at the browser (`virga:preferences`: theme, accent, contrast, density, the
-live sky and its time of day, the period or range of dates, the sidebar, and how numbers,
-dates and the week are written). A long
+for whoever is at the browser (`virga:preferences`: the sky, the accent, contrast, density,
+the live sky, the period or range of dates, the sidebar, and how numbers, dates and the
+week are written). A long
 session's token sits where any script running on the page could read it, like the
 browser client's own session; Remove from this browser deletes it. sessionStorage holds a
 sign-in in progress (`virga:signin-pending`), a guard against sign-in loops
@@ -407,38 +434,70 @@ per account.
 
 ## The look
 
-A quiet, light workspace (the Ledger direction), with a dark theme beside it and a
-high-contrast set of each.
+Quiet sky: your numbers set straight on the page, under a sky.
 
-- **Plain grounds and one-pixel lines.** White cards on a pale ground, small radii, no
-  shadows except on what floats (menus, dialogs). Colours, type, spacing and density are
-  tokens in `src/styles/theme.css`, with a dark set under `[data-theme='dark']` and a
-  high-contrast set of each under `[data-contrast='high']`: words at 7:1 or better, lines
-  and borders at 3:1, one flat ground with the cards outlined on it, and a thicker focus
-  ring. The theme and the contrast follow the system unless Settings picks one;
-  `index.html` stamps them, with the accent and the density, before the first paint.
-  Under forced colours nothing is left to a fill or a shadow alone.
-- **One accent** for the data and whatever is pressed: blue, or one of five others chosen
-  in Settings (violet, teal, amber, rose, graphite). It is not a colour picker: each is a
-  full set of steps for both themes and for high contrast. The second thing on a chart,
-  and a change downward, is coral, or blue beside amber and rose, where coral would sit
-  too close. A change says which way it went, not whether that's good.
-  `src/styles/theme.test.js` reads the stylesheet and holds every accent, theme and
-  contrast setting to the same numbers: words at 4.5:1 (7:1 in high contrast), marks and
-  the focus ring at 3:1 (4.5:1), and the two series at least 15 apart in OKLab under
-  simulated protanopia, deuteranopia and tritanopia (20 with ordinary vision).
-- **One typeface,** Mona Sans, in sentence case, in its ordinary figures (its tabular
-  ones have a slashed zero). Monospace is for code only (NSIDs, DIDs).
+- **No boxes.** A figure is a number under a two-pixel rule; a chart is its title and the
+  chart; a list is its title over a rule in ink, with hairlines between its rows. Space
+  sets things apart, so the gaps are wide. Only what floats (a menu, a dialog, the
+  composer) has an edge and a shadow. Buttons are pills.
+- **A sky behind every page.** A wash of colour at the top that fades into the page's own
+  ground, so it scrolls away as you read. There are four: dawn, day, dusk and night.
+  Dawn, day and dusk are light pages that differ only in the wash; night is the dark
+  theme. Settings › Appearance keeps one, or lets the sky follow the clock (dawn from
+  five, day from eight, dusk from five in the evening, night from eight), and a device
+  set to dark stays on night. `src/lib/sky.js` decides, `index.html` stamps the answer on
+  `<html>` before the first paint (`data-sky`, and the `data-theme` it brings), and the
+  browser's own toolbar takes the colour at the top of the sky.
+- **Ink does the work, sparingly.** New post, in the sidebar or the bar along the bottom,
+  is the pill filled with ink that is always there; inside a page, ink is kept for the
+  button that confirms what you opened (a dialog, a sheet, the composer). The page you
+  are on and the pressed key of a control are in ink with a line under them; links are
+  ink, underlined. **The accent means one thing:** the data, or what is selected. It is blue,
+  or one of five others chosen in Settings (violet, teal, amber, rose, graphite). It is
+  not a colour picker: each is a full set of steps for the light pages, for night and for
+  high contrast. The second thing on a chart is coral, or blue beside amber and rose,
+  where coral would sit too close. A change says which way it went with its sign, not
+  with a colour.
+- **Checked, not eyeballed.** Colours, type, spacing and density are tokens in
+  `src/styles/theme.css`, with a dark set under `[data-theme='dark']` and a high-contrast
+  set of each under `[data-contrast='high']` (words at 7:1 or better, solid lines at 3:1,
+  no sky, a thicker focus ring). `src/styles/theme.test.js` reads the stylesheet and holds
+  every accent under every sky and contrast setting to the same numbers: words at 4.5:1
+  on the page, on what floats and on both ends of the sky (7:1 in high contrast), marks
+  and the focus ring at 3:1 (4.5:1) on the page and on the sky where a chart can start,
+  and the two series at least 15 apart in OKLab under simulated protanopia, deuteranopia
+  and tritanopia (20 with ordinary vision). Under forced colours nothing is left to a
+  fill or a shadow alone.
+- **One look per job.** A page's header is its title, one line, a quiet line saying what
+  the page can touch, and at most one row of controls: the period, and on a dashboard
+  Customize. An action sits beside what it acts on: Export over the list it exports, a
+  chart's actions under the chart, an add at the head of the list it adds to, as
+  underlined words with an icon. A row shows at most one labelled button and a ⋯ that
+  holds the rest, with anything that deletes last and in red. Tabs narrow a list or a
+  chart, chips only pick a value in a form, and a coloured badge only marks a problem
+  to find; everything else is quiet words in a line, with a dot between them. The same
+  number is the same size on a dashboard, a report and the index.
+- **One typeface,** Instrument Sans, in sentence case and three weights, with tabular
+  figures so columns line up, and one scale of sizes. Monospace is kept for identifiers
+  such as DIDs.
 - **Every chart has a table.** Hover shows a value; Show as table shows them all.
-- **On a phone,** the sidebar becomes an app bar (with Search and New post) and five tabs at the
-  bottom, cards stack one to a row (figures two to a row), Customize moves cards with
-  arrows, and the composer and its dialogs are full-height sheets with the main button
-  under the thumb.
-- **The live sky is an easter egg.** The 3D hillside from the first version
-  (`src/hillside/`) is off by default. Settings › Appearance turns it on, for the
-  dashboards or everywhere, at dawn, at day, or following the archive (dawn until the
-  first build). Five taps on the logo turn it on or off from anywhere. With reduced
-  motion it's a still picture; without WebGL, a flat gradient of the same sky.
+- **The sidebar is words.** The five parts of Virga down the side, each with its icon, and
+  only the one you are in opened out into its pages. It has no ground of its own: it sits
+  on the sky. It folds to a rail of icons.
+- **On a phone,** the top of the page has the mark (or, on an inner page, the way back to
+  the one above it), Search and the account (Settings and Sync now are in its menu), and
+  a bar along the bottom has the parts as icons: the one you are in says its name, and New
+  post is the round button at its end. Cards stack one to a row (figures two to a row), a
+  row of tabs that doesn't fit scrolls sideways under a faded edge, a long menu rises from
+  the foot of the screen as a sheet, Customize is a list of the cards with arrows to move
+  them, and the composer and its dialogs are full-height sheets with the main button under
+  the thumb.
+- **The live sky is an easter egg.** The 3D scene from the first version
+  (`src/hillside/`) is off by default. Settings › Appearance turns it on, and five taps on
+  the mark do the same from anywhere. It draws its clouds (and at night its stars) in the
+  sky at the top of the page, under whichever sky the page has, laid over the wash so
+  that it can only lighten it and the words on it keep their contrast. With reduced
+  motion it's a still picture; in high contrast it is left out.
 
 ## The harness
 
@@ -573,6 +632,8 @@ on agreements read it, and Vercel's edge is what makes it trustworthy there.
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
 | `src/reports/annotations.js` | Chart notes and follower milestones, and where they land on a chart |
 | `src/lib/periods.js`, `src/lib/locale.js` | What a period means (presets and custom ranges) and the words for it; how numbers, dates, the clock and the week are written |
+| `src/lib/sky.js`, `src/lib/preferences.jsx` | Which sky a setting, a clock and a device come to; the preferences, and what they stamp on the page |
+| `src/styles/` | The tokens (`theme.css`, with its test), the page and the sky (`base.css`), and the kit every page is drawn with (`controls.css`) |
 | `src/share/` | A card as a picture: what it shows, its alt text, the canvas that draws it, the dialog |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
 | `src/reports/`, `src/tools/`, `src/settings/` | The pages |

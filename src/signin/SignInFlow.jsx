@@ -49,14 +49,20 @@ function RememberedAccounts({ accounts, opening, disabled, onOpen, onForget }) {
       <ul className="remembered-list" aria-labelledby={titleId}>
         {accounts.map((a) => {
           const name = accountName(a);
-          const meta = [accountHandle(a), lastOpenedLabel(a.lastUsed)].filter(Boolean).join(' · ');
+          const handle = accountHandle(a);
+          const opened = lastOpenedLabel(a.lastUsed);
           return (
             <li key={a.did} className="remembered-row">
               <button type="button" className="remembered-open" disabled={disabled} onClick={() => onOpen(a)} aria-label={`Continue as ${name}`}>
                 <Avatar src={a.avatar} name={name} size="lg" />
                 <span className="remembered-text">
                   <span className="remembered-name">{opening === a.did ? 'Opening…' : name}</span>
-                  {meta && <span className="remembered-meta">{meta}</span>}
+                  {(handle || opened) && (
+                    <span className="meta remembered-meta">
+                      {handle && <span className="remembered-handle">{handle}</span>}
+                      {opened && <span className="remembered-opened">{opened}</span>}
+                    </span>
+                  )}
                 </span>
                 <ChevronRight className="remembered-chevron" size={16} aria-hidden="true" />
               </button>
@@ -85,9 +91,9 @@ function RememberedAccounts({ accounts, opening, disabled, onOpen, onForget }) {
  * host chosen from a short list. The steps and their words are in flow.js;
  * this holds the timers, the lookups and the page.
  *
- * `variant` is 'page' (the front page, in a card of its own) or 'dialog'
- * (inside Add an account, which brings its own title and frame). `remembered`
- * lists the accounts this browser knows above the field.
+ * `variant` is 'page' (the front page, straight on the sky under the lede)
+ * or 'dialog' (inside Add an account, which brings its own title and frame).
+ * `remembered` lists the accounts this browser knows above the field.
  */
 export default function SignInFlow({ variant = 'page', remembered = false, composing = false }) {
   const { signIn, switchAccount, removeAccount, accounts, authMode } = useAtprotoSession();
@@ -323,13 +329,17 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
 
   /* ---- the cards ---------------------------------------------------- */
 
-  // A notice about the handle is the field's description, and focus goes to
-  // the field as it appears, so it is read once that way; as an alert too it
-  // would be read twice. Any other notice has no control to hang on, and is
-  // an alert.
-  const aboutField = notice?.about === 'field';
-  const noticeLine = notice && (
-    <p id={noticeId} className="callout callout--danger" role={aboutField ? undefined : 'alert'}>
+  // A notice about the handle (not found, or not an address Virga can read)
+  // is the field's own hint, in words under it, and the field is marked.
+  // It is the field's description too: for a handle that wasn't found the
+  // focus goes back to the field, so it is read once that way, and as an
+  // alert as well it would be read twice. An address that can't be read
+  // leaves the focus where it is, so that one is an alert. Any other notice
+  // (a lookup or a trip that failed) isn't about what was typed: it has no
+  // control to hang on, and is an alert in a box of its own.
+  const fieldNotice = notice?.about === 'field' || notice?.about === 'address' ? notice : null;
+  const noticeLine = notice && !fieldNotice && (
+    <p id={noticeId} className="callout callout--danger" role="alert">
       <span>
         {notice.text}
         {notice.anyway && (
@@ -377,24 +387,31 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
           {showRemembered ? 'Or sign in with another handle' : inDialog ? 'Handle' : 'Your handle'}
         </label>
         <div className="signin-row">
-          <HandleField
-            id={fieldId}
-            inputRef={inputRef}
-            value={handle}
-            size={inDialog ? 'md' : 'lg'}
-            autoFocus={inDialog}
-            disabled={Boolean(opening)}
-            invalid={aboutField || notice?.about === 'address'}
-            describedBy={aboutField || notice?.about === 'address' ? noticeId : undefined}
-            onChange={(value) => {
-              setHandle(value);
-              dispatch({ type: 'typed' });
-            }}
-            onPick={(picked) => {
-              setHandle(picked);
-              find(picked);
-            }}
-          />
+          <div className="signin-field">
+            <HandleField
+              id={fieldId}
+              inputRef={inputRef}
+              value={handle}
+              size={inDialog ? 'md' : 'lg'}
+              autoFocus={inDialog}
+              disabled={Boolean(opening)}
+              invalid={Boolean(fieldNotice)}
+              describedBy={fieldNotice ? noticeId : undefined}
+              onChange={(value) => {
+                setHandle(value);
+                dispatch({ type: 'typed' });
+              }}
+              onPick={(picked) => {
+                setHandle(picked);
+                find(picked);
+              }}
+            />
+            {fieldNotice && (
+              <p id={noticeId} className="field-hint signin-field-error" role={fieldNotice.about === 'field' ? undefined : 'alert'}>
+                {fieldNotice.text}
+              </p>
+            )}
+          </div>
           <button type="submit" className={`btn btn--primary${inDialog ? '' : ' btn--lg'}`} disabled={Boolean(opening)}>
             Sign in
           </button>
@@ -404,7 +421,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
           <button type="button" className="signin-link" onClick={() => dispatch({ type: 'hosts' })}>
             Make an account
           </button>
-          <button type="button" className="signin-link signin-link--quiet" onClick={() => setHowOpen(true)}>
+          <button type="button" className="signin-link" onClick={() => setHowOpen(true)}>
             How signing in works
           </button>
         </div>
@@ -454,7 +471,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
           <button type="button" className="signin-link" onClick={notMe}>
             Not you?
           </button>
-          <span className="signin-aside">{APP_NAME} never sees your password.</span>
+          {inDialog && <span className="signin-aside">{APP_NAME} never sees your password.</span>}
         </div>
       </section>
     );
@@ -486,7 +503,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
           <button type="button" className="signin-link" onClick={cancelLeaving}>
             Cancel
           </button>
-          <span className="signin-aside">{APP_NAME} never sees your password.</span>
+          {inDialog && <span className="signin-aside">{APP_NAME} never sees your password.</span>}
         </div>
       </section>
     );
@@ -507,7 +524,10 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
                 <span className="signin-host-text">
                   <span className="signin-host-name">
                     {host.name}
-                    {host.recommended && <span className="signin-host-note"> · most people start here</span>}
+                    {/* The space stands outside the note, which is a box of its own (so the
+                        line that underlines the name on hover stops at the name). */}
+                    {host.recommended && ' '}
+                    {host.recommended && <span className="signin-host-note">· most people start here</span>}
                   </span>
                   <span className="signin-host-meta">
                     {host.domain} · {host.region}

@@ -534,8 +534,18 @@ export function templateShelf(
     sections.push({
       id: group ? `group:${group}` : 'ungrouped',
       // Ungrouped templates sort last; with groups above them they need a
-      // heading of their own, or they read as part of the last group.
-      heading: group || (anyGroup ? 'Other templates' : null),
+      // heading of their own, or they read as part of the last group. With
+      // the other kind's templates set apart under theirs, these say what
+      // they are for, so both lists are named alike.
+      heading:
+        group ||
+        (anyGroup
+          ? 'Other templates'
+          : rest.length
+            ? replying
+              ? 'For replies'
+              : 'For new posts'
+            : null),
       muted: false,
       items: [item],
     });

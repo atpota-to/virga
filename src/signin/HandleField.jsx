@@ -105,7 +105,7 @@ export default function HandleField({ id, value, onChange, onPick, invalid = fal
   }, [showing, active, listId]);
 
   return (
-    <div className="handle-field" data-open={showing || undefined}>
+    <div className="handle-field" data-size={size} data-open={showing || undefined}>
       <span className="handle-field-at" aria-hidden="true">
         @
       </span>

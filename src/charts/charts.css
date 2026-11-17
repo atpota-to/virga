@@ -1,5 +1,7 @@
 /* Charts: the time series, sparklines, heatmaps and bar lists. Every mark
-   takes its colour from the chart tokens in theme.css. */
+   takes its colour from the chart tokens in theme.css. A chart has no
+   frame: it is drawn straight on the page, or on the sky near the top of
+   one, so nothing here assumes a white ground behind it. */
 
 .an-chart {
   overflow: visible;
@@ -12,8 +14,7 @@
   gap: 4px var(--space-4);
   margin-bottom: var(--space-2);
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font-size: var(--text-sm);
 }
 
 .an-chart-legend span {
@@ -35,6 +36,10 @@
   border-top-style: dashed;
 }
 
+.an-chart-legend i.an-chart-legend-trend {
+  border-color: var(--chart-2);
+}
+
 .an-chart-plot {
   position: relative;
   width: 100%;
@@ -51,10 +56,19 @@
   stroke-width: 1;
 }
 
+/* A rule's number sits on its rule at the column's left edge, in a strip
+   the data leaves clear (SeriesChart's labelColumn), so nothing passes
+   behind it and it needs no ring. */
 .an-chart-ylabel {
   fill: var(--muted);
   font-family: var(--sans);
-  font-size: 11px;
+  font-size: 12px;
+}
+
+.an-chart-xlabel {
+  fill: var(--muted);
+  font-family: var(--sans);
+  font-size: 12px;
 }
 
 .an-chart-bar {
@@ -94,17 +108,18 @@
   stroke-linecap: round;
 }
 
+/* A dot is ringed in the page's own colour, to lift it off its line. */
 .an-chart-dot,
 .an-chart-marker {
   fill: var(--chart-1);
-  stroke: var(--surface);
+  stroke: var(--bg);
   stroke-width: 2;
 }
 
 .an-chart-dot-secondary,
 .an-chart-marker-secondary {
   fill: var(--chart-2);
-  stroke: var(--surface);
+  stroke: var(--bg);
   stroke-width: 2;
 }
 
@@ -116,13 +131,6 @@
   stroke-linecap: round;
 }
 
-.an-chart-trendlabel {
-  fill: var(--second-ink);
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 600;
-}
-
 .an-chart-ghost {
   fill: none;
   stroke: var(--chart-ghost);
@@ -132,21 +140,27 @@
 }
 
 .an-chart-ghost-dot {
-  fill: var(--surface);
+  fill: var(--bg);
   stroke: var(--chart-ghost);
   stroke-width: 1.5;
 }
 
+/* Ringed in the page's colour: a marked day's dashed rule can run up
+   behind these words, and must not strike through them. */
 .an-chart-ghost-label {
   fill: var(--muted);
   font-family: var(--sans);
-  font-size: 11px;
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
 }
 
+/* Solid, so it can't be taken for a marked day's dashed rule. */
 .an-chart-cross {
-  stroke: var(--faint);
+  stroke: var(--line-2);
   stroke-width: 1;
-  stroke-dasharray: 3 3;
 }
 
 .an-chart-tip {
@@ -155,30 +169,44 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: var(--radius);
-  background: #101828;
-  color: #c9d2e0;
-  font-size: var(--text-xs);
+  /* Ink by day and the ink's own light at night, written out rather than
+     taken from the tokens because theme.test.js measures the second
+     colour's tooltip step against these two grounds. */
+  background: #0f1b33;
+  color: #c9d3e6;
+  font-size: var(--text-sm);
   white-space: nowrap;
   pointer-events: none;
   transform: translate(-50%, calc(-100% - 10px));
   box-shadow: var(--shadow-md);
 }
 
+/* Near either side the readout hangs inward from its point instead, so it
+   stays over the plot; on the last point that keeps the ghost's dashed
+   reach in view (its label steps aside, as the readout repeats it). */
+.an-chart-tip[data-side='left'] {
+  transform: translate(calc(-100% + 12px), calc(-100% - 10px));
+}
+
+.an-chart-tip[data-side='right'] {
+  transform: translate(-12px, calc(-100% - 10px));
+}
+
 :root[data-theme='dark'] .an-chart-tip {
-  background: #e7eaf0;
-  color: #344054;
+  background: #f2f5fc;
+  color: #33415c;
 }
 
 .an-chart-tip strong {
   color: #ffffff;
-  font-size: var(--text-sm);
-  font-weight: 620;
+  font-size: var(--text-base);
+  font-weight: 600;
 }
 
 :root[data-theme='dark'] .an-chart-tip strong {
-  color: #101828;
+  color: #0d152b;
 }
 
 /* The second colour's step for this ground, which is dark in the light
@@ -188,35 +216,59 @@
   color: var(--second-tip);
 }
 
-.an-chart-xaxis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--space-1);
-  color: var(--muted);
-  font-size: 11px;
-}
-
+/* The chart as a table, opened under the line that holds "Show as
+   table": its head's words 16px under that line's (8px here, 8px in the
+   sticky head), as close as a heading is to what it heads. A table sized
+   to its few columns rather than spread across the page, so its numbers
+   stay near their dates. */
 .an-tableview {
-  margin-top: var(--space-3);
+  margin-top: 8px;
 }
 
+/* On touch the line's link actions are 44px tall with their words in the
+   middle, which is already 12px of room under the words. */
+@media (pointer: coarse) {
+  .an-tableview {
+    margin-top: 0;
+  }
+}
+
+.an-tableview .table {
+  width: auto;
+  min-width: min(100%, 28rem);
+}
+
+/* It scrolls inside its own height, under a head that stays put (so the
+   head needs the page's ground behind it). */
 .an-tableview-scroll {
   position: relative;
-  max-height: 18rem;
-  margin-top: var(--space-2);
+  max-height: 20rem;
   overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  scrollbar-width: thin;
 }
 
 .an-tableview .table thead th {
   position: sticky;
+  z-index: 1;
   top: 0;
+  padding-top: 8px;
+  background: var(--bg);
+  /* A sticky cell's own border scrolls off with the collapsed table, so
+     the rule under the head is drawn as a shadow. */
+  border-bottom: 0;
+  box-shadow: inset 0 -1px 0 var(--rule);
+}
+
+/* A row's head stays on one line ("81 to 160"): the table scrolls
+   sideways in its own box when its columns need more room than the page,
+   so a head that wrapped would only make every row twice as tall. */
+.an-tableview .table th {
+  white-space: nowrap;
 }
 
 .an-tableview .table tbody th {
   color: var(--ink-2);
-  font-weight: 450;
+  font-weight: 400;
 }
 
 /* ---- sparkline ---------------------------------------------------- */
@@ -231,7 +283,7 @@
 .sparkline-line {
   fill: none;
   stroke: var(--chart-1);
-  stroke-width: 1.75;
+  stroke-width: 1.5;
   stroke-linejoin: round;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
@@ -244,32 +296,47 @@
 
 /* ---- bar list ----------------------------------------------------- */
 
+/* One set of columns for every row (each row is a subgrid of the list),
+   so every bar starts at the same place and ends at the same place, however
+   wide its number. The label column is fixed, 136px for words, so bar lists
+   on one page start their bars on one line. In a narrow column (a report's
+   side column on a laptop) the bar keeps 96px, enough to compare by, and
+   the label column gives way to it: short words still fit, a long one ends
+   in an ellipsis. Not wider than 640px: a bar is read against its
+   neighbours, and across a whole desk they drift apart. */
 .barlist {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  --barlist-label: 136px;
+  --barlist-track: 96px;
+  display: grid;
+  grid-template-columns: minmax(0, var(--barlist-label)) minmax(var(--barlist-track), 1fr) auto;
+  gap: 12px 16px;
+  max-width: 640px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* A list of NSIDs: their names are what is read, and they are long, so
+   the label column is wider and gives way later. */
+.barlist--nsid {
+  --barlist-label: 200px;
+  --barlist-track: 60px;
+}
+
 .barlist-row {
   display: grid;
-  grid-template-columns: minmax(0, var(--barlist-label, 1.2fr)) minmax(60px, 1fr) auto;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 12px;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 .barlist-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
-  overflow: hidden;
   color: var(--ink-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .barlist-label svg {
@@ -279,29 +346,41 @@
   color: var(--muted);
 }
 
-.barlist-label code {
+/* The words, cut with an ellipsis when they run past the column (the whole
+   label is in their title). */
+.barlist-label-text {
+  min-width: 0;
   overflow: hidden;
-  font-size: var(--text-xs);
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* An NSID is a name here, not code to type, so it is set in the page's
+   face, a step smaller than the words beside it. */
+.barlist-label code {
+  font-family: inherit;
+  font-size: var(--text-sm);
+}
+
+/* The track is a tint of the ink, so it shows on the sky as on the page. */
 .barlist-track {
-  height: 8px;
-  border-radius: 4px;
-  background: var(--surface-3);
+  height: 6px;
+  border-radius: var(--pill);
+  background: var(--tint);
   overflow: hidden;
 }
 
 .barlist-fill {
   display: block;
   height: 100%;
-  border-radius: 4px;
+  border-radius: var(--pill);
   background: var(--chart-1);
 }
 
 .barlist-value {
   min-width: 3ch;
-  font-weight: 580;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -317,7 +396,7 @@
 .heatmap-day,
 .heatmap-hour {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .heatmap-hour {
@@ -363,37 +442,15 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-top: 8px;
+  margin-top: 10px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .heatmap-legend .heatmap-cell {
   width: 14px;
   height: 10px;
   border-radius: 2px;
-}
-
-/* ---- stacked columns ---------------------------------------------- */
-
-.stacked {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  border-bottom: 1px solid var(--chart-axis);
-}
-
-.stacked-col {
-  display: flex;
-  flex: 1;
-  flex-direction: column-reverse;
-  min-width: 2px;
-  border-radius: 3px 3px 0 0;
-  overflow: hidden;
-}
-
-.stacked-seg + .stacked-seg {
-  border-bottom: 2px solid var(--surface);
 }
 
 /* ---- marks: notes and milestones ----------------------------------- */
@@ -426,7 +483,7 @@
   padding: 0;
   list-style: none;
   color: var(--ink-2);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .an-chart-marks li::before {
@@ -449,4 +506,16 @@
 
 .an-chart-marks li.an-chart-marks-more::before {
   display: none;
+}
+
+/* On a dashboard card the list is for a screen reader only: the card is a
+   glance, and its diamonds name themselves on hover. A report keeps the
+   list in view. */
+.widget .an-chart-marks {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

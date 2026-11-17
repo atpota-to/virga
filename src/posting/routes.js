@@ -5,8 +5,9 @@
 // `needsBackend` marks the pages whose work happens on Virga's server
 // (scheduled posts, the weekly queue, timers). A browser-session account sees
 // NeedsBackend there instead of the page. `access` is what each page can
-// touch, as the badges in its header say (ui/AccessBadge.jsx). `pinned` puts
-// a page in the sidebar; the rest are reached from the overview.
+// touch, which PageHeader says in the muted line under the page's sub
+// (AccessLine, components/AccessBadge.jsx). `pinned` lists a page under
+// Posting in the sidebar, after the overview.
 
 import { CalendarClock, CalendarRange, FileText, LayoutTemplate, Library, Send, SquarePen, Timer } from 'lucide-react';
 import { pathParts } from '../lib/router.jsx';
@@ -54,7 +55,7 @@ export const POSTING_PAGES = Object.freeze([
     title: 'Weekly schedule',
     icon: CalendarRange,
     needsBackend: true,
-    pinned: false,
+    pinned: true,
     access: ['server'],
     desc: 'The times each week that a post added to the queue goes out.',
   },
@@ -78,7 +79,7 @@ export const POSTING_PAGES = Object.freeze([
     needsBackend: false,
     pinned: true,
     access: ['post'],
-    desc: 'What you’ve posted: reply to it, quote it, change who can reply, or delete it.',
+    desc: 'Everything you’ve posted.',
   },
   {
     key: 'templates',

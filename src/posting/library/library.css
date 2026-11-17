@@ -1,7 +1,9 @@
 /* The library (the dialog the composer opens and the Library page), the
-   template questions and the template editor. Tokens only. A phone gets the
-   dialogs as full-height sheets, the shelves as a row to scroll and the
-   chosen item in place of the list. */
+   template questions and the template editor. Tokens only. The library is
+   three columns with no boxes round them: the shelves down a hairline
+   rail, the shelf's things as rows between hairlines, and the chosen one
+   beside them. A phone gets the dialogs as full-height sheets, the shelves
+   as a row to scroll and the chosen item in place of the list. */
 
 /* ---- the dialogs ----------------------------------------------------- */
 
@@ -20,7 +22,7 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: 4px 20px 16px;
+  padding: 4px 24px 20px;
 }
 
 .dialog.tpl-dialog {
@@ -52,28 +54,29 @@
   }
 
   .lib-dialog .dialog-body {
-    padding: 0 12px 12px;
+    padding: 0 16px 12px;
   }
 }
 
 /* ---- the panel -------------------------------------------------------- */
 
+/* A container, so its columns answer to the room it has (the page beside
+   an open sidebar, a dialog on a tablet) and not to the screen's width. */
 .lib-panel {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   min-height: 0;
   color: var(--ink);
+  container: lib / inline-size;
 }
 
+/* As a page it is as long as its list, and the page scrolls: the shelves
+   and the chosen item stay in view beside it (below). In the dialog each
+   column scrolls by itself. */
 .lib-panel[data-mode='page'] {
-  min-height: 560px;
-  height: calc(100svh - var(--appbar-h, 56px) - 220px);
-  padding: var(--card-pad);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  gap: 20px;
 }
 
 .lib-search {
@@ -90,12 +93,40 @@
   right: 4px;
 }
 
+/* On the page the search sits over the shelves and the list it searches,
+   as wide as both, with the chosen item beside them from the top. */
+.lib-panel[data-mode='page'] .lib-top {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
+
+.lib-panel[data-mode='page'] .lib-rail {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.lib-panel[data-mode='page'] .lib-list {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.lib-panel[data-mode='page'] .lib-detail {
+  grid-column: 3;
+  grid-row: 2;
+}
+
 .lib-body {
   display: grid;
   flex: 1;
-  grid-template-columns: 176px minmax(0, 1fr) minmax(0, 340px);
-  gap: 16px;
+  grid-template-columns: 168px minmax(0, 1fr) minmax(0, 340px);
+  gap: 28px;
   min-height: 0;
+}
+
+.lib-panel[data-mode='page'] .lib-body {
+  grid-template-columns: 168px minmax(0, 1fr) minmax(0, 360px);
+  gap: 20px 40px;
+  align-items: start;
 }
 
 .lib-rail ul,
@@ -112,36 +143,53 @@
   overflow-y: auto;
 }
 
+.lib-panel[data-mode='page'] .lib-rail,
+.lib-panel[data-mode='page'] .lib-detail {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100svh - 48px);
+}
+
+/* The shelves, as words on a hairline rail. The one you are on is in ink,
+   with a rule in the accent where the rail runs past it. */
 .lib-rail ul {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  border-left: 1px solid var(--line);
 }
 
 .lib-shelf {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   min-height: 34px;
-  padding: 6px 10px;
+  margin-left: -1px;
+  padding: 6px 4px 6px 14px;
   border: 0;
-  border-radius: var(--radius);
+  border-radius: 0;
   background: none;
-  color: var(--ink-2);
-  font-size: var(--text-sm);
+  box-shadow: inset 2px 0 0 transparent;
+  color: var(--muted);
+  font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
+  transition: color 0.12s ease;
 }
 
 .lib-shelf:hover {
-  background: var(--hover);
+  color: var(--ink);
 }
 
 .lib-shelf[aria-current='true'] {
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--ink);
   font-weight: 600;
+}
+
+.lib-shelf:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .lib-shelf svg {
@@ -158,102 +206,144 @@
 
 .lib-shelf-count {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
+  font-weight: 400;
 }
 
 .lib-list,
 .lib-detail {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
 }
 
-.lib-detail {
-  padding-left: 16px;
-  border-left: 1px solid var(--line-soft);
+.lib-list {
+  gap: 0;
 }
 
+.lib-detail {
+  gap: 12px;
+}
+
+.lib-panel[data-mode='page'] .lib-list {
+  overflow: visible;
+}
+
+/* What the shelf is, and its own controls, over the rule in ink that
+   opens the list. Beside the chosen item it is as tall as that item's head
+   (a title and a line under it), its words on the line nearest the rule,
+   so the two rules in ink are one line across the page. */
 .lib-list-head {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-end;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 8px 16px;
+  min-height: calc(var(--text-md) * 1.25 + 4px + var(--text-sm) * 1.45 + 13px);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
 }
 
 .lib-list-hint {
   margin: 0;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
+}
+
+.lib-list > .lib-list-hint {
+  padding: 12px 0 4px;
 }
 
 .lib-mine {
   font-size: var(--text-sm);
 }
 
+/* A shelf or a search that didn't answer, and Try again: beside the words
+   where both fit, under them where they don't. */
 .lib-status {
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 12px;
+}
+
+.lib-status > span {
+  flex: 1 1 260px;
+  min-width: 0;
 }
 
 .lib-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border-radius: var(--radius);
 }
 
 .lib-options:focus-visible {
   outline: 2px solid var(--focus-ring, var(--accent));
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .lib-section {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
-/* Templates meant for the other kind of post: still usable, so set apart by
-   a rule above them rather than faded (fading takes their small text under
-   4.5:1 in both themes). */
-.lib-section[data-muted] {
-  margin-top: 6px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--line);
-}
-
+/* Templates meant for the other kind of post: still usable, so set apart
+   under a heading of their own rather than faded (fading takes their small
+   text under 4.5:1 in both themes). */
 .lib-section-head {
-  padding: 2px 10px;
-  color: var(--muted);
-  font-size: var(--text-xs);
+  padding: 18px 0 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
+/* A thing on the shelf: a row between hairlines, its words on the list's
+   own edge. The chosen one has a rule in the accent just outside that
+   edge. The one the arrow keys are on has a tint, only while the list has
+   the keys (and let out to the rule, so the words don't touch its side);
+   a row has no fill under the pointer, as no row in the page does. */
 .lib-row {
+  position: relative;
   display: flex;
-  gap: 10px;
-  padding: 8px 10px;
-  border: 1px solid transparent;
-  border-radius: var(--radius);
+  gap: 12px;
+  padding: var(--row-pad) 8px var(--row-pad) 0;
+  border-bottom: 1px solid var(--line);
   cursor: pointer;
 }
 
-.lib-row:hover {
-  background: var(--hover);
+/* The search box drives the list too (the arrow keys move from it), so
+   it counts as the list having the keys. */
+.lib-list:focus-within .lib-row[data-active],
+.lib-panel:has(.lib-search > .input:focus) .lib-row[data-active] {
+  background: var(--tint);
+  box-shadow: -10px 0 0 var(--tint);
 }
 
-.lib-row[data-active] {
-  border-color: var(--line-2);
-  background: var(--surface-3);
+.lib-row[aria-selected='true']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -12px;
+  width: 2px;
+  background: var(--accent);
 }
 
-.lib-row[aria-selected='true'] {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
+/* In the dialog the list scrolls by itself, which would clip that rule:
+   its box is let out to make room for it. */
+.lib-panel[data-mode='dialog'] .lib-list {
+  margin-left: -12px;
+  padding-left: 12px;
+}
+
+.lib-row[aria-selected='true'] .lib-row-title {
+  font-weight: 600;
 }
 
 .lib-row-thumb {
@@ -262,7 +352,7 @@
   height: 40px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  background: var(--surface-3);
+  background: var(--tint);
 }
 
 .lib-row-text {
@@ -272,31 +362,38 @@
   min-width: 0;
 }
 
+/* A post's title is its first line, which may be the whole post: two lines
+   at most, as in every list of posts. A template's /shortcut follows its
+   name on the same line. */
 .lib-row-title {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+  display: -webkit-box;
   min-width: 0;
-  font-size: var(--text-base);
-  font-weight: 560;
+  overflow: hidden;
+  font-size: var(--text-md);
+  font-weight: 500;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .lib-row-shortcut {
-  flex: none;
-  color: var(--accent-ink);
-  font-size: var(--text-xs);
+  margin-left: 8px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: var(--text-sm);
   font-weight: 400;
 }
 
 .lib-row-label,
 .lib-row-reason {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
+/* Why it is offered first (the post you are answering mentions it). */
 .lib-row-reason {
-  color: var(--accent-ink);
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 .lib-row-excerpt {
@@ -309,15 +406,17 @@
   overflow-wrap: anywhere;
 }
 
-.lib-empty,
-.lib-detail-empty {
-  padding: var(--space-5) var(--space-3);
+.lib-empty {
+  padding: var(--space-5) 0;
 }
 
-.lib-more {
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 8px;
+.lib-detail-empty {
+  padding: 0;
+}
+
+/* Show more, under the list, a little off the dialog's foot. */
+.lib-list > .card-foot {
+  padding-bottom: 8px;
 }
 
 /* ---- loading ---------------------------------------------------------- */
@@ -325,30 +424,31 @@
 .lib-skeleton {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .lib-skeleton-row {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .lib-bone-card {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: 12px;
 }
 
+/* A bone is a tint of the ink, so it shows on the sky as on the page. */
 .lib-bone {
   display: block;
   height: 10px;
   border-radius: var(--radius-sm);
-  background: var(--surface-3);
+  background: var(--line);
   animation: lib-pulse 1.6s ease-in-out infinite;
 }
 
@@ -373,26 +473,33 @@
 .lib-item {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .lib-item-head {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
 }
 
 .lib-eyebrow {
   color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
+/* One line: a post's title is its first line, which the preview under it
+   shows whole, and at one line the head stays as tall as the list's beside
+   it, so their two rules in ink stay one line across. */
 .lib-item-title {
   margin: 0;
+  overflow: hidden;
   font-size: var(--text-md);
-  font-weight: 640;
-  overflow-wrap: anywhere;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lib-item-effect {
@@ -401,14 +508,15 @@
   font-size: var(--text-sm);
 }
 
+/* A link, a feed or a list as it will be attached: one of the things a
+   post carries, so it keeps a hairline round it. */
 .lib-card {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  border-radius: 12px;
   font-size: var(--text-sm);
 }
 
@@ -423,7 +531,7 @@
 }
 
 .lib-card-link {
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .lib-back {
@@ -435,13 +543,13 @@
 .lib-questions {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .lib-question-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .lib-optional {
@@ -464,10 +572,28 @@
   gap: 8px;
 }
 
+/* A question's answers, as chips to pick from (the kit's .chip, pressed
+   when chosen). A long answer wraps inside its chip rather than running
+   out of the column. */
+.lib-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lib-answers > .chip {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* The template editor's list of posts to quote: rows between hairlines,
+   the picked one in ink with a rule in the accent down its side. */
 .lib-choices {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  border-top: 1px solid var(--line);
 }
 
 .lib-choice {
@@ -475,25 +601,34 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 36px;
-  padding: 6px 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink);
-  font-size: var(--text-sm);
+  min-height: 40px;
+  padding: 8px 4px 8px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  box-shadow: inset 2px 0 0 transparent;
+  color: var(--ink-2);
+  font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
 }
 
-.lib-choice:hover {
-  background: var(--hover);
+@media (hover: hover) {
+  .lib-choice:hover {
+    color: var(--ink);
+  }
 }
 
 .lib-choice[aria-checked='true'] {
-  border-color: var(--accent-line);
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.lib-choice:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .lib-choice-label {
@@ -501,23 +636,15 @@
   overflow-wrap: anywhere;
 }
 
-.lib-choice-check {
-  flex: none;
-  visibility: hidden;
-}
-
-.lib-choice[aria-checked='true'] .lib-choice-check {
-  visibility: visible;
-}
-
+/* The post as it will read: a hairline round it, as round any post shown
+   inside something else. */
 .lib-preview {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  border-radius: 12px;
 }
 
 .lib-preview-head {
@@ -529,7 +656,7 @@
 
 .lib-preview-count {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .lib-preview-count.is-over {
@@ -539,8 +666,8 @@
 
 .lib-preview-text {
   margin: 0;
-  font-size: var(--text-base);
-  line-height: 1.5;
+  font-size: var(--text-md);
+  line-height: 1.45;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -551,18 +678,20 @@
 
 .lib-part--context {
   text-decoration: underline;
-  text-decoration-color: var(--accent-line);
+  text-decoration-color: var(--line-2);
   text-underline-offset: 3px;
 }
 
+/* What you answered, where it lands in the words: the one place the
+   accent is used here, since it marks what is yours. */
 .lib-part--answer {
   border-radius: 3px;
-  background: var(--accent-wash);
-  color: var(--accent-ink);
+  background: var(--accent-tint);
+  box-shadow: inset 0 -1px 0 var(--accent);
 }
 
 .lib-part--blank {
-  padding: 0 4px;
+  padding: 0 5px;
   border: 1px dashed var(--line-2);
   border-radius: 4px;
   color: var(--muted);
@@ -573,16 +702,15 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 8px 10px;
+  padding: 9px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  border-radius: var(--radius);
   font-size: var(--text-sm);
 }
 
 .lib-preview-attach-by {
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .lib-preview-attach-title {
@@ -593,7 +721,7 @@
 .lib-preview-blocked {
   margin: 0;
   color: var(--muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .lib-preview-blocked {
@@ -605,7 +733,7 @@
 .tpl-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   color: var(--ink);
 }
 
@@ -618,28 +746,26 @@
   resize: vertical;
 }
 
+/* Insert at the left, the count at the right, on one baseline. */
 .tpl-text-foot {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: baseline;
+  gap: 8px 16px;
 }
 
-.tpl-inserts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+.tpl-count {
+  margin-left: auto;
 }
 
+/* Naming a new blank, in place: set apart by a rule at its left, a
+   control's edge, as a neutral note is. */
 .tpl-blank-new {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--line-2);
 }
 
 .tpl-row {
@@ -650,31 +776,51 @@
 }
 
 .tpl-row > .input {
-  flex: 1 1 220px;
+  flex: 1 1 160px;
   min-width: 0;
 }
 
 .tpl-blanks {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
+.tpl-blanks > legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+/* A question the template asks: its fields, between hairlines. */
 .tpl-blank {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.tpl-blank:last-of-type {
+  border-bottom: 1px solid var(--line);
 }
 
 .tpl-blank-key {
-  color: var(--accent-ink);
-  font-size: var(--text-xs);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.tpl-blank-fields {
+  display: grid;
+  gap: 10px 12px;
+}
+
+@media (min-width: 640px) {
+  .tpl-blank-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }
 
 .tpl-attached {
@@ -691,7 +837,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
 }
 
 .tpl-posts .lib-choices,
@@ -717,6 +863,8 @@
   min-width: 0;
 }
 
+/* The editor's own foot, held at the bottom of the dialog while its body
+   scrolls: it sits on the dialog's ground, under a hairline. */
 .tpl-actions {
   position: sticky;
   bottom: 0;
@@ -726,9 +874,9 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  margin: 0 -20px;
-  padding: 12px 20px 16px;
-  border-top: 1px solid var(--line-soft);
+  margin: 0 -24px;
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--line);
   background: var(--surface);
 }
 
@@ -738,51 +886,155 @@
   font-size: var(--text-sm);
 }
 
+/* Delete, the kit's destructive outline, stands apart at the left of the
+   foot, away from Cancel and Save. */
 .tpl-delete {
   margin-right: auto;
-  color: var(--danger);
 }
 
-/* ---- phone ------------------------------------------------------------ */
+/* ---- narrower screens --------------------------------------------------- */
 
-@media (max-width: 760px) {
-  .lib-panel[data-mode='page'] {
-    height: auto;
-    min-height: 0;
-    padding: 12px;
+/* Less room: the page's columns close up. */
+@container lib (max-width: 960px) {
+  .lib-panel[data-mode='page'] .lib-body {
+    grid-template-columns: 152px minmax(0, 1fr) minmax(0, 300px);
+    gap: 28px;
+  }
+}
+
+/* Not room for three columns (a tablet, or a desk with the sidebar open):
+   the shelves go across the top as a row of words to scroll, the one you
+   are on with a line under it, and the list and the chosen item share
+   what is under them. */
+@container lib (max-width: 800px) {
+  .lib-body,
+  .lib-panel[data-mode='page'] .lib-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+    /* The shelves' row is as tall as its words; the rest is the list's. */
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px 28px;
   }
 
-  .lib-body {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .lib-rail {
-    flex: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    margin: 0 -12px;
-    padding: 0 12px 2px;
-    scrollbar-width: none;
+  /* The row itself scrolls (the list is a .scroll-row), fading at the
+     edge that has more behind it. */
+  .lib-rail,
+  .lib-panel[data-mode='page'] .lib-rail {
+    position: static;
+    grid-column: 1 / -1;
+    max-height: none;
+    overflow: visible;
   }
 
   .lib-rail ul {
     flex-direction: row;
-    gap: 6px;
+    gap: 22px;
+    border-left: 0;
   }
 
   .lib-shelf {
     width: auto;
     min-height: 40px;
-    padding: 6px 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--pill);
+    margin-left: 0;
+    padding: 0;
+    gap: 6px;
     white-space: nowrap;
   }
 
   .lib-shelf[aria-current='true'] {
-    border-color: var(--accent-line);
+    box-shadow: inset 0 -2px 0 var(--ink);
+  }
+
+  .lib-shelf-label {
+    overflow: visible;
+  }
+
+  /* On the page: the search, the shelves under it, then the list and the
+     chosen item side by side. */
+  .lib-panel[data-mode='page'] .lib-body {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .lib-panel[data-mode='page'] .lib-top,
+  .lib-panel[data-mode='page'] .lib-rail {
+    grid-column: 1 / -1;
+  }
+
+  .lib-panel[data-mode='page'] .lib-rail {
+    grid-row: 2;
+  }
+
+  .lib-panel[data-mode='page'] .lib-list {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .lib-panel[data-mode='page'] .lib-detail {
+    grid-column: 2;
+    grid-row: 3;
+  }
+}
+
+/* Narrower still: the list and the chosen item take half each. */
+@container lib (max-width: 640px) {
+  .lib-body,
+  .lib-panel[data-mode='page'] .lib-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px 24px;
+  }
+}
+
+@media (max-width: 760px) {
+  .lib-panel[data-mode='page'] .lib-body,
+  .lib-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .lib-panel[data-mode='page'] .lib-rail,
+  .lib-panel[data-mode='page'] .lib-detail {
+    position: static;
+    max-height: none;
+  }
+
+  /* The shelves as a row to scroll: words, the one you are on in ink with
+     a line under it, as any row of tabs here. It runs out to the screen's
+     edges (the sheet's, in the dialog), its first shelf on the page's. */
+  .lib-rail {
+    flex: none;
+    overflow: visible;
+  }
+
+  .lib-rail ul {
+    flex-direction: row;
+    gap: 22px;
+    width: calc(100% + var(--page-pad) * 2);
+    max-width: none;
+    margin: 0 calc(var(--page-pad) * -1);
+    padding: 0 var(--page-pad);
+    border-left: 0;
+    scroll-padding-inline: var(--page-pad);
+  }
+
+  .lib-dialog .lib-rail ul {
+    width: calc(100% + 32px);
+    margin: 0 -16px;
+    padding: 0 16px;
+    scroll-padding-inline: 16px;
+  }
+
+  .lib-shelf {
+    width: auto;
+    min-height: 44px;
+    margin-left: 0;
+    padding: 0;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .lib-shelf[aria-current='true'] {
+    box-shadow: inset 0 -2px 0 var(--ink);
   }
 
   .lib-shelf-label {
@@ -799,13 +1051,15 @@
     overflow: visible;
   }
 
-  .lib-detail {
-    padding-left: 0;
-    border-left: 0;
-  }
-
   .lib-row {
     min-height: 48px;
+  }
+
+  /* The chosen item takes the list's place here, so there is no head
+     beside it to keep level with. */
+  .lib-list-head {
+    min-height: 42px;
+    padding-bottom: 10px;
   }
 
   .lib-questions-actions {
@@ -815,16 +1069,26 @@
     background: var(--surface);
   }
 
-  .lib-questions-actions > .btn {
+  /* On the page it is the form's last line, where the page puts it: held
+     to the screen's foot it would sit under the tab bar, and over the sky
+     as a band of its own. */
+  .lib-panel[data-mode='page'] .lib-questions-actions {
+    position: static;
+    padding: 0;
+    background: none;
+  }
+
+  /* The one thing to do here, under the thumb, the width of the column. */
+  .lib-questions-actions > .btn--primary {
     flex: 1;
-    min-height: 44px;
   }
+}
 
+/* The dialog's own sides are narrower here (shell.css), and the foot runs
+   out to them. */
+@media (max-width: 560px) {
   .tpl-actions {
-    margin: 0 -20px;
-  }
-
-  .tpl-actions > .btn {
-    min-height: 44px;
+    margin: 0 -18px;
+    padding: 12px 18px 16px;
   }
 }

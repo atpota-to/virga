@@ -8,6 +8,7 @@ import {
   interactionModel,
   isDid,
   keepsMentions,
+  kindsLine,
   lookupHref,
   matchPeople,
   parseActorInput,
@@ -589,5 +590,26 @@ describe('the export', () => {
   it('keeps a post’s line breaks as plain newlines', () => {
     const rows = eventsCsvRows([{ at: at(2026, 1, 1), dir: 'out', kind: 'reply', url: null, urlOwner: null, text: 'one\r\ntwo\rthree', uri: 'at://x' }], { did: ADA });
     expect(rows[1][7]).toBe('one\ntwo\nthree');
+  });
+});
+
+describe('kindsLine', () => {
+  it('names each kind it counts, one and many, in the page’s order', () => {
+    expect(kindsLine({ reply: 2, like: 1, quote: 0, mention: 1 })).toBe('1 like, 2 replies, 1 mention');
+  });
+
+  it('says replies, not replys', () => {
+    expect(kindsLine({ reply: 9 })).toBe('9 replies');
+    expect(kindsLine({ reply: 1 })).toBe('1 reply');
+  });
+
+  it('puts the largest first when asked to', () => {
+    expect(kindsLine({ like: 13, reply: 9, repost: 22 }, { byCount: true })).toBe('22 reposts, 13 likes, 9 replies');
+  });
+
+  it('writes thousands with separators, and nothing for nothing', () => {
+    expect(kindsLine({ like: 1234 })).toBe('1,234 likes');
+    expect(kindsLine({})).toBe('');
+    expect(kindsLine(null)).toBe('');
   });
 });

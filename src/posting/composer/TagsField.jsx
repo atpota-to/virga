@@ -25,12 +25,12 @@ export default function TagsField({ tags = [], onChange, disabled = false }) {
       <p className="field-hint" id={`${id}-hint`}>
         Not shown in the post, but Bluesky files it under them. Separate them with commas; up to {MAX_TAGS}.
       </p>
-      <div className="tags-row">
+      <div className="tokens">
         {tags.map((t) => (
-          <span key={t} className="lang-chip">
+          <span key={t} className="token">
             #{t}
-            <button type="button" className="lang-chip-remove" aria-label={`Remove the tag ${t}`} disabled={disabled} onClick={() => onChange?.(tags.filter((x) => x !== t))}>
-              <X size={13} aria-hidden="true" />
+            <button type="button" className="token-remove" aria-label={`Remove the tag ${t}`} disabled={disabled} onClick={() => onChange?.(tags.filter((x) => x !== t))}>
+              <X size={14} aria-hidden="true" />
             </button>
           </span>
         ))}

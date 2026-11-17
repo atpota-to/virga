@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarClock, FileText, Send, SquarePen, Trash2 } from 'lucide-react';
+import { CalendarClock, MoreHorizontal, Send, SquarePen, Trash2 } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
+import Menu from '../../components/Menu.jsx';
 import { navigate } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
@@ -23,6 +24,7 @@ import WhenPicker from '../ui/WhenPicker.jsx';
 import { blobImageLoader, draftActionMessage, draftMeta, draftPostBlock, draftScheduleBlock, postDraftNow, scheduleDraft } from './draftActions.js';
 import { draftRows, whenLabel } from './hubModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
+import { useFocusAfterRemoval } from './scheduleParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
 
@@ -82,6 +84,9 @@ export default function DraftsPage({ did, id = null }) {
   const req = caps.canSchedule ? backendFor(did) : null;
   const { settings } = usePostingSettings(did);
   const list = useDraftList(did, agentFor);
+  // A draft posted, scheduled or deleted leaves the list; the focus goes to
+  // the draft that took its place rather than back to the top of the page.
+  const keepFocus = useFocusAfterRemoval('.draft-row[id]', list.views);
   const [busy, setBusy] = useState(null);
   const [notice, setNotice] = useState(null);
   const [deleting, setDeleting] = useState(null);
@@ -149,12 +154,14 @@ export default function DraftsPage({ did, id = null }) {
     if (!view || busy) return;
     setBusy(row.id);
     setNotice(null);
+    keepFocus(`draft-row-${row.id}`);
     try {
       const agent = await agentFor(did);
       const out = await postDraftNow(view, { did, settings, agent, deps: await deps() });
       toast?.(`Posted as ${handle}.`);
       if (out.notes.length) setNotice({ tone: 'warn', text: out.notes.join(' ') });
     } catch (err) {
+      keepFocus(null);
       setNotice({
         tone: 'danger',
         text: draftActionMessage(err, { action: 'post' }),
@@ -170,6 +177,7 @@ export default function DraftsPage({ did, id = null }) {
     if (!view) return;
     setBusy(row.id);
     setNotice(null);
+    keepFocus(`draft-row-${row.id}`);
     try {
       const agent = await agentFor(did);
       const out = await scheduleDraft(view, { did, settings, agent, scheduledFor, queued, deps: await deps() });
@@ -177,6 +185,7 @@ export default function DraftsPage({ did, id = null }) {
       if (out.notes.length) setNotice({ tone: 'warn', text: out.notes.join(' ') });
       setScheduling(null);
     } catch (err) {
+      keepFocus(null);
       throw new Error(
         err?.code === 'MEDIA_MISSING' || err?.code === 'NEEDS_BACKEND' ? err.message : scheduleErrorMessage(err) || draftActionMessage(err, { action: 'schedule' }),
       );
@@ -187,27 +196,37 @@ export default function DraftsPage({ did, id = null }) {
 
   const remove = async (row) => {
     const agent = await agentFor(did);
+    keepFocus(`draft-row-${row.id}`);
     try {
       await deleteDraft(agent, row.id);
     } catch (err) {
+      keepFocus(null);
       throw new Error(isMissingScopeError(err) ? 'Virga needs permission to delete drafts. Sign in again to grant it.' : `The draft couldn’t be deleted. ${err?.message || 'Try again.'}`);
     }
     toast?.('Draft deleted.');
   };
 
   const scopeError = list.status === 'error' && isMissingScopeError(list.error);
+  const empty = list.status === 'ready' && !rows.length;
+
+  // What a draft can do beyond Open: post it, schedule it, and deleting it
+  // last. A step that can't be taken just now isn't offered; the line under
+  // the draft says why.
+  const menuItems = (row, { postBlock, scheduleBlock }) => {
+    const items = [
+      !postBlock && { key: 'post', label: 'Post now', icon: Send, onSelect: () => postNow(row) },
+      !scheduleBlock && { key: 'schedule', label: 'Schedule…', icon: CalendarClock, onSelect: () => !busy && setScheduling(row) },
+    ].filter(Boolean);
+    if (caps.canPost) {
+      if (items.length) items.push({ separator: true });
+      items.push({ key: 'delete', label: 'Delete draft', icon: Trash2, tone: 'danger', onSelect: () => !busy && setDeleting(row) });
+    }
+    return items;
+  };
 
   return (
     <>
-      <PostingHeader
-        page="drafts"
-        actions={
-          <Button variant="primary" onClick={() => composer.open({ asDid: did })}>
-            <SquarePen size={15} aria-hidden="true" />
-            New post
-          </Button>
-        }
-      />
+      <PostingHeader page="drafts" />
       <div className="page-body hub">
         <PostingPermissionNotice did={did} force={scopeError || Boolean(notice?.scope)} />
         {notice && !notice.scope && (
@@ -216,112 +235,103 @@ export default function DraftsPage({ did, id = null }) {
           </p>
         )}
 
-        <section className="card card--flush hub-card" aria-labelledby="drafts-title">
-          <div className="card-head">
-            <div>
-              <h2 id="drafts-title" className="card-title">
-                {list.status === 'ready' && rows.length
-                  ? `${rows.length.toLocaleString(activeLocale())}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
-                  : 'Drafts'}
-              </h2>
-              <p className="card-sub">The latest edit first. Pictures stay on the device that saved them.</p>
-            </div>
+        {empty ? (
+          // Nothing to list, so no heading over nothing: the sentence and
+          // the way to start one.
+          <div className="empty-block">
+            <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
+            <Button onClick={() => composer.open({ asDid: did })}>
+              <SquarePen size={15} aria-hidden="true" />
+              New post
+            </Button>
           </div>
-
-          {list.status === 'loading' ? (
-            <RowSkeleton rows={4} actions={3} />
-          ) : list.status === 'error' ? (
-            scopeError ? (
+        ) : list.status === 'error' ? (
+          // Nothing could be read, so no heading either: what went wrong,
+          // under the notice that says how to put it right.
+          scopeError ? (
+            <div className="empty-block">
               <p className="empty">Your drafts can’t be read until Virga has permission.</p>
-            ) : (
-              <div className="hub-pad">
-                <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
-              </div>
-            )
-          ) : rows.length ? (
-            <ul className="hub-list hub-list--rows">
-              {rows.map((row) => {
-                const postBlock = draftPostBlock(row, { canPost: caps.canPost });
-                const scheduleBlock = draftScheduleBlock(row, { canSchedule: caps.canSchedule });
-                const disabled = Boolean(busy);
-                const working = busy === row.id;
-                return (
-                  <li key={row.id} className="hub-row draft-row" aria-busy={working || undefined}>
-                    <div className="hub-row-main">
-                      <p className="hub-row-text draft-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
-                      <p className="hub-row-meta">{draftMeta(row).join(' · ')}</p>
-                      {row.mediaElsewhere && (
-                        <p className="hub-row-note">Its pictures were saved on another device. Open it to attach them again before posting.</p>
-                      )}
-                    </div>
-                    <div className="hub-row-actions draft-actions">
-                      <Button size="sm" disabled={disabled} onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}>
-                        <FileText size={14} aria-hidden="true" />
-                        Open
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={disabled || Boolean(postBlock)}
-                        title={postBlock || 'Post it now, as it is'}
-                        aria-busy={working || undefined}
-                        onClick={() => postNow(row)}
-                      >
-                        <Send size={14} aria-hidden="true" />
-                        {working ? 'Working…' : 'Post now'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={disabled || Boolean(scheduleBlock)}
-                        title={scheduleBlock || 'Choose when it goes out'}
-                        onClick={() => setScheduling(row)}
-                      >
-                        <CalendarClock size={14} aria-hidden="true" />
-                        Schedule
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        icon
-                        className="hub-danger"
-                        disabled={disabled || !caps.canPost}
-                        aria-label={`Delete the draft “${row.text.trim().slice(0, 40) || 'with no text'}”`}
-                        title="Delete this draft"
-                        onClick={() => setDeleting(row)}
-                      >
-                        <Trash2 size={15} aria-hidden="true" />
-                      </Button>
-                    </div>
-                    {(postBlock || scheduleBlock) && !row.mediaElsewhere && (
-                      <p className="hub-row-why">{[postBlock, scheduleBlock && caps.canSchedule ? scheduleBlock : ''].filter(Boolean).join(' ')}</p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            </div>
           ) : (
-            <div className="hub-empty hub-pad">
-              <p className="empty">No drafts yet. Start a post and choose Save draft: it waits here, private to your account, until you’re ready.</p>
-              <Button onClick={() => composer.open({ asDid: did })}>
-                <SquarePen size={15} aria-hidden="true" />
-                Write a post
-              </Button>
+            <LoadError message="Your drafts couldn’t be read from Bluesky. Check the connection and try again." onRetry={list.reload} />
+          )
+        ) : (
+          <section className="card card--flush hub-card" aria-labelledby="drafts-title">
+            <div className="card-head">
+              <div>
+                <h2 id="drafts-title" className="card-title">
+                  {list.status === 'ready' && rows.length
+                    ? `${rows.length.toLocaleString(activeLocale())}${list.cursor ? '+' : ''} ${rows.length === 1 && !list.cursor ? 'draft' : 'drafts'}`
+                    : 'Drafts'}
+                </h2>
+                <p className="card-sub">The latest edit first. Pictures stay on the device that saved them.</p>
+              </div>
             </div>
-          )}
 
-          {list.status === 'ready' && list.cursor && (
-            <div className="hub-more-row">
-              <Button size="sm" onClick={list.loadMore} disabled={list.more} aria-busy={list.more || undefined}>
-                {list.more ? 'Loading…' : 'Load more drafts'}
-              </Button>
-            </div>
-          )}
-          {list.status === 'ready' && rows.length >= MANY_DRAFTS && (
-            <p className="card-caption hub-pad">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
-          )}
-          {!caps.canSchedule && rows.length > 0 && (
-            <p className="card-caption hub-pad">Scheduling a draft needs a long session. Settings › Account offers one.</p>
-          )}
-        </section>
+            {list.status === 'loading' ? (
+              <RowSkeleton rows={4} actions={1} />
+            ) : (
+              <ul className="hub-list hub-list--rows">
+                {rows.map((row) => {
+                  const postBlock = draftPostBlock(row, { canPost: caps.canPost });
+                  const scheduleBlock = draftScheduleBlock(row, { canSchedule: caps.canSchedule });
+                  const working = busy === row.id;
+                  const items = menuItems(row, { postBlock, scheduleBlock });
+                  const why = [postBlock, scheduleBlock && caps.canSchedule ? scheduleBlock : ''].filter(Boolean).join(' ');
+                  const name = row.text.trim().slice(0, 40) || 'with no text';
+                  return (
+                    <li key={row.id} id={`draft-row-${row.id}`} className="hub-row draft-row has-corner-menu" aria-busy={working || undefined}>
+                      <div className="hub-row-main">
+                        <p className="hub-row-text draft-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
+                        <p className="meta">
+                          {draftMeta(row).map((part) => (
+                            <span key={part}>{part}</span>
+                          ))}
+                        </p>
+                        {row.mediaElsewhere ? (
+                          <p className="hub-row-note">Its pictures were saved on another device. Open it to attach them again before posting.</p>
+                        ) : (
+                          why && <p className="hub-row-why">{why}</p>
+                        )}
+                      </div>
+                      <div className="row-actions">
+                        <Button
+                          size="sm"
+                          disabled={Boolean(busy)}
+                          aria-label={`Open the draft “${name}”`}
+                          onClick={() => composer.open({ draftId: row.id, draftOwnerDid: did, asDid: did })}
+                        >
+                          Open
+                        </Button>
+                        {items.length > 0 && (
+                          // The kit's ⋯ (MoreMenu), with a spinner in place of
+                          // the dots while the draft goes out.
+                          <Menu label={`More for the draft “${name}”`} icon variant="ghost" className="row-menu" items={items}>
+                            {working ? <span className="hub-spinner" aria-hidden="true" /> : <MoreHorizontal size={16} aria-hidden="true" />}
+                          </Menu>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {list.status === 'ready' && list.cursor && (
+              <div className="card-foot">
+                <Button size="sm" variant="ghost" onClick={list.loadMore} disabled={list.more} aria-busy={list.more || undefined}>
+                  {list.more ? 'Loading…' : 'Show more'}
+                </Button>
+              </div>
+            )}
+            {list.status === 'ready' && rows.length >= MANY_DRAFTS && (
+              <p className="card-caption">Bluesky may stop keeping new drafts past a limit. If one won’t save: {DRAFT_LIMIT_MESSAGE}</p>
+            )}
+            {!caps.canSchedule && rows.length > 0 && (
+              <p className="card-caption">Scheduling a draft needs a long session. Settings › Account offers one.</p>
+            )}
+          </section>
+        )}
       </div>
 
       <ConfirmDialog
@@ -394,13 +404,16 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
       open={open}
       onClose={busy ? undefined : onClose}
       title="Schedule this draft"
+      className="when-dialog dialog--stack-actions"
       actions={
         <>
-          <Button onClick={onClose} disabled={busy}>
+          <Button className="when-dialog-cancel" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
+          {/* The queue's next open time is said on its button, so the
+              picker above is only for a time of one's own. */}
           <Button onClick={() => go(true)} disabled={busy || !info.slot || Boolean(info.room)} title={info.slot ? undefined : 'Your weekly schedule has no open time'}>
-            Add to queue
+            {info.slot ? `Add to queue · ${whenLabel(info.slot)}` : 'Add to queue'}
           </Button>
           <Button variant="primary" onClick={() => go(false)} disabled={busy || tooSoon || Boolean(info.room)} aria-busy={busy || undefined}>
             {busy ? 'Scheduling…' : 'Schedule'}
@@ -410,15 +423,11 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
     >
       <div className="hub-confirm">
         {row?.text?.trim() && <blockquote className="hub-quote">{row.text.trim().slice(0, 200)}</blockquote>}
-        <WhenPicker did={did} value={when} onChange={setWhen} queue={Boolean(info.slot)} onQueue={() => info.slot && setWhen(info.slot)} />
+        <WhenPicker did={did} value={when} onChange={setWhen} />
         {tooSoon && when && <p className="field-hint lib-question-error">Choose a time at least a minute from now.</p>}
         {info.status === 'loading' && <p className="field-hint">Looking for the next open time in your queue…</p>}
-        {info.status === 'ready' && (
-          <p className="field-hint">
-            {info.slot
-              ? `Add to queue puts it in the next open time: ${whenLabel(info.slot)}.`
-              : 'Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.'}
-          </p>
+        {info.status === 'ready' && !info.slot && (
+          <p className="field-hint">Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.</p>
         )}
         {info.usage && <p className="field-hint">{info.usage}.</p>}
         {info.room && (

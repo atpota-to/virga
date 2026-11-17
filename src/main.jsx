@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import '@fontsource-variable/mona-sans/wdth.css';
+import '@fontsource-variable/instrument-sans/wght.css';
 import { AtprotoSessionProvider } from './session/useAtprotoSession.jsx';
 import './styles/theme.css';
 import './styles/base.css';

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Image as ImageIcon, List, Pencil, Rss, Users, X } from 'lucide-react';
+import { ImageOff, List, Pencil, Rss, Users, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import PostPreview from '../ui/PostPreview.jsx';
@@ -78,20 +78,18 @@ export function LinkCard({ card, loading = false, onEdit, onRemove, disabled = f
   if (!card) return null;
   return (
     <div className="embed-card embed-card--link">
-      {card.thumb ? (
+      {/* A page with no image has no picture column: its words take the
+          card's width. */}
+      {card.thumb && (
         <img
           className="link-thumb"
           src={card.thumb}
           alt=""
           onError={(e) => {
             // A page image that won't load is left out of the preview.
-            e.currentTarget.style.visibility = 'hidden';
+            e.currentTarget.style.display = 'none';
           }}
         />
-      ) : (
-        <span className="link-thumb link-thumb--none" aria-hidden="true">
-          <ImageIcon size={18} />
-        </span>
       )}
       <span className="embed-text">
         <span className="embed-title">{card.title || hostOf(card.url)}</span>
@@ -124,6 +122,9 @@ export function LinkCardDialog({ open, card, onClose, onSave }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [thumb, setThumb] = useState({ url: null, file: null, removed: false });
+  // The address of a page image that wouldn't load: its frame is drawn
+  // with a picture of a missing image, not a broken one with its words.
+  const [thumbFailed, setThumbFailed] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef(null);
@@ -204,8 +205,12 @@ export function LinkCardDialog({ open, card, onClose, onSave }) {
         <div className="field">
           <span className="field-label">Image</span>
           <div className="card-thumb-edit">
-            {thumb.url && !thumb.removed ? (
-              <img className="link-thumb link-thumb--lg" src={thumb.url} alt="The card’s image" />
+            {thumb.url && !thumb.removed && thumbFailed === thumb.url ? (
+              <span className="link-thumb link-thumb--lg link-thumb--none" aria-hidden="true">
+                <ImageOff size={18} />
+              </span>
+            ) : thumb.url && !thumb.removed ? (
+              <img className="link-thumb link-thumb--lg" src={thumb.url} alt="The card’s image" onError={() => setThumbFailed(thumb.url)} />
             ) : (
               <span className="link-thumb link-thumb--lg link-thumb--none">No image</span>
             )}
@@ -225,9 +230,9 @@ export function LinkCardDialog({ open, card, onClose, onSave }) {
                 }}
               />
               {thumb.url && !thumb.removed && (
-                <Button size="sm" variant="ghost" onClick={() => setThumb((t) => ({ ...t, removed: true }))}>
+                <button type="button" className="link-action" onClick={() => setThumb((t) => ({ ...t, removed: true }))}>
                   Remove the image
-                </Button>
+                </button>
               )}
             </span>
           </div>

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { afterEach } from 'vitest';
-import { DEFAULT_PREFERENCES, PREFERENCES_KEY, applyFormats, effectiveTheme, readPreferences } from './preferences.jsx';
+import { DEFAULT_PREFERENCES, PREFERENCES_KEY, applyFormats, readPreferences } from './preferences.jsx';
 import { activeLocale, activeWeekStart, setActiveLocale, setActiveWeekStart } from './locale.js';
 import { readFileSync } from 'node:fs';
-import { ACCENT_CHOICES, effectiveContrast, rootAttributes, themeColor } from './preferences.jsx';
+import { ACCENT_CHOICES, SKY_CHOICES, effectiveContrast, rootAttributes } from './preferences.jsx';
 
 function store(value) {
   return { getItem: (k) => (k === PREFERENCES_KEY ? value : null) };
@@ -17,20 +17,22 @@ describe('preferences', () => {
   });
 
   it('keep the values this version knows and drop the rest', () => {
-    const out = readPreferences(store(JSON.stringify({ theme: 'dark', density: 'roomy', sky: true, period: '90d', extra: 1 })));
-    expect(out).toEqual({ ...DEFAULT_PREFERENCES, theme: 'dark', sky: true, period: '90d' });
+    const out = readPreferences(store(JSON.stringify({ sky: 'dusk', density: 'roomy', liveSky: true, period: '90d', extra: 1 })));
+    expect(out).toEqual({ ...DEFAULT_PREFERENCES, sky: 'dusk', liveSky: true, period: '90d' });
   });
 
   it('keep the live sky off unless it was asked for', () => {
-    expect(DEFAULT_PREFERENCES.sky).toBe(false);
-    expect(readPreferences(store(JSON.stringify({ sky: 'yes' }))).sky).toBe(false);
+    expect(DEFAULT_PREFERENCES.liveSky).toBe(false);
+    expect(readPreferences(store(JSON.stringify({ liveSky: 'yes' }))).liveSky).toBe(false);
   });
 
-  it('follow the system only when asked to', () => {
-    expect(effectiveTheme('system', true)).toBe('dark');
-    expect(effectiveTheme('system', false)).toBe('light');
-    expect(effectiveTheme('light', true)).toBe('light');
-    expect(effectiveTheme('dark', false)).toBe('dark');
+  it('read what an earlier version stored: a theme becomes its sky, and the old switch is the live sky', () => {
+    expect(readPreferences(store(JSON.stringify({ theme: 'dark' })))).toMatchObject({ sky: 'night', liveSky: false });
+    expect(readPreferences(store(JSON.stringify({ theme: 'light', sky: true })))).toMatchObject({ sky: 'day', liveSky: true });
+    expect(readPreferences(store(JSON.stringify({ theme: 'system', sky: false, skyTime: 'dusk' })))).toMatchObject({ sky: 'clock', liveSky: false });
+    // A sky picked since wins over a theme left behind.
+    expect(readPreferences(store(JSON.stringify({ theme: 'dark', sky: 'dawn' }))).sky).toBe('dawn');
+    expect(readPreferences(store(JSON.stringify({ theme: 'dark', sky: 'clock' }))).sky).toBe('clock');
   });
 
   it('keep a named format and week start, and follow the browser otherwise', () => {
@@ -74,21 +76,21 @@ describe('applyFormats', () => {
   });
 });
 
-describe('the accent, the contrast and the sky’s time', () => {
-  it('start as blue, the system’s contrast, and the sky following the archive', () => {
-    expect(DEFAULT_PREFERENCES).toMatchObject({ accent: 'blue', contrast: 'system', skyTime: 'archive' });
+describe('the accent, the contrast and the sky', () => {
+  it('start as blue, the system’s contrast, and the sky following the clock', () => {
+    expect(DEFAULT_PREFERENCES).toMatchObject({ accent: 'blue', contrast: 'system', sky: 'clock' });
     expect(ACCENT_CHOICES[0]).toBe('blue');
   });
 
   it('keep a choice this version knows and drop one it doesn’t', () => {
-    const kept = readPreferences(store(JSON.stringify({ accent: 'teal', contrast: 'high', skyTime: 'dusk' })));
-    expect(kept).toMatchObject({ accent: 'teal', contrast: 'high', skyTime: 'dusk' });
-    for (const skyTime of ['archive', 'clock', 'dawn', 'day', 'dusk', 'night']) {
-      expect(readPreferences(store(JSON.stringify({ skyTime }))).skyTime).toBe(skyTime);
+    const kept = readPreferences(store(JSON.stringify({ accent: 'teal', contrast: 'high', sky: 'dusk' })));
+    expect(kept).toMatchObject({ accent: 'teal', contrast: 'high', sky: 'dusk' });
+    for (const sky of SKY_CHOICES) {
+      expect(readPreferences(store(JSON.stringify({ sky }))).sky).toBe(sky);
     }
     // Not a colour picker: a hex value is no accent.
-    const odd = readPreferences(store(JSON.stringify({ accent: '#ff00ff', contrast: 'max', skyTime: 'noon' })));
-    expect(odd).toMatchObject({ accent: 'blue', contrast: 'system', skyTime: 'archive' });
+    const odd = readPreferences(store(JSON.stringify({ accent: '#ff00ff', contrast: 'max', sky: 'noon' })));
+    expect(odd).toMatchObject({ accent: 'blue', contrast: 'system', sky: 'clock' });
   });
 
   it('follow the system’s contrast only when asked to', () => {
@@ -98,24 +100,26 @@ describe('the accent, the contrast and the sky’s time', () => {
     expect(effectiveContrast('high', false)).toBe('high');
   });
 
-  it('are stamped on the page as four attributes, with nothing unknown let through', () => {
-    expect(rootAttributes(DEFAULT_PREFERENCES)).toEqual({ theme: 'light', accent: 'blue', contrast: 'normal', density: 'comfortable' });
-    expect(rootAttributes(DEFAULT_PREFERENCES, { dark: true, moreContrast: true })).toEqual({ theme: 'dark', accent: 'blue', contrast: 'high', density: 'comfortable' });
-    expect(rootAttributes({ theme: 'light', accent: 'rose', contrast: 'normal', density: 'compact' }, { dark: true, moreContrast: true })).toEqual({
+  it('are stamped on the page as five attributes, with nothing unknown let through', () => {
+    expect(rootAttributes(DEFAULT_PREFERENCES)).toEqual({ sky: 'day', theme: 'light', accent: 'blue', contrast: 'normal', density: 'comfortable' });
+    expect(rootAttributes(DEFAULT_PREFERENCES, { dark: true, moreContrast: true })).toEqual({ sky: 'night', theme: 'dark', accent: 'blue', contrast: 'high', density: 'comfortable' });
+    expect(rootAttributes({ sky: 'dusk', accent: 'rose', contrast: 'normal', density: 'compact' }, { dark: true, moreContrast: true })).toEqual({
+      sky: 'dusk',
       theme: 'light',
       accent: 'rose',
       contrast: 'normal',
       density: 'compact',
     });
     expect(rootAttributes({ accent: 'mauve', density: 'roomy' })).toMatchObject({ accent: 'blue', density: 'comfortable' });
-    expect(rootAttributes(null)).toMatchObject({ theme: 'light', accent: 'blue' });
+    expect(rootAttributes(null)).toMatchObject({ sky: 'day', theme: 'light', accent: 'blue' });
   });
 
-  it('give the browser’s chrome the page ground', () => {
-    expect(themeColor('light')).toBe('#f5f6f8');
-    expect(themeColor('dark')).toBe('#0c0e12');
-    expect(themeColor('light', 'high')).toBe('#ffffff');
-    expect(themeColor('dark', 'high')).toBe('#000000');
+  it('follow the clock through the day, and bring the dark theme with night', () => {
+    const at = (hour) => rootAttributes(DEFAULT_PREFERENCES, { hour });
+    expect([6, 12, 18, 23].map((h) => at(h).sky)).toEqual(['dawn', 'day', 'dusk', 'night']);
+    expect([6, 12, 18, 23].map((h) => at(h).theme)).toEqual(['light', 'light', 'light', 'dark']);
+    expect(rootAttributes({ sky: 'night' }, { hour: 12 })).toMatchObject({ sky: 'night', theme: 'dark' });
+    expect(rootAttributes({ sky: 'day' }, { hour: 23, dark: true })).toMatchObject({ sky: 'day', theme: 'light' });
   });
 });
 
@@ -124,7 +128,7 @@ describe('the script that stamps the page before the first paint', () => {
   const app = scriptOf('../../index.html');
 
   /** Run the inline script against a stand-in page, and return what it stamped on <html>. */
-  function stamp(script, stored, { dark = false, moreContrast = false, storageThrows = false, noMatchMedia = false } = {}) {
+  function stamp(script, stored, { dark = false, moreContrast = false, hour = 12, storageThrows = false, noMatchMedia = false } = {}) {
     const dataset = {};
     const storage = {
       getItem: (key) => {
@@ -133,7 +137,11 @@ describe('the script that stamps the page before the first paint', () => {
       },
     };
     const matchMedia = (query) => ({ matches: query.includes('prefers-color-scheme: dark') ? dark : query.includes('prefers-contrast: more') ? moreContrast : false });
-    new Function('localStorage', 'document', 'window', script)(storage, { documentElement: { dataset } }, noMatchMedia ? {} : { matchMedia });
+    // The script asks the clock for the hour; here the clock says what it is told to.
+    const Clock = function Clock() {
+      this.getHours = () => hour;
+    };
+    new Function('localStorage', 'document', 'window', 'Date', script)(storage, { documentElement: { dataset } }, noMatchMedia ? {} : { matchMedia }, Clock);
     return dataset;
   }
 
@@ -147,23 +155,32 @@ describe('the script that stamps the page before the first paint', () => {
       '{not json',
       '5',
       '{}',
-      JSON.stringify({ theme: 'dark', accent: 'graphite', contrast: 'high', density: 'compact' }),
-      JSON.stringify({ theme: 'light', accent: 'blue', contrast: 'normal' }),
-      JSON.stringify({ theme: 'system', accent: 'mauve', contrast: 'max', density: 'roomy' }),
+      JSON.stringify({ sky: 'night', accent: 'graphite', contrast: 'high', density: 'compact' }),
+      JSON.stringify({ sky: 'dawn', accent: 'blue', contrast: 'normal' }),
+      JSON.stringify({ sky: 'noon', accent: 'mauve', contrast: 'max', density: 'roomy' }),
+      ...SKY_CHOICES.map((sky) => JSON.stringify({ sky })),
+      // What an earlier version stored.
+      JSON.stringify({ theme: 'dark', sky: true }),
+      JSON.stringify({ theme: 'light', sky: false, skyTime: 'dusk' }),
+      JSON.stringify({ theme: 'system' }),
+      JSON.stringify({ theme: 'dark', sky: 'clock' }),
+      JSON.stringify({ theme: 'light', sky: 'dusk' }),
       ...ACCENT_CHOICES.map((accent) => JSON.stringify({ accent })),
     ];
     for (const value of stored) {
       for (const dark of [false, true]) {
         for (const moreContrast of [false, true]) {
-          const system = { dark, moreContrast };
-          expect(stamp(app, value, system), `${value} on ${JSON.stringify(system)}`).toEqual(rootAttributes(readPreferences(store(value)), system));
+          for (const hour of [0, 4, 5, 7, 8, 12, 16, 17, 19, 20, 23]) {
+            const system = { dark, moreContrast, hour };
+            expect(stamp(app, value, system), `${value} on ${JSON.stringify(system)}`).toEqual(rootAttributes(readPreferences(store(value)), system));
+          }
         }
       }
     }
   });
 
   it('still stamps the defaults where storage is refused or the browser can’t be asked', () => {
-    expect(stamp(app, null, { storageThrows: true, dark: true })).toEqual({ theme: 'dark', accent: 'blue', contrast: 'normal', density: 'comfortable' });
-    expect(stamp(app, null, { noMatchMedia: true })).toEqual({ theme: 'light', accent: 'blue', contrast: 'normal', density: 'comfortable' });
+    expect(stamp(app, null, { storageThrows: true, dark: true })).toEqual({ sky: 'night', theme: 'dark', accent: 'blue', contrast: 'normal', density: 'comfortable' });
+    expect(stamp(app, null, { noMatchMedia: true })).toEqual({ sky: 'day', theme: 'light', accent: 'blue', contrast: 'normal', density: 'comfortable' });
   });
 });

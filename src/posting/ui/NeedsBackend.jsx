@@ -46,7 +46,7 @@ export default function NeedsBackend({ did }) {
         )}
         {action === 'reconnect' && (
           <div>
-            <Button variant="primary" onClick={() => actions.lengthen(account)}>
+            <Button onClick={() => actions.lengthen(account)}>
               <Timer size={15} aria-hidden="true" />
               Reconnect for a longer session
             </Button>
@@ -54,7 +54,7 @@ export default function NeedsBackend({ did }) {
         )}
         {action === 'signBackIn' && (
           <div>
-            <Button variant="primary" onClick={() => requestReauth(did, { immediate: true })}>
+            <Button onClick={() => requestReauth(did, { immediate: true })}>
               <LogIn size={15} aria-hidden="true" />
               Sign back in
             </Button>

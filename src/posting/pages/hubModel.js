@@ -143,8 +143,12 @@ export function timersOverview(rows) {
   return { live: live.length, nextCheck: next || null };
 }
 
-/** "Today, 9:00 AM", "Tomorrow, 9:00 AM", "Fri, Nov 14, 9:00 AM". */
-export function whenLabel(iso, now = new Date()) {
+/**
+ * "Today, 9:00 AM", "Tomorrow, 9:00 AM", "Fri, Nov 14, 9:00 AM". Without
+ * the weekday ("Nov 14, 9:00 AM") for a past time in a narrow column,
+ * where it fits on one line.
+ */
+export function whenLabel(iso, now = new Date(), { weekday = true } = {}) {
   const t = time(iso);
   if (t == null) return '';
   const d = new Date(t);
@@ -154,7 +158,8 @@ export function whenLabel(iso, now = new Date()) {
   if (days === 0) return `Today, ${clock}`;
   if (days === 1) return `Tomorrow, ${clock}`;
   if (days === -1) return `Yesterday, ${clock}`;
-  const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+  const opts = { month: 'short', day: 'numeric' };
+  if (weekday) opts.weekday = 'short';
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
   return `${d.toLocaleDateString(activeLocale(), opts)}, ${clock}`;
 }

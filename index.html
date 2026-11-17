@@ -8,11 +8,11 @@
       name="description"
       content="Analytics for your Bluesky account and the rest of your atproto repo, worked out in your browser from your own data."
     />
-    <meta name="theme-color" content="#f5f6f8" />
+    <meta name="theme-color" content="#b9d5ff" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <script>
-      // Theme, accent, contrast and density before the first paint, from what
-      // src/lib/preferences.jsx stores, so a dark-mode reader never sees a white
+      // The sky, accent, contrast and density before the first paint, from what
+      // src/lib/preferences.jsx stores, so a reader at night never sees a white
       // flash. Kept tiny on purpose. It has to stamp what rootAttributes() there
       // would: preferences.test.js runs this script against it.
       (function () {
@@ -24,7 +24,24 @@
           return !!(window.matchMedia && window.matchMedia(q).matches);
         };
         var d = document.documentElement.dataset;
-        d.theme = p.theme === 'light' || p.theme === 'dark' ? p.theme : asks('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+        var h = new Date().getHours();
+        // A sky that was picked; else the theme an earlier version stored;
+        // else the clock, with night for a device set to dark.
+        var sky = /^(dawn|day|dusk|night)$/.test(p.sky)
+          ? p.sky
+          : p.sky !== 'clock' && p.theme === 'dark'
+            ? 'night'
+            : p.sky !== 'clock' && p.theme === 'light'
+              ? 'day'
+              : asks('(prefers-color-scheme: dark)') || h < 5 || h >= 20
+                ? 'night'
+                : h < 8
+                  ? 'dawn'
+                  : h < 17
+                    ? 'day'
+                    : 'dusk';
+        d.sky = sky;
+        d.theme = sky === 'night' ? 'dark' : 'light';
         d.accent = /^(violet|teal|amber|rose|graphite)$/.test(p.accent) ? p.accent : 'blue';
         d.contrast = p.contrast === 'normal' || p.contrast === 'high' ? p.contrast : asks('(prefers-contrast: more)') ? 'high' : 'normal';
         d.density = p.density === 'compact' ? 'compact' : 'comfortable';

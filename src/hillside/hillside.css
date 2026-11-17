@@ -100,3 +100,46 @@
     transition: none;
   }
 }
+
+/* ---- the live sky, in the page's sky -------------------------------- */
+
+/* A band across the top of the page, as tall as the wash it is drawn over
+   (theme.css's --sky-end), under everything on the page and scrolling away
+   with it. The scene inside is taller than the band and has its crest near
+   its foot, so only sky and clouds are in view, and a mask fades it out
+   downwards as the wash fades.
+
+   It is laid over the wash with `screen`, which can only lighten what is
+   under it. So by day, dawn and dusk the dark words on the sky keep at
+   least the contrast theme.test.js measured for the wash alone, whatever
+   the scene is showing; at night, where the words are light, the scene is
+   turned down far enough that a cloud under them still leaves them
+   readable. The scene is also drained of its colour and pushed to black
+   and white first: its own blue would only bleach the wash, and this way
+   the sky stays the page's colour and the clouds (and at night the stars)
+   are the only things that show. */
+.live-sky {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--sky-end);
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.live-sky-scene {
+  --crest: 96%;
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1100px;
+  opacity: 0.8;
+  filter: grayscale(1) brightness(0.62) contrast(2.4);
+  -webkit-mask-image: linear-gradient(180deg, #000 0, rgb(0 0 0 / 0.6) var(--sky-mid-at), transparent var(--sky-end));
+  mask-image: linear-gradient(180deg, #000 0, rgb(0 0 0 / 0.6) var(--sky-mid-at), transparent var(--sky-end));
+}
+
+:root[data-theme='dark'] .live-sky-scene {
+  opacity: 0.45;
+}

@@ -144,6 +144,10 @@ describe('whenLabel', () => {
     expect(whenLabel(new Date(2026, 10, 20, 9, 0).toISOString(), now)).toBe('Fri, Nov 20, 9:00 AM');
     expect(whenLabel(new Date(2027, 0, 2, 9, 0).toISOString(), now)).toMatch(/2027/);
   });
+  it('leaves the weekday out when asked, for a narrow column', () => {
+    expect(whenLabel(new Date(2026, 10, 9, 18, 0).toISOString(), now, { weekday: false })).toBe('Nov 9, 6:00 PM');
+    expect(whenLabel(new Date(2026, 10, 11, 18, 0).toISOString(), now, { weekday: false })).toBe('Yesterday, 6:00 PM');
+  });
   it('is empty for nothing', () => {
     expect(whenLabel(null, now)).toBe('');
   });

@@ -7,15 +7,14 @@
 // "video" look like the answer forever.
 
 import { useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import BarList from '../charts/BarList.jsx';
 import { fmtRate } from '../charts/format.js';
-import Button from '../components/Button.jsx';
 import Figures from '../components/Figures.jsx';
 import { fmtInt } from '../lib/locale.js';
 import { periodPhrase } from '../shell/bits.jsx';
 import { CONTENT_MIN_POSTS, contentModel, contentStandout } from './models.js';
-import { Card, GroupTable, HowCounted, ModeToggle, fig } from './parts.jsx';
+import { Card, GroupTable, HowCounted, ModeToggle, SyncEmpty, fig } from './parts.jsx';
 
 const MEASURES = [
   { key: 'typical', label: 'Typical post', title: 'What the middle post of each group earns' },
@@ -58,7 +57,8 @@ export function standoutSentence(groups, overall, against, noun = (g) => g.label
   return `${noun(s.best)} typically earn${noun(s.best).endsWith('s') ? '' : 's'} ${fmtRate(s.best.typical)}, against ${versus}.`;
 }
 
-function Grouped({ title, sub, groups, head, ariaLabel, insight = null, labelWidth = '120px' }) {
+/** A group chart. `actions` go on the line under it, after Show as table (the report's lead chart has them). */
+function Grouped({ title, sub, groups, head, ariaLabel, insight = null, actions = null }) {
   const [measure, setMeasure] = useState('typical');
   const shown = groups.filter((g) => g.posts > 0);
   return (
@@ -66,8 +66,8 @@ function Grouped({ title, sub, groups, head, ariaLabel, insight = null, labelWid
       {insight && <p className="report-insight">{insight}</p>}
       {shown.length ? (
         <>
-          <BarList ariaLabel={ariaLabel} labelWidth={labelWidth} rows={shown.map((g) => barRow(g, measure))} />
-          <GroupTable rows={shown} columns={GROUP_COLUMNS(head)} />
+          <BarList ariaLabel={ariaLabel} rows={shown.map((g) => barRow(g, measure))} />
+          <GroupTable rows={shown} columns={GROUP_COLUMNS(head)} actions={actions} />
         </>
       ) : (
         <p className="empty">No posts in this window.</p>
@@ -83,19 +83,21 @@ function Ranked({ title, sub, rows, name, head, empty, render = (v) => v, limit 
   // By typical post: only groups with one, so a single lucky post can't lead.
   const ordered = measure === 'typical' ? labelled.filter((r) => r.typical != null).sort((a, b) => b.typical - a.typical || b.posts - a.posts) : labelled;
   const shown = all ? ordered : ordered.slice(0, limit);
+  // Showing every bar is one more thing to do with the chart, so it joins
+  // Show as table on the line under it rather than taking a line of its own.
+  const more =
+    ordered.length > limit ? (
+      <button type="button" className="link-action" onClick={() => setAll((v) => !v)}>
+        {all ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
+        {all ? 'Show fewer' : `Show all ${fmtInt(ordered.length)}`}
+      </button>
+    ) : null;
   return (
     <Card title={title} sub={sub} tools={rows.length ? <ModeToggle value={measure} onChange={setMeasure} options={MEASURES} label={`${title}: measure`} /> : null}>
       {shown.length ? (
         <>
-          <BarList ariaLabel={title} labelWidth="1fr" rows={shown.map((r) => barRow(r, measure, r.label))} />
-          {ordered.length > limit && (
-            <div className="card-foot">
-              <Button size="sm" variant="ghost" onClick={() => setAll((v) => !v)}>
-                {all ? 'Show fewer' : `Show all ${fmtInt(ordered.length)}`}
-              </Button>
-            </div>
-          )}
-          <GroupTable rows={ordered} columns={GROUP_COLUMNS(head)} />
+          <BarList ariaLabel={title} rows={shown.map((r) => barRow(r, measure, r.label))} />
+          <GroupTable rows={ordered} columns={GROUP_COLUMNS(head)} actions={more} />
         </>
       ) : (
         <p className="empty">{rows.length ? `None used in ${CONTENT_MIN_POSTS} posts or more yet.` : empty}</p>
@@ -104,25 +106,15 @@ function Ranked({ title, sub, rows, name, head, empty, render = (v) => v, limit 
   );
 }
 
-export default function ContentReport({ archive, period, nowMs }) {
+export default function ContentReport({ archive, period, nowMs, actions = null }) {
   const m = contentModel(archive, period, nowMs);
-  if (!archive.posts.length) return <p className="card empty">The post archive is empty. Run a sync to build it.</p>;
+  if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   if (!m.ready) {
-    const syncing = Boolean(archive.sync);
     return (
-      <div className="card empty-page">
-        <h2 className="card-title">One more sync, and this report can be drawn</h2>
-        <p className="card-sub">
-          Your archive was built before Virga kept what each post is made of: its length, tags, links, media and alt text. A sync reads
-          them from your repo in one download and keeps every count you already have.
-        </p>
-        <div>
-          <Button variant="primary" disabled={syncing} onClick={() => archive.runSync('incremental')}>
-            <RefreshCw size={15} aria-hidden="true" />
-            {syncing ? 'Syncing…' : 'Sync now'}
-          </Button>
-        </div>
-      </div>
+      <SyncEmpty archive={archive}>
+        One more sync, and this report can be drawn. Your archive was built before Virga kept what each post is made of: its length,
+        tags, links, media and alt text. A sync reads them from your repo in one download and keeps every count you already have.
+      </SyncEmpty>
     );
   }
 
@@ -151,6 +143,7 @@ export default function ContentReport({ archive, period, nowMs }) {
           head="Format"
           ariaLabel="Posts by format"
           groups={m.formats}
+          actions={actions}
           insight={standoutSentence(m.formats, m.typical, 'text', (g) => (g.key === 'text' ? 'Text-only posts' : g.key === 'image' ? 'Posts with images' : g.key === 'video' ? 'Posts with video' : g.key === 'link' ? 'Posts with a link card' : g.key === 'gif' ? 'Posts with a GIF' : 'Quote posts'))}
         />
         <Grouped
@@ -181,11 +174,10 @@ export default function ContentReport({ archive, period, nowMs }) {
           head="Place"
           ariaLabel="Posts by place in a thread"
           groups={m.places}
-          labelWidth="140px"
         />
         {m.langs.length > 1 && (
           <Card title="Languages" sub="As each post is marked. A post can carry more than one.">
-            <BarList ariaLabel="Posts by language" labelWidth="120px" rows={m.langs.map((l) => ({ key: l.lang, label: languageName(l.lang), value: l.posts }))} />
+            <BarList ariaLabel="Posts by language" rows={m.langs.map((l) => ({ key: l.lang, label: languageName(l.lang), value: l.posts }))} />
           </Card>
         )}
       </div>

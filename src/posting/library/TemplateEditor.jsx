@@ -1,7 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { LogIn, Plus, Trash2, X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
+import Menu from '../../components/Menu.jsx';
 import Segmented from '../../components/Segmented.jsx';
 import { requestReauth } from '../../accounts/accountCopy.js';
 import { useToast } from '../../shell/bits.jsx';
@@ -71,9 +72,11 @@ function startingDraft(template, seed) {
  *
  * `template` edits that one; `seed` (`{ text, embed }`, or `{ draft, note }`
  * from draftFromReply) starts a new one from a post ("Save this as a
- * template"). `onSaved(template)` after a save.
+ * template"). `onSaved(template)` after a save. `onDeleting(rkey)` just
+ * before the template is deleted, and `onDeleting(null)` if that fails, so
+ * a list can keep the focus when its row goes.
  */
-export default function TemplateEditor({ open, onClose, did, template = null, seed = null, onSaved }) {
+export default function TemplateEditor({ open, onClose, did, template = null, seed = null, onSaved, onDeleting }) {
   // The dialog's own close (Escape, the backdrop, the X) asks the form
   // first, which may have changes to keep.
   const closeRef = useRef(null);
@@ -84,12 +87,12 @@ export default function TemplateEditor({ open, onClose, did, template = null, se
       title={template ? 'Edit the template' : 'New template'}
       className="lib-dialog tpl-dialog"
     >
-      {open && <EditorForm did={did} template={template} seed={seed} onClose={onClose} onSaved={onSaved} closeRef={closeRef} />}
+      {open && <EditorForm did={did} template={template} seed={seed} onClose={onClose} onSaved={onSaved} onDeleting={onDeleting} closeRef={closeRef} />}
     </Dialog>
   );
 }
 
-function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
+function EditorForm({ did, template, seed, onClose, onSaved, onDeleting, closeRef }) {
   const uid = useId();
   const toast = useToast();
   const textRef = useRef(null);
@@ -293,11 +296,13 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
     if (!template?.rkey) return;
     setSaving(true);
     setServerError(null);
+    onDeleting?.(template.rkey);
     try {
       await remove(template.rkey);
       toast?.('Template deleted.');
       onClose?.();
     } catch (err) {
+      onDeleting?.(null);
       setServerError(err);
       setConfirmDelete(false);
     } finally {
@@ -354,19 +359,18 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
           value={draft.text}
           onChange={(e) => set({ text: e.target.value })}
         />
+        {/* One line under the text: what can be put in it, and its count. */}
         <div className="tpl-text-foot">
-          <div className="tpl-inserts" role="group" aria-label="Put in a blank">
-            <Button size="sm" onClick={() => setBlankLabel('')}>
-              <Plus size={14} aria-hidden="true" />
-              Add a blank
-            </Button>
-            {CONTEXT_INSERTS.map((c) => (
-              <Button key={c.key} size="sm" variant="ghost" onClick={() => insertToken(c.key)}>
-                {c.label}
-              </Button>
-            ))}
-          </div>
-          <span className={`field-hint num${textCount > TEMPLATE_LIMITS.textGraphemes ? ' is-over' : ''}`}>
+          <Menu
+            variant="link"
+            label="Insert"
+            align="start"
+            items={[
+              { key: 'blank', label: 'A blank…', onSelect: () => setBlankLabel('') },
+              ...CONTEXT_INSERTS.map((c) => ({ key: c.key, label: c.label, onSelect: () => insertToken(c.key) })),
+            ]}
+          />
+          <span className={`field-hint num tpl-count${textCount > TEMPLATE_LIMITS.textGraphemes ? ' is-over' : ''}`}>
             {textCount.toLocaleString(activeLocale())} of {TEMPLATE_LIMITS.textGraphemes}
           </span>
         </div>
@@ -413,28 +417,32 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
           {blanks.asked.map((v) => (
             <div key={v.key} className="tpl-blank">
               <span className="tpl-blank-key mono">{`{{${v.key}}}`}</span>
-              <div className="field">
-                <label className="field-label" htmlFor={`${uid}-q-${v.key}`}>
-                  Question
-                </label>
-                <input
-                  id={`${uid}-q-${v.key}`}
-                  className="input"
-                  value={v.label || ''}
-                  placeholder={`Fill in “${v.key}”`}
-                  onChange={(e) => setDraft((d) => patchVariable(d, v.key, { label: e.target.value }))}
-                />
-              </div>
-              <div className="field">
-                <label className="field-label" htmlFor={`${uid}-h-${v.key}`}>
-                  Example or hint
-                </label>
-                <input
-                  id={`${uid}-h-${v.key}`}
-                  className="input"
-                  value={v.hint || ''}
-                  onChange={(e) => setDraft((d) => patchVariable(d, v.key, { hint: e.target.value }))}
-                />
+              {/* Side by side where there is room: what it asks, and the
+                  example that goes with it. */}
+              <div className="tpl-blank-fields">
+                <div className="field">
+                  <label className="field-label" htmlFor={`${uid}-q-${v.key}`}>
+                    Question
+                  </label>
+                  <input
+                    id={`${uid}-q-${v.key}`}
+                    className="input"
+                    value={v.label || ''}
+                    placeholder={`Fill in “${v.key}”`}
+                    onChange={(e) => setDraft((d) => patchVariable(d, v.key, { label: e.target.value }))}
+                  />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor={`${uid}-h-${v.key}`}>
+                    Example or hint
+                  </label>
+                  <input
+                    id={`${uid}-h-${v.key}`}
+                    className="input"
+                    value={v.hint || ''}
+                    onChange={(e) => setDraft((d) => patchVariable(d, v.key, { hint: e.target.value }))}
+                  />
+                </div>
               </div>
               <Segmented
                 size="sm"
@@ -640,8 +648,7 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
         <div className="callout callout--danger" role="alert">
           <span>{serverError.message || 'The template couldn’t be saved. Try again.'}</span>
           {serverError.permission && (
-            <Button size="sm" variant="primary" onClick={() => requestReauth(did, { immediate: true })}>
-              <LogIn size={14} aria-hidden="true" />
+            <Button size="sm" onClick={() => requestReauth(did, { immediate: true })}>
               Sign in again
             </Button>
           )}
@@ -675,8 +682,8 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
       ) : (
         <div className="tpl-actions">
           {template?.rkey && (
-            <Button ref={deleteRef} variant="ghost" className="tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
-              <Trash2 size={14} aria-hidden="true" />
+            <Button ref={deleteRef} className="is-danger tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
+              <Trash2 size={15} aria-hidden="true" />
               Delete
             </Button>
           )}

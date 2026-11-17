@@ -1,11 +1,12 @@
 // Settings › Account: every account signed in here, how each is signed in,
 // and the ways to switch, lengthen, end or forget it.
 
-import { useMemo, useState } from 'react';
-import { ExternalLink, LogIn, LogOut, Timer, Trash2, UserPlus } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ExternalLink, LogOut, Timer, Trash2, UserPlus } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
+import { MoreMenu } from '../components/Menu.jsx';
 import { backendHost } from '../config.js';
 import { Link } from '../lib/router.jsx';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
@@ -19,7 +20,11 @@ function rowName(account) {
   return accountName({ displayName: account.displayName, handle: account.handle }, account.did);
 }
 
-function RemoveAccountDialog({ account, onClose }) {
+function profileUrl(account) {
+  return `https://bsky.app/profile/${encodeURIComponent(account.handle || account.did)}`;
+}
+
+function RemoveAccountDialog({ account, onClose, onRemoved }) {
   const { removeAccount, backendFor } = useAtprotoSession();
   const [deleteData, setDeleteData] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -28,11 +33,14 @@ function RemoveAccountDialog({ account, onClose }) {
   const work = usePendingWork(listed, backendFor, Boolean(account));
   async function confirm() {
     setBusy(true);
+    let removed = false;
     try {
       await removeAccount(account.did, { deleteData });
+      removed = true;
     } finally {
       setBusy(false);
       setDeleteData(false);
+      if (removed) onRemoved?.(account);
       onClose();
     }
   }
@@ -68,79 +76,113 @@ function RemoveAccountDialog({ account, onClose }) {
   );
 }
 
+/**
+ * One account: who it is, how it's signed in, then at most one thing to do
+ * in words (sign back in, sign in again, or switch to it) and a ⋯ for the
+ * rest, with removing it from this browser last.
+ */
 function AccountRow({ account, active, onRemove, signOutGuard }) {
   const { switching, signOutAccount, authMode } = useAtprotoSession();
   const actions = useAccountActions();
   const [busy, setBusy] = useState(false);
   const checking = signOutGuard.checking === account.did;
   const name = rowName(account);
-  const status = statusLabel(account.status, { active, switching: switching === account.did });
   const needsSignIn = account.status === 'needsSignIn';
-  const tone = needsSignIn ? 'badge--warn' : active ? 'badge--accent' : 'badge--outline';
+  const label = statusLabel(account.status, { active, switching: switching === account.did });
+  // The open account is marked after its name, as in the account menu: the
+  // accent's dot and quiet words.
+  const current = active && !needsSignIn && account.status !== 'unknown' && switching !== account.did;
+  // Any other state is the first fact about the sign-in, on the line under
+  // the name, as the account menu has it: signed out is a problem to find,
+  // so a badge; the rest are quiet words. A menu item can't show that it's
+  // working, so a sign-out under way says so there too.
+  const working = busy ? 'Signing out…' : checking ? 'Checking…' : null;
+  const state = working || (current ? null : label);
+  // The name is the handle when there's no display name; it isn't said twice.
+  const handle = account.displayName && account.handle ? account.handle : null;
+
+  function signOut() {
+    if (busy || checking) return;
+    signOutGuard.guard(account, async () => {
+      setBusy(true);
+      try {
+        await signOutAccount(account.did);
+      } finally {
+        setBusy(false);
+      }
+    });
+  }
+
+  let action = null;
+  if (needsSignIn) {
+    action = (
+      <Button size="sm" onClick={() => requestReauth(account.did, { immediate: true })} aria-label={`Sign back in as ${name}`}>
+        Sign back in
+      </Button>
+    );
+  } else if (account.status === 'unknown') {
+    action = (
+      <Button
+        size="sm"
+        onClick={() => requestReauth(account.did, { immediate: true })}
+        aria-label={`Sign in again as ${name}`}
+        title="Virga couldn’t confirm this sign-in; signing in again settles it"
+      >
+        Sign in again
+      </Button>
+    );
+  } else if (!active) {
+    action = (
+      <Button size="sm" disabled={Boolean(switching)} onClick={() => actions.open(account)} aria-label={`Switch to ${name}`}>
+        Switch
+      </Button>
+    );
+  }
+
+  const items = [
+    !needsSignIn &&
+      offersLongerSession(account, authMode) && {
+        key: 'lengthen',
+        icon: Timer,
+        label: 'Reconnect for a longer session',
+        hint: 'Sign in again through Virga’s server',
+        onSelect: () => actions.lengthen(account),
+      },
+    { key: 'bluesky', icon: ExternalLink, label: 'Open on Bluesky', onSelect: () => window.open(profileUrl(account), '_blank', 'noopener') },
+    !needsSignIn && { key: 'sign-out', icon: LogOut, label: 'Sign out', onSelect: signOut },
+    { separator: true },
+    { key: 'remove', icon: Trash2, label: 'Remove from this browser', tone: 'danger', onSelect: () => onRemove(account) },
+  ];
 
   return (
-    <li className="accounts-row" aria-current={active ? 'true' : undefined}>
+    <li className="accounts-row" data-did={account.did} aria-current={active ? 'true' : undefined}>
       <Avatar src={account.avatar} name={name} size="lg" />
       <div className="accounts-row-text">
         <span className="accounts-row-name">
-          {name}
-          {status && <span className={`badge ${tone}`}>{status}</span>}
+          <span className="accounts-row-who">{name}</span>
+          {current && label && (
+            <span className="accounts-row-current">
+              <span className="dot dot--current" aria-hidden="true" />
+              {label}
+            </span>
+          )}
         </span>
-        {account.handle && <span className="muted">@{account.handle}</span>}
-        <span className="accounts-row-meta">{modeLabel(account.mode)}</span>
+        <span className="meta accounts-row-meta">
+          {state && <span>{needsSignIn && !working ? <span className="badge badge--warn">{state}</span> : state}</span>}
+          {handle && (
+            <span>
+              <a className="accounts-row-handle" href={profileUrl(account)} target="_blank" rel="noopener noreferrer" title="Open on Bluesky">
+                @{handle}
+                <ExternalLink size={12} aria-hidden="true" />
+              </a>
+            </span>
+          )}
+          <span>{modeLabel(account.mode)}</span>
+        </span>
       </div>
-      <div className="accounts-row-actions">
-        {needsSignIn ? (
-          <Button variant="primary" size="sm" onClick={() => requestReauth(account.did, { immediate: true })}>
-            <LogIn size={15} aria-hidden="true" />
-            Sign back in
-          </Button>
-        ) : (
-          !active && (
-            <Button size="sm" disabled={Boolean(switching)} onClick={() => actions.open(account)} aria-label={`Switch to ${name}`}>
-              Switch
-            </Button>
-          )
-        )}
-        {account.status === 'unknown' && (
-          <Button size="sm" onClick={() => requestReauth(account.did, { immediate: true })} title="Virga couldn’t confirm this sign-in; signing in again settles it">
-            <LogIn size={15} aria-hidden="true" />
-            Sign in again
-          </Button>
-        )}
-        {!needsSignIn && offersLongerSession(account, authMode) && (
-          <Button size="sm" onClick={() => actions.lengthen(account)} title="Sign in again through Virga’s server">
-            <Timer size={15} aria-hidden="true" />
-            Reconnect for a longer session
-          </Button>
-        )}
-        <Button as="a" size="sm" href={`https://bsky.app/profile/${encodeURIComponent(account.handle || account.did)}`} target="_blank" rel="noopener noreferrer" aria-label={`Open ${name} on Bluesky`}>
-          <ExternalLink size={15} aria-hidden="true" />
-          Bluesky
-        </Button>
-        {!needsSignIn && (
-          <Button
-            size="sm"
-            disabled={busy || checking}
-            aria-label={`Sign out of ${name}`}
-            onClick={() =>
-              signOutGuard.guard(account, async () => {
-                setBusy(true);
-                try {
-                  await signOutAccount(account.did);
-                } finally {
-                  setBusy(false);
-                }
-              })
-            }
-          >
-            <LogOut size={15} aria-hidden="true" />
-            {busy ? 'Signing out…' : checking ? 'Checking…' : 'Sign out'}
-          </Button>
-        )}
-        <Button size="sm" variant="ghost" icon aria-label={`Remove ${name} from this browser`} title="Remove from this browser" onClick={() => onRemove(account)}>
-          <Trash2 size={15} aria-hidden="true" />
-        </Button>
+      <div className="row-actions">
+        {action}
+        <MoreMenu className="row-menu" label={`More for ${name}`} items={items} />
       </div>
     </li>
   );
@@ -156,66 +198,106 @@ export default function AccountsSettings() {
   const signedIn = accounts.filter((a) => a.status !== 'needsSignIn');
   const ordered = [...accounts].sort((a, b) => (a.did === did ? -1 : b.did === did ? 1 : 0));
 
+  // A removed account's ⋯ had the focus, and goes with its row: the focus
+  // moves to the ⋯ of the row that takes its place, or of the new last row.
+  const listRef = useRef(null);
+  const [refocus, setRefocus] = useState(null);
+  useEffect(() => {
+    if (refocus == null) return;
+    const rows = [...(listRef.current?.children || [])];
+    rows[Math.min(refocus, rows.length - 1)]?.querySelector('.row-menu .menu-button')?.focus();
+    setRefocus(null);
+  }, [accounts, refocus]);
+
+  // The sections are Settings' own (src/settings/settings.css): a heading,
+  // a rule in ink, then rows between hairlines.
   return (
     <>
-      <section className="card settings-section">
-        <div className="settings-section-head">
-          <h2 className="card-title">Accounts</h2>
-          <p className="card-sub">Each account keeps its own archive and its own dashboards in this browser. Switching doesn’t sign anyone out.</p>
-        </div>
-        <ul className="accounts-list">
-          {ordered.map((a) => (
-            <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} signOutGuard={signOutGuard} />
-          ))}
-        </ul>
-        <div className="settings-actions">
-          <Button onClick={() => setAdding(true)}>
-            <UserPlus size={15} aria-hidden="true" />
+      <section className="settings-section">
+        <div className="settings-section-head card-head accounts-head">
+          <div>
+            <h2 className="card-title">Accounts</h2>
+            <p className="card-sub">
+              Each account keeps its own archive and its own dashboards in this browser. Switching doesn’t sign anyone out. Your DID, your PDS
+              and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
+            </p>
+          </div>
+          <button type="button" className="link-action" onClick={() => setAdding(true)}>
+            <UserPlus size={14} aria-hidden="true" />
             Add an account
-          </Button>
+          </button>
+        </div>
+        <div className="settings-section-body">
+          <ul className="accounts-list" ref={listRef}>
+            {ordered.map((a) => (
+              <AccountRow key={a.did} account={a} active={a.did === did} onRemove={setRemoving} signOutGuard={signOutGuard} />
+            ))}
+          </ul>
           {signedIn.length > 1 && (
-            <Button variant="danger" onClick={() => setSigningOutAll(true)}>
-              Sign out of all {signedIn.length} accounts
-            </Button>
+            <div className="card-foot">
+              <button type="button" className="link-action" onClick={() => setSigningOutAll(true)}>
+                <LogOut size={14} aria-hidden="true" />
+                Sign out of all {signedIn.length} accounts
+              </button>
+            </div>
           )}
         </div>
       </section>
 
-      <section className="card settings-section">
-        <div className="settings-section-head">
-          <h2 className="card-title">How long a sign-in lasts</h2>
-        </div>
-        <ul className="perm-list">
-          <li>
-            <strong>Browser session.</strong> The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as
-            long as that server allows an app that runs only in a browser, which is usually up to two weeks.
-          </li>
-          <li>
-            <strong>Long session through Virga’s server.</strong> The sign-in is held by Virga’s server ({backendHost()}), which passes your
-            requests on to your account and stays signed in for as long as you keep using it. Scheduled posts, post timers and the post
-            adviser need one, because they run while this browser is closed.
-          </li>
-        </ul>
-        <p className="settings-text">
-          Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and post
-          timers keep running while any browser or device is signed in to Virga with a long session for the account; signing out of the
-          last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
-          {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}
-        </p>
-      </section>
-
-      <section className="card settings-section">
-        <div className="settings-section-head">
-          <h2 className="card-title">Identity</h2>
-        </div>
-        <p className="settings-text">
-          Your DID, your PDS and every handle you’ve had are in the <Link to="/tools/identity">Identity inspector</Link>.
-        </p>
+      {/* What the two kinds of sign-in mean, for whoever wants to know:
+          closed until it's opened, so the page is the accounts first. */}
+      <section className="settings-section">
+        <details className="disclosure accounts-how">
+          <summary>How long a sign-in lasts</summary>
+          <p className="accounts-how-intro">There are two kinds. Each account above says which it has.</p>
+          <div className="settings-section-body">
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <div className="settings-row-label">Browser session</div>
+              </div>
+              <div className="settings-row-control">
+                <p className="accounts-note">
+                  The sign-in is kept by this browser, which talks to your account’s server directly. It lasts as long as that server allows
+                  an app that runs only in a browser, which is usually up to two weeks.
+                </p>
+              </div>
+            </div>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <div className="settings-row-label">Long session through Virga’s server</div>
+              </div>
+              <div className="settings-row-control">
+                <p className="accounts-note">
+                  The sign-in is held by Virga’s server ({backendHost()}), which passes your requests on to your account and stays signed in
+                  for as long as you keep using it. Scheduled posts, post timers and the post adviser need one, because they run while this
+                  browser is closed.
+                </p>
+              </div>
+            </div>
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <div className="settings-row-label">Signing out</div>
+              </div>
+              <div className="settings-row-control">
+                <p className="accounts-note">
+                  Signing out ends the session in this browser only: your other browsers and devices stay signed in. Scheduled posts and
+                  post timers keep running while any browser or device is signed in to Virga with a long session for the account; signing
+                  out of the last one stops them until you sign in that way again. Your archive is never sent to Virga’s server.
+                  {authMode !== 'backend' && ' This copy of Virga signs new accounts in through the browser.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       <AddAccountDialog open={adding} onClose={() => setAdding(false)} />
       <SignOutAllDialog open={signingOutAll} onClose={() => setSigningOutAll(false)} />
-      <RemoveAccountDialog account={removing} onClose={() => setRemoving(null)} />
+      <RemoveAccountDialog
+        account={removing}
+        onClose={() => setRemoving(null)}
+        onRemoved={(gone) => setRefocus(Math.max(0, ordered.findIndex((a) => a.did === gone.did)))}
+      />
       {signOutGuard.dialog}
     </>
   );

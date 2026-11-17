@@ -1,3 +1,4 @@
+import { isValidElement } from 'react';
 import './charts.css';
 import { activeLocale } from '../lib/locale.js';
 
@@ -5,20 +6,25 @@ import { activeLocale } from '../lib/locale.js';
  * Ranked rows, each a label, a bar and its value: the share of the biggest
  * row, read at a glance, with the exact number beside it. `rows` are
  * `{ key, label, value, icon?, display?, title? }`; `label` may be markup
- * (a <code> NSID, a link).
+ * (a <code> NSID, a link). The label column is the list's own choice, not
+ * the caller's (charts.css): every list of words starts its bars at the
+ * same place, and a list of NSIDs (labels in <code>) a little further in.
  */
-export default function BarList({ rows, labelWidth = '1.2fr', format = (v) => v.toLocaleString(activeLocale()), max = null, ariaLabel }) {
+export default function BarList({ rows, format = (v) => v.toLocaleString(activeLocale()), max = null, ariaLabel }) {
   if (!rows?.length) return null;
   const top = max ?? Math.max(...rows.map((r) => r.value), 1);
+  const nsids = rows.some((r) => isValidElement(r.label) && r.label.type === 'code');
   return (
-    <ol className="barlist" aria-label={ariaLabel} style={{ '--barlist-label': labelWidth }}>
+    <ol className={`barlist${nsids ? ' barlist--nsid' : ''}`} aria-label={ariaLabel}>
       {rows.map((r) => {
         const Icon = r.icon;
         return (
           <li key={r.key ?? r.label} className="barlist-row" title={r.title}>
             <span className="barlist-label">
               {Icon && <Icon aria-hidden="true" />}
-              {r.label}
+              <span className="barlist-label-text" title={plainText(r.label)}>
+                {r.label}
+              </span>
             </span>
             <span className="barlist-track" aria-hidden="true">
               <span className="barlist-fill" style={{ width: `${top ? (r.value / top) * 100 : 0}%` }} />
@@ -29,4 +35,11 @@ export default function BarList({ rows, labelWidth = '1.2fr', format = (v) => v.
       })}
     </ol>
   );
+}
+
+/** A label's words, for its title when they are cut short; markup gives its own text if it is plain. */
+function plainText(label) {
+  if (typeof label === 'string' || typeof label === 'number') return String(label);
+  if (isValidElement(label) && typeof label.props.children === 'string') return label.props.children;
+  return undefined;
 }

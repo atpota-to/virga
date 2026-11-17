@@ -4,7 +4,7 @@
 // confirmation every delete asks.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { onPostingEvent } from '../events.js';
@@ -88,7 +88,6 @@ export function LoadError({ message, onRetry }) {
       <span>{message}</span>
       {onRetry && (
         <Button size="sm" onClick={onRetry}>
-          <RefreshCw size={14} aria-hidden="true" />
           Try again
         </Button>
       )}

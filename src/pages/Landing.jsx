@@ -1,48 +1,31 @@
-import { useRef } from 'react';
 import { LayoutDashboard, Lock, Wrench } from 'lucide-react';
-import Hillside from '../hillside/Hillside.jsx';
+import LiveSky from '../hillside/LiveSky.jsx';
 import { APP_NAME } from '../config.js';
 import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
+import { LogoMark, useSkyTaps } from '../shell/bits.jsx';
 import SignInFlow from '../signin/SignInFlow.jsx';
 import '../accounts/accounts.css';
 
 /**
  * The front page, for someone who isn't signed in: what this is, and the
  * sign-in (src/signin/SignInFlow.jsx), which lists the accounts this browser
- * remembers above the one field that starts a new one. All the copy here is
+ * remembers above the one field that starts a new one. It sits on the sky
+ * as the app does, with the mark where the app has it. All the copy here is
  * a draft.
  */
 export default function Landing({ composing = false }) {
-  const { sky, setPref } = usePreferences();
-  const taps = useRef({ n: 0, at: 0 });
-
+  const { liveSky } = usePreferences();
   // Five taps on the mark: the live sky, as anywhere else in Virga.
-  function tapLogo() {
-    const now = Date.now();
-    const t = taps.current;
-    t.n = now - t.at < 1500 ? t.n + 1 : 1;
-    t.at = now;
-    if (t.n >= 5) {
-      t.n = 0;
-      setPref('sky', !sky);
-    }
-  }
+  const tapLogo = useSkyTaps();
 
   return (
-    <div className="landing" data-sky={sky || undefined}>
-      {sky && (
-        <div className="landing-sky" aria-hidden="true">
-          <Hillside day={0} depth={0.8} intro />
-        </div>
-      )}
+    <div className="landing">
+      {liveSky && <LiveSky />}
       <header className="landing-bar">
         <button type="button" className="brand" onClick={tapLogo} aria-label={APP_NAME}>
-          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
-            <rect width="24" height="24" rx="6" fill="var(--accent)" />
-            <path d="M6 11a6 6 0 0 1 12 0M9 14l-1 4.5M12.5 14l-1 6M16 14l-1 3.5" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
+          <LogoMark />
           <span className="brand-name">{APP_NAME}</span>
         </button>
       </header>
@@ -66,66 +49,7 @@ export default function Landing({ composing = false }) {
             </p>
           </div>
 
-          <div className="landing-preview" aria-hidden="true">
-            <div className="preview-window">
-              <div className="preview-side">
-                <span className="preview-logo" />
-                <span />
-                <span />
-                <span />
-                <span className="is-on" />
-                <span />
-                <span />
-              </div>
-              <div className="preview-main">
-                <div className="preview-tiles">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="preview-tile">
-                      <span className="preview-line short" />
-                      <span className="preview-line big" />
-                      <svg viewBox="0 0 100 24" preserveAspectRatio="none">
-                        <path d={['M0 20L20 18L40 16L60 12L80 9L100 4', 'M0 14L20 17L40 10L60 13L80 7L100 9', 'M0 18L20 15L40 17L60 11L80 12L100 6', 'M0 12L20 14L40 9L60 15L80 10L100 11'][i]} />
-                      </svg>
-                    </div>
-                  ))}
-                </div>
-                <div className="preview-row">
-                  <div className="preview-card wide">
-                    <span className="preview-line short" />
-                    <svg viewBox="0 0 300 110" preserveAspectRatio="none" className="preview-chart">
-                      <path className="area" d="M0 96L25 92L50 90L75 86L100 84L125 79L150 76L175 70L200 62L225 50L250 40L275 32L300 26V110H0Z" />
-                      <path d="M0 96L25 92L50 90L75 86L100 84L125 79L150 76L175 70L200 62L225 50L250 40L275 32L300 26" />
-                    </svg>
-                  </div>
-                  <div className="preview-card">
-                    <span className="preview-line short" />
-                    {[92, 40, 30, 12].map((w, i) => (
-                      <span key={i} className="preview-bar">
-                        <span style={{ width: `${w}%` }} />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="preview-row">
-                  <div className="preview-card">
-                    {[0, 1, 2].map((i) => (
-                      <span key={i} className="preview-person">
-                        <span className="preview-dot" />
-                        <span className="preview-line" />
-                      </span>
-                    ))}
-                  </div>
-                  <div className="preview-card">
-                    <span className="preview-heat">
-                      {Array.from({ length: 36 }, (_, i) => (
-                        <span key={i} data-step={[1, 2, 1, 3, 2, 1, 2, 3, 4, 3, 2, 1, 1, 2, 3, 5, 4, 2, 1, 3, 4, 6, 5, 3, 1, 2, 3, 4, 3, 2, 1, 1, 2, 2, 1, 1][i]} />
-                      ))}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Sketch />
         </section>
 
         <section className="landing-points" aria-label="What you get">
@@ -157,8 +81,95 @@ export default function Landing({ composing = false }) {
           <Link to={TERMS_PATH}>Terms</Link>
           <Link to={PRIVACY_PATH}>Privacy</Link>
         </nav>
-        <span>Draft copy</span>
       </footer>
+    </div>
+  );
+}
+
+// How wide each bar of the sketch is, as a share of its column: a label, the
+// figure under it, and the line under that.
+const SKETCH_FIGURES = [
+  [46, 72, 58],
+  [62, 44, 76],
+  [54, 66, 50],
+  [34, 30, 64],
+];
+const SKETCH_POSTS = [88, 72, 80];
+const SKETCH_PEOPLE = [58, 46, 66];
+// A best-time grid: four days of fourteen hours, a step of heat in each.
+const SKETCH_HEAT = [
+  [0, 1, 1, 2, 3, 2, 1, 2, 4, 3, 2, 1, 1, 0],
+  [1, 1, 2, 3, 5, 4, 2, 3, 6, 5, 3, 2, 1, 1],
+  [0, 1, 2, 2, 4, 3, 2, 2, 5, 4, 2, 2, 1, 0],
+  [0, 0, 1, 2, 2, 3, 1, 1, 3, 2, 2, 1, 0, 0],
+].flat();
+
+/**
+ * What is inside, as a picture: a dashboard drawn in shapes, not numbers
+ * (styles/app.css draws it from the theme's tokens). Decoration, so it is
+ * hidden from a screen reader; the three points under it say the same in
+ * words.
+ */
+function Sketch() {
+  return (
+    <div className="landing-sketch" aria-hidden="true">
+      <div className="sketch-figures">
+        {SKETCH_FIGURES.map(([label, number, note], i) => (
+          <div key={i} className="sketch-figure" data-on={i === 0 || undefined}>
+            <span className="sketch-word" style={{ width: `${label}%` }} />
+            <span className="sketch-number" style={{ width: `${number}%` }} />
+            <span className="sketch-word sketch-word--faint" style={{ width: `${note}%` }} />
+          </div>
+        ))}
+      </div>
+
+      <div className="sketch-chart">
+        <div className="sketch-head">
+          <span className="sketch-word sketch-word--strong" style={{ width: '32%' }} />
+          <span className="sketch-tabs">
+            <span className="sketch-word is-on" />
+            <span className="sketch-word" />
+          </span>
+        </div>
+        <svg viewBox="0 0 520 176">
+          <path className="sketch-grid" d="M0 12H520M0 88H520M0 164H520" />
+          <path className="sketch-line" d="M4 132L60 126L116 121L172 113L228 108L284 99L340 92L372 88L404 80L436 74L468 60L484 44" />
+          <path className="sketch-line sketch-line--dashed" d="M484 44L512 22" />
+          <circle className="sketch-dot sketch-dot--open" cx="484" cy="44" r="3.5" />
+          <circle className="sketch-dot" cx="512" cy="22" r="4.5" />
+        </svg>
+      </div>
+
+      <div className="sketch-lists">
+        <div className="sketch-list">
+          <span className="sketch-word sketch-word--strong" style={{ width: '38%' }} />
+          {SKETCH_POSTS.map((width, i) => (
+            <span key={i} className="sketch-row">
+              <span className="sketch-word" style={{ width: `${width}%` }} />
+              <span className="sketch-word" />
+            </span>
+          ))}
+        </div>
+        <div className="sketch-list">
+          <span className="sketch-word sketch-word--strong" style={{ width: '46%' }} />
+          {SKETCH_PEOPLE.map((width, i) => (
+            <span key={i} className="sketch-row">
+              <span className="sketch-face" />
+              <span className="sketch-word" style={{ width: `${width}%` }} />
+              <span className="sketch-word" />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="sketch-list sketch-times">
+        <span className="sketch-word sketch-word--strong" style={{ width: '28%' }} />
+        <div className="sketch-heat">
+          {SKETCH_HEAT.map((step, i) => (
+            <span key={i} data-step={step} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

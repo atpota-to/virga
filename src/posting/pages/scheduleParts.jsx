@@ -1,15 +1,23 @@
-// Pieces the Scheduled and Weekly schedule pages (and Settings › Posting)
-// share: the time-zone picker, the week ahead as a calendar, and an on/off
-// switch with its words.
+// Pieces the Scheduled, Weekly schedule and Timers pages (and Settings ›
+// Posting) share: the time-zone picker, the week ahead as a calendar, an
+// on/off switch with its words, the question before an action, and keeping
+// the focus on a list when a row goes.
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
-import { buildCalendarDays, compactTime } from '../schedule/queueCalendar.js';
+import { buildCalendarDays } from '../schedule/queueCalendar.js';
 import { resolveTimezone } from '../schedule/postingQueue.js';
 import { formatInZone, timeInZone, zoneLabel } from './scheduleModel.js';
 import './schedule.css';
-import { activeLocale } from '../../lib/locale.js';
+import { activeLocale, uses12Hour } from '../../lib/locale.js';
 
 function allZones() {
   try {
@@ -98,12 +106,66 @@ export function Switch({
   );
 }
 
+/** A time of day as the grid's row label: '9 AM', '5:30 PM', or '17:00'. */
+function rowLabel(at) {
+  const minutes = at.getMinutes();
+  if (!uses12Hour())
+    return at.toLocaleTimeString(activeLocale(), {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  return at.toLocaleTimeString(activeLocale(), {
+    hour: 'numeric',
+    ...(minutes ? { minute: '2-digit' } : {}),
+    hour12: true,
+  });
+}
+
 /**
- * The week ahead as a calendar: a column a day (this device's days), a cell
- * per posting time, filled with the queued post that has it. A post whose
- * time isn't one of the week's any more gets its own dashed cell. Pressing a
- * filled cell calls `onPick(row)`. With `occupancy` false the cells are just
+ * The grid's rows: each time of day the week holds, earliest first. Two
+ * slots on one day at the same time (a post off the week's times landing
+ * on a minute already taken) get a row each, so no two marks share a cell.
+ * Returns the rows ({ key, label }) and, per day, each slot's row index.
+ */
+function calendarRows(days) {
+  const keys = new Map();
+  const placed = days.map((day) => {
+    const seen = new Map();
+    return day.slots.map((slot) => {
+      const minute = slot.at.getHours() * 60 + slot.at.getMinutes();
+      const nth = seen.get(minute) || 0;
+      seen.set(minute, nth + 1);
+      const key = `${minute}:${nth}`;
+      if (!keys.has(key)) keys.set(key, { key, minute, nth, at: slot.at });
+      return key;
+    });
+  });
+  const rows = [...keys.values()].sort(
+    (a, b) => a.minute - b.minute || a.nth - b.nth,
+  );
+  const index = new Map(rows.map((r, i) => [r.key, i]));
+  return {
+    rows: rows.map((r) => ({
+      key: r.key,
+      label: r.nth === 0 ? rowLabel(r.at) : '',
+    })),
+    rowOf: placed.map((keysOfDay) => keysOfDay.map((k) => index.get(k))),
+  };
+}
+
+/**
+ * The week ahead as a grid: a column a day (this device's days, today
+ * first and in ink), a row a time of day, and a small circle where a day
+ * has that time. An open time is a ring; one a queued post takes is filled
+ * in the accent, since that is the data here; a post whose time isn't one
+ * of the week's any more is a dashed ring of its own. Pressing a filled
+ * one calls `onPick(row)`. With `occupancy` false the marks are just
  * posting times (the weekly schedule's preview).
+ *
+ * The caption says what's open and in which zone. `lead` takes the place
+ * of its first sentence and `after` ends it (a link to the weekly
+ * schedule, say). With `caption` false there is none.
  */
 export function QueueCalendar({
   schedule,
@@ -113,11 +175,14 @@ export function QueueCalendar({
   occupancy = true,
   highlight = null,
   caption = true,
+  lead = null,
+  after = null,
 }) {
   const model = useMemo(
     () => buildCalendarDays(schedule, occupancy ? rows : [], 7, new Date(now)),
     [schedule, rows, now, occupancy],
   );
+  const grid = useMemo(() => calendarRows(model.days), [model]);
   const tz = resolveTimezone(schedule);
   const device = resolveTimezone(null);
   const open = model.days.reduce(
@@ -126,23 +191,37 @@ export function QueueCalendar({
   );
   const label = (slot) => {
     const when = formatInZone(slot.at, device, now);
+    if (!occupancy) return when;
     if (!slot.row) return `${when}: open`;
     const text = String(
       slot.row.payload?.posts?.[0]?.record?.text || '',
     ).trim();
     return `${when}: ${text ? text.slice(0, 80) : 'a post with media'}${slot.offSchedule ? ' (not one of the week’s times)' : ''}`;
   };
+  const count = grid.rows.length;
   return (
     <figure className="sched-cal">
       <div
         className="sched-cal-grid"
         role="list"
         aria-label="The next seven days"
+        style={{ gridTemplateRows: `repeat(${count + 1}, auto)` }}
       >
-        {model.days.map((day, i) => (
+        {/* The times down the side, for the eye: each mark names its own. */}
+        {grid.rows.map((r, i) => (
+          <span
+            key={r.key}
+            className="sched-cal-time"
+            style={{ gridRow: i + 2 }}
+            aria-hidden="true"
+          >
+            {r.label}
+          </span>
+        ))}
+        {model.days.map((day, d) => (
           <div
             key={day.key}
-            className="sched-cal-day"
+            className={`sched-cal-day${d === 0 ? ' is-today' : ''}`}
             role="listitem"
             aria-label={day.date.toLocaleDateString(activeLocale(), {
               weekday: 'long',
@@ -150,69 +229,124 @@ export function QueueCalendar({
               day: 'numeric',
             })}
           >
-            <div className="sched-cal-head" aria-hidden="true">
-              <span className="sched-cal-dow">
-                {i === 0
-                  ? 'Today'
-                  : day.date.toLocaleDateString(activeLocale(), {
-                      weekday: 'short',
-                    })}
+            <span className="sched-cal-head" aria-hidden="true">
+              <span>
+                {day.date.toLocaleDateString(activeLocale(), {
+                  weekday: 'short',
+                })}
               </span>
-              <span className="sched-cal-date">{day.date.getDate()}</span>
-            </div>
-            <ul className="sched-cal-cells">
-              {day.slots.length === 0 && (
-                <li className="sched-cal-none" aria-label="No posting times">
-                  –
-                </li>
-              )}
-              {day.slots.map((slot) => {
-                const filled = Boolean(slot.row);
-                const cls = `sched-cal-cell${filled ? ' is-filled' : ''}${slot.offSchedule ? ' is-off' : ''}${
-                  highlight && slot.row?.id === highlight ? ' is-lit' : ''
-                }`;
-                return (
-                  <li key={`${slot.minute}-${slot.row?.id || ''}`}>
-                    {filled && onPick ? (
-                      <button
-                        type="button"
-                        className={cls}
-                        onClick={() => onPick(slot.row)}
-                        aria-label={label(slot)}
-                        title={label(slot)}
-                      >
-                        {compactTime(slot.at)}
-                      </button>
-                    ) : (
-                      <span
-                        className={cls}
-                        aria-label={
-                          occupancy
-                            ? label(slot)
-                            : formatInZone(slot.at, device, now)
-                        }
-                        title={occupancy ? label(slot) : undefined}
-                      >
-                        {compactTime(slot.at)}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+              <span>{day.date.getDate()}</span>
+            </span>
+            {day.slots.length === 0 ? (
+              <span className="visually-hidden">No posting times</span>
+            ) : (
+              <ul className="sched-cal-cells">
+                {day.slots.map((slot, s) => {
+                  const filled = Boolean(slot.row);
+                  const cls = `sched-cal-mark${filled ? ' is-filled' : ''}${slot.offSchedule ? ' is-off' : ''}${
+                    highlight && slot.row?.id === highlight ? ' is-lit' : ''
+                  }`;
+                  const place = { gridRow: grid.rowOf[d][s] + 1 };
+                  return (
+                    <li
+                      key={`${slot.minute}-${slot.row?.id || ''}`}
+                      className="sched-cal-cell"
+                      style={place}
+                    >
+                      {filled && onPick ? (
+                        <button
+                          type="button"
+                          className="sched-cal-pick"
+                          onClick={() => onPick(slot.row)}
+                          aria-label={label(slot)}
+                          title={label(slot)}
+                        >
+                          <span className={cls} aria-hidden="true" />
+                        </button>
+                      ) : (
+                        <>
+                          <span
+                            className={cls}
+                            aria-hidden="true"
+                            title={occupancy ? label(slot) : undefined}
+                          />
+                          <span className="visually-hidden">{label(slot)}</span>
+                        </>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         ))}
       </div>
       {caption && (
         <figcaption className="card-caption sched-cal-caption">
-          {occupancy
-            ? `${open === 1 ? '1 open time' : `${open} open times`} in the next seven days${model.laterCount ? ` · ${model.laterCount} queued further out` : ''}.`
-            : 'The posting times of the next seven days.'}{' '}
+          {lead ? (
+            <>{lead} </>
+          ) : occupancy ? (
+            `${open === 1 ? '1 open time' : `${open} open times`} in the next seven days${model.laterCount ? ` · ${model.laterCount} queued further out` : ''}. `
+          ) : (
+            'The posting times of the next seven days. '
+          )}
           Shown in this device’s time ({zoneLabel(device)})
           {tz !== device ? `; the week is set in ${zoneLabel(tz)}` : ''}.
+          {after && <> {after}</>}
         </figcaption>
       )}
     </figure>
+  );
+}
+
+/**
+ * Keeps the focus on the list when a row that held it goes (removed,
+ * posted, dismissed, called off). Call the returned `keep(elementId)` just
+ * before acting on the row with that id. Once the list has been read again
+ * without it, and any dialog over it has closed, the focus moves to the row
+ * that took its place, or else the one before it, or else the page's main
+ * region, rather than falling back to the top of the page. It moves only
+ * when the focus has been lost: a person who has gone elsewhere stays there.
+ * `rowSelector` matches the page's rows (each with an id); `list` is what
+ * changes when the list is read again.
+ */
+export function useFocusAfterRemoval(rowSelector, list) {
+  const want = useRef(null);
+  useEffect(() => {
+    const w = want.current;
+    if (!w || document.getElementById(w.gone)) return;
+    want.current = null;
+    const settle = () => {
+      const at = document.activeElement;
+      if (at && at !== document.body && at.isConnected) return;
+      const row = [w.next, w.prev]
+        .map((id) => id && document.getElementById(id))
+        .find(Boolean);
+      const target =
+        row?.querySelector('.row-actions button') ||
+        row?.querySelector('button, a[href]') ||
+        document.getElementById('main');
+      target?.focus();
+    };
+    // A dialog hands the focus back to its opener as it closes; the opener
+    // may be in the row that has gone, so look once that has happened.
+    const open = document.querySelector('dialog[open]');
+    if (open)
+      open.addEventListener('close', () => setTimeout(settle, 0), {
+        once: true,
+      });
+    else settle();
+  }, [list]);
+  return useCallback(
+    (id) => {
+      const rows = [...document.querySelectorAll(rowSelector)];
+      const i = rows.findIndex((el) => el.id === id);
+      want.current =
+        i < 0
+          ? null
+          : { gone: id, next: rows[i + 1]?.id, prev: rows[i - 1]?.id };
+    },
+    [rowSelector],
   );
 }
 
