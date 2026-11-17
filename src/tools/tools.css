@@ -300,7 +300,7 @@
 .field-inline .input {
   width: auto;
   min-height: 30px;
-  padding-left: 10px;
+  padding-left: 12px;
   font-size: var(--text-sm);
 }
 

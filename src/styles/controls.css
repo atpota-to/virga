@@ -1017,13 +1017,17 @@
 
 /* A field's ground lets a little of what is behind it through, so on the
    sky it is a pale pane and on the page it is the page; its edge is what
-   says it is a field. */
+   says it is a field. A line of text is round-ended like the buttons,
+   chips and tokens it so often sits beside: everything you press or type
+   into is round, and only what holds things (a menu, a dialog, an embed)
+   is a rounded box. Its words start a little further in, clear of the
+   curve. */
 .input {
   width: 100%;
   min-height: var(--control-h);
-  padding: 0 12px;
+  padding: 0 14px;
   border: 1px solid var(--line-2);
-  border-radius: var(--radius);
+  border-radius: var(--pill);
   background: color-mix(in srgb, var(--surface) 72%, transparent);
   color: var(--ink);
   font-size: var(--text-base);
@@ -1065,16 +1069,18 @@
 
 .input--lg {
   min-height: 46px;
-  padding: 0 16px;
+  padding: 0 18px;
   font-size: var(--text-md);
 }
 
-/* A text area: the field's look, with room for lines. The writer can
-   make it taller, never wider than its column. */
+/* A text area: the field's look, with room for lines, and a box's
+   corners, since a pill can't hold a paragraph. The writer can make it
+   taller, never wider than its column. */
 textarea.input {
   display: block;
   min-height: calc(var(--control-h) * 2.5);
-  padding: 9px 12px;
+  padding: 9px 14px;
+  border-radius: var(--radius-lg);
   line-height: 1.5;
   resize: vertical;
 }
@@ -1104,7 +1110,7 @@ textarea.input {
 input[type='datetime-local'].input,
 input[type='date'].input,
 input[type='time'].input {
-  padding-right: 8px;
+  padding-right: 12px;
 }
 
 /* A search field: the glass sits inside the left edge. */
@@ -1116,7 +1122,7 @@ input[type='time'].input {
 
 .search > svg {
   position: absolute;
-  left: 12px;
+  left: 14px;
   width: 16px;
   height: 16px;
   color: var(--muted);
@@ -1124,17 +1130,19 @@ input[type='time'].input {
 }
 
 .search > .input {
-  padding-left: 36px;
+  padding-left: 38px;
 }
 
+/* The arrow sits as far in from the round end as the words do from the
+   other, and the words stop short of it. */
 select.input {
-  padding-right: 30px;
+  padding-right: 36px;
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%),
     linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
   background-position:
-    calc(100% - 16px) 50%,
-    calc(100% - 11px) 50%;
+    calc(100% - 20px) 50%,
+    calc(100% - 15px) 50%;
   background-size: 5px 5px;
   background-repeat: no-repeat;
   cursor: pointer;
