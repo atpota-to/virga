@@ -193,11 +193,25 @@
 }
 
 .handle-field[data-size='lg'] .handle-field-at {
+  left: 18px;
   height: 46px;
 }
 
 .handle-field .handle-field-input {
   padding-left: 32px;
+}
+
+/* The large field's words start further in from its round end, as every
+   large field's do, and the @ with them. */
+.handle-field[data-size='lg'] .handle-field-input {
+  padding-left: 36px;
+}
+
+/* A finger's field is 40px tall, and the @ stays on its middle. */
+@media (pointer: coarse) {
+  .handle-field-at {
+    height: 40px;
+  }
 }
 
 /* The suggestions float under the field, so they have what floats has: a

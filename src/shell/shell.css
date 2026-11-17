@@ -288,7 +288,9 @@
 
 /* "Search or jump to": shaped like a field, because pressing it gives one
    (the command palette), with the shortcut that does the same at its end.
-   A pale pane on the sky, and an outline on the page. */
+   A pale pane on the sky, and an outline on the page. The outline is a
+   border rather than a shadow, so it is still drawn where the system's
+   colours take over (and shadows go). */
 .sidebar-search {
   display: flex;
   flex: none;
@@ -296,16 +298,15 @@
   gap: 8px;
   width: 100%;
   min-height: var(--control-h);
-  padding: 0 12px 0 14px;
-  border: 0;
+  padding: 0 14px;
+  border: 1px solid var(--line);
   border-radius: var(--pill);
   background: color-mix(in srgb, var(--surface) 60%, transparent);
-  box-shadow: inset 0 0 0 1px var(--line);
   color: var(--muted);
   font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
-  transition: box-shadow 0.12s ease;
+  transition: border-color 0.12s ease;
 }
 
 .sidebar-search > svg {
@@ -320,7 +321,11 @@
   white-space: nowrap;
 }
 
+/* Here the shortcut is words, not a key: without a key's inset it ends as
+   far in from the round end as the glass starts from the other, and the
+   label keeps the room for its last word. */
 .sidebar-search .kbd {
+  padding: 0;
   border: 0;
   background: transparent;
   font-size: var(--text-xs);
@@ -328,7 +333,7 @@
 
 @media (hover: hover) {
   .sidebar-search:hover {
-    box-shadow: inset 0 0 0 1px var(--line-2);
+    border-color: var(--line-2);
     color: var(--ink-2);
   }
 }

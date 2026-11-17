@@ -1134,9 +1134,11 @@ input[type='time'].input {
 }
 
 /* The arrow sits as far in from the round end as the words do from the
-   other, and the words stop short of it. */
+   other, and the words stop short of it: a choice too long for the field
+   ends in an ellipsis there, not in half a letter. */
 select.input {
   padding-right: 36px;
+  text-overflow: ellipsis;
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%),
     linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
@@ -1146,6 +1148,18 @@ select.input {
   background-size: 5px 5px;
   background-repeat: no-repeat;
   cursor: pointer;
+}
+
+/* Where the system's colours take over, the drawn arrow goes with every
+   other background, and nothing would say the field opens a list: there
+   it has the browser's own arrow, drawn in the system's colours. That
+   arrow brings its own room at the end, so the words need no more than
+   their usual inset to stay clear of it. */
+@media (forced-colors: active) {
+  select.input {
+    padding-right: 14px;
+    appearance: auto;
+  }
 }
 
 input[type='checkbox'],

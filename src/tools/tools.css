@@ -305,18 +305,21 @@
 }
 
 /* Beside the activity check's md button the field is md as well, so the
-   two stand one height on one line. */
+   two stand one height on one line, its words as far in as any md
+   field's. */
 .check-actions .field-inline .input {
   min-height: var(--control-h);
+  padding-left: 14px;
   font-size: var(--text-base);
 }
 
-/* A finger's field: as tall as the kit's, and 16px so a phone doesn't zoom
-   in on it. */
+/* A finger's field: as tall as the kit's, its words as far from the
+   round end, and 16px so a phone doesn't zoom in on it. */
 @media (pointer: coarse) {
   .field-inline .input,
   .check-actions .field-inline .input {
     min-height: 40px;
+    padding-left: 14px;
     font-size: 16px;
   }
 }
@@ -777,9 +780,10 @@
 /* ---- search ------------------------------------------------------------- */
 
 /* The interaction lookup's field is the page's first thing, so it is the
-   large one. */
+   large one. Its glass starts where a large field's words would, and its
+   words 8px past the glass, as in the kit's search. */
 .search--lg > svg {
-  left: 16px;
+  left: 18px;
   width: 18px;
   height: 18px;
 }

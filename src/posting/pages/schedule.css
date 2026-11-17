@@ -95,6 +95,8 @@
   opacity: 0.6;
 }
 
+/* Round-ended, as everything pressed is: its fill under the pointer, its
+   ring when picked up and its focus ring all take that shape. */
 .sched-handle {
   display: grid;
   flex: none;
@@ -104,7 +106,7 @@
   margin: -6px -4px 0 -6px;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--pill);
   background: transparent;
   color: var(--muted);
   cursor: grab;
@@ -555,8 +557,11 @@
   gap: 8px;
 }
 
+/* As wide as a time and the clock that picks one, at whatever size its
+   words are: a set width cuts the end off the time on a touch screen,
+   where they are larger. */
 .sched-add-input {
-  width: 128px;
+  width: auto;
 }
 
 .sched-week-foot {
