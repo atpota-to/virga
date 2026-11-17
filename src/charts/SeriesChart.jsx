@@ -210,12 +210,8 @@ export default function SeriesChart({
   const ghostWords = showGhost ? fmtCount(ghost.v) : null;
   // Where the reach ends: its open dot at the plot's right, with its words
   // riding above it, or below it when the dot is already brushing the top.
-  const ghostAt = showGhost
-    ? (() => {
-        const gy = y(ghost.v);
-        return { x: w - PAD.r - 4, y: gy, labelY: gy - 8 < 12 ? gy + 16 : gy - 8 };
-      })()
-    : null;
+  const ghostY = showGhost ? y(ghost.v) : 0;
+  const ghostAt = showGhost ? { x: w - PAD.r - 4, y: ghostY, labelY: ghostY - 8 < 12 ? ghostY + 16 : ghostY - 8 } : null;
   // The readout sits over its point, or hangs inward from it near either
   // side: on the last point that keeps it clear of the ghost's reach. A
   // hanging readout reaches 12px back past its point, so it is held that far

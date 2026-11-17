@@ -145,10 +145,16 @@
   stroke-width: 1.5;
 }
 
+/* Ringed in the page's colour: a marked day's dashed rule can run up
+   behind these words, and must not strike through them. */
 .an-chart-ghost-label {
   fill: var(--muted);
   font-family: var(--sans);
   font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
 }
 
 /* Solid, so it can't be taken for a marked day's dashed rule. */
