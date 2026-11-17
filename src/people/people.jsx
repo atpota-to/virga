@@ -98,14 +98,16 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
 }
 
 /**
- * One person in a list. `meta` is the line under the name (after the
- * handle); `value` sits at the right before the button (a count). After it
- * comes a small link to the Interaction lookup for this person, unless
- * `history` is false; a phone leaves it out, for the room the name needs
- * (dashboards.css). The handle is left out when it is already the name
- * (someone with no display name), and "follows you" when `rel` is false: a
- * list where everyone follows you (your newest followers, the follow-back
- * queue) would say it on every row.
+ * One person in a list. `meta` is the row's own fact, the reason it is in
+ * the list ("followed 2d ago", "84 likes, 12 replies"), last on the line
+ * under the name, after the handle and "follows you"; in a list too narrow
+ * for the whole line, the fact is what stays (dashboards.css). `value` sits
+ * at the right before the button (a count). After it comes a small link to
+ * the Interaction lookup for this person, unless `history` is false; a
+ * phone leaves it out, for the room the name needs. The handle is left out when it is already the name (someone with
+ * no display name), and "follows you" when `rel` is false: a list where
+ * everyone follows you (your newest followers, the follow-back queue)
+ * would say it on every row.
  */
 export function PersonRow({
   archive,
@@ -137,8 +139,8 @@ export function PersonRow({
         {(handle || followsYou || meta) && (
           <span className="person-meta">
             {handle && <span className="person-handle">@{handle}</span>}
-            {followsYou && <span className="person-rel">{handle ? ' · ' : ''}follows you</span>}
-            {meta && <span>{handle || followsYou ? ' · ' : ''}{meta}</span>}
+            {followsYou && <span className="person-rel">follows you</span>}
+            {meta && <span className="person-fact">{meta}</span>}
           </span>
         )}
         {follow?.error(did) && (

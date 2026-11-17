@@ -15,7 +15,7 @@
 // opens for its size, its settings and Remove. Changes are saved as they're
 // made.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -429,6 +429,25 @@ function WidgetFrame({
   const Body = WIDGET_COMPONENTS[card.type];
   const [handleDown, setHandleDown] = useState(false);
   const [view, setView] = useState(null);
+  const toolsRef = useRef(null);
+  // A narrow card's tools are wider than it is, and reach past it on both
+  // sides (dashboards.css); at the grid's edge they are moved in, so they
+  // never run off the page.
+  useLayoutEffect(() => {
+    const el = toolsRef.current;
+    if (!el) return undefined;
+    const fit = () => {
+      el.style.removeProperty('--tools-shift');
+      const grid = el.closest('.dash-grid')?.getBoundingClientRect();
+      if (!grid) return;
+      const r = el.getBoundingClientRect();
+      const shift = Math.max(0, grid.left - r.left) - Math.max(0, r.right - grid.right);
+      if (shift) el.style.setProperty('--tools-shift', `${Math.round(shift)}px`);
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, [chosen, editing, card.size, index]);
   if (!def || !Body) return null;
   const isStat = def.kind === 'stat';
   // A card that takes a number of rows is a list: its heading gets the rule
@@ -462,7 +481,7 @@ function WidgetFrame({
   // never moves what is in it. They come after the handle, so tabbing onto
   // the handle (which chooses the card) brings them in as the next stops.
   const tools = editing && chosen && (
-    <div className="widget-edit-tools" role="group" aria-label={`Arrange ${name}`}>
+    <div ref={toolsRef} className="widget-edit-tools" role="group" aria-label={`Arrange ${name}`}>
       {def.sizes.length > 1 && <Segmented size="sm" label={`Size of ${def.name}`} value={card.size} onChange={onResize} options={sizeOptions(def)} />}
       <span className="widget-edit-actions">
         {def.options?.length > 0 && (

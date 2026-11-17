@@ -7,9 +7,9 @@
 // "video" look like the answer forever.
 
 import { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import BarList from '../charts/BarList.jsx';
 import { fmtRate } from '../charts/format.js';
-import Button from '../components/Button.jsx';
 import Figures from '../components/Figures.jsx';
 import { fmtInt } from '../lib/locale.js';
 import { periodPhrase } from '../shell/bits.jsx';
@@ -83,19 +83,21 @@ function Ranked({ title, sub, rows, name, head, empty, render = (v) => v, limit 
   // By typical post: only groups with one, so a single lucky post can't lead.
   const ordered = measure === 'typical' ? labelled.filter((r) => r.typical != null).sort((a, b) => b.typical - a.typical || b.posts - a.posts) : labelled;
   const shown = all ? ordered : ordered.slice(0, limit);
+  // Showing every bar is one more thing to do with the chart, so it joins
+  // Show as table on the line under it rather than taking a line of its own.
+  const more =
+    ordered.length > limit ? (
+      <button type="button" className="link-action" onClick={() => setAll((v) => !v)}>
+        {all ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
+        {all ? 'Show fewer' : `Show all ${fmtInt(ordered.length)}`}
+      </button>
+    ) : null;
   return (
     <Card title={title} sub={sub} tools={rows.length ? <ModeToggle value={measure} onChange={setMeasure} options={MEASURES} label={`${title}: measure`} /> : null}>
       {shown.length ? (
         <>
           <BarList ariaLabel={title} labelWidth="1fr" rows={shown.map((r) => barRow(r, measure, r.label))} />
-          {ordered.length > limit && (
-            <div className="card-foot">
-              <Button size="sm" variant="ghost" onClick={() => setAll((v) => !v)}>
-                {all ? 'Show fewer' : `Show all ${fmtInt(ordered.length)}`}
-              </Button>
-            </div>
-          )}
-          <GroupTable rows={ordered} columns={GROUP_COLUMNS(head)} />
+          <GroupTable rows={ordered} columns={GROUP_COLUMNS(head)} actions={more} />
         </>
       ) : (
         <p className="empty">{rows.length ? `None used in ${CONTENT_MIN_POSTS} posts or more yet.` : empty}</p>

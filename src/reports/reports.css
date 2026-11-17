@@ -29,15 +29,14 @@
 }
 
 /* People's: the filters, then what can be done with the report at the
-   line's end, since it has no chart to put them under. Where both don't
-   fit, the words go to a line of their own under the filters rather than
-   leave a group of filters out of sight: sideways scrolling is a phone's
-   habit, not a mouse's. On a phone they are a ⋯, which keeps the line. */
+   line's end, since it has no chart to put them under. One line at every
+   width: where the words don't fit beside the filters they become a ⋯
+   (ReportPage's ReportFilters measures), rather than hide a group of
+   filters out of sight or drop to a line of their own. */
 .report-filter-bar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 12px 32px;
+  gap: 32px;
   min-width: 0;
 }
 
@@ -53,19 +52,18 @@
   margin-left: auto;
 }
 
+/* The ⋯'s dots end on the column's edge, as under a chart. */
+.report-filter-actions > .menu:has(> .btn--icon) {
+  margin-right: -7px;
+}
+
 @media (max-width: 560px) {
   .report-filter-bar {
-    flex-wrap: nowrap;
     gap: 16px;
-  }
-
-  /* The ⋯'s dots end on the column's edge, as under a chart. */
-  .report-filter-actions > .menu:has(> .btn--icon) {
-    margin-right: -7px;
   }
 }
 
-@media (pointer: coarse) and (max-width: 560px) {
+@media (pointer: coarse) {
   .report-filter-actions > .menu:has(> .btn--icon) {
     margin-right: -14px;
   }
@@ -89,10 +87,17 @@
 
 /* ---- the bands of a report -------------------------------------------- */
 
+/* Two sections side by side, the same gutter as a dashboard's. */
 .report-split {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-  gap: var(--grid-gap) clamp(32px, 5vw, 64px);
+  gap: var(--grid-gap) var(--grid-gap-x);
+}
+
+@media (max-width: 1179px) {
+  .report-split {
+    column-gap: clamp(24px, 4cqi, var(--grid-gap-x));
+  }
 }
 
 .report-split--wide {
@@ -107,14 +112,6 @@
 
 .report-rows {
   margin: 0;
-}
-
-/* People's list foot: what the list leaves out, then "12 of 64" at the
-   right, where every foot has it; on a narrow screen the words wrap toward
-   that edge too. */
-.report-foot-meta {
-  justify-content: flex-end;
-  text-align: right;
 }
 
 .fig-unit {
@@ -206,6 +203,12 @@
   .report-index {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--grid-gap) 20px;
+  }
+
+  /* An odd one out at the end takes the whole row, as a figure does,
+     rather than leaving a hole beside it. */
+  .report-index > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 

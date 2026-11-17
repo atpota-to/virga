@@ -12,11 +12,13 @@
 // a phone they fold into a ⋯ at that line's end. Add to dashboard asks which
 // dashboard and how wide in a dialog.
 
-import { useId, useMemo, useRef, useState } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownLeft,
   ArrowUpRight,
   AtSign,
+  ChevronDown,
+  ChevronUp,
   Download,
   Heart,
   ImageUp,
@@ -117,7 +119,7 @@ export default function ReportPage({ reportKey }) {
   if (!report) {
     return (
       <>
-        <PageHeader title={`There’s no report called “${reportKey}”`} />
+        <PageHeader crumbs={[{ label: 'Reports', to: '/reports' }]} title={`There’s no report called “${reportKey}”`} />
         <div className="page-body">
           <div className="empty-block">
             <Button onClick={() => navigate('/reports')}>See every report</Button>
@@ -179,7 +181,7 @@ export default function ReportPage({ reportKey }) {
   // them on the line under it, or a ⋯ at that line's end on a phone.
   const exportIt = () => exportReport(archive, reportKey, period, nowMs);
   const postIt = () => setShare({ type: widget.type, options: showKind && kind !== 'all' && kind !== 'mention' ? { kind } : {} });
-  const chartActions = phone ? (
+  const moreActions = (
     <MoreMenu
       label={reportKey === 'people' ? 'More for this report' : 'More for this chart'}
       items={[
@@ -188,7 +190,8 @@ export default function ReportPage({ reportKey }) {
         widget && { key: 'add', label: 'Add to dashboard', icon: LayoutDashboard, onSelect: () => setAdding(true) },
       ]}
     />
-  ) : (
+  );
+  const wordActions = (
     <>
       <button type="button" className="link-action" onClick={exportIt}>
         <Download size={14} aria-hidden="true" />
@@ -208,7 +211,8 @@ export default function ReportPage({ reportKey }) {
       )}
     </>
   );
-  const props = { archive, period, nowMs, actions: chartActions };
+  const props = { archive, period, nowMs, actions: phone ? moreActions : wordActions };
+  const people = reportKey === 'people';
 
   return (
     <>
@@ -216,7 +220,11 @@ export default function ReportPage({ reportKey }) {
       <div className="page-body">
         {/* People has no chart to put its actions under, so they end its
             filter row instead. */}
-        {filters && <ReportFilters actions={reportKey === 'people' ? chartActions : null}>{filters}</ReportFilters>}
+        {filters && (
+          <ReportFilters actions={people ? wordActions : null} more={people ? moreActions : null} fold={phone}>
+            {filters}
+          </ReportFilters>
+        )}
         {reportKey === 'followers' && <FollowersReport {...props} />}
         {reportKey === 'blocks' && <BlocksReport {...props} />}
         {reportKey === 'posts' && <PostsReport {...props} />}
@@ -238,20 +246,52 @@ export default function ReportPage({ reportKey }) {
  * a hairline between groups, in one row that scrolls sideways rather than
  * wrap. Alone on its line it runs to the screen's edges; with `actions`
  * after it (People's), it stops short of them and they keep the line's end.
+ *
+ * The actions are words where the filters leave room for them, and `more`,
+ * a ⋯ holding the same, where they don't (and always when `fold`, on a
+ * phone). Either way the line stays one line: the words never push a group
+ * of filters out of sight, and never drop to a line of their own between
+ * the filters and the list they narrow.
  */
-function ReportFilters({ actions = null, children }) {
-  const ref = useRef(null);
-  useOverflowEdge(ref);
+function ReportFilters({ actions = null, more = null, fold = false, children }) {
+  const rowRef = useRef(null);
+  const barRef = useRef(null);
+  const wordsRef = useRef(null);
+  // The words' width, kept from when they were last shown, so the ⋯ can
+  // tell when there is room to give them back.
+  const wordsWidth = useRef(0);
+  const [cramped, setCramped] = useState(false);
+  useOverflowEdge(rowRef);
+  const hasActions = Boolean(actions);
+  useLayoutEffect(() => {
+    const bar = barRef.current;
+    const row = rowRef.current;
+    if (!hasActions || !bar || !row) return undefined;
+    const check = () => {
+      if (wordsRef.current) wordsWidth.current = wordsRef.current.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(bar).columnGap) || 0;
+      setCramped(row.scrollWidth + gap + wordsWidth.current > bar.clientWidth + 0.5);
+    };
+    check();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(check);
+    observer.observe(bar);
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [hasActions]);
   const row = (
-    <div ref={ref} className={`report-filters scroll-row${actions ? '' : ' scroll-row--bleed'}`}>
+    <div ref={rowRef} className={`report-filters scroll-row${hasActions ? '' : ' scroll-row--bleed'}`}>
       {children}
     </div>
   );
-  if (!actions) return row;
+  if (!hasActions) return row;
+  const folded = fold || cramped;
   return (
-    <div className="report-filter-bar">
+    <div ref={barRef} className="report-filter-bar">
       {row}
-      <div className="report-filter-actions">{actions}</div>
+      <div ref={folded ? null : wordsRef} className="report-filter-actions">
+        {folded ? more : actions}
+      </div>
     </div>
   );
 }
@@ -901,9 +941,10 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
 
   const detail = (r) => kindsLine(r.byKind, { byCount: true });
 
-  // `note` is a word about the whole list, which sits in its foot, so both
+  // Under each list the same foot, Show 12 more and then "12 of 64". What
+  // is worth saying about a whole list is a caption under it, so both
   // headings are one line and their rules line up side by side.
-  const list = (rows, ranked, side, empty, note = null) => (
+  const list = (rows, ranked, side, empty) => (
     <>
       {rows.length ? (
         <ul className="widget-rows report-rows">
@@ -914,30 +955,27 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
       ) : (
         <p className="empty">{empty}</p>
       )}
-      {(ranked.length > rows.length || note) && (
+      {ranked.length > rows.length && (
         <div className="card-foot">
-          {ranked.length > rows.length && (
-            <Button size="sm" variant="ghost" onClick={() => setLimits((l) => ({ ...l, [side]: l[side] + PEOPLE_PAGE }))}>
-              Show {Math.min(PEOPLE_PAGE, ranked.length - rows.length)} more
-            </Button>
-          )}
-          <span className="meta report-foot-meta">
-            {note && <span>{note}</span>}
-            {ranked.length > rows.length && (
-              <span className="num">
-                {rows.length.toLocaleString(activeLocale())} of {ranked.length.toLocaleString(activeLocale())}
-              </span>
-            )}
+          <Button size="sm" variant="ghost" onClick={() => setLimits((l) => ({ ...l, [side]: l[side] + PEOPLE_PAGE }))}>
+            Show {Math.min(PEOPLE_PAGE, ranked.length - rows.length)} more
+          </Button>
+          <span className="num">
+            {rows.length.toLocaleString(activeLocale())} of {ranked.length.toLocaleString(activeLocale())}
           </span>
         </div>
       )}
     </>
   );
 
-  const inCoverage =
+  const inCaption = [
+    archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow.` : null,
     m.inOldest != null && period.days && m.inOldest > m.inT0
       ? `Notifications reach back to ${formatDateShort(m.inOldest)} so far, so earlier events in this window are outside them.`
-      : null;
+      : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <>
@@ -948,9 +986,8 @@ function PeopleReport({ archive, period, nowMs, kind, relation }) {
             inRanked,
             'in',
             relation === 'not' && m.inbound.length ? 'You already follow everyone who engaged with you in this window.' : 'Nobody has engaged with you in this window yet.',
-            archive.meta.following && relation !== 'not' && notFollowing > 0 ? `${notFollowing.toLocaleString(activeLocale())} of them you don’t follow` : null,
           )}
-          {inCoverage && <p className="card-caption">{inCoverage}</p>}
+          {inCaption && <p className="card-caption">{inCaption}</p>}
         </Card>
         <Card title="You engage with them" className="card--flush">
           {kind === 'mention'
@@ -1011,11 +1048,14 @@ function AtmosphereReport({ archive, period, nowMs, actions }) {
         ) : (
           <p className="empty">No records written in this window.</p>
         )}
+        {/* A bar list's line under it, as Content's have: every bar is one
+            more thing to do with the chart, not a list's "Show N more". */}
         {m.ranked.length > 16 && (
-          <div className="card-foot">
-            <Button size="sm" variant="ghost" onClick={() => setMore((v) => !v)}>
+          <div className="chart-foot">
+            <button type="button" className="link-action" onClick={() => setMore((v) => !v)}>
+              {more ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
               {more ? 'Show fewer' : `Show all ${m.ranked.length} collections`}
-            </Button>
+            </button>
           </div>
         )}
       </Card>

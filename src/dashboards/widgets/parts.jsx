@@ -22,8 +22,10 @@ export function rowsShown(type, size, rows) {
 
 /**
  * A figure: its label, the number set large, and a line under it (the change
- * against the window before, and a note). A card wide enough to have the
- * room also draws its trend beside the number; a quarter of a row doesn't.
+ * against the window before, and a note). A note in parts ("2.3 a day · 48%
+ * replies") is drawn as parts, so every dot on the line is the one after
+ * the change (dashboards.css). A card wide enough to have the room also
+ * draws its trend beside the number; a quarter of a row doesn't.
  */
 export function Stat({ icon: Icon, label, window, value, delta, deltaTitle, sub, spark = null, to = null }) {
   return (
@@ -43,7 +45,13 @@ export function Stat({ icon: Icon, label, window, value, delta, deltaTitle, sub,
         <div className="stat-note num">
           {delta}
           {deltaTitle && <span className="visually-hidden">{deltaTitle}</span>}
-          {sub && <span className="stat-sub">{sub}</span>}
+          {typeof sub === 'string'
+            ? sub.split(' · ').map((part, i) => (
+                <span key={i} className="stat-sub">
+                  {part}
+                </span>
+              ))
+            : sub && <span className="stat-sub">{sub}</span>}
         </div>
       )}
     </div>

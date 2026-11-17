@@ -92,7 +92,10 @@ function StatFollowers({ archive, period, nowMs, def, title }) {
       sub={
         differs ? (
           <>
-            {m.total.toLocaleString(activeLocale())} can be listed <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
+            {m.total.toLocaleString(activeLocale())} can be{' '}
+            <span className="stat-keep">
+              listed <FollowerCountTip profileCount={m.profileCount} listed={m.total} />
+            </span>
           </>
         ) : null
       }

@@ -170,8 +170,8 @@
   border-bottom: 1px solid var(--rule);
 }
 
-/* What isn't rows under that rule (bars, a line of words) stands off it. */
-.widget--list > .widget-body > :not(.widget-rows, .hub-list, .empty):first-child {
+/* What isn't rows under that rule (bars, a sentence) stands off it. */
+.widget--list > .widget-body > :not(.widget-rows, .hub-list):first-child {
   margin-top: 16px;
 }
 
@@ -195,10 +195,11 @@
   min-width: 0;
 }
 
+/* A line about a chart, the chart, and a caption under it, 12px apart. */
 .widget-stack {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .widget-insight {
@@ -206,12 +207,23 @@
   font-size: var(--text-sm);
 }
 
-/* A caption under what a card shows. */
+/* A caption, 12px under what it explains rather than at the foot of a
+   card that a taller neighbour has stretched, where it would read as
+   belonging to the next card down. */
 .widget-foot {
-  margin-top: auto;
   padding-top: 12px;
   color: var(--muted);
   font-size: var(--text-sm);
+}
+
+.widget-stack > .widget-foot {
+  padding-top: 0;
+}
+
+/* A card with nothing to show says so where its first row or its chart
+   would start: 16px under its title, or under the rule of a list. */
+.widget-body > .empty {
+  padding: 0;
 }
 
 /* ---- figures (stat cards) ------------------------------------------- */
@@ -294,18 +306,26 @@
 }
 
 /* The change and the words about it run as one line of text, wrapping a
-   word at a time in a narrow card: "+8.4% · 580 the 30 days before". */
+   word at a time in a narrow card: "+8.4% · 580 the 30 days before". A
+   note in parts has the same faint dot between them as after the change. */
 .stat-note {
   color: var(--muted);
   font-size: var(--text-sm);
   line-height: 1.35;
 }
 
-.stat-note .delta:not(:last-child)::after {
+.stat-note .delta:not(:last-child)::after,
+.stat-sub:not(:last-child)::after {
   content: '·';
   margin: 0 6px 0 4px;
   color: var(--faint);
   font-weight: 400;
+}
+
+/* A word and the (i) that explains it wrap together, so the (i) never
+   starts a line alone. */
+.stat-keep {
+  white-space: nowrap;
 }
 
 /* The trend beside the number, where a card is wide enough to give it
@@ -499,6 +519,20 @@
   background: var(--surface);
   box-shadow: var(--shadow-md);
   white-space: nowrap;
+  /* Moved in from the grid's edge where it would reach past it
+     (DashboardPage.jsx). */
+  translate: var(--tools-shift, 0px) 0;
+}
+
+/* A card about as narrow as its tools (a figure a quarter of a row wide)
+   has them centred over it, so what reaches past it reaches past both
+   sides alike rather than over the card beside it alone. */
+@container widget (max-width: 320px) {
+  .widget-edit-tools {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .widget-edit-tools > .segmented {
@@ -864,7 +898,10 @@
 
 /* ---- rows on cards, in reports and in tools --------------------------- */
 
+/* A list is a container: what the line under a person's name says goes by
+   the room the list has (.person-meta, below), the same on every row. */
 .widget-rows {
+  container: rows / inline-size;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -902,12 +939,38 @@
   text-decoration: underline;
 }
 
+/* The handle, "follows you" and the row's own fact, a dot between them as
+   every meta line has it (the kit's .meta): the dot belongs to the word
+   before it, 6px from both. */
 .person-meta {
   overflow: hidden;
   color: var(--muted);
   font-size: var(--text-sm);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.person-meta > :not(:last-child)::after {
+  content: '·';
+  margin: 0 6px;
+}
+
+/* Where a list is too narrow for the whole line, a row with a fact of its
+   own keeps the fact, which is why the person is in this list and
+   otherwise the part the ellipsis would take. "follows you" goes first; in
+   a narrower list still (a phone, a card half a row wide on a smaller
+   screen) the handle goes too, as the name and the face already say who
+   it is. */
+@container rows (max-width: 599px) {
+  .person-meta:has(> .person-fact) > .person-rel {
+    display: none;
+  }
+}
+
+@container rows (max-width: 479px) {
+  .person-meta:has(> .person-fact) > .person-handle {
+    display: none;
+  }
 }
 
 .person-error {
