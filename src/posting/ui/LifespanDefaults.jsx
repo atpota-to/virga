@@ -47,6 +47,20 @@ export default function LifespanDefaults({ did }) {
     }
   };
   const usage = timerLimitsLine(limits);
+  const rule = describeTimer({ ...lifespan, enabled: true });
+  const editor = (
+    <div className="settings-rule-editor">
+      <LifespanEditor
+        value={{ ...lifespan, enabled: true }}
+        onChange={(next) => save({ ...next, enabled: lifespan.enabled })}
+        fit={{}}
+        limits={limits}
+        did={did}
+        allowExactTime={false}
+        showToggle={false}
+      />
+    </div>
+  );
 
   return (
     <SettingsCard
@@ -58,8 +72,8 @@ export default function LifespanDefaults({ did }) {
         htmlFor={onId}
         hint={
           lifespan.enabled
-            ? `New posts start with: ${describeTimer({ ...lifespan, enabled: true })}`
-            : 'New posts start without one. The rule below is kept for when you turn this on.'
+            ? `New posts start with: ${rule}`
+            : 'New posts start without one. The rule is kept for when you turn this on.'
         }
       >
         <SwitchButton
@@ -68,17 +82,17 @@ export default function LifespanDefaults({ did }) {
           onChange={(on) => save({ ...lifespan, enabled: on })}
         />
       </SettingsRow>
-      <div className="sched-settings-editor">
-        <LifespanEditor
-          value={{ ...lifespan, enabled: true }}
-          onChange={(rule) => save({ ...rule, enabled: lifespan.enabled })}
-          fit={{}}
-          limits={limits}
-          did={did}
-          allowExactTime={false}
-          showToggle={false}
-        />
-      </div>
+      {/* Off, the rule waits behind its sentence, closed, so the page
+          doesn't show an editor for something that isn't in use; it's still
+          there to change before turning the timer on. */}
+      {lifespan.enabled ? (
+        <SettingsRow block>{editor}</SettingsRow>
+      ) : (
+        <details className="disclosure settings-rule">
+          <summary>The rule it will use: {sentenceClause(rule)}</summary>
+          {editor}
+        </details>
+      )}
       {/* A wrapper, so the hairline under this runs the section's width
           while the words keep to a readable measure. */}
       <div className="sched-settings-note">
@@ -95,4 +109,9 @@ export default function LifespanDefaults({ did }) {
       )}
     </SettingsCard>
   );
+}
+
+/** "Deletes itself 24 hours after it goes up." as the end of a sentence. */
+function sentenceClause(text) {
+  return text.charAt(0).toLowerCase() + text.slice(1).replace(/\.$/, '');
 }

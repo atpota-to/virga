@@ -1,9 +1,11 @@
 /* Settings: each section is a page of rows. A row says what a setting is
-   at the left and has its control at the right; hairlines part the rows,
-   and a rule in ink sits over the first. On a phone, /settings is the list
-   of sections. */
+   at the left and has its control at the right, on the line of its name;
+   hairlines part the rows, and a rule in ink sits over the first. On a
+   phone, /settings is the list of sections. */
 
-/* The list of sections, on a phone. */
+/* The list of sections, on a phone: a row each, its name and a line under
+   it, with the chevron centred on the two. About's documents are rows of
+   the same kind. */
 .settings-index {
   margin: 0;
   padding: 0;
@@ -13,17 +15,24 @@
 
 .settings-index-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
+  width: 100%;
   min-height: 64px;
   padding: 12px 0;
+  border: 0;
   border-bottom: 1px solid var(--line);
+  background: none;
   color: var(--ink);
+  font: inherit;
+  text-align: left;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .settings-index-item > svg {
   flex: none;
+  align-self: center;
   color: var(--muted);
 }
 
@@ -51,8 +60,14 @@
   min-width: 0;
 }
 
+/* The heading is the kit's section head (a link action at its right, on
+   the title's baseline); here the rule under it is the body's. */
 .settings-section-head {
   padding-bottom: var(--space-3);
+}
+
+.settings-section-head.card-head {
+  margin-bottom: 0;
 }
 
 /* The rule in ink over a section's rows. */
@@ -62,12 +77,13 @@
   border-top: 1px solid var(--rule);
 }
 
-/* What isn't a row (a paragraph, a line of buttons) gets a row's air and
-   a hairline under it, so a section reads as one list. A list brings rows
-   of its own, and a notice keeps its own shape and is given room instead. */
-.settings-section-body > :where(:not(.settings-row, .callout, .dash-list, .perm-list, .choice-list)) {
+/* What isn't a row (a paragraph, the timer's rule) gets a row's air and a
+   hairline under it, so a section reads as one list. A list brings rows of
+   its own; a notice keeps its own shape and is given room instead; a
+   caption and a foot sit under the rows, 12px down. */
+.settings-section-body > :where(:not(.settings-row, .settings-index-item, .callout, .card-caption, .card-foot, .dash-list, .perm-list)) {
   margin: 0;
-  padding: 16px 0;
+  padding: var(--row-pad-lg) 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -75,17 +91,27 @@
    hairline under it still runs the section's width. */
 .settings-section-body > .settings-text {
   max-width: none;
-  padding-right: max(0px, 100% - 72ch);
+  padding-right: max(0px, 100% - var(--measure));
 }
 
 .settings-section-body > .callout {
   margin: 16px 0 4px;
 }
 
-/* The kit's choices are rows between hairlines; here the rule in ink is
-   already over the first. */
-.settings-section-body > .choice-list .choice:first-child {
-  border-top: 0;
+/* A document to read is a row with one line, not two: its name and the
+   chevron share the row's middle. */
+.settings-section-body > .settings-index-item {
+  align-items: center;
+  min-height: 0;
+  padding: var(--row-pad-lg) 0;
+}
+
+@media (hover: hover) {
+  .settings-section-body > .settings-index-item:hover .settings-index-label {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
 }
 
 /* Something that can't be taken back is marked by its rule and its button,
@@ -97,30 +123,36 @@
 .settings-text {
   color: var(--ink-2);
   font-size: var(--text-base);
-  max-width: 72ch;
+  max-width: var(--measure);
 }
 
+/* ---- a row --------------------------------------------------------------- */
+
+/* The words at the left, held to a readable measure; the control at the
+   right end, centred on the name's first line whatever the length of the
+   line under it. --settings-line is that first line's height. */
 .settings-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 48px;
-  padding: 18px 0;
+  --settings-line: calc(var(--text-md) * 1.45);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px 40px;
+  padding: var(--row-pad-lg) 0;
   border-bottom: 1px solid var(--line);
 }
 
 .settings-row-text {
   display: flex;
-  flex: 1 1 240px;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
-  max-width: 320px;
+  max-width: var(--measure);
 }
 
 .settings-row-label {
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .settings-row-hint {
@@ -137,11 +169,36 @@
 
 .settings-row-control {
   display: flex;
-  flex: 999 1 380px;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 8px;
   min-width: 0;
+  margin-top: calc((var(--settings-line) - var(--control-h)) / 2);
+}
+
+/* A switch is 24px, and words or a badge already sit on the line. */
+.settings-row-control:has(> .switch:only-child) {
+  margin-top: calc((var(--settings-line) - 24px) / 2);
+}
+
+.settings-row-control:has(> .badge:only-child, > .settings-row-state:only-child) {
+  margin-top: 0;
+}
+
+/* Prose in the control's place (a few lines about a kind of sign-in) reads
+   from the top of its column, like the words beside it. */
+.settings-row-control:has(> p) {
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+/* A setting's state in words where there is nothing to press ("Kept"). */
+.settings-row-state {
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: var(--settings-line);
 }
 
 /* A select is as wide as its longest choice unless told it may be less,
@@ -154,18 +211,68 @@
   max-width: 320px;
 }
 
-@media (max-width: 760px) {
-  .settings-row {
-    padding: 16px 0;
+/* On a touch screen buttons and fields are 40px, and a Segmented's keys
+   44px. */
+@media (pointer: coarse) {
+  .settings-row-control {
+    margin-top: calc((var(--settings-line) - 40px) / 2);
   }
 
-  .settings-row-text {
-    flex-basis: 100%;
-    max-width: none;
+  .settings-row-control:has(> .segmented) {
+    margin-top: calc((var(--settings-line) - 44px) / 2);
+  }
+}
+
+/* A control wider than a short column (the sky's tiles, two selects, an
+   editor) has a line of its own under the words, from the left. The
+   composer's defaults and the adviser mark theirs --tall and
+   .adviser-set-row. */
+.settings-row:is(.settings-row--block, .settings-row--tall, .adviser-set-row) > .settings-row-control {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+/* A phone, and a narrow tablet: the control goes under the words, from the
+   left, except a switch or a state in a word or two ("Kept"), which stay on
+   the name's line at the right; the line about it then runs under both. */
+@media (max-width: 760px) {
+  .settings-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-row > .settings-row-control {
+    justify-content: flex-start;
+    margin-top: 0;
   }
 
   .settings-row-control > select.input {
     max-width: 100%;
+  }
+
+  .settings-row:has(> .settings-row-control > :is(.switch, .badge, .settings-row-state):only-child) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 24px;
+  }
+
+  .settings-row:has(> .settings-row-control > :is(.switch, .badge, .settings-row-state):only-child) > .settings-row-text {
+    display: contents;
+  }
+
+  .settings-row:has(> .settings-row-control > :is(.switch, .badge, .settings-row-state):only-child) .settings-row-label {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .settings-row:has(> .settings-row-control > :is(.switch, .badge, .settings-row-state):only-child) .settings-row-hint {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    max-width: var(--measure);
+  }
+
+  .settings-row:has(> .settings-row-control > :is(.switch, .badge, .settings-row-state):only-child) > .settings-row-control {
+    grid-row: 1;
+    grid-column: 2;
   }
 }
 
@@ -173,7 +280,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: 8px;
+}
+
+/* ---- data and sync ------------------------------------------------------- */
+
+/* "synced 4m ago" stays in one piece at the end of the archive's line. */
+.settings-when {
+  white-space: nowrap;
 }
 
 /* A sync under way: its steps, and the way to stop it. */
@@ -183,8 +297,45 @@
   gap: 16px;
 }
 
-/* The dashboards, a row each: its name, how much is on it, and what can be
-   done to it. Renaming turns the row into a field. */
+/* ---- the default timer --------------------------------------------------- */
+
+/* Off, the rule is a sentence to open; the arrow sits on its first line.
+   On a touch screen the sentence reaches 44px into the row's air, so the
+   row is no taller for it. */
+.settings-rule > summary {
+  align-items: flex-start;
+}
+
+.settings-rule > summary::before {
+  flex: none;
+  margin-top: 6px;
+}
+
+.settings-rule[open] > .settings-rule-editor {
+  margin-top: var(--space-4);
+}
+
+@media (pointer: coarse) {
+  .settings-rule > summary {
+    margin-block: calc((1.45em - 44px) / 2);
+    padding-block: calc((44px - 1.45em) / 2);
+  }
+}
+
+.settings-rule-editor {
+  max-width: 640px;
+}
+
+/* The editor's parts are named like the rows around them. */
+.settings-section .lse-legend {
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+
+/* ---- dashboards ---------------------------------------------------------- */
+
+/* A row each: its name (which opens it) and how many reports are on it,
+   then its ⋯. */
 .dash-list {
   display: flex;
   flex-direction: column;
@@ -195,21 +346,27 @@
 
 .dash-list-item {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 16px;
-  min-height: 56px;
-  padding: 8px 0;
+  align-items: flex-start;
+  gap: 16px;
+  padding: var(--row-pad-lg) 0;
   border-bottom: 1px solid var(--line);
 }
 
+.dash-list-text {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+}
+
 .dash-list-name {
-  flex: 1 1 140px;
   min-width: 0;
   overflow: hidden;
   color: var(--ink);
   font-size: var(--text-md);
   font-weight: 500;
+  line-height: 1.45;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -226,59 +383,25 @@
   font-size: var(--text-sm);
 }
 
-.dash-list-tools {
-  display: flex;
-  flex: none;
-  gap: 2px;
-  margin-right: -6px;
-}
-
-.dash-list-rename {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.dash-list-rename .input {
-  flex: 1 1 200px;
-  width: auto;
-}
-
-/* On a phone the row is the name and its four buttons; how many reports
-   are on it is one press away. */
+/* On a phone the ⋯'s dots end on the column's edge, as every row's ⋯
+   does there. */
 @media (max-width: 560px) {
-  .dash-list-name {
-    flex-basis: 0;
-  }
-
-  .dash-list-count {
-    display: none;
+  .dash-list-item .row-menu {
+    margin-right: -7px;
   }
 }
 
-.choice.is-disabled {
-  cursor: default;
+@media (max-width: 560px) and (pointer: coarse) {
+  .dash-list-item .row-menu {
+    margin-right: -14px;
+  }
 }
 
-.choice.is-disabled .choice-label,
-.choice.is-disabled .choice-desc {
-  color: var(--muted);
-}
-
-.choice-label .badge {
-  margin-left: 6px;
-  vertical-align: 1px;
-}
-
-.settings-section-body .choice-desc {
-  max-width: 72ch;
-}
+/* ---- permissions and sources --------------------------------------------- */
 
 /* A list of things said in a sentence each (what the sign-in allows, where
-   the data comes from): a row each, the words held to a readable measure
-   while the hairline runs the section's width. */
+   the data comes from): a row each, the words held to the measure of the
+   paragraphs around them while the hairline runs the section's width. */
 .perm-list {
   display: flex;
   flex-direction: column;
@@ -290,7 +413,7 @@
 }
 
 .perm-list li {
-  padding: 14px max(0px, 100% - 72ch) 14px 0;
+  padding: 14px max(0px, 100% - var(--measure)) 14px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -422,20 +545,23 @@
 
 /* Each choice carries data-accent, which makes it a swatch (theme.css):
    inside it --accent and the rest are that accent's own, under the page's
-   sky. So the disc, the small dot of its second colour and the ring round
-   the chosen one all come from the tokens, not from a second list of
-   colours here. */
+   sky. So the disc and the ring round the chosen one come from the tokens,
+   not from a second list of colours here. A grid, so the names line up
+   when the choices take two lines; six fit one on a desk. */
 
 .accent-choices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 732px;
 }
 
 .accent-choice {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
   min-height: 40px;
   padding: 0 2px 0 5px;
   border: 0;
@@ -452,7 +578,6 @@
 }
 
 .accent-swatch {
-  position: relative;
   flex: none;
   width: 22px;
   height: 22px;
@@ -466,24 +591,9 @@
     0 0 0 4px var(--accent);
 }
 
-.accent-swatch::after {
-  content: '';
-  position: absolute;
-  right: -5px;
-  bottom: -4px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--chart-2);
-  box-shadow: 0 0 0 2px var(--bg);
-}
-
 @media (max-width: 560px) {
   .accent-choices {
-    display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px 12px;
-    width: 100%;
   }
 
   .accent-choice {
@@ -495,7 +605,6 @@
    swatches, and the picture of each sky. */
 @media (forced-colors: active) {
   .accent-swatch,
-  .accent-swatch::after,
   .sky-choice-swatch {
     forced-color-adjust: none;
   }

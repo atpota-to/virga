@@ -1,4 +1,5 @@
 import './charts.css';
+import { heatSteps } from './format.js';
 
 /**
  * A grid of cells shaded on one blue ramp, lightest for "nothing": weekdays
@@ -12,9 +13,7 @@ import './charts.css';
 export default function Heatmap({ rows, columns, summary, cellHeight = 18, legend = true }) {
   if (!rows?.length) return null;
   const cols = rows[0].cells.length;
-  const values = rows.flatMap((r) => r.cells.map((c) => c.value)).filter((v) => v != null);
-  const max = Math.max(...values, 0);
-  const step = (v) => (v == null ? null : v <= 0 || !max ? 0 : Math.min(6, 1 + Math.floor((v / max) * 5.999)));
+  const steps = heatSteps(rows.flatMap((r) => r.cells.map((c) => c.value)));
   return (
     <div>
       <div className="heatmap" role="img" aria-label={summary} style={{ '--heat-cols': cols, '--heat-cell-h': `${cellHeight}px` }}>
@@ -24,7 +23,7 @@ export default function Heatmap({ rows, columns, summary, cellHeight = 18, legen
               {r.label}
             </span>
             {r.cells.map((c, i) => {
-              const s = step(c.value);
+              const s = steps.get(c.value) ?? null;
               return (
                 <span
                   key={i}

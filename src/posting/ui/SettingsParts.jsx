@@ -12,30 +12,39 @@
 export function SettingsCard({ title, sub = null, tone = null, children }) {
   return (
     <section className="settings-section" data-tone={tone || undefined}>
-      <div className="settings-section-head">
-        <h2 className="card-title">{title}</h2>
-        {sub && <p className="card-sub">{sub}</p>}
+      <div className="settings-section-head card-head">
+        <div>
+          <h2 className="card-title">{title}</h2>
+          {sub && <p className="card-sub">{sub}</p>}
+        </div>
       </div>
       <div className="settings-section-body">{children}</div>
     </section>
   );
 }
 
-/** A row: the label and its hint on the left, the control on the right. */
-export function SettingsRow({ label, hint = null, htmlFor = null, children }) {
+/**
+ * A row: the label and its hint on the left, the control on the right, on
+ * the label's first line. A `block` row puts its control on a line of its
+ * own under them, for one wider than a short column (an editor, a row of
+ * tiles). A block row with no label is the control alone, as a row.
+ */
+export function SettingsRow({ label = null, hint = null, htmlFor = null, block = false, children }) {
   return (
-    <div className="settings-row">
-      <div className="settings-row-text">
-        {htmlFor ? (
-          <label className="settings-row-label" htmlFor={htmlFor}>
-            {label}
-          </label>
-        ) : (
-          <div className="settings-row-label">{label}</div>
-        )}
-        {hint && <div className="settings-row-hint">{hint}</div>}
-      </div>
-      <div className="settings-row-control">{children}</div>
+    <div className={block ? 'settings-row settings-row--block' : 'settings-row'}>
+      {label && (
+        <div className="settings-row-text">
+          {htmlFor ? (
+            <label className="settings-row-label" htmlFor={htmlFor}>
+              {label}
+            </label>
+          ) : (
+            <div className="settings-row-label">{label}</div>
+          )}
+          {hint && <div className="settings-row-hint">{hint}</div>}
+        </div>
+      )}
+      {children && <div className="settings-row-control">{children}</div>}
     </div>
   );
 }

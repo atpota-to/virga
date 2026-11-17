@@ -68,7 +68,7 @@ export default function ShareDialog({ share, archive, period, nowMs, onClose }) 
       open={open}
       onClose={onClose}
       title="Post this chart"
-      className="share-dialog"
+      className="share-dialog dialog--stack-actions"
       actions={
         <>
           <Button onClick={save} disabled={!picture}>
@@ -92,11 +92,9 @@ export default function ShareDialog({ share, archive, period, nowMs, onClose }) 
             <span className="field-label">Description (alt text)</span>
             <textarea className="input share-alt" rows={5} value={alt} maxLength={2000} onChange={(e) => setAlt(e.target.value)} />
             <span className={`field-hint${alt.length > ALT_TEXT_MAX ? ' is-over' : ''}`}>
-              Written from the chart’s own numbers, so someone who can’t see the picture gets what it shows. Change it as you like; it goes
-              with the picture into the post.
+              Written from the chart’s numbers; change it as you like. Nothing posts until you do.
             </span>
           </label>
-          <p className="field-hint">Nothing is posted yet. The composer opens with the picture attached, and you can save a draft, schedule it or post it from there.</p>
         </div>
       )}
     </Dialog>

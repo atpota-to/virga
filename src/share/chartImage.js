@@ -5,14 +5,16 @@
 // The layout is worked out by pure functions (tested); the drawing itself
 // needs a real canvas and is looked at in the browser.
 
-import { bucketLabel } from '../lib/analytics.js';
-import { fmtTick, niceScale, uniqueTicks } from '../charts/format.js';
+import { axisStops, chartScale, fmtTick, trendName } from '../charts/format.js';
 
 export const SHARE_WIDTH = 1200;
 export const SHARE_HEIGHT = 675;
 
 const PAD = 56;
-const PLOT = { left: PAD, right: SHARE_WIDTH - PAD, top: 236, bottom: SHARE_HEIGHT - 118 };
+// The plot starts a clear line under the headline figure, so its top rule's
+// number never sits against the figure's words, and ends with room for its
+// dates over the mark in the corner.
+const PLOT = { left: PAD, right: SHARE_WIDTH - PAD, top: 264, bottom: SHARE_HEIGHT - 130 };
 /** Room at the right for the dashed reach to a reference the line can't arrive at. */
 const GHOST_GUTTER = 70;
 const FONT = '"Instrument Sans Variable", "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif';
@@ -44,17 +46,19 @@ export function readShareTheme(root = document.documentElement) {
 
 /**
  * Where a series sits in the plot: the y scale, each point's x and y, the
- * bar width, the ticks. `box` is `{ left, right, top, bottom }` in pixels.
+ * bar width, the rules (`ticks`) and which of them carry a number
+ * (`labelled`), on the same scale as the chart on the page (chartScale).
+ * `box` is `{ left, right, top, bottom }` in pixels.
  */
 export function seriesLayout(spec, box = PLOT) {
-  const { series, trend, zeroBase, ghost } = spec;
+  const { series, trend, zeroBase, ghost, mode = 'bars' } = spec;
   const n = series.length;
   const values = series.map((p) => p.v ?? 0);
   const dataMax = Math.max(...values, ...(trend ? trend.map((p) => p.v ?? 0) : [0]), ghost ? ghost.v : 0);
   // The ghost reaches past the last bucket, so the series cedes it a gutter.
   if (ghost) box = { ...box, right: box.right - GHOST_GUTTER };
   const dataMin = Math.min(...values);
-  const { min, max } = niceScale(zeroBase ? 0 : Math.max(0, dataMin), Math.max(dataMax, zeroBase ? 1 : dataMax));
+  const { min, max, ticks, labelled } = chartScale(dataMin, dataMax, { zeroBase, bars: mode === 'bars' });
   const span = Math.max(1e-9, max - min);
   const slot = (box.right - box.left) / n;
   const x = (i) => box.left + slot * (i + 0.5);
@@ -67,17 +71,15 @@ export function seriesLayout(spec, box = PLOT) {
     x,
     y,
     barWidth: Math.max(1, Math.min(40, slot - Math.max(2, slot * 0.22))),
-    ticks: uniqueTicks([max, (max + min) / 2, min]),
+    ticks,
+    labelled,
   };
 }
 
-/** The three dates under a chart: first, middle (once there's room for one), last. */
+/** The dates under a chart (charts/format.js axisStops), as the canvas aligns text. */
 export function axisLabels(series, unit) {
-  const n = series.length;
-  const out = [{ at: 0, text: bucketLabel(series[0].t, unit), align: 'left' }];
-  if (n >= 5) out.push({ at: Math.floor((n - 1) / 2), text: bucketLabel(series[Math.floor((n - 1) / 2)].t, unit), align: 'center' });
-  if (n > 1) out.push({ at: n - 1, text: bucketLabel(series[n - 1].t, unit), align: 'right' });
-  return out;
+  const ALIGN = { start: 'left', middle: 'center', end: 'right' };
+  return axisStops(series, unit).map((s) => ({ at: s.i, text: s.text, align: ALIGN[s.anchor] }));
 }
 
 /** Text cut to fit `width`, with an ellipsis, measured with the context's current font. */
@@ -156,17 +158,13 @@ function drawSeries(ctx, spec, theme) {
   const { series, unit, mode, trend, marks } = spec;
 
   ctx.lineWidth = 1;
-  ctx.font = `400 18px ${FONT}`;
-  ctx.textAlign = 'left';
+  ctx.strokeStyle = theme.grid;
   for (const tick of L.ticks) {
     const ty = Math.round(L.y(tick)) + 0.5;
-    ctx.strokeStyle = theme.grid;
     ctx.beginPath();
     ctx.moveTo(PLOT.left, ty);
     ctx.lineTo(PLOT.right, ty);
     ctx.stroke();
-    ctx.fillStyle = theme.muted;
-    ctx.fillText(fmtTick(tick), PLOT.left + 2, ty - 6);
   }
 
   if (mode === 'line') {
@@ -270,14 +268,50 @@ function drawSeries(ctx, spec, theme) {
     ctx.fill();
   }
 
-  ctx.fillStyle = theme.muted;
+  // The rules' numbers on the plot's left edge, the title's edge, ringed in
+  // the ground's colour so a bar passing behind doesn't take them away.
   ctx.font = `400 18px ${FONT}`;
+  ctx.textAlign = 'left';
+  ctx.lineWidth = 5;
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = theme.surface;
+  ctx.fillStyle = theme.muted;
+  for (const tick of L.labelled) {
+    const ty = Math.round(L.y(tick)) - 6;
+    ctx.strokeText(fmtTick(tick), PLOT.left, ty);
+    ctx.fillText(fmtTick(tick), PLOT.left, ty);
+  }
+
+  // Each date under its own bucket, the ends hanging inward from the first
+  // and last bars' edges (a line's ends are its points), so the dates stop
+  // where the buckets do, short of a ghost's gutter.
+  const reach = mode === 'bars' ? L.barWidth / 2 : 0;
   for (const label of axisLabels(series, unit)) {
     ctx.textAlign = label.align;
-    // Under the measured curve: the axis stops where the buckets do, short of a ghost's gutter.
-    const lx = label.align === 'left' ? PLOT.left : label.align === 'right' ? L.x(L.n - 1) + L.slot / 2 : (PLOT.left + L.x(L.n - 1) + L.slot / 2) / 2;
+    const lx = label.align === 'left' ? L.x(label.at) - reach : label.align === 'right' ? L.x(label.at) + reach : L.x(label.at);
     ctx.fillText(label.text, lx, PLOT.bottom + 30);
   }
+
+  if (trend?.some((p) => p.v != null)) drawTrendKey(ctx, trendName(series, trend, unit), theme);
+}
+
+/** The trend's legend, as on the page: a short stroke in its colour and its name, at the plot's top right. */
+function drawTrendKey(ctx, name, theme) {
+  const cy = PLOT.top - 34;
+  ctx.font = `400 18px ${FONT}`;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = theme.muted;
+  ctx.fillText(name, PLOT.right, cy);
+  const left = PLOT.right - ctx.measureText(name).width - 10 - 28;
+  ctx.strokeStyle = theme.chart2;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(left, cy);
+  ctx.lineTo(left + 28, cy);
+  ctx.stroke();
+  ctx.textBaseline = 'alphabetic';
 }
 
 function drawBars(ctx, spec, theme) {

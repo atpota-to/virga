@@ -51,8 +51,8 @@ export default function QueueSettings({ did }) {
         }
         hint={weekSummary(schedule)}
       >
-        <Link to={postingPath('schedule')} className="btn btn--sm">
-          <CalendarRange size={14} aria-hidden="true" />
+        <Link to={postingPath('schedule')} className="btn">
+          <CalendarRange size={15} aria-hidden="true" />
           Edit the week
         </Link>
       </SettingsRow>

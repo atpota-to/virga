@@ -32,15 +32,17 @@ function fakeContext() {
 const THEME = { surface: '#fff', ink: '#000', ink2: '#333', muted: '#666', line: '#ddd', grid: '#eee', chart1: '#00f', chart2: '#f60', area: '#eef', track: '#eee', accent: '#00f' };
 
 describe('seriesLayout', () => {
-  it('stands bars on zero and spreads them across the plot', () => {
+  it('stands bars on zero, spreads them across the plot and leaves room over the tallest', () => {
     const L = seriesLayout({ series: series([0, 5, 10, 20]), zeroBase: true }, BOX);
     expect(L.min).toBe(0);
-    expect(L.max).toBe(20);
+    expect(L.max).toBeCloseTo(21.6);
     expect(L.x(0)).toBe(12.5);
     expect(L.x(3)).toBe(87.5);
     expect(L.y(0)).toBe(50);
-    expect(L.y(20)).toBe(0);
+    expect(L.y(20)).toBeGreaterThan(0);
     expect(L.barWidth).toBeLessThan(L.slot);
+    expect(L.ticks).toEqual([0, 10, 20]);
+    expect(L.labelled).toEqual([10, 20]);
   });
 
   it('lets a line sit near its own floor, and makes room for the trend', () => {

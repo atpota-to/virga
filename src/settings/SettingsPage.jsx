@@ -5,12 +5,12 @@
 // Each section is a page of its own. On a desk the sidebar lists them; on a
 // phone, where there is no sidebar, /settings is that list.
 
-import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, HardDrive, Moon, Pencil, RefreshCw, RotateCcw, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, Moon, Pencil, Plus, RefreshCw, RotateCcw, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
 import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
-import Figures from '../components/Figures.jsx';
+import { MoreMenu } from '../components/Menu.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PERMISSION_GROUPS, backendHost } from '../config.js';
@@ -86,15 +86,19 @@ function SettingsIndex() {
 
 /**
  * A band of a settings page: a heading with a rule in ink under it, then
- * its rows. Without a title it is the rows alone, under the rule.
+ * its rows. Without a title it is the rows alone, under the rule. `action`
+ * is what adds to the band's list (New dashboard), at the heading's right.
  */
-function Section({ title = null, sub = null, children, tone = null }) {
+function Section({ title = null, sub = null, action = null, children, tone = null }) {
   return (
     <section className="settings-section" data-tone={tone || undefined}>
       {title && (
-        <div className="settings-section-head">
-          <h2 className="card-title">{title}</h2>
-          {sub && <p className="card-sub">{sub}</p>}
+        <div className="settings-section-head card-head">
+          <div>
+            <h2 className="card-title">{title}</h2>
+            {sub && <p className="card-sub">{sub}</p>}
+          </div>
+          {action}
         </div>
       )}
       <div className="settings-section-body">{children}</div>
@@ -102,17 +106,22 @@ function Section({ title = null, sub = null, children, tone = null }) {
   );
 }
 
-/** One setting: what it is and a line about it at the left, its control at the right. */
-function Row({ label, hint = null, labelId = undefined, children }) {
+/**
+ * One setting: what it is and a line about it at the left, its control at
+ * the right, on the label's first line. A `block` row puts its control on a
+ * line of its own under them (tiles, two selects). A row with nothing to
+ * press is the words alone.
+ */
+function Row({ label, hint = null, labelId = undefined, block = false, children = null }) {
   return (
-    <div className="settings-row">
+    <div className={block ? 'settings-row settings-row--block' : 'settings-row'}>
       <div className="settings-row-text">
         <div className="settings-row-label" id={labelId}>
           {label}
         </div>
         {hint && <div className="settings-row-hint">{hint}</div>}
       </div>
-      <div className="settings-row-control">{children}</div>
+      {children && <div className="settings-row-control">{children}</div>}
     </div>
   );
 }
@@ -137,6 +146,28 @@ function megabytes(bytes) {
   return bytes == null ? '—' : `${(bytes / 1048576).toFixed(bytes < 10 * 1048576 ? 1 : 0)} MB`;
 }
 
+/** "1,031 posts" or "1 post", in the reader's way of writing numbers. */
+function counted(n, one, many) {
+  return `${n.toLocaleString(activeLocale())} ${n === 1 ? one : many}`;
+}
+
+/**
+ * What the archive holds and how fresh it is, in a line: "1,031 posts,
+ * 9,732 repo records and 4,810 followers that can be listed · synced 4m
+ * ago". The followers are the ones a signed-in read can list, which can be
+ * fewer than the count on the profile. Before the first build, only when.
+ */
+function archiveLine(archive, counts) {
+  const when = syncWhen(archive);
+  if (!archive.meta.posts) return when;
+  const held = `${counted(counts.posts, 'post', 'posts')}, ${counted(counts.records, 'repo record', 'repo records')} and ${counted(counts.followers, 'follower', 'followers')} that can be listed`;
+  return (
+    <>
+      {held} · <span className="settings-when">{when.charAt(0).toLowerCase() + when.slice(1)}</span>
+    </>
+  );
+}
+
 function DataSection() {
   const archive = useArchive();
   const toast = useToast();
@@ -148,17 +179,7 @@ function DataSection() {
 
   return (
     <>
-      <Figures
-        label="Your archive in figures"
-        items={[
-          { key: 'posts', label: 'Posts', value: counts.posts },
-          { key: 'followers', label: 'Followers', value: counts.followers },
-          { key: 'records', label: 'Repo records', value: counts.records },
-          { key: 'blocked', label: 'Blocked by', value: counts.blockedBy },
-        ]}
-      />
-
-      <Section title="Your archive" sub={syncWhen(archive)}>
+      <Section title="Your archive" sub={archiveLine(archive, counts)}>
         {archive.sync ? (
           <div className="settings-sync">
             <SyncSteps sync={archive.sync} />
@@ -179,7 +200,7 @@ function DataSection() {
               label={!pm ? 'Build' : pm.complete ? 'Sync' : 'Finish the build'}
               hint="A sync runs by itself when you open Virga and the archive is more than an hour old. It only fetches what’s new."
             >
-              <Button variant="primary" onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
+              <Button onClick={() => archive.runSync(!pm ? 'full' : pm.complete ? 'incremental' : 'resume')}>
                 <RefreshCw size={15} aria-hidden="true" />
                 {!pm ? 'Build your archive' : pm.complete ? 'Sync now' : 'Resume the build'}
               </Button>
@@ -224,15 +245,13 @@ function DataSection() {
                 : 'In IndexedDB, in a database of its own for this account.'
           }
         >
-          <span className="badge">
-            <HardDrive aria-hidden="true" />
-            {archive.persistent ? 'IndexedDB' : 'This session only'}
-          </span>
+          {/* Only the case to find is marked; kept, the line says where. */}
+          {!archive.persistent && <span className="badge badge--warn">This session only</span>}
         </Row>
         {navigator.storage?.persist && (
           <Row label="Keep it when space runs low" hint="Asks the browser not to clear the archive to make room. It may say no.">
             {persisted ? (
-              <span className="badge badge--accent">Kept</span>
+              <span className="settings-row-state">Kept</span>
             ) : (
               <Button
                 onClick={async () => {
@@ -250,12 +269,12 @@ function DataSection() {
 
       <Section title="Delete this archive" tone="danger">
         <Row
-          label="Remove everything Virga keeps for this account in this browser"
+          label="Everything Virga keeps for this account here"
           hint="Your account, your repo and your followers aren’t touched. The next build reads it all again."
         >
-          <Button variant="danger" onClick={() => setConfirm('delete')} disabled={!archive.loaded || Boolean(archive.sync)}>
+          <Button className="is-danger" onClick={() => setConfirm('delete')} disabled={!archive.loaded || Boolean(archive.sync)}>
             <Trash2 size={15} aria-hidden="true" />
-            Delete the archive
+            Delete the archive…
           </Button>
         </Row>
       </Section>
@@ -320,103 +339,108 @@ function DataSection() {
 function DashboardsSection() {
   const actions = useDashboards();
   const toast = useToast();
-  const [editing, setEditing] = useState(null);
+  const [renaming, setRenaming] = useState(null);
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
   const [creating, setCreating] = useState(false);
   const list = actions.dashboards;
+  // A row that moves, or goes, takes the focus on its ⋯ with it: the
+  // moved row's own, or the row that takes a deleted one's place.
+  const listRef = useRef(null);
+  const [refocus, setRefocus] = useState(null);
+  useEffect(() => {
+    if (refocus == null) return;
+    const rows = [...(listRef.current?.children || [])];
+    const row = typeof refocus === 'number' ? rows[Math.min(refocus, rows.length - 1)] : rows.find((r) => r.dataset.id === refocus);
+    row?.querySelector('.menu-button')?.focus();
+    setRefocus(null);
+  }, [list, refocus]);
+  const move = (d, to) => {
+    actions.moveDashboard(d.id, to);
+    setRefocus(d.id);
+  };
+  const rename = (e) => {
+    e.preventDefault();
+    actions.renameDashboard(renaming.id, name);
+    setRenaming(null);
+  };
   return (
     <>
-      <Section title="Your dashboards" sub="Each is a set of reports, arranged your way. Open one and press Customize to change it.">
-        <ul className="dash-list">
+      <Section
+        title="Your dashboards"
+        sub="Each is a set of reports, arranged your way. Open one and press Customize to change it."
+        action={
+          <button type="button" className="link-action" onClick={() => setCreating(true)}>
+            <Plus size={14} aria-hidden="true" />
+            New dashboard
+          </button>
+        }
+      >
+        <ul className="dash-list" ref={listRef}>
           {list.map((d, i) => (
-            <li key={d.id} className="dash-list-item">
-              {editing === d.id ? (
-                <form
-                  className="dash-list-rename"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    actions.renameDashboard(d.id, name);
-                    setEditing(null);
-                  }}
-                >
-                  <label className="visually-hidden" htmlFor={`rename-${d.id}`}>
-                    Name
-                  </label>
-                  <input id={`rename-${d.id}`} className="input" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} autoFocus />
-                  <Button type="submit" size="sm" variant="primary">
-                    Save
-                  </Button>
-                  <Button size="sm" onClick={() => setEditing(null)}>
-                    Cancel
-                  </Button>
-                </form>
-              ) : (
-                <>
-                  <Link to={`/dashboard/${d.id}`} className="dash-list-name">
-                    {d.name}
-                  </Link>
-                  <span className="dash-list-count num">
-                    {d.widgets.length} {d.widgets.length === 1 ? 'report' : 'reports'}
-                  </span>
-                  <span className="dash-list-tools">
-                    <Button size="sm" variant="ghost" icon aria-label={`Move ${d.name} up`} disabled={i === 0} onClick={() => actions.moveDashboard(d.id, i - 1)}>
-                      <ArrowUp size={14} aria-hidden="true" />
-                    </Button>
-                    <Button size="sm" variant="ghost" icon aria-label={`Move ${d.name} down`} disabled={i === list.length - 1} onClick={() => actions.moveDashboard(d.id, i + 1)}>
-                      <ArrowDown size={14} aria-hidden="true" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      icon
-                      aria-label={`Rename ${d.name}`}
-                      onClick={() => {
-                        setEditing(d.id);
+            <li key={d.id} className="dash-list-item" data-id={d.id}>
+              <span className="dash-list-text">
+                <Link to={`/dashboard/${d.id}`} className="dash-list-name">
+                  {d.name}
+                </Link>
+                <span className="dash-list-count num">
+                  {d.widgets.length} {d.widgets.length === 1 ? 'report' : 'reports'}
+                </span>
+              </span>
+              <div className="row-actions">
+                <MoreMenu
+                  className="row-menu"
+                  label={`More for ${d.name}`}
+                  items={[
+                    {
+                      label: 'Rename…',
+                      icon: Pencil,
+                      onSelect: () => {
                         setName(d.name);
-                      }}
-                    >
-                      <Pencil size={14} aria-hidden="true" />
-                    </Button>
-                    <Button size="sm" variant="ghost" icon aria-label={`Delete ${d.name}`} disabled={list.length <= 1} onClick={() => setConfirm(d)}>
-                      <Trash2 size={14} aria-hidden="true" />
-                    </Button>
-                  </span>
-                </>
-              )}
+                        setRenaming(d);
+                      },
+                    },
+                    i > 0 && { label: 'Move up', icon: ArrowUp, onSelect: () => move(d, i - 1) },
+                    i < list.length - 1 && { label: 'Move down', icon: ArrowDown, onSelect: () => move(d, i + 1) },
+                    // The last dashboard can't go: the app always opens on one.
+                    list.length > 1 && { separator: true },
+                    list.length > 1 && { label: 'Delete', icon: Trash2, tone: 'danger', onSelect: () => setConfirm(d) },
+                  ]}
+                />
+              </div>
             </li>
           ))}
         </ul>
-        <div className="settings-actions">
-          <Button onClick={() => setCreating(true)}>New dashboard</Button>
-          <Button variant="ghost" onClick={() => setConfirm('reset')}>
+        <div className="card-foot">
+          <button type="button" className="link-action" onClick={() => setConfirm('reset')}>
+            <RotateCcw size={14} aria-hidden="true" />
             Reset to the three starting dashboards
-          </Button>
+          </button>
         </div>
       </Section>
       <Section title="Where they’re kept">
-        <div className="choice-list">
-          <label className="choice" data-on>
-            <input type="radio" name="layout-store" checked readOnly />
-            <span>
-              <span className="choice-label">In this browser</span>
-              <span className="choice-desc">Like your archive. Another browser starts with the three starting dashboards.</span>
-            </span>
-          </label>
-          <label className="choice is-disabled">
-            <input type="radio" name="layout-store" disabled />
-            <span>
-              <span className="choice-label">
-                In your own repo <span className="badge badge--warn">Not yet</span>
-              </span>
-              <span className="choice-desc">
-                As a small record on your PDS, so your dashboards follow you to any browser. It would need permission to write that one
-                kind of record, which Virga doesn’t ask for today.
-              </span>
-            </span>
-          </label>
-        </div>
+        <p className="settings-text">Kept in this browser, like your archive. Another browser starts with the three starting dashboards.</p>
       </Section>
+      <Dialog
+        open={Boolean(renaming)}
+        onClose={() => setRenaming(null)}
+        title="Rename dashboard"
+        actions={
+          <>
+            <Button onClick={() => setRenaming(null)}>Cancel</Button>
+            <Button variant="primary" type="submit" form="rename-dashboard-form">
+              Save
+            </Button>
+          </>
+        }
+      >
+        <form id="rename-dashboard-form" className="dialog-form" onSubmit={rename}>
+          <label className="field">
+            <span className="field-label">Name</span>
+            <input className="input" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} onFocus={(e) => e.target.select()} data-autofocus />
+          </label>
+        </form>
+      </Dialog>
       <Dialog
         open={Boolean(confirm)}
         onClose={() => setConfirm(null)}
@@ -431,6 +455,7 @@ function DashboardsSection() {
                   actions.resetAll();
                   toast?.('Your dashboards are back to the three starting ones.');
                 } else {
+                  setRefocus(list.findIndex((d) => d.id === confirm.id));
                   actions.deleteDashboard(confirm.id);
                 }
                 setConfirm(null);
@@ -513,12 +538,15 @@ function RadioButtons({ className, label = undefined, labelledBy = undefined, ch
 
 function AppearanceSection() {
   const prefs = usePreferences();
+  // A phone or a tablet has no sidebar to fold.
+  const narrow = useIsNarrow();
   const { setPref } = prefs;
   // What the clock comes to at the moment, said under its tile.
   const now = SKY_NAMES[prefs.effectiveSky];
   return (
     <Section>
       <Row
+        block
         labelId="sky-label"
         label="Sky"
         hint="The sky behind every page. Let it follow the clock, or keep it where you leave it. Night is also the dark theme, and a device set to dark stays on it."
@@ -543,9 +571,10 @@ function AppearanceSection() {
         </RadioButtons>
       </Row>
       <Row
+        block
         labelId="accent-label"
         label="Accent"
-        hint="The colour of your data, and of whatever is selected. The small dot is the second line on a chart. Each pair is checked for contrast and for colour-blind eyes, under every sky."
+        hint="The colour of your data, and of whatever is selected. Each pair is checked for contrast and for colour-blind eyes, under every sky."
       >
         <RadioButtons className="accent-choices" labelledBy="accent-label" choices={ACCENTS} value={prefs.accent} onChange={(v) => setPref('accent', v)}>
           {(a, radio) => (
@@ -583,18 +612,21 @@ function AppearanceSection() {
           ]}
         />
       </Row>
-      <Row label="Sidebar" hint="Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.">
-        <Segmented
-          label="Sidebar"
-          value={prefs.sidebar}
-          onChange={(v) => setPref('sidebar', v)}
-          options={[
-            { value: 'expanded', label: 'Open' },
-            { value: 'collapsed', label: 'Folded' },
-          ]}
-        />
-      </Row>
+      {!narrow && (
+        <Row label="Sidebar" hint="Folded, it’s a rail of icons, which gives the page more room. The button at its top does the same.">
+          <Segmented
+            label="Sidebar"
+            value={prefs.sidebar}
+            onChange={(v) => setPref('sidebar', v)}
+            options={[
+              { value: 'expanded', label: 'Open' },
+              { value: 'collapsed', label: 'Folded' },
+            ]}
+          />
+        </Row>
+      )}
       <Row
+        block
         label="Numbers and dates"
         hint={
           <>
@@ -702,15 +734,17 @@ function AboutSection() {
         </p>
       </Section>
       <Section title="Terms and privacy" sub="What you agreed to when this account signed in, and what Virga does with information about you.">
+        {/* Each opens in place, like a row of the settings list leads to its page. */}
         {Object.values(DOCUMENTS).map((doc) => (
-          <Row key={doc.key} label={doc.title}>
-            <Button onClick={() => setReading(doc.key)} aria-label={`Read the ${doc.title}`}>
-              Read
-            </Button>
-          </Row>
+          <button key={doc.key} type="button" className="settings-index-item" onClick={() => setReading(doc.key)} aria-haspopup="dialog">
+            <span className="settings-index-text">
+              <span className="settings-index-label">{doc.title}</span>
+            </span>
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
         ))}
         {agreed && (
-          <p className="settings-text muted">
+          <p className="card-caption">
             This account agreed to version {agreed.version} of both{agreed.at ? ` on ${formatDateShort(agreed.at)}` : ''}.
           </p>
         )}
@@ -757,7 +791,7 @@ function AboutSection() {
           </li>
         </ul>
         {archive.meta.repo?.syncedAt && (
-          <p className="settings-text muted">
+          <p className="card-caption">
             Your repo was last read {relativeTime(archive.meta.repo.syncedAt)}, on {formatDateShort(archive.meta.repo.syncedAt)}.
           </p>
         )}

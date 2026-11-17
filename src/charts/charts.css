@@ -36,6 +36,10 @@
   border-top-style: dashed;
 }
 
+.an-chart-legend i.an-chart-legend-trend {
+  border-color: var(--chart-2);
+}
+
 .an-chart-plot {
   position: relative;
   width: 100%;
@@ -52,7 +56,20 @@
   stroke-width: 1;
 }
 
+/* A rule's number sits on the plot's left edge, over whatever passes
+   behind it, so it is ringed in the page's colour to stay readable over a
+   bar or the wash. */
 .an-chart-ylabel {
+  fill: var(--muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.an-chart-xlabel {
   fill: var(--muted);
   font-family: var(--sans);
   font-size: 12px;
@@ -118,13 +135,6 @@
   stroke-linecap: round;
 }
 
-.an-chart-trendlabel {
-  fill: var(--second-ink);
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 600;
-}
-
 .an-chart-ghost {
   fill: none;
   stroke: var(--chart-ghost);
@@ -145,10 +155,10 @@
   font-size: 12px;
 }
 
+/* Solid, so it can't be taken for a marked day's dashed rule. */
 .an-chart-cross {
-  stroke: var(--faint);
+  stroke: var(--line-2);
   stroke-width: 1;
-  stroke-dasharray: 3 3;
 }
 
 .an-chart-tip {
@@ -169,6 +179,17 @@
   pointer-events: none;
   transform: translate(-50%, calc(-100% - 10px));
   box-shadow: var(--shadow-md);
+}
+
+/* Near either side the readout hangs inward from its point instead, so it
+   stays over the plot, and on the last point it leaves the ghost's reach
+   and its label in view. */
+.an-chart-tip[data-side='left'] {
+  transform: translate(calc(-100% + 12px), calc(-100% - 10px));
+}
+
+.an-chart-tip[data-side='right'] {
+  transform: translate(-12px, calc(-100% - 10px));
 }
 
 :root[data-theme='dark'] .an-chart-tip {
@@ -193,24 +214,33 @@
   color: var(--second-tip);
 }
 
-.an-chart-xaxis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
+/* The chart as a table, opened under the line that holds "Show as
+   table": its head's words 16px under that line's (8px here, 8px in the
+   sticky head), as close as a heading is to what it heads. A table sized
+   to its few columns rather than spread across the page, so its numbers
+   stay near their dates. */
 .an-tableview {
-  margin-top: var(--space-3);
+  margin-top: 8px;
 }
 
-/* The chart as a table: it scrolls inside its own height, under a head
-   that stays put (so the head needs the page's ground behind it). */
+/* On touch the line's link actions are 44px tall with their words in the
+   middle, which is already 12px of room under the words. */
+@media (pointer: coarse) {
+  .an-tableview {
+    margin-top: 0;
+  }
+}
+
+.an-tableview .table {
+  width: auto;
+  min-width: min(100%, 28rem);
+}
+
+/* It scrolls inside its own height, under a head that stays put (so the
+   head needs the page's ground behind it). */
 .an-tableview-scroll {
   position: relative;
   max-height: 20rem;
-  margin-top: var(--space-3);
   overflow: auto;
   scrollbar-width: thin;
 }
@@ -257,10 +287,17 @@
 
 /* ---- bar list ----------------------------------------------------- */
 
+/* One set of columns for every row (each row is a subgrid of the list),
+   so every bar starts at the same place and ends at the same place, however
+   wide its number. The label column is fixed: 136px for words, 200px for
+   NSIDs (BarList sets it), so bar lists side by side on a dashboard start
+   their bars on one line. Not wider than 640px: a bar is read against its
+   neighbours, and across a whole desk they drift apart. */
 .barlist {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, var(--barlist-label, 136px)) minmax(60px, 1fr) auto;
+  gap: 12px 16px;
+  max-width: 640px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -268,21 +305,18 @@
 
 .barlist-row {
   display: grid;
-  grid-template-columns: minmax(0, var(--barlist-label, 1.2fr)) minmax(60px, 1fr) auto;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 14px;
   font-size: var(--text-base);
 }
 
 .barlist-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
-  overflow: hidden;
   color: var(--ink-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .barlist-label svg {
@@ -292,10 +326,20 @@
   color: var(--muted);
 }
 
-.barlist-label code {
+/* The words, cut with an ellipsis when they run past the column (the whole
+   label is in their title). */
+.barlist-label-text {
+  min-width: 0;
   overflow: hidden;
-  font-size: var(--text-xs);
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* An NSID is a name here, not code to type, so it is set in the page's
+   face, a step smaller than the words beside it. */
+.barlist-label code {
+  font-family: inherit;
+  font-size: var(--text-sm);
 }
 
 /* The track is a tint of the ink, so it shows on the sky as on the page. */
@@ -316,6 +360,7 @@
 .barlist-value {
   min-width: 3ch;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -463,4 +508,16 @@
 
 .an-chart-marks li.an-chart-marks-more::before {
   display: none;
+}
+
+/* On a dashboard card the list is for a screen reader only: the card is a
+   glance, and its diamonds name themselves on hover. A report keeps the
+   list in view. */
+.widget .an-chart-marks {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

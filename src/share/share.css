@@ -1,14 +1,16 @@
 /* The "Post this chart" dialog: the picture as it will be posted, and its
-   description under it. */
+   description under it. Wider than other dialogs, since the picture is what
+   it is for: written as .dialog.share-dialog to outrank the kit's width.
+   On a phone it is the kit's dialog, like any other. */
 
-.share-dialog {
-  width: min(720px, calc(100vw - 32px));
+.dialog.share-dialog {
+  width: min(640px, calc(100vw - 32px));
 }
 
 .share {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 /* The picture is a thing in its own right, so it keeps an edge. */
@@ -34,8 +36,6 @@
   line-height: 1.45;
 }
 
-@media (max-width: 760px) {
-  .share-dialog {
-    width: 100%;
-  }
+.share .field-hint {
+  text-wrap: pretty;
 }
