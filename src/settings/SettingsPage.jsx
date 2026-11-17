@@ -161,9 +161,14 @@ function archiveLine(archive, counts) {
   const when = syncWhen(archive);
   if (!archive.meta.posts) return when;
   const held = `${counted(counts.posts, 'post', 'posts')}, ${counted(counts.records, 'repo record', 'repo records')} and ${counted(counts.followers, 'follower', 'followers')} that can be listed`;
+  // The dot is spaced as a meta line's, and goes with the words before it
+  // when the line breaks there.
   return (
     <>
-      {held} · <span className="settings-when">{when.charAt(0).toLowerCase() + when.slice(1)}</span>
+      {held}
+      <span className="settings-dot">·</span>
+      <wbr />
+      <span className="settings-when">{when.charAt(0).toLowerCase() + when.slice(1)}</span>
     </>
   );
 }

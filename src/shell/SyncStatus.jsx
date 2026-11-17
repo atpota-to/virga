@@ -138,7 +138,7 @@ export function SyncBanner({ archive }) {
     <div className="sync-banner">
       <span role="status" className="sync-banner-text">
         {syncHeadline(sync)}
-        <span className="sync-banner-step num"> · {syncStepText(sync)}</span>
+        <span className="sync-banner-step num">{syncStepText(sync)}</span>
       </span>
       <button type="button" className="link-action" aria-label="Cancel the sync" onClick={archive.cancelSync}>
         Cancel

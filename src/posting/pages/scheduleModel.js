@@ -265,14 +265,17 @@ function safeFormat(ms, tz, options) {
   }
 }
 
-/** 'Fri 14 Nov, 9:00 AM' (with the year when it isn't this one), in `tz`. */
-export function formatInZone(value, tz, now = Date.now()) {
+/**
+ * 'Fri 14 Nov, 9:00 AM' (with the year when it isn't this one), in `tz`;
+ * without the weekday given `{ weekday: false }`.
+ */
+export function formatInZone(value, tz, now = Date.now(), { weekday = true } = {}) {
   const ms = instant(value);
   if (!Number.isFinite(ms)) return '';
   const sameYear =
     new Date(ms).getUTCFullYear() === new Date(now).getUTCFullYear();
   return safeFormat(ms, tz, {
-    weekday: 'short',
+    ...(weekday ? { weekday: 'short' } : {}),
     month: 'short',
     day: 'numeric',
     ...(sameYear ? {} : { year: 'numeric' }),

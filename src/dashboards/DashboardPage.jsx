@@ -246,6 +246,16 @@ export default function DashboardPage({ dashboard }) {
       />
 
       <div className="dash-wrap" data-editing={editing || undefined}>
+        {/* Over the cards, so the way to add one is in sight on arrival
+            rather than at the end of a long page. */}
+        {editing && (
+          <div className="library-open">
+            <Button onClick={() => setDialog('library')}>
+              <Plus size={15} aria-hidden="true" />
+              Add a report from the library
+            </Button>
+          </div>
+        )}
         {editing && phone ? (
           <div className="dash-arrange">
             {empty || (
@@ -318,18 +328,10 @@ export default function DashboardPage({ dashboard }) {
           </div>
         )}
 
-        {/* Beside the grid where the page has the room (dashboards.css
-            shows one or the other by the width of the page); a button that
-            opens it in a dialog where it hasn't. */}
+        {/* The library: beside the grid where the page has the room, or
+            behind the button over the cards where it hasn't (dashboards.css
+            shows one or the other by the width of the page). */}
         {editing && <Library dashboard={dashboard} onAdd={addReport} onDragStart={setDragType} onDragEnd={endDrag} />}
-        {editing && (
-          <div className="library-open">
-            <Button onClick={() => setDialog('library')}>
-              <Plus size={15} aria-hidden="true" />
-              Add a report from the library
-            </Button>
-          </div>
-        )}
       </div>
 
       <Dialog open={dialog === 'library'} onClose={() => setDialog(null)} title="Report library" className="library-dialog">
@@ -778,11 +780,6 @@ function CardSettingsDialog({ card, onClose, onSave }) {
       title={def ? `${def.name} settings` : 'Card settings'}
       actions={
         <>
-          {hasAny && (
-            <Button variant="ghost" className="dialog-action-start" onClick={() => onSave(card, {})}>
-              Use the defaults
-            </Button>
-          )}
           <Button onClick={onClose}>Cancel</Button>
           <Button variant="primary" type="submit" form="card-settings-form">
             Save
@@ -845,6 +842,14 @@ function CardSettingsDialog({ card, onClose, onSave }) {
                 ))}
               </select>
             </label>
+          )}
+          {/* A reset is a link action, under the fields it clears, so the
+              foot keeps to Cancel and Save (halves on a phone). */}
+          {hasAny && (
+            <button type="button" className="link-action card-settings-reset" onClick={() => onSave(card, {})}>
+              <RotateCcw size={14} aria-hidden="true" />
+              Use the defaults
+            </button>
           )}
         </form>
       )}

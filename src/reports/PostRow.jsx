@@ -29,22 +29,35 @@ function countWords(n, { one, many }) {
 }
 
 /**
+ * When a post went out, as its line says it: "2d ago" under a week, and
+ * after that its day ("Oct 23"), with the year only when it isn't this one,
+ * as a draft's "Edited Nov 12" is. Every list of posts says it this way.
+ */
+export function postWhen(at, now = Date.now()) {
+  const t = typeof at === 'number' ? at : Date.parse(at);
+  if (!Number.isFinite(t)) return '';
+  if (now - t < WEEK_MS) return relativeTime(t, now);
+  const day = new Date(t);
+  const opts = { month: 'short', day: 'numeric' };
+  if (day.getFullYear() !== new Date(now).getFullYear()) opts.year = 'numeric';
+  return day.toLocaleDateString(activeLocale(), opts);
+}
+
+/**
  * The line under a post, wherever it is listed: when, what kind of post it
  * is if it isn't a plain one, and its counts, as a .meta line ("2d ago ·
- * reply · ♥ 532 ⟲ 108"). A week old or more, the date; the full date is in
- * the tooltip either way. Only counts above zero are shown, each with the
+ * reply · ♥ 532 ⟲ 108"). A week old or more, the day (postWhen); the full
+ * date is in the tooltip either way. Only counts above zero are shown, each with the
  * glyph the engagement filter wears. `kind` dims the counts the current
  * filter isn't about. `breakdown={false}` leaves the counts out, for a row
  * that shows its total on its own (a dashboard card's top posts). `now` is
  * when "2d ago" is counted from.
  */
 export function PostMeta({ post, kind = 'all', breakdown = true, now = Date.now(), className = '' }) {
-  const at = typeof post.at === 'number' ? post.at : Date.parse(post.at);
-  const recent = Number.isFinite(at) && now - at < WEEK_MS;
   const counts = breakdown ? COUNTS.filter((c) => (post[c.key] || 0) > 0) : [];
   return (
     <span className={`meta ${className}`.trim()}>
-      <span title={formatDateShort(post.at)}>{recent ? relativeTime(post.at, now) : formatDateShort(post.at)}</span>
+      <span title={formatDateShort(post.at)}>{postWhen(post.at, now)}</span>
       {post.replyTo && <span>reply</span>}
       {post.quoteOf && <span>quote</span>}
       {counts.length > 0 && (

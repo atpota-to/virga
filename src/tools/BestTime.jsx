@@ -128,24 +128,24 @@ export default function BestTime({ tool }) {
             )}
           </section>
           <section className="card card--flush" aria-labelledby="bt-days">
-            {/* What the bars measure, at the heading's right: a line under the
-                title would drop this rule below the best slots' beside it. */}
+            {/* What the bars measure goes in a caption under them: a line
+                under the title would drop this rule below the best slots'
+                beside it, and words at the heading's right read as a link. */}
             <div className="card-head">
               <div>
                 <h2 id="bt-days" className="card-title">
                   By weekday
                 </h2>
               </div>
-              <span className="tool-head-note">What a typical post earns</span>
             </div>
             <div className="best-days">
               <BarList
                 ariaLabel="What a typical post earns, by weekday"
-                labelWidth="48px"
                 format={(v) => fmtRate(v)}
                 rows={weekdayOrder().map((day) => m.byDay[day]).map((d) => ({ key: d.day, label: WEEKDAYS[d.day], value: d.avg || 0, display: d.avg == null ? '—' : fmtRate(d.avg), title: `${d.posts} posts` }))}
               />
             </div>
+            <p className="card-caption">What a typical post earns.</p>
           </section>
         </div>
       </div>

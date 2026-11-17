@@ -137,7 +137,7 @@ export default function AdviserSettings({ open, onClose, did }) {
                 <Segmented label="When the check stops a post" value={adviser.reviewMode} onChange={(v) => patch({ reviewMode: v })} options={REVIEW_OPTIONS} />
               </SettingsRow>
               {/* Radios, not a row of keys: three choices this long don't fit one. */}
-              <div className="settings-row adviser-set-row" role="radiogroup" aria-labelledby={ids.scope}>
+              <div className="settings-row settings-row--block" role="radiogroup" aria-labelledby={ids.scope}>
                 <div className="settings-row-text">
                   <div className="settings-row-label" id={ids.scope}>
                     Which posts
@@ -171,7 +171,7 @@ export default function AdviserSettings({ open, onClose, did }) {
             />
           </SettingsRow>
 
-          <div className="settings-row adviser-set-row" role="group" aria-labelledby={ids.goalsTitle}>
+          <div className="settings-row settings-row--block" role="group" aria-labelledby={ids.goalsTitle}>
             <div className="settings-row-text">
               <div className="settings-row-label" id={ids.goalsTitle}>
                 Your goals
@@ -234,7 +234,7 @@ export default function AdviserSettings({ open, onClose, did }) {
             </div>
           </div>
 
-          <div className="settings-row adviser-set-row" role="group" aria-labelledby={ids.proofTitle}>
+          <div className="settings-row settings-row--block" role="group" aria-labelledby={ids.proofTitle}>
             <div className="settings-row-text">
               <div className="settings-row-label" id={ids.proofTitle}>
                 Proofread

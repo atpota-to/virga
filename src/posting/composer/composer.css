@@ -1618,12 +1618,8 @@ button.post-as-button {
 
 /* ---- settings (ComposerDefaults) ------------------------------------ */
 
-/* A row whose control is taller than a line: the words at its left stay at
-   the top, and what is at its right is stacked. */
-.settings-row.settings-row--tall {
-  align-items: flex-start;
-}
-
+/* A block row's controls (Languages, Who can reply), stacked on their
+   own line under the words. */
 .settings-row-control.settings-row-control--stack {
   flex-direction: column;
   flex-wrap: nowrap;

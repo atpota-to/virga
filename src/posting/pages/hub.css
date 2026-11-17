@@ -102,16 +102,6 @@
   }
 }
 
-.hub-row-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 10px;
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
 /* Something about a row to know before acting on it: why a draft can't be
    posted or scheduled from here, or what to do about one that didn't go
    out. A warning is in the warning's colour. */
@@ -127,8 +117,7 @@
   color: var(--warn);
 }
 
-/* The actions of a row in a dashboard's posting card, which still lays its
-   rows out with these classes. */
+/* The bones of a row's actions in RowSkeleton, while a list loads. */
 .hub-row-actions {
   display: flex;
   flex: none;

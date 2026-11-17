@@ -14,6 +14,7 @@ import TemplateEditor from '../library/TemplateEditor.jsx';
 import PostingHeader from '../ui/PostingHeader.jsx';
 import { countPhrase } from './hubModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
+import { useFocusAfterRemoval } from './scheduleParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
 
@@ -57,6 +58,10 @@ export default function TemplatesPage({ did }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const usage = useMemo(() => readTemplateUsage(did), [did, templates]);
   const sorted = useMemo(() => sortTemplatesForShelf(templates, usage), [templates, usage]);
+  // A template deleted (from its ⋯ or the editor) leaves the list; the focus
+  // goes to the one that took its place rather than back to the top.
+  const keepFocus = useFocusAfterRemoval('.tpl-row-item[id]', templates);
+  const keepFocusFor = (rkey) => keepFocus(rkey ? `tpl-row-${rkey}` : null);
   const canWrite = !caps.missing.some((t) => t.startsWith(`repo:${TEMPLATE_COLLECTION}`));
 
   const groups = useMemo(() => {
@@ -135,7 +140,7 @@ export default function TemplatesPage({ did }) {
                       usedLine(usage[t.rkey]),
                     ].filter(Boolean);
                     return (
-                      <li key={t.rkey} className="hub-row tpl-row-item">
+                      <li key={t.rkey} id={`tpl-row-${t.rkey}`} className="hub-row tpl-row-item">
                         <div className="hub-row-main">
                           <p className="tpl-name">
                             {/* The name is the way into the editor; Use is the row's one button. */}
@@ -183,13 +188,25 @@ export default function TemplatesPage({ did }) {
         )}
       </div>
 
-      <TemplateEditor open={Boolean(editing)} did={did} template={editing?.template || null} onClose={() => setEditing(null)} />
+      <TemplateEditor
+        open={Boolean(editing)}
+        did={did}
+        template={editing?.template || null}
+        onClose={() => setEditing(null)}
+        onDeleting={keepFocusFor}
+      />
       <ConfirmDialog
         open={Boolean(deleting)}
         title="Delete this template?"
         onClose={() => setDeleting(null)}
         onConfirm={async () => {
-          await remove(deleting.rkey);
+          keepFocusFor(deleting.rkey);
+          try {
+            await remove(deleting.rkey);
+          } catch (err) {
+            keepFocusFor(null);
+            throw err;
+          }
           toast?.('Template deleted.');
         }}
       >

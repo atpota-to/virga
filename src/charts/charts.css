@@ -259,6 +259,13 @@
   box-shadow: inset 0 -1px 0 var(--rule);
 }
 
+/* A row's head stays on one line ("81 to 160"): the table scrolls
+   sideways in its own box when its columns need more room than the page,
+   so a head that wrapped would only make every row twice as tall. */
+.an-tableview .table th {
+  white-space: nowrap;
+}
+
 .an-tableview .table tbody th {
   color: var(--ink-2);
   font-weight: 400;
@@ -444,28 +451,6 @@
   width: 14px;
   height: 10px;
   border-radius: 2px;
-}
-
-/* ---- stacked columns ---------------------------------------------- */
-
-.stacked {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  border-bottom: 1px solid var(--chart-axis);
-}
-
-.stacked-col {
-  display: flex;
-  flex: 1;
-  flex-direction: column-reverse;
-  min-width: 2px;
-  border-radius: 3px 3px 0 0;
-  overflow: hidden;
-}
-
-.stacked-seg + .stacked-seg {
-  border-bottom: 2px solid var(--bg);
 }
 
 /* ---- marks: notes and milestones ----------------------------------- */

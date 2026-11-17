@@ -58,7 +58,7 @@ export function standoutSentence(groups, overall, against, noun = (g) => g.label
 }
 
 /** A group chart. `actions` go on the line under it, after Show as table (the report's lead chart has them). */
-function Grouped({ title, sub, groups, head, ariaLabel, insight = null, labelWidth = '120px', actions = null }) {
+function Grouped({ title, sub, groups, head, ariaLabel, insight = null, actions = null }) {
   const [measure, setMeasure] = useState('typical');
   const shown = groups.filter((g) => g.posts > 0);
   return (
@@ -66,7 +66,7 @@ function Grouped({ title, sub, groups, head, ariaLabel, insight = null, labelWid
       {insight && <p className="report-insight">{insight}</p>}
       {shown.length ? (
         <>
-          <BarList ariaLabel={ariaLabel} labelWidth={labelWidth} rows={shown.map((g) => barRow(g, measure))} />
+          <BarList ariaLabel={ariaLabel} rows={shown.map((g) => barRow(g, measure))} />
           <GroupTable rows={shown} columns={GROUP_COLUMNS(head)} actions={actions} />
         </>
       ) : (
@@ -96,7 +96,7 @@ function Ranked({ title, sub, rows, name, head, empty, render = (v) => v, limit 
     <Card title={title} sub={sub} tools={rows.length ? <ModeToggle value={measure} onChange={setMeasure} options={MEASURES} label={`${title}: measure`} /> : null}>
       {shown.length ? (
         <>
-          <BarList ariaLabel={title} labelWidth="1fr" rows={shown.map((r) => barRow(r, measure, r.label))} />
+          <BarList ariaLabel={title} rows={shown.map((r) => barRow(r, measure, r.label))} />
           <GroupTable rows={ordered} columns={GROUP_COLUMNS(head)} actions={more} />
         </>
       ) : (
@@ -174,11 +174,10 @@ export default function ContentReport({ archive, period, nowMs, actions = null }
           head="Place"
           ariaLabel="Posts by place in a thread"
           groups={m.places}
-          labelWidth="140px"
         />
         {m.langs.length > 1 && (
           <Card title="Languages" sub="As each post is marked. A post can carry more than one.">
-            <BarList ariaLabel="Posts by language" labelWidth="120px" rows={m.langs.map((l) => ({ key: l.lang, label: languageName(l.lang), value: l.posts }))} />
+            <BarList ariaLabel="Posts by language" rows={m.langs.map((l) => ({ key: l.lang, label: languageName(l.lang), value: l.posts }))} />
           </Card>
         )}
       </div>

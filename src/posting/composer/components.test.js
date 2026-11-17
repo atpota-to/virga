@@ -109,6 +109,37 @@ describe('PublishButton', () => {
     expect(html).toContain('Write something first.');
     expect(html).toMatch(/disabled=""/);
   });
+
+  // A model by hand: which actions are off is all the button reads.
+  const handModel = (off) => ({
+    primary: 'post',
+    actions: Object.fromEntries(['post', 'schedule', 'queue', 'draft'].map((a) => [a, { disabled: off.includes(a), reason: off.includes(a) ? 'Not here.' : '' }])),
+  });
+  const caret = (html) => html.match(/<button[^>]*publish-caret[^>]*>/)?.[0] || null;
+  const root = (html) => html.match(/<div[^>]*publish-split[^>]*>/)[0];
+
+  it('leaves the caret out when the foot already has a button for every other way', () => {
+    const state = emptyComposerState({ asDid: MIRA });
+    const html = renderToString(h(PublishButton, { state, model: handModel([]), also: ['schedule', 'queue', 'draft'] }));
+    expect(caret(html)).toBeNull();
+    expect(html).not.toContain('More ways to send it');
+    expect(root(html)).not.toContain('data-caret');
+  });
+
+  it('keeps the caret, switched off, when every way it lists is off', () => {
+    const state = emptyComposerState({ asDid: MIRA });
+    const html = renderToString(h(PublishButton, { state, model: handModel(['queue', 'draft']), also: ['schedule'] }));
+    expect(caret(html)).toMatch(/disabled=""/);
+    // The primary half can still run, so the pair isn't dimmed as one.
+    expect(root(html)).not.toContain('data-disabled');
+  });
+
+  it('dims the pair as one button when neither half can run', () => {
+    const state = emptyComposerState({ asDid: MIRA });
+    const html = renderToString(h(PublishButton, { state, model: handModel(['post', 'schedule', 'queue', 'draft']) }));
+    expect(caret(html)).toMatch(/disabled=""/);
+    expect(root(html)).toContain('data-disabled="true"');
+  });
 });
 
 describe('PostAsPicker', () => {

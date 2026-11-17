@@ -200,19 +200,6 @@
   padding-left: 32px;
 }
 
-/* A handle that is the trouble: the field's edge, and its focus ring, in
-   the danger colour. The ring (--focus) is worked out where the theme sets
-   it, from the accent, so it is said again here from --focus-ring. */
-.handle-field .handle-field-input[aria-invalid='true'] {
-  --focus-ring: var(--danger);
-  --focus: 0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent);
-  border-color: var(--danger);
-}
-
-:root[data-contrast='high'] .handle-field .handle-field-input[aria-invalid='true'] {
-  --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
-}
-
 /* The suggestions float under the field, so they have what floats has: a
    ground, an edge and a shadow. */
 .handle-suggestions {

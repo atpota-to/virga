@@ -405,32 +405,6 @@
   mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
 }
 
-/* ---- section head ------------------------------------------------- */
-
-.section-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.section-head-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-md);
-  font-weight: 600;
-}
-
-.section-head-meta {
-  margin-left: auto;
-  min-width: 0;
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
 /* ---- section (.card) ---------------------------------------------- */
 
 /* A section of a page: a heading and what is under it. It has no edge and
@@ -504,10 +478,15 @@
   letter-spacing: -0.005em;
 }
 
+/* The line under a section's title, held to the measure captions keep, so
+   a long one is read in lines of a comfortable length rather than across
+   the whole column. */
 .card-sub {
+  max-width: var(--measure);
   margin-top: 2px;
   color: var(--muted);
   font-size: var(--text-sm);
+  text-wrap: pretty;
 }
 
 /* What a list or a chart needs said about it, inside its section, 12px
@@ -816,6 +795,16 @@
   font-weight: 400;
 }
 
+/* Five figures (Content's) keep to one line wherever four would fit,
+   rather than leaving the fifth alone under the other four: their numbers
+   are sized from the page's column, not the cell, so narrower cells only
+   wrap the words over and under them. */
+@media (min-width: 561px) {
+  .figures:has(> .figures-cell:nth-child(5):last-child) {
+    grid-template-columns: repeat(auto-fit, minmax(min(128px, 100%), 1fr));
+  }
+}
+
 /* Two to a row on a phone; an odd one out at the end takes the whole row
    rather than leaving a hole beside it. */
 @media (max-width: 560px) {
@@ -887,6 +876,55 @@
     linear-gradient(var(--line-2), transparent) top / 100% 16px no-repeat scroll,
     linear-gradient(transparent, var(--line-2)) bottom / 100% 16px no-repeat scroll,
     var(--surface);
+}
+
+/* A phone's list with no room to open whole beside its button rises from
+   the foot of the screen as a sheet, over the dialogs' scrim, so every item
+   is in reach without scrolling inside a popover (Menu decides when). */
+.menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--scrim);
+  touch-action: none;
+}
+
+.menu-list.menu-list--sheet {
+  position: fixed;
+  z-index: 81;
+  inset: auto 0 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  max-height: calc(100dvh - 72px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-width: 1px 0 0;
+  border-radius: 16px 16px 0 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-scrim {
+    animation: menu-scrim-in 0.16s var(--ease);
+  }
+
+  .menu-list--sheet {
+    animation: menu-sheet-in 0.2s var(--ease);
+  }
+}
+
+@keyframes menu-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes menu-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
 }
 
 .menu[data-placement='up'] .menu-list {
@@ -1000,7 +1038,7 @@
 }
 
 @media (hover: hover) {
-  .input:hover:not(:disabled):not(:focus-visible) {
+  .input:hover:not(:disabled):not(:focus-visible):not([aria-invalid='true']) {
     border-color: var(--muted);
   }
 }
@@ -1009,6 +1047,20 @@
   outline: none;
   border-color: var(--focus-ring);
   box-shadow: var(--focus);
+}
+
+/* A field that is the trouble (aria-invalid): its edge, and its focus
+   ring, in the danger colour. The ring (--focus) is worked out where the
+   theme sets it, from the accent, so it is said again here from
+   --focus-ring. */
+.input[aria-invalid='true'] {
+  --focus-ring: var(--danger);
+  --focus: 0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent);
+  border-color: var(--danger);
+}
+
+:root[data-contrast='high'] .input[aria-invalid='true'] {
+  --focus: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring);
 }
 
 .input--lg {

@@ -37,6 +37,7 @@ import {
   templateSeedFrom,
 } from './postedModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton, useLoad } from './hubParts.jsx';
+import { useFocusAfterRemoval } from './scheduleParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
 
@@ -97,6 +98,9 @@ export default function PostedPage({ did }) {
   const all = useMemo(() => mergePostRows(own ? archive.posts : [], feedRows, { removed }), [own, archive.posts, feedRows, removed]);
   const rows = useMemo(() => filterPostRows(all, { did, filter, query }), [all, did, filter, query]);
   const visible = rows.slice(0, shown);
+  // A post deleted from its ⋯ leaves the list; the focus goes to the post
+  // that took its place rather than back to the top of the page.
+  const keepFocus = useFocusAfterRemoval('.posted-row[id]', visible);
   const waitingForArchive = !archive.loaded;
   const loading = waitingForArchive || (fresh.status === 'loading' && !built);
 
@@ -158,9 +162,11 @@ export default function PostedPage({ did }) {
     } catch (err) {
       if (err?.code !== 'GONE') throw new Error(actionError(err, 'The post couldn’t be read.'));
     }
+    keepFocus(`posted-row-${row.uri}`);
     try {
       await deletePost(row.uri, { agent });
     } catch (err) {
+      keepFocus(null);
       throw new Error(actionError(err, 'The post couldn’t be deleted.'));
     }
     setRemoved((r) => [...r, row.uri]);
@@ -288,7 +294,7 @@ export default function PostedPage({ did }) {
                   // posts, so it isn't called a reply.
                   const meta = isReplyRow(row, did) ? row : { ...row, replyTo: null };
                   return (
-                    <li key={row.uri} className="hub-row posted-row has-corner-menu" aria-busy={busy || undefined}>
+                    <li key={row.uri} id={`posted-row-${row.uri}`} className="hub-row posted-row has-corner-menu" aria-busy={busy || undefined}>
                       <div className="hub-row-main">
                         <a className="hub-row-text hub-row-link" href={bskyUrlFor(row.uri)} target="_blank" rel="noopener noreferrer" title="Open on Bluesky">
                           {row.text?.trim() || <span className="muted">{row.hasMedia ? 'A post with media' : 'No text'}</span>}

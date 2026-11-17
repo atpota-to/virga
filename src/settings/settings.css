@@ -226,10 +226,9 @@
 }
 
 /* A control wider than a short column (the sky's tiles, two selects, an
-   editor) has a line of its own under the words, from the left. The
-   composer's defaults and the adviser mark theirs --tall and
-   .adviser-set-row. */
-.settings-row:is(.settings-row--block, .settings-row--tall, .adviser-set-row) > .settings-row-control {
+   editor, the composer's defaults, the adviser's goals) has a line of its
+   own under the words, from the left. */
+.settings-row.settings-row--block > .settings-row-control {
   grid-column: 1 / -1;
   justify-content: flex-start;
   margin-top: 0;
@@ -280,9 +279,14 @@
 
 /* ---- data and sync ------------------------------------------------------- */
 
-/* "synced 4m ago" stays in one piece at the end of the archive's line. */
+/* "synced 4m ago" stays in one piece at the end of the archive's line,
+   after a dot 6px from the words either side, as a meta line's is. */
 .settings-when {
   white-space: nowrap;
+}
+
+.settings-dot {
+  margin: 0 6px;
 }
 
 /* A sync under way: its steps, and the way to stop it. */

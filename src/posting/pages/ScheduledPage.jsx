@@ -83,9 +83,9 @@ import {
 import './hub.css';
 import './schedule.css';
 
-/** 'Fri, Nov 13' from 'Fri, Nov 13, 6:00 PM': the date a moment falls on in `tz`, without its hour. */
-function dayInZone(value, tz, now) {
-  const full = formatInZone(value, tz, now);
+/** 'Fri, Nov 13' from 'Fri, Nov 13, 6:00 PM': the date a moment falls on in `tz`, without its hour (and without its weekday, given `{ weekday: false }`). */
+function dayInZone(value, tz, now, opts) {
+  const full = formatInZone(value, tz, now, opts);
   const clock = timeInZone(value, tz);
   return clock && full.endsWith(clock)
     ? full.slice(0, -clock.length).replace(/[,\s]+$/, '')
@@ -827,7 +827,9 @@ export default function ScheduledPage({ did }) {
               {timerNotes.map((row) => {
                 const facts = rowFacts(row);
                 const note = timerNoteActions(row);
-                const day = dayInZone(row.scheduledFor, tz, now);
+                const day = dayInZone(row.scheduledFor, tz, now, {
+                  weekday: false,
+                });
                 const hour = timeInZone(row.scheduledFor, tz);
                 return (
                   <li
@@ -838,8 +840,9 @@ export default function ScheduledPage({ did }) {
                   >
                     {/* "Went out" where a time would lead, over when: in a
                         page of times still to come, this one is past. The
-                        day and the hour are each kept whole, so the column
-                        breaks between them, as the overview's does. */}
+                        date without its weekday ("Nov 16, 8:00 AM") fits
+                        the column on one line; each part is kept whole, so
+                        a narrower one breaks between them. */}
                     <div className="sched-when-cell">
                       <span className="sched-time">Went out</span>
                       <time

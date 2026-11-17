@@ -758,14 +758,14 @@
   margin-left: auto;
 }
 
-/* Naming a new blank, in place: set apart by a rule in the accent, since
-   it is the thing being done just now. */
+/* Naming a new blank, in place: set apart by a rule at its left, a
+   control's edge, as a neutral note is. */
 .tpl-blank-new {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 2px 0 2px 14px;
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--line-2);
 }
 
 .tpl-row {
@@ -886,9 +886,10 @@
   font-size: var(--text-sm);
 }
 
+/* Delete, the kit's destructive outline, stands apart at the left of the
+   foot, away from Cancel and Save. */
 .tpl-delete {
   margin-right: auto;
-  color: var(--danger);
 }
 
 /* ---- narrower screens --------------------------------------------------- */

@@ -3,7 +3,8 @@
  * closes only the list (not the dialog it sits in), and taking an item hands
  * focus back to the menu button first. And the one thing a phone shows: a
  * list that would run off the screen hangs from the button's other edge,
- * or opens upward when the tab bar leaves it no room underneath.
+ * or opens upward when the tab bar leaves it no room underneath, or rises
+ * from the foot of the screen as a sheet when it is too long for either.
  * The suite has no DOM, so these drive the handlers Menu wires to the
  * document and to each item, and the rule it measures the list against;
  * the button's look is read from its markup.
@@ -16,7 +17,7 @@ import { describe, expect, it, vi } from 'vitest';
 // React.createElement and needs React in scope.
 globalThis.React = React;
 
-const { default: Menu, MoreMenu, closeOnEscape, chooseItem, menuAlign, menuPlace, menuDrop } = await import('./Menu.jsx');
+const { default: Menu, MoreMenu, closeOnEscape, chooseItem, menuAlign, menuPlace, menuDrop, menuSheet } = await import('./Menu.jsx');
 const { buttonClass } = await import('./Button.jsx');
 
 // The menu's own button, as markup.
@@ -227,5 +228,23 @@ describe('a button variant the kit doesn’t know', () => {
     // 'text' was a variant once; a caller still passing it gets the outline.
     expect(buttonClass({ variant: 'text' })).toBe('btn');
     expect(buttonClass({ variant: 'ghost', size: 'sm' })).toBe('btn btn--ghost btn--sm');
+  });
+});
+
+describe('a list as a sheet', () => {
+  it('rises from the foot of a phone when it has no room beside its button', () => {
+    expect(menuSheet(441, { placement: 'up', maxHeight: 330 }, 740, true)).toBe(true);
+  });
+
+  it('does so for a list taller than half a phone, wherever its row is', () => {
+    expect(menuSheet(441, { placement: 'down', maxHeight: null }, 740, true)).toBe(true);
+  });
+
+  it('hangs from its button when it is short enough to fit there', () => {
+    expect(menuSheet(245, { placement: 'down', maxHeight: null }, 740, true)).toBe(false);
+  });
+
+  it('never on a wider screen, where a long list scrolls in its room', () => {
+    expect(menuSheet(441, { placement: 'up', maxHeight: 330 }, 740, false)).toBe(false);
   });
 });

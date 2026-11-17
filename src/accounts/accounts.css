@@ -58,12 +58,6 @@
   list-style: none;
 }
 
-/* The heading's line under it is three sentences, so it keeps to a
-   readable measure rather than running the width of the list. */
-.accounts-head .card-sub {
-  max-width: var(--measure);
-}
-
 /* An account: its picture, its name (with the dot if it is the open one),
    and under them what there is to know about its sign-in: a state if it
    has one, its handle (the way to its profile) and how it is signed in. At

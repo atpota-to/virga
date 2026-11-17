@@ -457,10 +457,6 @@ export default function TimersPage({ did }) {
             they go out aren’t shown.
           </p>
         )}
-        {limitsLine && (
-          <p className="card-caption sched-limits">{limitsLine}</p>
-        )}
-
         {!loading && !unreadable && !unavailable && (
           <details
             className="disclosure sched-settled"
@@ -483,6 +479,9 @@ export default function TimersPage({ did }) {
                 <p className="empty">No timer has settled in a while.</p>
               ))}
           </details>
+        )}
+        {limitsLine && (
+          <p className="card-caption sched-limits">{limitsLine}</p>
         )}
       </div>
 

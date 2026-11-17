@@ -137,13 +137,6 @@
   text-wrap: balance;
 }
 
-/* A word at the right of a section's heading saying what its numbers
-   are: quiet, and on the title's baseline. */
-.tool-head-note {
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
 /* Something to know, under a list's heading: it needs the air a row has. */
 .card--flush > .callout {
   margin: 14px 0;
@@ -852,12 +845,19 @@
   }
 }
 
-/* The ✕ is a 44px target on a touch phone around a 16px glyph. It lends
-   its empty sides to the gaps either side, so the name keeps that room
-   and the glyph sits as far from the name as from Follow back. */
+/* The ✕ ends the row, after Follow back, with its glyph's right side on
+   the column's edge, as a row's ⋯ does: its box reaches past the edge by
+   the room beside the glyph (7px in a 30px box). On a touch phone the box
+   is 44px; it lends its empty sides to the gap before it and to the edge,
+   and to the rows above and below, so the row stays a person row's height. */
+.queue-dismiss {
+  margin-right: -7px;
+}
+
 @media (max-width: 560px) and (pointer: coarse) {
   .queue-dismiss {
-    margin-inline: -7px;
+    margin-block: -6px;
+    margin-inline: -7px -14px;
   }
 }
 
@@ -1247,16 +1247,21 @@
   font-weight: 500;
 }
 
+/* Each key's words on the heading's baseline, its arrow centred on them. */
+.lookup-legend > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.lookup-legend svg {
+  align-self: center;
+}
+
 /* The busiest accounts: a name and two counts, so on a wide screen the
    list keeps a width the eye can cross. */
 .lookup-start {
   max-width: 720px;
-}
-
-.lookup-legend > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
 }
 
 /* A row that is one link: the whole of it opens that person's history. */

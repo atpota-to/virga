@@ -104,8 +104,11 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
  * for the whole line, the fact is what stays (dashboards.css). `value` sits
  * at the right before the button (a count). After it comes a small link to
  * the Interaction lookup for this person, unless `history` is false; a
- * phone leaves it out, for the room the name needs. The handle is left out when it is already the name (someone with
- * no display name), and "follows you" when `rel` is false: a list where
+ * phone leaves it out, for the room the name needs. `extra` comes last,
+ * after the follow button: a suggestion's ✕ (the follow-back queue), so the
+ * row reads, and tabs, [Follow back][✕]. The handle is left out when it is
+ * already the name (someone with no display name), and "follows you" when
+ * `rel` is false: a list where
  * everyone follows you (your newest followers, the follow-back queue)
  * would say it on every row.
  */
@@ -164,8 +167,8 @@ export function PersonRow({
           <History size={15} aria-hidden="true" />
         </Link>
       )}
-      {extra}
       {follow && <FollowButton follow={follow} did={did} name={name} followLabel={followLabel} />}
+      {extra}
     </li>
   );
 }

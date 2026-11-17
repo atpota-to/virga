@@ -50,13 +50,13 @@ function StatAltText({ archive, period, nowMs, def, title }) {
   );
 }
 
-function Groups({ groups, insight, ariaLabel, labelWidth }) {
+function Groups({ groups, insight, ariaLabel }) {
   const shown = groups.filter((g) => g.posts > 0);
   if (!shown.length) return <p className="empty">No posts in this window.</p>;
   return (
     <div className="widget-stack">
       {insight && <p className="widget-insight">{insight}</p>}
-      <BarList ariaLabel={ariaLabel} labelWidth={labelWidth} rows={shown.map((g) => typicalRow(g))} />
+      <BarList ariaLabel={ariaLabel} rows={shown.map((g) => typicalRow(g))} />
       <p className="widget-foot">What a typical post in each group earns.</p>
     </div>
   );
@@ -71,7 +71,6 @@ function ContentFormats({ archive, period, nowMs }) {
     <Groups
       groups={m.formats}
       ariaLabel="What a typical post earns, by format"
-      labelWidth="96px"
       insight={standoutSentence(m.formats, m.typical, 'text', (g) => FORMAT_NOUN[g.key])}
     />
   );
@@ -80,7 +79,7 @@ function ContentFormats({ archive, period, nowMs }) {
 function ContentLength({ archive, period, nowMs }) {
   const m = contentModel(archive, period, nowMs);
   if (!m.ready) return <p className="empty">{NEEDS_SYNC}</p>;
-  return <Groups groups={m.lengths} ariaLabel="What a typical post earns, by length" labelWidth="96px" />;
+  return <Groups groups={m.lengths} ariaLabel="What a typical post earns, by length" />;
 }
 
 /** A ranked list of tags or sites: how many posts use each, and what those typically earn. */
@@ -91,7 +90,6 @@ function Used({ rows, name, render = (v) => v, size, want, empty }) {
     <div className="widget-stack">
       <BarList
         ariaLabel="Posts using each"
-        labelWidth="1fr"
         rows={shown.map((r) => ({
           key: r[name],
           label: render(r[name]),

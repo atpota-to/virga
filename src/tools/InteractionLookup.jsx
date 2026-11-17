@@ -23,7 +23,7 @@ import { getProfile } from '../lib/atproto.js';
 import { activeLocale, fmtInt } from '../lib/locale.js';
 import { formatDateShort } from '../lib/time.js';
 import { cardFor, displayName, profileUrl, useWantActors } from '../people/people.jsx';
-import PostRow, { postText } from '../reports/PostRow.jsx';
+import PostRow, { postText, postWhen } from '../reports/PostRow.jsx';
 import { ToolHeader } from './ToolPage.jsx';
 import {
   DIRECTIONS,
@@ -665,7 +665,7 @@ function EngagedPosts({ model }) {
                   {row.post ? postText(row.post) : 'A post that isn’t in your archive'}
                 </a>
                 <span className="meta num">
-                  {row.post && <span>{formatDateShort(row.post.at)}</span>}
+                  {row.post && <span title={formatDateShort(row.post.at)}>{postWhen(row.post.at)}</span>}
                   <span>{kindsLine(row.byKind)}</span>
                 </span>
               </div>

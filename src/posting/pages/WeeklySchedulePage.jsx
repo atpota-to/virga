@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Copy, Plus, RotateCcw, Trash2, X } from 'lucide-react';
+import { Plus, RotateCcw, Trash2, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
+import Dialog from '../../components/Dialog.jsx';
 import { MoreMenu } from '../../components/Menu.jsx';
 import { Link } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
@@ -82,6 +83,7 @@ const LONG_DAY = {
  */
 function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
   const [adding, setAdding] = useState(false);
+  const [copying, setCopying] = useState(false);
   const [time, setTime] = useState('09:00');
   const id = useId();
   const addRef = useRef(null);
@@ -111,20 +113,16 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
     onAdd(time);
     close();
   };
+  // The three common spans each take one press; any other days are picked
+  // together in a small dialog, rather than six more items of the same
+  // shape. None carries an icon: they would all be the same one.
   const copyItems = [
     ...COPY_TARGETS.map((t) => ({
       key: t.key,
       label: `Copy to ${t.label.toLowerCase()}`,
-      icon: Copy,
       onSelect: () => onCopy(t.days),
     })),
-    { separator: true, key: 'sep-days' },
-    ...orderedWeekdays().filter((d) => d.key !== day.key).map((d) => ({
-      key: d.key,
-      label: `Copy to ${d.label}`,
-      icon: Copy,
-      onSelect: () => onCopy([d.key]),
-    })),
+    { key: 'other', label: 'Copy to other days…', onSelect: () => setCopying(true) },
   ];
   return (
     <li className="sched-day">
@@ -227,7 +225,51 @@ function DayRow({ day, times, onAdd, onRemove, onCopy, onClear }) {
           ]}
         />
       )}
+      <CopyDaysDialog
+        open={copying}
+        day={day}
+        onClose={() => setCopying(false)}
+        onCopy={(days) => {
+          setCopying(false);
+          onCopy(days);
+        }}
+      />
     </li>
+  );
+}
+
+/** Picks the days to copy one day's times to, any number of them at once. */
+function CopyDaysDialog({ open, day, onClose, onCopy }) {
+  const [days, setDays] = useState([]);
+  useEffect(() => {
+    if (open) setDays([]);
+  }, [open]);
+  const others = orderedWeekdays().filter((d) => d.key !== day.key);
+  const toggle = (key, on) => setDays((cur) => (on ? [...cur, key] : cur.filter((k) => k !== key)));
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title={`Copy ${day.label}’s times`}
+      actions={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="primary" disabled={!days.length} onClick={() => onCopy(days)}>
+            Copy
+          </Button>
+        </>
+      }
+    >
+      <fieldset className="sched-copy-days">
+        <legend className="visually-hidden">Days to copy them to</legend>
+        {others.map((d) => (
+          <label key={d.key} className="check">
+            <input type="checkbox" checked={days.includes(d.key)} onChange={(e) => toggle(d.key, e.target.checked)} />
+            {d.label}
+          </label>
+        ))}
+      </fieldset>
+    </Dialog>
   );
 }
 

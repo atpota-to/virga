@@ -24,6 +24,7 @@ import WhenPicker from '../ui/WhenPicker.jsx';
 import { blobImageLoader, draftActionMessage, draftMeta, draftPostBlock, draftScheduleBlock, postDraftNow, scheduleDraft } from './draftActions.js';
 import { draftRows, whenLabel } from './hubModel.js';
 import { ConfirmDialog, LoadError, RowSkeleton } from './hubParts.jsx';
+import { useFocusAfterRemoval } from './scheduleParts.jsx';
 import './hub.css';
 import { activeLocale } from '../../lib/locale.js';
 
@@ -83,6 +84,9 @@ export default function DraftsPage({ did, id = null }) {
   const req = caps.canSchedule ? backendFor(did) : null;
   const { settings } = usePostingSettings(did);
   const list = useDraftList(did, agentFor);
+  // A draft posted, scheduled or deleted leaves the list; the focus goes to
+  // the draft that took its place rather than back to the top of the page.
+  const keepFocus = useFocusAfterRemoval('.draft-row[id]', list.views);
   const [busy, setBusy] = useState(null);
   const [notice, setNotice] = useState(null);
   const [deleting, setDeleting] = useState(null);
@@ -150,12 +154,14 @@ export default function DraftsPage({ did, id = null }) {
     if (!view || busy) return;
     setBusy(row.id);
     setNotice(null);
+    keepFocus(`draft-row-${row.id}`);
     try {
       const agent = await agentFor(did);
       const out = await postDraftNow(view, { did, settings, agent, deps: await deps() });
       toast?.(`Posted as ${handle}.`);
       if (out.notes.length) setNotice({ tone: 'warn', text: out.notes.join(' ') });
     } catch (err) {
+      keepFocus(null);
       setNotice({
         tone: 'danger',
         text: draftActionMessage(err, { action: 'post' }),
@@ -171,6 +177,7 @@ export default function DraftsPage({ did, id = null }) {
     if (!view) return;
     setBusy(row.id);
     setNotice(null);
+    keepFocus(`draft-row-${row.id}`);
     try {
       const agent = await agentFor(did);
       const out = await scheduleDraft(view, { did, settings, agent, scheduledFor, queued, deps: await deps() });
@@ -178,6 +185,7 @@ export default function DraftsPage({ did, id = null }) {
       if (out.notes.length) setNotice({ tone: 'warn', text: out.notes.join(' ') });
       setScheduling(null);
     } catch (err) {
+      keepFocus(null);
       throw new Error(
         err?.code === 'MEDIA_MISSING' || err?.code === 'NEEDS_BACKEND' ? err.message : scheduleErrorMessage(err) || draftActionMessage(err, { action: 'schedule' }),
       );
@@ -188,9 +196,11 @@ export default function DraftsPage({ did, id = null }) {
 
   const remove = async (row) => {
     const agent = await agentFor(did);
+    keepFocus(`draft-row-${row.id}`);
     try {
       await deleteDraft(agent, row.id);
     } catch (err) {
+      keepFocus(null);
       throw new Error(isMissingScopeError(err) ? 'Virga needs permission to delete drafts. Sign in again to grant it.' : `The draft couldn’t be deleted. ${err?.message || 'Try again.'}`);
     }
     toast?.('Draft deleted.');
@@ -270,7 +280,7 @@ export default function DraftsPage({ did, id = null }) {
                   const why = [postBlock, scheduleBlock && caps.canSchedule ? scheduleBlock : ''].filter(Boolean).join(' ');
                   const name = row.text.trim().slice(0, 40) || 'with no text';
                   return (
-                    <li key={row.id} className="hub-row draft-row has-corner-menu" aria-busy={working || undefined}>
+                    <li key={row.id} id={`draft-row-${row.id}`} className="hub-row draft-row has-corner-menu" aria-busy={working || undefined}>
                       <div className="hub-row-main">
                         <p className="hub-row-text draft-text">{row.text.trim() || <span className="muted">No text yet</span>}</p>
                         <p className="meta">

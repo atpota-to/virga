@@ -21,11 +21,14 @@
   flex: 1;
 }
 
-/* The page's closing lines sit close under its last section, and close
-   to each other: the gap between sections is too much air for a note. */
+/* The page's closing lines sit close under its last section, 12px as a
+   caption does, and close to each other: the gap between sections is too
+   much air for a note. The settled timers' disclosure carries on the list
+   above it, so it sits as close. */
 .sched-page > .card-caption,
-.sched-page > .field-hint {
-  margin-top: calc(var(--section-gap) * -1 + 20px);
+.sched-page > .field-hint,
+.sched-page > .sched-settled {
+  margin-top: calc(var(--section-gap) * -1 + var(--space-3));
 }
 
 .sched-page > .card-caption + .card-caption,
@@ -518,6 +521,25 @@
   align-self: start;
 }
 
+/* The days a day's times can be copied to, one per line. */
+.sched-copy-days {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sched-copy-days > .check {
+  min-height: 36px;
+}
+
+@media (pointer: coarse) {
+  .sched-copy-days > .check {
+    min-height: 44px;
+  }
+}
+
 @media (pointer: coarse) {
   /* The + reaches out above and below its 32px line, so the line stays
      the tokens' height. */
@@ -603,8 +625,8 @@
   color: var(--muted);
 }
 
-/* The settled timers, behind a disclosure at the foot of the page; opened,
-   they are a list like the ones above it. */
+/* The settled timers, behind a disclosure under the timers' list; opened,
+   they are a list like the one above it. */
 .sched-settled > .hub-list {
   margin-top: var(--space-3);
   border-top: 1px solid var(--rule);
@@ -654,19 +676,19 @@
   margin: 0;
 }
 
-.sched-settings-note > .card-caption {
-  margin-top: 0;
-}
-
 /* ---- the time picker --------------------------------------------------- */
 
-/* Doubled class, to win over any later row rule for the picker. */
+/* Doubled class, to win over any later row rule for the picker. Its
+   width, not the screen's, decides whether its fields sit side by side
+   (below), so it is the same in the same dialog at any screen width. */
 .when-picker.sched-when {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
+  container: when / inline-size;
 }
+
 
 .sched-when .sched-when-fields {
   display: grid;
@@ -716,6 +738,15 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
   gap: 10px;
   align-items: end;
+}
+
+/* Too narrow for the date and the time side by side, or the three
+   fields of a repeat: one under the other. */
+@container when (max-width: 440px) {
+  .sched-when .sched-when-fields,
+  .sched-repeat-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .sched-repeat .field-label {
@@ -1156,11 +1187,6 @@
 }
 
 @media (max-width: 760px) {
-  .sched-when .sched-when-fields,
-  .sched-repeat-fields {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .dialog.timer-dialog {
     width: 100vw;
     max-width: 100vw;

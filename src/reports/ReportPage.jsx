@@ -747,7 +747,6 @@ function PostsReport({ archive, period, nowMs, actions }) {
         <Card title="What kind of posts" sub={`Of the ${m.count.toLocaleString(activeLocale())} in the window`}>
           <BarList
             ariaLabel="Posts by kind"
-            labelWidth="110px"
             max={m.count || 1}
             rows={[
               { key: 'standalone', label: 'Standalone', value: m.originals - m.quotes },
@@ -813,7 +812,7 @@ function EngagementReport({ archive, period, nowMs, kind, actions }) {
         </Card>
         {kind === 'all' && (
           <Card title="By type" sub={`Of ${m.total.toLocaleString(activeLocale())} in the window`}>
-            <BarList ariaLabel="Engagement by type" labelWidth="96px" rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))} />
+            <BarList ariaLabel="Engagement by type" rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))} />
           </Card>
         )}
       </div>
@@ -889,7 +888,6 @@ function GivenReport({ archive, period, nowMs, kind, actions }) {
           <Card title="By type">
             <BarList
               ariaLabel="Engagement given by type"
-              labelWidth="96px"
               rows={m.byKind.map((k) => ({ key: k.kind, label: GIVEN_NOUN[k.kind].charAt(0).toUpperCase() + GIVEN_NOUN[k.kind].slice(1), icon: KIND_ICON[k.kind], value: k.count }))}
             />
           </Card>
@@ -1044,7 +1042,7 @@ function AtmosphereReport({ archive, period, nowMs, actions }) {
       </Card>
       <Card title="By collection" sub="Which apps write to your repo, and how much">
         {shown.length ? (
-          <BarList ariaLabel="Records by collection" labelWidth="1.6fr" rows={shown.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))} />
+          <BarList ariaLabel="Records by collection" rows={shown.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))} />
         ) : (
           <p className="empty">No records written in this window.</p>
         )}

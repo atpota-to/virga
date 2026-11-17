@@ -31,7 +31,7 @@ export default function ComposerDefaults({ did }) {
 
   return (
     <SettingsCard title="New posts" sub="What the composer starts with for this account. Each post can still change it.">
-      <div className="settings-row settings-row--tall">
+      <div className="settings-row settings-row--block">
         <div className="settings-row-text">
           <div className="settings-row-label">Languages</div>
           <div className="settings-row-hint">Bluesky uses these to show your posts to people who read them. Up to three.</div>
@@ -41,7 +41,7 @@ export default function ComposerDefaults({ did }) {
         </div>
       </div>
 
-      <div className="settings-row settings-row--tall">
+      <div className="settings-row settings-row--block">
         <div className="settings-row-text">
           <div className="settings-row-label">Who can reply and quote</div>
           <div className="settings-row-hint">

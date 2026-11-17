@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { MoreHorizontal } from 'lucide-react';
 import { buttonClass } from './Button.jsx';
 
@@ -12,7 +13,8 @@ import { buttonClass } from './Button.jsx';
  * `icon` is a component drawn before the label and `tone: 'danger'` marks an
  * action that can't be taken back; `{ separator: true }` draws a rule. Give
  * `key` when two items could share a label (two accounts with one name).
- * Within one menu, every item has an icon or none does.
+ * Within one menu, every item has an icon or none does; a menu whose items
+ * would all share one glyph carries none, apart from a danger item's Trash2.
  *
  * `label` is the button's words; pass `children` to draw something else in it
  * (an avatar and a handle, or an icon alone) and `label` becomes its
@@ -25,8 +27,10 @@ import { buttonClass } from './Button.jsx';
  * would run off the screen (menuAlign), and slides back onto the screen when
  * neither edge leaves it room (menuPlace). The same goes for up and down: a
  * list with no room under its button (a row's ⋯ near a phone's tab bar)
- * opens upward instead, and one with room on neither side scrolls in the
- * larger.
+ * opens upward instead. On a phone, a list with room on neither side, or
+ * taller than half the screen (the ⋯ of a sent post, the account menu),
+ * rises from the foot of the screen as a sheet over a scrim, so every item
+ * is in reach at once; wider, it scrolls in the larger side.
  *
  * MoreMenu, below, is the ⋯ every row and dashboard uses.
  */
@@ -159,6 +163,34 @@ function listStyle(place) {
   return Object.keys(style).length ? style : undefined;
 }
 
+/** The widths at which a list with no room beside its button is a sheet. */
+const SHEET_QUERY = '(max-width: 560px)';
+
+/**
+ * Whether an open list is drawn as a sheet from the screen's foot rather
+ * than hung from its button: on a phone (`narrow`), when it fits neither
+ * above nor below its button (menuDrop gave it a `maxHeight`), or when it
+ * would cover more than half the screen anyway, so the same list opens the
+ * same way from every row.
+ */
+export function menuSheet(listHeight, drop, viewportHeight, narrow) {
+  if (!narrow) return false;
+  return drop?.maxHeight != null || listHeight > viewportHeight / 2;
+}
+
+function wantsSheet() {
+  return typeof window !== 'undefined' && Boolean(window.matchMedia?.(SHEET_QUERY).matches);
+}
+
+/**
+ * Where a sheet is drawn: inside the modal dialog the menu sits in, if any,
+ * since anything outside a modal dialog is inert under it; otherwise at the
+ * end of the page, clear of any box that would hold or clip it.
+ */
+function sheetHost(root) {
+  return root?.closest('dialog') || document.body;
+}
+
 /** Whether `icon` is a component to draw, rather than true. */
 function isGlyph(icon) {
   return typeof icon === 'function' || (typeof icon === 'object' && icon !== null);
@@ -183,10 +215,17 @@ export default function Menu({
   const listRef = useRef(null);
   const listId = useId();
 
+  // Whether a node is the menu's own: its button, or the list wherever it
+  // is drawn (a sheet is drawn outside the menu, at the end of the page).
+  const isOwn = (node) => Boolean(node && (rootRef.current?.contains(node) || listRef.current?.contains(node)));
+  const sheet = Boolean(place?.sheet);
+
   useEffect(() => {
     if (!open) return undefined;
+    // A press on a sheet's scrim closes it on the scrim's own click, so the
+    // tap doesn't fall through to whatever is under it.
     const onPointer = (event) => {
-      if (!rootRef.current?.contains(event.target)) setOpen(false);
+      if (!isOwn(event.target) && !event.target.closest?.('.menu-scrim')) setOpen(false);
     };
     const onKey = (event) =>
       closeOnEscape(event, () => {
@@ -219,12 +258,76 @@ export default function Menu({
     const hung = getComputedStyle(list).position === 'absolute';
     const vertical = hung ? { placement, viewportHeight: window.innerHeight, bottomInset: coveredFoot(root) } : null;
     const next = menuPlace(list.getBoundingClientRect(), root?.getBoundingClientRect(), document.documentElement.clientWidth, align, vertical);
-    if (next.align !== align || next.shift || (next.placement && next.placement !== placement) || next.maxHeight != null) setPlace(next);
+    if (hung && menuSheet(list.getBoundingClientRect().height, next, window.innerHeight, wantsSheet())) setPlace({ sheet: true });
+    else if (next.align !== align || next.shift || (next.placement && next.placement !== placement) || next.maxHeight != null) setPlace(next);
   }, [open, align, placement]);
+
+  // A sheet is drawn at the end of the page, away from its button, so the
+  // focus goes into it: to its first item, as a dialog's first control.
+  useEffect(() => {
+    if (sheet) listRef.current?.querySelector('.menu-item')?.focus({ preventScroll: true });
+  }, [sheet]);
+
+  const close = () => {
+    setOpen(false);
+    buttonRef.current?.focus({ preventScroll: true });
+  };
+
+  // Tab goes round a sheet's items rather than out of it into the page
+  // behind the scrim; Escape, or a press on the scrim, closes it.
+  const keepTabInSheet = (event) => {
+    if (event.key !== 'Tab') return;
+    const items = [...(listRef.current?.querySelectorAll('.menu-item') || [])];
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   const link = variant === 'link';
   const Glyph = isGlyph(icon) ? icon : null;
   const square = Boolean(icon) && !link;
+  const list = open && (
+    <ul
+      ref={listRef}
+      id={listId}
+      className={sheet ? 'menu-list menu-list--sheet' : 'menu-list'}
+      style={sheet ? undefined : listStyle(place)}
+      onKeyDown={sheet ? keepTabInSheet : undefined}
+    >
+      {items.filter(Boolean).map((item, index) => {
+        if (item.separator) return <li key={`sep-${index}`} className="menu-sep" role="separator" />;
+        const Icon = item.icon;
+        return (
+          <li key={item.key ?? item.label} className={item.className}>
+            <button
+              type="button"
+              className="menu-item"
+              data-tone={item.tone}
+              onClick={() =>
+                chooseItem(item, {
+                  focusButton: () => buttonRef.current?.focus(),
+                  close: () => setOpen(false),
+                })
+              }
+            >
+              {Icon && <Icon className="menu-item-icon" size={16} aria-hidden="true" />}
+              <span className="menu-item-text">
+                <span className="menu-item-label">{item.label}</span>
+                {item.hint && <span className="menu-item-hint">{item.hint}</span>}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
     <div
@@ -235,7 +338,7 @@ export default function Menu({
       // Tabbing out of the list closes it, so it never hangs open behind
       // whatever has focus.
       onBlur={(event) => {
-        if (!rootRef.current?.contains(event.relatedTarget)) setOpen(false);
+        if (!isOwn(event.relatedTarget)) setOpen(false);
       }}
     >
       <button
@@ -251,34 +354,13 @@ export default function Menu({
         {Glyph && <Glyph size={link ? 14 : 16} aria-hidden="true" />}
         {children || (Glyph && !link ? null : label)}
       </button>
-      {open && (
-        <ul ref={listRef} id={listId} className="menu-list" style={listStyle(place)}>
-          {items.filter(Boolean).map((item, index) => {
-            if (item.separator) return <li key={`sep-${index}`} className="menu-sep" role="separator" />;
-            const Icon = item.icon;
-            return (
-              <li key={item.key ?? item.label} className={item.className}>
-                <button
-                  type="button"
-                  className="menu-item"
-                  data-tone={item.tone}
-                  onClick={() =>
-                    chooseItem(item, {
-                      focusButton: () => buttonRef.current?.focus(),
-                      close: () => setOpen(false),
-                    })
-                  }
-                >
-                  {Icon && <Icon className="menu-item-icon" size={16} aria-hidden="true" />}
-                  <span className="menu-item-text">
-                    <span className="menu-item-label">{item.label}</span>
-                    {item.hint && <span className="menu-item-hint">{item.hint}</span>}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+      {open && !sheet && list}
+      {open && sheet && createPortal(
+        <>
+          <div className="menu-scrim" aria-hidden="true" onClick={close} />
+          {list}
+        </>,
+        sheetHost(rootRef.current),
       )}
     </div>
   );

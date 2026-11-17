@@ -72,9 +72,11 @@ function startingDraft(template, seed) {
  *
  * `template` edits that one; `seed` (`{ text, embed }`, or `{ draft, note }`
  * from draftFromReply) starts a new one from a post ("Save this as a
- * template"). `onSaved(template)` after a save.
+ * template"). `onSaved(template)` after a save. `onDeleting(rkey)` just
+ * before the template is deleted, and `onDeleting(null)` if that fails, so
+ * a list can keep the focus when its row goes.
  */
-export default function TemplateEditor({ open, onClose, did, template = null, seed = null, onSaved }) {
+export default function TemplateEditor({ open, onClose, did, template = null, seed = null, onSaved, onDeleting }) {
   // The dialog's own close (Escape, the backdrop, the X) asks the form
   // first, which may have changes to keep.
   const closeRef = useRef(null);
@@ -85,12 +87,12 @@ export default function TemplateEditor({ open, onClose, did, template = null, se
       title={template ? 'Edit the template' : 'New template'}
       className="lib-dialog tpl-dialog"
     >
-      {open && <EditorForm did={did} template={template} seed={seed} onClose={onClose} onSaved={onSaved} closeRef={closeRef} />}
+      {open && <EditorForm did={did} template={template} seed={seed} onClose={onClose} onSaved={onSaved} onDeleting={onDeleting} closeRef={closeRef} />}
     </Dialog>
   );
 }
 
-function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
+function EditorForm({ did, template, seed, onClose, onSaved, onDeleting, closeRef }) {
   const uid = useId();
   const toast = useToast();
   const textRef = useRef(null);
@@ -294,11 +296,13 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
     if (!template?.rkey) return;
     setSaving(true);
     setServerError(null);
+    onDeleting?.(template.rkey);
     try {
       await remove(template.rkey);
       toast?.('Template deleted.');
       onClose?.();
     } catch (err) {
+      onDeleting?.(null);
       setServerError(err);
       setConfirmDelete(false);
     } finally {
@@ -678,8 +682,8 @@ function EditorForm({ did, template, seed, onClose, onSaved, closeRef }) {
       ) : (
         <div className="tpl-actions">
           {template?.rkey && (
-            <Button ref={deleteRef} variant="ghost" className="tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
-              <Trash2 size={14} aria-hidden="true" />
+            <Button ref={deleteRef} className="is-danger tpl-delete" onClick={() => setConfirmDelete(true)} disabled={saving}>
+              <Trash2 size={15} aria-hidden="true" />
               Delete
             </Button>
           )}

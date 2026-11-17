@@ -303,7 +303,6 @@ function EngagementByType({ archive, period, nowMs }) {
   return (
     <BarList
       ariaLabel="Engagement by type"
-      labelWidth="96px"
       rows={m.byKind.map((k) => ({ key: k.kind, label: k.label, icon: KIND_ICON[k.kind], value: k.value }))}
     />
   );
@@ -569,7 +568,6 @@ function RepoCollections({ archive, period, nowMs, size, rows: want = null }) {
     <div className="widget-stack">
       <BarList
         ariaLabel="Records by collection"
-        labelWidth="1.4fr"
         rows={rows.map((c) => ({ key: c.collection, label: <code>{c.collection}</code>, value: c.count, title: c.collection }))}
       />
       <p className="widget-foot num">

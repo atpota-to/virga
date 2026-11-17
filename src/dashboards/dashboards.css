@@ -588,12 +588,12 @@
   max-height: calc(100svh - 48px);
 }
 
-/* Under the cards, closer to them than the next band would be: it adds to
+/* Over the cards, closer to them than the next band would be: it adds to
    them. */
 .library-open {
   display: none;
   flex: 1 1 100%;
-  margin-top: calc(16px - var(--section-gap));
+  margin-bottom: calc(16px - var(--section-gap));
 }
 
 @container dash-wrap (max-width: 899px) {
@@ -1052,17 +1052,6 @@
   text-decoration: underline;
 }
 
-/* The line under a post that isn't a PostRow's (whose line is the kit's
-   .meta, PostMeta): the Interaction lookup's posts. */
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 12px;
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
 .post-count {
   display: inline-flex;
   align-items: center;
@@ -1086,6 +1075,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  font-size: var(--text-md);
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1098,7 +1088,7 @@
   white-space: nowrap;
 }
 
-/* The one dialog action that sits apart from the others, at the start. */
-.dialog-action-start {
-  margin-right: auto;
+/* A card's settings: "Use the defaults" at the start of its own line. */
+.card-settings-reset {
+  align-self: flex-start;
 }

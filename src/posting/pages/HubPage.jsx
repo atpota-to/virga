@@ -230,17 +230,23 @@ export default function HubPage({ did }) {
                   })}
                   {failedRows.map((row) => {
                     const lead = failedLead(row);
-                    const [day, hour] = whenParts(whenLabel(row.scheduledFor, now));
+                    const [day, hour] = whenParts(whenLabel(row.scheduledFor, now, { weekday: false }));
                     return (
                       <li key={row.id} className="hub-row hub-row--when" aria-busy={retrying === row.id || undefined}>
                         <div className="hub-when">
                           <span className="hub-when-day hub-when-failed">{rowStatus(row).label}</span>
-                          {/* Its day and its hour as a meta line, as the hour is
-                              under every other row's day: each kept whole, so a
-                              narrow column breaks between them. */}
-                          <time className="hub-when-time meta" dateTime={row.scheduledFor}>
+                          {/* When it was due, under the words, as the hour is
+                              under every other row's day: the date without its
+                              weekday ("Nov 14, 6:00 PM") fits the column on one
+                              line, and each part is kept whole, so a narrower
+                              one breaks between them. */}
+                          <time className="hub-when-time" dateTime={row.scheduledFor}>
                             <span>{day}</span>
-                            {hour && <span>{hour}</span>}
+                            {hour && (
+                              <>
+                                , <span>{hour}</span>
+                              </>
+                            )}
                           </time>
                         </div>
                         <div className="hub-row-main">
