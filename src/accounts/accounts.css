@@ -46,10 +46,8 @@
 
 /* ---- Settings › Account --------------------------------------------- */
 
-/* Each account is a row of the section: who it is at the left, what can be
-   done with it at the right. The list is a child of the section's body
-   (settings.css), which would give it a row's air; the rows have their own,
-   so it is taken back here. */
+/* The list is a child of the section's body (settings.css), which would
+   give it a row's air; the rows have their own, so it is taken back here. */
 .accounts-list,
 .settings-section-body > ul.accounts-list {
   display: flex;
@@ -60,67 +58,165 @@
   list-style: none;
 }
 
+/* The heading's line under it is three sentences, so it keeps to a
+   readable measure rather than running the width of the list. */
+.accounts-head .card-sub {
+  max-width: var(--measure);
+}
+
+/* An account: its picture, its name (with the dot if it is the open one),
+   and under them what there is to know about its sign-in: a state if it
+   has one, its handle (the way to its profile) and how it is signed in. At
+   the right, one thing to do in words and the ⋯, on the name's line. The
+   line under the name runs on beneath them, so a phone keeps the row's
+   width for it and the row keeps to its three lines. */
 .accounts-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 16px;
-  padding: 16px 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'avatar name actions'
+    'avatar meta meta';
+  align-items: start;
+  gap: 2px 12px;
+  padding: var(--row-pad-lg) 0;
   border-bottom: 1px solid var(--line);
 }
 
+.accounts-row > .avatar {
+  grid-area: avatar;
+  align-self: center;
+}
+
 .accounts-row-text {
-  display: flex;
-  flex: 1 1 220px;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  font-size: var(--text-base);
+  display: contents;
 }
 
 .accounts-row-name {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 10px;
+  gap: 2px 8px;
+  grid-area: name;
+  min-width: 0;
   color: var(--ink);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.accounts-row-who {
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.accounts-row-text .muted {
-  overflow-wrap: anywhere;
+.accounts-row-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
 }
 
 .accounts-row-meta {
+  grid-area: meta;
+  min-width: 0;
+}
+
+/* Signed out: the badge reaches past the line by its extra height, so the
+   row is as tall as the others. */
+.accounts-row-meta .badge {
+  margin-block: -2px;
+}
+
+/* A long handle breaks rather than widening the page. */
+.accounts-row-meta > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.accounts-row-handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.accounts-row-meta .accounts-row-handle svg {
+  width: 12px;
+  height: 12px;
+}
+
+@media (hover: hover) {
+  .accounts-row-handle:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+}
+
+/* The actions centre on the name's line and reach past it above and below
+   by the difference, so that line keeps its own height and the one under
+   it stays 2px down. With the grid's 12px, 16px from the words. */
+.accounts-row > .row-actions {
+  grid-area: actions;
+  margin-block: -5px;
+  margin-left: 4px;
+}
+
+@media (pointer: coarse) {
+  .accounts-row > .row-actions {
+    margin-block: -6px;
+  }
+
+  /* The handle is pressed by a finger reaching past its line, into the
+     words above and below it, which do nothing when pressed. */
+  .accounts-row-handle {
+    position: relative;
+  }
+
+  .accounts-row-handle::after {
+    content: '';
+    position: absolute;
+    inset: -12px -6px;
+  }
+}
+
+/* On a phone how it is signed in takes a line of its own, under the state
+   and the handle. */
+@media (max-width: 560px) {
+  .accounts-row-meta > :last-child:not(:first-child) {
+    flex-basis: 100%;
+  }
+
+  .accounts-row-meta > :nth-last-child(2)::after {
+    content: none;
+  }
+}
+
+/* How long a sign-in lasts: a sentence to open, under the accounts. Open,
+   the two kinds and signing out are rows under a rule in ink, each name at
+   the left and a few lines about it at the right. */
+.accounts-how-intro {
+  margin-top: 4px;
   color: var(--muted);
   font-size: var(--text-sm);
+  max-width: var(--measure);
 }
 
-.accounts-row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-/* A kind of sign-in and what it means: the name at the left, a few lines
-   about it at the right, both from the top. */
-.settings-row.accounts-fact {
-  align-items: flex-start;
+.accounts-how > .settings-section-body {
+  margin-top: var(--space-3);
 }
 
 .accounts-note {
-  max-width: 62ch;
+  max-width: var(--measure);
   color: var(--ink-2);
   font-size: var(--text-base);
-}
-
-@media (max-width: 760px) {
-  .accounts-row-actions {
-    flex-basis: 100%;
-  }
 }
 
 /* ---- the front page's remembered accounts --------------------------- */
@@ -130,8 +226,16 @@
 .remembered {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   margin: 0 0 var(--space-4);
+}
+
+/* "Continue as" heads the list as a section's heading does. */
+.remembered .field-label {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
 }
 
 .remembered-list {
@@ -189,11 +293,33 @@
   overflow-wrap: anywhere;
 }
 
-/* Wraps rather than truncates: a long handle shouldn't widen the page. */
-.remembered-meta {
-  color: var(--muted);
-  font-size: var(--text-sm);
+/* The handle and when it was last opened, each in one piece; the second
+   goes under the first when they don't fit side by side. A handle too long
+   for the row breaks rather than widening the page. */
+.remembered-meta > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.remembered-handle {
   overflow-wrap: anywhere;
+}
+
+.remembered-opened {
+  white-space: nowrap;
+}
+
+/* A phone never has room for both on one line, so each has its own, as an
+   account's lines do in Settings. */
+@media (max-width: 560px) {
+  .remembered-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .remembered-meta > :not(:last-child)::after {
+    content: none;
+  }
 }
 
 .remembered-chevron {

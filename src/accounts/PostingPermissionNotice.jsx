@@ -1,4 +1,3 @@
-import { LogIn } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { POSTING_REGRANT_MESSAGE, requestReauth } from './accountCopy.js';
@@ -18,8 +17,7 @@ export default function PostingPermissionNotice({ did, force = false }) {
   return (
     <div className="callout callout--warn posting-permission" role="status">
       <span>{POSTING_REGRANT_MESSAGE}</span>
-      <Button size="sm" variant="primary" onClick={() => requestReauth(did, { immediate: true })}>
-        <LogIn size={15} aria-hidden="true" />
+      <Button size="sm" onClick={() => requestReauth(did, { immediate: true })}>
         Sign in again
       </Button>
     </div>

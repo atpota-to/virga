@@ -21,11 +21,15 @@ import { activeLocale } from '../lib/locale.js';
 import { markText } from '../reports/annotations.js';
 
 /**
- * The plot's margins. No left margin: the tick labels sit on the rules at
- * the plot's left edge, which is the section title's edge too. The foot
- * holds the dates; the top, the highest rule's label.
+ * The plot's margins. The rules start at the column's left edge, which is
+ * the section title's edge too, and each rule's number sits on it there;
+ * the data starts past the widest number (labelColumn), so a bar or a line
+ * never runs under one. The foot holds the dates; the top, the highest
+ * rule's number.
  */
-const PAD = { l: 0, r: 12, t: 18, b: 22 };
+const PAD = { r: 12, t: 18, b: 22 };
+/** Room between the widest of the rules' numbers and the first bar or point. */
+const LABEL_GAP = 8;
 /** More room at the top for the diamonds of marked days, clear of the top label. */
 const MARKS_ROOM = 10;
 /** Below this distance from either side, the readout hangs inward from its point. */
@@ -134,9 +138,10 @@ export default function SeriesChart({
   // pinned to a zero axis is a flat wire that says nothing.
   const scale = chartScale(dataMin, dataMax, { zeroBase, bars: mode === 'bars' });
   const ySpan = Math.max(1e-9, scale.max - scale.min);
-  const plotW = Math.max(1, w - PAD.l - PAD.r - gutter);
+  const padL = labelColumn(scale.labelled.map(fmtTick)) + LABEL_GAP;
+  const plotW = Math.max(1, w - padL - PAD.r - gutter);
   const slot = plotW / n;
-  const x = (i) => PAD.l + slot * (i + 0.5);
+  const x = (i) => padL + slot * (i + 0.5);
   const y = (v) => H - PAD.b - ((v - scale.min) / ySpan) * (H - padT - PAD.b);
   const baseY = H - PAD.b;
 
@@ -165,7 +170,7 @@ export default function SeriesChart({
     if (!ready || !plotRef.current) return;
     const rect = plotRef.current.getBoundingClientRect();
     const px = e.clientX - rect.left;
-    const i = Math.min(n - 1, Math.max(0, Math.round((px - PAD.l) / slot - 0.5)));
+    const i = Math.min(n - 1, Math.max(0, Math.round((px - padL) / slot - 0.5)));
     setHover(i);
   }
 
@@ -203,9 +208,20 @@ export default function SeriesChart({
     : null;
   const trendLabel = trendPath ? trendName(series, trend, unit) : null;
   const ghostWords = showGhost ? fmtCount(ghost.v) : null;
+  // Where the reach ends: its open dot at the plot's right, with its words
+  // riding above it, or below it when the dot is already brushing the top.
+  const ghostAt = showGhost
+    ? (() => {
+        const gy = y(ghost.v);
+        return { x: w - PAD.r - 4, y: gy, labelY: gy - 8 < 12 ? gy + 16 : gy - 8 };
+      })()
+    : null;
   // The readout sits over its point, or hangs inward from it near either
-  // side: on the last point that keeps it clear of the ghost's reach.
+  // side: on the last point that keeps it clear of the ghost's reach. A
+  // hanging readout reaches 12px back past its point, so it is held that far
+  // in from the column's edges.
   const tipSide = hp ? (x(hp.i) > w - TIP_EDGE ? 'left' : x(hp.i) < TIP_EDGE ? 'right' : null) : null;
+  const tipX = hp ? (tipSide === 'right' ? Math.max(12, x(hp.i)) : tipSide === 'left' ? Math.min(w - 12, x(hp.i)) : x(hp.i)) : 0;
 
   return (
     <div className="an-chart">
@@ -232,8 +248,8 @@ export default function SeriesChart({
             onPointerMove={onMove}
             onPointerLeave={() => setHover(null)}
           >
-            {/* The rules run the column's full width, under the title's
-                edges; a bar chart's baseline has no number. */}
+            {/* The rules run the column's full width, from the title's edge
+                to the head's other end; a bar chart's baseline has no number. */}
             {scale.ticks.map((v) => (
               <line key={v} className="an-chart-grid" x1={0} x2={w} y1={y(v)} y2={y(v)} />
             ))}
@@ -265,15 +281,11 @@ export default function SeriesChart({
               </>
             )}
 
-            {showGhost &&
+            {ghostAt &&
               (() => {
                 const gx0 = x(n - 1);
                 const gy0 = y(series[n - 1].v);
-                const gx1 = w - PAD.r - 4;
-                const gy1 = y(ghost.v);
-                // The label rides above the open dot, or below it when the
-                // dot is already brushing the top of the plot.
-                const labelY = gy1 - 8 < 12 ? gy1 + 16 : gy1 - 8;
+                const { x: gx1, y: gy1 } = ghostAt;
                 return (
                   <g>
                     {/* The same wash the measured curve carries, continued
@@ -289,13 +301,6 @@ export default function SeriesChart({
                       d={`M${gx0.toFixed(1)},${gy0.toFixed(1)} L${gx1.toFixed(1)},${gy1.toFixed(1)}`}
                     />
                     <circle className="an-chart-ghost-dot" cx={gx1} cy={gy1} r="3.4" />
-                    {/* Out of the way while a readout hangs over it from the
-                        right-hand points; on the last, the readout says it. */}
-                    {tipSide !== 'left' && (
-                      <text className="an-chart-ghost-label" x={gx1} y={labelY} textAnchor="end">
-                        {ghost.label || `${ghostWords} on profile`}
-                      </text>
-                    )}
                   </g>
                 );
               })()}
@@ -309,8 +314,18 @@ export default function SeriesChart({
               </g>
             ))}
 
-            {/* Drawn over the marks, ringed in the page's own colour, so a
-                bar or a line passing behind never takes a number away. */}
+            {/* The reach's words, drawn over a marked day's rule that may
+                pass behind them (a note from the last few days), and out of
+                the way while a readout hangs over them from the right-hand
+                points; on the last, the readout says it. */}
+            {ghostAt && tipSide !== 'left' && (
+              <text className="an-chart-ghost-label" x={ghostAt.x} y={ghostAt.labelY} textAnchor="end">
+                {ghost.label || `${ghostWords} on profile`}
+              </text>
+            )}
+
+            {/* Each rule's number, on the title's edge, in the column the
+                data leaves for them. */}
             {scale.labelled.map((v) => (
               <text key={v} className="an-chart-ylabel" x={0} y={y(v) - 4}>
                 {fmtTick(v)}
@@ -335,7 +350,7 @@ export default function SeriesChart({
         )}
 
         {hp && (
-          <div className="an-chart-tip" data-side={tipSide || undefined} style={{ left: x(hp.i), top: Math.max(padT, y(hp.v)) }}>
+          <div className="an-chart-tip" data-side={tipSide || undefined} style={{ left: tipX, top: Math.max(padT, y(hp.v)) }}>
             <strong>{seriesLabel && `${seriesLabel} `}{fmt(hp.v)}</strong>
             {secondaryHp && (
               <strong className="an-chart-tip-secondary">
@@ -379,6 +394,23 @@ export default function SeriesChart({
 }
 
 const MARKS_LISTED = 5;
+
+/** A canvas to measure the rules' numbers with, made once; false where there is none. */
+let measurer = null;
+
+/**
+ * How wide the rules' numbers are, the widest of them, at the 12px the chart
+ * sets them in (.an-chart-ylabel). Measured in the page's own face; where
+ * nothing can measure, a digit's width is near enough.
+ */
+function labelColumn(texts) {
+  if (!texts.length) return 0;
+  if (measurer === null) measurer = (typeof document !== 'undefined' && document.createElement('canvas').getContext?.('2d')) || false;
+  if (!measurer) return Math.max(...texts.map((t) => t.length * 7));
+  const face = getComputedStyle(document.documentElement).getPropertyValue('--sans').trim() || 'sans-serif';
+  measurer.font = `400 12px ${face}`;
+  return Math.ceil(Math.max(...texts.map((t) => measurer.measureText(t).width)));
+}
 
 /** A small diamond centred on (cx, cy), `r` from centre to point. */
 function diamondPath(cx, cy, r) {

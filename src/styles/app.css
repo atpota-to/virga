@@ -87,7 +87,7 @@
 
 .landing-eyebrow {
   color: var(--ink-2);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: 500;
 }
 
@@ -407,17 +407,26 @@
     max-width: 620px;
     padding-top: 0;
   }
+
+  /* Under the way in, the picture is the figures and the line; the lists
+     and the heat would make it a second page to scroll past. */
+  .sketch-lists,
+  .sketch-times {
+    display: none;
+  }
 }
 
-/* A phone has room for the figures and the line, not for the lists too. */
 @media (max-width: 560px) {
   .landing-lede {
     font-size: var(--text-md);
   }
+}
 
-  .sketch-lists,
-  .sketch-times {
-    display: none;
+/* Wide enough for the three points side by side, they stay a row of three
+   rather than two and one left over. */
+@media (min-width: 720px) {
+  .landing-points {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

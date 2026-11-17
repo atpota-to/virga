@@ -6,7 +6,7 @@
 // phone, where there is no sidebar, /settings is that list.
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, Moon, Pencil, Plus, RefreshCw, RotateCcw, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronRight, Clock, Download, Moon, Pencil, Plus, RefreshCw, RotateCcw, ShieldCheck, Sun, Sunrise, Sunset, Trash2 } from 'lucide-react';
 import AccountsSettings from '../accounts/AccountsSettings.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
@@ -260,6 +260,7 @@ function DataSection() {
                   toast?.(ok ? 'The browser will keep the archive.' : 'The browser said no. It may ask again later, or decide by itself.');
                 }}
               >
+                <ShieldCheck size={15} aria-hidden="true" />
                 Ask the browser
               </Button>
             )}

@@ -153,8 +153,17 @@ function drawFoot(ctx, theme) {
   ctx.fillText('Virga', x + s + 8, y + 22);
 }
 
+/** Room between the widest of the rules' numbers and the first bar or point. */
+const LABEL_GAP = 14;
+
 function drawSeries(ctx, spec, theme) {
-  const L = seriesLayout(spec);
+  // The rules' numbers sit on the plot's left edge, the title's edge, and
+  // the data starts past the widest of them, as on the page, so no bar or
+  // line runs under a number.
+  ctx.font = `400 18px ${FONT}`;
+  const { labelled } = seriesLayout(spec);
+  const column = labelled.length ? Math.max(...labelled.map((tick) => ctx.measureText(fmtTick(tick)).width)) + LABEL_GAP : 0;
+  const L = seriesLayout(spec, { ...PLOT, left: PLOT.left + column });
   const { series, unit, mode, trend, marks } = spec;
 
   ctx.lineWidth = 1;
@@ -268,19 +277,11 @@ function drawSeries(ctx, spec, theme) {
     ctx.fill();
   }
 
-  // The rules' numbers on the plot's left edge, the title's edge, ringed in
-  // the ground's colour so a bar passing behind doesn't take them away.
+  // The rules' numbers, each on its rule at the plot's left edge.
   ctx.font = `400 18px ${FONT}`;
   ctx.textAlign = 'left';
-  ctx.lineWidth = 5;
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = theme.surface;
   ctx.fillStyle = theme.muted;
-  for (const tick of L.labelled) {
-    const ty = Math.round(L.y(tick)) - 6;
-    ctx.strokeText(fmtTick(tick), PLOT.left, ty);
-    ctx.fillText(fmtTick(tick), PLOT.left, ty);
-  }
+  for (const tick of L.labelled) ctx.fillText(fmtTick(tick), PLOT.left, Math.round(L.y(tick)) - 6);
 
   // Each date under its own bucket, the ends hanging inward from the first
   // and last bars' edges (a line's ends are its points), so the dates stop

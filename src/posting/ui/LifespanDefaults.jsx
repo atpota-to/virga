@@ -67,14 +67,12 @@ export default function LifespanDefaults({ did }) {
       title="Default timer"
       sub="A timer every new post starts with. Each post can change it or take it off."
     >
+      {/* On, the editor under this row ends with the rule in a sentence, so
+          the row says nothing more; off, it says what happens instead. */}
       <SettingsRow
         label="Start new posts with a timer"
         htmlFor={onId}
-        hint={
-          lifespan.enabled
-            ? `New posts start with: ${rule}`
-            : 'New posts start without one. The rule is kept for when you turn this on.'
-        }
+        hint={lifespan.enabled ? null : 'New posts start without one. The rule is kept for when you turn this on.'}
       >
         <SwitchButton
           id={onId}
@@ -93,20 +91,16 @@ export default function LifespanDefaults({ did }) {
           {editor}
         </details>
       )}
-      {/* A wrapper, so the hairline under this runs the section's width
-          while the words keep to a readable measure. */}
-      <div className="sched-settings-note">
-        <p className="card-caption">
-          {usage ? `${usage} ` : ''}When the account has no free timer of the
-          kind this rule needs, a new post starts without it, and the composer
-          says why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
-        </p>
-      </div>
       {error && (
         <p className="callout callout--danger" role="alert">
           {error}
         </p>
       )}
+      <p className="card-caption">
+        {usage ? `${usage} ` : ''}When the account has no free timer of the
+        kind this rule needs, a new post starts without it, and the composer
+        says why. <Link to={postingPath('timers')}>See posts on a timer</Link>.
+      </p>
     </SettingsCard>
   );
 }

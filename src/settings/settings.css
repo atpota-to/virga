@@ -124,6 +124,7 @@
   color: var(--ink-2);
   font-size: var(--text-base);
   max-width: var(--measure);
+  text-wrap: pretty;
 }
 
 /* ---- a row --------------------------------------------------------------- */
@@ -158,6 +159,7 @@
 .settings-row-hint {
   color: var(--muted);
   font-size: var(--text-sm);
+  text-wrap: pretty;
 }
 
 /* What the chosen format looks like, under the line about it. */
@@ -276,13 +278,6 @@
   }
 }
 
-.settings-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
 /* ---- data and sync ------------------------------------------------------- */
 
 /* "synced 4m ago" stays in one piece at the end of the archive's line. */
@@ -299,28 +294,29 @@
 
 /* ---- the default timer --------------------------------------------------- */
 
-/* Off, the rule is a sentence to open; the arrow sits on its first line.
-   On a touch screen the sentence reaches 44px into the row's air, so the
-   row is no taller for it. */
-.settings-rule > summary {
+/* A disclosure that is a row of its own (the default timer's rule when it
+   is off, what the adviser sends): a sentence to open, its arrow on the
+   first line. On a touch screen the sentence reaches 44px into the row's
+   air, so the row is no taller for it than on a desk. */
+.settings-section-body > .disclosure > summary {
   align-items: flex-start;
   text-wrap: pretty;
 }
 
-.settings-rule > summary::before {
+.settings-section-body > .disclosure > summary::before {
   flex: none;
   margin-top: 6px;
 }
 
-.settings-rule[open] > .settings-rule-editor {
-  margin-top: var(--space-4);
-}
-
 @media (pointer: coarse) {
-  .settings-rule > summary {
+  .settings-section-body > .disclosure > summary {
     margin-block: calc((1.45em - 44px) / 2);
     padding-block: calc((44px - 1.45em) / 2);
   }
+}
+
+.settings-rule[open] > .settings-rule-editor {
+  margin-top: var(--space-4);
 }
 
 .settings-rule-editor {
@@ -414,8 +410,9 @@
 }
 
 .perm-list li {
-  padding: 14px max(0px, 100% - var(--measure)) 14px 0;
+  padding: var(--row-pad-lg) max(0px, 100% - var(--measure)) var(--row-pad-lg) 0;
   border-bottom: 1px solid var(--line);
+  text-wrap: pretty;
 }
 
 .perm-list strong {

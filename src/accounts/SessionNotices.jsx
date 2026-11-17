@@ -118,7 +118,6 @@ export default function SessionNotices() {
           <span>{reauthNoticeLabel(stuck)} needs to sign in again.</span>
           <Button
             size="sm"
-            variant="primary"
             onClick={() => {
               setStuck(null);
               reauth(stuck).catch((err) => setNotice({ text: signInErrorMessage(err), tone: 'danger' }));

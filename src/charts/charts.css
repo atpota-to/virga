@@ -56,17 +56,13 @@
   stroke-width: 1;
 }
 
-/* A rule's number sits on the plot's left edge, over whatever passes
-   behind it, so it is ringed in the page's colour to stay readable over a
-   bar or the wash. */
+/* A rule's number sits on its rule at the column's left edge, in a strip
+   the data leaves clear (SeriesChart's labelColumn), so nothing passes
+   behind it and it needs no ring. */
 .an-chart-ylabel {
   fill: var(--muted);
   font-family: var(--sans);
   font-size: 12px;
-  paint-order: stroke;
-  stroke: var(--bg);
-  stroke-width: 3px;
-  stroke-linejoin: round;
 }
 
 .an-chart-xlabel {
@@ -289,18 +285,29 @@
 
 /* One set of columns for every row (each row is a subgrid of the list),
    so every bar starts at the same place and ends at the same place, however
-   wide its number. The label column is fixed: 136px for words, 200px for
-   NSIDs (BarList sets it), so bar lists side by side on a dashboard start
-   their bars on one line. Not wider than 640px: a bar is read against its
+   wide its number. The label column is fixed, 136px for words, so bar lists
+   on one page start their bars on one line. In a narrow column (a report's
+   side column on a laptop) the bar keeps 96px, enough to compare by, and
+   the label column gives way to it: short words still fit, a long one ends
+   in an ellipsis. Not wider than 640px: a bar is read against its
    neighbours, and across a whole desk they drift apart. */
 .barlist {
+  --barlist-label: 136px;
+  --barlist-track: 96px;
   display: grid;
-  grid-template-columns: minmax(0, var(--barlist-label, 136px)) minmax(60px, 1fr) auto;
+  grid-template-columns: minmax(0, var(--barlist-label)) minmax(var(--barlist-track), 1fr) auto;
   gap: 12px 16px;
   max-width: 640px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* A list of NSIDs: their names are what is read, and they are long, so
+   the label column is wider and gives way later. */
+.barlist--nsid {
+  --barlist-label: 200px;
+  --barlist-track: 60px;
 }
 
 .barlist-row {

@@ -81,7 +81,6 @@ export default function Landing({ composing = false }) {
           <Link to={TERMS_PATH}>Terms</Link>
           <Link to={PRIVACY_PATH}>Privacy</Link>
         </nav>
-        <span>Draft copy</span>
       </footer>
     </div>
   );

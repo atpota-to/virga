@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { LogOut } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { APP_NAME } from '../config.js';
 import { LogoMark } from '../shell/bits.jsx';
@@ -90,9 +91,10 @@ export default function TermsGate({ did, profile, mode, onAccept, onSignOut }) {
             <IdentityRow
               identity={identity}
               action={
-                <Button variant="ghost" size="sm" onClick={signOut} disabled={busy || leaving}>
+                <button type="button" className="link-action" onClick={signOut} disabled={busy || leaving}>
+                  <LogOut size={14} aria-hidden="true" />
                   {leaving ? 'Signing out…' : 'Sign out'}
-                </Button>
+                </button>
               }
             />
           ) : (

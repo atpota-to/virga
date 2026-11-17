@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { Table2 } from 'lucide-react';
 import { bucketLabel } from '../lib/analytics.js';
-import { fmtCount } from './format.js';
+import { fmtCount, trendName } from './format.js';
 
 /**
  * The line under a chart (.chart-foot): "Show as table" first, a link
@@ -32,7 +32,8 @@ export function ShowAsTable({ actions = null, children }) {
 /**
  * Every chart's plain twin: the same buckets as a real table, opened from
  * the line under the chart (ShowAsTable), so no value is reachable only by
- * pointer. `actions` go on that line after "Show as table".
+ * pointer. `actions` go on that line after "Show as table". The trend's
+ * column takes the name the chart's legend gives it ("7-day average").
  */
 export default function ChartTable({
   series,
@@ -54,7 +55,7 @@ export default function ChartTable({
               <th scope="col">{unit === 'month' ? 'Month' : unit === 'week' ? 'Week' : 'Day'}</th>
               <th scope="col" className="is-num">{valueHead}</th>
               {secondary && <th scope="col" className="is-num">{secondaryHead || 'Compared series'}</th>}
-              {trend && <th scope="col" className="is-num">Trend</th>}
+              {trend && <th scope="col" className="is-num">{trendName(series, trend, unit)}</th>}
             </tr>
           </thead>
           <tbody>
