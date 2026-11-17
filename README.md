@@ -66,6 +66,18 @@ looked at: forced colours beyond one dashboard, a real on-screen keyboard over t
 phone's composer, dragging a card or a report on a touch screen, a queue with more than
 one post in it, the live sky on real graphics hardware, and any browser but Chromium.
 
+Fine-tuned on 2026-11-17 for calm and consistency, above all on phones. Every page was
+reviewed at each size and the findings became one set of rules: the controls the app may
+use and what each one is for, the shape of a page header and of a list row, and the type
+and spacing scales (The look, below). Each part of the app was then changed to follow
+them, reviewed by a second pair of eyes, and the whole app reviewed again. It was checked by
+measurement as well as by screenshot, with touch on for the phone sizes. Each header's
+height and the height of its rows and pages, the number of distinct control styles and
+type sizes in use, and the place each menu opens all stayed within set targets at 360, 390,
+820, 1180, 1440 and 1920, by day and at night, with Compact density, high contrast and
+forced colours looked at too. Not looked at, as before: a real on-screen keyboard,
+dragging on a touch screen, and any browser but Chromium.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
 Vercel, the adviser against the real AI gateway, an account actually made at one of the
@@ -427,7 +439,7 @@ Quiet sky: your numbers set straight on the page, under a sky.
 - **No boxes.** A figure is a number under a two-pixel rule; a chart is its title and the
   chart; a list is its title over a rule in ink, with hairlines between its rows. Space
   sets things apart, so the gaps are wide. Only what floats (a menu, a dialog, the
-  composer) has an edge and a shadow. Buttons and chips are pills.
+  composer) has an edge and a shadow. Buttons are pills.
 - **A sky behind every page.** A wash of colour at the top that fades into the page's own
   ground, so it scrolls away as you read. There are four: dawn, day, dusk and night.
   Dawn, day and dusk are light pages that differ only in the wash; night is the dark
@@ -436,9 +448,11 @@ Quiet sky: your numbers set straight on the page, under a sky.
   set to dark stays on night. `src/lib/sky.js` decides, `index.html` stamps the answer on
   `<html>` before the first paint (`data-sky`, and the `data-theme` it brings), and the
   browser's own toolbar takes the colour at the top of the sky.
-- **Ink does the work.** The thing to do is a pill filled with ink; the page you are on
-  and the pressed key of a control are in ink with a line under them; links are ink,
-  underlined. **The accent means one thing:** the data, or what is selected. It is blue,
+- **Ink does the work, sparingly.** New post, in the sidebar or the bar along the bottom,
+  is the pill filled with ink that is always there; inside a page, ink is kept for the
+  button that confirms what you opened (a dialog, a sheet, the composer). The page you
+  are on and the pressed key of a control are in ink with a line under them; links are
+  ink, underlined. **The accent means one thing:** the data, or what is selected. It is blue,
   or one of five others chosen in Settings (violet, teal, amber, rose, graphite). It is
   not a colour picker: each is a full set of steps for the light pages, for night and for
   high contrast. The second thing on a chart is coral, or blue beside amber and rose,
@@ -454,17 +468,30 @@ Quiet sky: your numbers set straight on the page, under a sky.
   and the two series at least 15 apart in OKLab under simulated protanopia, deuteranopia
   and tritanopia (20 with ordinary vision). Under forced colours nothing is left to a
   fill or a shadow alone.
+- **One look per job.** A page's header is its title, one line, a quiet line saying what
+  the page can touch, and at most one row of controls: the period, and on a dashboard
+  Customize. An action sits beside what it acts on: Export over the list it exports, a
+  chart's actions under the chart, an add at the head of the list it adds to, as
+  underlined words with an icon. A row shows at most one labelled button and a ⋯ that
+  holds the rest, with anything that deletes last and in red. Tabs narrow a list or a
+  chart, chips only pick a value in a form, and a coloured badge only marks a problem
+  to find; everything else is quiet words in a line, with a dot between them. The same
+  number is the same size on a dashboard, a report and the index.
 - **One typeface,** Instrument Sans, in sentence case and three weights, with tabular
-  figures so columns line up. Monospace is for code only (NSIDs, DIDs).
+  figures so columns line up, and one scale of sizes. Monospace is kept for identifiers
+  such as DIDs.
 - **Every chart has a table.** Hover shows a value; Show as table shows them all.
 - **The sidebar is words.** The five parts of Virga down the side, each with its icon, and
   only the one you are in opened out into its pages. It has no ground of its own: it sits
   on the sky. It folds to a rail of icons.
-- **On a phone,** the top of the page has the mark, Search, Sync and the account (Settings
-  is in its menu), and a bar along the bottom has the parts as icons: the one you are in
-  says its name, and New post is the round button at its end. Cards stack one to a row
-  (figures two to a row), Customize moves the chosen card with arrows, and the composer
-  and its dialogs are full-height sheets with the main button under the thumb.
+- **On a phone,** the top of the page has the mark (or, on an inner page, the way back to
+  the one above it), Search and the account (Settings and Sync now are in its menu), and
+  a bar along the bottom has the parts as icons: the one you are in says its name, and New
+  post is the round button at its end. Cards stack one to a row (figures two to a row), a
+  row of tabs that doesn't fit scrolls sideways under a faded edge, a long menu rises from
+  the foot of the screen as a sheet, Customize is a list of the cards with arrows to move
+  them, and the composer and its dialogs are full-height sheets with the main button under
+  the thumb.
 - **The live sky is an easter egg.** The 3D scene from the first version
   (`src/hillside/`) is off by default. Settings › Appearance turns it on, and five taps on
   the mark do the same from anywhere. It draws its clouds (and at night its stars) in the
