@@ -182,8 +182,8 @@
 }
 
 /* Near either side the readout hangs inward from its point instead, so it
-   stays over the plot, and on the last point it leaves the ghost's reach
-   and its label in view. */
+   stays over the plot; on the last point that keeps the ghost's dashed
+   reach in view (its label steps aside, as the readout repeats it). */
 .an-chart-tip[data-side='left'] {
   transform: translate(calc(-100% + 12px), calc(-100% - 10px));
 }

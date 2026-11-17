@@ -304,6 +304,7 @@
    row is no taller for it. */
 .settings-rule > summary {
   align-items: flex-start;
+  text-wrap: pretty;
 }
 
 .settings-rule > summary::before {
