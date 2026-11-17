@@ -260,6 +260,16 @@ The first build takes a minute or two for an account with thousands of posts. Af
 that a sync only fetches what is new, and runs by itself when the archive is more than an
 hour old.
 
+## Defense (planned)
+
+A sixth part, for moderation and defence: scans of who piled onto a post sorted by how
+close each account is to you, block lists that can't take your own people, a moderator
+account to DM, and closing replies and quotes when strangers arrive. It is being ported
+from [bluesky-mod](https://github.com/dame-is/bluesky-mod) as a hosted, paid feature.
+[docs/DEFENSE.md](docs/DEFENSE.md) is the plan. So far only its engine is written
+(`src/defense/`: the harvest from Constellation and the scoring, with tests); nothing of it
+is on screen.
+
 ## Signing in
 
 The front page and Add an account share one sign-in, a step at a time

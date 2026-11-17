@@ -82,10 +82,10 @@ function wait(ms, signal) {
  * Shape (from the deprecated-but-still-supported `/links/all`):
  *   { links: { "app.bsky.feed.like": { "subject.uri": { count, distinct_dids } } } }
  */
-export async function getBacklinkSources(target) {
+export async function getBacklinkSources(target, { signal } = {}) {
   if (!target) return null;
   const url = `${CONSTELLATION_BASE}/links/all?target=${encodeURIComponent(target)}`;
-  return fetchJsonOrNull(url);
+  return fetchJsonOrNull(url, signal ? { signal } : undefined);
 }
 
 /**
