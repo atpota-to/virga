@@ -121,6 +121,16 @@ export function fmtRate(v) {
   return v < 10 ? (Math.round(v * 10) / 10).toLocaleString(activeLocale()) : Math.round(v).toLocaleString(activeLocale());
 }
 
+/**
+ * An average of counts (a trend's value): one decimal while small, written
+ * even when it is nought ("2.0"), so a column of them lines up; whole above ten.
+ */
+export function fmtAverage(v) {
+  if (v == null) return '—';
+  if (v < 10) return v.toLocaleString(activeLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  return Math.round(v).toLocaleString(activeLocale());
+}
+
 /** A number for a figure: whole with separators, or one decimal while small. */
 export function fmtFigure(v, { decimals = false } = {}) {
   if (v == null || Number.isNaN(v)) return '—';

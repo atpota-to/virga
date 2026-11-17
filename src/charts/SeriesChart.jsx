@@ -15,7 +15,7 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import { bucketLabel } from '../lib/analytics.js';
-import { axisStops, chartScale, fmtCount, fmtTick, trendName } from './format.js';
+import { axisStops, chartScale, fmtAverage, fmtCount, fmtTick, trendName } from './format.js';
 import './charts.css';
 import { activeLocale } from '../lib/locale.js';
 import { markText } from '../reports/annotations.js';
@@ -90,6 +90,9 @@ export default function SeriesChart({
   ariaLabel,
 }) {
   const fmt = format || fmtCount;
+  // An average of counts keeps its decimal while small: a week of two and
+  // three posts a day averages 2.3, not 2.
+  const fmtTrend = format || fmtAverage;
   const plotRef = useRef(null);
   const [w, setW] = useState(0);
   const [hover, setHover] = useState(null);
@@ -362,7 +365,7 @@ export default function SeriesChart({
             {showGhost && hp.i === n - 1 && <span>{ghost.readout || `Profile counter ${ghostWords}`}</span>}
             {trendLabel && trend[hp.i]?.v != null && (
               <span className="an-chart-tip-trend">
-                {trendLabel} {fmt(trend[hp.i].v)}
+                {trendLabel} {fmtTrend(trend[hp.i].v)}
               </span>
             )}
             {hoverMark?.items.map((item, k) => (

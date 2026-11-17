@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { Table2 } from 'lucide-react';
 import { bucketLabel } from '../lib/analytics.js';
-import { fmtCount, trendName } from './format.js';
+import { fmtAverage, fmtCount, trendName } from './format.js';
 
 /**
  * The line under a chart (.chart-foot): "Show as table" first, a link
@@ -46,6 +46,8 @@ export default function ChartTable({
   actions = null,
 }) {
   if (!series || series.length === 0) return null;
+  // As in the chart's readout, an average of counts keeps its decimal while small.
+  const trendFormat = format === fmtCount ? fmtAverage : format;
   return (
     <ShowAsTable actions={actions}>
       <div className="an-tableview-scroll">
@@ -66,7 +68,7 @@ export default function ChartTable({
                   <th scope="row">{bucketLabel(p.t, unit)}</th>
                   <td className="is-num">{format(p.v)}</td>
                   {secondary && <td className="is-num">{fmtCount(secondary[i]?.v ?? 0)}</td>}
-                  {trend && <td className="is-num">{trend[i]?.v == null ? '—' : format(trend[i].v)}</td>}
+                  {trend && <td className="is-num">{trend[i]?.v == null ? '—' : trendFormat(trend[i].v)}</td>}
                 </tr>
               );
             })}

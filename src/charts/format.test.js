@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { axisStops, chartScale, heatSteps, trendName } from './format.js';
+import { axisStops, chartScale, fmtAverage, heatSteps, trendName } from './format.js';
 import { movingAverage } from '../lib/analytics.js';
 
 const DAY = 86_400_000;
@@ -69,5 +69,15 @@ describe('heatSteps', () => {
     const steps = heatSteps([3, 3, 3, 9]);
     expect(steps.get(3)).toBe(1);
     expect(steps.get(9)).toBeGreaterThan(1);
+  });
+});
+
+describe('fmtAverage', () => {
+  it('keeps one decimal while small, even a nought, and is whole above ten', () => {
+    expect(fmtAverage(2)).toBe('2.0');
+    expect(fmtAverage(2.29)).toBe('2.3');
+    expect(fmtAverage(0.8)).toBe('0.8');
+    expect(fmtAverage(12.6)).toBe('13');
+    expect(fmtAverage(null)).toBe('—');
   });
 });

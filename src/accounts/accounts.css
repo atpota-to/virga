@@ -160,18 +160,20 @@
   }
 }
 
-/* The actions centre on the name's line and reach past it above and below
-   by the difference, so that line keeps its own height and the one under
-   it stays 2px down. With the grid's 12px, 16px from the words. */
+/* The actions centre on the name's line and reach past it above by the
+   difference, so that line keeps its own height. Below they reach only
+   3px past it: the line under the name runs on beneath them, and starts
+   that much lower so the button's edge stays clear of its words. With the
+   grid's 12px, 16px from the words. */
 .accounts-row > .row-actions {
   grid-area: actions;
-  margin-block: -5px;
+  margin-block: -5px -3px;
   margin-left: 4px;
 }
 
 @media (pointer: coarse) {
   .accounts-row > .row-actions {
-    margin-block: -6px;
+    margin-block: -6px -3px;
   }
 
   /* The handle is pressed by a finger reaching past its line, into the
