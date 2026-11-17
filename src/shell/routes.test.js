@@ -42,6 +42,17 @@ describe('routes', () => {
     expect(parseRoute('/intent/other')).toEqual({ section: 'missing' });
   });
 
+  it('name Defense, and nothing under it that isn’t there', () => {
+    expect(parseRoute('/defense')).toEqual({ section: 'defense', page: null });
+    expect(parseRoute('/defense/')).toEqual({ section: 'defense', page: null });
+    expect(parseRoute('/defense/lists')).toEqual({ section: 'missing' });
+    expect(SECTION_TITLE.defense).toBe('Defense');
+    // A scan's canary comes from the archive's follows.
+    expect(needsArchive(parseRoute('/defense'))).toBe(true);
+    expect(opensBeforeArchive(parseRoute('/defense'))).toBe(false);
+    expect(parentOf(parseRoute('/defense'))).toBeNull();
+  });
+
   it('let posting open before the archive has, and never ask for a built one', () => {
     for (const path of ['/posting', '/posting/posted', '/posting/compose', '/intent/compose']) {
       const route = parseRoute(path);
@@ -56,7 +67,7 @@ describe('routes', () => {
   });
 
   it('give every section a title, and each posting page its own', () => {
-    for (const section of ['dashboard', 'reports', 'tools', 'settings', 'posting', 'intent', 'missing']) {
+    for (const section of ['dashboard', 'reports', 'tools', 'settings', 'posting', 'defense', 'intent', 'missing']) {
       expect(SECTION_TITLE[section]).toBeTruthy();
     }
     expect(postingTitle(parseRoute('/posting'))).toBe('Posting');

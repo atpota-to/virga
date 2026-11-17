@@ -9,8 +9,8 @@
 // fragment, and what login requests is what the metadata declares.
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { OAUTH_SCOPE } from '../../src/config.js';
-import { SCOPE, clientMetadata } from './config.js';
+import { DEFENSE_SCOPE, OAUTH_SCOPE } from '../../src/config.js';
+import { DECLARED, SCOPE, SCOPE_WITH_DEFENSE, clientMetadata } from './config.js';
 import { parsePermission } from './testing/permissionScope.js';
 import { installOAuthEnv } from './testing/env.js';
 
@@ -118,9 +118,29 @@ describe('the scope', () => {
     }
   });
 
-  it('is exactly what the metadata declares, so declared ⊇ requested', () => {
+  it('fits under what the metadata declares, so declared ⊇ requested', () => {
     const declared = new Set(tokens(clientMetadata().scope));
     for (const token of list) expect(declared.has(token), token).toBe(true);
-    expect(clientMetadata().scope).toBe(SCOPE);
+    expect(clientMetadata().scope).toBe(DECLARED);
+  });
+});
+
+describe('the scope with Defense on', () => {
+  const list = tokens(SCOPE_WITH_DEFENSE);
+
+  it('is the app scope and the signed-in getProfiles, nothing more', () => {
+    expect(SCOPE_WITH_DEFENSE).toBe(DEFENSE_SCOPE);
+    expect(list).toEqual([
+      ...tokens(SCOPE),
+      'rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview',
+    ]);
+    for (const token of list)
+      expect(() => parsePermission(token), token).not.toThrow();
+  });
+
+  it('is what the metadata declares, so both sign-ins fit under it', () => {
+    expect(clientMetadata().scope).toBe(SCOPE_WITH_DEFENSE);
+    const declared = new Set(tokens(clientMetadata().scope));
+    for (const token of list) expect(declared.has(token), token).toBe(true);
   });
 });

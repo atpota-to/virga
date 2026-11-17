@@ -22,6 +22,7 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { navigate } from '../lib/router.jsx';
 import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import { POSTING_PAGES } from '../posting/routes.js';
+import { DEFENSE_ICON, DEFENSE_PAGES } from '../defense/routes.js';
 import { REPORTS } from '../reports/registry.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
@@ -52,7 +53,7 @@ function writeRecent(list) {
 // kind's.
 const ACTION_ICONS = { newPost: SquarePen, sync: RefreshCw, customize: SlidersHorizontal, newDashboard: Plus, period: CalendarRange };
 const SKY_ICONS = { clock: Clock, dawn: Sunrise, day: Sun, dusk: Sunset, night: Moon };
-const GROUP_ICONS = { Dashboards: LayoutDashboard, Reports: BarChart3, Tools: Wrench, Settings, Posting: Send };
+const GROUP_ICONS = { Dashboards: LayoutDashboard, Reports: BarChart3, Tools: Wrench, Settings, Posting: Send, Defense: DEFENSE_ICON };
 
 function CommandIcon({ command, accounts }) {
   if (command.do === 'switchAccount') {
@@ -110,6 +111,7 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
             reports: REPORTS,
             tools: TOOLS,
             postingPages: POSTING_PAGES,
+            defensePages: DEFENSE_PAGES,
             settingsSections: SETTINGS_SECTIONS,
             accounts,
             activeDid: did,

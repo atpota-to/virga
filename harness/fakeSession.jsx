@@ -85,7 +85,9 @@ export function AtprotoSessionProvider({ children }) {
   // `input` is a handle, a DID, or a host's address (to make an account
   // there, which here lands as Mira). The real one's other options (mode,
   // intent, prompt) change where the browser goes, and there is nowhere to go.
-  const signIn = useCallback(async (input, { signal } = {}) => {
+  // `defense` is the one that changes what is granted: true or false signs
+  // in with or without Defense's permission; unsaid, the grant stays as it is.
+  const signIn = useCallback(async (input, { signal, defense = null } = {}) => {
     await sleep(500);
     // Called off while "the host" was being reached: nobody is signed in.
     if (signal?.aborted) throw Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' });
@@ -93,6 +95,8 @@ export function AtprotoSessionProvider({ children }) {
     const id = String(input).replace(/^@/, '') === LAB.handle || input === LAB.did ? LAB : ME;
     if (!harness.worldOf(id.did)) throw new Error(`Failed to resolve identity: ${input}`);
     if (flags.mode === 'backend') tokens.set(id.did, harness.server.mintToken(id.did));
+    const scope = typeof defense === 'boolean' ? harness.regrant(id.did, { defense }) : harness.grantOf(id.did);
+    setRows((list) => list.map((r) => (r.did === id.did ? { ...r, scope } : r)));
     setStatus(id.did, 'ready');
     setActiveDid(id.did);
   }, []);

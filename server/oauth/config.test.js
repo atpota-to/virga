@@ -12,7 +12,7 @@ import { createRequire } from 'node:module';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { NodeOAuthClient } from '@atproto/oauth-client-node';
 import { JoseKey } from '@atproto/jwk-jose';
-import { OAUTH_SCOPE } from '../../src/config.js';
+import { DECLARED_SCOPE, OAUTH_SCOPE } from '../../src/config.js';
 import {
   RETURN_PATH,
   SCOPE,
@@ -131,11 +131,11 @@ describe('client metadata', () => {
     );
   });
 
-  it('is a confidential web client asking for exactly the app scope', () => {
+  it('is a confidential web client declaring every scope a sign-in may ask for', () => {
     const m = clientMetadata();
     expect(m).toMatchObject({
       client_name: 'Virga',
-      scope: OAUTH_SCOPE,
+      scope: DECLARED_SCOPE,
       token_endpoint_auth_method: 'private_key_jwt',
       token_endpoint_auth_signing_alg: 'ES256',
       dpop_bound_access_tokens: true,

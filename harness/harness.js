@@ -10,6 +10,14 @@
 //   ?expired=lab     that account (by handle) starts signed out; the other is open
 //   ?scope=read      the sessions were granted reading only, as before
 //                    posting: writes are refused for a missing scope
+//   ?defense=on      the sessions were granted Defense's permission too, as
+//                    after Turn on Defense (by default they weren't, so the
+//                    Defense page offers to ask for it)
+//   ?appview=failopen|flaky
+//                    the signed-in getProfiles leaves known followers off
+//                    every answer (failopen: a scan can't count anyone) or
+//                    the first answer for each batch (flaky: the canary
+//                    catches it and the batch is asked again)
 //   ?limits=3,1,1    per-account limits on scheduled posts, plain timers and
 //                    conditional timers (the server's SCHEDULED_POSTS_LIMIT,
 //                    POST_TIMERS_LIMIT, CONDITIONAL_TIMERS_LIMIT); a blank or
@@ -29,7 +37,7 @@
 //                    post's address comes from its date, so without this a
 //                    reload is a new set of posts; with it, the same ones
 
-import { OAUTH_SCOPE } from '../src/config.js';
+import { DEFENSE_TOKENS, OAUTH_SCOPE } from '../src/config.js';
 import { DEFAULT_AI_LIMITS, createServer } from './fakeServer.js';
 import { createFakeAgent } from './fakeXrpc.js';
 import { installFakeNetwork } from './fakeNetwork.js';
@@ -45,6 +53,14 @@ export const READ_ONLY_SCOPE = OAUTH_SCOPE.split(' ')
       t.startsWith('repo:app.bsky.graph.follow'),
   )
   .join(' ');
+
+/** A granted scope with Defense's permission added (`on`) or taken out. */
+export function withDefense(scope, on) {
+  const tokens = String(scope || '')
+    .split(' ')
+    .filter((t) => t && !DEFENSE_TOKENS.includes(t));
+  return [...tokens, ...(on ? DEFENSE_TOKENS : [])].join(' ');
+}
 
 /** `?limits=` as the server's per-feature limits; a blank or 0 is unlimited. */
 function readLimits(value) {
@@ -78,7 +94,8 @@ export function readFlags(search) {
     mode: params.get('mode') === 'browser' ? 'browser' : 'backend',
     signedOut: params.has('signedout'),
     expired: params.get('expired') || null,
-    scope: params.get('scope') === 'read' ? READ_ONLY_SCOPE : OAUTH_SCOPE,
+    scope: withDefense(params.get('scope') === 'read' ? READ_ONLY_SCOPE : OAUTH_SCOPE, params.get('defense') === 'on'),
+    appview: ['failopen', 'flaky'].includes(params.get('appview')) ? params.get('appview') : 'ok',
     limits: readLimits(params.get('limits')),
     aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
@@ -109,12 +126,26 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     terms: flags.terms,
   });
   const agents = new Map();
+  const worldOf = (did) => worlds.find((w) => w.me.did === did) || null;
 
   return {
     flags,
     worlds,
     server,
-    worldOf: (did) => worlds.find((w) => w.me.did === did) || null,
+    worldOf,
+    /** What the account's session was granted now. */
+    grantOf: (did) => worldOf(did)?.scope ?? flags.scope,
+    /**
+     * Sign the account in again with or without Defense's permission, as
+     * Turn on Defense (and Turn off) does: its agent and Virga's server
+     * see the new grant at once. Returns the scope.
+     */
+    regrant(did, { defense }) {
+      const world = worldOf(did);
+      if (!world) throw new Error(`harness: no account ${did}`);
+      world.scope = withDefense(world.scope, defense);
+      return world.scope;
+    },
     /** The account's agent: the same one for the life of the page. */
     agentFor(did) {
       if (!agents.has(did)) {
@@ -125,7 +156,9 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
           createFakeAgent(world, {
             latency: flags.latency,
             worlds,
-            scope: flags.scope,
+            // Read at each call: a sign-in that turns Defense on changes it.
+            scope: () => world.scope,
+            appview: flags.appview,
           }),
         );
       }

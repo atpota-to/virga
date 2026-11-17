@@ -6,7 +6,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { Agent } from '@atproto/api';
-import { OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
+import { DEFENSE_SCOPE, DEFENSE_TOKENS, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
 import { SESSION_HINT_KEY } from '../lib/sessionHint.js';
 import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import {
@@ -591,14 +591,49 @@ describe('signing in', () => {
     expect(browser.signIn).toHaveBeenCalledWith('mira.example.com', { scope: OAUTH_SCOPE, intent: 'add' });
     expect(browser.signIn.mock.calls[0][1]).not.toHaveProperty('prompt');
   });
+
+  it('asks for Defense’s permission only when told to, either way of signing in', async () => {
+    const { ctrl, browser } = setup();
+    await ctrl.signIn('mira.example.com', { mode: 'browser', intent: 'reauth', defense: true });
+    expect(browser.signIn).toHaveBeenLastCalledWith('mira.example.com', { scope: DEFENSE_SCOPE, intent: 'reauth' });
+    await ctrl.signIn('mira.example.com', { mode: 'browser', intent: 'reauth', defense: false });
+    expect(browser.signIn).toHaveBeenLastCalledWith('mira.example.com', { scope: OAUTH_SCOPE, intent: 'reauth' });
+
+    const backend = setup({ answer: () => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?x=4' }) });
+    backend.ctrl.signIn('mira.example.com', { mode: 'backend', intent: 'reauth', defense: true });
+    await vi.waitFor(() => expect(backend.env.assign).toHaveBeenCalled());
+    expect(new URL(backend.fetch.mock.calls[0][0]).searchParams.get('defense')).toBe('1');
+    const plain = setup({ answer: () => json({ success: true, authUrl: 'https://bsky.social/oauth/authorize?x=5' }) });
+    plain.ctrl.signIn('mira.example.com', { mode: 'backend' });
+    await vi.waitFor(() => expect(plain.env.assign).toHaveBeenCalled());
+    expect(new URL(plain.fetch.mock.calls[0][0]).searchParams.has('defense')).toBe(false);
+  });
+
+  it('keeps Defense for an account that has it when signing in again, and gives it to no one else', async () => {
+    const storage = memoryStorage();
+    recordSignIn(storage, { did: MIRA, mode: 'browser', handle: 'mira.example.com', scope: DEFENSE_SCOPE }, 2);
+    recordSignIn(storage, { did: LAB, mode: 'browser', handle: 'lab.example.org', scope: OAUTH_SCOPE }, 1);
+    const { ctrl, browser } = setup({ storage });
+    await ctrl.signIn('Mira.Example.com', { mode: 'browser', intent: 'reauth' });
+    expect(browser.signIn).toHaveBeenLastCalledWith('Mira.Example.com', { scope: DEFENSE_SCOPE, intent: 'reauth' });
+    await ctrl.signIn(MIRA, { mode: 'browser', intent: 'reauth' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(DEFENSE_SCOPE);
+    await ctrl.signIn('lab.example.org', { mode: 'browser', intent: 'reauth' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
+    await ctrl.signIn('someone.else.example', { mode: 'browser' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
+    // Turning it off is a sign-in that says so.
+    await ctrl.signIn(MIRA, { mode: 'browser', intent: 'reauth', defense: false });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
+  });
 });
 
 describe('capabilitiesFrom', () => {
   const old = 'atproto repo:app.bsky.graph.follow?action=create&action=delete';
 
   it('lets a long session schedule and use the adviser, a browser one neither', () => {
-    expect(capabilitiesFrom({ mode: 'backend' }, 'ready')).toEqual({ mode: 'backend', canPost: true, canSchedule: true, canUseAi: true, missing: [] });
-    expect(capabilitiesFrom({ mode: 'browser' }, 'ready')).toEqual({ mode: 'browser', canPost: true, canSchedule: false, canUseAi: false, missing: [] });
+    expect(capabilitiesFrom({ mode: 'backend' }, 'ready')).toEqual({ mode: 'backend', canPost: true, canSchedule: true, canUseAi: true, defense: 'unknown', missing: [] });
+    expect(capabilitiesFrom({ mode: 'browser' }, 'ready')).toEqual({ mode: 'browser', canPost: true, canSchedule: false, canUseAi: false, defense: 'unknown', missing: [] });
     expect(capabilitiesFrom({ mode: 'backend' }, 'unknown').canSchedule).toBe(true);
     expect(capabilitiesFrom({ mode: 'backend' }, 'needsSignIn')).toMatchObject({ canPost: false, canSchedule: false, canUseAi: false });
     expect(capabilitiesFrom(null, 'needsSignIn')).toMatchObject({ mode: null, canPost: false });
@@ -609,6 +644,13 @@ describe('capabilitiesFrom', () => {
     expect(caps.canPost).toBe(false);
     for (const token of POSTING_TOKENS) expect(caps.missing).toContain(token);
     expect(capabilitiesFrom({ mode: 'browser', scope: OAUTH_SCOPE }, 'ready')).toMatchObject({ canPost: true, missing: [] });
+  });
+
+  it('says whether the grant holds Defense’s permission, without counting it as missing from an ordinary one', () => {
+    expect(capabilitiesFrom({ mode: 'browser', scope: OAUTH_SCOPE }, 'ready')).toMatchObject({ defense: 'missing', missing: [] });
+    expect(capabilitiesFrom({ mode: 'browser', scope: DEFENSE_SCOPE }, 'ready')).toMatchObject({ defense: 'granted', missing: [] });
+    expect(capabilitiesFrom({ mode: 'backend', scope: `atproto ${DEFENSE_TOKENS[0]}` }, 'ready').defense).toBe('granted');
+    expect(capabilitiesFrom({ mode: 'browser' }, 'ready').defense).toBe('unknown');
   });
 });
 

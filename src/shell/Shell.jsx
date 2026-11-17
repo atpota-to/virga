@@ -21,6 +21,7 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { navigate, usePath } from '../lib/router.jsx';
 import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import PostingPage from '../posting/PostingPage.jsx';
+import DefensePage from '../defense/DefensePage.jsx';
 import { parseComposeIntent } from '../posting/lib/composeIntent.js';
 import { takePendingCompose } from '../lib/pendingCompose.js';
 import FirstRun from './FirstRun.jsx';
@@ -83,6 +84,7 @@ export default function Shell({ profile, did, onSignOut }) {
   else if (route.section === 'dashboard') page = dashboard ? <DashboardPage key={customizing} dashboard={dashboard} /> : null;
   else if (route.section === 'reports') page = route.page ? <ReportPage reportKey={route.page} /> : <ReportsIndex />;
   else if (route.section === 'tools') page = route.page ? <ToolPage toolKey={route.page} /> : <ToolsIndex />;
+  else if (route.section === 'defense') page = <DefensePage />;
   else if (route.section === 'settings') page = <SettingsPage section={route.page} profile={profile} onSignOut={onSignOut} />;
   else page = <NotFound />;
 

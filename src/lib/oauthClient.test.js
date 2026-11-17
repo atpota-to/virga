@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import handler from '../../api/client-metadata.js';
-import { AUTH_MODE, BACKEND_URL, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost } from '../config.js';
+import { AUTH_MODE, BACKEND_URL, DECLARED_SCOPE, DEFENSE_SCOPE, DEFENSE_TOKENS, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost, signInScope } from '../config.js';
 import { isValidScopeToken } from '../session/scopes.js';
 import {
   buildClientMetadata,
@@ -82,12 +82,39 @@ describe('the scope a sign-in asks for', () => {
 
   it('explains every token it asks for, once', () => {
     // Settings › Permissions is written from PERMISSION_GROUPS.
-    const explained = PERMISSION_GROUPS.flatMap((g) => g.tokens);
+    const explained = PERMISSION_GROUPS.filter((g) => !g.onlyWith).flatMap((g) => g.tokens);
     expect([...explained].sort()).toEqual([...tokens].sort());
     for (const group of PERMISSION_GROUPS) {
       expect(group.title).toMatch(/\S/);
       expect(group.text).toMatch(/\S/);
     }
+  });
+});
+
+describe('the scope with Defense on', () => {
+  it('adds the signed-in getProfiles, and only that, to an ordinary sign-in', () => {
+    expect(DEFENSE_TOKENS).toEqual(['rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview']);
+    expect(DEFENSE_SCOPE.split(' ')).toEqual([...OAUTH_SCOPE.split(' '), ...DEFENSE_TOKENS]);
+    for (const token of DEFENSE_TOKENS) expect(isValidScopeToken(token), token).toBe(true);
+    expect(OAUTH_SCOPE.split(' ')).not.toContain(DEFENSE_TOKENS[0]);
+  });
+
+  it('is asked for only when Defense is on', () => {
+    expect(signInScope()).toBe(OAUTH_SCOPE);
+    expect(signInScope({ defense: false })).toBe(OAUTH_SCOPE);
+    expect(signInScope({ defense: true })).toBe(DEFENSE_SCOPE);
+  });
+
+  it('is explained by a group of its own, marked as Defense’s', () => {
+    const groups = PERMISSION_GROUPS.filter((g) => g.onlyWith);
+    expect(groups.map((g) => g.onlyWith)).toEqual(['defense']);
+    expect(groups[0].tokens).toEqual(DEFENSE_TOKENS);
+  });
+
+  it('is what the client declares, so either sign-in fits under it', () => {
+    const declared = new Set(DECLARED_SCOPE.split(' '));
+    for (const token of [...OAUTH_SCOPE.split(' '), ...DEFENSE_SCOPE.split(' ')]) expect(declared.has(token), token).toBe(true);
+    expect(new Set(DECLARED_SCOPE.split(' ')).size).toBe(DECLARED_SCOPE.split(' ').length);
   });
 });
 
@@ -123,11 +150,11 @@ describe('buildLoopbackClientId', () => {
     );
   });
 
-  it('declares the scope a sign-in asks for', () => {
+  it('declares every scope a sign-in may ask for, Defense’s included', () => {
     const id = new URL(
       buildLoopbackClientId('http://127.0.0.1:4173', '/oauth/callback'),
     );
-    expect(id.searchParams.get('scope')).toBe(OAUTH_SCOPE);
+    expect(id.searchParams.get('scope')).toBe(DECLARED_SCOPE);
   });
 });
 

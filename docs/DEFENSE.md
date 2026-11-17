@@ -6,8 +6,10 @@ yourself (a block list that can't take your own people, scans of who piled onto 
 closing replies and quotes when strangers arrive, attack mode) and makes it something you
 turn on in Virga, with the infrastructure run for you.
 
-This is the plan as of 2026-11-17. The first piece is built: the in-browser scan and score
-engine (`src/defense/`), with tests. Nothing of Defense is on screen yet.
+This is the plan as of 2026-11-17. The first two phases are built: the in-browser scan and
+score engine (`src/defense/`), and scanning a post on screen, in the Defense part of the
+sidebar, with the permission it needs asked for only when it's turned on (phase 2, below).
+Nothing of Defense writes anything yet.
 
 ## The idea it keeps
 
@@ -45,7 +47,11 @@ It doesn't have to be. Read from `@atproto/bsky` 0.5.13 (npm, 2026-11-17):
   friends into `UNKNOWN`, the band approved without a named look.
 
 So `src/defense/score.js` sends a **canary** with every batch: an account the owner follows
-that has known followers (`findCanary`). The lookup is one call per batch, so a canary
+that has known followers (`findCanary`). A scan picks it from the archive
+(`canaryCandidates` in `scan.js`): the follows who follow back, those who engage most first,
+then the rest of the follows, newest first. If no canary turns up, the scan looks once more
+after a pause before scoring without one, because a lookup that failed open on the canary's
+own batches looks, from here, just like follows nobody else follows. The lookup is one call per batch, so a canary
 without its count means nobody in the batch was counted: the batch is asked again, the
 canary is picked again once if it keeps failing (someone may have unfollowed), and after
 that nothing is scored. Without any canary (the owner follows no one, or no two of their
@@ -59,6 +65,23 @@ The veto doesn't rest on vouches anyway. "You follow them" comes from the public
 
 This needs one more permission for the browser session, only when Defense is turned on:
 `rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app#bsky_appview`.
+
+How that works (built in phase 2, `src/config.js`):
+
+- **Declared, not asked.** The client metadata, both the browser client's and the server's,
+  declares every token any sign-in may ask for (`DECLARED_SCOPE`), Defense's included. An
+  authorization server refuses a request for anything undeclared and grants a request for
+  less, so an ordinary sign-in still asks for exactly `OAUTH_SCOPE`, unchanged.
+- **Turned on by signing in again.** Turn on Defense signs the account in again asking for
+  `DEFENSE_SCOPE` (`OAUTH_SCOPE` plus the token): a browser session names it itself; a long
+  session's login route takes `defense=1` and picks between its two fixed scope strings, so a
+  caller still never writes a scope. Turn off is the same sign-in without it.
+- **Kept on a sign-in again.** A sign-in that doesn't say (Sign back in, Reconnect, a remembered
+  account) asks for Defense's token if the account's last granted scope held it, so it isn't
+  dropped by an expired session, nor given to an account that never turned it on.
+- **Read from the grant.** `capabilitiesFrom` says `defense: 'granted' | 'missing' |
+  'unknown'`. A grant nobody has read yet is let try; a scan refused for a missing scope comes
+  back to Turn on Defense. It is not in `missing`, which is what every sign-in asks for.
 
 ## Where each piece runs
 
@@ -172,7 +195,7 @@ a few dozen users to each holder, which still splits the limits and the blast ra
 | `gates.js` | `server/defense/internal/gates.js` on Vercel, the only door to a user's session |
 | `shield.js`, `ownerActivity.js`, `spacedust.js`, `jetstream.js` | `worker/`, one connection for all subscribers |
 | `lib/command.js`, `bot/dmLoop.js`, `bot/operator.js` | `worker/`, rewritten for many owners; the command grammar and its tests come across |
-| `panel/public/radar.js`, `lib/radar-layout.js` | A React radar under `src/defense/` |
+| `panel/public/radar.js`, `lib/radar-layout.js` | `src/defense/radar.js` and `Radar.jsx`. **Done**, drawn in SVG in Virga's tokens |
 | `bot/triage.js`, `bot/tiers.js`, `bot/botAgent.js` | Later, behind the AI allowance |
 | `snapshot.js`, `drift.js`, `lease.js` | Not ported. No snapshot; the weekly re-score reads vouches live; a Postgres advisory lock replaces the file lease |
 
@@ -186,7 +209,7 @@ also hold the PDS's keys.
 1. **Engine.** Harvest, score, the canary, summaries. In the browser, no server. *Done.*
 2. **Scan a post.** The Defense part in the sidebar; the getProfiles permission asked for
    when it's turned on; the canary picked from the archive's follows; the radar; harness
-   fixtures, including an AppView that fails open. Free.
+   fixtures, including an AppView that fails open. Free. *Done* (below).
 3. **Lists and writes.** Migrations; lists in modes 1 and 2; plans sent to the server;
    the worker's first job, batch writes with the veto at the write; decisions, undo,
    history.
@@ -200,6 +223,43 @@ also hold the PDS's keys.
    check, which sees your words but never the posts the agent read.
 
 Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to host them.
+
+### Phase 2, as built
+
+- **Where.** `/defense`: the sixth part, in the sidebar, the phone's tab bar (which now shows
+  the name of the part you are in only from 430px wide, as five parts and New post leave no
+  room for "Dashboards" beside its icon below that) and the command palette. It needs a built
+  archive, like the reports, because the canary comes from it.
+- **The page** (`DefensePage.jsx`): Turn on Defense while the session lacks the permission;
+  then a field for any post's link, and the owner's own posts of the last 30 days with the
+  most replies and quotes, a Scan each. A scan shows its stage and progress and can be
+  stopped. The result: four figures (engaged, near you, no connection, protected), notes when
+  vouches couldn't be checked or the harvest was cut short or partly unread, the radar with
+  its table (band by slice) and an Export of every row as CSV, the list of everyone near you
+  by band, closest first, and one line for the strangers. Picking a mark on the radar finds
+  its row in the list.
+- **The radar** (`radar.js`, `Radar.jsx`): bluesky-mod's layout, ported as is, drawn in SVG
+  on the page's own ground in the page's tokens rather than in a dark well, with shape as well
+  as colour telling the bands apart (a ring, a dot, a diamond, a speck) and forced colours
+  handled. Pointer and arrow keys move a callout; Enter picks.
+- **Memory only.** `scanStore.js` keeps the latest scan per account for the life of the tab,
+  so leaving the page doesn't stop or lose it. Not IndexedDB yet.
+- **Read-only.** No lists, plans, decisions or server routes. Selecting bands to approve, as
+  bluesky-mod's panel does, comes with the lists in phase 3.
+- **Harness.** A crowd engages with Mira's posts (`harness/crowd.js`): some of the cast she
+  follows and some she doesn't, some of her followers, and strangers, among them notable
+  accounts, a few followed by people she follows, and a few that block her. The fake network
+  answers `/links/all` and the post backlinks, and `getRelationships`; the fake agent answers
+  the signed-in `getProfiles` with `knownFollowers` worked out for whoever asks. `?defense=on`
+  starts with the permission granted; `?appview=failopen` leaves every count off, and
+  `?appview=flaky` leaves it off the first time each batch is asked.
+  `harness/crowd.test.js` runs the real scan against all of it.
+- **Not yet true to the code: the Terms and the Privacy Policy.** A scan sends any post's
+  address to Constellation and other accounts' DIDs to Bluesky's AppView, signed in, and the
+  sign-in can carry one more permission. The Privacy Policy's Constellation and AppView rows
+  and the Terms' list of what the permission lets Virga do don't say so yet. They are left for
+  phase 6 as planned, because changing either document means deciding whether everyone agrees
+  again (`TERMS_VERSION`); until then a scan shouldn't be put in front of anyone but us.
 
 ## Security and policy
 

@@ -204,7 +204,27 @@ function followerChurn(world, counter) {
  * The methods one account's agent answers. `input` is the params of a query
  * or the body of a procedure, `opts` the call options (`encoding`, `signal`).
  */
-function methodsFor(world, { views, did, churn }) {
+/**
+ * Whether the AppView counts known followers for this batch. `ok` always;
+ * `failopen` never (its 100 ms lookup always times out, so every count is
+ * left off and the request still succeeds); `flaky` not the first time a
+ * batch is asked and always after, so a scan's canary sees each miss and
+ * asks again.
+ */
+function knownFollowersCounter(appview) {
+  const asked = new Set();
+  return (actors) => {
+    if (appview === 'failopen') return false;
+    if (appview !== 'flaky') return true;
+    const key = [...actors].sort().join(' ');
+    if (asked.has(key)) return true;
+    asked.add(key);
+    return false;
+  };
+}
+
+function methodsFor(world, { views, did, churn, appview = 'ok' }) {
+  const counted = knownFollowersCounter(appview);
   const ownRepo = (repo) => {
     if (repo && repo !== did && repo !== world.me.handle) {
       throw new XrpcError(
@@ -423,6 +443,33 @@ function methodsFor(world, { views, did, churn }) {
     },
 
     /* ---- Bluesky's AppView, signed in ------------------------------------ */
+    /*
+     * Profiles as this account sees them, with `viewer.knownFollowers`: how
+     * many of the people it follows follow each one (crowd.js). Under
+     * ?appview=failopen or flaky the counts are left off a call, as the real
+     * AppView does when its lookup runs out of time.
+     */
+    'app.bsky.actor.getProfiles'({ actors }) {
+      const list = Array.isArray(actors) ? actors : [actors].filter(Boolean);
+      if (list.length > 25) throw new XrpcError(400, 'InvalidRequest', 'Too many actors: at most 25');
+      const withCounts = counted(list);
+      const profiles = list
+        .map((actor) => {
+          const id = views.byDid.has(actor) || String(actor).startsWith('did:') ? actor : views.resolveHandle(actor);
+          const known = views.person(id);
+          if (!known) return null;
+          const own = views.byDid.get(id);
+          const p = own ? { ...own.profile, viewer: {} } : views.crowd.profileAs(world, id, known);
+          if (p && !withCounts && p.viewer) {
+            const rest = { ...p.viewer };
+            delete rest.knownFollowers;
+            return { ...p, viewer: rest };
+          }
+          return p;
+        })
+        .filter(Boolean);
+      return { profiles };
+    },
     'app.bsky.actor.getPreferences'() {
       return { preferences: world.preferences };
     },
@@ -516,7 +563,9 @@ function methodsFor(world, { views, did, churn }) {
  * @param {string} [options.did] - the account (the world's, by default)
  * @param {number} [options.latency] - simulated delay per call, in ms (writes take four times as long)
  * @param {object[]} [options.worlds] - every account's world, so posts and people resolve across them
- * @param {string} [options.scope] - the scope the session was granted (OAUTH_SCOPE by default)
+ * @param {string|(() => string)} [options.scope] - the scope the session was granted (OAUTH_SCOPE by default),
+ *   or a function that reads it now (a sign-in can change it, as turning Defense on does)
+ * @param {'ok'|'failopen'|'flaky'} [options.appview] - whether getProfiles counts known followers
  * @param {{ next(): number }} [options.sweepCounter] - counts follower sweeps (Mira's churn); localStorage by default
  */
 export function createFakeAgent(
@@ -526,9 +575,11 @@ export function createFakeAgent(
     latency = 0,
     worlds = [world],
     scope = OAUTH_SCOPE,
+    appview = 'ok',
     sweepCounter,
   } = {},
 ) {
+  const granted = () => (typeof scope === 'function' ? scope() : scope);
   const views = createViews(
     worlds.includes(world) ? worlds : [world, ...worlds],
   );
@@ -539,7 +590,7 @@ export function createFakeAgent(
           sweepCounter || localStorageCounter('virga-harness:follower-sweeps'),
         )
       : null;
-  const methods = methodsFor(world, { views, did, churn });
+  const methods = methodsFor(world, { views, did, churn, appview });
 
   async function handle(nsid, input, opts, proxy) {
     if (opts?.signal?.aborted) throw abortError();
@@ -568,7 +619,7 @@ export function createFakeAgent(
         `${nsid} is only answered by Bluesky's AppView; call it through withProxy('bsky_appview', 'did:web:api.bsky.app')`,
       );
     }
-    const missing = missingScopes(scope, scopesFor(nsid, input, opts));
+    const missing = missingScopes(granted(), scopesFor(nsid, input, opts));
     if (missing.length)
       throw new XrpcError(
         403,

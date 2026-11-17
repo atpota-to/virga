@@ -1,8 +1,11 @@
-// GET /api/oauth/login?handle=<h>&redirect_uri=<url>[&prompt=<p>]: start a
-// sign-in.
+// GET /api/oauth/login?handle=<h>&redirect_uri=<url>[&prompt=<p>][&defense=1]:
+// start a sign-in.
 //
-// The scope is always SCOPE, and nothing else from the query reaches the
-// authorization request. redirect_uri must be the return page on an allowed
+// The scope is SCOPE, or SCOPE_WITH_DEFENSE when `defense=1` (an account
+// turning Defense on, or signing in again with it on). Those two fixed
+// strings are the only scopes it can ask for: the caller picks one, it never
+// writes one, and nothing else from the query reaches the authorization
+// request. redirect_uri must be the return page on an allowed
 // origin, because the session token is handed to whatever page it names.
 //
 // With `Accept: application/json` (what the app sends) the answer is
@@ -19,6 +22,7 @@ import { createRateLimiter } from '../../rateLimit.js';
 import { getOAuthClient } from '../client.js';
 import {
   SCOPE,
+  SCOPE_WITH_DEFENSE,
   classifyAuthorizeError,
   defaultReturnUrl,
   isAllowedReturnUrl,
@@ -112,7 +116,7 @@ export default async function handler(req, res) {
   }
 
   const options = {
-    scope: SCOPE,
+    scope: queryParam(req, 'defense') === '1' ? SCOPE_WITH_DEFENSE : SCOPE,
     state: JSON.stringify({ redirect_uri: redirect, timestamp: Date.now() }),
   };
   const prompt = queryParam(req, 'prompt');

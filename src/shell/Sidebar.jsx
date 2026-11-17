@@ -1,4 +1,4 @@
-// The sidebar: the account, New post, search, and the five parts of Virga as
+// The sidebar: the account, New post, search, and the six parts of Virga as
 // words down the side. Only the part you are in is opened out into its
 // pages, so the list stays short; the rest are one word each. At its foot,
 // the archive's state. On a screen too short for the whole list, the list
@@ -21,6 +21,7 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
 import { REPORTS } from '../reports/registry.js';
 import { POSTING_PAGES } from '../posting/routes.js';
+import { DEFENSE_BASE, DEFENSE_ICON } from '../defense/routes.js';
 import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
 import { TOOLS } from '../tools/registry.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
@@ -32,7 +33,7 @@ const POSTING_LINKS = POSTING_PAGES.filter((p) => p.key === 'hub' || p.pinned);
 const TOOL_LINKS = TOOLS.filter((t) => !t.planned);
 
 /**
- * One of the five parts: its word, and, while it is the part you are in,
+ * One of the six parts: its word, and, while it is the part you are in,
  * its pages under it. `current` marks the word itself as the page (the
  * part's own front page); `open` is being anywhere inside it.
  */
@@ -177,6 +178,9 @@ export default function Sidebar({ archive, route, profile, did, firstRun = false
               <NavSubLink key={t.key} to={`/tools/${t.key}`} label={t.name} current={page === t.key} />
             ))}
           </NavSection>
+
+          {/* One page so far, so the word is the page, with nothing under it. */}
+          <NavSection collapsed={collapsed} to={DEFENSE_BASE} icon={DEFENSE_ICON} label="Defense" open={section === 'defense'} current={section === 'defense'} />
 
           <NavSection collapsed={collapsed} to="/settings" icon={Settings} label="Settings" open={section === 'settings'}>
             {SETTINGS_SECTIONS.map((s) => (

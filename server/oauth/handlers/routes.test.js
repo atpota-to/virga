@@ -29,7 +29,7 @@ import {
   resetSupabaseClientForTests,
   setSupabaseClientForTests,
 } from '../../supabase.js';
-import { OAUTH_SCOPE } from '../../../src/config.js';
+import { DEFENSE_SCOPE, OAUTH_SCOPE } from '../../../src/config.js';
 import { getOAuthClient, resetOAuthForTests } from '../client.js';
 import { clientMetadata } from '../config.js';
 import { installOAuthEnv } from '../testing/env.js';
@@ -150,6 +150,23 @@ describe('GET /api/oauth/login', () => {
     const [, options] = virga.generateLoginUrl.mock.calls[0];
     expect(Object.keys(options).sort()).toEqual(['scope', 'state']);
     expect(options.scope).toBe(OAUTH_SCOPE);
+  });
+
+  it('asks for Defense’s permission too when defense=1, and for nothing a caller writes', async () => {
+    await login({ handle: 'reader.example.com', redirect_uri: RETURN, defense: '1' });
+    await login({ handle: 'reader.example.com', redirect_uri: RETURN, defense: 'true' });
+    await login({
+      handle: 'reader.example.com',
+      redirect_uri: RETURN,
+      defense: '1',
+      scope: 'atproto transition:generic',
+    });
+    const [first, second, third] = virga.generateLoginUrl.mock.calls.map(([, options]) => options);
+    expect(first.scope).toBe(DEFENSE_SCOPE);
+    expect(Object.keys(first).sort()).toEqual(['scope', 'state']);
+    // Only the one spelling turns it on.
+    expect(second.scope).toBe(OAUTH_SCOPE);
+    expect(third.scope).toBe(DEFENSE_SCOPE);
   });
 
   it('passes a known prompt value only', async () => {
