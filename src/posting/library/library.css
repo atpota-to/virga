@@ -746,18 +746,16 @@
   resize: vertical;
 }
 
+/* Insert at the left, the count at the right, on one baseline. */
 .tpl-text-foot {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: baseline;
+  gap: 8px 16px;
 }
 
-.tpl-inserts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+.tpl-count {
+  margin-left: auto;
 }
 
 /* Naming a new blank, in place: set apart by a rule in the accent, since
@@ -778,7 +776,7 @@
 }
 
 .tpl-row > .input {
-  flex: 1 1 220px;
+  flex: 1 1 160px;
   min-width: 0;
 }
 
@@ -812,6 +810,17 @@
 .tpl-blank-key {
   color: var(--muted);
   font-size: var(--text-sm);
+}
+
+.tpl-blank-fields {
+  display: grid;
+  gap: 10px 12px;
+}
+
+@media (min-width: 640px) {
+  .tpl-blank-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }
 
 .tpl-attached {

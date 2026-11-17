@@ -394,14 +394,16 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
       open={open}
       onClose={busy ? undefined : onClose}
       title="Schedule this draft"
-      className="when-dialog"
+      className="when-dialog dialog--stack-actions"
       actions={
         <>
-          <Button onClick={onClose} disabled={busy}>
+          <Button className="when-dialog-cancel" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
+          {/* The queue's next open time is said on its button, so the
+              picker above is only for a time of one's own. */}
           <Button onClick={() => go(true)} disabled={busy || !info.slot || Boolean(info.room)} title={info.slot ? undefined : 'Your weekly schedule has no open time'}>
-            Add to queue
+            {info.slot ? `Add to queue · ${whenLabel(info.slot)}` : 'Add to queue'}
           </Button>
           <Button variant="primary" onClick={() => go(false)} disabled={busy || tooSoon || Boolean(info.room)} aria-busy={busy || undefined}>
             {busy ? 'Scheduling…' : 'Schedule'}
@@ -411,15 +413,11 @@ function ScheduleDraftDialog({ open, row, did, req, queueSettings, onClose, onSc
     >
       <div className="hub-confirm">
         {row?.text?.trim() && <blockquote className="hub-quote">{row.text.trim().slice(0, 200)}</blockquote>}
-        <WhenPicker did={did} value={when} onChange={setWhen} queue={Boolean(info.slot)} onQueue={() => info.slot && setWhen(info.slot)} />
+        <WhenPicker did={did} value={when} onChange={setWhen} />
         {tooSoon && when && <p className="field-hint lib-question-error">Choose a time at least a minute from now.</p>}
         {info.status === 'loading' && <p className="field-hint">Looking for the next open time in your queue…</p>}
-        {info.status === 'ready' && (
-          <p className="field-hint">
-            {info.slot
-              ? `Add to queue puts it in the next open time: ${whenLabel(info.slot)}.`
-              : 'Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.'}
-          </p>
+        {info.status === 'ready' && !info.slot && (
+          <p className="field-hint">Your weekly schedule has no open times. Set some in Posting › Weekly schedule to use the queue.</p>
         )}
         {info.usage && <p className="field-hint">{info.usage}.</p>}
         {info.room && (

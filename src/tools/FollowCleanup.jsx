@@ -4,7 +4,7 @@
 // account marked Keep is never suggested again.
 
 import { useMemo, useRef, useState } from 'react';
-import { RefreshCw, Undo2 } from 'lucide-react';
+import { Download, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
 import Button from '../components/Button.jsx';
 import Dialog from '../components/Dialog.jsx';
@@ -195,7 +195,7 @@ export default function FollowCleanup({ tool }) {
                   ))}
                 </select>
               </label>
-              <Button variant={checkedCount ? 'quiet' : 'primary'} onClick={() => runCheck(rows.map((r) => r.did))} disabled={!rows.length}>
+              <Button onClick={() => runCheck(rows.map((r) => r.did))} disabled={!rows.length}>
                 <RefreshCw size={15} aria-hidden="true" />
                 {checkedCount ? 'Check again' : 'Check activity'}
               </Button>
@@ -225,47 +225,40 @@ export default function FollowCleanup({ tool }) {
         </div>
 
         <section className="table-card" aria-label="Accounts">
-          <div className="table-bar" data-selected={selectedLive.length ? '' : undefined}>
-            {working ? (
-              <span role="status">
-                Unfollowing {working.done.toLocaleString(activeLocale())} of {working.total.toLocaleString(activeLocale())}…
-              </span>
-            ) : selectedLive.length ? (
-              <>
-                <span className="table-bar-count">
-                  {selectedLive.length.toLocaleString(activeLocale())} selected
+          {/* Over the table: how it is sorted and what to do with it, or, once
+              rows are ticked, how many and what to do with them. With no rows
+              to show (before the first check) there is nothing to sort, so the
+              line waits for some, unless kept accounts could be shown. */}
+          {(shown.length > 0 || working || keep.size > 0) && (
+            <div className="table-bar" data-selected={selectedLive.length ? '' : undefined}>
+              {working ? (
+                <span role="status">
+                  Unfollowing {working.done.toLocaleString(activeLocale())} of {working.total.toLocaleString(activeLocale())}…
                 </span>
-                <span className="table-bar-actions">
-                  <Button size="sm" onClick={() => setSelected(new Set())}>
-                    Clear
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      keep.add(selectedLive);
-                      toast?.(`Kept ${selectedLive.length}. They won’t be suggested again.`);
-                      setSelected(new Set());
-                    }}
-                  >
-                    Keep, don’t suggest
-                  </Button>
-                  <Button size="sm" variant="danger" onClick={() => setConfirming(true)} disabled={follow.locked}>
-                    Unfollow {selectedLive.length.toLocaleString(activeLocale())}
-                  </Button>
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="muted num">
-                  Showing {shown.length.toLocaleString(activeLocale())} of {filtered.length.toLocaleString(activeLocale())}
-                  {keep.size ? `. ${keep.size.toLocaleString(activeLocale())} kept accounts are ${showKept ? 'shown' : 'hidden'}` : ''}.
-                </span>
-                <span className="table-bar-actions">
-                  {keep.size > 0 && (
-                    <Button size="sm" variant="ghost" onClick={() => setShowKept((v) => !v)}>
-                      {showKept ? 'Hide kept' : 'Show kept'}
+              ) : selectedLive.length ? (
+                <>
+                  <span className="table-bar-count">{selectedLive.length.toLocaleString(activeLocale())} selected</span>
+                  <span className="table-bar-actions">
+                    <Button size="sm" onClick={() => setSelected(new Set())}>
+                      Clear
                     </Button>
-                  )}
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        keep.add(selectedLive);
+                        toast?.(`Kept ${selectedLive.length}. They won’t be suggested again.`);
+                        setSelected(new Set());
+                      }}
+                    >
+                      Keep, don’t suggest
+                    </Button>
+                    <Button size="sm" className="is-danger" onClick={() => setConfirming(true)} disabled={follow.locked}>
+                      Unfollow {selectedLive.length.toLocaleString(activeLocale())}
+                    </Button>
+                  </span>
+                </>
+              ) : (
+                <>
                   <label className="field-inline">
                     <span>Sort</span>
                     <select className="input" value={sort} onChange={(e) => setSort(e.target.value)}>
@@ -274,28 +267,37 @@ export default function FollowCleanup({ tool }) {
                       <option value="oldest">Followed longest ago</option>
                     </select>
                   </label>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() =>
-                      exportRows(archive, 'follows', [
-                        ['did', 'handle', 'follows_you', 'last_active', 'interactions', 'followed_at'],
-                        ...filtered.map((r) => [r.did, cardFor(archive, r.did)?.handle || '', r.followsYou ? 'yes' : 'no', r.gone ? 'gone' : r.lastActiveMs ? new Date(r.lastActiveMs).toISOString() : '', r.interactions, r.followedAt || '']),
-                      ])
-                    }
-                  >
-                    Export
-                  </Button>
-                </span>
-              </>
-            )}
-          </div>
+                  <span className="head-actions">
+                    {keep.size > 0 && (
+                      <button type="button" className="link-action" onClick={() => setShowKept((v) => !v)}>
+                        {showKept ? <EyeOff size={14} aria-hidden="true" /> : <Eye size={14} aria-hidden="true" />}
+                        {showKept ? 'Hide kept' : `Show ${keep.size.toLocaleString(activeLocale())} kept`}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="link-action"
+                      onClick={() =>
+                        exportRows(archive, 'follows', [
+                          ['did', 'handle', 'follows_you', 'last_active', 'interactions', 'followed_at'],
+                          ...filtered.map((r) => [r.did, cardFor(archive, r.did)?.handle || '', r.followsYou ? 'yes' : 'no', r.gone ? 'gone' : r.lastActiveMs ? new Date(r.lastActiveMs).toISOString() : '', r.interactions, r.followedAt || '']),
+                        ])
+                      }
+                    >
+                      <Download size={14} aria-hidden="true" />
+                      Export
+                    </button>
+                  </span>
+                </>
+              )}
+            </div>
+          )}
           {/* On a phone each row of this table is set as a small block (tools.css),
               which takes the table's own layout away, and in some browsers its
               meaning with it. The roles say again what each part is. */}
           <div className="table-scroll table-scroll--bleed">
             <table className="table table--stack cleanup-table" role="table">
-              <thead role="rowgroup">
+              <thead role="rowgroup" hidden={!shown.length}>
                 <tr role="row">
                   <th scope="col" role="columnheader" className="col-check">
                     <label className="stack-all">
@@ -336,36 +338,58 @@ export default function FollowCleanup({ tool }) {
                   const name = displayName(card, r.did);
                   const following = follow.isFollowing(r.did);
                   const undone = undo.has(r.did) && !following;
+                  const kept = keep.has(r.did);
                   return (
                     <tr key={r.did} role="row" className={selected.has(r.did) ? 'is-selected' : undefined} data-gone={undone || undefined}>
                       <td role="cell" className="col-check">
-                        <input type="checkbox" aria-label={`Select ${name}`} checked={selected.has(r.did)} disabled={!following} onChange={() => toggleRow(r.did)} />
+                        {/* The label is the box's reach on a touch screen (tools.css). */}
+                        <label className="check-reach">
+                          <input type="checkbox" aria-label={`Select ${name}`} checked={selected.has(r.did)} disabled={!following} onChange={() => toggleRow(r.did)} />
+                        </label>
                       </td>
                       <td role="cell" className="col-main">
                         <span className="table-person">
-                          <Avatar src={card?.avatar} name={card?.displayName || card?.handle} size="sm" />
+                          <Avatar src={card?.avatar} name={card?.displayName || card?.handle} />
                           <span className="table-person-text">
                             <a href={profileUrl(card, r.did)} target="_blank" rel="noopener noreferrer" className="table-person-name">
                               {name}
                             </a>
-                            {card?.handle && <span className="muted">@{card.handle}</span>}
+                            {/* The handle only where the name isn't it already; Kept as a quiet word beside it. */}
+                            {((card?.displayName && card?.handle) || kept) && (
+                              <span className="meta">
+                                {card?.displayName && card?.handle && <span className="table-person-handle">@{card.handle}</span>}
+                                {kept && <span>Kept</span>}
+                              </span>
+                            )}
                           </span>
-                          {keep.has(r.did) && <span className="badge">Kept</span>}
                         </span>
                       </td>
-                      <td role="cell" data-label="Follows you">
-                        {r.followsYou ? 'Yes' : <span className="muted">No</span>}
+                      {/* On a phone these cells run on under the name as one meta
+                          line, the activity first (tools.css); the words only a
+                          phone shows stand in for the column heads it hides. A
+                          "No" and a nought say nothing there, so they go. */}
+                      <td role="cell" className="cleanup-follows" data-empty={r.followsYou ? undefined : ''}>
+                        {r.followsYou ? (
+                          <>
+                            <span className="stack-hide">Yes</span>
+                            <span className="stack-word">follows you</span>
+                          </>
+                        ) : (
+                          <span className="muted">No</span>
+                        )}
                       </td>
-                      <td role="cell" data-label="Last active">
+                      <td role="cell" className="cleanup-active">
                         <span className="activity">
                           <span className={`dot${r.gone ? ' dot--danger' : !r.checked ? ' dot--idle' : r.lastActiveMs && r.lastActiveMs >= quietCut ? '' : ' dot--warn'}`} aria-hidden="true" />
                           {r.gone ? 'Gone' : !r.checked ? <span className="muted">Not checked</span> : r.lastActiveMs ? relativeTime(r.lastActiveMs) : 'Never posted'}
                         </span>
                       </td>
-                      <td role="cell" className="is-num" data-label="Interactions">
+                      <td role="cell" className="is-num cleanup-count" data-empty={r.interactions ? undefined : ''}>
                         {r.interactions.toLocaleString(activeLocale())}
+                        <span className="stack-word"> {r.interactions === 1 ? 'interaction' : 'interactions'}</span>
                       </td>
-                      <td role="cell" className="num" data-label="Followed">
+                      <td role="cell" className="num cleanup-followed" data-empty={r.followedAt ? undefined : ''}>
+                        <span className="stack-word">followed </span>
                         {r.followedAt ? formatDateShort(r.followedAt) : '—'}
                       </td>
                       <td role="cell" className="col-action">
@@ -374,8 +398,7 @@ export default function FollowCleanup({ tool }) {
                             Unfollow<span className="visually-hidden"> {name}</span>
                           </Button>
                         ) : (
-                          <Button size="sm" variant="ghost" disabled={follow.busy(r.did)} onClick={() => follow.toggle(r.did, true)}>
-                            <Undo2 size={14} aria-hidden="true" />
+                          <Button size="sm" disabled={follow.busy(r.did)} onClick={() => follow.toggle(r.did, true)}>
                             Undo<span className="visually-hidden"> unfollowing {name}</span>
                           </Button>
                         )}
@@ -401,13 +424,16 @@ export default function FollowCleanup({ tool }) {
               <Button size="sm" variant="ghost" onClick={() => setLimit((l) => l + PAGE)}>
                 Show {Math.min(PAGE, filtered.length - shown.length)} more
               </Button>
+              <span className="num">
+                {shown.length.toLocaleString(activeLocale())} of {filtered.length.toLocaleString(activeLocale())}
+              </span>
             </div>
           )}
+          <p className="card-caption">
+            Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an
+            account Keep only changes what this page suggests, in this browser.
+          </p>
         </section>
-        <p className="note">
-          Unfollowing deletes the follow record from your repo, the same as unfollowing in any app. Undo writes a new one. Marking an
-          account Keep only changes what this page suggests, in this browser.
-        </p>
       </div>
 
       <Dialog

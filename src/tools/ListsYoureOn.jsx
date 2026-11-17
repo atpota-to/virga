@@ -3,9 +3,8 @@
 // lists that are simply someone's reading list.
 
 import { useState } from 'react';
-import { Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, RefreshCw } from 'lucide-react';
 import Button from '../components/Button.jsx';
-import Figures from '../components/Figures.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportRows } from '../archive/exports.js';
 import { formatDateShort } from '../lib/time.js';
@@ -13,6 +12,9 @@ import { cardFor, useWantActors } from '../people/people.jsx';
 import { listsModel } from '../reports/models.js';
 import { ToolHeader } from './ToolPage.jsx';
 import { activeLocale } from '../lib/locale.js';
+
+/** A list's kind, as a word: "moderation" is said a step louder (tools.css). */
+const KIND_WORD = { moderation: 'Moderation', curation: 'Curation', reference: 'Reference' };
 
 function listUrl(list, ownerHandle) {
   const rkey = String(list.uri).split('/').pop();
@@ -27,54 +29,65 @@ export default function ListsYoureOn({ tool }) {
   const mod = lists.filter((l) => l.purpose === 'moderation');
   const shown = filter === 'all' ? lists : lists.filter((l) => (filter === 'moderation' ? l.purpose === 'moderation' : l.purpose !== 'moderation'));
   const subs = mod.reduce((s, l) => s + (l.subscribers || 0), 0);
+  const fmt = (n) => n.toLocaleString(activeLocale());
+  const syncing = Boolean(archive.sync);
+
+  // Three counts that are also the filter, as on Follow cleanup.
+  const FILTERS = [
+    { key: 'all', label: 'Every list', count: lists.length },
+    {
+      key: 'moderation',
+      label: 'Moderation lists',
+      count: mod.length,
+      hint: mod.length ? `Their ${fmt(subs)} ${subs === 1 ? 'subscriber blocks or mutes' : 'subscribers block or mute'} you` : 'Their subscribers block or mute you',
+    },
+    { key: 'curation', label: 'Curation lists', count: lists.length - mod.length, hint: 'Reading lists, feeds and starter packs' },
+  ];
+
+  const exportLists = () =>
+    exportRows(archive, 'lists', [
+      ['uri', 'name', 'purpose', 'owner', 'owner_handle', 'subscribers', 'added_at'],
+      ...lists.map((l) => [l.uri, l.name, l.purpose, l.owner, cardFor(archive, l.owner)?.handle || '', l.subscribers ?? '', l.memberAt || '']),
+    ]);
 
   return (
     <>
-      <ToolHeader
-        tool={tool}
-        actions={
-          lists.length > 0 && (
-            <Button
-              onClick={() =>
-                exportRows(archive, 'lists', [
-                  ['uri', 'name', 'purpose', 'owner', 'owner_handle', 'subscribers', 'added_at'],
-                  ...lists.map((l) => [l.uri, l.name, l.purpose, l.owner, cardFor(archive, l.owner)?.handle || '', l.subscribers ?? '', l.memberAt || '']),
-                ])
-              }
-            >
-              <Download size={15} aria-hidden="true" />
-              Export
-            </Button>
-          )
-        }
-      />
+      <ToolHeader tool={tool} />
       <div className="page-body">
         {!archive.meta.lists ? (
-          <p className="empty">Lists are read at the next sync, along with blocks.</p>
+          <div className="empty-block">
+            <p className="empty">Lists are read at the next sync, along with blocks.</p>
+            <Button disabled={syncing} onClick={() => archive.runSync(archive.meta.posts?.complete ? 'incremental' : 'resume')}>
+              <RefreshCw size={15} aria-hidden="true" />
+              {syncing ? 'Syncing…' : 'Sync now'}
+            </Button>
+          </div>
+        ) : !lists.length ? (
+          <div className="empty-block">
+            <p className="empty">No lists here.</p>
+          </div>
         ) : (
           <>
-            <Figures
-              label="Lists in figures"
-              items={[
-                { key: 'all', label: 'Lists you’re on', value: lists.length },
-                { key: 'mod', label: 'Moderation lists', value: mod.length, note: 'Their subscribers block or mute you' },
-                { key: 'subs', label: 'Subscribers to them', value: subs, note: 'Counted once per list' },
-                { key: 'cur', label: 'Curation lists', value: lists.length - mod.length, note: 'Reading lists, feeds and starter packs' },
-              ]}
-            />
-            <section className="table-card" aria-label="The lists">
-              <div className="table-bar">
-                <div className="tool-chips" role="group" aria-label="Show">
-                  {[
-                    ['all', 'All'],
-                    ['moderation', 'Moderation'],
-                    ['curation', 'Curation'],
-                  ].map(([k, label]) => (
-                    <button key={k} type="button" className="chip" aria-pressed={filter === k} onClick={() => setFilter(k)}>
-                      {label}
-                    </button>
-                  ))}
+            <div className="filter-cards" role="group" aria-label="Which lists">
+              {FILTERS.map((f) => (
+                <button key={f.key} type="button" className="filter-card" aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
+                  <span className="filter-card-label">{f.label}</span>
+                  <span className="filter-card-count num">{fmt(f.count)}</span>
+                  {f.hint && <span className="filter-card-hint">{f.hint}</span>}
+                </button>
+              ))}
+            </div>
+            <section className="card" aria-labelledby="lists-title">
+              <div className="card-head">
+                <div>
+                  <h2 id="lists-title" className="card-title num">
+                    {fmt(shown.length)} {shown.length === 1 ? 'list' : 'lists'}
+                  </h2>
                 </div>
+                <button type="button" className="link-action" onClick={exportLists}>
+                  <Download size={14} aria-hidden="true" />
+                  Export
+                </button>
               </div>
               {/* Set as blocks on a phone (tools.css); the roles keep it a table for a screen reader. */}
               <div className="table-scroll">
@@ -101,6 +114,7 @@ export default function ListsYoureOn({ tool }) {
                   <tbody role="rowgroup">
                     {shown.map((l) => {
                       const owner = cardFor(archive, l.owner);
+                      const counted = l.purpose === 'moderation' && l.subscribers != null;
                       return (
                         <tr key={l.uri} role="row">
                           <td role="cell" className="col-main">
@@ -109,16 +123,31 @@ export default function ListsYoureOn({ tool }) {
                               <ExternalLink size={12} aria-hidden="true" />
                             </a>
                           </td>
-                          <td role="cell" data-label="Made by">
-                            {owner?.handle ? `@${owner.handle}` : <span className="muted mono lists-did">{l.owner}</span>}
+                          {/* On a phone these run on under the name as one meta line
+                              (tools.css), with the words their column heads would
+                              have said. An owner whose name hasn't been read says
+                              so, with the DID to hand; a phone leaves it out. */}
+                          <td role="cell" className="lists-owner" data-empty={owner?.handle ? undefined : ''}>
+                            <span className="stack-word">by </span>
+                            {owner?.handle ? (
+                              `@${owner.handle}`
+                            ) : (
+                              <span className="muted" title={l.owner}>
+                                Unknown account
+                              </span>
+                            )}
                           </td>
                           <td role="cell" className="col-kind">
-                            <span className={`badge${l.purpose === 'moderation' ? ' badge--danger' : ''}`}>{l.purpose}</span>
+                            <span className="lists-kind" data-purpose={l.purpose}>
+                              {KIND_WORD[l.purpose] || l.purpose}
+                            </span>
                           </td>
-                          <td role="cell" className="is-num" data-label="Subscribers" data-empty={l.purpose === 'moderation' && l.subscribers != null ? undefined : ''}>
-                            {l.purpose === 'moderation' && l.subscribers != null ? l.subscribers.toLocaleString(activeLocale()) : '—'}
+                          <td role="cell" className="is-num lists-subs" data-empty={counted ? undefined : ''}>
+                            {counted ? fmt(l.subscribers) : '—'}
+                            <span className="stack-word"> {l.subscribers === 1 ? 'subscriber' : 'subscribers'}</span>
                           </td>
-                          <td role="cell" className="num" data-label="Added" data-empty={l.memberAt ? undefined : ''}>
+                          <td role="cell" className="num lists-added" data-empty={l.memberAt ? undefined : ''}>
+                            <span className="stack-word">added </span>
                             {l.memberAt ? formatDateShort(l.memberAt) : '—'}
                           </td>
                         </tr>
@@ -128,12 +157,12 @@ export default function ListsYoureOn({ tool }) {
                 </table>
                 {!shown.length && <p className="empty">No lists here.</p>}
               </div>
+              <p className="card-caption">
+                Found through Constellation, which indexes who links to whom across the network, then each list read from Bluesky’s
+                public API. Subscribers are counted for moderation lists only, where they decide who blocks you. A list removed since the
+                last sync is gone from here at the next one.
+              </p>
             </section>
-            <p className="note">
-              Found through Constellation, which indexes who links to whom across the network, then each list read from Bluesky’s
-              public API. Subscribers are counted for moderation lists only, where they decide who blocks you. A list removed since the
-              last sync is gone from here at the next one.
-            </p>
           </>
         )}
       </div>

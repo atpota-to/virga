@@ -936,14 +936,6 @@
   padding: var(--section-gap) var(--page-pad) 72px;
 }
 
-.empty-page {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 520px;
-  padding-top: var(--space-5);
-}
-
 /* ---- the phone's bars ---------------------------------------------- */
 
 /* The top row is part of the page: the mark at the left (or, on a page

@@ -33,7 +33,7 @@ function CopyButton({ text, label }) {
         }
       }}
     >
-      {done ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+      {done ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
     </Button>
   );
 }
@@ -138,14 +138,14 @@ export default function Identity({ tool }) {
             <div className="kv-row">
               <dt>Handle</dt>
               <dd>
-                {profile?.handle ? <code className="kv-code">@{profile.handle}</code> : <span className="muted">Not verified right now</span>}
+                {profile?.handle ? <span className="kv-value">@{profile.handle}</span> : <span className="muted">Not verified right now</span>}
                 {profile?.handle && <CopyButton text={profile.handle} label="the handle" />}
               </dd>
             </div>
             <div className="kv-row">
               <dt>PDS</dt>
               <dd>
-                {pds === null ? <span className="muted">Looking it up…</span> : pds ? <code className="kv-code">{pds}</code> : <span className="muted">Couldn’t be resolved</span>}
+                {pds === null ? <span className="muted">Looking it up…</span> : pds ? <span className="kv-value">{pds}</span> : <span className="muted">Couldn’t be resolved</span>}
                 {pds && <CopyButton text={pds} label="the PDS address" />}
               </dd>
             </div>
@@ -200,19 +200,19 @@ export default function Identity({ tool }) {
               </div>
             </div>
             <dl className="kv">
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Records</dt>
                 <dd className="num">{repo.records.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Collections</dt>
                 <dd className="num">{repo.collections.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Apps writing to it</dt>
                 <dd className="num">{repo.apps.toLocaleString(activeLocale())}</dd>
               </div>
-              <div className="kv-row">
+              <div className="kv-row kv-row--inline">
                 <dt>Oldest record</dt>
                 <dd className="num">{repo.oldest ? formatDateShort(repo.oldest) : '—'}</dd>
               </div>

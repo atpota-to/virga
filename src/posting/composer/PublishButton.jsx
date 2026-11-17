@@ -8,11 +8,15 @@ const MENU_LABEL = { post: 'Post now', schedule: 'Schedule…', queue: 'Add to q
 
 /**
  * The split button: the primary half runs the account's usual action (or
- * Save as draft for a post that's over the limit), and the caret lists all
- * four with the reason under any that can't run here. The reason for a
- * disabled primary is spoken with it and shown under the bar.
+ * Save as draft for a post that's over the limit), and the caret lists the
+ * other ways to send it, with the reason under any that can't run here.
+ * `also` names the ways that already have a button of their own beside it
+ * (the composer's foot), which the caret leaves out; with nothing left to
+ * list there is no caret. The reason for a disabled primary is spoken with
+ * it and shown under the bar, so an item that is off for the same reason
+ * doesn't repeat it.
  */
-export default function PublishButton({ state, model, busy = false, onAction, placement = 'up', footnote = '' }) {
+export default function PublishButton({ state, model, busy = false, onAction, placement = 'up', footnote = '', also = [] }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
@@ -20,9 +24,20 @@ export default function PublishButton({ state, model, busy = false, onAction, pl
   const primary = model.primary;
   const p = model.actions[primary];
   const Icon = ICONS[primary] || Send;
+  const listed = ORDER.filter((action) => action !== primary && !also.includes(action));
+  const caretOff = listed.every((action) => model.actions[action].disabled);
+  // Nothing here can run: the two halves dim as one button, as any other
+  // button that can't be pressed does.
+  const allOff = (busy || p.disabled) && (busy || caretOff);
+  // A list whose caret has just gone off (a send began) closes with it.
+  const menuOpen = open && listed.length > 0 && !caretOff && !busy;
 
   useEffect(() => {
-    if (!open) return undefined;
+    if (open && !menuOpen) setOpen(false);
+  }, [open, menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
     const onPointer = (e) => {
       if (!rootRef.current?.contains(e.target)) setOpen(false);
     };
@@ -39,13 +54,15 @@ export default function PublishButton({ state, model, busy = false, onAction, pl
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey, true);
     };
-  }, [open]);
+  }, [menuOpen]);
 
   return (
     <div
       className="publish-split"
       ref={rootRef}
       data-placement={placement}
+      data-caret={listed.length > 0 || undefined}
+      data-disabled={allOff || undefined}
       onBlur={(e) => {
         if (!rootRef.current?.contains(e.relatedTarget)) setOpen(false);
       }}
@@ -64,28 +81,31 @@ export default function PublishButton({ state, model, busy = false, onAction, pl
         <Icon size={16} aria-hidden="true" />
         {busy ? 'Working…' : actionLabel(primary, state, { short: true })}
       </button>
-      <button
-        ref={caretRef}
-        type="button"
-        className="btn btn--primary publish-caret"
-        aria-label="More ways to send it"
-        aria-expanded={open}
-        aria-controls={`${id}-menu`}
-        disabled={busy}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <ChevronDown size={16} aria-hidden="true" />
-      </button>
+      {listed.length > 0 && (
+        <button
+          ref={caretRef}
+          type="button"
+          className="btn btn--primary publish-caret"
+          aria-label="More ways to send it"
+          aria-expanded={menuOpen}
+          aria-controls={`${id}-menu`}
+          disabled={busy || caretOff}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <ChevronDown size={16} aria-hidden="true" />
+        </button>
+      )}
       {p.disabled && p.reason && (
         <span id={`${id}-why`} className="visually-hidden">
           {p.reason}
         </span>
       )}
-      {open && (
+      {menuOpen && (
         <ul id={`${id}-menu`} className="menu-list publish-menu">
-          {ORDER.map((action) => {
+          {listed.map((action) => {
             const a = model.actions[action];
             const ItemIcon = ICONS[action];
+            const hint = a.disabled && a.reason && !(p.disabled && a.reason === p.reason) ? a.reason : '';
             return (
               <li key={action}>
                 <button
@@ -93,7 +113,6 @@ export default function PublishButton({ state, model, busy = false, onAction, pl
                   className="menu-item"
                   aria-disabled={a.disabled || undefined}
                   data-disabled={a.disabled || undefined}
-                  aria-current={action === primary ? 'true' : undefined}
                   onClick={() => {
                     if (a.disabled) return;
                     setOpen(false);
@@ -103,7 +122,7 @@ export default function PublishButton({ state, model, busy = false, onAction, pl
                   <ItemIcon className="menu-item-icon" size={16} aria-hidden="true" />
                   <span className="menu-item-text">
                     <span className="menu-item-label">{MENU_LABEL[action]}</span>
-                    {a.disabled && a.reason && <span className="menu-item-hint">{a.reason}</span>}
+                    {hint && <span className="menu-item-hint">{hint}</span>}
                   </span>
                 </button>
               </li>

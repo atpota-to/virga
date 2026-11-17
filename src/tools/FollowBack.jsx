@@ -1,15 +1,17 @@
 // The follow-back queue: people who follow you and engage with your posts,
 // that you don't follow yet, the most engaged first. Each row has Follow
-// back; Dismiss keeps someone out of the queue for good, in this browser.
+// back; its ✕ (Dismiss) keeps someone out of the queue for good, in this
+// browser.
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Undo2, X } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { PersonRow, useFollow, useWantActors } from '../people/people.jsx';
 import { followBackModel } from '../reports/models.js';
 import { PeriodPicker, periodPhrase, usePeriod } from '../shell/bits.jsx';
 import { ToolHeader } from './ToolPage.jsx';
+import { kindsLine } from './interactionModel.js';
 import { useKeepList } from './keep.js';
 import { activeLocale } from '../lib/locale.js';
 
@@ -30,11 +32,17 @@ export default function FollowBack({ tool }) {
   const shown = rows.slice(0, limit);
   useWantActors(archive, shown.map((r) => r.did));
 
-  const detail = (r) =>
-    Object.entries(r.byKind)
-      .sort((a, b) => b[1] - a[1])
-      .map(([k, n]) => `${n} ${k}${n === 1 ? '' : 's'}`)
-      .join(', ');
+  const fmt = (n) => n.toLocaleString(activeLocale());
+  // Why they are here, the count in words first: "36 interactions · 13
+  // likes, 9 reposts", the dot spaced as every meta line's (tools.css).
+  const detail = (r) => (
+    <span className="queue-fact">
+      <span>
+        {fmt(r.total)} {r.total === 1 ? 'interaction' : 'interactions'}
+      </span>
+      <span>{kindsLine(r.byKind, { byCount: true })}</span>
+    </span>
+  );
 
   const followTracked = {
     ...follow,
@@ -53,21 +61,22 @@ export default function FollowBack({ tool }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">
-                {rows.length.toLocaleString(activeLocale())} {rows.length === 1 ? 'person' : 'people'} waiting
+                {fmt(rows.length)} {rows.length === 1 ? 'person' : 'people'} waiting
               </h2>
               <p className="card-sub">Engaged with you in {periodPhrase(period)}, follow you, and you don’t follow them.</p>
             </div>
             {dismissed.size > 0 && (
-              <Button size="sm" variant="ghost" onClick={() => dismissed.clear()}>
+              <button type="button" className="link-action" onClick={() => dismissed.clear()}>
+                <Undo2 size={14} aria-hidden="true" />
                 Bring back {dismissed.size} dismissed
-              </Button>
+              </button>
             )}
           </div>
           {!follow.known && <p className="callout">Who you follow arrives with the next sync; until then the queue can’t tell who you already follow.</p>}
           {shown.length || held.length ? (
             <ul className="widget-rows report-rows">
               {held.map((did) => (
-                <PersonRow key={did} archive={archive} did={did} meta="followed just now" follow={followTracked} followLabel="Follow back" />
+                <PersonRow key={did} archive={archive} did={did} meta="followed just now" follow={followTracked} followLabel="Follow back" rel={false} />
               ))}
               {shown.map((r) => (
                 <PersonRow
@@ -75,16 +84,12 @@ export default function FollowBack({ tool }) {
                   archive={archive}
                   did={r.did}
                   meta={detail(r)}
-                  value={r.total.toLocaleString(activeLocale())}
-                  valueTitle={detail(r)}
                   follow={followTracked}
                   followLabel="Follow back"
+                  rel={false}
                   extra={
-                    // The word on a desk; on a phone, where the row has a name to
-                    // fit as well, a cross (tools.css). Its name is the same either way.
-                    <Button size="sm" variant="ghost" className="queue-dismiss" onClick={() => dismissed.add([r.did])} aria-label="Dismiss from the queue" title="Don’t suggest again">
+                    <Button size="sm" variant="ghost" icon className="queue-dismiss" onClick={() => dismissed.add([r.did])} aria-label="Dismiss from the queue" title="Don’t suggest again">
                       <X size={16} aria-hidden="true" />
-                      <span className="queue-dismiss-word">Dismiss</span>
                     </Button>
                   }
                 />
@@ -98,10 +103,13 @@ export default function FollowBack({ tool }) {
               <Button size="sm" variant="ghost" onClick={() => setLimit((l) => l + PAGE)}>
                 Show {Math.min(PAGE, rows.length - shown.length)} more
               </Button>
+              <span className="num">
+                {fmt(shown.length)} of {fmt(rows.length)}
+              </span>
             </div>
           )}
+          <p className="card-caption">Engagement comes from your notifications, which reach back about a year. Follow back writes a follow record to your repo.</p>
         </section>
-        <p className="note">Engagement comes from your notifications, which reach back about a year. Follow back writes a follow record to your repo.</p>
       </div>
     </>
   );

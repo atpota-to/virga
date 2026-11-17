@@ -88,3 +88,30 @@ export function gatesSummary(gates) {
   }
   return gates?.quotes === false ? `${who} · No quotes` : who;
 }
+
+const REPLY_GROUP = {
+  mention: 'People you mention',
+  follower: 'Your followers',
+  following: 'People you follow',
+  list: 'People in a list',
+};
+
+/**
+ * Who may reply, in as few words as a phone's row has room for: "Anyone",
+ * "Nobody", one group by name, "Followed or mentioned", or else "Some
+ * people" (the row's title says the rest).
+ */
+export function gatesShortSummary(gates) {
+  const reply = gates?.reply;
+  let who;
+  if (reply == null) who = 'Anyone';
+  else if (reply.length === 0) who = 'Nobody';
+  else {
+    const types = [...new Set(reply.map((r) => r?.type).filter((t) => REPLY_GROUP[t]))];
+    const lists = reply.filter((r) => r?.type === 'list').length;
+    if (types.length === 1 && lists <= 1) who = REPLY_GROUP[types[0]];
+    else if (types.length === 2 && types.includes('following') && types.includes('mention')) who = 'Followed or mentioned';
+    else who = 'Some people';
+  }
+  return gates?.quotes === false ? `${who} · No quotes` : who;
+}

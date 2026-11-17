@@ -313,13 +313,14 @@ button.post-as-button {
 }
 
 .post-blocks[data-thread] .post-block {
-  padding: 0 0 18px 18px;
+  padding-bottom: 18px;
 }
 
 /* A line down the side of the post you are writing in, in the accent: with
    the words set straight on the dialog there is no field's edge to light.
-   A thread is drawn as one such line running down its posts, quiet until
-   one of them is being written in. */
+   It is always out in the gutter, so a thread's words sit on the same edge
+   as a single post's. A thread is drawn as one such line running down its
+   posts, quiet until one of them is being written in. */
 .post-block::before {
   content: '';
   position: absolute;
@@ -334,8 +335,13 @@ button.post-as-button {
 
 .post-blocks[data-thread] .post-block::before {
   bottom: 0;
-  left: 4px;
   background: var(--line-2);
+}
+
+@media (max-width: 760px) {
+  .post-block::before {
+    left: -12px;
+  }
 }
 
 .post-blocks[data-thread] .post-block:last-child::before {
@@ -1055,8 +1061,9 @@ button.post-as-button {
   display: none;
 }
 
-/* Holds the "More for this post" menu so its place can be measured. It
-   keeps the row's right-hand corner, however the words before it wrap. */
+/* Holds the "More for this post" menu on a wide screen, so its place can
+   be measured. It keeps the row's right-hand corner, however the words
+   before it wrap. */
 .composer-more {
   position: absolute;
   top: 11px;
@@ -1127,45 +1134,42 @@ button.post-as-button {
     border-bottom: 1px solid var(--line);
   }
 
-  /* More is the last row, with its name beside the dots. */
-  .composer-more {
-    position: static;
-    border-bottom: 1px solid var(--line);
+  /* The rows above already end on a hairline. */
+  .composer-options + .when-panel {
+    padding-top: 4px;
+    border-top: 0;
   }
 
-  .composer-more > .menu {
-    display: flex;
-    width: 100%;
-  }
-
-  .composer-more .menu-button {
-    justify-content: flex-start;
-    gap: 12px;
-    width: 100%;
-    min-height: 52px;
-    padding: 0;
-    border-radius: 0;
-    color: var(--ink);
-    font-size: var(--text-base);
-    font-weight: 500;
-  }
-
-  .composer-more .menu-button:hover:not(:disabled) {
-    background: none;
-  }
-
-  .composer-more .menu-button > svg {
-    color: var(--ink-2);
-  }
-
-  .composer-more .composer-option-label {
+  /* More is the last row, and opens in place: its rows follow it, their
+     words on the line of the names above, the one that clears the post in
+     red. */
+  .composer-more-toggle .composer-option-label {
     flex: 1;
-    text-align: left;
   }
 
-  .composer-more .menu-list {
-    right: auto;
-    left: 0;
+  .composer-more-toggle .composer-option-chevron {
+    transition: transform 0.12s ease;
+  }
+
+  .composer-more-toggle[aria-expanded='true'] .composer-option-chevron {
+    transform: rotate(180deg);
+  }
+
+  .composer-more-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .composer-option--sub {
+    padding-left: 28px;
+  }
+
+  .composer-option--sub .composer-option-label {
+    font-weight: 400;
+  }
+
+  .composer-option[data-tone='danger'] {
+    color: var(--danger);
   }
 }
 
@@ -1205,81 +1209,31 @@ button.post-as-button {
   min-width: 0;
 }
 
-.tags-row,
-.lang-chips {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-
+/* The tags typed so far are tokens (the kit's), with the field for the
+   next one at the end of their line. */
 .tags-input {
   flex: 1 1 160px;
   min-width: 0;
 }
 
-/* A tag or a language that has been chosen, with the way to take it off. */
-.lang-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  min-height: 30px;
-  padding: 0 4px 0 12px;
-  border: 1px solid var(--line-2);
-  border-radius: var(--pill);
-  color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-.lang-chip-remove {
-  display: grid;
-  width: 24px;
-  height: 24px;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-@media (hover: hover) {
-  .lang-chip-remove:hover {
-    background: var(--hover);
-    color: var(--ink);
-  }
-}
-
-@media (pointer: coarse) {
-  .lang-chip {
-    min-height: 38px;
-  }
-
-  .lang-chip-remove {
-    width: 32px;
-    height: 32px;
-  }
-}
-
 /* ---- when it goes out ------------------------------------------------ */
 
-/* Chosen, so it has the rule down its side that a chosen thing has. */
+/* Its own part of the post's settings, under a hairline: what it is on
+   the left, the way back to posting now on the right, on one baseline. */
 .when-panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 2px 0 2px 14px;
-  border-left: 2px solid var(--accent);
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
 .when-panel-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 4px 8px;
+  gap: 4px 16px;
 }
 
 /* ---- busy, and the action bar ---------------------------------------- */
@@ -1320,6 +1274,12 @@ button.post-as-button {
   line-height: 1.35;
 }
 
+/* The post's tools in the foot: a phone's, from 760px down. Their
+   pictures sit on the dialog's edge, not a button's padding in from it. */
+.composer-tools {
+  display: none;
+}
+
 .composer-also {
   display: inline-flex;
   flex: none;
@@ -1343,6 +1303,9 @@ button.post-as-button {
 
 .publish-main {
   min-width: 88px;
+}
+
+.publish-split[data-caret] .publish-main {
   padding-right: 14px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -1369,6 +1332,17 @@ button.post-as-button {
   color: color-mix(in srgb, var(--on-btn) 55%, transparent);
 }
 
+/* Neither half can run: the pill dims as one, as a button that can't be
+   pressed does, and its words stay whole inside it. */
+.publish-split[data-disabled] {
+  opacity: 0.45;
+}
+
+.publish-split[data-disabled] .publish-main:disabled,
+.publish-split[data-disabled] .publish-caret:disabled {
+  color: var(--on-btn);
+}
+
 .publish-menu {
   right: 0;
   width: 18rem;
@@ -1393,17 +1367,46 @@ button.post-as-button {
   cursor: not-allowed;
 }
 
-.publish-menu .menu-item[aria-current='true'] .menu-item-label::after {
-  content: ' · main button';
-  color: var(--muted);
-  font-weight: 400;
+@media (max-width: 760px) {
+  .post-block-actions {
+    display: none;
+  }
+
+  .composer-tools {
+    display: inline-flex;
+    flex: none;
+    margin: 0 auto 0 -8px;
+  }
+
+  /* An empty post, or one over the limit, says so where it is written. */
+  .composer-why[data-passing] {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 760px) {
+  .composer-tools {
+    margin-left: -12px;
+  }
 }
 
 @media (max-width: 640px) {
-  /* The why takes the first line; the buttons sit under it, at the right. */
+  /* The tools at the left, Save as draft and Schedule at the right; a why
+     that has to be read takes a line of its own over them. */
   .composer-actions {
     flex-wrap: wrap;
+    column-gap: 8px;
     min-height: 44px;
+  }
+
+  /* Save as draft is words, as in a line of text: its box is theirs, and
+     16px from Schedule. */
+  .composer-also {
+    gap: 16px;
+  }
+
+  .btn.composer-also-draft {
+    padding: 0;
   }
 
   .composer-why {
@@ -1425,6 +1428,14 @@ button.post-as-button {
 
   .publish-menu {
     width: min(18rem, calc(100vw - 24px));
+  }
+}
+
+/* The smallest phones: Schedule says it in words alone, so the tools and
+   both buttons keep one line. */
+@media (max-width: 374px) {
+  .composer-also .btn > svg {
+    display: none;
   }
 }
 
@@ -1497,6 +1508,10 @@ button.post-as-button {
   .dialog .skeleton,
   .image-tile--busy {
     animation: none;
+  }
+
+  .composer-more-toggle .composer-option-chevron {
+    transition: none;
   }
 }
 

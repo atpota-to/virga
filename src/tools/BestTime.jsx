@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import BarList from '../charts/BarList.jsx';
+import { ShowAsTable } from '../charts/ChartTable.jsx';
 import Heatmap from '../charts/Heatmap.jsx';
 import { fmtRate } from '../charts/format.js';
 import Segmented from '../components/Segmented.jsx';
@@ -19,13 +20,15 @@ export default function BestTime({ tool }) {
   const archive = useArchive();
   const [period] = usePeriod();
   const [block, setBlock] = useState(2);
-  // A short period holds too few posts to say anything; it reads the year.
+  // A short period holds too few posts to say anything; it reads the year,
+  // and the picker offers only the windows it can read, with the one in use
+  // pressed.
   const win = bestTimeWindow(period);
   const m = bestTimeModel(archive, win, archive.nowMs, { block });
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return (
     <>
-      <ToolHeader tool={tool} actions={<PeriodPicker />} />
+      <ToolHeader tool={tool} actions={<PeriodPicker options={['90d', '1y', 'all', 'custom']} effective={win.custom ? 'custom' : win.key} />} />
       <div className="page-body">
         {/* What the page found, in a sentence, before any of the charts it found it in. */}
         <p className="tool-statement">{bestTimeSentence(m)}</p>
@@ -37,8 +40,7 @@ export default function BestTime({ tool }) {
                 What a typical post earns, by when it was posted
               </h2>
               <p className="card-sub">
-                {m.posts.toLocaleString(activeLocale())} posts and threads over {periodPhrase(win)}
-                {win !== period ? ' (a shorter window holds too few posts to say)' : ''}, in {zone.replace(/_/g, ' ')} time
+                {m.posts.toLocaleString(activeLocale())} posts and threads over {periodPhrase(win)}, in {zone.replace(/_/g, ' ')} time
               </p>
             </div>
             <Segmented
@@ -59,15 +61,50 @@ export default function BestTime({ tool }) {
             time forever. The ringed slot is the best. A slot with fewer than {BEST_TIME_MIN_POSTS} posts is left as an outline: too
             few to say anything. Posts from the last two days are still collecting engagement and are left out.
           </p>
+          <ShowAsTable>
+            <div className="table-scroll best-table">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th scope="col">When</th>
+                    <th scope="col" className="is-num">
+                      Posts
+                    </th>
+                    <th scope="col" className="is-num">
+                      Typical post
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weekdayOrder().flatMap((day) =>
+                    m.rows[day].cells
+                      .map((c, col) => ({ c, col }))
+                      .filter(({ c }) => c.posts > 0)
+                      .map(({ c, col }) => (
+                        <tr key={`${day}-${col}`}>
+                          <th scope="row">
+                            {LONG[day]}, {hourRange(col, block)}
+                          </th>
+                          <td className="is-num">{c.posts}</td>
+                          <td className="is-num">{c.avg == null ? '—' : fmtRate(c.avg)}</td>
+                        </tr>
+                      )),
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </ShowAsTable>
         </section>
 
         <div className="report-split">
           <section className="card card--flush" aria-labelledby="bt-top">
             <div className="card-head">
-              <h2 id="bt-top" className="card-title">
-                The best slots
-              </h2>
-              <Link to="/posting/schedule" className="tool-head-link">
+              <div>
+                <h2 id="bt-top" className="card-title">
+                  The best slots
+                </h2>
+              </div>
+              <Link to="/posting/schedule" className="more-link">
                 Use them in the weekly schedule
               </Link>
             </div>
@@ -91,10 +128,14 @@ export default function BestTime({ tool }) {
             )}
           </section>
           <section className="card card--flush" aria-labelledby="bt-days">
+            {/* What the bars measure, at the heading's right: a line under the
+                title would drop this rule below the best slots' beside it. */}
             <div className="card-head">
-              <h2 id="bt-days" className="card-title">
-                By weekday
-              </h2>
+              <div>
+                <h2 id="bt-days" className="card-title">
+                  By weekday
+                </h2>
+              </div>
               <span className="tool-head-note">What a typical post earns</span>
             </div>
             <div className="best-days">
@@ -107,41 +148,6 @@ export default function BestTime({ tool }) {
             </div>
           </section>
         </div>
-
-        <details className="disclosure how-counted">
-          <summary>Every slot as a table</summary>
-          <div className="table-scroll best-table">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">When</th>
-                  <th scope="col" className="is-num">
-                    Posts
-                  </th>
-                  <th scope="col" className="is-num">
-                    Typical post
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {weekdayOrder().flatMap((day) =>
-                  m.rows[day].cells
-                    .map((c, col) => ({ c, col }))
-                    .filter(({ c }) => c.posts > 0)
-                    .map(({ c, col }) => (
-                      <tr key={`${day}-${col}`}>
-                        <th scope="row">
-                          {LONG[day]}, {hourRange(col, block)}
-                        </th>
-                        <td className="is-num">{c.posts}</td>
-                        <td className="is-num">{c.avg == null ? '—' : fmtRate(c.avg)}</td>
-                      </tr>
-                    )),
-                )}
-              </tbody>
-            </table>
-          </div>
-        </details>
       </div>
     </>
   );

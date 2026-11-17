@@ -1,4 +1,6 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Plus, X } from 'lucide-react';
+import Button from '../../components/Button.jsx';
 import Segmented from '../../components/Segmented.jsx';
 import {
   ACTOR_TESTS,
@@ -48,6 +50,15 @@ function toLocalInput(value) {
   const pad = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
+
+const HOUR = 3600;
+
+// The lengths offered as chips: the common ones. The rest of the presets
+// (5 and 30 minutes, 12 hours) are still lengths a timer can have; a rule
+// that has one shows it under Other…, in the length field.
+const SHOWN_LENGTHS = [HOUR, 6 * HOUR, 24 * HOUR, 3 * 24 * HOUR, 7 * 24 * HOUR];
+const SHOWN_PRESETS = LIFESPAN_PRESETS.filter((p) => SHOWN_LENGTHS.includes(p.seconds));
+const isShownChoice = (choice) => SHOWN_LENGTHS.includes(Number(choice));
 
 /** A row of buttons that each stay pressed while they're on. */
 function Toggles({ label, labelledBy, children }) {
@@ -108,13 +119,12 @@ export default function LifespanEditor({
     const s = splitLifespan(rule.lifespanSeconds);
     return { amount: String(s.amount), unit: s.unit };
   });
-  const [openLength, setOpenLength] = useState(
-    choice === 'custom' ? 'custom' : choice === 'exact' ? 'exact' : null,
-  );
+  // Other… holds every length that isn't a chip: a typed one, a set time,
+  // and the presets that aren't shown. It opens by itself for a rule that
+  // has one of those, with the field already filled.
+  const [otherOpen, setOtherOpen] = useState(() => !isShownChoice(choice));
   useEffect(() => {
-    if (choice === 'exact') setOpenLength('exact');
-    else if (choice === 'custom')
-      setOpenLength((o) => (o === 'exact' ? 'custom' : o || 'custom'));
+    if (!isShownChoice(choice)) setOtherOpen(true);
   }, [choice]);
   const customSeconds = lifespanFromParts(custom.amount, custom.unit);
 
@@ -153,6 +163,53 @@ export default function LifespanEditor({
   const quoteClause = clauseFor(rule.conditions, 'quotes');
   const quoteFilter = quoteClause?.from || null;
   const clauses = rule.conditions.clauses;
+
+  // The conditions shown, a row each: the rule's clauses, and rows added
+  // here that have no number yet (a clause only exists once it has one, so
+  // the rows are kept apart from the rule, or a row would vanish while its
+  // number is retyped). `ops` holds the comparison chosen for such a row.
+  const clauseKey = clauses.map((c) => c.metric).join(',');
+  const [rows, setRows] = useState(() => clauses.map((c) => c.metric));
+  const [ops, setOps] = useState({});
+  const focusRow = useRef(null);
+  useEffect(() => {
+    const missing = clauseKey ? clauseKey.split(',').filter((m) => !rows.includes(m)) : [];
+    if (missing.length) setRows((r) => [...r, ...missing.filter((m) => !r.includes(m))]);
+    // Only a change to the rule's clauses can add rows here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clauseKey]);
+  // A new row's first field takes focus; a removed row hands it to Add.
+  useEffect(() => {
+    if (!focusRow.current) return;
+    document.getElementById(`${id}-${focusRow.current === 'add' ? 'add' : `cm-${focusRow.current}`}`)?.focus();
+    focusRow.current = null;
+  }, [rows, id]);
+  const freeMetric = METRICS.find((m) => !rows.includes(m.key));
+  const addRow = () => {
+    if (!freeMetric) return;
+    focusRow.current = freeMetric.key;
+    setRows((r) => [...r, freeMetric.key]);
+  };
+  const removeRow = (metric) => {
+    focusRow.current = 'add';
+    setRows((r) => r.filter((m) => m !== metric));
+    if (clauseFor(rule.conditions, metric))
+      emit(withMetric(rule, metric, { value: '' }));
+  };
+  const changeRowMetric = (from, to) => {
+    if (from === to || rows.includes(to)) return;
+    const clause = clauseFor(rule.conditions, from);
+    focusRow.current = to;
+    setRows((r) => r.map((m) => (m === from ? to : m)));
+    if (clause)
+      emit(
+        withMetric(withMetric(rule, from, { value: '' }), to, {
+          op: clause.op,
+          value: clause.value,
+        }),
+      );
+    else setOps((o) => ({ ...o, [to]: o[from] || 'gte' }));
+  };
   const bounds = pinBounds(
     Number.isFinite(Date.parse(publishAt || '')) ? Date.parse(publishAt) : now,
   );
@@ -201,14 +258,14 @@ export default function LifespanEditor({
               {deletes ? 'Delete it after' : 'Act on it after'}
             </legend>
             <Toggles labelledBy={`${id}-len`}>
-              {LIFESPAN_PRESETS.map((p) => (
+              {SHOWN_PRESETS.map((p) => (
                 <button
                   key={p.seconds}
                   type="button"
                   className="chip"
-                  aria-pressed={choice === String(p.seconds)}
+                  aria-pressed={!otherOpen && choice === String(p.seconds)}
                   onClick={() => {
-                    setOpenLength(null);
+                    setOtherOpen(false);
                     const s = splitLifespan(p.seconds);
                     setCustom({ amount: String(s.amount), unit: s.unit });
                     emit(withLength(rule, p.seconds));
@@ -220,114 +277,100 @@ export default function LifespanEditor({
               <button
                 type="button"
                 className="chip"
-                aria-pressed={choice === 'custom'}
-                aria-expanded={openLength === 'custom'}
-                aria-controls={`${id}-custom`}
-                onClick={() => {
-                  setOpenLength('custom');
-                  if (choice === 'exact' && customSeconds)
-                    emit(withLength(rule, customSeconds));
-                }}
+                aria-pressed={otherOpen}
+                aria-expanded={otherOpen}
+                aria-controls={`${id}-other`}
+                onClick={() => setOtherOpen(true)}
               >
-                Another length
+                Other…
               </button>
-              {allowExactTime && (
-                <button
-                  type="button"
-                  className="chip"
-                  aria-pressed={choice === 'exact'}
-                  aria-expanded={openLength === 'exact'}
-                  aria-controls={`${id}-exact`}
-                  onClick={() => setOpenLength('exact')}
-                >
-                  A set time
-                </button>
-              )}
             </Toggles>
 
-            {openLength === 'custom' && (
-              <div className="lse-inline" id={`${id}-custom`}>
-                <label className="field lse-amount" htmlFor={`${id}-amount`}>
-                  <span className="field-label">Length</span>
-                  <input
-                    id={`${id}-amount`}
-                    className="input"
-                    type="number"
-                    inputMode="numeric"
-                    min={1}
-                    max={maxAmountForUnit(custom.unit)}
-                    step={1}
-                    value={custom.amount}
-                    aria-describedby={`${id}-custom-hint`}
-                    aria-invalid={customSeconds === null ? true : undefined}
-                    onChange={(e) => {
-                      const next = { ...custom, amount: e.target.value };
-                      setCustom(next);
-                      const s = lifespanFromParts(next.amount, next.unit);
-                      if (s) emit(withLength(rule, s));
-                    }}
-                  />
-                </label>
-                <label className="field lse-unit" htmlFor={`${id}-unit`}>
-                  <span className="field-label">Unit</span>
-                  <select
-                    id={`${id}-unit`}
-                    className="input"
-                    value={custom.unit}
-                    onChange={(e) => {
-                      const next = { ...custom, unit: e.target.value };
-                      setCustom(next);
-                      const s = lifespanFromParts(next.amount, next.unit);
-                      if (s) emit(withLength(rule, s));
-                    }}
+            {otherOpen && (
+              <div className="lse-other" id={`${id}-other`}>
+                <div className="lse-inline">
+                  <label className="field lse-amount" htmlFor={`${id}-amount`}>
+                    <span className="field-label">Length</span>
+                    <input
+                      id={`${id}-amount`}
+                      className="input"
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      max={maxAmountForUnit(custom.unit)}
+                      step={1}
+                      value={custom.amount}
+                      aria-describedby={`${id}-custom-hint`}
+                      aria-invalid={customSeconds === null ? true : undefined}
+                      onChange={(e) => {
+                        const next = { ...custom, amount: e.target.value };
+                        setCustom(next);
+                        const s = lifespanFromParts(next.amount, next.unit);
+                        if (s) emit(withLength(rule, s));
+                      }}
+                    />
+                  </label>
+                  <label className="field lse-unit" htmlFor={`${id}-unit`}>
+                    <span className="field-label">Unit</span>
+                    <select
+                      id={`${id}-unit`}
+                      className="input"
+                      value={custom.unit}
+                      onChange={(e) => {
+                        const next = { ...custom, unit: e.target.value };
+                        setCustom(next);
+                        const s = lifespanFromParts(next.amount, next.unit);
+                        if (s) emit(withLength(rule, s));
+                      }}
+                    >
+                      {LIFESPAN_UNITS.map((u) => (
+                        <option key={u.key} value={u.key}>
+                          {u.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p
+                    className="field-hint lse-hint-wide"
+                    id={`${id}-custom-hint`}
                   >
-                    {LIFESPAN_UNITS.map((u) => (
-                      <option key={u.key} value={u.key}>
-                        {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <p
-                  className="field-hint lse-hint-wide"
-                  id={`${id}-custom-hint`}
-                >
-                  {customSeconds === null
-                    ? `Between 5 minutes and 30 days: at most ${maxAmountForUnit(custom.unit)} ${custom.unit}.`
-                    : `${formatLifespan(customSeconds)} after it goes up.`}
-                </p>
-              </div>
-            )}
+                    {customSeconds === null
+                      ? `Between 5 minutes and 30 days: at most ${maxAmountForUnit(custom.unit)} ${custom.unit}.`
+                      : rule.deleteAt
+                        ? `Without a set time it would use ${formatLifespan(rule.lifespanSeconds)}.`
+                        : `${formatLifespan(customSeconds)} after it goes up.`}
+                  </p>
+                </div>
 
-            {allowExactTime && openLength === 'exact' && (
-              <div className="lse-inline" id={`${id}-exact`}>
-                <label className="field" htmlFor={`${id}-at`}>
-                  <span className="field-label">Date and time</span>
-                  <input
-                    id={`${id}-at`}
-                    className="input"
-                    type="datetime-local"
-                    value={toLocalInput(rule.deleteAt)}
-                    min={toLocalInput(bounds.min)}
-                    max={toLocalInput(bounds.max)}
-                    aria-describedby={`${id}-exact-hint`}
-                    onChange={(e) => {
-                      const t = Date.parse(e.target.value);
-                      emit(
-                        withPin(
-                          rule,
-                          Number.isFinite(t) ? new Date(t).toISOString() : null,
-                        ),
-                      );
-                    }}
-                  />
-                </label>
-                <p className="field-hint lse-hint-wide" id={`${id}-exact-hint`}>
-                  In this device’s time. At least 5 minutes and at most 30 days
-                  after it goes up.
-                  {rule.deleteAt &&
-                    ` Without a set time it would use ${formatLifespan(rule.lifespanSeconds)}.`}
-                </p>
+                {allowExactTime && (
+                  <div className="lse-inline lse-inline--at">
+                    <label className="field" htmlFor={`${id}-at`}>
+                      <span className="field-label">Or a set time</span>
+                      <input
+                        id={`${id}-at`}
+                        className="input"
+                        type="datetime-local"
+                        value={toLocalInput(rule.deleteAt)}
+                        min={toLocalInput(bounds.min)}
+                        max={toLocalInput(bounds.max)}
+                        aria-describedby={`${id}-exact-hint`}
+                        onChange={(e) => {
+                          const t = Date.parse(e.target.value);
+                          emit(
+                            withPin(
+                              rule,
+                              Number.isFinite(t) ? new Date(t).toISOString() : null,
+                            ),
+                          );
+                        }}
+                      />
+                    </label>
+                    <p className="field-hint lse-hint-wide" id={`${id}-exact-hint`}>
+                      In this device’s time. At least 5 minutes and at most 30 days
+                      after it goes up.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </fieldset>
@@ -419,69 +462,105 @@ export default function LifespanEditor({
               Leave these empty to act on time, whatever happens. Counts are
               read from Bluesky when it’s due.
             </p>
-            <Segmented
-              size="sm"
-              label="How the conditions work"
-              value={rule.conditions.sense}
-              onChange={(sense) => emit(withConditions(rule, { sense }))}
-              options={[
-                { value: 'unless', label: 'Unless it reaches' },
-                { value: 'onlyIf', label: 'Only if it reaches' },
-              ]}
-            />
-            <div className="lse-metrics">
-              {METRICS.map((m) => {
-                const clause = clauseFor(rule.conditions, m.key);
-                return (
-                  <div key={m.key} className="lse-metric">
-                    <label
-                      className="lse-metric-name"
-                      htmlFor={`${id}-m-${m.key}`}
-                    >
-                      {m.label}
-                    </label>
-                    <select
-                      className="input lse-op"
-                      aria-label={`${m.label}: how to compare`}
-                      value={clause?.op || 'gte'}
-                      disabled={!clause}
-                      onChange={(e) =>
-                        emit(
-                          withMetric(rule, m.key, {
-                            op: e.target.value,
-                            value: clause?.value,
-                          }),
-                        )
-                      }
-                    >
-                      {OPERATORS.map((o) => (
-                        <option key={o.key} value={o.key}>
-                          {o.symbol} {o.label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      id={`${id}-m-${m.key}`}
-                      className="input lse-value"
-                      type="number"
-                      inputMode="numeric"
-                      min={0}
-                      max={1_000_000}
-                      placeholder="off"
-                      value={clause?.value ?? ''}
-                      onChange={(e) =>
-                        emit(
-                          withMetric(rule, m.key, {
-                            op: clause?.op || 'gte',
-                            value: e.target.value,
-                          }),
-                        )
-                      }
-                    />
-                  </div>
-                );
-              })}
-            </div>
+            {rows.length > 0 && (
+              <Segmented
+                size="sm"
+                label="How the conditions work"
+                value={rule.conditions.sense}
+                onChange={(sense) => emit(withConditions(rule, { sense }))}
+                options={[
+                  { value: 'unless', label: 'Unless it reaches' },
+                  { value: 'onlyIf', label: 'Only if it reaches' },
+                ]}
+              />
+            )}
+            {rows.length > 0 && (
+              <div className="lse-conds">
+                {rows.map((metric) => {
+                  const m = METRICS.find((x) => x.key === metric);
+                  const clause = clauseFor(rule.conditions, metric);
+                  const op = clause?.op || ops[metric] || 'gte';
+                  return (
+                    <div key={metric} className="lse-cond">
+                      <select
+                        id={`${id}-cm-${metric}`}
+                        className="input lse-cond-metric"
+                        aria-label="What it counts"
+                        value={metric}
+                        onChange={(e) => changeRowMetric(metric, e.target.value)}
+                      >
+                        {METRICS.map((x) => (
+                          <option
+                            key={x.key}
+                            value={x.key}
+                            disabled={x.key !== metric && rows.includes(x.key)}
+                          >
+                            {x.label}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        className="input lse-op"
+                        aria-label={`${m.label}: how to compare`}
+                        value={op}
+                        onChange={(e) =>
+                          clause
+                            ? emit(
+                                withMetric(rule, metric, {
+                                  op: e.target.value,
+                                  value: clause.value,
+                                }),
+                              )
+                            : setOps((o) => ({ ...o, [metric]: e.target.value }))
+                        }
+                      >
+                        {OPERATORS.map((o) => (
+                          <option key={o.key} value={o.key}>
+                            {o.symbol} {o.label}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        id={`${id}-m-${metric}`}
+                        className="input lse-value"
+                        type="number"
+                        inputMode="numeric"
+                        aria-label={`${m.label}: how many`}
+                        min={0}
+                        max={1_000_000}
+                        placeholder="off"
+                        value={clause?.value ?? ''}
+                        onChange={(e) =>
+                          emit(
+                            withMetric(rule, metric, {
+                              op,
+                              value: e.target.value,
+                            }),
+                          )
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon
+                        className="lse-cond-remove"
+                        aria-label={`Remove the ${m.label.toLowerCase()} condition`}
+                        title="Remove"
+                        onClick={() => removeRow(metric)}
+                      >
+                        <X size={16} aria-hidden="true" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {freeMetric && (
+              <button type="button" id={`${id}-add`} className="link-action lse-add" onClick={addRow}>
+                <Plus size={14} aria-hidden="true" />
+                Add a condition
+              </button>
+            )}
 
             {quoteClause && (
               <div className="lse-sub">

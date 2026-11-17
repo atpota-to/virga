@@ -3,12 +3,13 @@
 // its kind; each has a page of its own.
 
 import { ChevronRight } from 'lucide-react';
+import { AccessLine } from '../components/AccessBadge.jsx';
 import Button from '../components/Button.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { Link, navigate } from '../lib/router.jsx';
 import { followBackModel, followerLogModel, listsModel } from '../reports/models.js';
 import { PageHeader } from '../shell/bits.jsx';
-import { ACCESS, TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
+import { TOOLS, TOOL_BY_KEY, TOOL_SECTIONS } from './registry.js';
 import FollowCleanup from './FollowCleanup.jsx';
 import UnfollowTracker from './UnfollowTracker.jsx';
 import FollowBack from './FollowBack.jsx';
@@ -50,17 +51,23 @@ export function ToolHeader({ tool, actions = null, sub = null, children = null }
 export default function ToolPage({ toolKey }) {
   const tool = TOOL_BY_KEY[toolKey];
   const Page = PAGES[toolKey];
+  // A tool that isn't built (or an address that names none) is a page like
+  // any other: its header, then the one way on.
   if (!tool || !Page) {
     return (
-      <div className="page-body">
-        <div className="empty-page">
-          <h1 className="page-title">{tool ? `${tool.name} isn’t built yet` : 'There’s no tool here'}</h1>
-          {tool && <p className="page-sub">{tool.desc}</p>}
-          <div>
+      <>
+        <PageHeader
+          crumbs={[{ label: 'Tools', to: '/tools' }]}
+          title={tool ? `${tool.name} isn’t built yet` : 'There’s no tool here'}
+          sub={tool?.desc}
+          access={tool ? [tool.access] : null}
+        />
+        <div className="page-body">
+          <div className="empty-block">
             <Button onClick={() => navigate('/tools')}>See every tool</Button>
           </div>
         </div>
-      </div>
+      </>
     );
   }
   return <Page tool={tool} />;
@@ -84,22 +91,6 @@ function useToolStats(archive) {
     archive: `${archive.posts.length.toLocaleString(activeLocale())} posts`,
     identity: archive.atmosphere.length ? `${new Set(archive.atmosphere.map((r) => r.collection)).size} collections` : '',
   };
-}
-
-/**
- * What a tool can touch, as a quiet line under its description: the same
- * words as the badge in its own header, without the pill.
- */
-function AccessLine({ tool }) {
-  const access = ACCESS[tool.access];
-  if (!access) return null;
-  const Icon = access.icon;
-  return (
-    <span className="tool-row-access" data-access={tool.access}>
-      <Icon size={13} aria-hidden="true" />
-      {tool.planned ? `Not built yet. ${access.label}` : access.label}
-    </span>
-  );
 }
 
 export function ToolsIndex() {
@@ -129,9 +120,10 @@ export function ToolsIndex() {
                       <span className="tool-row-text">
                         <span className="tool-row-name">{t.name}</span>
                         <span className="tool-row-desc">{t.desc}</span>
-                        <span className="tool-row-meta">
-                          <AccessLine tool={t} />
-                          {!t.planned && stats[t.key] && <span className="tool-row-stat num">{stats[t.key]}</span>}
+                        {/* What it can touch, then what it has to say right now. */}
+                        <span className="tool-row-meta meta">
+                          <AccessLine kinds={[t.access]} prefix={t.planned ? 'Not built yet.' : null} />
+                          {!t.planned && stats[t.key] && <span className="num">{stats[t.key]}</span>}
                         </span>
                       </span>
                       {!t.planned && (

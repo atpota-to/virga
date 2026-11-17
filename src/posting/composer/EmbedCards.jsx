@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Image as ImageIcon, List, Pencil, Rss, Users, X } from 'lucide-react';
+import { List, Pencil, Rss, Users, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import PostPreview from '../ui/PostPreview.jsx';
@@ -78,20 +78,18 @@ export function LinkCard({ card, loading = false, onEdit, onRemove, disabled = f
   if (!card) return null;
   return (
     <div className="embed-card embed-card--link">
-      {card.thumb ? (
+      {/* A page with no image has no picture column: its words take the
+          card's width. */}
+      {card.thumb && (
         <img
           className="link-thumb"
           src={card.thumb}
           alt=""
           onError={(e) => {
             // A page image that won't load is left out of the preview.
-            e.currentTarget.style.visibility = 'hidden';
+            e.currentTarget.style.display = 'none';
           }}
         />
-      ) : (
-        <span className="link-thumb link-thumb--none" aria-hidden="true">
-          <ImageIcon size={18} />
-        </span>
       )}
       <span className="embed-text">
         <span className="embed-title">{card.title || hostOf(card.url)}</span>

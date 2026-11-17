@@ -10,8 +10,8 @@
 // What isn't the post's own (who it goes out as, defaults, uploads in
 // flight, what the intent asked to load) is held beside it here.
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { CalendarClock, ChevronRight, Clock, Hash, Languages, ListTree, MessageSquareReply, MoreHorizontal, Plus, Sparkles, X } from 'lucide-react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { CalendarClock, ChevronDown, ChevronRight, Clock, Hash, Languages, ListTree, MessageSquareReply, MoreHorizontal, Plus, Sparkles, X } from 'lucide-react';
 import Button from '../../components/Button.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import Menu from '../../components/Menu.jsx';
@@ -91,7 +91,7 @@ import WhenPicker from '../ui/WhenPicker.jsx';
 import LibraryDialog from '../library/LibraryDialog.jsx';
 import TemplateEditor from '../library/TemplateEditor.jsx';
 
-import PostBlock from './PostBlock.jsx';
+import PostBlock, { PostTools } from './PostBlock.jsx';
 import PostAsPicker from './PostAsPicker.jsx';
 import ReplyContext from './ReplyContext.jsx';
 import PublishButton from './PublishButton.jsx';
@@ -100,7 +100,7 @@ import { LinkCardDialog } from './EmbedCards.jsx';
 import { ConfirmDialog, ContinueThreadDialog, GatesDialog, LifespanDialog, MetaDialog, VideoAltDialog } from './ComposerDialogs.jsx';
 import { normalizeIntent, intentLoads, seedFromIntent, readTargetRef } from './intent.js';
 import { actionLabel, composerActions, EMPTY_HINT, MEDIA_MISSING_HINT, OVER_LIMIT_HINT, VIDEO_PENDING_HINT } from './actions.js';
-import { defaultTimerFor, gatesSourceLine, gatesSummary, NO_FREE_TIMER, TIMER_NEEDS_SERVER } from './defaults.js';
+import { defaultTimerFor, gatesShortSummary, gatesSourceLine, gatesSummary, NO_FREE_TIMER, TIMER_NEEDS_SERVER } from './defaults.js';
 import { pastedImageFiles, sortIncomingFiles, IMAGE_INPUT_ACCEPT } from './media.js';
 import { removeLinkFromText } from './editing.js';
 import { planRenumber, planSplit, splitTexts, undoAction, undoLine, undoStands } from './threadEdits.js';
@@ -241,6 +241,9 @@ export default function Composer({ open, intent, onClose }) {
   const [threadUndo, setThreadUndo] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [moreAlign, setMoreAlign] = useState('end');
+  // On a phone More opens in place, as rows of its own under the others.
+  const [moreOpen, setMoreOpen] = useState(false);
+  const composerId = useId();
   const composerRef = useRef(null);
   const dropFiles = useRef(() => {});
   const moreRef = useRef(null);
@@ -1918,23 +1921,43 @@ export default function Composer({ open, intent, onClose }) {
   ];
 
   // Saving a draft and scheduling get a button of their own at the foot,
-  // beside the main one, unless one of them is the main one already.
+  // beside the main one, unless one of them is the main one already; the
+  // main button's caret then lists only what is left.
   const also = ['draft', 'schedule'].filter((action) => {
     const a = model.actions[action];
     return action !== model.primary && (!a.disabled || PASSING_BLOCKS.includes(a.reason));
   });
   const sendBusy = !!busy || adviserReading;
   const publishButton = (placement) => (
-    <PublishButton state={state} model={model} busy={sendBusy} onAction={runAction} placement={placement} footnote={usageLine ? `${usageLine}.` : ''} />
+    <PublishButton state={state} model={model} busy={sendBusy} onAction={runAction} placement={placement} also={also} footnote={usageLine ? `${usageLine}.` : ''} />
   );
   const closeComposer = () => {
     autosaver.flush();
     onClose?.();
   };
 
+  // On a phone the foot holds the post's own tools, for the post being
+  // written in, and says why the main button is off only when that is
+  // something to fix elsewhere: an empty post, or one over the limit, says
+  // so where it is written.
+  const toolsIndex = Math.min(activeIndex, state.posts.length - 1);
+  const toolsPost = state.posts[toolsIndex] || state.posts[0];
+  const whyPassing = !primaryReason || PASSING_BLOCKS.includes(primaryReason);
   const actions = (
     <div className="composer-actions">
-      <p className="composer-why" aria-live="polite">
+      {toolsPost && !loadError && !(loads.scheduled === 'loading' || loads.draft === 'loading') && (
+        <PostTools
+          className="composer-tools"
+          post={toolsPost}
+          disabled={disabled}
+          size="md"
+          iconSize={20}
+          onImages={() => api.pickImages(toolsIndex)}
+          onVideo={() => api.pickVideo(toolsIndex)}
+          onLibrary={() => api.openLibrary(toolsIndex, null)}
+        />
+      )}
+      <p className="composer-why" aria-live="polite" data-passing={whyPassing || undefined}>
         {busy ? '' : primaryReason || (model.draftFallback ? 'Over 300 characters: it can be saved as a draft.' : '')}
       </p>
       {also.length > 0 && (
@@ -1960,8 +1983,11 @@ export default function Composer({ open, intent, onClose }) {
   // What each setting is called on a phone's row, and what it is set to.
   const tagsValue = state.tags.length ? state.tags.map((t) => `#${t}`).join(', ') : 'None';
   const langsValue = `${langsSummary(state.langs)}${state.labels.length ? ` · ${labelsSummary(state.labels)}` : ''}`;
-  const gatesShort = gatesSummary(state.gates);
-  const gatesValue = gatesShort.replace(/^Replies: /, '').replace(' can reply', '').replace(/^./, (c) => c.toUpperCase());
+  // Who can reply, short: a phone's row says it after "Replies", a wide
+  // screen's row of words as a phrase of its own. The whole of it is the
+  // button's title.
+  const gatesValue = gatesShortSummary(state.gates);
+  const gatesShort = state.gates.reply?.length ? `Replies: ${gatesValue.replace(/^./, (c) => c.toLowerCase())}` : gatesSummary(state.gates);
   const timerValue = state.lifespan?.enabled ? timerChipLabel(state.lifespan) : 'No timer';
 
   return (
@@ -2202,17 +2228,51 @@ export default function Composer({ open, intent, onClose }) {
                     <span className="composer-option-label">Check this post</span>
                   </button>
                 )}
-                {/* The list hangs toward whichever side has room: on a wide
-                    screen this button sits at the row's right edge, and on a
-                    phone it is the last row, at the left. */}
-                <span className="composer-more" ref={moreRef} onPointerDownCapture={placeMore} onFocusCapture={placeMore}>
-                  <Menu label="More for this post" icon variant="ghost" placement="up" align={moreAlign} items={moreItems.filter(Boolean)}>
-                    <MoreHorizontal size={16} aria-hidden="true" />
-                    <span className="composer-option-label" aria-hidden="true">
-                      More
-                    </span>
-                  </Menu>
-                </span>
+                {narrow ? (
+                  <>
+                    <button
+                      type="button"
+                      className="composer-option composer-more-toggle"
+                      aria-expanded={moreOpen}
+                      aria-controls={`${composerId}-more`}
+                      disabled={disabled}
+                      onClick={() => setMoreOpen((v) => !v)}
+                    >
+                      <MoreHorizontal size={16} aria-hidden="true" />
+                      <span className="composer-option-label">More</span>
+                      <ChevronDown className="composer-option-chevron" size={15} aria-hidden="true" />
+                    </button>
+                    {moreOpen && (
+                      <div id={`${composerId}-more`} className="composer-more-rows" role="group" aria-label="More for this post">
+                        {moreItems
+                          .filter((item) => item && !item.separator)
+                          .map((item) => (
+                            <button
+                              key={item.key}
+                              type="button"
+                              className="composer-option composer-option--sub"
+                              data-tone={item.tone || undefined}
+                              disabled={disabled}
+                              onClick={() => {
+                                setMoreOpen(false);
+                                item.onSelect();
+                              }}
+                            >
+                              <span className="composer-option-label">{item.label}</span>
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  /* At the row's right edge; the list hangs toward whichever
+                     side has room. */
+                  <span className="composer-more" ref={moreRef} onPointerDownCapture={placeMore} onFocusCapture={placeMore}>
+                    <Menu label="More for this post" icon variant="ghost" placement="up" align={moreAlign} items={moreItems.filter(Boolean)}>
+                      <MoreHorizontal size={16} aria-hidden="true" />
+                    </Menu>
+                  </span>
+                )}
               </div>
               {timerNote && !state.lifespan?.enabled && (
                 <p className="field-hint composer-timer-note">{timerNote}</p>
@@ -2225,9 +2285,9 @@ export default function Composer({ open, intent, onClose }) {
                 <section ref={whenRef} className="when-panel" aria-label="When it goes out">
                   <div className="when-panel-head">
                     <span className="field-label">{state.schedule.mode === 'queue' ? 'Into your weekly queue' : 'Schedule for later'}</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
+                    <button
+                      type="button"
+                      className="link-action"
                       onClick={() => {
                         dispatch({ type: 'setSchedule', schedule: null });
                         setWhenOpen(false);
@@ -2235,7 +2295,7 @@ export default function Composer({ open, intent, onClose }) {
                       }}
                     >
                       Post now instead
-                    </Button>
+                    </button>
                   </div>
                   {state.schedule.mode === 'at' ? (
                     <WhenPicker

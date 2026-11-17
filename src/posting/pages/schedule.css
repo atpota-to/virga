@@ -677,7 +677,13 @@
 .sched-picks {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
+}
+
+/* On a phone the picks keep one line and scroll sideways (WhenPicker
+   makes the row a .scroll-row there). */
+.sched-picks.scroll-row {
+  flex-wrap: nowrap;
 }
 
 .sched-when-zone {
@@ -740,10 +746,12 @@
 
 /* ---- the timer editor -------------------------------------------------- */
 
+/* Each part of the rule is a fieldset, 24px from the next; a legend is 8px
+   over what it names, and what follows inside a part is 12px down. */
 .lifespan-editor {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .lse-switch-row {
@@ -767,11 +775,16 @@
 .lse-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
+}
+
+.lse-block > * {
+  max-width: 100%;
 }
 
 .lse-legend {
@@ -784,7 +797,7 @@
 .lse-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .lse-chips .chip:disabled {
@@ -797,14 +810,22 @@
   box-shadow: var(--focus);
 }
 
+/* Other…: a typed length, and under it a set time instead. */
+.lse-other {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .lse-inline {
   display: grid;
   grid-template-columns: minmax(0, 140px) minmax(0, 160px);
-  gap: 8px 10px;
+  gap: 8px 12px;
   align-items: end;
 }
 
-.lse-inline:has(input[type='datetime-local']) {
+.lse-inline--at {
   grid-template-columns: minmax(0, 260px);
 }
 
@@ -816,37 +837,47 @@
 .lse-sub {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
 }
 
-/* What a timer can count, a line each, between hairlines. */
-.lse-metrics {
+/* A follow-on question (who can still reply, what happens if it does)
+   stands a little further off than the parts of the one before it. */
+.lse-block > .lse-sub {
+  margin-top: 4px;
+}
+
+/* A condition: what it counts, how it compares, the number and its ✕,
+   one line each. Only the conditions that are set (or just added) show. */
+.lse-conds {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--line);
+  gap: 8px;
+  width: 100%;
 }
 
-.lse-metric {
+.lse-cond {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 150px 96px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 150px) minmax(0, 96px) auto;
   align-items: center;
   gap: 8px;
-  padding: 7px 0;
-  border-bottom: 1px solid var(--line);
 }
 
-.lse-metric-name {
+.lse-cond-remove {
+  margin-right: -7px;
+}
+
+/* A comparison that can't be changed yet keeps the ground of the field
+   beside it, so the pair reads as one line. In a line of words (People
+   with over…, At most…) it takes their 13px; 16px on a touch screen, where
+   a smaller field zooms the page. */
+.lse-check-with .lse-op,
+.lse-inline-field .lse-op {
   font-size: var(--text-sm);
-  font-weight: 500;
 }
 
-.lse-op {
-  min-height: 32px;
-  font-size: var(--text-sm);
-}
-
-.lse-value {
-  min-height: 32px;
+.lse-op:disabled {
+  background-color: color-mix(in srgb, var(--surface) 72%, transparent);
 }
 
 .lse-checks {
@@ -885,17 +916,11 @@
   width: auto;
 }
 
-/* The rule as a sentence: a line in the accent down its side, as a
-   thing to read before going on. */
-.lse-summary {
-  padding: 2px 0 2px 14px;
-  border-left: 2px solid var(--accent);
-}
-
+/* The rule as a sentence, plain: what the parts above add up to. */
 .lse-sentence {
   margin: 0;
-  color: var(--ink);
-  font-size: var(--text-base);
+  color: var(--ink-2);
+  font-size: 0.875rem;
   line-height: 1.45;
 }
 
@@ -907,10 +932,62 @@
   margin: 4px 0 0;
 }
 
+@media (pointer: coarse) {
+  .lse-check-with .lse-op,
+  .lse-inline-field .lse-op {
+    font-size: 16px;
+  }
+
+  .lse-cond-remove {
+    margin-right: -14px;
+  }
+}
+
+/* A phone: a condition is two lines, what it counts (and its ✕), then how
+   it compares and the number. */
+@media (max-width: 560px) {
+  .lse-cond {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    row-gap: 8px;
+  }
+
+  .lse-cond-metric {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .lse-cond-remove {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .lse-cond .lse-op {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .lse-cond .lse-value {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+
+  .lse-conds {
+    gap: 16px;
+  }
+}
+
 /* ---- the timer dialog -------------------------------------------------- */
 
 .dialog.timer-dialog {
   width: min(640px, calc(100vw - 32px));
+}
+
+/* Schedule this draft, on a phone: its three buttons one under another,
+   Schedule first and Cancel last. */
+@media (max-width: 560px) {
+  .when-dialog .dialog-actions > .when-dialog-cancel {
+    order: 1;
+  }
 }
 
 /* Both dialogs can be taller than a phone: their words scroll, and the
@@ -1072,18 +1149,6 @@
 }
 
 @media (max-width: 760px) {
-  .lse-metric {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .lse-metric-name {
-    grid-column: 1 / -1;
-  }
-
-  .lse-chips .chip {
-    min-height: 36px;
-  }
-
   .sched-when .sched-when-fields,
   .sched-repeat-fields {
     grid-template-columns: minmax(0, 1fr);
