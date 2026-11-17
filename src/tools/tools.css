@@ -304,10 +304,11 @@
   font-size: var(--text-sm);
 }
 
-/* Beside the activity check's md button the field is md as well, so the
-   two stand one height on one line, its words as far in as any md
-   field's. */
-.check-actions .field-inline .input {
+/* Beside the activity check's md button, or on the line of the archive's
+   md search, the field is md as well, so the two pills stand one height
+   on one line, its words as far in as any md field's. */
+.check-actions .field-inline .input,
+.list-toolbar .field-inline .input {
   min-height: var(--control-h);
   padding-left: 14px;
   font-size: var(--text-base);
@@ -317,7 +318,8 @@
    round end, and 16px so a phone doesn't zoom in on it. */
 @media (pointer: coarse) {
   .field-inline .input,
-  .check-actions .field-inline .input {
+  .check-actions .field-inline .input,
+  .list-toolbar .field-inline .input {
     min-height: 40px;
     padding-left: 14px;
     font-size: 16px;
