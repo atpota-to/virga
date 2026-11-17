@@ -252,7 +252,10 @@ export default function WhenPicker({
           </>
         )}
         {Number.isFinite(instant(value)) && !problem && (
-          <> Goes out {formatInZone(value, tz, now)}.</>
+          <>
+            {' '}
+            Goes out <span className="when-at">{formatInZone(value, tz, now)}</span>.
+          </>
         )}
       </p>
       {problem && (
@@ -387,7 +390,7 @@ export default function WhenPicker({
             ) : slot ? (
               <span>
                 Next open time in your queue:{' '}
-                <strong>{formatInZone(slot, tz, now)}</strong>
+                <strong className="when-at">{formatInZone(slot, tz, now)}</strong>
                 {taken.status === 'error' && (
                   <span className="field-hint">
                     {' '}

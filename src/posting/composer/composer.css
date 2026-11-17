@@ -166,6 +166,19 @@ button.post-as-button {
   cursor: pointer;
 }
 
+/* A 32px line, pressed as 44 on a touch screen without growing it. */
+@media (pointer: coarse) {
+  button.post-as-button {
+    position: relative;
+  }
+
+  button.post-as-button::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+}
+
 .post-as-button .avatar {
   width: 26px;
   height: 26px;
@@ -446,12 +459,11 @@ button.post-as-button {
   margin-top: -4px;
 }
 
-/* Words with a plus before them, on the dialog's own edge. */
-.btn.add-post {
+/* Adding to the end of the thread is a link action, as adding to the end
+   of any list is: nearer the post it follows than the rule under it. */
+.link-action.add-post {
   align-self: flex-start;
-  margin: -4px 0 0 -12px;
-  color: var(--ink);
-  font-weight: 500;
+  margin: 2px 0 6px;
 }
 
 /* ---- the text: a transparent textarea over the layer that draws it ---- */
@@ -956,10 +968,12 @@ button.post-as-button {
   gap: 12px;
 }
 
+/* Choose an image, and the words that take it off beside it. */
 .card-thumb-actions {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 12px 20px;
 }
 
 @media (max-width: 420px) {
@@ -1132,6 +1146,17 @@ button.post-as-button {
     order: 0;
     padding: 14px 0 16px;
     border-bottom: 1px solid var(--line);
+  }
+
+  /* The row right over it already says Tags; the field keeps the name for
+     a screen reader. */
+  .composer-options > .tags-field > .field-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* The rows above already end on a hairline. */
@@ -1343,9 +1368,9 @@ button.post-as-button {
   color: var(--on-btn);
 }
 
+/* The kit's list: as wide as what it says, within its bounds. */
 .publish-menu {
   right: 0;
-  width: 18rem;
 }
 
 .publish-split[data-placement='up'] .publish-menu {
@@ -1394,6 +1419,7 @@ button.post-as-button {
   /* The tools at the left, Save as draft and Schedule at the right; a why
      that has to be read takes a line of its own over them. */
   .composer-actions {
+    container: composer-foot / inline-size;
     flex-wrap: wrap;
     column-gap: 8px;
     min-height: 44px;
@@ -1425,15 +1451,13 @@ button.post-as-button {
   .publish-main {
     min-width: 0;
   }
-
-  .publish-menu {
-    width: min(18rem, calc(100vw - 24px));
-  }
 }
 
-/* The smallest phones: Schedule says it in words alone, so the tools and
-   both buttons keep one line. */
-@media (max-width: 374px) {
+/* A phone's foot too narrow for the tools and both buttons with
+   Schedule's picture (375px and under): Schedule says it in words alone,
+   so the whole foot keeps one line. Measured on the foot itself, since
+   that is what has to hold them. */
+@container composer-foot (max-width: 350px) {
   .composer-also .btn > svg {
     display: none;
   }

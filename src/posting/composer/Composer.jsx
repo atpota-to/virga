@@ -247,6 +247,7 @@ export default function Composer({ open, intent, onClose }) {
   const composerRef = useRef(null);
   const dropFiles = useRef(() => {});
   const moreRef = useRef(null);
+  const moreToggleRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const loadToken = useRef(0);
@@ -2146,19 +2147,18 @@ export default function Composer({ open, intent, onClose }) {
                 </p>
               )}
               {state.posts.length < MAX_POSTS && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="add-post"
+                <button
+                  type="button"
+                  className="link-action add-post"
                   disabled={disabled}
                   onClick={() => {
                     focusNewPost.current = true;
                     dispatch({ type: 'addPost', after: state.posts.length - 1 });
                   }}
                 >
-                  <Plus size={15} aria-hidden="true" />
+                  <Plus size={14} aria-hidden="true" />
                   Add a post to the thread
-                </Button>
+                </button>
               )}
               {mediaNote && (
                 <p className="callout callout--warn" role="status">
@@ -2231,6 +2231,7 @@ export default function Composer({ open, intent, onClose }) {
                 {narrow ? (
                   <>
                     <button
+                      ref={moreToggleRef}
                       type="button"
                       className="composer-option composer-more-toggle"
                       aria-expanded={moreOpen}
@@ -2254,6 +2255,10 @@ export default function Composer({ open, intent, onClose }) {
                               data-tone={item.tone || undefined}
                               disabled={disabled}
                               onClick={() => {
+                                // The rows close as the choice is made, so
+                                // focus waits on More: a dialog the choice
+                                // opens hands it back there when it closes.
+                                moreToggleRef.current?.focus();
                                 setMoreOpen(false);
                                 item.onSelect();
                               }}

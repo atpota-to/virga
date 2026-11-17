@@ -343,6 +343,13 @@
   width: 36px;
 }
 
+/* A row's tick box, in a label of its own: a box rather than a word on a
+   line, so the cell centres it on the row instead of on a text baseline. */
+.check-reach {
+  display: flex;
+  width: max-content;
+}
+
 /* A tick box is 16 or 20px; on a touch screen its label reaches 12px past
    it on every side, so it is a finger's size to press without moving
    anything. "Select all shown" reaches the same way. */
@@ -351,11 +358,6 @@
   .cleanup-table .stack-all {
     padding: 12px;
     margin: -12px;
-  }
-
-  .check-reach {
-    display: flex;
-    width: max-content;
   }
 }
 
@@ -1320,6 +1322,20 @@
   margin-top: 6px;
 }
 
+/* Your posts they engaged with, beside your replies to them: two ruled
+   lists whose rules should be one line, though only the second heading
+   always has a line under its title. Side by side (two 400px columns and
+   the gutter), each heading keeps the room of a title and its line. */
+.lookup-posts {
+  container-type: inline-size;
+}
+
+@container (min-width: 848px) {
+  .lookup-posts > .card--flush > .card-head > :first-child {
+    min-height: calc(var(--text-md) * 1.25 + 2px + var(--text-sm) * 1.45);
+  }
+}
+
 /* The totals beside the timeline: the table is the narrow one. */
 .report-split.lookup-top {
   grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
@@ -1334,6 +1350,12 @@
 .lookup-totals th[scope='row'] {
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* "First on record" may take two lines, so the dates beside it keep one
+   and the table stays inside a phone's width. */
+.lookup-totals tfoot th[scope='row'] {
+  white-space: normal;
 }
 
 .lookup-totals tfoot th,
@@ -1471,6 +1493,12 @@
 
 /* On a phone the date goes under what happened, and the glyph leads. */
 @media (max-width: 560px) {
+  /* The totals' two heads keep their words and colour but not their
+     arrows, which would push the table past a phone's width. */
+  .lookup-totals .lookup-dir svg {
+    display: none;
+  }
+
   .lookup-event {
     grid-template-columns: 22px minmax(0, 1fr) auto;
     grid-template-areas:

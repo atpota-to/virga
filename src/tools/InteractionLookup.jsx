@@ -915,7 +915,7 @@ function Chosen({ tool, archive, who, search, onClear }) {
               <Timeline model={model} name={name} />
             </div>
             {model.engagedPosts.known ? (
-              <div className="report-split">
+              <div className="report-split lookup-posts">
                 <EngagedPosts model={model} />
                 <YourPosts archive={archive} model={model} who={who} />
               </div>

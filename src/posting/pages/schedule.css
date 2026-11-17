@@ -690,6 +690,12 @@
   margin: 0;
 }
 
+/* A time it goes out ("Tue, Nov 17, 9:00 AM") is read as one thing, so a
+   narrow line breaks before it, not inside it. */
+.when-at {
+  white-space: nowrap;
+}
+
 .sched-problem {
   margin: 0;
   color: var(--danger);
@@ -825,8 +831,9 @@
   align-items: end;
 }
 
+/* The set time keeps a field's width; its hint has the whole line. */
 .lse-inline--at {
-  grid-template-columns: minmax(0, 260px);
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
 }
 
 .lse-hint-wide {
