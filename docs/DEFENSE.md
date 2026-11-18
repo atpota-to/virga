@@ -90,8 +90,8 @@ How that works (built in phase 2, `src/config.js`):
 | Where | What runs there | What it holds |
 | --- | --- | --- |
 | **The browser** | Scans started on the web: the harvest from Constellation, the scoring, the radar, building a plan, the review | Nothing new beyond the session it already has. A scan lives in memory (IndexedDB if it should survive a reload) |
-| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: narrow internal routes the droplet calls to write a gate or a list item as the user | Users' OAuth sessions, encrypted, as now |
-| **The droplet** (`worker/`, new) | Everything that has to stay on: the moderator account's DMs, Spacedust for the shield, Jetstream for new follows, batch writes that take hours, watches, attack mode | The moderator account's app password, Virga-held list accounts (below), a lock so one copy runs. **No user sessions** |
+| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: the list writer and narrow internal routes the droplet calls to write a gate or a list item as the user. The moderator's DMs, a pass at a time (phase 4, as built) | Users' OAuth sessions, encrypted, as now; the moderator's session, sealed the same way |
+| **The droplet** (`worker/`, new) | Everything that has to stay on: the clock for the writer and the DM pass, Spacedust for the shield, Jetstream for new follows, watches, attack mode | Virga-held list accounts (below). **No user sessions, and not the moderator's** |
 | **Supabase** (`virga` schema) | Defense's tables | The minimum below |
 
 The droplet never decrypts a user's session. When the shield needs to close replies on
@@ -216,7 +216,7 @@ also hold the PDS's keys.
    the worker's first job, batch writes with the veto at the write; decisions, undo,
    history. *Done, but for mode 2* (below).
 4. **The moderator.** The shared account, linking, tenancy, the command grammar, background
-   writes, scans by DM.
+   writes, scans by DM. *Done* (below), but for approving by name or by engagement.
 5. **The shield and attack mode.** Spacedust on the droplet, the internal gates route,
    per-post guards, attack mode, putting everything back.
 6. **Premium and policy.** Entitlement and payments; the Terms and Privacy Policy;
@@ -404,6 +404,57 @@ had happened. Fixed in `server/defense/run.js` and
     run its passes, as Virga's other crons do. Production refuses.
   - **The two locks aren't tested.** PGlite has one connection, so neither can be shown
     under real concurrency. They are written to the pattern Postgres documents.
+
+### Phase 4, as built
+
+- **The grammar** (`src/defense/command.js`) is bluesky-mod's, ported with its tests for the
+  verbs Virga has: block and unblock one account, keep and unkeep, approve, review and cancel
+  a plan by its code, undo (the last, or an approval), history (all, or one account's), lists,
+  status, a new list, help, and Virga's own `link`. A message either matches a verb, its
+  target named in the owner's own words (a handle, a DID, a link, the post they shared), or
+  it isn't a command. "block them" is asked back, never guessed; two accounts are refused;
+  PROTECTED is stripped from any approval; an approval with a word it can't place is refused
+  whole.
+- **Where the DMs are read: a change from the plan.** The plan had the droplet hold the
+  moderator's app password and read the DMs. As built, Vercel does
+  (`server/defense/dm/`), a pass at a time, called by Vercel Cron every minute and by the
+  worker every 15 seconds, signed. The worker holds nothing that can act as anyone, the
+  moderator included, so a compromised droplet can't send a command as an owner, nor read
+  their DMs. The moderator's session is kept between passes sealed with
+  `SESSION_ENCRYPTION_KEY` (production refuses to keep it without one), and a lease in
+  `defense_dm_state` keeps it to one pass at a time, so a refresh token is never spent twice.
+- **Linking** (`defense_link`): Defense › Lists makes an eight-character code, shown once
+  and kept only as a hash of the owner's DID and the code. Sent to the moderator from the
+  same account within fifteen minutes, it links; from any other account it links nothing.
+  The fifth wrong try spends it. Anyone who hasn't linked gets one line, the same for
+  everyone, at most once a day, keyed by a hash of their DID (`defense_dm_stranger`), so a
+  DM can't tell anyone whether a handle uses Virga and no list of who wrote is kept.
+- **A pass** reads the chat log from where the last stopped. It answers only one-to-one
+  conversations, only messages from someone other than the moderator, and each at most once:
+  the cursor moves past a message before it is answered. A message more than an hour old is
+  not answered; the sender is told once. The first pass ever finds the end of the log and
+  answers nothing before it.
+- **A command runs as its sender**: `storeFor(sender)`, where the sender is the chat
+  service's, and nothing else. "block @someone" is a new kind of add, one named account with
+  no band (`defense_add_named`), to the list chosen in Defense › Lists, or the only one; the
+  veto at the write decides as for any other. A post shared with "block" or "block this
+  guy" names its author; with words that might mean someone else, it asks.
+- **Tests:** the grammar's (`command.test.js`), the tables' (`moderator.pglite.test.js`),
+  and the whole pass against a fake chat service with two owners and a stranger
+  (`dm/dm.pglite.test.js`): nothing one owner sends moves the other's rows or names their
+  lists.
+- **Scans by DM** (`server/defense/dm/scan.js`): a post sent to the moderator, pasted or
+  shared, or "add repliers" and a post, is scanned on Vercel inside the pass. It is the web's
+  own scan (`runScan`), with the vouches read through the owner's long session (opened for
+  that call) and the canary's candidates from the owner's public follows and followers. What
+  it finds is stored as a plan with a short code and answered with its counts; nothing is
+  added until "approve <code> UNKNOWN". A scan whose vouches couldn't be counted offers
+  nothing to approve, as on the web. A scan has 25 seconds; a post too big for that is
+  pointed at the web.
+- **Not built yet:**
+  - **Approving by name or by engagement** ("approve 3f9a2c1b @a @b", "… repliers") parse,
+    and are answered with how to approve by band instead.
+  - **The second wall** (row-level security keyed on the owner), as phase 3 left it.
 
 ## Security and policy
 

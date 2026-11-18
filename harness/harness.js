@@ -17,6 +17,11 @@
 //   ?defensewrites=off
 //                    Virga's server doesn't write Defense's lists (its
 //                    DEFENSE_WRITES isn't on): scans work, lists don't
+//   ?moderator=off|linked
+//                    Virga's moderator account isn't set up (off), or every
+//                    account starts linked to it (linked). By default it is set
+//                    up as @mod.virga.example and nobody has linked it; a code
+//                    made on Defense › Lists links ten seconds later, as if sent
 //   ?appview=failopen|flaky
 //                    the signed-in getProfiles leaves known followers off
 //                    every answer (failopen: a scan can't count anyone) or
@@ -108,6 +113,7 @@ export function readFlags(search) {
     ),
     appview: ['failopen', 'flaky'].includes(params.get('appview')) ? params.get('appview') : 'ok',
     defenseWrites: params.get('defensewrites') !== 'off',
+    moderator: ['off', 'linked'].includes(params.get('moderator')) ? params.get('moderator') : 'on',
     limits: readLimits(params.get('limits')),
     aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
@@ -137,6 +143,7 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     ai: flags.ai,
     terms: flags.terms,
     defenseWrites: flags.defenseWrites,
+    moderator: flags.moderator,
   });
   const agents = new Map();
   const worldOf = (did) => worlds.find((w) => w.me.did === did) || null;

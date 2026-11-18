@@ -16,7 +16,8 @@
   "crons": [
     { "path": "/api/schedule/run", "schedule": "* * * * *" },
     { "path": "/api/self-destruct/run", "schedule": "* * * * *" },
-    { "path": "/api/defense/run", "schedule": "* * * * *" }
+    { "path": "/api/defense/run", "schedule": "* * * * *" },
+    { "path": "/api/defense/dm", "schedule": "* * * * *" }
   ],
   "rewrites": [
     { "source": "/oauth-client-metadata.json", "destination": "/api/client-metadata" },

@@ -1,15 +1,18 @@
-// What the worker does, apart from its loop: call Virga's run route, signed,
-// and work out how long to wait before the next call. Pure enough to test
-// against the server's own check (drive.test.js).
+// What the worker does, apart from its loop: call Virga's routes, signed, and
+// work out how long to wait before the next call. Pure enough to test against
+// the server's own check (drive.test.js).
 //
-// In phase 3 this is all the worker does. It holds one secret,
-// DEFENSE_WORKER_SECRET, and calls one route; Virga's server chooses the work,
-// opens the sessions and writes. The DMs, the shield's socket and attack mode
-// join it in phases 4 and 5 (docs/DEFENSE.md).
+// It holds one secret, DEFENSE_WORKER_SECRET, and calls two routes: the list
+// writer (/api/defense/run) and the moderator's DM pass (/api/defense/dm).
+// Virga's server chooses the work, opens the sessions, reads the DMs and
+// writes; the worker is the clock that keeps them coming sooner than Vercel
+// Cron's minute (docs/DEFENSE.md). The shield's socket and attack mode join
+// it in phase 5.
 
 import { signWorkerRequest } from '../server/defense/workerAuth.js';
 
 export const RUN_PATH = '/api/defense/run';
+export const DM_PATH = '/api/defense/dm';
 const MAX_BACKOFF_MS = 10 * 60_000;
 
 /** The worker's settings from its environment; throws a sentence naming what's missing. */
@@ -28,19 +31,24 @@ export function readConfig(env = process.env) {
   if (secret.length < 32) throw new Error('DEFENSE_WORKER_SECRET must be set, 32 characters or more (openssl rand -hex 32), the same as on Vercel');
   const seconds = Number(env.WORKER_INTERVAL_SECONDS || 60);
   const intervalMs = Number.isFinite(seconds) && seconds >= 15 ? seconds * 1000 : 60_000;
-  return { base: base.origin, secret, intervalMs };
+  // The DM pass, more often, so a command is answered in seconds; 0 leaves it to the cron.
+  const dmRaw = env.WORKER_DM_SECONDS ?? '15';
+  const dmSeconds = Number(dmRaw);
+  const dmIntervalMs = String(dmRaw).trim() === '0' ? 0 : Number.isFinite(dmSeconds) && dmSeconds >= 5 ? dmSeconds * 1000 : 15_000;
+  return { base: base.origin, secret, intervalMs, dmIntervalMs };
 }
 
 /**
- * One call to the run route. Resolves to `{ ok, status, summary?, error? }`;
- * never throws, so the loop's only job is to wait and call again.
+ * One call to a route (the writer's by default). Resolves to `{ ok, status,
+ * summary?, error? }`; never throws, so the loop's only job is to wait and
+ * call again.
  */
-export async function driveOnce({ base, secret, fetchImpl = globalThis.fetch, now = Date.now, timeoutMs = 70_000 }) {
+export async function driveOnce({ base, secret, path = RUN_PATH, fetchImpl = globalThis.fetch, now = Date.now, timeoutMs = 70_000 }) {
   const signal = AbortSignal.timeout(timeoutMs);
   try {
-    const res = await fetchImpl(`${base}${RUN_PATH}`, {
+    const res = await fetchImpl(`${base}${path}`, {
       method: 'POST',
-      headers: { 'x-virga-worker': signWorkerRequest({ secret, method: 'POST', path: RUN_PATH, now: now() }), Accept: 'application/json' },
+      headers: { 'x-virga-worker': signWorkerRequest({ secret, method: 'POST', path, now: now() }), Accept: 'application/json' },
       signal,
     });
     const body = await res.json().catch(() => null);

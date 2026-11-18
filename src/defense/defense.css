@@ -651,3 +651,38 @@ a.defense-list-name {
     gap: var(--space-2);
   }
 }
+
+/* ---- the moderator ------------------------------------------------------ */
+
+.defense-moderator-linked,
+.defense-moderator-code {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.defense-moderator-linked > p,
+.defense-moderator-code > p {
+  margin: 0;
+}
+
+.defense-moderator .field {
+  max-width: 22rem;
+}
+
+.defense-link-code {
+  margin: 0;
+}
+
+.defense-link-code code {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--code);
+  font-size: 1.125rem;
+  letter-spacing: 0.06em;
+  user-select: all;
+  overflow-wrap: anywhere;
+}

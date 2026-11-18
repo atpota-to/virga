@@ -1,16 +1,21 @@
 # The worker
 
-Defense's process on the droplet (docs/DEFENSE.md). In phase 3 it does one thing: every
-minute or so it calls Virga's run route, `POST /api/defense/run`, signed with
-`DEFENSE_WORKER_SECRET`. That route, on Vercel, claims the lists due a write, runs the
-veto, opens the session of the account that holds each list and writes a batch.
-Vercel Cron calls the same route, so the worker isn't required for lists to be written; it
-is the clock that will stay when the cron can't, and the place the DMs, the shield and
-attack mode join it in phases 4 and 5.
+Defense's process on the droplet (docs/DEFENSE.md). It calls two of Virga's routes,
+signed with `DEFENSE_WORKER_SECRET`:
 
-It holds no database key and no session, only the secret, and calls nothing else
-(docs/DEFENSE-THREATS.md). A stolen secret can make Virga write sooner what owners have
-already approved, and nothing more.
+- **The list writer**, `POST /api/defense/run`, every minute or so. On Vercel, it claims the
+  lists due a write, runs the veto, opens the session of the account that holds each list
+  and writes a batch.
+- **The moderator's DM pass**, `POST /api/defense/dm`, every 15 seconds. On Vercel, it reads
+  the moderator account's DMs since the last pass and answers each linked owner's commands.
+
+Vercel Cron calls both every minute, so the worker isn't required for either; it makes the
+DMs answer in seconds, and is the clock that stays when the cron can't. The shield and
+attack mode join it in phase 5.
+
+It holds no database key and no session, the moderator's included: only the secret, and it
+calls nothing else (docs/DEFENSE-THREATS.md). A stolen secret can make Virga write sooner
+what owners have already approved, and read its DMs sooner, and nothing more.
 
 ## Running it
 
@@ -27,7 +32,8 @@ Or without Docker: `VIRGA_URL=… DEFENSE_WORKER_SECRET=… node worker/main.js`
 | --- | --- |
 | `VIRGA_URL` | Virga's deployment, an https origin |
 | `DEFENSE_WORKER_SECRET` | The same value as on Vercel, 32 characters or more |
-| `WORKER_INTERVAL_SECONDS` | How often to call, at least 15; 60 by default |
+| `WORKER_INTERVAL_SECONDS` | How often to call the list writer, at least 15; 60 by default |
+| `WORKER_DM_SECONDS` | How often to call the DM pass, at least 5; 15 by default; 0 leaves it to Vercel Cron |
 
 A failed call is tried again after twice the wait, up to ten minutes; a 401 (the secret
 doesn't match Vercel's) waits ten minutes each time and says so in the log.

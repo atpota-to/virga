@@ -94,10 +94,9 @@ forgotten.
 
 ## What phase 3 leaves open
 
-- **The worker holds no database key and no session in phase 3**, only the secret that
-  signs its calls to the run route. Phase 4 gives it the moderator account and the DM loop;
-  it should still reach Defense's tables only through Vercel or through a database role with
-  a few functions granted, never the service-role key.
+- **The worker holds no database key and no session**, only the secret that signs its
+  calls. Phase 4 kept it so: the DMs are read on Vercel (rule 16), and the worker only says
+  when.
 - **Row-level security on `owner_did` is not the second wall yet.** Supabase's service role
   bypasses row-level security, and every Virga route uses it. The first wall is the
   owner-bound store and the SQL functions that require an owner. A second needs a role
@@ -108,11 +107,44 @@ forgotten.
   a run that would take too long, by refusing the batch rather than writing it.
 - **A Bluesky client can still add anyone by hand.** The veto binds Virga, not the owner.
 
+## The rules phase 4 adds
+
+Every DM is untrusted text, from whoever is on the other end. The moderator answers only
+accounts that linked it, but what they paste can carry anything.
+
+11. **Who sent a message is what the chat service says.** The pass takes the sender's DID
+    from the chat service's message view and nothing else; no command, link or mention in a
+    message can say who it is from. Test: a command sent by one owner touches only their rows.
+12. **Linking proves a choice, bound to one account.** A code is made by an authenticated
+    request, stored as a hash of the owner's DID and the code, lasts fifteen minutes, and is
+    spent by the fifth wrong try. Sent from any other account it links nothing, and the
+    answer to a wrong code is the same as to an expired one or to none. Test: another account
+    sending a real code links nothing, and the owner's code still works after.
+13. **A command runs as its sender, on their rows only, and says nothing of anyone else's.**
+    Every command goes through `storeFor(sender)`; every reply is built from that store's
+    answers. Test: two owners and a stranger in one database, and nothing one sends moves or
+    names the other's lists, plans or decisions.
+14. **A target is named in the owner's own words.** The grammar takes a handle, a DID, a
+    link the owner pasted (its full URL from the facet, never what's left of a shortened
+    one) or the post the owner shared. Nothing a post says, and nothing the moderator read,
+    can choose a target. Two candidates are refused; "them" is asked back; an approval with a
+    word it can't place is refused whole; PROTECTED is never carried. Test: command.test.js,
+    ported from bluesky-mod's.
+15. **One-to-one, at most once, one pass at a time.** Group conversations aren't answered
+    (everyone in them would read the reply). The cursor moves past a message before it is
+    answered, so a message that breaks its turn isn't answered again on every pass. A lease
+    keeps two passes from reading the same log. Someone unlinked gets one line, the same for
+    everyone, at most once a day, keyed by a hash of their DID. Test: dm/dm.pglite.test.js.
+16. **The moderator's session is Vercel's alone.** It is opened only by the DM pass, kept
+    sealed with `SESSION_ENCRYPTION_KEY` (production won't keep it otherwise), and refreshed
+    only under the lease. The droplet never holds it: a compromised worker can make a pass
+    run sooner, and can't read a DM or send one.
+
 ## For the phases after
 
-- **Phase 4 (the moderator in DMs):** every DM is untrusted text from a stranger; linking by
-  a short code must not tell anyone whether a handle uses Virga; replies must never name
-  another owner's lists; the command grammar's tests come across with it.
+- **Phase 4 (the moderator in DMs):** built to the rules above. A scan by DM opens the
+  owner's session for the signed-in `getProfiles` and nothing else, and its plan is approved
+  under rules 1 and 13 like any other.
 - **Phase 5 (the shield):** the gates route may only change threadgates and postgates on the
   owner's own posts, and must put each back exactly as it was.
 - **Phase 7 (agent mode):** the write check sees the owner's words, never the posts the

@@ -1,6 +1,7 @@
 // Defense › Lists: the block and mute lists Defense keeps for the account,
 // what each holds by Virga's hand and what is still being written, a new one,
-// and the people kept off every list by hand.
+// the moderator linked for DMs (ModeratorCard.jsx), and the people kept off
+// every list by hand.
 //
 // The lists are records in the account's own repo (mode 'own',
 // docs/DEFENSE.md): anyone can see them on its profile, and the account blocks
@@ -22,6 +23,7 @@ import { whyNot } from './AddToList.jsx';
 import { createList, defenseErrorMessage, keepAccount, unkeepAccount } from './defenseService.js';
 import { DEFENSE_PAGE_BY_KEY } from './routes.js';
 import { useDefenseAccount, useDefenseLists } from './useDefense.js';
+import ModeratorCard from './ModeratorCard.jsx';
 import './defense.css';
 
 const PAGE = DEFENSE_PAGE_BY_KEY.lists;
@@ -58,6 +60,7 @@ export default function DefenseLists() {
         ) : (
           <>
             <YourLists lists={lists} />
+            <ModeratorCard lists={lists} />
             <KeptByHand lists={lists} />
           </>
         )}

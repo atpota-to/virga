@@ -21,6 +21,12 @@ const { default: approve } = await import('./handlers/approve.js');
 const { default: history } = await import('./handlers/history.js');
 const { default: undo } = await import('./handlers/undo.js');
 const { default: run } = await import('./handlers/run.js');
+const { default: dm } = await import('./handlers/dm.js');
+const { default: link } = await import('./handlers/link.js');
+const { default: linkCode } = await import('./handlers/linkCode.js');
+const { default: unlink } = await import('./handlers/unlink.js');
+const { default: linkList } = await import('./handlers/linkList.js');
+const { hashLinkCode } = await import('./linking.js');
 
 const MIRA = 'did:plc:mira';
 const LAB = 'did:plc:lab';
@@ -36,7 +42,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await t.query(`TRUNCATE defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  await t.query(`TRUNCATE defense_link, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
   setSupabaseClientForTests(t.supabase);
   vi.unstubAllEnvs();
   vi.stubEnv('DEFENSE_WRITES', 'on');
@@ -226,5 +232,73 @@ describe('the run route', () => {
     ];
     for (const headers of tries) expect((await call(run, { url: URL_PATH, headers }, { run: r })).status, JSON.stringify(headers)).toBe(401);
     expect(r).not.toHaveBeenCalled();
+  });
+});
+
+describe('the DM route', () => {
+  const URL_PATH = '/api/defense/dm';
+  const passer = () => vi.fn(async () => ({ ran: true, answered: 0, skipped: 0, errors: [] }));
+
+  it('runs for the worker’s signed call and the cron, and for nothing else', async () => {
+    vi.stubEnv('DEFENSE_WORKER_SECRET', 'w-secret');
+    vi.stubEnv('CRON_SECRET', 'c-secret');
+    const p = passer();
+    expect((await call(dm, { url: URL_PATH, headers: { 'x-virga-worker': signWorkerRequest({ secret: 'w-secret', path: URL_PATH }) } }, { run: p })).status).toBe(200);
+    expect((await call(dm, { method: 'GET', url: URL_PATH, headers: { authorization: 'Bearer c-secret' } }, { run: p })).status).toBe(200);
+    expect(p).toHaveBeenCalledTimes(2);
+    const refused = passer();
+    // The writer's signature doesn't open the DM pass, nor an owner's token.
+    for (const headers of [{ 'x-virga-worker': signWorkerRequest({ secret: 'w-secret', path: '/api/defense/run' }) }, TOKEN, {}]) {
+      expect((await call(dm, { url: URL_PATH, headers }, { run: refused })).status).toBe(401);
+    }
+    expect(refused).not.toHaveBeenCalled();
+  });
+});
+
+describe('linking the moderator', () => {
+  beforeEach(() => {
+    vi.stubEnv('DEFENSE_MODERATOR_HANDLE', 'mod.virga.example');
+    vi.stubEnv('DEFENSE_MODERATOR_PASSWORD', 'app-pass');
+  });
+
+  it('makes a code bound to the caller, shown once and kept as a hash', async () => {
+    expect((await call(link, { method: 'GET' })).body.data).toEqual({ moderator: 'mod.virga.example', linked: false, linkedAt: null, codeExpiresAt: null, listId: null });
+    const made = await call(linkCode, {});
+    expect(made.body.data).toMatchObject({ code: expect.stringMatching(/^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/), moderator: 'mod.virga.example' });
+    const { rows } = await t.query(`SELECT code_hash FROM defense_link WHERE owner_did = $1`, [MIRA]);
+    expect(rows[0].code_hash).toBe(hashLinkCode(MIRA, made.body.data.code));
+    expect(JSON.stringify(rows)).not.toContain(made.body.data.code.replace('-', ''));
+    expect((await call(link, { method: 'GET' })).body.data.codeExpiresAt).toEqual(expect.any(String));
+  });
+
+  it('says when there is no moderator to link', async () => {
+    vi.stubEnv('DEFENSE_MODERATOR_PASSWORD', '');
+    expect((await call(linkCode, {})).body.code).toBe('NO_MODERATOR');
+    expect((await call(link, { method: 'GET' })).body.data.moderator).toBeNull();
+  });
+
+  it('chooses one of the caller’s own lists, and unlinks', async () => {
+    const mine = await makeList(MIRA);
+    const theirs = await makeList(LAB);
+    signInAs(MIRA);
+    expect((await call(linkList, { body: { listId: theirs.id } })).status).toBe(404);
+    expect((await call(linkList, { body: { listId: 'nope' } })).status).toBe(400);
+    expect((await call(linkList, { body: { listId: mine.id } })).body.data).toEqual({ listId: mine.id });
+    await t.query(`UPDATE defense_link SET linked_at = NOW() WHERE owner_did = $1`, [MIRA]);
+    expect((await call(link, { method: 'GET' })).body.data).toMatchObject({ linked: true, listId: mine.id });
+    await call(unlink, {});
+    expect((await call(link, { method: 'GET' })).body.data.linked).toBe(false);
+  });
+
+  it('needs the caller signed in', async () => {
+    signInAs(null);
+    for (const [h, m] of [
+      [link, 'GET'],
+      [linkCode, 'POST'],
+      [unlink, 'POST'],
+      [linkList, 'POST'],
+    ]) {
+      expect((await call(h, { method: m, body: {} })).status).toBe(401);
+    }
   });
 });

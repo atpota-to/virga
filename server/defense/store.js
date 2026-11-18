@@ -309,6 +309,22 @@ export function storeFor(ownerDid, { client = null } = {}) {
       );
     },
 
+    /** Everything decided about one account, newest first. */
+    async historyOf(did, { limit = 20 } = {}) {
+      return (
+        unwrap(
+          await db()
+            .from('defense_decision')
+            .select('id, list_id, plan_id, subject_did, action, band, trust, via, note, state, reason, created_at, acted_at, undone_at, undoes')
+            .eq('owner_did', owner)
+            .eq('subject_did', did)
+            .order('id', { ascending: false })
+            .limit(Math.max(1, Math.min(100, limit))),
+          'history of',
+        ) || []
+      );
+    },
+
     /** The newest add still live, whatever it came from, or null. */
     async lastAdd() {
       const rows = unwrap(

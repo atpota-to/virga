@@ -31,15 +31,17 @@ describe('vercel.json crons', () => {
       { path: '/api/schedule/run', schedule: '* * * * *' },
       { path: '/api/self-destruct/run', schedule: '* * * * *' },
       { path: '/api/defense/run', schedule: '* * * * *' },
+      { path: '/api/defense/dm', schedule: '* * * * *' },
     ]);
   });
 
-  it('points each cron at a router that has a run action', () => {
+  it('points each cron at a pass its router has: a run, or the moderator’s DM pass', () => {
     for (const { path } of crons) {
       const [, area, action] = path.split('/').filter(Boolean);
-      expect(action).toBe('run');
+      expect(['run', 'dm']).toContain(action);
+      if (action === 'dm') expect(area).toBe('defense');
       const text = readFileSync(new URL(`api/${area}/[action].js`, root), 'utf8');
-      expect(text).toMatch(/\brun\b/);
+      expect(text).toMatch(new RegExp(`\\b${action}\\b`));
     }
   });
 

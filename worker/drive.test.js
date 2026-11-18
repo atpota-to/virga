@@ -1,12 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import { isWorkerAuthorized } from '../server/defense/workerAuth.js';
-import { RUN_PATH, driveOnce, nextDelay, readConfig } from './drive.js';
+import { DM_PATH, RUN_PATH, driveOnce, nextDelay, readConfig } from './drive.js';
 
 const SECRET = 'a'.repeat(64);
 
 describe('the worker’s settings', () => {
   it('want an https origin and a long secret', () => {
-    expect(readConfig({ VIRGA_URL: 'https://virga.example/', DEFENSE_WORKER_SECRET: SECRET })).toEqual({ base: 'https://virga.example', secret: SECRET, intervalMs: 60_000 });
+    expect(readConfig({ VIRGA_URL: 'https://virga.example/', DEFENSE_WORKER_SECRET: SECRET })).toEqual({ base: 'https://virga.example', secret: SECRET, intervalMs: 60_000, dmIntervalMs: 15_000 });
+    expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_DM_SECONDS: '0' }).dmIntervalMs).toBe(0);
+    expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_DM_SECONDS: '2' }).dmIntervalMs).toBe(15_000);
+    expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_DM_SECONDS: '8' }).dmIntervalMs).toBe(8_000);
     expect(readConfig({ VIRGA_URL: 'http://127.0.0.1:3000', DEFENSE_WORKER_SECRET: SECRET, WORKER_INTERVAL_SECONDS: '30' }).intervalMs).toBe(30_000);
     expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_INTERVAL_SECONDS: '1' }).intervalMs).toBe(60_000);
     expect(() => readConfig({ VIRGA_URL: 'http://virga.example', DEFENSE_WORKER_SECRET: SECRET })).toThrow(/https/);
@@ -29,6 +32,20 @@ describe('a call to the run route', () => {
     expect(seen.url).toBe(RUN_PATH);
     expect(isWorkerAuthorized(seen, { DEFENSE_WORKER_SECRET: SECRET })).toBe(true);
     expect(isWorkerAuthorized(seen, { DEFENSE_WORKER_SECRET: 'b'.repeat(64) })).toBe(false);
+  });
+
+  it('signs the DM pass for its own path, which the writer’s signature doesn’t open', async () => {
+    let seen;
+    const fetchImpl = vi.fn(async (url, init) => {
+      seen = { method: init.method, url: new URL(url).pathname, headers: Object.fromEntries(Object.entries(init.headers).map(([k, v]) => [k.toLowerCase(), v])) };
+      return new Response(JSON.stringify({ success: true, data: { ran: true, answered: 1 } }), { status: 200 });
+    });
+    await driveOnce({ base: 'https://virga.example', secret: SECRET, path: DM_PATH, fetchImpl });
+    expect(seen.url).toBe(DM_PATH);
+    expect(isWorkerAuthorized(seen, { DEFENSE_WORKER_SECRET: SECRET })).toBe(true);
+    expect(isWorkerAuthorized({ ...seen, url: RUN_PATH }, { DEFENSE_WORKER_SECRET: SECRET })).toBe(false);
+    // The signature covers the body: the same header with a body it wasn't made for is refused.
+    expect(isWorkerAuthorized(seen, { DEFENSE_WORKER_SECRET: SECRET }, Date.now(), { body: '{"owner":"did:plc:x"}' })).toBe(false);
   });
 
   it('never throws: a refusal or no answer is an outcome', async () => {
