@@ -14,9 +14,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 
-// Defense is off unless a build turns it on (src/config.js); the harness shows
-// everything. Vite reads VITE_ variables from the environment it starts in.
+// Defense, and its moderator, are off unless a build turns them on
+// (src/config.js); the harness shows everything. Vite reads VITE_ variables
+// from the environment it starts in.
 process.env.VITE_DEFENSE ??= 'on';
+process.env.VITE_DEFENSE_MODERATOR ??= 'on';
 
 const REAL_SESSION = fileURLToPath(new URL('./src/session/useAtprotoSession.jsx', import.meta.url));
 const FAKE_SESSION = fileURLToPath(new URL('./harness/fakeSession.jsx', import.meta.url));

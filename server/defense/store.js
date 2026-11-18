@@ -92,9 +92,30 @@ export function storeFor(ownerDid, { client = null } = {}) {
       return unwrap(await db().from('defense_protected').select('did, reason, added_at').eq('owner_did', owner).order('added_at', { ascending: false }), 'kept') || [];
     },
 
-    /** The same, as did -> reason, for the veto. */
-    async keptMap() {
-      return new Map((await this.kept()).map((r) => [r.did, r.reason]));
+    /**
+     * The people kept by hand as did -> reason, for the veto: of `dids` when
+     * given (a batch at the write), or all of them, read in pages so none is
+     * cut off at the database's row cap.
+     */
+    async keptMap(dids = null) {
+      const out = new Map();
+      if (dids) {
+        for (let i = 0; i < dids.length; i += 200) {
+          const part = dids.slice(i, i + 200);
+          const rows = unwrap(await db().from('defense_protected').select('did, reason').eq('owner_did', owner).in('did', part), 'kept') || [];
+          for (const r of rows) out.set(r.did, r.reason);
+        }
+        return out;
+      }
+      for (let from = 0; ; from += 1000) {
+        const rows =
+          unwrap(
+            await db().from('defense_protected').select('did, reason').eq('owner_did', owner).order('did', { ascending: true }).range(from, from + 999),
+            'kept',
+          ) || [];
+        for (const r of rows) out.set(r.did, r.reason);
+        if (rows.length < 1000) return out;
+      }
     },
 
     async keep(did, reason) {
@@ -151,6 +172,21 @@ export function storeFor(ownerDid, { client = null } = {}) {
       return unwrap(await q, 'history') || [];
     },
 
+    /** The owner's plans, approved or not and not expired, newest first. */
+    async recentPlans({ limit = 20 } = {}) {
+      return (
+        unwrap(
+          await db()
+            .from('defense_plan')
+            .select('id, list_id, post_uri, created_at, approved_at, approved_bands, expires_at')
+            .eq('owner_did', owner)
+            .order('created_at', { ascending: false })
+            .limit(Math.max(1, Math.min(50, limit))),
+          'recent plans',
+        ) || []
+      ).filter((p) => !p.expires_at || Date.parse(p.expires_at) > Date.now());
+    },
+
     /** The owner's approved plans, newest first, each with what came of its adds. */
     async plans({ limit = 50 } = {}) {
       return unwrap(await db().rpc('defense_plans', { p_owner_did: owner, p_limit: limit }), 'plans') || [];
@@ -185,12 +221,171 @@ export function storeFor(ownerDid, { client = null } = {}) {
       return unwrap(await db().rpc('defense_settle', { p_owner_did: owner, p_job_id: jobId, p_results: results }), 'settle');
     },
 
+    /** Of the owner's adds `ids`, those whose removal is waiting (queued or sent): a Set of add ids. */
+    async undoPending(ids) {
+      if (!ids?.length) return new Set();
+      const rows =
+        unwrap(
+          await db().from('defense_decision').select('undoes').eq('owner_did', owner).eq('action', 'remove').in('state', ['queued', 'sent']).in('undoes', ids),
+          'undo pending',
+        ) || [];
+      return new Set(rows.map((r) => r.undoes));
+    },
+
+    /** The state of some of the owner's decisions: id -> { state, rkey, undone_at }. */
+    async decisionStates(ids) {
+      if (!ids?.length) return new Map();
+      const rows = unwrap(await db().from('defense_decision').select('id, state, rkey, undone_at').eq('owner_did', owner).in('id', ids), 'decision states') || [];
+      return new Map(rows.map((r) => [r.id, r]));
+    },
+
+    /** Hold every job of a job's holder until a time (a rate limit is the account's). */
+    async holdHolder(jobId, until) {
+      unwrap(await db().rpc('defense_hold_holder', { p_owner_did: owner, p_job_id: jobId, p_until: new Date(until).toISOString() }), 'hold holder');
+    },
+
     /** Hold a job back until a time, saying why. */
     async holdJob(jobId, until, error) {
       unwrap(
         await db().rpc('defense_hold_job', { p_owner_did: owner, p_job_id: jobId, p_until: new Date(until).toISOString(), p_error: String(error || '').slice(0, 500) }),
         'hold job',
       );
+    },
+
+    // ─── The moderator (phase 4) ────────────────────────────────────────────
+
+    /** The owner's link to the moderator: `{ linked_at, code_expires_at, list_id, … }`, or null. */
+    async link() {
+      return unwrap(await db().from('defense_link').select('owner_did, linked_at, code_expires_at, list_id, updated_at').eq('owner_did', owner).maybeSingle(), 'link');
+    },
+
+    /** Store a new linking code's hash, replacing the last. */
+    async linkCode(codeHash, expiresAt) {
+      return unwrap(await db().rpc('defense_link_code', { p_owner_did: owner, p_code_hash: codeHash, p_expires: new Date(expiresAt).toISOString() }), 'link code');
+    },
+
+    /** What came of the owner sending a code: 'linked', 'wrong', 'expired' or 'none'. */
+    async claimLink(codeHash) {
+      return unwrap(await db().rpc('defense_link_claim', { p_owner_did: owner, p_code_hash: codeHash }), 'claim link');
+    },
+
+    /** Unlink the moderator; the moderator stops answering this owner. */
+    async unlink() {
+      unwrap(
+        await db().from('defense_link').update({ linked_at: null, code_hash: null, code_expires_at: null, code_tries: 0, updated_at: new Date().toISOString() }).eq('owner_did', owner),
+        'unlink',
+      );
+    },
+
+    /** The list the moderator's adds go to (null clears it); false when it isn't the owner's. */
+    async setLinkList(listId) {
+      return unwrap(await db().rpc('defense_link_list', { p_owner_did: owner, p_list_id: listId }), 'link list');
+    },
+
+    /** Add one named account: `{ outcome, job_id, decision_id }`. */
+    async addNamed(listId, did, { note = null, via = 'dm' } = {}) {
+      return first(unwrap(await db().rpc('defense_add_named', { p_owner_did: owner, p_list_id: listId, p_did: did, p_note: note, p_via: via }), 'add named'));
+    },
+
+    /** The owner's plans whose id starts with an eight-digit code (two means ambiguous). */
+    async plansByCode(code) {
+      return unwrap(await db().rpc('defense_plan_by_code', { p_owner_did: owner, p_code: code }), 'plan by code') || [];
+    },
+
+    /** Drop a plan nothing was approved from; whether one was dropped. */
+    async cancelPlan(planId) {
+      const gone = unwrap(await db().from('defense_plan').delete().eq('owner_did', owner).eq('id', planId).is('approved_at', null).select('id'), 'cancel plan');
+      return Boolean(gone?.length);
+    },
+
+    /** The rows of one plan of the owner's; none for a plan that isn't theirs. */
+    async planRows(planId) {
+      // Through the plan, owner first: a plan id alone names nobody's rows.
+      if (!(await this.plan(planId))) return [];
+      return unwrap(await db().from('defense_plan_row').select('did, band, trust').eq('plan_id', planId).limit(10_000), 'plan rows') || [];
+    },
+
+    /** Adds for one account that are still live (queued, sent or written, not undone), newest first. */
+    async liveAdds(did) {
+      return (
+        unwrap(
+          await db()
+            .from('defense_decision')
+            .select('id, list_id, plan_id, state, created_at')
+            .eq('owner_did', owner)
+            .eq('subject_did', did)
+            .eq('action', 'add')
+            .in('state', ['queued', 'sent', 'done'])
+            .is('undone_at', null)
+            .order('id', { ascending: false })
+            .limit(50),
+          'live adds',
+        ) || []
+      );
+    },
+
+    /** Everything decided about one account, newest first. */
+    async historyOf(did, { limit = 20 } = {}) {
+      return (
+        unwrap(
+          await db()
+            .from('defense_decision')
+            .select('id, list_id, plan_id, subject_did, action, band, trust, via, note, state, reason, created_at, acted_at, undone_at, undoes')
+            .eq('owner_did', owner)
+            .eq('subject_did', did)
+            .order('id', { ascending: false })
+            .limit(Math.max(1, Math.min(100, limit))),
+          'history of',
+        ) || []
+      );
+    },
+
+    /**
+     * Count an agent turn against the owner's monthly allowance (`limit`,
+     * null for none): the turns used this month, or null when it is spent.
+     */
+    async agentTurn(limit) {
+      return unwrap(await db().rpc('defense_agent_count', { p_owner_did: owner, p_limit: limit ?? null }), 'agent turn');
+    },
+
+    /**
+     * A turn for a message Vercel read back from the chat service: its id, or
+     * null when the allowance (`limit`) is spent. `count` false opens one
+     * without counting it (a yes to a question, which asks no model).
+     */
+    async openTurn({ convoId, messageId, limit = null, count = true }) {
+      return unwrap(
+        await db().rpc('defense_agent_turn_open', { p_owner_did: owner, p_convo_id: convoId, p_message_id: messageId, p_limit: limit, p_count: count }),
+        'open turn',
+      );
+    },
+
+    /** One of the owner's turns, or null. */
+    async turn(id) {
+      if (!id) return null;
+      return unwrap(await db().from('defense_agent_turn').select('id, convo_id, message_id, created_at, writes').eq('owner_did', owner).eq('id', id).maybeSingle(), 'turn');
+    },
+
+    /** Count a write against a turn: false when it isn't the owner's, is stale, or has had its writes. */
+    async turnWrite(id, { minutes, max }) {
+      return Boolean(unwrap(await db().rpc('defense_agent_turn_write', { p_owner_did: owner, p_turn_id: id, p_minutes: minutes, p_max: max }), 'turn write'));
+    },
+
+    /** The newest add still live, whatever it came from, or null. */
+    async lastAdd() {
+      const rows = unwrap(
+        await db()
+          .from('defense_decision')
+          .select('id, list_id, plan_id, subject_did, state, created_at')
+          .eq('owner_did', owner)
+          .eq('action', 'add')
+          .in('state', ['queued', 'sent', 'done'])
+          .is('undone_at', null)
+          .order('id', { ascending: false })
+          .limit(1),
+        'last add',
+      );
+      return rows?.[0] || null;
     },
   };
 }

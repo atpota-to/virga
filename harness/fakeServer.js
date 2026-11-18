@@ -362,6 +362,7 @@ export function createServer({
   ai = 'ok',
   terms = 'agreed',
   defenseWrites = true,
+  moderator = 'on',
   now = () => Date.now(),
 } = {}) {
   const list = Array.isArray(worlds) ? worlds : [worlds];
@@ -2265,7 +2266,7 @@ export function createServer({
 
   /** One run of both workers. Resolves to `{ published, settled }` rows. */
   // Defense's routes and its list writer (fakeDefense.js), on the same tick.
-  const defense = createDefense({ worlds: list, writes: defenseWrites, now, note });
+  const defense = createDefense({ worlds: list, writes: defenseWrites, moderator, now, note });
   Object.assign(api, defense.api);
 
   async function runCron() {

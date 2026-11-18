@@ -25,6 +25,10 @@ import { APPVIEW_CONCURRENCY, chunks, mapLimit } from './limit.js';
 const REL_BATCH = 30;
 
 const CURATELIST = 'app.bsky.graph.defs#curatelist';
+const NOT_FOUND = 'app.bsky.graph.defs#notFoundActor';
+
+/** Curation lists read at once. */
+const CURATION_CONCURRENCY = 4;
 
 /** How far a read of the owner's curation lists goes before it gives up. */
 export const CURATION_LIMITS = Object.freeze({ lists: 20, membersPerList: 5000 });
@@ -49,11 +53,15 @@ async function getJson(url, { fetchImpl, signal }) {
 }
 
 /**
- * Which of `dids` the owner follows, from the public AppView, read now.
- * Throws VetoUnreadable when any batch can't be read.
+ * Of `dids`, who may not be added because of how they stand with the owner,
+ * from the public AppView, read now: did -> reason. Someone the owner follows,
+ * and someone the AppView says it can't find (deleted, or taken down: nobody
+ * to block, and no way to see whether they are followed). Every DID asked
+ * about must be answered; a batch with any left out, or an answer without a
+ * list, throws VetoUnreadable.
  */
 export async function followedNow(ownerDid, dids, { fetchImpl = fetchWithTimeout, appview = APPVIEW, signal } = {}) {
-  const out = new Set();
+  const out = new Map();
   try {
     await mapLimit(
       chunks([...new Set(dids)], REL_BATCH),
@@ -62,7 +70,22 @@ export async function followedNow(ownerDid, dids, { fetchImpl = fetchWithTimeout
         const q = batch.map((d) => `others=${encodeURIComponent(d)}`).join('&');
         const body = await getJson(`${appview}/xrpc/app.bsky.graph.getRelationships?actor=${encodeURIComponent(ownerDid)}&${q}`, { fetchImpl, signal });
         if (!Array.isArray(body?.relationships)) throw new Error('getRelationships answered with no list');
-        for (const r of body.relationships) if (r?.did && r.following) out.add(r.did);
+        const answered = new Set();
+        for (const r of body.relationships) {
+          if (r?.notFound || r?.$type === NOT_FOUND) {
+            const did = r.actor || r.did;
+            if (did) {
+              answered.add(did);
+              if (batch.includes(did)) out.set(did, 'Bluesky can’t find this account right now');
+            }
+            continue;
+          }
+          if (!r?.did) continue;
+          answered.add(r.did);
+          if (r.following) out.set(r.did, 'you follow them');
+        }
+        const missing = batch.filter((d) => !answered.has(d));
+        if (missing.length) throw new Error(`getRelationships left out ${missing.length} of ${batch.length}`);
       },
       { signal },
     );
@@ -88,26 +111,39 @@ export async function curationMembers(ownerDid, { fetchImpl = fetchWithTimeout, 
       const q = new URLSearchParams({ actor: ownerDid, limit: '100' });
       if (cursor) q.set('cursor', cursor);
       const body = await getJson(`${appview}/xrpc/app.bsky.graph.getLists?${q}`, { fetchImpl, signal });
-      for (const l of body?.lists || []) if (l?.purpose === CURATELIST && l.uri) lists.push(l);
+      if (!Array.isArray(body?.lists)) throw new Error('getLists answered with no list');
+      for (const l of body.lists) if (l?.purpose === CURATELIST && l.uri) lists.push(l);
       cursor = body?.cursor;
     } while (cursor && lists.length <= limits.lists);
     if (lists.length > limits.lists) throw new Error(`more than ${limits.lists} curation lists`);
-    for (const list of lists) {
-      let seen = 0;
-      let next;
-      do {
-        const q = new URLSearchParams({ list: list.uri, limit: '100' });
-        if (next) q.set('cursor', next);
-        const body = await getJson(`${appview}/xrpc/app.bsky.graph.getList?${q}`, { fetchImpl, signal });
-        for (const item of body?.items || []) {
-          const did = item?.subject?.did;
-          if (did && !out.has(did)) out.set(did, list.name || 'a curation list');
-          seen += 1;
-        }
-        if (seen > limits.membersPerList) throw new Error(`a curation list with more than ${limits.membersPerList} members`);
-        next = body?.cursor;
-      } while (next);
-    }
+    // The lists side by side, each read in pages; the members are merged in
+    // the lists' own order, so the name given for someone on two is the same
+    // whichever answered first.
+    const members = await mapLimit(
+      lists,
+      CURATION_CONCURRENCY,
+      async (list) => {
+        const dids = [];
+        let next;
+        do {
+          const q = new URLSearchParams({ list: list.uri, limit: '100' });
+          if (next) q.set('cursor', next);
+          const body = await getJson(`${appview}/xrpc/app.bsky.graph.getList?${q}`, { fetchImpl, signal });
+          if (!Array.isArray(body?.items)) throw new Error('getList answered with no items');
+          for (const item of body.items) {
+            const did = item?.subject?.did;
+            if (did) dids.push(did);
+          }
+          if (dids.length > limits.membersPerList) throw new Error(`a curation list with more than ${limits.membersPerList} members`);
+          next = body?.cursor;
+        } while (next);
+        return dids;
+      },
+      { signal },
+    );
+    lists.forEach((list, i) => {
+      for (const did of members[i]) if (!out.has(did)) out.set(did, list.name || 'a curation list');
+    });
   } catch (err) {
     if (signal?.aborted) throw err;
     throw new VetoUnreadable('Couldn’t read the curation lists you made, so nothing was written.', { cause: err });
@@ -128,7 +164,7 @@ export async function curationMembers(ownerDid, { fetchImpl = fetchWithTimeout, 
  * @param {string[]} opts.dids
  * @param {Map<string,string>} [opts.kept]
  * @param {Map<string,string>|(() => Promise<Map<string,string>>)} [opts.curation]
- * @param {(owner: string, dids: string[], o: object) => Promise<Set<string>>} [opts.follows]
+ * @param {(owner: string, dids: string[], o: object) => Promise<Map<string,string>>} [opts.follows]
  */
 export async function vetoed({ ownerDid, holderDid = null, dids, kept = new Map(), curation = null, follows = followedNow, signal, ...read }) {
   if (!ownerDid) throw new VetoUnreadable('A veto needs the owner.');
@@ -147,7 +183,7 @@ export async function vetoed({ ownerDid, holderDid = null, dids, kept = new Map(
     typeof curation === 'function' ? curation() : curation ? Promise.resolve(curation) : curationMembers(ownerDid, { signal, ...read }),
   ]);
   for (const did of others) {
-    if (followed.has(did)) out.set(did, 'you follow them');
+    if (followed.has(did)) out.set(did, followed.get(did) || 'you follow them');
     else if (members.has(did)) out.set(did, `on your list “${members.get(did)}”`);
   }
   return out;

@@ -31,7 +31,7 @@ const text = (v, max) => (typeof v === 'string' && v.replace(/\s+/g, ' ').trim()
  * @param {() => number} [opts.now]
  * @param {(line: string) => void} [opts.note]  the server's log
  */
-export function createDefense({ worlds, writes = true, now = () => Date.now(), note = () => {} }) {
+export function createDefense({ worlds, writes = true, moderator = 'on', now = () => Date.now(), note = () => {} }) {
   const worldOf = (did) => worlds.find((w) => w.me.did === did) || null;
   const nextKey = createTidClock();
   const iso = (ms = now()) => new Date(ms).toISOString();
@@ -42,6 +42,10 @@ export function createDefense({ worlds, writes = true, now = () => Date.now(), n
   const plans = []; // { id, owner_did, list_id, post_uri, rows, approved_at, approved_bands, note, totals, created_at }
   const decisions = []; // as defense_decision
   const jobs = []; // { id, owner_did, list_id, kind, state, next_at, last_error }
+  // The moderator's links: did -> { linked_at, code, code_at, list_id }. A
+  // code "lands" ten seconds after it is made, as if the owner DMed it.
+  const links = new Map(moderator === 'linked' ? worlds.map((w) => [w.me.did, { linked_at: iso(), code: null, code_at: null, list_id: null }]) : []);
+  const MODERATOR = moderator === 'off' ? null : 'mod.virga.example';
 
   const id = () => `${(++seq).toString(16).padStart(8, '0')}-0000-4000-8000-${now().toString(16).padStart(12, '0').slice(-12)}`;
   const mine = (auth) => (row) => row.owner_did === auth.did;
@@ -218,8 +222,8 @@ export function createDefense({ worlds, writes = true, now = () => Date.now(), n
     ];
   };
 
+  // Undo isn't stopped by writes being off, as on the server.
   api['POST /api/defense/undo'] = (auth, { body }) => {
-    requireWrites();
     const ids = Array.isArray(body?.ids) ? body.ids : [];
     const inScope = (d) => d.owner_did === auth.did && d.action === 'add' && !d.undone_at && ((body?.planId && d.plan_id === body.planId) || ids.includes(d.id));
     let cancelled = 0;
@@ -242,6 +246,41 @@ export function createDefense({ worlds, writes = true, now = () => Date.now(), n
       queued += 1;
     }
     return [200, { success: true, data: { jobId: [...byList.values()][0]?.id ?? null, cancelled, queued } }];
+  };
+
+  const linkOf = (did) => {
+    const l = links.get(did);
+    if (l?.code && !l.linked_at && now() - l.code_at > 10_000) {
+      l.linked_at = iso();
+      l.code = null;
+      note(`the moderator was linked by ${did}`);
+    }
+    return l || null;
+  };
+  api['GET /api/defense/link'] = (auth) => {
+    const l = linkOf(auth.did);
+    const live = l?.code && now() - l.code_at < 15 * 60_000;
+    return [200, { success: true, data: { moderator: MODERATOR, linked: Boolean(l?.linked_at), linkedAt: l?.linked_at ?? null, codeExpiresAt: live ? iso(l.code_at + 15 * 60_000) : null, listId: l?.list_id ?? null } }];
+  };
+  api['POST /api/defense/link-code'] = (auth) => {
+    if (!MODERATOR) return [503, { success: false, code: 'NO_MODERATOR', error: 'Virga’s moderator isn’t set up on this server yet.' }];
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const code = Array.from({ length: 8 }, () => letters[Math.floor(Math.random() * letters.length)]).join('');
+    const l = links.get(auth.did) || { linked_at: null, list_id: null };
+    links.set(auth.did, { ...l, code, code_at: now() });
+    return [200, { success: true, data: { code: `${code.slice(0, 4)}-${code.slice(4)}`, expiresAt: iso(now() + 15 * 60_000), moderator: MODERATOR } }];
+  };
+  api['POST /api/defense/unlink'] = (auth) => {
+    const l = links.get(auth.did);
+    if (l) Object.assign(l, { linked_at: null, code: null, code_at: null });
+    return [200, { success: true, data: { linked: false } }];
+  };
+  api['POST /api/defense/link-list'] = (auth, { body }) => {
+    const listId = body?.listId || null;
+    if (listId && !lists.some((x) => x.id === listId && x.owner_did === auth.did && !x.removed_at)) return [404, { success: false, code: 'NOT_FOUND', error: 'That list isn’t one of yours.' }];
+    const l = links.get(auth.did) || { linked_at: null, code: null, code_at: null };
+    links.set(auth.did, { ...l, list_id: listId });
+    return [200, { success: true, data: { listId } }];
   };
 
   /** Who the owner may never add: did -> why. */
@@ -309,5 +348,5 @@ export function createDefense({ worlds, writes = true, now = () => Date.now(), n
     return written;
   }
 
-  return { api, run, inspect: () => ({ lists, kept, plans, decisions, jobs }) };
+  return { api, run, inspect: () => ({ lists, kept, plans, decisions, jobs, links }) };
 }

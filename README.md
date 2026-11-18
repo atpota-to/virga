@@ -124,6 +124,7 @@ Two build settings (in `.env.local` or the host's environment):
 | `VITE_AUTH_MODE` | `browser` | How a new sign-in is held: `browser` (OAuth in this browser, as before) or `backend` (a long session held by Virga's server) |
 | `VITE_BACKEND_URL` | `''` (this site) | Where Virga's server is. Leave it empty in a deployment; set it only to point a local dev server at a deployed one |
 | `VITE_DEFENSE` | off | `on` shows Defense. Off until the Terms and the Privacy Policy describe it (docs/DEFENSE.md); the harness turns it on |
+| `VITE_DEFENSE_MODERATOR` | off | `on` also shows the card that links Defense's moderator, on Defense › Lists. Off for the first release; the server's `DEFENSE_MODERATOR` turns the rest on. The harness turns it on |
 
 The server's own settings are in `.env.example` and under Deploying below.
 
@@ -277,12 +278,19 @@ hour old.
 The sixth part, for moderation and defence, being ported from
 [bluesky-mod](https://github.com/dame-is/bluesky-mod) as a hosted feature:
 [docs/DEFENSE.md](docs/DEFENSE.md) is the plan, and
-[docs/DEFENSE-THREATS.md](docs/DEFENSE-THREATS.md) its threat model. Three of its phases are
-built: the engine (`src/defense/`: the harvest from Constellation, the scoring and its
-canary), **Scan a post**, at `/defense`, and **lists**: adding who a scan found to a block
-or mute list in your own repo, at `/defense/lists` and `/defense/history`. The moderator
-account to DM and closing replies when strangers arrive are still to come. It is all off
-unless the build says `VITE_DEFENSE=on`, and writes nothing unless the server says
+[docs/DEFENSE-THREATS.md](docs/DEFENSE-THREATS.md) its threat model. Four of its phases are
+built: the engine (`src/defense/`: the harvest from Constellation, the
+scoring and its canary), **Scan a post**, at `/defense`, **lists**: adding who a scan found
+to a block or mute list in your own repo, at `/defense/lists` and `/defense/history`, and
+**the moderator**: a Bluesky account you link from Defense › Lists and DM, in sentences
+("block whoever's piling on in the quotes of this") or typed commands ("approve 3f9a2c1b
+UNKNOWN", "block @someone", "undo"). The worker on the droplet reads its DMs; an agent
+through the Vercel AI Gateway answers sentences and can read the wider network through
+aturi.to. Virga's server reads every DM back with a key of its own before acting on it, and
+checks every change against what you wrote. The moderator is switched off for the first
+release (`DEFENSE_MODERATOR` and `VITE_DEFENSE_MODERATOR`; docs/DEFENSE.md says what's left
+before it's turned on). Closing replies when strangers arrive is still to come. It is all off unless
+the build says `VITE_DEFENSE=on`, and writes nothing unless the server says
 `DEFENSE_WRITES=on`.
 
 A scan takes a link to any post, or one of yours from the last 30 days that people have been
@@ -588,8 +596,8 @@ each dispatching to the handlers in `server/`. `vercel.json` sets their time lim
 rewrites the two OAuth `.json` addresses, sends every other path to `index.html`, and
 runs three crons every minute: `/api/schedule/run` (scheduled posts),
 `/api/self-destruct/run` (post timers) and `/api/defense/run` (Defense's lists; it writes
-nothing until `DEFENSE_WRITES` is `on`). Defense's worker (`worker/`, for the droplet) can
-call the last one too; see worker/README.md.
+nothing until `DEFENSE_WRITES` is `on`). Defense's worker (`worker/`, for the droplet) calls
+the last one too, and reads the moderator's DMs; see worker/README.md.
 
 Without the server settings below, the app still works with browser sign-ins; the
 server's routes answer 503 and the posting pages that need it say so.
@@ -639,9 +647,12 @@ server's routes answer 503 and the posting pages that need it say so.
      (optional; see `.env.example`). `OAUTH_TOS_URL` and `OAUTH_POLICY_URL` only if the
      consent screen should link somewhere other than this site's `/terms` and `/privacy`
    - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
-   - `VITE_DEFENSE=on` to show Defense, `DEFENSE_WRITES=on` to let it write lists, and
-     `DEFENSE_WORKER_SECRET` for the worker. Leave all three off until the Terms and the
-     Privacy Policy describe Defense (docs/DEFENSE.md)
+   - `VITE_DEFENSE=on` to show Defense, `DEFENSE_WRITES=on` to let it write lists,
+     and `DEFENSE_WORKER_SECRET` for the worker. Leave them all off until the Terms and the
+     Privacy Policy describe Defense (docs/DEFENSE.md). The moderator stays off for the first
+     release; turning it on later takes `DEFENSE_MODERATOR=on` and `VITE_DEFENSE_MODERATOR=on`,
+     with `DEFENSE_MODERATOR_HANDLE` and `DEFENSE_MODERATOR_VERIFY_PASSWORD` (a second app
+     password, not the droplet's; worker/README.md)
 4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
    can fetch the client metadata and keys for the life of every sign-in. After deploying,
    `curl https://<origin>/api/oauth/client-metadata.json` should show a `client_id` that

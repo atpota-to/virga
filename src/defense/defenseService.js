@@ -84,3 +84,28 @@ export function defenseErrorMessage(err) {
       return err?.message || 'Something went wrong on Virga’s server. Try again in a moment.';
   }
 }
+
+// ─── The moderator (phase 4) ──────────────────────────────────────────────
+
+/** `{ moderator, linked, linkedAt, codeExpiresAt, listId }` for the account. */
+export async function fetchLink(req, { signal } = {}) {
+  check(req);
+  return data(await req.request(`${BASE}/link`, { signal }));
+}
+
+/** A new code to send the moderator: `{ code, expiresAt, moderator }`. Shown once. */
+export async function makeLinkCode(req) {
+  check(req);
+  return data(await req.request(`${BASE}/link-code`, { method: 'POST', body: {} }));
+}
+
+export async function unlinkModerator(req) {
+  check(req);
+  return data(await req.request(`${BASE}/unlink`, { method: 'POST', body: {} }));
+}
+
+/** The list "block @someone" adds to (null for the only one). */
+export async function chooseLinkList(req, listId) {
+  check(req);
+  return data(await req.request(`${BASE}/link-list`, { method: 'POST', body: { listId: listId || null } }));
+}

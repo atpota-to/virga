@@ -6,7 +6,9 @@ const SECRET = 'a'.repeat(64);
 
 describe('the worker’s settings', () => {
   it('want an https origin and a long secret', () => {
-    expect(readConfig({ VIRGA_URL: 'https://virga.example/', DEFENSE_WORKER_SECRET: SECRET })).toEqual({ base: 'https://virga.example', secret: SECRET, intervalMs: 60_000 });
+    expect(readConfig({ VIRGA_URL: 'https://virga.example/', DEFENSE_WORKER_SECRET: SECRET })).toEqual({ base: 'https://virga.example', secret: SECRET, intervalMs: 60_000, dmIntervalMs: 5_000, dataDir: '/data' });
+    expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_DM_SECONDS: '1' }).dmIntervalMs).toBe(5_000);
+    expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_DM_SECONDS: '8', WORKER_DATA_DIR: '/var/w' })).toMatchObject({ dmIntervalMs: 8_000, dataDir: '/var/w' });
     expect(readConfig({ VIRGA_URL: 'http://127.0.0.1:3000', DEFENSE_WORKER_SECRET: SECRET, WORKER_INTERVAL_SECONDS: '30' }).intervalMs).toBe(30_000);
     expect(readConfig({ VIRGA_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET, WORKER_INTERVAL_SECONDS: '1' }).intervalMs).toBe(60_000);
     expect(() => readConfig({ VIRGA_URL: 'http://virga.example', DEFENSE_WORKER_SECRET: SECRET })).toThrow(/https/);

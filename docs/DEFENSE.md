@@ -6,12 +6,17 @@ yourself (a block list that can't take your own people, scans of who piled onto 
 closing replies and quotes when strangers arrive, attack mode) and makes it something you
 turn on in Virga, with the infrastructure run for you.
 
-This is the plan as of 2026-11-18. Three phases are built: the in-browser scan and score
-engine (`src/defense/`), scanning a post on screen with the permission it needs asked for
-only when it's turned on (phase 2), and lists in the owner's own repo, written by Virga's
-server with the veto at every write (phase 3; mode 2, the helper account, isn't yet). The
-threat model for the write path is [DEFENSE-THREATS.md](DEFENSE-THREATS.md). All of it is
-behind `VITE_DEFENSE` on screen and `DEFENSE_WRITES` on the server, until phase 6.
+This is the plan as of 2026-11-18. Four phases are built:
+- the in-browser scan and score engine (`src/defense/`);
+- scanning a post on screen, with the permission it needs asked for only when it's turned
+  on (phase 2);
+- lists in the owner's own repo, written by Virga's server with the veto at every write
+  (phase 3; mode 2, the helper account, isn't yet);
+- the moderator in DMs (phase 4), which is switched off for the first release (below).
+
+The threat model is [DEFENSE-THREATS.md](DEFENSE-THREATS.md). All of it is behind
+`VITE_DEFENSE` on screen and `DEFENSE_WRITES` on the server, until phase 6, and the moderator
+is also behind `VITE_DEFENSE_MODERATOR` and `DEFENSE_MODERATOR`.
 
 ## The idea it keeps
 
@@ -90,8 +95,8 @@ How that works (built in phase 2, `src/config.js`):
 | Where | What runs there | What it holds |
 | --- | --- | --- |
 | **The browser** | Scans started on the web: the harvest from Constellation, the scoring, the radar, building a plan, the review | Nothing new beyond the session it already has. A scan lives in memory (IndexedDB if it should survive a reload) |
-| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: narrow internal routes the droplet calls to write a gate or a list item as the user | Users' OAuth sessions, encrypted, as now |
-| **The droplet** (`worker/`, new) | Everything that has to stay on: the moderator account's DMs, Spacedust for the shield, Jetstream for new follows, batch writes that take hours, watches, attack mode | The moderator account's app password, Virga-held list accounts (below), a lock so one copy runs. **No user sessions** |
+| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: the list writer, and the narrow moderator route the droplet calls to do what a DM asks, as the owner who sent it, once Vercel has read the DM back itself; the agent's write check | Users' OAuth sessions, encrypted, as now; its own session for the moderator account (a second app password), sealed the same way, to read DMs back with |
+| **The droplet** (`worker/`, new) | Everything that has to stay on: the moderator account's DMs and its agent, the list writer's clock, Spacedust for the shield, Jetstream for new follows, watches, attack mode | The moderator account's app password and session, the AI Gateway key, Virga-held list accounts (below), a lock so one copy runs. **No user sessions** |
 | **Supabase** (`virga` schema) | Defense's tables | The minimum below |
 
 The droplet never decrypts a user's session. When the shield needs to close replies on
@@ -177,15 +182,16 @@ a few dozen users to each holder, which still splits the limits and the blast ra
 
 - **Free:** scan a post and see its radar. Read-only, runs in the browser, costs Virga
   nothing, and is the reason to upgrade.
-- **Paid:** lists and writes, the moderator in DMs, the shield and attack mode, watches,
+- **Paid:** lists and writes, the shield and attack mode, watches, later the moderator in DMs,
   and the model features within an allowance (Virga already counts `AI_*_MONTHLY_LIMIT`).
 - **The entitlement is checked in three places:** Vercel's routes, the worker before any job
   or DM action, and the page. A lapsed plan stops the bot and the shield and puts any
   closed gates back. The lists stay where they are. A Virga-held holder is kept, read-only,
   for a notice period, during which its lists can be copied to your own account.
-- **Day one** means launching with the moderator, the shield and attack mode working, so
-  the phases below all land before launch except the model features. Agent mode (talking
-  to it in sentences) is the riskiest piece and ships when its review is done.
+- **The first release** launches with scans and lists, and the shield and attack mode once
+  phase 5 lands. The moderator in DMs is held back: it is built (phase 4), with agent mode,
+  but it is a lot to put in front of strangers at once. It stays switched off until what is
+  listed under "Phase 4, as built" is done.
 
 ## What comes over from bluesky-mod
 
@@ -196,7 +202,7 @@ a few dozen users to each holder, which still splits the limits and the blast ra
 | `bot/listWrite.js` (the veto at the write, pacing) | `server/defense/run.js`, driven by Vercel Cron or `worker/`, with the veto as a shared module both sides test (`src/defense/veto.js`). **Done** |
 | `gates.js` | `server/defense/internal/gates.js` on Vercel, the only door to a user's session |
 | `shield.js`, `ownerActivity.js`, `spacedust.js`, `jetstream.js` | `worker/`, one connection for all subscribers |
-| `lib/command.js`, `bot/dmLoop.js`, `bot/operator.js` | `worker/`, rewritten for many owners; the command grammar and its tests come across |
+| `lib/command.js`, `bot/dmLoop.js`, `bot/operator.js`, `bot/tiers.js` | `src/defense/command.js` (the grammar and its tests); `worker/dmLoop.js`, `worker/agent.js`, `worker/check.js` (the DM loop, agent mode and the write check), rewritten for many owners. **Done** |
 | `panel/public/radar.js`, `lib/radar-layout.js` | `src/defense/radar.js` and `Radar.jsx`. **Done**, drawn in SVG in Virga's tokens |
 | `bot/triage.js`, `bot/tiers.js`, `bot/botAgent.js` | Later, behind the AI allowance |
 | `snapshot.js`, `drift.js`, `lease.js` | Not ported. No snapshot; the weekly re-score reads vouches live; a Postgres advisory lock replaces the file lease |
@@ -216,13 +222,14 @@ also hold the PDS's keys.
    the worker's first job, batch writes with the veto at the write; decisions, undo,
    history. *Done, but for mode 2* (below).
 4. **The moderator.** The shared account, linking, tenancy, the command grammar, background
-   writes, scans by DM.
+   writes, scans by DM, and agent mode (brought forward from phase 7). *Built, and switched
+   off for the first release* (below).
 5. **The shield and attack mode.** Spacedust on the droplet, the internal gates route,
    per-post guards, attack mode, putting everything back.
 6. **Premium and policy.** Entitlement and payments; the Terms and Privacy Policy;
    the security work below. Launch.
-7. **Models.** Tone sorting in the browser, then agent mode in DMs with bluesky-mod's write
-   check, which sees your words but never the posts the agent read.
+7. **Models.** Tone sorting in the browser and by DM, and the agent reading posts. Agent mode
+   itself, with bluesky-mod's write check, came forward into phase 4.
 
 Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to host them.
 
@@ -362,6 +369,174 @@ Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to 
   - **The second wall** (row-level security keyed on the owner) and the entitlement, in
     phases 4 and 6.
 
+### Phase 3, reviewed
+
+The phase-boundary review found that a write whose reply is lost (the PDS commits, the
+connection drops) left decisions `sent`, and several paths then treated them as if nothing
+had happened. Fixed in `server/defense/run.js` and
+`supabase/migrations/20261118000150_defense_lists_fixes.sql`, each with a test in
+`run.pglite.test.js` ("after a lost reply"):
+
+- **An undo could be overtaken by its own add.** A removal for an add still being confirmed
+  could run first, find nothing, and the add's resend would then put the person back. Now a
+  removal waits while its add is `queued` or `sent`. An add whose removal is waiting is only
+  ever read, never sent again: found, it is recorded and the removal takes it off; not found,
+  it is cancelled.
+- **The veto was applied before a resent add was read.** Someone followed or kept since a
+  lost reply stayed on the list, recorded as kept off. Now every decision with a record key
+  is read by it first. Someone found on the list is recorded as on it, and if the veto now
+  keeps them off, taken off again with a note saying why.
+- **A resent add could lose its key's meaning.** "Resent" was read from the state, which an
+  unreadable veto or a signed-out holder reset to `queued`, so the next pass created at a
+  taken key and recorded `failed`. Now the veto and the holder's session are read before
+  anything is marked, a batch that can't go on is left exactly as it was, and a decision is
+  resent whenever it has a key. A create refused because its key is taken reads the key.
+- **The veto ran after the batch was marked sent**, and read curation lists one page at a
+  time. Now it runs first, reads lists four at a time, and gives up after 15 seconds (the
+  batch waits ten minutes), so one owner with large lists can't stall a pass for everyone.
+- **Smaller ones:** the veto treats an answer missing a DID, or with no list, as unreadable,
+  and keeps off an account the AppView can't find. The people kept by hand are read for the
+  batch's DIDs, not cut off at the database's row cap. A claim takes a lock per holder while
+  it reads the pace, and approvals for one list take a lock, so two at once can't add the
+  same person twice. Only `RecordNotFound` counts as already gone. A rate limit holds the
+  holder, not just the job. Undo isn't stopped by `DEFENSE_WRITES` being off. The worker's
+  signature covers the body, and its image copies only the files it runs (`.dockerignore`
+  keeps `.env` out of the build). Add to a list reuses a list it made if the approval then
+  failed, and its breakdown counts what the title counts. Turning Defense off says what is
+  left waiting.
+- **Left as they are:**
+  - **Replays.** A captured worker header can be replayed for five minutes. The routes it
+    opens choose their own work, so a replay only runs a pass sooner.
+  - **`CRON_SECRET` outside production.** Without it, a non-production server lets anyone
+    run its passes, as Virga's other crons do. Production refuses.
+  - **The two locks aren't tested.** PGlite has one connection, so neither can be shown
+    under real concurrency. They are written to the pattern Postgres documents.
+
+### Phase 4, as built
+
+- **Switched off for the first release.** Everything below is built and tested, and stays
+  in the code, but nothing of it runs until it is turned on in three places:
+  - `DEFENSE_MODERATOR=on` on Vercel. Until then the moderator route and the linking routes
+    answer 503 `MODERATOR_OFF`, and nothing a worker sends is read.
+  - `DEFENSE_MODERATOR=on` on the droplet. Until then the worker reads no DMs, and only
+    keeps the list writer's clock.
+  - `VITE_DEFENSE_MODERATOR=on` in the build. Until then Defense › Lists doesn't show the
+    card that links it.
+
+  The tests run with it on, and check that it is off by default. The harness shows it.
+  Before it is turned on:
+  - an adversarial review of phase 4, agent mode above all;
+  - a run against Bluesky's real chat service, with both keys, and the real AI Gateway;
+  - the moderator's chat limits measured (below, "Still open");
+  - the Terms and the Privacy Policy saying what it reads and what goes to a model provider.
+- **The droplet reads the DMs.** The worker (`worker/`) holds the moderator account: its
+  app password, its session (kept in the worker's data volume between restarts), and a lock
+  so one copy reads the log. Every few seconds it reads the chat log from where it stopped
+  (`worker/dmLoop.js`) and answers each new message:
+  - only in one-to-one conversations, and never its own messages;
+  - each message at most once: the cursor moves past a message before it is answered;
+  - not a message more than an hour old (the sender is told once). The first pass ever finds
+    the end of the log and answers nothing before it.
+- **Vercel does what a message asks, once it has read the message itself.** Every message
+  goes to Vercel's moderator route (`server/defense/handlers/moderator.js`), signed with
+  `DEFENSE_WORKER_SECRET` over its exact body, naming the conversation and the message.
+  Vercel doesn't take the droplet's word for what was said, or by whom. It signs in to the
+  moderator account with an app password of its own (`DEFENSE_MODERATOR_VERIFY_PASSWORD`),
+  which the droplet never holds, and reads the message back from Bluesky's chat service
+  (`server/defense/moderator/verifier.js`). It must be the owner's, in a one-to-one
+  conversation between the owner and the moderator, from within the hour, and Vercel goes by
+  the text it read. Everything is then done as that owner, through the store; the worker
+  holds no database key and no user's session. Production refuses to run without
+  Vercel's key (`DEFENSE_MODERATOR_VERIFY=off` is for running the worker locally).
+- **Linking** (`defense_link`): Defense › Lists makes an eight-character code, shown once
+  and kept only as a hash of the owner's DID and the code. Sent to the moderator from the
+  same account within fifteen minutes, it links; from any other account it links nothing.
+  The fifth wrong try spends it. Anyone who hasn't linked gets one line, the same for
+  everyone, at most once a day, keyed by a hash of their DID (`defense_dm_stranger`), so a
+  DM can't tell anyone whether a handle uses Virga, and no list of who wrote is kept.
+- **Typed commands, by code** (`src/defense/command.js`, bluesky-mod's grammar with its
+  tests): block and unblock one account, keep and unkeep, approve, review and cancel a plan by
+  its code, undo, history, lists, status, a new list, help, `link`, and a post on its own to
+  scan. A message the grammar reads whole is run by code with no model, even when the agent
+  is on. "block @someone" is a new kind of add, one named account with no band
+  (`defense_add_named`), to the list chosen in Defense › Lists, or the only one; the veto at
+  the write decides as for any other.
+- **Agent mode: brought forward from phase 7, on the owner's call.** Anything else from a
+  linked owner goes to an agent on the droplet (`worker/agent.js`), ported from bluesky-mod's
+  agent mode: one model through the Vercel AI Gateway (`AI_GATEWAY_API_KEY`,
+  `DEFENSE_AGENT_MODEL`, DeepSeek V4.1 Flash by default), talked to in sentences, with tools
+  to list, scan, review, approve, cancel and undo, add and remove named accounts, keep and
+  unkeep, read the history and look an account up. Each tool is a signed call to the
+  moderator route, which runs it as the owner (`server/defense/moderator/ops.js`). Held in
+  code, below the model:
+  - **Turns:** Vercel opens a turn for each message it has read back, and the agent's tool
+    calls carry it. A turn is good for ten minutes and six writes, for its owner only.
+  - **The write check, on Vercel** (`server/defense/moderator/check.js`, bluesky-mod's):
+    every write but keeping someone is first put to a separate model call, with Vercel's own
+    AI Gateway key, "did the owner ask for exactly this?". It reads the owner's message as
+    Vercel read it back, the moderator's message before it, and the change as Vercel's code
+    described it, with where each account came from. It never sees the agent's reasons, what
+    a tool or the network returned, or anything the droplet wrote. It fails closed.
+  - **Asking first:** any write can be put to the owner as a question instead, ending with
+    the change in Vercel's own words. A "yes" or a thumbs-up runs exactly that, without the
+    model, once Vercel has read the yes back and checked it against the question.
+  - **Caps:** ten accounts to a call, a plan by its code, bands but never PROTECTED, eight
+    steps and sixteen tool calls a turn.
+  - **Fences:** everything a tool or the network returns reaches the model inside
+    `<untrusted>` tags.
+  - **The record:** every write keeps the owner's own message, as read back, marked `[agent]`.
+  - **An allowance:** `DEFENSE_AGENT_MONTHLY_LIMIT` turns a month per owner (300 by
+    default), counted on Vercel when a turn opens (`defense_agent_usage`).
+  - **Privacy routing:** every call asks the gateway for providers that don't train on
+    prompts, and `DEFENSE_AGENT_ZDR=on` for zero data retention.
+- **Reading the wider network** (`worker/atmosphere.js`, bluesky-mod's `mcp.js`): the agent
+  has one more tool, `atmosphere`, over the Atmosphere MCP server at aturi.to. It covers
+  profiles, author feeds, threads, post search, followers and follows, backlinks, records,
+  lists and identity history, so it can answer "what has this person been posting" as well
+  as "what band are they in".
+  - It offers read verbs only, never a tool that needs a URL or host fetched, and no web link
+    in any argument but a Bluesky client's.
+  - It sends no credentials, and fences every result whole.
+  - `ATMOSPHERE=off` leaves it out.
+  - What it reads can steer the turn that read it. That is what the write check on Vercel and
+    the veto are for: neither reads anything a post says. bluesky-mod's triage (sorting
+    replies by tone) isn't ported yet.
+- **Scans by DM** (`server/defense/moderator/scan.js`): a post sent to the moderator, by
+  command or by the agent, is scanned on Vercel. It is the web's own scan (`runScan`), with
+  the vouches read through the owner's long session (opened for that call) and the canary's
+  candidates from the owner's public follows and followers. What it finds is stored as a plan
+  with a short code; nothing is added until it is approved. A scan whose vouches couldn't be
+  counted offers nothing to approve, as on the web. A scan has 25 seconds; a post too big for
+  that is pointed at the web.
+- **Tests:**
+  - the grammar's (`command.test.js`);
+  - the tables' (`moderator.pglite.test.js`);
+  - the agent's, against a scripted gateway (`worker/agent.test.js`);
+  - the whole path (`server/defense/moderator/dm.pglite.test.js`): the worker's loop over a
+    fake chat service, calling the moderator route in-process, signed, over PGlite, with two
+    owners and a stranger, typed and in sentences. Nothing one owner sends, or one owner's
+    agent calls, moves or names the other's rows, and a stranger's message never reaches a
+    model;
+  - a droplet in someone else's hands, against the same route. It can't make up a message,
+    claim someone else's, act on a group's or an old one, change what one says, turn an idle
+    question into a write, use one owner's turn as another's, an old turn, or a seventh
+    write, answer a question for the owner, or use a yes twice; and production won't run
+    without Vercel's own key.
+- **What the droplet can do if it is taken.** It holds the moderator account, so it can read
+  what owners DM the moderator, and send DMs as it. It can't act as an owner. Every message
+  Vercel acts on is read back with Vercel's own key, so the droplet can't invent one, change
+  one, or move one to another owner. Every write the agent asks for is judged on Vercel,
+  against the owner's real words, by a model call the droplet can't reach. What is left: it
+  can propose changes against what an owner really said in the last ten minutes, at most six
+  a message, each judged as above. It can also ask an owner a question of its own wording and
+  act on their yes; the yes still has to be theirs, and the change has to match the
+  question. DEFENSE-THREATS.md, rule 16, has the rest.
+- **Not built yet:**
+  - **Approving by name or by engagement** as typed commands ("approve 3f9a2c1b @a @b",
+    "… repliers") parse, and are answered with how to approve by band; in sentences the agent
+    adds named accounts instead.
+  - **The second wall** (row-level security keyed on the owner), as phase 3 left it.
+
 ## Security and policy
 
 - **A threat model before the worker is written,** covering the internal routes, the
@@ -372,10 +547,12 @@ Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to 
 - **Invariants as tests:** nothing in `PROTECTED` is ever written; one owner's commands
   never touch another's rows; the internal routes refuse anything but gates on the
   owner's own posts and list items on the owner's own lists.
-- **The Terms and Privacy Policy** gain: the moderator account and what it reads; what's
-  stored and for how long (the table above); holder accounts, who owns them and what
-  happens when a plan ends; that the model features send post text to a model provider;
-  that scans read Constellation and Spacedust.
+- **The Terms and Privacy Policy** gain: the moderator account and what it reads; that a
+  DM to it in sentences, and what its tools find (handles, counts, and posts and profiles
+  read from the network through aturi.to), go to a model provider through the AI Gateway,
+  and that a change it makes is checked by another model call; what's stored and for how long (the table above); holder accounts,
+  who owns them and what happens when a plan ends; that the model features send post text to
+  a model provider; that scans read Constellation and Spacedust.
 
 ## Still open
 

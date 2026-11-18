@@ -21,6 +21,20 @@ export function requireWrites(res, env = process.env) {
   return false;
 }
 
+/**
+ * Whether Defense's moderator is on: DEFENSE_MODERATOR=on. Off for the first
+ * release (docs/DEFENSE.md, phase 4): its routes answer 503 MODERATOR_OFF and
+ * the worker reads no DMs.
+ */
+export const moderatorEnabled = (env = process.env) => env?.DEFENSE_MODERATOR === 'on';
+
+/** True when the moderator is on; otherwise answers 503 MODERATOR_OFF and returns false. */
+export function requireModerator(res, env = process.env) {
+  if (moderatorEnabled(env)) return true;
+  sendJson(res, 503, { success: false, code: 'MODERATOR_OFF', error: 'Defense’s moderator isn’t turned on on Virga’s server.' });
+  return false;
+}
+
 /** The caller's DID, or null after answering 401/503 with the auth's code. */
 export async function authorize(req, res) {
   const auth = await resolveUserDid(req);
