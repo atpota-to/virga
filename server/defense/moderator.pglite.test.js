@@ -22,7 +22,7 @@ afterAll(async () => {
 });
 
 async function reset() {
-  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_agent_turn, defense_verifier, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
 }
 
 const as = (did) => storeFor(did, { client: t.supabase });

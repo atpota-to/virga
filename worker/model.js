@@ -5,7 +5,9 @@
 //
 //   DEFENSE_AGENT_MODEL  the model that answers DMs; it must call tools.
 //                        DeepSeek V4.1 Flash by default, as bluesky-mod's is
-//   DEFENSE_CHECK_MODEL  the write check's model; the agent's by default
+//
+// The write check isn't run here: Vercel runs it, with its own key
+// (server/defense/moderator/check.js).
 //
 // Every call asks the gateway to route only to providers that don't train on
 // prompts: the DMs and the handles in them are the owners'.
@@ -25,12 +27,10 @@ export class ModelError extends Error {
 export function modelConfig(env = process.env) {
   const apiKey = String(env.AI_GATEWAY_API_KEY || '').trim();
   if (!apiKey) return null;
-  const agent = String(env.DEFENSE_AGENT_MODEL || '').trim() || DEFAULT_AGENT_MODEL;
   return {
     apiKey,
     baseUrl: (String(env.AI_GATEWAY_BASE_URL || '').trim() || DEFAULT_BASE_URL).replace(/\/+$/, ''),
-    agent,
-    check: String(env.DEFENSE_CHECK_MODEL || '').trim() || agent,
+    agent: String(env.DEFENSE_AGENT_MODEL || '').trim() || DEFAULT_AGENT_MODEL,
     zeroDataRetention: env.DEFENSE_AGENT_ZDR === 'on',
   };
 }

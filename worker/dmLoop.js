@@ -4,9 +4,12 @@
 //
 // Three rules hold it together:
 //
-//  1. Who sent a message is what the chat service says, and nothing else.
-//     That DID goes to Vercel with the message; everything done for it is
-//     done there, as them (server/defense/handlers/moderator.js).
+//  1. Who sent a message is what the chat service says, and the droplet's
+//     word for it isn't enough: Vercel reads every message back from the chat
+//     service with its own key before it acts on one
+//     (server/defense/moderator/verifier.js). The worker sends which message
+//     (its conversation and id); what Vercel does is done as the sender it
+//     read.
 //  2. At most once. The cursor moves past each message before it is answered,
 //     so a message that crashes its turn is dropped rather than answered again
 //     and again; a pass that stops part-way leaves the rest for the next.
@@ -16,9 +19,12 @@
 // typed commands the grammar reads whole are answered there by code. What
 // isn't goes to the agent (agent.js) when the worker has a model. A yes, a no
 // or a thumbs-up to a question the agent asked runs, or drops, exactly what
-// it described, without the model.
+// Vercel described, without the model, once Vercel has read the yes back.
 
-import { answerTo, historyFrom, runPending, runTurn } from './agent.js';
+import { answerTo, isDirect, sharedUri } from '../src/defense/dmMessage.js';
+import { historyFrom, runTurn } from './agent.js';
+
+export { isDirect, sharedUri };
 
 /** Pages of the log one pass reads. */
 export const MAX_PAGES = 10;
@@ -33,7 +39,6 @@ export const PASS_BUDGET_MS = 120_000;
 
 const CREATE = 'chat.bsky.convo.defs#logCreateMessage';
 const REACTION = 'chat.bsky.convo.defs#logAddReaction';
-const DIRECT = 'chat.bsky.convo.defs#directConvo';
 
 /** A reply cut into messages the chat service will take, at line ends or spaces where it can. */
 export function chunkText(text, limit = DM_CHUNK) {
@@ -50,20 +55,11 @@ export function chunkText(text, limit = DM_CHUNK) {
   return out;
 }
 
-/** The record a message shares (a post, or anything else), as an at:// URI, or null. */
-export function sharedUri(message) {
-  const uri = message?.embed?.record?.uri ?? message?.embed?.record?.record?.uri;
-  return typeof uri === 'string' && uri.startsWith('at://') ? uri : null;
-}
-
-/** Whether a conversation is one to one, by its kind or, failing that, its members. */
-export function isDirect(convo) {
-  const kind = convo?.kind?.$type;
-  if (kind) return kind === DIRECT;
-  return Array.isArray(convo?.members) && convo.members.length === 2;
-}
-
-/** The parts of a message Vercel reads: its text, facets and what it shares. */
+/**
+ * The parts of a message the worker passes on. Vercel reads the message back
+ * and goes by what it read; these are used only where it has been told not to
+ * (DEFENSE_MODERATOR_VERIFY=off, outside production).
+ */
 const forVirga = (m) => ({ text: typeof m?.text === 'string' ? m.text.slice(0, 3000) : '', facets: Array.isArray(m?.facets) ? m.facets.slice(0, 50) : [], embed: m?.embed ?? null });
 
 /** Walk the log to its end and say where that was (null for an empty log). */
@@ -86,8 +82,9 @@ async function seekToTail(chat, { maxPages = SEED_MAX_PAGES } = {}) {
  * @param {object} opts.state   fileState()
  * @param {object} opts.virga   virgaClient()
  * @param {object|null} opts.model  modelConfig(), or null for typed commands only
+ * @param {object|null} [opts.atmosphere]  atmosphereTools(), for the agent to read the network with
  */
-export async function runDmPass({ moderator, state, virga, model = null, fetchImpl, now = () => Date.now(), turn = runTurn }) {
+export async function runDmPass({ moderator, state, virga, model = null, atmosphere = null, fetchImpl, now = () => Date.now(), turn = runTurn }) {
   const { chat, did: botDid } = moderator;
   const started = now();
   const out = { answered: 0, skipped: 0, stale: 0, errors: [] };
@@ -134,13 +131,32 @@ export async function runDmPass({ moderator, state, virga, model = null, fetchIm
     }
   };
 
-  /** A question the owner answered: run or drop it. True when the message was that answer. */
-  async function answered(entry, sender, word) {
+  /**
+   * A question the owner answered: run or drop it. True when this was that
+   * answer. A yes is Vercel's to read back (`answer` names the message, or the
+   * reaction on the question) before it runs what Vercel described.
+   */
+  async function answered(entry, sender, word, answer) {
     const pending = await state.pending(entry.convoId);
     if (!pending || pending.owner !== sender) return false;
     await state.setPending(entry.convoId, null);
-    if (word === 'no') await send(entry.convoId, 'Okay, nothing changed.');
-    else await send(entry.convoId, await runPending(pending, { virga, owner: sender, said: entry.message?.text || 'yes' }));
+    if (word === 'no') {
+      await send(entry.convoId, 'Okay, nothing changed.');
+      return true;
+    }
+    const out = await virga.call('confirm', {
+      owner: sender,
+      convoId: entry.convoId,
+      name: pending.name,
+      args: pending.args,
+      answer,
+      said: entry.message?.text || '👍',
+      question: pending.question || pending.description,
+    });
+    const result = out?.result;
+    if (out?.error || result?.error) await send(entry.convoId, `I couldn’t do that: ${out?.error || result.error}`);
+    else if (result?.notDone) await send(entry.convoId, `I didn’t do that: ${result.why}`);
+    else await send(entry.convoId, `Done: ${pending.description}`);
     return true;
   }
 
@@ -163,7 +179,7 @@ export async function runDmPass({ moderator, state, virga, model = null, fetchIm
         const pending = by && by !== botDid ? await state.pending(entry.convoId) : null;
         if (pending && pending.messageIds?.includes(entry.message?.id)) {
           const word = answerTo(entry.reaction?.value);
-          if (word) await answered(entry, by, word).catch((err) => out.errors.push(String(err?.message || err)));
+          if (word) await answered(entry, by, word, { reaction: { messageId: entry.message.id, value: entry.reaction?.value } }).catch((err) => out.errors.push(String(err?.message || err)));
         }
         continue;
       }
@@ -186,20 +202,36 @@ export async function runDmPass({ moderator, state, virga, model = null, fetchIm
       }
       try {
         const word = answerTo(message.text);
-        if (word && (await answered(entry, sender, word))) {
+        if (word && (await answered(entry, sender, word, { messageId: message.id }))) {
           out.answered += 1;
           continue;
         }
         // Anything else supersedes a question still waiting.
         if (await state.pending(entry.convoId)) await state.setPending(entry.convoId, null);
 
-        const shared = sharedUri(message);
-        const first = await virga.call('message', { owner: sender, message: forVirga(message), sharedUri: shared, agent: Boolean(model) });
+        const first = await virga.call('message', {
+          owner: sender,
+          convoId: entry.convoId,
+          messageId: message.id,
+          agent: Boolean(model),
+          message: forVirga(message),
+          sharedUri: sharedUri(message),
+        });
         if (first?.reply) await send(entry.convoId, first.reply);
-        else if (first?.agent && model) {
-          const t = await turn({ config: model, virga, owner: sender, message, sharedUri: shared, history: await history(entry.convoId, sender, message.id), fetchImpl, now });
+        else if (first?.agent && first.turnId && model) {
+          const t = await turn({
+            config: model,
+            virga,
+            owner: sender,
+            turnId: first.turnId,
+            message,
+            history: await history(entry.convoId, sender, message.id),
+            atmosphere: atmosphere ? await atmosphere.get() : null,
+            fetchImpl,
+            now,
+          });
           const ids = await send(entry.convoId, t.reply);
-          if (t.pending) await state.setPending(entry.convoId, { ...t.pending, owner: sender, messageIds: ids });
+          if (t.pending) await state.setPending(entry.convoId, { ...t.pending, question: t.reply, owner: sender, messageIds: ids });
         }
         out.answered += 1;
       } catch (err) {

@@ -90,7 +90,7 @@ How that works (built in phase 2, `src/config.js`):
 | Where | What runs there | What it holds |
 | --- | --- | --- |
 | **The browser** | Scans started on the web: the harvest from Constellation, the scoring, the radar, building a plan, the review | Nothing new beyond the session it already has. A scan lives in memory (IndexedDB if it should survive a reload) |
-| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: the list writer, and the narrow moderator route the droplet calls to do what a DM asks, as the owner who sent it | Users' OAuth sessions, encrypted, as now |
+| **Vercel** (`api/`, `server/`) | Defense's routes: lists, plans, decisions, undo, settings, entitlement. **The only place a user's session is ever opened**: the list writer, and the narrow moderator route the droplet calls to do what a DM asks, as the owner who sent it, once Vercel has read the DM back itself; the agent's write check | Users' OAuth sessions, encrypted, as now; its own session for the moderator account (a second app password), sealed the same way, to read DMs back with |
 | **The droplet** (`worker/`, new) | Everything that has to stay on: the moderator account's DMs and its agent, the list writer's clock, Spacedust for the shield, Jetstream for new follows, watches, attack mode | The moderator account's app password and session, the AI Gateway key, Virga-held list accounts (below), a lock so one copy runs. **No user sessions** |
 | **Supabase** (`virga` schema) | Defense's tables | The minimum below |
 
@@ -416,11 +416,17 @@ had happened. Fixed in `server/defense/run.js` and
   - each message at most once: the cursor moves past a message before it is answered;
   - not a message more than an hour old (the sender is told once). The first pass ever finds
     the end of the log and answers nothing before it.
-- **Vercel does what a message asks.** Every message goes to Vercel's moderator route
-  (`server/defense/handlers/moderator.js`), signed with `DEFENSE_WORKER_SECRET` over its
-  exact body, naming the sender the chat service gave. Everything is done there, as that
-  sender, through the store (`storeFor(sender)`): the worker holds no database key and no
-  user's session.
+- **Vercel does what a message asks, once it has read the message itself.** Every message
+  goes to Vercel's moderator route (`server/defense/handlers/moderator.js`), signed with
+  `DEFENSE_WORKER_SECRET` over its exact body, naming the conversation and the message.
+  Vercel doesn't take the droplet's word for what was said, or by whom. It signs in to the
+  moderator account with an app password of its own (`DEFENSE_MODERATOR_VERIFY_PASSWORD`),
+  which the droplet never holds, and reads the message back from Bluesky's chat service
+  (`server/defense/moderator/verifier.js`). It must be the owner's, in a one-to-one
+  conversation between the owner and the moderator, from within the hour, and Vercel goes by
+  the text it read. Everything is then done as that owner, through the store; the worker
+  holds no database key and no user's session. Production refuses to run without
+  Vercel's key (`DEFENSE_MODERATOR_VERIFY=off` is for running the worker locally).
 - **Linking** (`defense_link`): Defense › Lists makes an eight-character code, shown once
   and kept only as a hash of the owner's DID and the code. Sent to the moderator from the
   same account within fifteen minutes, it links; from any other account it links nothing.
@@ -442,24 +448,38 @@ had happened. Fixed in `server/defense/run.js` and
   unkeep, read the history and look an account up. Each tool is a signed call to the
   moderator route, which runs it as the owner (`server/defense/moderator/ops.js`). Held in
   code, below the model:
-  - **The write check** (`worker/check.js`, bluesky-mod's): every write but keeping someone
-    is first put to a separate model call, "did the owner ask for exactly this?". It reads the
-    owner's latest message, the moderator's previous one, and the change as Vercel's code
-    described it (`describe`), with where each account came from; never the agent's reasons,
-    and never what a tool read. It fails closed.
-  - **Asking first:** any write can be put to the owner as a question instead; a "yes" or a
-    thumbs-up runs exactly that, without the model.
+  - **Turns:** Vercel opens a turn for each message it has read back, and the agent's tool
+    calls carry it. A turn is good for ten minutes and six writes, for its owner only.
+  - **The write check, on Vercel** (`server/defense/moderator/check.js`, bluesky-mod's):
+    every write but keeping someone is first put to a separate model call, with Vercel's own
+    AI Gateway key, "did the owner ask for exactly this?". It reads the owner's message as
+    Vercel read it back, the moderator's message before it, and the change as Vercel's code
+    described it, with where each account came from. It never sees the agent's reasons, what
+    a tool or the network returned, or anything the droplet wrote. It fails closed.
+  - **Asking first:** any write can be put to the owner as a question instead, ending with
+    the change in Vercel's own words. A "yes" or a thumbs-up runs exactly that, without the
+    model, once Vercel has read the yes back and checked it against the question.
   - **Caps:** ten accounts to a call, a plan by its code, bands but never PROTECTED, eight
     steps and sixteen tool calls a turn.
-  - **Fences:** everything a tool returns reaches the model inside `<untrusted>` tags.
-  - **The record:** every write keeps the owner's own message, marked `[agent]`.
+  - **Fences:** everything a tool or the network returns reaches the model inside
+    `<untrusted>` tags.
+  - **The record:** every write keeps the owner's own message, as read back, marked `[agent]`.
   - **An allowance:** `DEFENSE_AGENT_MONTHLY_LIMIT` turns a month per owner (300 by
-    default), counted on Vercel before the model is asked (`defense_agent_usage`).
+    default), counted on Vercel when a turn opens (`defense_agent_usage`).
   - **Privacy routing:** every call asks the gateway for providers that don't train on
     prompts, and `DEFENSE_AGENT_ZDR=on` for zero data retention.
-
-  bluesky-mod's triage (sorting replies by tone) and its network-reading tools aren't
-  ported: the agent reads bands, counts and handles, never a post's text. They are phase 7.
+- **Reading the wider network** (`worker/atmosphere.js`, bluesky-mod's `mcp.js`): the agent
+  has one more tool, `atmosphere`, over the Atmosphere MCP server at aturi.to. It covers
+  profiles, author feeds, threads, post search, followers and follows, backlinks, records,
+  lists and identity history, so it can answer "what has this person been posting" as well
+  as "what band are they in".
+  - It offers read verbs only, never a tool that needs a URL or host fetched, and no web link
+    in any argument but a Bluesky client's.
+  - It sends no credentials, and fences every result whole.
+  - `ATMOSPHERE=off` leaves it out.
+  - What it reads can steer the turn that read it. That is what the write check on Vercel and
+    the veto are for: neither reads anything a post says. bluesky-mod's triage (sorting
+    replies by tone) isn't ported yet.
 - **Scans by DM** (`server/defense/moderator/scan.js`): a post sent to the moderator, by
   command or by the agent, is scanned on Vercel. It is the web's own scan (`runScan`), with
   the vouches read through the owner's long session (opened for that call) and the canary's
@@ -475,13 +495,21 @@ had happened. Fixed in `server/defense/run.js` and
     fake chat service, calling the moderator route in-process, signed, over PGlite, with two
     owners and a stranger, typed and in sentences. Nothing one owner sends, or one owner's
     agent calls, moves or names the other's rows, and a stranger's message never reaches a
-    model.
-- **What the droplet can do if it is taken.** It holds the moderator account, so it can act
-  as the moderator, read the DMs owners send it, and ask Vercel to do whatever a linked
-  owner's DM could: add named accounts to their list (past the veto, which runs on Vercel),
-  approve their plans, undo. It can't open anyone's session, write anything but list items,
-  or reach an owner who hasn't linked. That was the trade of reading the DMs on the droplet
-  rather than on Vercel; DEFENSE-THREATS.md, rule 16, has the rest.
+    model;
+  - a droplet in someone else's hands, against the same route. It can't make up a message,
+    claim someone else's, act on a group's or an old one, change what one says, turn an idle
+    question into a write, use one owner's turn as another's, an old turn, or a seventh
+    write, answer a question for the owner, or use a yes twice; and production won't run
+    without Vercel's own key.
+- **What the droplet can do if it is taken.** It holds the moderator account, so it can read
+  what owners DM the moderator, and send DMs as it. It can't act as an owner. Every message
+  Vercel acts on is read back with Vercel's own key, so the droplet can't invent one, change
+  one, or move one to another owner. Every write the agent asks for is judged on Vercel,
+  against the owner's real words, by a model call the droplet can't reach. What is left: it
+  can propose changes against what an owner really said in the last ten minutes, at most six
+  a message, each judged as above. It can also ask an owner a question of its own wording and
+  act on their yes; the yes still has to be theirs, and the change has to match the
+  question. DEFENSE-THREATS.md, rule 16, has the rest.
 - **Not built yet:**
   - **Approving by name or by engagement** as typed commands ("approve 3f9a2c1b @a @b",
     "… repliers") parse, and are answered with how to approve by band; in sentences the agent
@@ -499,8 +527,9 @@ had happened. Fixed in `server/defense/run.js` and
   never touch another's rows; the internal routes refuse anything but gates on the
   owner's own posts and list items on the owner's own lists.
 - **The Terms and Privacy Policy** gain: the moderator account and what it reads; that a
-  DM to it in sentences, and the handles and counts its tools find, go to a model provider
-  through the AI Gateway; what's stored and for how long (the table above); holder accounts,
+  DM to it in sentences, and what its tools find (handles, counts, and posts and profiles
+  read from the network through aturi.to), go to a model provider through the AI Gateway,
+  and that a change it makes is checked by another model call; what's stored and for how long (the table above); holder accounts,
   who owns them and what happens when a plan ends; that the model features send post text to
   a model provider; that scans read Constellation and Spacedust.
 

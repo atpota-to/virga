@@ -14,6 +14,7 @@
 // Stops cleanly on SIGTERM and SIGINT, between calls.
 
 import { driveOnce, nextDelay, readConfig } from './drive.js';
+import { atmosphereTools } from './atmosphere.js';
 import { runDmPass } from './dmLoop.js';
 import { modelConfig } from './model.js';
 import { moderatorConfigured, openModerator } from './moderator.js';
@@ -76,13 +77,14 @@ async function moderatorLoop() {
   }
   const model = modelConfig(process.env);
   const virga = virgaClient(config);
+  const atmosphere = model ? atmosphereTools({ env: process.env }) : null;
   console.info(`[worker] reading the moderator’s DMs every ${Math.round(config.dmIntervalMs / 1000)} s${model ? `, with ${model.agent} for sentences` : ', typed commands only'}`);
   let moderator = null;
   let failures = 0;
   while (!stopping) {
     try {
       moderator ??= await openModerator({ env: process.env, state });
-      const out = await runDmPass({ moderator, state, virga, model });
+      const out = await runDmPass({ moderator, state, virga, model, atmosphere });
       await state.touch();
       failures = 0;
       if (out.answered || out.errors.length || out.seeded) console.info(`[worker] DMs: ${JSON.stringify(out)}`);

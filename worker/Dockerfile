@@ -14,9 +14,9 @@ RUN cd worker && npm ci --omit=dev --no-audit --no-fund
 
 # Only what runs: never worker/.env, which compose passes in at run time
 # (and .dockerignore keeps out of the build context).
-COPY worker/main.js worker/drive.js worker/dmLoop.js worker/agent.js worker/check.js worker/model.js worker/moderator.js worker/state.js worker/virga.js ./worker/
+COPY worker/main.js worker/drive.js worker/dmLoop.js worker/agent.js worker/atmosphere.js worker/fence.js worker/model.js worker/moderator.js worker/state.js worker/virga.js ./worker/
 COPY server/defense/workerAuth.js ./server/defense/workerAuth.js
-COPY src/defense/command.js ./src/defense/command.js
+COPY src/defense/command.js src/defense/dmMessage.js ./src/defense/
 
 # The moderator's session and how far its DMs have been read, kept across restarts.
 RUN mkdir -p /data && chown node:node /data

@@ -345,7 +345,30 @@ export function storeFor(ownerDid, { client = null } = {}) {
      * null for none): the turns used this month, or null when it is spent.
      */
     async agentTurn(limit) {
-      return unwrap(await db().rpc('defense_agent_turn', { p_owner_did: owner, p_limit: limit ?? null }), 'agent turn');
+      return unwrap(await db().rpc('defense_agent_count', { p_owner_did: owner, p_limit: limit ?? null }), 'agent turn');
+    },
+
+    /**
+     * A turn for a message Vercel read back from the chat service: its id, or
+     * null when the allowance (`limit`) is spent. `count` false opens one
+     * without counting it (a yes to a question, which asks no model).
+     */
+    async openTurn({ convoId, messageId, limit = null, count = true }) {
+      return unwrap(
+        await db().rpc('defense_agent_turn_open', { p_owner_did: owner, p_convo_id: convoId, p_message_id: messageId, p_limit: limit, p_count: count }),
+        'open turn',
+      );
+    },
+
+    /** One of the owner's turns, or null. */
+    async turn(id) {
+      if (!id) return null;
+      return unwrap(await db().from('defense_agent_turn').select('id, convo_id, message_id, created_at, writes').eq('owner_did', owner).eq('id', id).maybeSingle(), 'turn');
+    },
+
+    /** Count a write against a turn: false when it isn't the owner's, is stale, or has had its writes. */
+    async turnWrite(id, { minutes, max }) {
+      return Boolean(unwrap(await db().rpc('defense_agent_turn_write', { p_owner_did: owner, p_turn_id: id, p_minutes: minutes, p_max: max }), 'turn write'));
     },
 
     /** The newest add still live, whatever it came from, or null. */

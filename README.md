@@ -284,8 +284,10 @@ to a block or mute list in your own repo, at `/defense/lists` and `/defense/hist
 **the moderator**: a Bluesky account you link from Defense › Lists and DM, in sentences
 ("block whoever's piling on in the quotes of this") or typed commands ("approve 3f9a2c1b
 UNKNOWN", "block @someone", "undo"). The worker on the droplet reads its DMs; an agent
-through the Vercel AI Gateway answers sentences, with every change checked against what you
-said. Closing replies when strangers arrive is still to come. It is all off unless
+through the Vercel AI Gateway answers sentences and can read the wider network through
+aturi.to. Virga's server reads every DM back with a key of its own before acting on it, and
+checks every change against what you wrote. Closing replies when strangers arrive is still
+to come. It is all off unless
 the build says `VITE_DEFENSE=on`, and writes nothing unless the server says
 `DEFENSE_WRITES=on`.
 
@@ -644,9 +646,10 @@ server's routes answer 503 and the posting pages that need it say so.
      consent screen should link somewhere other than this site's `/terms` and `/privacy`
    - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
    - `VITE_DEFENSE=on` to show Defense, `DEFENSE_WRITES=on` to let it write lists,
-     `DEFENSE_WORKER_SECRET` for the worker, and `DEFENSE_MODERATOR_HANDLE` for the
-     moderator (its password goes on the droplet; worker/README.md). Leave them all off until
-     the Terms and the Privacy Policy describe Defense (docs/DEFENSE.md)
+     `DEFENSE_WORKER_SECRET` for the worker, and `DEFENSE_MODERATOR_HANDLE` with
+     `DEFENSE_MODERATOR_VERIFY_PASSWORD` for the moderator (a second app password, not the
+     droplet's; worker/README.md). Leave them all off until the Terms and the Privacy Policy
+     describe Defense (docs/DEFENSE.md)
 4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
    can fetch the client metadata and keys for the life of every sign-in. After deploying,
    `curl https://<origin>/api/oauth/client-metadata.json` should show a `client_id` that

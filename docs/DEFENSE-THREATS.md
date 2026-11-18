@@ -40,8 +40,11 @@ forgotten.
 | --- | --- | --- | --- |
 | The browser | Vercel's Defense routes | The owner's `vg_` token, a list's name, a plan's rows (DIDs, bands, trust), the bands approved, the owner's words | Who the owner is (the token, checked against the session store). Nothing in the body is trusted for identity or for the veto |
 | Vercel cron, or the worker | Vercel's run route | `Bearer CRON_SECRET`, or a signed request (HMAC over the time, the method, the path and the body) | That it is time to run. It names nothing: the route chooses the work from the database |
-| The worker | Vercel's moderator route | A signed request naming the DM's sender, as the chat service gave it, and what they sent or the tool the agent called | That this owner sent a DM asking for it (rule 16). Run only for an owner who linked, as that owner |
+| The worker | Vercel's moderator route | A signed request naming a DM (its conversation and id) and its sender, or the turn and the tool the agent called | Nothing on its own. Vercel reads the DM back from the chat service with its own key, and acts only on what it read, as its real sender, if they linked (rule 16) |
+| Vercel | The chat service | Its own session for the moderator account | What a DM says and who sent it |
+| Vercel | The AI Gateway | The owner's words as read back, the moderator's message before them, a change described by code | The write check's yes or no (rule 17) |
 | The worker | The AI Gateway | The owner's DM, their recent conversation with the moderator, what the agent's tools found | Nothing: the model's answer is read for tool calls, which go to Vercel, and for the reply |
+| The worker | aturi.to | The Atmosphere tool's lookups, with no credentials | Nothing: what it returns is fenced as untrusted (rule 18) |
 | Vercel | The holder's PDS | Writes as the holder, through the restored session | Nothing comes back that is trusted beyond the write's own result |
 | Vercel | The public AppView | `getRelationships` and lists, without a session | The veto's fresh read of who the owner follows and who is on their curation lists. A failed read refuses the write |
 | Vercel | Supabase | Service-role queries, every one filtered by owner | Everything stored |
@@ -97,7 +100,8 @@ forgotten.
 ## What phase 3 leaves open
 
 - **The worker holds no database key and no user's session**, only the secret that signs
-  its calls, and in phase 4 the moderator account and the AI Gateway key (rule 16).
+  its calls, and in phase 4 the moderator account and the AI Gateway key. Neither is enough
+  to act for an owner (rule 16).
 - **Row-level security on `owner_did` is not the second wall yet.** Supabase's service role
   bypasses row-level security, and every Virga route uses it. The first wall is the
   owner-bound store and the SQL functions that require an owner. A second needs a role
@@ -113,9 +117,10 @@ forgotten.
 Every DM is untrusted text, from whoever is on the other end. The moderator answers only
 accounts that linked it, but what they paste can carry anything.
 
-11. **Who sent a message is what the chat service says.** The pass takes the sender's DID
-    from the chat service's message view and nothing else; no command, link or mention in a
-    message can say who it is from. Test: a command sent by one owner touches only their rows.
+11. **Who sent a message is what the chat service says.** Vercel takes the sender's DID from
+    the message it reads back from the chat service (rule 16) and nothing else; no command,
+    link or mention in a message can say who it is from. Test: a command sent by one owner
+    touches only their rows.
 12. **Linking proves a choice, bound to one account.** A code is made by an authenticated
     request, stored as a hash of the owner's DID and the code, lasts fifteen minutes, and is
     spent by the fifth wrong try. Sent from any other account it links nothing, and the
@@ -137,28 +142,54 @@ accounts that linked it, but what they paste can carry anything.
     the worker's data volume keeps a second copy from reading the same log. Someone unlinked
     gets one line, the same for everyone, at most once a day, keyed by a hash of their DID.
     Test: server/defense/moderator/dm.pglite.test.js.
-16. **The droplet relays; Vercel acts.** The worker holds the moderator account and the AI
-    Gateway key, and no database key and no user's session. Everything a DM asks of an
-    owner's rows is a call to Vercel's moderator route, signed over its exact body
-    (`application/octet-stream`, so the bytes arrive as signed), naming the sender the chat
-    service gave; Vercel runs it as that sender, and only for one who linked. What this
-    leaves: a compromised droplet holds the moderator account and the signing secret, so it
-    can read what owners DM it and ask Vercel for anything a linked owner's DM could ask for
-    (named adds, approvals, undo, keeps), as any linked owner. It can't open a session, write
-    anything but list items on lists Virga made, get past the veto, or touch an owner who
-    hasn't linked. Reading the DMs on Vercel would have closed that, at the cost of the
-    moderator's session living on Vercel; the owner chose the droplet.
-17. **The agent's writes are checked against the owner's words.** Every write but a keep is
-    put to a separate model call before it runs. The check reads the owner's latest message,
-    the moderator's previous one, and the change as Vercel's code described it, with where
-    each account came from, worked out by code; never the agent's reasons, and never what a
-    tool returned. It fails closed. A write put to the owner as a question runs only on their
-    yes, and runs exactly what was described. Test: worker/agent.test.js.
-18. **What a tool returns is data.** Handles and names are anyone's to choose, so every tool
-    result reaches the model inside `<untrusted>` tags it can't close, and the prompt says
-    that nothing inside them is an instruction. The agent's tools read bands, counts, codes
-    and handles only, never the text of anyone's post, so far less can reach it than in
-    bluesky-mod. The veto at the write (rule 1) holds whatever a captured turn calls.
+16. **The droplet alone is not enough: Vercel reads every message back with a key of its
+    own.** The worker holds the moderator account (one app password) and the AI Gateway key,
+    and no database key and no user's session. Everything a DM asks of an owner's rows is a
+    call to Vercel's moderator route, signed over its exact body (`application/octet-stream`,
+    so the bytes arrive as signed), naming the conversation and the message. Vercel signs in
+    to the moderator account with a second app password the droplet never holds, and reads
+    the message back from the chat service. It must be from the owner it is said to be from,
+    in a one-to-one conversation between that owner and the moderator, within the hour, and
+    Vercel acts on the text it read, not the text it was sent. Nobody but the owner can put
+    a message in that conversation under the owner's name. So the signing secret and the
+    moderator's password together can't make Vercel act for an owner who didn't write.
+    - **The agent's tool calls** carry a turn Vercel opened for one message read back: good
+      for its owner, for ten minutes and six writes.
+    - **A yes to a question** is read back too, and is good once.
+    - **Production refuses to run without Vercel's key.** `DEFENSE_MODERATOR_VERIFY=off`
+      trusts the worker, and only outside production.
+    - **What a taken droplet keeps:** it can read what owners DM the moderator and send DMs
+      as it. It can propose changes against what an owner really said in the last ten
+      minutes, each judged by the check (rule 17). It can ask an owner a question in its own
+      words and act on their yes, if the change matches the question. App passwords can't
+      revoke one another, so it can't lock Vercel out. Test:
+      server/defense/moderator/dm.pglite.test.js, "a droplet in someone else's hands".
+17. **The agent's writes are checked against the owner's words, on Vercel.** Every write but
+    a keep is put to a separate model call, run by Vercel with its own AI Gateway key, before
+    it runs. The check reads:
+    - the owner's message as Vercel read it back;
+    - the moderator's message before it;
+    - the change as Vercel's code described it, with where each account came from, worked
+      out by code.
+
+    It never reads the agent's reasons, what a tool or the network returned, or anything the
+    droplet wrote. It fails closed. A write put to the owner as a question runs only on
+    their yes, read back, and runs exactly what was described. Test:
+    server/defense/moderator/check.test.js, and the end-to-end test.
+18. **What a tool or the network returns is data.** Handles, names, posts and bios are
+    anyone's to write, so every tool result, and every page the Atmosphere tool reads from
+    aturi.to, reaches the model inside `<untrusted>` tags it can't close. The prompt says that
+    nothing inside them is an instruction. The Atmosphere tool:
+    - offers read verbs only;
+    - refuses arguments named `url` or `host`, and a web link under any argument unless it
+      is a Bluesky client's (bsky.app, deer.social), so a post can't make aturi.to fetch a
+      page its author runs, carrying what the turn holds;
+    - sends no credentials.
+
+    A handle or a did:web still resolves at the host it names, a narrower channel of the same
+    kind that stays open: what the turn holds (the owner's recent DMs, their lists and their
+    history) could be spelled into a lookup. Whatever a post talks the turn into, rules 1 and
+    17 decide what is written.
 19. **The model sees the owner's DMs, and nothing of anyone else's.** A turn carries the
     owner's message, the half hour of their conversation before it, and what its tools
     found for that owner. A stranger's message never reaches a model. Calls ask the gateway
@@ -170,9 +201,9 @@ accounts that linked it, but what they paste can carry anything.
 - **Phase 4 (the moderator in DMs):** built to the rules above. A scan by DM opens the
   owner's session for the signed-in `getProfiles` and nothing else, and its plan is approved
   under rules 1 and 13 like any other.
-- **Phase 7 (the agent reading posts):** triage and network reads put strangers' words in
-  front of the model, which rules 17 and 18 were written for; they need their own review
-  before they are turned on.
+- **Phase 7 (triage):** sorting replies by tone puts strangers' words in front of a model to
+  label them, and a label can decide an approval. It needs its own review before it is
+  turned on.
 - **Phase 5 (the shield):** the gates route may only change threadgates and postgates on the
   owner's own posts, and must put each back exactly as it was.
 

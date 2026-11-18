@@ -9,6 +9,7 @@ dist
 harness
 src/**
 !src/defense/command.js
+!src/defense/dmMessage.js
 api
 public
 supabase

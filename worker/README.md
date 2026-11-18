@@ -8,10 +8,12 @@ Defense's process on the droplet (docs/DEFENSE.md). It does two things:
   - Linking, the one line for anyone who hasn't linked, and typed commands are answered by
     Virga's server by code.
   - Anything else from a linked owner goes to the agent (`agent.js`), through the Vercel AI
-    Gateway, when `AI_GATEWAY_API_KEY` is set. Every change it makes is first checked against
-    what the owner said (`check.js`).
+    Gateway, when `AI_GATEWAY_API_KEY` is set. It can read the wider network through aturi.to
+    (`atmosphere.js`).
   - Whatever a DM asks of an owner's lists is done by Virga's server, as that owner, through
-    `POST /api/defense/moderator`, signed with `DEFENSE_WORKER_SECRET`.
+    `POST /api/defense/moderator`, signed with `DEFENSE_WORKER_SECRET`. The server reads every
+    message back from Bluesky with a key of its own before acting on it, and checks every
+    change the agent asks for against what the owner wrote.
 - **The list writer's clock.** Every minute or so it calls `POST /api/defense/run`, signed
   the same way. That route, on Vercel, claims the lists due a write, runs the veto, opens the
   session of the account that holds each list and writes a batch. Vercel Cron calls it too,
@@ -19,8 +21,11 @@ Defense's process on the droplet (docs/DEFENSE.md). It does two things:
 
 It holds no database key and no user's session (docs/DEFENSE-THREATS.md). It does hold the
 moderator account and the AI Gateway key, so keep the droplet's `.env` to yourself: with it,
-someone could read what owners DM the moderator, and ask Virga to do anything a linked owner's
-DM could (DEFENSE-THREATS.md, rule 16).
+someone could read what owners DM the moderator and send DMs as it. What they couldn't do is
+act for an owner: Vercel acts only on messages it has read back with its own app password
+(`DEFENSE_MODERATOR_VERIFY_PASSWORD`, set on Vercel, never here), and checks each change the
+agent asks for against the owner's real words with its own model call (DEFENSE-THREATS.md,
+rules 16 and 17). Make two app passwords for the moderator, and give each side one.
 
 Its state is one file in a Docker volume (`/data`): how far the DMs have been read, the
 moderator's session, and the questions the agent has asked and not had answered. A lock file
@@ -50,11 +55,14 @@ Or without Docker: `cd worker && npm ci && cd .. && VIRGA_URL=… DEFENSE_WORKER
 | `WORKER_DATA_DIR` | Where its state is kept; `/data` (the volume) by default |
 | `AI_GATEWAY_API_KEY` | The Vercel AI Gateway. Unset, the moderator answers typed commands only |
 | `DEFENSE_AGENT_MODEL` | The agent's model, which must call tools; `deepseek/deepseek-v4.1-flash` by default |
-| `DEFENSE_CHECK_MODEL` | The write check's model; the agent's by default |
 | `DEFENSE_AGENT_ZDR` | `on` routes only to providers with zero data retention |
+| `ATMOSPHERE` | `off` leaves out the tool that reads the wider network through aturi.to |
 
-How many replies in sentences each owner gets a month is set on Vercel
-(`DEFENSE_AGENT_MONTHLY_LIMIT`, 300 by default), where they're counted.
+On Vercel: `DEFENSE_MODERATOR_HANDLE`, its own `DEFENSE_MODERATOR_VERIFY_PASSWORD`, the write
+check's model (`DEFENSE_CHECK_MODEL`, with Vercel's `AI_GATEWAY_API_KEY`), and how many
+replies in sentences each owner gets a month (`DEFENSE_AGENT_MONTHLY_LIMIT`, 300 by default).
+To run the worker locally against a server outside production without a second password,
+set `DEFENSE_MODERATOR_VERIFY=off` on that server.
 
 A failed call to the list writer is tried again after twice the wait, up to ten minutes; a
 401 (the secret doesn't match Vercel's) waits ten minutes each time and says so in the log.

@@ -12,6 +12,12 @@
 --                       hash of their DID, so the moderator says its one line at
 --                       most once a day and keeps no list of who wrote to it
 --   defense_agent_usage how many agent turns each owner has had this month
+--   defense_agent_turn  each real DM an agent turn answers, as Vercel read it
+--                       from the chat service: the agent's tool calls name one,
+--                       and a turn has a few minutes and a few writes
+--   defense_verifier    Vercel's own session for the moderator account, made
+--                       with an app password the droplet doesn't have, for
+--                       reading back each message the droplet says it got
 --
 -- Every function that reads or writes a link takes its owner first, as phase
 -- 3's do (docs/DEFENSE-THREATS.md, rule 4). Granted to service_role only.
@@ -48,11 +54,36 @@ CREATE TABLE IF NOT EXISTS virga.defense_agent_usage (
   PRIMARY KEY (owner_did, month)
 );
 
+-- A message an agent turn answers. Its id is what the agent's tool calls
+-- carry: random, so only the worker that was handed it can name it, and good
+-- only for its owner, for TURN_MINUTES, for so many writes. No text: the
+-- message is read again from the chat service whenever its words are needed.
+CREATE TABLE IF NOT EXISTS virga.defense_agent_turn (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_did   TEXT NOT NULL CHECK (char_length(owner_did) <= 512),
+  convo_id    TEXT NOT NULL CHECK (char_length(convo_id) BETWEEN 1 AND 200),
+  message_id  TEXT NOT NULL CHECK (char_length(message_id) BETWEEN 1 AND 200),
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  writes      SMALLINT NOT NULL DEFAULT 0 CHECK (writes >= 0),
+  UNIQUE (owner_did, message_id)
+);
+CREATE INDEX IF NOT EXISTS idx_defense_agent_turn_created ON virga.defense_agent_turn(created_at);
+
+-- Vercel's session for the moderator account, sealed with
+-- SESSION_ENCRYPTION_KEY. One row.
+CREATE TABLE IF NOT EXISTS virga.defense_verifier (
+  id          SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  session     TEXT CHECK (session IS NULL OR char_length(session) <= 16384),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 ALTER TABLE virga.defense_link ENABLE ROW LEVEL SECURITY;
 ALTER TABLE virga.defense_dm_stranger ENABLE ROW LEVEL SECURITY;
 ALTER TABLE virga.defense_agent_usage ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage FROM PUBLIC, anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage TO service_role;
+ALTER TABLE virga.defense_agent_turn ENABLE ROW LEVEL SECURITY;
+ALTER TABLE virga.defense_verifier ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage, virga.defense_agent_turn, virga.defense_verifier FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage, virga.defense_agent_turn, virga.defense_verifier TO service_role;
 
 -- ─── A code, made ───────────────────────────────────────────────────────────
 -- A new code replaces the last; an account already linked stays linked.
@@ -215,7 +246,7 @@ $$;
 -- An agent turn, counted against the owner's monthly allowance: the turns
 -- used this month after this one, or NULL when the allowance is spent (and
 -- nothing is counted). A NULL limit is unlimited.
-CREATE OR REPLACE FUNCTION virga.defense_agent_turn(
+CREATE OR REPLACE FUNCTION virga.defense_agent_count(
   p_owner_did TEXT,
   p_limit     INTEGER
 ) RETURNS INTEGER
@@ -237,17 +268,74 @@ BEGIN
 END;
 $$;
 
+-- A turn for a message Vercel has read back: the turn's id, the same one for
+-- the same message. A new turn is counted against the owner's monthly
+-- allowance when p_count, and none is opened (NULL) once it is spent. Turns
+-- older than a day are cleared as new ones open.
+CREATE OR REPLACE FUNCTION virga.defense_agent_turn_open(
+  p_owner_did  TEXT,
+  p_convo_id   TEXT,
+  p_message_id TEXT,
+  p_limit      INTEGER,
+  p_count      BOOLEAN DEFAULT TRUE
+) RETURNS UUID
+LANGUAGE plpgsql
+SET search_path = virga, pg_temp
+AS $$
+DECLARE
+  v_id UUID;
+BEGIN
+  IF p_owner_did IS NULL THEN RAISE EXCEPTION 'an owner is required'; END IF;
+  SELECT id INTO v_id FROM defense_agent_turn WHERE owner_did = p_owner_did AND message_id = p_message_id;
+  IF FOUND THEN RETURN v_id; END IF;
+  IF p_count AND defense_agent_count(p_owner_did, p_limit) IS NULL THEN RETURN NULL; END IF;
+  DELETE FROM defense_agent_turn WHERE created_at < NOW() - INTERVAL '1 day';
+  INSERT INTO defense_agent_turn (owner_did, convo_id, message_id) VALUES (p_owner_did, p_convo_id, p_message_id)
+    ON CONFLICT (owner_did, message_id) DO NOTHING
+    RETURNING id INTO v_id;
+  IF v_id IS NULL THEN
+    SELECT id INTO v_id FROM defense_agent_turn WHERE owner_did = p_owner_did AND message_id = p_message_id;
+  END IF;
+  RETURN v_id;
+END;
+$$;
+
+-- One write of a turn's, if it is the owner's, still fresh (p_minutes), and
+-- under p_max writes: true and counted, or false.
+CREATE OR REPLACE FUNCTION virga.defense_agent_turn_write(
+  p_owner_did TEXT,
+  p_turn_id   UUID,
+  p_minutes   INTEGER,
+  p_max       INTEGER
+) RETURNS BOOLEAN
+LANGUAGE plpgsql
+SET search_path = virga, pg_temp
+AS $$
+BEGIN
+  IF p_owner_did IS NULL THEN RAISE EXCEPTION 'an owner is required'; END IF;
+  UPDATE defense_agent_turn
+     SET writes = writes + 1
+   WHERE id = p_turn_id AND owner_did = p_owner_did AND writes < p_max
+     AND created_at > NOW() - make_interval(mins => GREATEST(1, p_minutes));
+  RETURN FOUND;
+END;
+$$;
+
 REVOKE ALL ON FUNCTION virga.defense_link_code(TEXT, TEXT, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_link_claim(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_link_list(TEXT, UUID) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_add_named(TEXT, UUID, TEXT, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_plan_by_code(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_dm_stranger_due(TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION virga.defense_agent_turn(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.defense_agent_count(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.defense_agent_turn_open(TEXT, TEXT, TEXT, INTEGER, BOOLEAN) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.defense_agent_turn_write(TEXT, UUID, INTEGER, INTEGER) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION virga.defense_link_code(TEXT, TEXT, TIMESTAMPTZ) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_link_claim(TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_link_list(TEXT, UUID) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_add_named(TEXT, UUID, TEXT, TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_plan_by_code(TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_dm_stranger_due(TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION virga.defense_agent_turn(TEXT, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.defense_agent_count(TEXT, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.defense_agent_turn_open(TEXT, TEXT, TEXT, INTEGER, BOOLEAN) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.defense_agent_turn_write(TEXT, UUID, INTEGER, INTEGER) TO service_role;

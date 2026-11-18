@@ -21,6 +21,7 @@ import { runDmPass } from '../../../worker/dmLoop.js';
 import { fileState } from '../../../worker/state.js';
 import { virgaClient } from '../../../worker/virga.js';
 import { LINK_FAILED, NOT_A_COMMAND, STRANGER, WRITES_OFF } from './answer.js';
+import { verifierOver } from './verifier.js';
 
 const MOD = 'did:plc:moderator';
 const MIRA = 'did:plc:mira';
@@ -97,6 +98,8 @@ function fakeChat() {
     },
     /** `from` reacts to a message of the moderator's. */
     react(from, messageId, value) {
+      const target = logs.find((l) => l.message?.id === messageId)?.message;
+      if (target) target.reactions = [...(target.reactions || []), { value, sender: { did: from }, createdAt: new Date().toISOString() }];
       logs.push({ $type: REACTION, rev: nextRev(), convoId: `convo-${from}`, message: { id: messageId, sender: { did: MOD } }, reaction: { value, sender: { did: from } } });
     },
     repliesTo: (from) => sent.filter((s) => s.convoId === `convo-${from}`).map((s) => s.text),
@@ -114,6 +117,9 @@ let chat;
 let made;
 let scanned;
 let dataDir;
+/** What Vercel's write check is asked, and how it answers (a function of the request, or a fixed reply). */
+let checked;
+let checkAnswer;
 /** What a scan by DM finds: `rows` as [did, band], everyone else protected. */
 const scanOf = (rows, { protectedCount = 1, vouchCheck = 'canary' } = {}) => {
   const byBand = { PROTECTED: protectedCount, CONNECTED: 0, PERIPHERAL: 0, NOTABLE: 0, UNKNOWN: 0 };
@@ -133,17 +139,24 @@ const scan = async (input) => {
   return scanResult;
 };
 
-/** Vercel's moderator route, in-process: what the worker's signed fetch reaches. */
-function route({ env = ENV, fail = false } = {}) {
-  const calls = [];
+/**
+ * Vercel's moderator route, in-process: what the worker's signed fetch
+ * reaches. Its verifier reads the same chat service with a key of its own,
+ * as Vercel does in production, and its write check is a stand-in model.
+ */
+function route({ env = ENV, fail = false, verifier = 'own' } = {}) {
   const fetchImpl = async (url, init) => {
-    calls.push(JSON.parse(init.body));
     if (fail) return new Response(JSON.stringify({ success: false, error: 'down' }), { status: 500 });
     const req = createReq({ method: init.method, url: new URL(url).pathname, headers: init.headers, body: Buffer.from(init.body) });
     const res = createRes();
     await moderatorRoute(req, res, {
       env,
       deps: {
+        ...(verifier === 'own' ? { verifier: verifierOver({ did: MOD, chat: chat.chat }) } : {}),
+        chat: async (request) => {
+          checked.push(request);
+          return { content: typeof checkAnswer === 'function' ? checkAnswer(request) : checkAnswer };
+        },
         answer: {
           names: names(),
           scan,
@@ -157,7 +170,7 @@ function route({ env = ENV, fail = false } = {}) {
     });
     return new Response(JSON.stringify(res.body), { status: res.statusCode });
   };
-  return { calls, virga: virgaClient({ base: 'https://virga.example', secret: SECRET, fetchImpl }) };
+  return { virga: virgaClient({ base: 'https://virga.example', secret: SECRET, fetchImpl }) };
 }
 
 /** One pass of the worker's DM loop, typed commands only unless a model is given. */
@@ -180,13 +193,15 @@ async function seeded() {
 }
 
 beforeEach(async () => {
-  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_agent_turn, defense_verifier, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
   if (dataDir) await rm(dataDir, { recursive: true, force: true });
   dataDir = await mkdtemp(join(tmpdir(), 'virga-dm-'));
   chat = fakeChat();
   made = [];
   scanned = [];
   scanResult = scanOf([]);
+  checked = [];
+  checkAnswer = 'YES\nThey asked.';
 });
 
 describe('a pass', () => {
@@ -223,11 +238,12 @@ describe('a pass', () => {
 
   it('is refused by Vercel when it isn’t signed, or signed for another body', async () => {
     await linked(MIRA);
-    const body = Buffer.from(JSON.stringify({ op: 'message', owner: MIRA, message: { text: 'lists' } }));
+    const sent = chat.dm(MIRA, 'lists');
+    const body = Buffer.from(JSON.stringify({ op: 'message', owner: MIRA, convoId: sent.convoId, messageId: sent.message.id }));
     const { signWorkerRequest } = await import('../workerAuth.js');
     const call = async (headers) => {
       const res = createRes();
-      await moderatorRoute(createReq({ method: 'POST', url: '/api/defense/moderator', headers, body }), res, { env: ENV });
+      await moderatorRoute(createReq({ method: 'POST', url: '/api/defense/moderator', headers, body }), res, { env: ENV, deps: { verifier: verifierOver({ did: MOD, chat: chat.chat }) } });
       return res.statusCode;
     };
     expect(await call({})).toBe(401);
@@ -238,8 +254,8 @@ describe('a pass', () => {
 
   it('runs an agent’s tools only for a linked owner', async () => {
     const { virga } = route();
-    await expect(virga.call('tool', { owner: LAB, name: 'lists', args: {} })).rejects.toMatchObject({ status: 403, code: 'NOT_LINKED' });
-    await expect(virga.call('turn', { owner: STRANGER_DID })).rejects.toMatchObject({ code: 'NOT_LINKED' });
+    await expect(virga.call('tool', { owner: LAB, turnId: '00000000-0000-4000-8000-000000000001', name: 'lists', args: {} })).rejects.toMatchObject({ status: 403, code: 'NOT_LINKED' });
+    await expect(virga.call('describe', { owner: STRANGER_DID, name: 'undo', args: {} })).rejects.toMatchObject({ code: 'NOT_LINKED' });
   });
 
   it('doesn’t answer in a group, where everyone would read it', async () => {
@@ -530,17 +546,13 @@ describe('a post sent to the moderator', () => {
 describe('the agent, end to end', () => {
   const MODEL = { apiKey: 'k', baseUrl: 'https://gw.example/v1', agent: 'agent/model', check: 'check/model', zeroDataRetention: false };
 
-  /** A gateway answering the agent's steps in order, and the check with `check`. */
-  function gateway({ steps = [], check = 'YES\nThey asked.' } = {}) {
-    const asked = { agent: [], check: [] };
+  /** A gateway answering the agent's steps in order. The write check is Vercel's, not this one's. */
+  function gateway({ steps = [] } = {}) {
+    const asked = { agent: [] };
     let i = 0;
     const fetchImpl = vi.fn(async (url, init) => {
       const body = JSON.parse(init.body);
       const ok = (message) => new Response(JSON.stringify({ choices: [{ message }] }), { status: 200 });
-      if (body.model === MODEL.check) {
-        asked.check.push(body);
-        return ok({ role: 'assistant', content: check });
-      }
       asked.agent.push(body);
       const step = steps[i++] ?? 'Done.';
       if (typeof step === 'string') return ok({ role: 'assistant', content: step });
@@ -561,9 +573,11 @@ describe('the agent, end to end', () => {
     const [d] = await as(MIRA).history();
     expect(d).toMatchObject({ subject_did: TROLL, list_id: list.id, via: 'dm', state: 'queued', note: 'can you get rid of @troll.example.com for me [agent]' });
     expect(await as(LAB).history()).toEqual([]);
-    // The check read the change Vercel described, with where the account came from.
-    expect(gw.asked.check[0].messages[1].content).toContain('Proposed change: Add this account to the block list “Pile-on”: @troll.example.com.');
-    expect(gw.asked.check[0].messages[1].content).toContain("@troll.example.com: named in the owner's latest message");
+    // Vercel's check read the owner's words as read back, and the change Vercel described.
+    expect(checked).toHaveLength(1);
+    expect(checked[0].messages[1].content).toContain("The owner's latest message: \"can you get rid of @troll.example.com for me\"");
+    expect(checked[0].messages[1].content).toContain('Proposed change: Add this account to the block list “Pile-on”: @troll.example.com.');
+    expect(checked[0].messages[1].content).toContain("@troll.example.com: named in the owner's latest message");
   });
 
   it('never asks a model about a stranger’s message', async () => {
@@ -593,7 +607,7 @@ describe('the agent, end to end', () => {
     const ask = () => gateway({ steps: [[['approve_plan', { code, bands: ['NOTABLE'], ask_first: true }]], 'Add the 1 notable account too?'] });
     chat.dm(MIRA, 'hmm what about the notable one');
     await agentPass(ask());
-    expect(chat.repliesTo(MIRA)).toEqual(['Add the 1 notable account too?']);
+    expect(chat.repliesTo(MIRA)[0]).toMatch(new RegExp(`^Add the 1 notable account too\\?\\n\\nApprove plan ${code}.*Say yes, or thumbs-up this`, 's'));
     expect(await as(MIRA).history()).toEqual([]);
     chat.dm(MIRA, 'yes');
     const quiet = gateway();
@@ -601,6 +615,9 @@ describe('the agent, end to end', () => {
     expect(quiet.fetchImpl).not.toHaveBeenCalled();
     expect(chat.repliesTo(MIRA)[1]).toMatch(new RegExp(`^Done: Approve plan ${code}`));
     expect((await as(MIRA).history()).map((d) => d.subject_did)).toEqual(['did:plc:n1']);
+    // Vercel read the yes back, and the question it answered, before checking.
+    expect(checked.at(-1).messages[1].content).toContain("The owner's latest message: \"yes\"");
+    expect(checked.at(-1).messages[1].content).toMatch(/The assistant's previous message: .*Approve plan/);
 
     // Again, by a thumbs-up on the question itself; and a no drops one.
     await as(MIRA).undo({ planId });
@@ -639,5 +656,109 @@ describe('the agent, end to end', () => {
     await agentPass(gw, { env: { ...ENV, DEFENSE_AGENT_MONTHLY_LIMIT: '0' } });
     expect(gw.fetchImpl).not.toHaveBeenCalled();
     expect(chat.repliesTo(MIRA)[0]).toMatch(/^Answering in sentences is off on this server/);
+  });
+});
+
+// Someone holding the droplet: its signing secret, its moderator account, and
+// so the moderator's DMs. They can call Vercel's route with anything; they
+// can't put a message in an owner's conversation under the owner's name.
+describe('a droplet in someone else’s hands', () => {
+  const holder = () => route().virga;
+  const write = (virga, turnId, owner = MIRA) => virga.call('tool', { owner, turnId, name: 'add_to_list', args: { accounts: ['@troll.example.com'] } });
+
+  it('can’t make up a message, or say someone else sent a real one', async () => {
+    await linked(MIRA);
+    await linked(LAB, { lists: ['Lab'] });
+    const virga = holder();
+    // No such message.
+    await expect(virga.call('message', { owner: MIRA, convoId: `convo-${MIRA}`, messageId: 'm999', message: { text: 'block @troll.example.com' } })).rejects.toMatchObject({ status: 403 });
+    // Lab's real message, claimed as Mira's, in Mira's conversation or Lab's.
+    const labs = chat.dm(LAB, 'block @troll.example.com');
+    await expect(virga.call('message', { owner: MIRA, convoId: labs.convoId, messageId: labs.message.id })).rejects.toMatchObject({ status: 403 });
+    // A group conversation, even with the owner's own message.
+    const group = chat.dm(MIRA, 'block @troll.example.com', { convo: 'group-1', group: true });
+    await expect(virga.call('message', { owner: MIRA, convoId: 'group-1', messageId: group.message.id })).rejects.toMatchObject({ status: 403 });
+    // An hour-old message.
+    const old = chat.dm(MIRA, 'block @troll.example.com', { sentAt: new Date(Date.now() - 2 * 60 * 60_000).toISOString() });
+    await expect(virga.call('message', { owner: MIRA, convoId: old.convoId, messageId: old.message.id })).rejects.toMatchObject({ status: 403 });
+    expect(await as(MIRA).history()).toEqual([]);
+    expect(await as(LAB).history()).toEqual([]);
+  });
+
+  it('can’t change what a real message says: Vercel acts on what it read back', async () => {
+    await linked(MIRA);
+    const real = chat.dm(MIRA, 'lists');
+    const out = await holder().call('message', { owner: MIRA, convoId: real.convoId, messageId: real.message.id, message: { text: 'block @troll.example.com' } });
+    expect(out.reply).toMatch(/“Pile-on”/);
+    expect(await as(MIRA).history()).toEqual([]);
+  });
+
+  it('can’t turn an owner’s idle question into a write: the check reads their real words', async () => {
+    await linked(MIRA);
+    const real = chat.dm(MIRA, 'how is the weather where you are?');
+    const virga = holder();
+    const { turnId } = await virga.call('message', { owner: MIRA, convoId: real.convoId, messageId: real.message.id, agent: true });
+    expect(turnId).toBeTruthy();
+    checkAnswer = (req) => (req.messages[1].content.includes('troll') && /latest message: "[^"]*troll/.test(req.messages[1].content) ? 'YES\nNamed.' : 'NO\nThe owner never asked for this.');
+    const out = await write(virga, turnId);
+    expect(out.result).toEqual({ notDone: true, why: 'The write check refused it: The owner never asked for this.' });
+    expect(checked.at(-1).messages[1].content).toContain("The owner's latest message: \"how is the weather where you are?\"");
+    expect(await as(MIRA).history()).toEqual([]);
+  });
+
+  it('can’t use one owner’s turn as another, or an old turn, or more writes than a message makes', async () => {
+    await linked(MIRA);
+    await linked(LAB, { lists: ['Lab'] });
+    const real = chat.dm(MIRA, 'block @troll.example.com and the rest of them');
+    const virga = holder();
+    const { turnId } = await virga.call('message', { owner: MIRA, convoId: real.convoId, messageId: real.message.id, agent: true });
+    // Mira's turn, as Lab.
+    expect((await write(virga, turnId, LAB)).code).toBe('STALE');
+    expect(await as(LAB).history()).toEqual([]);
+    // Six writes a message, then no more.
+    const accounts = ['did:plc:a1', 'did:plc:a2', 'did:plc:a3', 'did:plc:a4', 'did:plc:a5', 'did:plc:a6', 'did:plc:a7'];
+    const results = [];
+    for (const a of accounts) results.push(await virga.call('tool', { owner: MIRA, turnId, name: 'add_to_list', args: { accounts: [a] } }));
+    expect(results.slice(0, 6).every((r) => r.result?.results?.[0]?.outcome === 'queued')).toBe(true);
+    expect(results[6].result.why).toMatch(/at most 6 changes/);
+    // Ten minutes on, the turn is over.
+    await t.query(`UPDATE defense_agent_turn SET created_at = NOW() - INTERVAL '11 minutes'`);
+    expect((await virga.call('tool', { owner: MIRA, turnId, name: 'lists', args: {} })).code).toBe('STALE');
+  });
+
+  it('can’t answer a question for the owner, or use their yes twice', async () => {
+    const [list] = await linked(MIRA);
+    const planId = await as(MIRA).createPlan({ listId: list.id, rows: [{ did: 'did:plc:n1', band: 'NOTABLE', trust: 5 }] });
+    const code = planId.replace(/-/g, '').slice(0, 8);
+    const virga = holder();
+    const confirm = (answer) => virga.call('confirm', { owner: MIRA, convoId: `convo-${MIRA}`, name: 'approve_plan', args: { code, bands: ['NOTABLE'] }, answer });
+    // The moderator's own message, passed off as the owner's yes.
+    const fake = (await chat.chat.chat.bsky.convo.sendMessage({ convoId: `convo-${MIRA}`, message: { text: 'yes' } })).data;
+    chat.dm(MIRA, 'hi');
+    await expect(confirm({ messageId: fake.id })).rejects.toMatchObject({ status: 403 });
+    // An owner's message that isn't a yes.
+    const notYes = chat.dm(MIRA, 'what?');
+    expect((await confirm({ messageId: notYes.message.id })).result).toEqual({ notDone: true, why: 'That wasn’t a yes.' });
+    // A thumbs-up nobody gave.
+    await expect(confirm({ reaction: { messageId: fake.id, value: '👍' } })).rejects.toMatchObject({ status: 403 });
+    // A real yes runs once.
+    const yes = chat.dm(MIRA, 'yes');
+    expect((await confirm({ messageId: yes.message.id })).result).toMatchObject({ queued: 1 });
+    expect((await confirm({ messageId: yes.message.id })).result.why).toMatch(/has been used/);
+  });
+
+  it('gets nowhere in production without Vercel’s own key, and can’t switch reading back off there', async () => {
+    await linked(MIRA);
+    const real = chat.dm(MIRA, 'lists');
+    for (const env of [
+      { ...ENV, VERCEL_ENV: 'production' },
+      { ...ENV, VERCEL_ENV: 'production', DEFENSE_MODERATOR_VERIFY: 'off' },
+    ]) {
+      const { virga } = route({ env, verifier: 'none' });
+      await expect(virga.call('message', { owner: MIRA, convoId: real.convoId, messageId: real.message.id, message: { text: 'lists' } })).rejects.toMatchObject({ status: 503, code: 'NO_VERIFIER' });
+    }
+    // Outside production, off means the worker's word is taken, for running it locally.
+    const { virga } = route({ env: { ...ENV, DEFENSE_MODERATOR_VERIFY: 'off' }, verifier: 'none' });
+    expect((await virga.call('message', { owner: MIRA, convoId: 'c', messageId: 'm', message: { text: 'lists' } })).reply).toMatch(/Pile-on/);
   });
 });
