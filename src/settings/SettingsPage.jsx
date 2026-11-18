@@ -693,8 +693,9 @@ function PermissionsSection() {
       </Section>
       <Section title="What it can’t do">
         <p className="settings-text">
-          It can’t like, repost, block, mute, change your profile, or read your messages. It posts, replies and deletes posts only when you
-          ask it to, and never edits a post once it’s published. Everything else it reads is public and fetched without your session.
+          It can’t like, repost, block or mute anyone, change your profile, or read your messages. It posts, replies and deletes posts only
+          when you ask it to, and never edits a post once it’s published. With Defense’s lists on, it adds people to a list you made only
+          when you approve them, and never anyone you follow. Everything else it reads is public and fetched without your session.
         </p>
       </Section>
       <Section title="Where the sign-in is kept">

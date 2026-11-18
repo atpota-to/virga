@@ -42,7 +42,8 @@ Clear the site's data to start over.
 | `?terms=ask` | nobody has agreed to the Terms of Service and Privacy Policy, so the agreement screen stands in front of the app until you agree (it comes back on every load). `?terms=down` is the same with a server that can't record the agreement, to show the error. Combine with `?mode=browser` for a browser session, whose agreement is kept in the browser and reported |
 | `?expired=lab` | that account (by handle) starts signed out; the other is open |
 | `?scope=read` | the sessions were granted what Virga asked for before it could post: posts, gates, templates, drafts and uploads are refused for a missing scope (following still works) |
-| `?defense=on` | the sessions were granted Defense's permission too, as after Turn on Defense. By default they weren't, so `/defense` offers to ask for it; Turn on Defense (and Turn off) changes the grant in place, for the agent and the server alike |
+| `?defense=on` | the sessions were granted Defense's permission too, as after Turn on Defense. By default they weren't, so `/defense` offers to ask for it; Turn on Defense (and Turn off) changes the grant in place, for the agent and the server alike. `?defense=lists` grants the list writes as well, as after Let Defense make lists |
+| `?defensewrites=off` | Virga's server doesn't write Defense's lists (its `DEFENSE_WRITES` isn't on): scans work, and Add to a list and Lists say so |
 | `?appview=failopen`, `?appview=flaky` | the signed-in `getProfiles` leaves `knownFollowers` off every answer (a scan finds no canary and says it couldn't check who you know in common), or off the first answer for each batch (the canary catches it, and the batch is asked again and counted) |
 | `?limits=3,1,1` | limits on scheduled posts, plain timers and conditional timers per account, as the server's `SCHEDULED_POSTS_LIMIT`, `POST_TIMERS_LIMIT` and `CONDITIONAL_TIMERS_LIMIT` would set them; a blank or `0` leaves one unlimited. By default there are none, as on the server, only its flat caps (50 scheduled posts, 200 timers) |
 | `?ailimits=30,15,3` | the monthly AI allowances: adviser reads, image descriptions, style readings (these are the defaults); `?ailimits=unlimited` counts nothing |
@@ -142,6 +143,17 @@ tried it),
 `__harness.agentFor(did)` is the agent the page uses, and
 `__harness.server.inspect()` shows what the server holds.
 
+## Defense's lists
+
+The fake server answers `/api/defense/*` (`harness/fakeDefense.js`) in the real handlers'
+shapes: lists, the people kept by hand, plans and their approval, the history and undo. A
+list it makes is a record in the account's world, and on each tick of the server's workers
+it writes one batch per account as list items there, with the same veto the real one reads
+(the account, the people kept by hand, everyone it follows, the members of its curation
+lists). `__harness.cron()` runs a tick now; `?cron=0` stops them, so a batch can be watched
+arriving. The world is in memory, so a reload starts it over: move between Defense's pages
+from the sidebar.
+
 ## Cards and video
 
 The card service answers any web address with a title, a description and a real PNG
@@ -151,8 +163,10 @@ addressed to the right place (the upload's to the account's PDS for `uploadBlob`
 rest to the video service), keeps the upload as one of the account's blobs and reports
 it processed after a few seconds.
 
-`harness/world.test.js`, `fakeXrpc.test.js`, `fakeServer.test.js` and `crowd.test.js` run
-with `npm test` (`crowd.test.js` runs the real Defense scan against the fixtures). They check that the real code still reads the fixtures the way it reads real
+`harness/world.test.js`, `fakeXrpc.test.js`, `fakeServer.test.js`, `crowd.test.js` and
+`fakeDefense.test.js` run with `npm test` (`crowd.test.js` runs the real Defense scan
+against the fixtures, and `fakeDefense.test.js` the real Defense client against the fake
+server). They check that the real code still reads the fixtures the way it reads real
 answers, and that the posting services (publish, drafts, scheduling, timers) work
 against the fakes, which is the only thing that stops them drifting.
 

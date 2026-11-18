@@ -31,6 +31,7 @@ import {
   storeBlob,
   writeRecord,
 } from './repo.js';
+import { createDefense } from './fakeDefense.js';
 import { createViews } from './views.js';
 import { hashOf, tidAt } from './world.js';
 import {
@@ -360,6 +361,7 @@ export function createServer({
   aiDelayMs = 900,
   ai = 'ok',
   terms = 'agreed',
+  defenseWrites = true,
   now = () => Date.now(),
 } = {}) {
   const list = Array.isArray(worlds) ? worlds : [worlds];
@@ -2262,10 +2264,15 @@ export function createServer({
   }
 
   /** One run of both workers. Resolves to `{ published, settled }` rows. */
+  // Defense's routes and its list writer (fakeDefense.js), on the same tick.
+  const defense = createDefense({ worlds: list, writes: defenseWrites, now, note });
+  Object.assign(api, defense.api);
+
   async function runCron() {
     const published = await runSchedule();
     const settled = await runTimers();
-    return { published, settled };
+    const listed = await defense.run();
+    return { published, settled, listed };
   }
 
   /* ---- routing ---- */
@@ -2475,8 +2482,9 @@ export function createServer({
     runCron,
     runSchedule,
     runTimers,
-    /** What's held, for tests and the console: `{ scheduled, timers, tokens, agreements, log }`. */
-    inspect: () => ({ scheduled, timers, tokens: [...tokens.entries()], agreements, log }),
+    runDefense: () => defense.run(),
+    /** What's held, for tests and the console: `{ scheduled, timers, tokens, agreements, defense, log }`. */
+    inspect: () => ({ scheduled, timers, tokens: [...tokens.entries()], agreements, defense: defense.inspect(), log }),
   };
 }
 

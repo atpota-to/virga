@@ -4,7 +4,7 @@
 // signing in and out, and noticing a sign-in that has ended. The provider in
 // useAtprotoSession.jsx holds the state; this decides what goes in it.
 
-import { DEFENSE_TOKENS, OAUTH_RETURN_PATH, OAUTH_SCOPE, POSTING_TOKENS, signInScope } from '../config.js';
+import { DEFENSE_TOKENS, LIST_TOKENS, OAUTH_RETURN_PATH, OAUTH_SCOPE, POSTING_TOKENS, defenseLevel, signInScope } from '../config.js';
 import { readSessionHint, syncSessionHint, writeSessionHint } from '../lib/sessionHint.js';
 import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import { missingScopes } from './scopes.js';
@@ -29,8 +29,11 @@ const GRANT_GONE_CODES = new Set(['OAUTH_SESSION_MISSING', 'SESSION_EXPIRED']);
  *
  * `defense` says whether the session holds Defense's permission, which only
  * an account that turned Defense on asked for: 'granted', 'missing', or
- * 'unknown' while nobody has read the grant. It is not in `missing`, which
- * is what every sign-in asks for.
+ * 'unknown' while nobody has read the grant. `lists` says the same of the
+ * permission to write Defense's lists, and `canWriteLists` whether the
+ * account can have them written: Virga's server writes them, so it takes a
+ * long session as well. Neither is in `missing`, which is what every sign-in
+ * asks for.
  */
 export function capabilitiesFrom(row, status) {
   const mode = row?.mode || null;
@@ -39,13 +42,33 @@ export function capabilitiesFrom(row, status) {
   const missing = granted == null ? [] : missingScopes(granted, OAUTH_SCOPE);
   const postingGranted = granted == null || missingScopes(granted, POSTING_TOKENS).length === 0;
   const longSession = mode === 'backend' && live;
-  const defense = granted == null ? 'unknown' : holdsDefense(granted) ? 'granted' : 'missing';
-  return { mode, canPost: live && postingGranted, canSchedule: longSession, canUseAi: longSession, defense, missing };
+  const level = granted == null ? null : grantedDefenseLevel(granted);
+  const defense = granted == null ? 'unknown' : level ? 'granted' : 'missing';
+  const lists = granted == null ? 'unknown' : level === 'lists' ? 'granted' : 'missing';
+  return {
+    mode,
+    canPost: live && postingGranted,
+    canSchedule: longSession,
+    canUseAi: longSession,
+    defense,
+    lists,
+    canWriteLists: longSession && lists !== 'missing',
+    missing,
+  };
 }
 
 /** Whether a granted scope covers Defense's permission. */
 export function holdsDefense(granted) {
   return typeof granted === 'string' && missingScopes(granted, DEFENSE_TOKENS).length === 0;
+}
+
+/**
+ * How much of Defense a granted scope covers: 'lists' (the read and the list
+ * writes), 'scan' (the read), or false.
+ */
+export function grantedDefenseLevel(granted) {
+  if (!holdsDefense(granted)) return false;
+  return missingScopes(granted, LIST_TOKENS).length === 0 ? 'lists' : 'scan';
 }
 
 /**
@@ -86,11 +109,21 @@ export function createSessionController(set, env) {
 
   const rows = () => A.readAccounts(env.storage);
   const find = (did) => A.findAccount(rows(), did);
-  /** The remembered account a sign-in's input names (its DID or handle), or null. */
-  const rememberedFor = (input) => {
+  /**
+   * The remembered account a sign-in is for: by `did` when the caller knows it
+   * (every sign-in again does), else by the input as a DID, else by the input
+   * as a handle, and only when exactly one account has it, since a handle can
+   * move between accounts.
+   */
+  const rememberedFor = (input, did = null) => {
+    const list = rows();
+    if (did) return list.find((r) => r.did === did) || null;
     const text = String(input || '').toLowerCase();
     if (!text) return null;
-    return rows().find((r) => r.did === input || (r.handle && r.handle.toLowerCase() === text)) || null;
+    const byDid = list.find((r) => r.did === input);
+    if (byDid) return byDid;
+    const byHandle = list.filter((r) => r.handle && r.handle.toLowerCase() === text);
+    return byHandle.length === 1 ? byHandle[0] : null;
   };
 
   function refreshRows() {
@@ -401,7 +434,9 @@ export function createSessionController(set, env) {
       const replaced = A.readBackendToken(store, did);
       A.writeBackendToken(store, did, token);
       if (replaced && replaced !== token) dropToken(replaced);
-      list = A.recordSignIn(store, { did, mode: 'backend' });
+      // The grant is new: what the row said before (Defense on or off, say)
+      // isn't assumed of it. learnBackendSession reads it again.
+      list = A.recordSignIn(store, { did, mode: 'backend', scope: null });
       if (!keepsOpen(intent, did, openBefore)) A.writeActiveDid(store, did);
       H.clearReauthAttempts(env.tabStorage);
       forgetBuilt(did);
@@ -606,15 +641,18 @@ export function createSessionController(set, env) {
      * and `prompt: 'create'` opens that page on making a new one. `signal`
      * calls it off, for as long as the browser hasn't left.
      *
-     * `defense` asks for Defense's permission too (true) or leaves it out
-     * (false). Unsaid, an account this browser remembers keeps what it has:
-     * signing in again doesn't take Defense away from an account that had
-     * turned it on, nor give it to one that hadn't.
+     * `defense` asks for Defense's permissions too: `'scan'` (or true) the
+     * read a scan needs, `'lists'` that and writing lists, false neither.
+     * Unsaid, an account this browser remembers keeps what it has: signing
+     * in again doesn't take Defense away from an account that had turned it
+     * on, nor give it to one that hadn't. `did` says which remembered account
+     * this is, when the caller knows (a sign-in again always does).
      */
-    async signIn(input, { mode = env.authMode, intent = 'add', prompt = null, signal = null, defense = null } = {}) {
+    async signIn(input, { mode = env.authMode, intent = 'add', prompt = null, signal = null, defense = null, did = null } = {}) {
       const handle = String(input || '').trim().replace(/^@/, '');
       const ask = B.signInPrompt(prompt);
-      const withDefense = typeof defense === 'boolean' ? defense : holdsDefense(rememberedFor(handle)?.scope);
+      const remembered = rememberedFor(handle, did)?.scope;
+      const withDefense = defense == null ? (typeof remembered === 'string' ? grantedDefenseLevel(remembered) : false) : defenseLevel(defense);
       A.writeOpenAtSignIn(env.tabStorage, intent === 'reauth' ? active.did : null);
       if (mode === 'backend') {
         return B.startBackendSignIn({

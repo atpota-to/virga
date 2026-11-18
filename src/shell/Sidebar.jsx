@@ -21,7 +21,8 @@ import { usePreferences } from '../lib/preferences.jsx';
 import { Link } from '../lib/router.jsx';
 import { REPORTS } from '../reports/registry.js';
 import { POSTING_PAGES } from '../posting/routes.js';
-import { DEFENSE_BASE, DEFENSE_ICON } from '../defense/routes.js';
+import { DEFENSE_BASE, DEFENSE_ICON, DEFENSE_PAGES } from '../defense/routes.js';
+import { DEFENSE_ENABLED } from '../config.js';
 import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
 import { TOOLS } from '../tools/registry.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
@@ -179,8 +180,13 @@ export default function Sidebar({ archive, route, profile, did, firstRun = false
             ))}
           </NavSection>
 
-          {/* One page so far, so the word is the page, with nothing under it. */}
-          <NavSection collapsed={collapsed} to={DEFENSE_BASE} icon={DEFENSE_ICON} label="Defense" open={section === 'defense'} current={section === 'defense'} />
+          {DEFENSE_ENABLED && (
+            <NavSection collapsed={collapsed} to={DEFENSE_BASE} icon={DEFENSE_ICON} label="Defense" open={section === 'defense'}>
+              {DEFENSE_PAGES.map((p) => (
+                <NavSubLink key={p.key} to={p.path} label={p.label} current={(page || 'scan') === p.key} />
+              ))}
+            </NavSection>
+          )}
 
           <NavSection collapsed={collapsed} to="/settings" icon={Settings} label="Settings" open={section === 'settings'}>
             {SETTINGS_SECTIONS.map((s) => (

@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CANARY_CANDIDATES, ScanError, canaryCandidates, readPostInput, resolvePost, runScan, scanErrorFrom, signedInProfiles } from './scan.js';
+import { CANARY_CANDIDATES, CANARY_REQUIRED_AT, ScanError, canaryCandidates, readPostInput, resolvePost, runScan, scanErrorFrom, signedInProfiles } from './scan.js';
 import { ScoreError } from './score.js';
 
 const OWNER = 'did:plc:owner';
 const AUTHOR = 'did:plc:author';
 const CANARY = 'did:plc:canary';
 const NO_WAIT = [0, 0];
+/** A scan's read of the owner's curation lists, with none: no network in these tests. */
+const noCuration = async () => new Map();
 
 describe('what was pasted', () => {
   it('reads a bsky.app link, an aturi.to link and an at:// URI', () => {
@@ -129,6 +131,8 @@ describe('a scan', () => {
       candidates: [CANARY],
       harvest: fakeHarvest(['did:plc:close', 'did:plc:near', 'did:plc:friend', 'did:plc:far']),
       onStage: (s) => stages.push(s.stage),
+      readCurated: async () => new Map([['did:plc:near', 'on your list “Neighbours”']]),
+      kept: new Map([['did:plc:far', 'my sister']]),
       retryDelaysMs: NO_WAIT,
       now: () => Date.parse('2026-11-17T01:00:00Z'),
     });
@@ -137,9 +141,11 @@ describe('a scan', () => {
     expect(result.canary).toBe(CANARY);
     expect(result.vouchCheck).toBe('canary');
     const band = Object.fromEntries(result.rows.map((r) => [r.did, r.band]));
-    expect(band).toEqual({ 'did:plc:close': 'CONNECTED', 'did:plc:near': 'PERIPHERAL', 'did:plc:friend': 'PROTECTED', 'did:plc:far': 'UNKNOWN' });
+    // On a curation list of the owner's, or kept by hand: protected, as the veto at the write has them.
+    expect(band).toEqual({ 'did:plc:close': 'CONNECTED', 'did:plc:near': 'PROTECTED', 'did:plc:friend': 'PROTECTED', 'did:plc:far': 'PROTECTED' });
+    expect(result.rows.find((r) => r.did === 'did:plc:near').protectedReason).toBe('on your list “Neighbours”');
+    expect(result.rows.find((r) => r.did === 'did:plc:far').protectedReason).toBe('my sister');
     expect(result.totals.participants).toBe(4);
-    expect(result.requiresReview.map((r) => r.did)).toEqual(['did:plc:friend', 'did:plc:close', 'did:plc:near']);
     expect(result.finishedAt).toBe('2026-11-17T01:00:00.000Z');
   });
 
@@ -159,6 +165,7 @@ describe('a scan', () => {
         candidates: [CANARY],
         harvest: fakeHarvest(['did:plc:close']),
         retryDelaysMs: NO_WAIT,
+        readCurated: async () => new Map(),
       }),
     ).rejects.toMatchObject({ name: 'ScanError', code: 'vouches' });
   });
@@ -177,8 +184,7 @@ describe('a scan', () => {
       getRelationships: relationships,
       candidates: [CANARY],
       harvest: fakeHarvest(['did:plc:far']),
-      retryDelaysMs: NO_WAIT,
-    });
+      retryDelaysMs: NO_WAIT, readCurated: noCuration });
     expect(result.canary).toBe(CANARY);
     expect(result.vouchCheck).toBe('canary');
   });
@@ -191,11 +197,26 @@ describe('a scan', () => {
       getRelationships: vi.fn(async (_o, dids) => dids.map((did) => ({ did, followedBy: did === 'did:plc:fan' }))),
       candidates: [CANARY],
       harvest: fakeHarvest(['did:plc:fan', 'did:plc:far']),
-      retryDelaysMs: NO_WAIT,
-    });
+      retryDelaysMs: NO_WAIT, readCurated: noCuration });
     expect(result.canary).toBeNull();
     expect(result.vouchCheck).toBe('unavailable');
     expect(result.rows.find((r) => r.did === 'did:plc:fan').band).toBe('CONNECTED');
+    // Without the count, "no connection" is a guess: nothing is eligible on it.
+    expect(result.autoEligible).toEqual([]);
+  });
+
+  it('stops rather than scoring without vouches when you follow plenty of people', async () => {
+    const many = Array.from({ length: CANARY_REQUIRED_AT }, (_, i) => `did:plc:follow${i}`);
+    await expect(
+      runScan({
+        input: `at://${AUTHOR}/app.bsky.feed.post/3abc`,
+        ownerDid: OWNER,
+        getProfiles: fakeAppview({ failOpen: true }),
+        getRelationships: relationships,
+        candidates: many,
+        harvest: fakeHarvest(['did:plc:far']),
+        retryDelaysMs: NO_WAIT, readCurated: noCuration }),
+    ).rejects.toMatchObject({ code: 'vouches' });
   });
 
   it('stops when asked to, and says so', async () => {
@@ -205,13 +226,13 @@ describe('a scan', () => {
       throw new DOMException('Aborted', 'AbortError');
     });
     await expect(
-      runScan({ input: `at://${AUTHOR}/app.bsky.feed.post/3abc`, ownerDid: OWNER, getProfiles: fakeAppview(), harvest, signal: controller.signal }),
+      runScan({ input: `at://${AUTHOR}/app.bsky.feed.post/3abc`, ownerDid: OWNER, getProfiles: fakeAppview(), harvest, signal: controller.signal, readCurated: noCuration }),
     ).rejects.toMatchObject({ code: 'aborted' });
   });
 
   it('turns down a link that isn’t a post before reading anything', async () => {
     const harvest = vi.fn();
-    await expect(runScan({ input: 'https://example.com', ownerDid: OWNER, getProfiles: fakeAppview(), harvest })).rejects.toMatchObject({ code: 'link' });
+    await expect(runScan({ input: 'https://example.com', ownerDid: OWNER, getProfiles: fakeAppview(), harvest, readCurated: noCuration })).rejects.toMatchObject({ code: 'link' });
     expect(harvest).not.toHaveBeenCalled();
   });
 });

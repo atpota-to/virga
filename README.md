@@ -123,6 +123,7 @@ Two build settings (in `.env.local` or the host's environment):
 | --- | --- | --- |
 | `VITE_AUTH_MODE` | `browser` | How a new sign-in is held: `browser` (OAuth in this browser, as before) or `backend` (a long session held by Virga's server) |
 | `VITE_BACKEND_URL` | `''` (this site) | Where Virga's server is. Leave it empty in a deployment; set it only to point a local dev server at a deployed one |
+| `VITE_DEFENSE` | off | `on` shows Defense. Off until the Terms and the Privacy Policy describe it (docs/DEFENSE.md); the harness turns it on |
 
 The server's own settings are in `.env.example` and under Deploying below.
 
@@ -275,17 +276,22 @@ hour old.
 
 The sixth part, for moderation and defence, being ported from
 [bluesky-mod](https://github.com/dame-is/bluesky-mod) as a hosted feature:
-[docs/DEFENSE.md](docs/DEFENSE.md) is the plan. Two of its phases are built: the engine
-(`src/defense/`: the harvest from Constellation, the scoring and its canary) and **Scan a
-post**, at `/defense`. Block lists, the moderator account to DM and closing replies when
-strangers arrive are still to come; nothing in Defense writes anything yet.
+[docs/DEFENSE.md](docs/DEFENSE.md) is the plan, and
+[docs/DEFENSE-THREATS.md](docs/DEFENSE-THREATS.md) its threat model. Three of its phases are
+built: the engine (`src/defense/`: the harvest from Constellation, the scoring and its
+canary), **Scan a post**, at `/defense`, and **lists**: adding who a scan found to a block
+or mute list in your own repo, at `/defense/lists` and `/defense/history`. The moderator
+account to DM and closing replies when strangers arrive are still to come. It is all off
+unless the build says `VITE_DEFENSE=on`, and writes nothing unless the server says
+`DEFENSE_WRITES=on`.
 
 A scan takes a link to any post, or one of yours from the last 30 days that people have been
 answering, and finds everyone who engaged with it (from Constellation, so the people you
 already block or mute are counted too). Each is put in a band by one thing, how many of the
 people you follow also follow them, read live from Bluesky with your own session: protected
-(you follow them), connected, peripheral, notable (widely followed, no connection) and no
-connection, most of any pile-on. The result is the radar (you at the centre, a ring a band,
+(you follow them), connected, peripheral (one or two of your follows follow them, or they
+follow you), notable (widely followed, no connection) and no connection, most of any
+pile-on. The result is the radar (you at the centre, a ring a band,
 a slice what they did), its table, the list of everyone near you with what they did and who
 you know in common, and an Export of the lot. Nothing is kept: the scan stays in the tab's
 memory until another replaces it. A batch whose counts the AppView quietly left off is
@@ -296,6 +302,19 @@ It needs one permission the ordinary sign-in doesn't ask for, so it starts with 
 Defense**, which signs the account in again asking for it as well; Turn off signs in again
 without it. Accounts that haven't turned it on are asked for exactly what they were asked for
 before.
+
+**Add to a list**, under a scan's result, takes the bands you tick (no connection, to start
+with; never protected) to a list you pick or make. A confirmation says how many and how long.
+Virga's server then writes them a batch every two minutes as the account (about 1,500 an
+hour, under the PDS's limit), so it takes a long session and one more permission, asked for
+when you first make a list: making list records and adding and removing their items. At
+every write the veto is read again, fresh, and anyone you follow by then, keep by hand, or
+have on a curation list of yours is left off; if that can't be read, nothing is written.
+**Lists** shows each list, how many are on it and how many are still being written, and the
+people you keep off every list. **History** shows each approval and everyone added or taken
+off, with your words, and undoes an approval or one person by the very record each add
+wrote. The lists are in your own repo, on your profile; block or mute one in Bluesky for it
+to take effect for you.
 
 ## Signing in
 
@@ -402,6 +421,7 @@ The app asks for these and no others (`src/config.js`, where each is explained i
 | `rpc:app.bsky.draft.*` (get, create, update, delete) | Bluesky's private drafts |
 | `rpc:app.bsky.actor.getPreferences`, `rpc:app.bsky.bookmark.getBookmarks`, `rpc:app.bsky.feed.searchPosts` | Your default reply settings, saved posts for the library, and post search |
 | `rpc:app.bsky.actor.getProfiles`, **only once Defense is turned on** | How many of the people you follow follow each account a scan finds, which only a signed-in read of their profiles carries |
+| `repo:app.bsky.graph.list` (create) and `repo:app.bsky.graph.listitem` (create, delete), **only once Defense makes lists** | Making a block or mute list in your repo, and adding and taking off the people you approved. Never a block or a mute itself, and never anyone you follow |
 
 The client metadata declares all of these, Defense's included (`DECLARED_SCOPE`); a sign-in
 asks for `OAUTH_SCOPE`, or `DEFENSE_SCOPE` for an account that has turned Defense on, and an
@@ -554,19 +574,22 @@ looked at and clicked through offline. Flags in the address show other states: o
 account (`?accounts=1`), browser sessions (`?mode=browser`), an ended session
 (`?expired=lab`), a session from before posting (`?scope=read`), limits
 (`?limits=3,1,1`, `?ailimits=…`), the adviser slow or down, the agreement screen
-(`?terms=ask`, `?terms=down`), Defense already turned on (`?defense=on`), and an AppView
+(`?terms=ask`, `?terms=down`), Defense already turned on (`?defense=on`, or with its lists,
+`?defense=lists`), a server that doesn't write lists (`?defensewrites=off`), and an AppView
 whose known-followers counts fail open (`?appview=failopen`, `?appview=flaky`). See
 `harness/README.md`.
 
 ## Deploying
 
-Built for Vercel with a Supabase project. The front end is static; the server is seven
+Built for Vercel with a Supabase project. The front end is static; the server is eight
 functions: `api/client-metadata.js` (the browser client's metadata, per host, as before)
-and one function per area, `api/{oauth,schedule,self-destruct,ai,limits,terms}/[action].js`,
+and one function per area, `api/{oauth,schedule,self-destruct,ai,limits,terms,defense}/[action].js`,
 each dispatching to the handlers in `server/`. `vercel.json` sets their time limits,
 rewrites the two OAuth `.json` addresses, sends every other path to `index.html`, and
-runs two crons every minute: `/api/schedule/run` (scheduled posts) and
-`/api/self-destruct/run` (post timers).
+runs three crons every minute: `/api/schedule/run` (scheduled posts),
+`/api/self-destruct/run` (post timers) and `/api/defense/run` (Defense's lists; it writes
+nothing until `DEFENSE_WRITES` is `on`). Defense's worker (`worker/`, for the droplet) can
+call the last one too; see worker/README.md.
 
 Without the server settings below, the app still works with browser sign-ins; the
 server's routes answer 503 and the posting pages that need it say so.
@@ -583,7 +606,8 @@ server's routes answer 503 and the posting pages that need it say so.
      reads them) and a private Storage bucket, `virga-scheduled-media`. The two newest:
      `20261114000100_scheduled_repeats.sql` adds the series columns and functions for
      repeating posts (without it scheduling answers as not set up), and
-     `20261114000200_terms_acceptance.sql` adds the agreement ledger.
+     `20261114000200_terms_acceptance.sql` adds the agreement ledger, and
+     `20261118000100_defense_lists.sql` adds Defense's lists, plans, decisions and jobs.
    - Add `virga` to **Exposed schemas** in the project's API settings. Until it is there
      the Data API refuses every call the server makes (PostgREST's `PGRST106`), and the
      posting pages read that as the database not being set up.
@@ -615,6 +639,9 @@ server's routes answer 503 and the posting pages that need it say so.
      (optional; see `.env.example`). `OAUTH_TOS_URL` and `OAUTH_POLICY_URL` only if the
      consent screen should link somewhere other than this site's `/terms` and `/privacy`
    - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
+   - `VITE_DEFENSE=on` to show Defense, `DEFENSE_WRITES=on` to let it write lists, and
+     `DEFENSE_WORKER_SECRET` for the worker. Leave all three off until the Terms and the
+     Privacy Policy describe Defense (docs/DEFENSE.md)
 4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
    can fetch the client metadata and keys for the life of every sign-in. After deploying,
    `curl https://<origin>/api/oauth/client-metadata.json` should show a `client_id` that
@@ -627,8 +654,8 @@ answer 503 on the sign-in routes and stay on browser sign-ins.
 the crons run every minute. That needs a paid Vercel plan: on Hobby, Vercel refuses to
 deploy a cron that runs more than once a day, so the whole site fails to deploy, browser
 sign-ins included. On Hobby, delete the `crons` entries from `vercel.json`, then call the
-two run paths every minute from somewhere else, for example Supabase's `pg_cron` and
-`pg_net`:
+run paths every minute from somewhere else, for example Supabase's `pg_cron` and
+`pg_net` (and `/api/defense/run` the same way, or by the worker, once Defense writes):
 
 ```sql
 select cron.schedule('virga-schedule', '* * * * *', $$
@@ -685,7 +712,9 @@ on agreements read it, and Vercel's edge is what makes it trustworthy there.
 | `src/share/` | A card as a picture: what it shows, its alt text, the canvas that draws it, the dialog |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
 | `src/reports/`, `src/tools/`, `src/settings/` | The pages |
-| `src/defense/` | Defense: the harvest, the scoring and its canary, a scan in order (`scan.js`) and in memory (`scanStore.js`), the radar's layout and drawing, and the Scan a post page |
+| `src/defense/` | Defense: the harvest, the scoring and its canary, a scan in order (`scan.js`) and in memory (`scanStore.js`), the radar's layout and drawing, the veto (`veto.js`) and plans (`plan.js`) both sides run, and the Scan a post, Lists and History pages |
+| `server/defense/` | Defense's routes, the store bound to one owner (`store.js`), and the list writer (`run.js`) with the worker's signed calls (`workerAuth.js`) |
+| `worker/` | Defense's worker for the droplet: in phase 3, a signed call to the list writer every minute (worker/README.md) |
 | `src/charts/` | The time series, sparklines, heatmaps and bar lists |
 | `src/lib/router.jsx` | Real paths (`/dashboard/:id`, `/reports/:report`, `/tools/:tool`, `/posting/:page`, `/defense`, `/settings/:section`) on the History API |
 

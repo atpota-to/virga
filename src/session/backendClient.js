@@ -118,8 +118,8 @@ export function signInPrompt(prompt) {
  * The login request: the address the server is asked for, and where it
  * should send the person back. `handle` is a handle, a DID, or the address of
  * a host (to sign in there without naming an account, or with `prompt:
- * 'create'` to make one). `defense` asks for Defense's permission as well
- * (the server picks the scope; this only says which of its two).
+ * 'create'` to make one). `defense` asks for Defense's permissions as well:
+ * `'scan'` (or true) or `'lists'`.
  */
 export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt = null, defense = false }) {
   const returnUrl = new URL(returnPath, origin);
@@ -128,7 +128,9 @@ export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonc
   url.searchParams.set('handle', handle);
   url.searchParams.set('redirect_uri', returnUrl.href);
   if (signInPrompt(prompt)) url.searchParams.set('prompt', prompt);
-  if (defense === true) url.searchParams.set('defense', '1');
+  // The server picks the scope; this only says which of its three.
+  if (defense === true || defense === 'scan') url.searchParams.set('defense', '1');
+  else if (defense === 'lists') url.searchParams.set('defense', 'lists');
   return { url: url.href, returnUrl: returnUrl.href };
 }
 

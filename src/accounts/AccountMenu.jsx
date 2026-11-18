@@ -69,7 +69,7 @@ export function useAccountActions() {
     },
     async lengthen(account) {
       try {
-        await session.signIn(accountSignInId(account), { mode: 'backend', intent: 'reauth' });
+        await session.signIn(accountSignInId(account), { mode: 'backend', intent: 'reauth', did: account.did });
       } catch (err) {
         showSessionNotice(signInErrorMessage(err));
       }

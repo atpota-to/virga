@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { IDLE, clearScan, resetScansForTests, scanFor, startScan, stopScan, subscribeScans } from './scanStore.js';
+import { IDLE, clearScan, keepScansFor, resetScansForTests, scanFor, startScan, stopScan, subscribeScans } from './scanStore.js';
 
 const MIRA = 'did:plc:mira';
 const LAB = 'did:plc:lab';
@@ -57,6 +57,32 @@ describe('an account’s scan', () => {
     await done;
     expect(scanFor(MIRA)).toBe(IDLE);
     expect(h.run.mock.calls[0][0].aborted).toBe(true);
+  });
+
+  it('shows a failure that only looks like a stop', async () => {
+    const h = held();
+    const done = startScan(MIRA, { input: 'link', run: h.run });
+    await vi.waitFor(() => expect(h.run).toHaveBeenCalled());
+    // A fetch timing out throws an AbortError of its own; nobody pressed Stop.
+    h.fail(Object.assign(new Error('The operation timed out'), { name: 'AbortError' }));
+    await done;
+    expect(scanFor(MIRA).status).toBe('failed');
+  });
+
+  it('forgets the scans of accounts no longer signed in', async () => {
+    const a = held();
+    const b = held();
+    const one = startScan(MIRA, { input: 'one', run: a.run });
+    const two = startScan(LAB, { input: 'two', run: b.run });
+    await vi.waitFor(() => expect(b.run).toHaveBeenCalled());
+    a.release();
+    await one;
+    keepScansFor([LAB]);
+    expect(scanFor(MIRA)).toBe(IDLE);
+    expect(scanFor(LAB).status).toBe('running');
+    keepScansFor([]);
+    await two;
+    expect(scanFor(LAB)).toBe(IDLE);
   });
 
   it('lets a new scan replace one under way, without the old one’s answer landing late', async () => {

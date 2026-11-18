@@ -41,6 +41,14 @@ export const AUTH_MODE = ENV.VITE_AUTH_MODE === 'backend' ? 'backend' : 'browser
 export const BACKEND_URL = String(ENV.VITE_BACKEND_URL || '').replace(/\/+$/, '');
 
 /**
+ * Whether Defense is on screen: 'on' shows it (the sidebar, the phone's tab
+ * bar, the command palette and /defense). Off by default, until the Terms and
+ * the Privacy Policy say what a scan reads and sends (docs/DEFENSE.md, phase
+ * 6). The harness turns it on.
+ */
+export const DEFENSE_ENABLED = ENV.VITE_DEFENSE === 'on';
+
+/**
  * The server's host, for the sentences that name it: this site's own unless
  * VITE_BACKEND_URL says otherwise. Read at render, so a module that imports
  * this still loads where there is no window.
@@ -75,8 +83,9 @@ const appview = (nsid) => `rpc:${nsid}?aud=${BSKY_APPVIEW_AUD}`;
  * (getServiceAuth names a bare DID as the audience: the video service, or the
  * account's own PDS), which a service-scoped token can't match.
  *
- * Virga's server imports OAUTH_SCOPE, DEFENSE_SCOPE and DECLARED_SCOPE from
- * here for its long-session sign-in, so the two can't drift apart. A group
+ * Virga's server imports OAUTH_SCOPE, DEFENSE_SCOPE, LISTS_SCOPE and
+ * DECLARED_SCOPE from here for its long-session sign-in, so the two can't
+ * drift apart. A group
  * with `onlyWith` is asked for only when that feature is on.
  */
 export const PERMISSION_GROUPS = [
@@ -158,6 +167,15 @@ export const PERMISSION_GROUPS = [
     text: 'A scan sorts everyone who engaged with a post by how many of the people you follow also follow them, and only a signed-in read of their profiles says that. Asked for only after you turn Defense on.',
     tokens: [appview('app.bsky.actor.getProfiles')],
   },
+  {
+    key: 'defense-lists',
+    // Asked for only by an account that has made a Defense list (LISTS_SCOPE
+    // below), on top of Defense's read.
+    onlyWith: 'lists',
+    title: 'Make block lists and add people to them, when you approve it.',
+    text: 'Create a moderation list in your repo, and add and remove the people on it, for the lists Defense keeps: only the people you approved, never anyone you follow or keep. Asked for only when you make your first list.',
+    tokens: ['repo:app.bsky.graph.list?action=create', 'repo:app.bsky.graph.listitem?action=create&action=delete'],
+  },
 ];
 
 // The order the tokens are asked for in. Pinned by oauthClient.test.js, and
@@ -199,16 +217,39 @@ export const DEFENSE_TOKENS = [appview('app.bsky.actor.getProfiles')];
 export const DEFENSE_SCOPE = `${OAUTH_SCOPE} ${DEFENSE_TOKENS.join(' ')}`;
 
 /**
+ * What Defense's lists add on top of that (docs/DEFENSE.md, phase 3): making
+ * a moderation list in the account's own repo, and adding and removing the
+ * items on it. Not updating or deleting a list: Virga never renames or
+ * removes one, so it doesn't ask to.
+ */
+export const LIST_TOKENS = ['repo:app.bsky.graph.list?action=create', 'repo:app.bsky.graph.listitem?action=create&action=delete'];
+
+/** What a sign-in asks for once the account keeps a Defense list. */
+export const LISTS_SCOPE = `${DEFENSE_SCOPE} ${LIST_TOKENS.join(' ')}`;
+
+/**
  * What the client metadata declares: every token any sign-in may ask for. An
  * authorization server refuses a request for anything the client didn't
- * declare, and grants a request for less, so OAUTH_SCOPE and DEFENSE_SCOPE
- * both fit under it.
+ * declare, and grants a request for less, so OAUTH_SCOPE, DEFENSE_SCOPE and
+ * LISTS_SCOPE all fit under it.
  */
-export const DECLARED_SCOPE = DEFENSE_SCOPE;
+export const DECLARED_SCOPE = LISTS_SCOPE;
 
-/** The scope a sign-in asks for: with Defense's token only when `defense`. */
+/**
+ * How much of Defense a sign-in asks for: `false` (none), `'scan'` (the read
+ * a scan needs; `true` means the same) or `'lists'` (that, and writing lists).
+ * Anything else is none.
+ */
+export function defenseLevel(value) {
+  if (value === true || value === 'scan') return 'scan';
+  if (value === 'lists') return 'lists';
+  return false;
+}
+
+/** The scope a sign-in asks for at a Defense level (defenseLevel). */
 export function signInScope({ defense = false } = {}) {
-  return defense ? DEFENSE_SCOPE : OAUTH_SCOPE;
+  const level = defenseLevel(defense);
+  return level === 'lists' ? LISTS_SCOPE : level === 'scan' ? DEFENSE_SCOPE : OAUTH_SCOPE;
 }
 
 /**

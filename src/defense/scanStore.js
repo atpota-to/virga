@@ -56,7 +56,8 @@ export function startScan(did, { input, run, now = () => Date.now() }) {
       },
       (error) => {
         if (!current()) return;
-        if (error?.code === 'aborted' || controller.signal.aborted) set(did, IDLE);
+        // Idle only when this scan was stopped; any other failure is shown.
+        if (controller.signal.aborted) set(did, IDLE);
         else set(did, { status: 'failed', input, startedAt, error });
       },
     )
@@ -79,6 +80,16 @@ export function stopScan(did) {
 export function clearScan(did) {
   stopScan(did);
   if (scans.has(did)) set(did, IDLE);
+}
+
+/**
+ * Forget every account's scan but those of `dids`, stopping any under way: a
+ * scan holds other people's names and shouldn't outlive its account's
+ * session in this tab.
+ */
+export function keepScansFor(dids) {
+  const keep = new Set(dids || []);
+  for (const did of [...new Set([...scans.keys(), ...controllers.keys()])]) if (!keep.has(did)) clearScan(did);
 }
 
 /** Tests only. */

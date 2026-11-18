@@ -10,11 +10,13 @@
     "api/self-destruct/[action].js": { "maxDuration": 60 },
     "api/ai/[action].js": { "maxDuration": 60 },
     "api/limits/[action].js": { "maxDuration": 30 },
-    "api/terms/[action].js": { "maxDuration": 30 }
+    "api/terms/[action].js": { "maxDuration": 30 },
+    "api/defense/[action].js": { "maxDuration": 60 }
   },
   "crons": [
     { "path": "/api/schedule/run", "schedule": "* * * * *" },
-    { "path": "/api/self-destruct/run", "schedule": "* * * * *" }
+    { "path": "/api/self-destruct/run", "schedule": "* * * * *" },
+    { "path": "/api/defense/run", "schedule": "* * * * *" }
   ],
   "rewrites": [
     { "source": "/oauth-client-metadata.json", "destination": "/api/client-metadata" },

@@ -66,6 +66,12 @@ export const DEFAULT_THRESHOLDS = {
    * checked; on when they can't, so the people closest to you still stand out.
    */
   followsYouConnects: false,
+  /**
+   * An account that follows you is at least PERIPHERAL, whoever vouches for
+   * it: it would notice being added, and "no connection" would be untrue.
+   * Never UNKNOWN, the band approved without a named look.
+   */
+  followsYouPeripheral: true,
 };
 
 /** Pauses before asking again: two more tries after the first. */
@@ -116,6 +122,7 @@ export function assignBand(f, thresholds = DEFAULT_THRESHOLDS) {
     return 'CONNECTED';
   }
   if (vouches >= 1) return 'PERIPHERAL';
+  if (t.followsYouPeripheral && f.followsYou) return 'PERIPHERAL';
   if (
     followers >= t.notableReach ||
     ((f.postsPerDay || 0) >= t.notableActivityPostsPerDay && followers >= t.notableActivityReach)
@@ -499,6 +506,8 @@ export function summarise(harvest, scores, { vouchCheck = 'canary' } = {}) {
     },
     rows,
     requiresReview,
-    autoEligible: rows.filter((r) => r.band === 'UNKNOWN'),
+    // Only a scan whose vouches were counted can say who has no connection:
+    // without the count, UNKNOWN is a guess, and nothing may be approved on it.
+    autoEligible: vouchCheck === 'canary' ? rows.filter((r) => r.band === 'UNKNOWN') : [],
   };
 }

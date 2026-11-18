@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { createReq, createRes } from './test/http.js';
 
-// The six api/<area>/[action].js functions are thin: each builds a router
+// The seven api/<area>/[action].js functions are thin: each builds a router
 // over exactly the handler modules the design names. The handlers are mocked
 // here (each answers with its own module path), so this pins the wiring
 // whatever the handlers do. Vite can't resolve an import of a file that
@@ -40,6 +40,17 @@ const MAP = {
     status: 'server/terms/handlers/status.js',
     accept: 'server/terms/handlers/accept.js',
   },
+  'api/defense/[action].js': {
+    lists: 'server/defense/handlers/lists.js',
+    'list-create': 'server/defense/handlers/listCreate.js',
+    keep: 'server/defense/handlers/keep.js',
+    unkeep: 'server/defense/handlers/unkeep.js',
+    plan: 'server/defense/handlers/plan.js',
+    approve: 'server/defense/handlers/approve.js',
+    history: 'server/defense/handlers/history.js',
+    undo: 'server/defense/handlers/undo.js',
+    run: 'server/defense/handlers/run.js',
+  },
 };
 
 // vi.mock is hoisted and takes literal paths, so each module is listed once.
@@ -70,6 +81,15 @@ vi.mock('./ai/handlers/altText.js', () => answer('server/ai/handlers/altText.js'
 vi.mock('./limits/handlers/status.js', () => answer('server/limits/handlers/status.js'));
 vi.mock('./terms/handlers/status.js', () => answer('server/terms/handlers/status.js'));
 vi.mock('./terms/handlers/accept.js', () => answer('server/terms/handlers/accept.js'));
+vi.mock('./defense/handlers/lists.js', () => answer('server/defense/handlers/lists.js'));
+vi.mock('./defense/handlers/listCreate.js', () => answer('server/defense/handlers/listCreate.js'));
+vi.mock('./defense/handlers/keep.js', () => answer('server/defense/handlers/keep.js'));
+vi.mock('./defense/handlers/unkeep.js', () => answer('server/defense/handlers/unkeep.js'));
+vi.mock('./defense/handlers/plan.js', () => answer('server/defense/handlers/plan.js'));
+vi.mock('./defense/handlers/approve.js', () => answer('server/defense/handlers/approve.js'));
+vi.mock('./defense/handlers/history.js', () => answer('server/defense/handlers/history.js'));
+vi.mock('./defense/handlers/undo.js', () => answer('server/defense/handlers/undo.js'));
+vi.mock('./defense/handlers/run.js', () => answer('server/defense/handlers/run.js'));
 
 const ENTRYPOINTS = {
   'api/oauth/[action].js': () => import('../api/oauth/[action].js'),
@@ -78,6 +98,7 @@ const ENTRYPOINTS = {
   'api/ai/[action].js': () => import('../api/ai/[action].js'),
   'api/limits/[action].js': () => import('../api/limits/[action].js'),
   'api/terms/[action].js': () => import('../api/terms/[action].js'),
+  'api/defense/[action].js': () => import('../api/defense/[action].js'),
 };
 
 const root = new URL('../', import.meta.url);

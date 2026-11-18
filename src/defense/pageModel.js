@@ -87,6 +87,18 @@ export function stageLine(state) {
   return `${stage.label}: ${of}`;
 }
 
+/** The stage alone, for the line a screen reader hears change: "Sorting by who you know". */
+export function stageLabel(state) {
+  return STAGES.find((s) => s.key === state?.stage)?.label || 'Starting';
+}
+
+/** The stage's count, after its label, or nothing: ": 300 of 1,250 accounts". */
+export function stageCount(state) {
+  const line = stageLine(state);
+  const label = stageLabel(state);
+  return line.startsWith(`${label}:`) ? line.slice(label.length) : '';
+}
+
 /** How far along a scan is, from 0 to 1, for the bar under its line. */
 export function stageFraction(state) {
   const i = STAGES.findIndex((s) => s.key === state?.stage);
@@ -96,13 +108,23 @@ export function stageFraction(state) {
   return (i + within) / STAGES.length;
 }
 
+/**
+ * A cell from someone else's profile, safe to open in a spreadsheet: one that
+ * starts with = + - @ or a tab or a return would be read as a formula, so it
+ * gets a quote in front (OWASP's advice for CSV built from strangers' input).
+ */
+export function inertCell(value) {
+  if (typeof value !== 'string') return value;
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+}
+
 /** Every account in a scan as a CSV's rows, header first. */
 export function scanCsvRows(summary) {
   const header = ['did', 'handle', 'display_name', 'band', 'trust', 'vouches', 'you_follow', 'follows_you', 'followers', 'engagement', 'records'];
   const rows = (summary?.rows || []).map((r) => [
     r.did,
-    r.handle || '',
-    r.displayName || '',
+    inertCell(r.handle || ''),
+    inertCell(r.displayName || ''),
     r.band,
     r.trust ?? '',
     summary.vouchCheck === 'canary' ? (r.vouches ?? 0) : '',

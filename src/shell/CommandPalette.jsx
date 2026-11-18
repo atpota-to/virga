@@ -23,6 +23,7 @@ import { navigate } from '../lib/router.jsx';
 import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import { POSTING_PAGES } from '../posting/routes.js';
 import { DEFENSE_ICON, DEFENSE_PAGES } from '../defense/routes.js';
+import { DEFENSE_ENABLED } from '../config.js';
 import { REPORTS } from '../reports/registry.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { SECTIONS as SETTINGS_SECTIONS } from '../settings/sections.js';
@@ -111,7 +112,7 @@ export default function CommandPalette({ open, onClose, route, onNewDashboard, o
             reports: REPORTS,
             tools: TOOLS,
             postingPages: POSTING_PAGES,
-            defensePages: DEFENSE_PAGES,
+            defensePages: DEFENSE_ENABLED ? DEFENSE_PAGES : [],
             settingsSections: SETTINGS_SECTIONS,
             accounts,
             activeDid: did,

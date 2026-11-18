@@ -1,8 +1,9 @@
-// GET /api/oauth/login?handle=<h>&redirect_uri=<url>[&prompt=<p>][&defense=1]:
+// GET /api/oauth/login?handle=<h>&redirect_uri=<url>[&prompt=<p>][&defense=1|lists]:
 // start a sign-in.
 //
-// The scope is SCOPE, or SCOPE_WITH_DEFENSE when `defense=1` (an account
-// turning Defense on, or signing in again with it on). Those two fixed
+// The scope is SCOPE; SCOPE_WITH_DEFENSE when `defense=1` (an account
+// turning Defense on, or signing in again with it on); SCOPE_WITH_LISTS when
+// `defense=lists` (an account keeping Defense's lists). Those three fixed
 // strings are the only scopes it can ask for: the caller picks one, it never
 // writes one, and nothing else from the query reaches the authorization
 // request. redirect_uri must be the return page on an allowed
@@ -23,6 +24,7 @@ import { getOAuthClient } from '../client.js';
 import {
   SCOPE,
   SCOPE_WITH_DEFENSE,
+  SCOPE_WITH_LISTS,
   classifyAuthorizeError,
   defaultReturnUrl,
   isAllowedReturnUrl,
@@ -35,6 +37,16 @@ import { queryParam, redirect302 } from '../respond.js';
 // sign-in that can't show the reader anything, and a silent one is only ever
 // someone else's doing.
 const PROMPTS = new Set(['login', 'consent', 'select_account', 'create']);
+
+/**
+ * One of the three fixed scopes, by the `defense` the caller sent. Compared,
+ * not looked up, so no value reaches anything but these strings.
+ */
+function scopeFor(defense) {
+  if (defense === '1') return SCOPE_WITH_DEFENSE;
+  if (defense === 'lists') return SCOPE_WITH_LISTS;
+  return SCOPE;
+}
 
 const LOGIN_LIMIT_PER_MINUTE = 20;
 let limiter = null;
@@ -116,7 +128,7 @@ export default async function handler(req, res) {
   }
 
   const options = {
-    scope: queryParam(req, 'defense') === '1' ? SCOPE_WITH_DEFENSE : SCOPE,
+    scope: scopeFor(queryParam(req, 'defense')),
     state: JSON.stringify({ redirect_uri: redirect, timestamp: Date.now() }),
   };
   const prompt = queryParam(req, 'prompt');

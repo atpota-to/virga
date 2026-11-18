@@ -1,10 +1,12 @@
-// Defense: scan a post (docs/DEFENSE.md, phase 2).
+// Defense: scan a post (docs/DEFENSE.md, phase 2), and add who it found to a
+// list (phase 3, AddToList.jsx). The Lists and History pages are their own
+// modules; this one routes to them.
 //
 // Paste a link to a post, or pick one of yours that people have been
 // answering, and see everyone who engaged with it on the radar, sorted by
 // how close each of them is to you. It answers "what would I be about to do,
-// and who would notice?" before there is anything to do: nothing here writes,
-// blocks, mutes or keeps anything. The scan stays in this tab's memory until
+// and who would notice?" before anything is done: a scan itself writes,
+// blocks, mutes and keeps nothing, and stays in this tab's memory until
 // another replaces it (scanStore.js).
 //
 // A scan needs one permission the ordinary sign-in doesn't ask for: the
@@ -22,21 +24,21 @@ import Segmented from '../components/Segmented.jsx';
 import { ShowAsTable } from '../charts/ChartTable.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
 import { exportRows } from '../archive/exports.js';
-import { reauthModeFor } from '../accounts/accountCopy.js';
-import { signInErrorMessage } from '../lib/oauthClient.js';
 import { fmtInt } from '../lib/locale.js';
 import { PersonRow } from '../people/people.jsx';
 import { postText, postWhen } from '../reports/PostRow.jsx';
 import { bskyUrlFor } from '../posting/lib/postLink.js';
-import { accountSignInId } from '../session/accounts.js';
-import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { PageHeader } from '../shell/bits.jsx';
 import { BAND_MEANS, BAND_WORD } from './bandWords.js';
-import { describeRow, postsToScan, rowFacts, scanCsvRows, stageFraction, stageLine } from './pageModel.js';
+import { describeRow, postsToScan, rowFacts, scanCsvRows, stageCount, stageFraction, stageLabel } from './pageModel.js';
 import Radar, { BandMark } from './Radar.jsx';
 import { radarTable, scanRadar } from './radar.js';
 import { canaryCandidates, runScan, signedInProfiles } from './scan.js';
 import { scanFor, startScan, stopScan, subscribeScans } from './scanStore.js';
+import AddToList from './AddToList.jsx';
+import DefenseHistory from './DefenseHistory.jsx';
+import DefenseLists from './DefenseLists.jsx';
+import { useDefenseAccount, useDefenseLists } from './useDefense.js';
 import './defense.css';
 
 const NEAR_BANDS = ['PROTECTED', 'CONNECTED', 'PERIPHERAL', 'NOTABLE'];
@@ -50,14 +52,22 @@ function useScan(did) {
   );
 }
 
-export default function DefensePage() {
-  const session = useAtprotoSession();
+/** Defense's pages: a scan (the front page), its lists and their history. */
+export default function DefensePage({ pageKey = 'scan' }) {
+  if (pageKey === 'lists') return <DefenseLists />;
+  if (pageKey === 'history') return <DefenseHistory />;
+  return <ScanPage />;
+}
+
+function ScanPage() {
+  const defense = useDefenseAccount();
+  const { session, did, account, caps, asking, askFor } = defense;
+  const { agent } = session;
   const archive = useArchive();
-  const { did, agent } = session;
-  const account = session.accounts.find((a) => a.did === did) || null;
-  const caps = session.capabilitiesFor(did);
   const scan = useScan(did);
-  const [asking, setAsking] = useState(null); // { busy } | { error }
+  // Read only once a scan has something to add; the server's answer decides
+  // what Add to a list can offer.
+  const lists = useDefenseLists(scan.status === 'done' ? did : null);
 
   const candidates = useMemo(
     () => canaryCandidates(archive, { ownerDid: did }),
@@ -72,19 +82,6 @@ export default function DefensePage() {
     startScan(did, { input, run: (signal, onStage) => runScan({ input, ownerDid: did, getProfiles, candidates, signal, onStage }) });
   };
 
-  /** Sign in again, asking for Defense's permission (`on`) or leaving it out. */
-  const askFor = async (on) => {
-    if (!account) return;
-    setAsking({ busy: true });
-    try {
-      await session.signIn(accountSignInId(account), { mode: account.mode || reauthModeFor(account, session.authMode), intent: 'reauth', defense: on });
-      setAsking(null);
-    } catch (error) {
-      console.warn('[defense] the sign-in didn’t start:', error);
-      setAsking({ error: signInErrorMessage(error) });
-    }
-  };
-
   const refused = scan.status === 'failed' && scan.error?.code === 'permission';
   const needsPermission = caps.defense === 'missing' || refused;
 
@@ -97,14 +94,18 @@ export default function DefensePage() {
       />
       <div className="page-body defense">
         {needsPermission ? (
-          <TurnOn account={account} asking={asking} onTurnOn={() => askFor(true)} refused={refused} />
+          <TurnOn account={account} asking={asking} onTurnOn={() => askFor('scan')} refused={refused} />
         ) : (
           <ScanForm archive={archive} scan={scan} onScan={begin} />
         )}
 
         {scan.status === 'running' && <ScanProgress scan={scan} onStop={() => stopScan(did)} />}
         {scan.status === 'failed' && !refused && <ScanFailure scan={scan} onRetry={() => begin(scan.input)} />}
-        {scan.status === 'done' && <ScanResult archive={archive} result={scan.result} onRescan={() => begin(scan.input)} />}
+        {scan.status === 'done' && (
+          <ScanResult archive={archive} result={scan.result} onRescan={() => begin(scan.input)}>
+            <AddToList result={scan.result} defense={defense} lists={lists} />
+          </ScanResult>
+        )}
         {scan.status === 'idle' && <Bands />}
 
         {caps.defense === 'granted' && !needsPermission && <DefenseOn account={account} asking={asking} onTurnOff={() => askFor(false)} />}
@@ -138,8 +139,11 @@ function TurnOn({ account, asking, onTurnOn, refused }) {
           you in again, asking for that one read as well. It reads; it can’t block, mute or post.
         </p>
         <p>
-          Who engaged comes from Constellation, the public index of the network, from this browser. Nothing a scan finds is sent to
-          Virga’s server or kept after this tab closes.
+          Who engaged comes from Constellation, the public index of the network, from this browser.{' '}
+          {account?.mode === 'backend'
+            ? 'This account’s session is held by Virga’s server, so the read of their profiles goes through it, which passes it on to Bluesky and keeps none of it.'
+            : 'The read of their profiles goes from this browser straight to Bluesky.'}{' '}
+          Nothing a scan finds is kept after this tab closes.
         </p>
       </div>
       <div className="defense-actions">
@@ -264,14 +268,16 @@ function ScanForm({ archive, scan, onScan }) {
 function ScanProgress({ scan, onStop }) {
   const frac = stageFraction(scan);
   return (
-    <section className="card defense-progress" aria-labelledby="defense-progress-title" aria-busy="true">
+    <section className="card defense-progress" aria-labelledby="defense-progress-title">
       <div className="card-head">
         <div>
           <h2 id="defense-progress-title" className="card-title">
             Scanning
           </h2>
-          <p className="card-sub" role="status">
-            {stageLine(scan)}
+          {/* The stage is announced as it changes; the running count isn't, or every batch would be. */}
+          <p className="card-sub">
+            <span role="status">{stageLabel(scan)}</span>
+            <span className="num">{stageCount(scan)}</span>
           </p>
         </div>
         <button type="button" className="link-action" onClick={onStop}>
@@ -305,7 +311,7 @@ function ScanFailure({ scan, onRetry }) {
 
 /* ---- what a scan found ----------------------------------------------- */
 
-function ScanResult({ archive, result, onRescan }) {
+function ScanResult({ archive, result, onRescan, children = null }) {
   const model = useMemo(() => scanRadar(result), [result]);
   const table = useMemo(() => radarTable(result), [result]);
   const [band, setBand] = useState('all');
@@ -469,12 +475,13 @@ function ScanResult({ archive, result, onRescan }) {
               {fmtInt(totals.byBand.UNKNOWN)} with no connection
             </h2>
             <p className="card-sub">
-              Nobody you follow follows them, and they aren’t widely followed. They are what a block list built from this post would
-              hold. Defense can’t make one yet: for now a scan only shows you, and Export takes everyone with you.
+              Nobody you follow follows them, they don’t follow you, and they aren’t widely followed. They are what a block list built
+              from this post would hold.
             </p>
           </div>
         </div>
       </section>
+      {children}
     </>
   );
 }

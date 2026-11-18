@@ -22,6 +22,8 @@ import { navigate, usePath } from '../lib/router.jsx';
 import { useComposer } from '../posting/composer/ComposerContext.jsx';
 import PostingPage from '../posting/PostingPage.jsx';
 import DefensePage from '../defense/DefensePage.jsx';
+import { DEFENSE_PAGE_BY_KEY } from '../defense/routes.js';
+import { DEFENSE_ENABLED } from '../config.js';
 import { parseComposeIntent } from '../posting/lib/composeIntent.js';
 import { takePendingCompose } from '../lib/pendingCompose.js';
 import FirstRun from './FirstRun.jsx';
@@ -84,7 +86,7 @@ export default function Shell({ profile, did, onSignOut }) {
   else if (route.section === 'dashboard') page = dashboard ? <DashboardPage key={customizing} dashboard={dashboard} /> : null;
   else if (route.section === 'reports') page = route.page ? <ReportPage reportKey={route.page} /> : <ReportsIndex />;
   else if (route.section === 'tools') page = route.page ? <ToolPage toolKey={route.page} /> : <ToolsIndex />;
-  else if (route.section === 'defense') page = <DefensePage />;
+  else if (route.section === 'defense') page = DEFENSE_ENABLED ? <DefensePage pageKey={route.page || 'scan'} /> : <NotFound />;
   else if (route.section === 'settings') page = <SettingsPage section={route.page} profile={profile} onSignOut={onSignOut} />;
   else page = <NotFound />;
 
@@ -97,7 +99,9 @@ export default function Shell({ profile, did, onSignOut }) {
           ? TOOL_BY_KEY[route.page]?.name || 'Tools'
           : route.section === 'posting'
             ? postingTitle(route)
-            : SECTION_TITLE[route.section];
+            : route.section === 'defense' && route.page
+              ? `${DEFENSE_PAGE_BY_KEY[route.page]?.title || 'Defense'} · Defense`
+              : SECTION_TITLE[route.section];
 
   useEffect(() => {
     document.title = `${title} · Virga`;

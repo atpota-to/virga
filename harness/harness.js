@@ -12,7 +12,11 @@
 //                    posting: writes are refused for a missing scope
 //   ?defense=on      the sessions were granted Defense's permission too, as
 //                    after Turn on Defense (by default they weren't, so the
-//                    Defense page offers to ask for it)
+//                    Defense page offers to ask for it); ?defense=lists the
+//                    list writes as well, as after making a first list
+//   ?defensewrites=off
+//                    Virga's server doesn't write Defense's lists (its
+//                    DEFENSE_WRITES isn't on): scans work, lists don't
 //   ?appview=failopen|flaky
 //                    the signed-in getProfiles leaves known followers off
 //                    every answer (failopen: a scan can't count anyone) or
@@ -37,7 +41,7 @@
 //                    post's address comes from its date, so without this a
 //                    reload is a new set of posts; with it, the same ones
 
-import { DEFENSE_TOKENS, OAUTH_SCOPE } from '../src/config.js';
+import { DEFENSE_TOKENS, LIST_TOKENS, OAUTH_SCOPE } from '../src/config.js';
 import { DEFAULT_AI_LIMITS, createServer } from './fakeServer.js';
 import { createFakeAgent } from './fakeXrpc.js';
 import { installFakeNetwork } from './fakeNetwork.js';
@@ -54,12 +58,16 @@ export const READ_ONLY_SCOPE = OAUTH_SCOPE.split(' ')
   )
   .join(' ');
 
-/** A granted scope with Defense's permission added (`on`) or taken out. */
-export function withDefense(scope, on) {
+/**
+ * A granted scope with Defense's permissions set to a level: false (none),
+ * true or 'scan' (the read), or 'lists' (the read and the list writes).
+ */
+export function withDefense(scope, level) {
   const tokens = String(scope || '')
     .split(' ')
-    .filter((t) => t && !DEFENSE_TOKENS.includes(t));
-  return [...tokens, ...(on ? DEFENSE_TOKENS : [])].join(' ');
+    .filter((t) => t && !DEFENSE_TOKENS.includes(t) && !LIST_TOKENS.includes(t));
+  const add = level === 'lists' ? [...DEFENSE_TOKENS, ...LIST_TOKENS] : level ? DEFENSE_TOKENS : [];
+  return [...tokens, ...add].join(' ');
 }
 
 /** `?limits=` as the server's per-feature limits; a blank or 0 is unlimited. */
@@ -94,8 +102,12 @@ export function readFlags(search) {
     mode: params.get('mode') === 'browser' ? 'browser' : 'backend',
     signedOut: params.has('signedout'),
     expired: params.get('expired') || null,
-    scope: withDefense(params.get('scope') === 'read' ? READ_ONLY_SCOPE : OAUTH_SCOPE, params.get('defense') === 'on'),
+    scope: withDefense(
+      params.get('scope') === 'read' ? READ_ONLY_SCOPE : OAUTH_SCOPE,
+      params.get('defense') === 'lists' ? 'lists' : params.get('defense') === 'on' ? 'scan' : false,
+    ),
     appview: ['failopen', 'flaky'].includes(params.get('appview')) ? params.get('appview') : 'ok',
+    defenseWrites: params.get('defensewrites') !== 'off',
     limits: readLimits(params.get('limits')),
     aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
@@ -124,6 +136,7 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     aiLimits: flags.aiLimits,
     ai: flags.ai,
     terms: flags.terms,
+    defenseWrites: flags.defenseWrites,
   });
   const agents = new Map();
   const worldOf = (did) => worlds.find((w) => w.me.did === did) || null;
@@ -177,7 +190,8 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
       installFakeNetwork(worlds, { latency: flags.latency, server });
       let timer = null;
       const cron = async () => {
-        const { published, settled } = await server.runCron();
+        const { published, settled, listed } = await server.runCron();
+        if (listed) console.info(`[harness] the server wrote ${listed} list item(s)`);
         if (published.length || settled.length) {
           console.info(
             `[harness] the server published ${published.length} scheduled post(s) and settled ${settled.length} timer(s)`,
