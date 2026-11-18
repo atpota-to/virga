@@ -93,6 +93,12 @@
   right: 4px;
 }
 
+/* The search has a clear button of its own, so the browser's goes, or
+   there would be two crosses side by side. */
+.lib-search > .input::-webkit-search-cancel-button {
+  display: none;
+}
+
 /* On the page the search sits over the shelves and the list it searches,
    as wide as both, with the chosen item beside them from the top. */
 .lib-panel[data-mode='page'] .lib-top {

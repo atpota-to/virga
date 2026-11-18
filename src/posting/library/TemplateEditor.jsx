@@ -396,10 +396,11 @@ function EditorForm({ did, template, seed, onClose, onSaved, onDeleting, closeRe
                   }
                 }}
               />
-              <Button size="sm" variant="primary" onClick={addAskedBlank} disabled={!blankLabel.trim()}>
+              {/* As tall as the field beside them, so the line is one height. */}
+              <Button variant="primary" onClick={addAskedBlank} disabled={!blankLabel.trim()}>
                 Add
               </Button>
-              <Button size="sm" variant="ghost" icon aria-label="Don’t add a blank" title="Don’t add a blank" onClick={() => setBlankLabel(null)}>
+              <Button variant="ghost" icon aria-label="Don’t add a blank" title="Don’t add a blank" onClick={() => setBlankLabel(null)}>
                 <X size={14} aria-hidden="true" />
               </Button>
             </div>
