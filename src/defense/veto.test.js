@@ -88,8 +88,38 @@ describe('the veto', () => {
     const f = appview({ follows: new Set(['did:plc:f45']) });
     const dids = Array.from({ length: 70 }, (_, i) => `did:plc:f${i}`);
     const out = await followedNow(OWNER, dids, { fetchImpl: f });
-    expect([...out]).toEqual(['did:plc:f45']);
+    expect([...out.keys()]).toEqual(['did:plc:f45']);
     expect(f).toHaveBeenCalledTimes(3);
+  });
+
+  it('fails closed when an answer leaves anyone out, or has no list', async () => {
+    const json = (body) => vi.fn(async () => new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    await expect(followedNow(OWNER, ['did:plc:a', 'did:plc:b'], { fetchImpl: json({ relationships: [{ did: 'did:plc:a' }] }) })).rejects.toBeInstanceOf(VetoUnreadable);
+    await expect(followedNow(OWNER, ['did:plc:a'], { fetchImpl: json({}) })).rejects.toBeInstanceOf(VetoUnreadable);
+    await expect(curationMembers(OWNER, { fetchImpl: json({ cursor: 'x' }) })).rejects.toBeInstanceOf(VetoUnreadable);
+  });
+
+  it('keeps off an account Bluesky can’t find, rather than guessing it isn’t followed', async () => {
+    const f = vi.fn(async (url) => {
+      const u = new URL(url);
+      if (u.pathname.endsWith('getLists')) return new Response(JSON.stringify({ lists: [] }), { status: 200 });
+      return new Response(JSON.stringify({ relationships: [{ $type: 'app.bsky.graph.defs#notFoundActor', actor: 'did:plc:gone', notFound: true }, { did: 'did:plc:here' }] }), { status: 200 });
+    });
+    const out = await vetoed({ ownerDid: OWNER, dids: ['did:plc:gone', 'did:plc:here'], fetchImpl: f });
+    expect(out.get('did:plc:gone')).toMatch(/can’t find/);
+    expect(out.has('did:plc:here')).toBe(false);
+  });
+
+  it('reads curation lists side by side, naming someone on two by the first', async () => {
+    const f = appview({
+      lists: [
+        { uri: 'at://owner/l/1', name: 'First', purpose: CURATE, members: ['did:plc:both'] },
+        { uri: 'at://owner/l/2', name: 'Second', purpose: CURATE, members: ['did:plc:both', 'did:plc:two'] },
+      ],
+    });
+    const out = await curationMembers(OWNER, { fetchImpl: f });
+    expect(out.get('did:plc:both')).toBe('First');
+    expect(out.get('did:plc:two')).toBe('Second');
   });
 
   it('needs an owner', async () => {

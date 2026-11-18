@@ -170,7 +170,9 @@ function DefenseOn({ account, asking, onTurnOff }) {
             Defense is on{account?.handle ? ` for @${account.handle}` : ''}
           </h2>
           <p className="card-sub">
-            Its sign-in includes reading who you know in common with an account. Turning it off signs you in again without that.
+            Its sign-in includes reading who you know in common with an account, and writing your lists if you let it. Turning it off
+            signs you in again without them. Anyone still waiting to be added waits until it is turned on again; take them back on
+            History if they shouldn’t be.
           </p>
         </div>
         <button type="button" className="link-action" onClick={onTurnOff} disabled={asking?.busy}>

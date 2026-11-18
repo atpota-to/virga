@@ -7,8 +7,10 @@ FROM node:22-slim
 WORKDIR /app
 ENV NODE_ENV=production NPM_CONFIG_UPDATE_NOTIFIER=false
 
+# Only what runs: never worker/.env, which compose passes in at run time
+# (and .dockerignore keeps out of the build context).
 COPY package.json ./
-COPY worker ./worker
+COPY worker/main.js worker/drive.js ./worker/
 COPY server/defense/workerAuth.js ./server/defense/workerAuth.js
 
 USER node

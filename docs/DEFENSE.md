@@ -362,6 +362,49 @@ Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to 
   - **The second wall** (row-level security keyed on the owner) and the entitlement, in
     phases 4 and 6.
 
+### Phase 3, reviewed
+
+The phase-boundary review found that a write whose reply is lost (the PDS commits, the
+connection drops) left decisions `sent`, and several paths then treated them as if nothing
+had happened. Fixed in `server/defense/run.js` and
+`supabase/migrations/20261118000150_defense_lists_fixes.sql`, each with a test in
+`run.pglite.test.js` ("after a lost reply"):
+
+- **An undo could be overtaken by its own add.** A removal for an add still being confirmed
+  could run first, find nothing, and the add's resend would then put the person back. Now a
+  removal waits while its add is `queued` or `sent`. An add whose removal is waiting is only
+  ever read, never sent again: found, it is recorded and the removal takes it off; not found,
+  it is cancelled.
+- **The veto was applied before a resent add was read.** Someone followed or kept since a
+  lost reply stayed on the list, recorded as kept off. Now every decision with a record key
+  is read by it first. Someone found on the list is recorded as on it, and if the veto now
+  keeps them off, taken off again with a note saying why.
+- **A resent add could lose its key's meaning.** "Resent" was read from the state, which an
+  unreadable veto or a signed-out holder reset to `queued`, so the next pass created at a
+  taken key and recorded `failed`. Now the veto and the holder's session are read before
+  anything is marked, a batch that can't go on is left exactly as it was, and a decision is
+  resent whenever it has a key. A create refused because its key is taken reads the key.
+- **The veto ran after the batch was marked sent**, and read curation lists one page at a
+  time. Now it runs first, reads lists four at a time, and gives up after 15 seconds (the
+  batch waits ten minutes), so one owner with large lists can't stall a pass for everyone.
+- **Smaller ones:** the veto treats an answer missing a DID, or with no list, as unreadable,
+  and keeps off an account the AppView can't find. The people kept by hand are read for the
+  batch's DIDs, not cut off at the database's row cap. A claim takes a lock per holder while
+  it reads the pace, and approvals for one list take a lock, so two at once can't add the
+  same person twice. Only `RecordNotFound` counts as already gone. A rate limit holds the
+  holder, not just the job. Undo isn't stopped by `DEFENSE_WRITES` being off. The worker's
+  signature covers the body, and its image copies only the files it runs (`.dockerignore`
+  keeps `.env` out of the build). Add to a list reuses a list it made if the approval then
+  failed, and its breakdown counts what the title counts. Turning Defense off says what is
+  left waiting.
+- **Left as they are:**
+  - **Replays.** A captured worker header can be replayed for five minutes. The routes it
+    opens choose their own work, so a replay only runs a pass sooner.
+  - **`CRON_SECRET` outside production.** Without it, a non-production server lets anyone
+    run its passes, as Virga's other crons do. Production refuses.
+  - **The two locks aren't tested.** PGlite has one connection, so neither can be shown
+    under real concurrency. They are written to the pattern Postgres documents.
+
 ## Security and policy
 
 - **A threat model before the worker is written,** covering the internal routes, the

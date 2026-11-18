@@ -39,7 +39,7 @@ forgotten.
 | From | To | Carries | Trusted for |
 | --- | --- | --- | --- |
 | The browser | Vercel's Defense routes | The owner's `vg_` token, a list's name, a plan's rows (DIDs, bands, trust), the bands approved, the owner's words | Who the owner is (the token, checked against the session store). Nothing in the body is trusted for identity or for the veto |
-| Vercel cron, or the worker | Vercel's run route | `Bearer CRON_SECRET`, or a signed request (HMAC over the time and the body) | That it is time to run. It names nothing: the route chooses the work from the database |
+| Vercel cron, or the worker | Vercel's run and DM routes | `Bearer CRON_SECRET`, or a signed request (HMAC over the time, the method, the path and the body) | That it is time to run. It names nothing: the route chooses the work from the database, or reads it from the chat service |
 | Vercel | The holder's PDS | Writes as the holder, through the restored session | Nothing comes back that is trusted beyond the write's own result |
 | Vercel | The public AppView | `getRelationships` and lists, without a session | The veto's fresh read of who the owner follows and who is on their curation lists. A failed read refuses the write |
 | Vercel | Supabase | Service-role queries, every one filtered by owner | Everything stored |
@@ -69,12 +69,17 @@ forgotten.
    database, and every route run as one leaves the other's rows as they were.
 5. **The owner comes from the token, never the body.** As everywhere on Virga's server.
 6. **Writes are idempotent across lost replies.** Each decision gets its record key (a TID)
-   before it is sent. A batch whose reply was lost is sent again with the same keys, and
-   the PDS's "already exists" (or a read of the key) says it landed. Undo deletes by that
-   key. So a retry can't add someone twice, and an undo can't miss what it added.
-7. **A decision is written before its write is sent, and stamped after.** A run that dies
-   between the two leaves a `sent` row, which the next run reconciles by its key. Nothing
-   is written that has no row.
+   before it is sent, and keeps it. A decision with a key may have landed, so the next pass
+   reads the key before deciding anything else about it, the veto included: someone found
+   there is recorded as on the list (and taken off again if the veto now keeps them off).
+   A create refused because its key is taken reads the key. Undo deletes by that key, and
+   waits while the add it takes back is unconfirmed. So a retry can't add someone twice, an
+   undo can't be overtaken by its own add, and the record never says "kept off" for someone
+   on the list.
+7. **Read first, then mark, then write, then stamp.** The veto and the holder's session are
+   read before anything changes; a batch that can't go on is left as it was. A decision is
+   marked sent before its write and stamped after. A run that dies between the two leaves a
+   `sent` row, which the next run reconciles by its key. Nothing is written that has no row.
 8. **Paced to the holder's limits, and stopped by them.** A batch at most every two minutes
    per holder (about 1,500 adds an hour, under the PDS's 5,000 points), and a rate-limit
    answer pauses that job for an hour instead of retrying.

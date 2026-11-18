@@ -1,0 +1,16 @@
+# The build context for worker/Dockerfile is the repository's root. Nothing
+# secret, and nothing the worker doesn't run, is sent to the builder.
+**/.env
+**/.env.*
+!**/.env.example
+.git
+node_modules
+dist
+harness
+src
+api
+public
+supabase
+docs
+scripts
+**/*.test.js

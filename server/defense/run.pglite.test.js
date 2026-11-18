@@ -283,3 +283,133 @@ describe('a list Virga may write to', () => {
     expect(listIsSound(null)).toBe(false);
   });
 });
+
+// The phase 3 review's cases (docs/DEFENSE.md, "Phase 3, reviewed"). Each
+// starts from a reply the PDS committed and never sent back, which leaves
+// decisions `sent`, and holds what must happen next.
+describe('after a lost reply', () => {
+  /** An agent whose first applyWrites commits and then loses its reply. */
+  const lossy = () => {
+    let lost = 0;
+    return class extends pds.Agent {
+      constructor(s) {
+        super(s);
+        const apply = this.com.atproto.repo.applyWrites;
+        this.com.atproto.repo.applyWrites = async (input) => {
+          const res = await apply(input);
+          if (lost++ === 0) throw Object.assign(new Error('socket hang up'), { status: 0 });
+          return res;
+        };
+      }
+    };
+  };
+  /** Time passing as it does: every due time moves back a gap, keeping their order. */
+  const later = () =>
+    Promise.all([
+      t.query(`UPDATE defense_pace SET next_at = next_at - INTERVAL '125 seconds'`),
+      t.query(`UPDATE defense_job SET next_at = next_at - INTERVAL '125 seconds' WHERE state = 'pending'`),
+    ]);
+
+  it('an undo can’t be overtaken by the add it takes back', async () => {
+    const { planId } = await approved(MIRA, ['did:plc:a']);
+    await pass({ Agent: lossy() });
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'sent' });
+    expect(await as(MIRA).undo({ planId })).toMatchObject({ queued: 1 });
+    for (let i = 0; i < 4; i += 1) {
+      await later();
+      await pass();
+    }
+    // Off the list, and the record says so: added, then taken off.
+    expect(itemsIn(MIRA)).toEqual([]);
+    const h = await as(MIRA).history();
+    expect(h.find((d) => d.action === 'add')).toMatchObject({ state: 'done', undone_at: expect.any(String) });
+    expect(h.find((d) => d.action === 'remove')).toMatchObject({ state: 'done' });
+    // Nothing waits, and nobody is put back.
+    expect((await as(MIRA).lists())[0]).toMatchObject({ listed: 0, waiting: 0 });
+  });
+
+  it('an undo of an add that never landed cancels it, and never writes it', async () => {
+    const { planId } = await approved(MIRA, ['did:plc:a']);
+    // Refused with no answer at all: nothing was committed, but nobody knows that yet.
+    pds.plan.applyWrites.push(Object.assign(new Error('socket hang up'), { status: 0 }));
+    await pass();
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'sent' });
+    await as(MIRA).undo({ planId });
+    for (let i = 0; i < 3; i += 1) {
+      await later();
+      await pass();
+    }
+    expect(itemsIn(MIRA)).toEqual([]);
+    expect(pds.calls.filter(([m]) => m === 'applyWrites' || m === 'createRecord')).toHaveLength(1);
+    const add = (await as(MIRA).history()).find((d) => d.action === 'add');
+    expect(add).toMatchObject({ state: 'cancelled', undone_at: expect.any(String) });
+  });
+
+  it('someone found on the list who is kept off now is taken off again, and the record says why', async () => {
+    await approved(MIRA, ['did:plc:friend', 'did:plc:sister', 'did:plc:stranger']);
+    await pass({ Agent: lossy() });
+    expect(itemsIn(MIRA)).toEqual(['did:plc:friend', 'did:plc:sister', 'did:plc:stranger']);
+    await as(MIRA).keep('did:plc:sister', 'my sister');
+    await afterTheGap();
+    await pass({ fetchImpl: fakeAppview({ follows: new Set(['did:plc:friend']) }) });
+    for (let i = 0; i < 2; i += 1) {
+      await later();
+      await pass({ fetchImpl: fakeAppview({ follows: new Set(['did:plc:friend']) }) });
+    }
+    expect(itemsIn(MIRA)).toEqual(['did:plc:stranger']);
+    const h = await as(MIRA).history();
+    const removal = (did) => h.find((d) => d.action === 'remove' && d.subject_did === did);
+    expect(removal('did:plc:friend')).toMatchObject({ state: 'done', note: 'Taken off at the write: you follow them.' });
+    expect(removal('did:plc:sister')).toMatchObject({ state: 'done', note: 'Taken off at the write: my sister.' });
+    expect(h.find((d) => d.action === 'add' && d.subject_did === 'did:plc:stranger')).toMatchObject({ state: 'done', undone_at: null });
+  });
+
+  it('a veto that can’t be read leaves a sent batch as it was, and the next pass finds what landed', async () => {
+    await approved(MIRA, ['did:plc:a']);
+    await pass({ Agent: lossy() });
+    await afterTheGap();
+    await pass({ fetchImpl: fakeAppview({ down: true }) });
+    // Not sent back to the queue: it may well be on the list.
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'sent' });
+    await afterTheGap();
+    await pass();
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'done' });
+    expect(itemsIn(MIRA)).toEqual(['did:plc:a']);
+  });
+
+  it('a signed-out holder leaves a sent batch as it was', async () => {
+    await approved(MIRA, ['did:plc:a']);
+    await pass({ Agent: lossy() });
+    await afterTheGap();
+    await pass({ restore: async () => null });
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'sent' });
+    await afterTheGap();
+    await pass();
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'done' });
+  });
+
+  it('reads a key the PDS says is taken, and counts what is there as written', async () => {
+    const { jobId } = await approved(MIRA, ['did:plc:a', 'did:plc:b']);
+    // As if an earlier write landed under a's key and its decision went back to the queue.
+    const [a] = await as(MIRA).markSent(jobId, [(await as(MIRA).history()).find((d) => d.subject_did === 'did:plc:a').id], [clock()]);
+    pds.records.set(`${MIRA}/app.bsky.graph.listitem/${a.rkey}`, { $type: 'app.bsky.graph.listitem', subject: 'did:plc:a', list: (await as(MIRA).lists())[0].uri });
+    await t.query(`UPDATE defense_decision SET state = 'queued', sent_at = NULL WHERE id = $1`, [a.id]);
+    await pass();
+    expect(await states(MIRA)).toEqual({ 'add:did:plc:a': 'done', 'add:did:plc:b': 'done' });
+    expect(itemsIn(MIRA)).toEqual(['did:plc:a', 'did:plc:b']);
+  });
+});
+
+describe('a rate limit', () => {
+  it('holds every list of the holder, not only the one that met it', async () => {
+    await approved(MIRA, ['did:plc:a'], { name: 'One' });
+    await approved(MIRA, ['did:plc:b'], { name: 'Two' });
+    pds.plan.applyWrites.push(pds.xrpc(429, 'RateLimitExceeded', 'Rate Limit Exceeded'));
+    await pass();
+    await t.query(`UPDATE defense_job SET next_at = NOW() - INTERVAL '1 second' WHERE state = 'pending' AND last_error IS NULL`);
+    // The other list's job is due, but its holder waits out the hour.
+    expect(await claimJobs({ client: t.supabase })).toEqual([]);
+    const { rows } = await t.query(`SELECT next_at FROM defense_pace WHERE holder_did = $1`, [MIRA]);
+    expect(new Date(rows[0].next_at).getTime()).toBeGreaterThan(Date.now() + RATE_LIMIT_HOLD_MS - 120_000);
+  });
+});

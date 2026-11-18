@@ -152,12 +152,18 @@ describe('a plan, approved and undone', () => {
     expect((await call(approve, { body: { planId: '00000000-0000-0000-0000-000000000000', bands: [] } })).status).toBe(400);
   });
 
-  it('queues nothing while writes are off', async () => {
+  it('queues nothing while writes are off, but still cancels what waits', async () => {
     const list = await makeList();
     const made = await call(plan, { body: { listId: list.id, rows } });
+    const other = await call(plan, { body: { listId: list.id, rows } });
+    await call(approve, { body: { planId: other.body.data.planId, bands: ['UNKNOWN'] } });
     vi.stubEnv('DEFENSE_WRITES', 'off');
     expect((await call(approve, { body: { planId: made.body.data.planId, bands: ['UNKNOWN'] } })).body.code).toBe('WRITES_OFF');
-    expect((await call(undo, { body: { planId: made.body.data.planId } })).body.code).toBe('WRITES_OFF');
+    // Writes turned off in a hurry are no reason the owner can't take back
+    // what they approved: it would go out the moment writes came back.
+    const back = await call(undo, { body: { planId: other.body.data.planId } });
+    expect(back.status).toBe(200);
+    expect(back.body.data.cancelled).toBeGreaterThan(0);
   });
 
   it('gives one owner nothing of another’s', async () => {

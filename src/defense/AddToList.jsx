@@ -30,12 +30,23 @@ export default function AddToList({ result, defense, lists }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(null);
+  // A list made here whose approval then failed: the retry adds to it rather
+  // than making another of the same name.
+  const [made, setMade] = useState(null);
 
   const counts = useMemo(() => bandCounts(result), [result]);
   const rows = useMemo(() => planRows(result, [...bands]), [result, bands]);
   const kept = useMemo(() => new Set((lists.data?.kept || []).map((k) => k.did)), [lists.data]);
   const adding = rows.filter((r) => !kept.has(r.did));
-  const available = lists.data?.lists || [];
+  const addingByBand = useMemo(() => {
+    const out = {};
+    for (const r of adding) out[r.band] = (out[r.band] || 0) + 1;
+    return out;
+  }, [adding]);
+  const available = useMemo(() => {
+    const known = lists.data?.lists || [];
+    return made && !known.some((l) => l.id === made.id) ? [...known, made] : known;
+  }, [lists.data, made]);
   const chosen = available.find((l) => l.id === listId) || (listId === 'new' ? null : available[0] || null);
   const making = listId === 'new' || !available.length;
 
@@ -177,7 +188,12 @@ export default function AddToList({ result, defense, lists }) {
                 setError(null);
                 try {
                   const req = lists.req;
-                  const list = making ? await createList(req, { name: newName.trim(), purpose: newPurpose }) : chosen;
+                  let list = chosen;
+                  if (making) {
+                    list = await createList(req, { name: newName.trim(), purpose: newPurpose });
+                    setMade(list);
+                    setListId(list.id);
+                  }
                   const out = await planAndApprove(req, {
                     listId: list.id,
                     postUri: result.post?.uri || null,
@@ -206,8 +222,8 @@ export default function AddToList({ result, defense, lists }) {
         <div className="defense-confirm">
           <p>
             {[...bands]
-              .filter((b) => counts[b])
-              .map((b) => `${fmtInt(counts[b])} ${BAND_COUNTED[b]}`)
+              .filter((b) => addingByBand[b])
+              .map((b) => `${fmtInt(addingByBand[b])} ${BAND_COUNTED[b]}`)
               .join(', ')}
             . They go on {making ? 'a new list in your repo' : 'the list'} {estimateWords(adding.length) === 'a minute or two' ? 'in a minute or two' : `over ${estimateWords(adding.length)}`}, a batch at a time.
           </p>
