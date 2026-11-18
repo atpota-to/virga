@@ -4,7 +4,7 @@
 
 import { methodGuard, sendJson } from '../../http.js';
 import { storeFor } from '../store.js';
-import { authorize, requireStore, sendFailure } from '../respond.js';
+import { authorize, requireStore, sendFailure, requireModerator } from '../respond.js';
 
 /**
  * The moderator's handle, as Settings names it, or null when there is none.
@@ -25,7 +25,7 @@ export const publicLink = (link, env = process.env) => ({
 
 export default async function handler(req, res) {
   if (!methodGuard(req, res, ['GET'])) return;
-  if (!requireStore(res)) return;
+  if (!requireModerator(res) || !requireStore(res)) return;
   try {
     const owner = await authorize(req, res);
     if (!owner) return;

@@ -16,6 +16,13 @@ export function moderatorConfigured(env = process.env) {
   return Boolean(env?.DEFENSE_MODERATOR_HANDLE && env?.DEFENSE_MODERATOR_PASSWORD);
 }
 
+/**
+ * Whether the worker reads the moderator's DMs: turned on (DEFENSE_MODERATOR=on,
+ * as on Vercel) and configured. Off for the first release (docs/DEFENSE.md,
+ * phase 4).
+ */
+export const moderatorWanted = (env = process.env) => env?.DEFENSE_MODERATOR === 'on' && moderatorConfigured(env);
+
 export class ModeratorError extends Error {
   constructor(message, code) {
     super(message);

@@ -5,12 +5,12 @@
 import { methodGuard, sendJson } from '../../http.js';
 import { LINK_TTL_MS, displayLinkCode, hashLinkCode, newLinkCode } from '../linking.js';
 import { storeFor } from '../store.js';
-import { authorize, requireStore, sendFailure } from '../respond.js';
+import { authorize, requireStore, sendFailure, requireModerator } from '../respond.js';
 import { moderatorHandle } from './link.js';
 
 export default async function handler(req, res) {
   if (!methodGuard(req, res, ['POST'])) return;
-  if (!requireStore(res)) return;
+  if (!requireModerator(res) || !requireStore(res)) return;
   try {
     const owner = await authorize(req, res);
     if (!owner) return;

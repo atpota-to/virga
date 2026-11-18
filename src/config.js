@@ -49,6 +49,15 @@ export const BACKEND_URL = String(ENV.VITE_BACKEND_URL || '').replace(/\/+$/, ''
 export const DEFENSE_ENABLED = ENV.VITE_DEFENSE === 'on';
 
 /**
+ * Whether Defense's moderator, the Bluesky account owners DM, is on screen:
+ * 'on' shows the card that links it on Defense › Lists. Off for the first
+ * release; the moderator is built, and its server routes and the worker's DM
+ * loop are off too unless the server says DEFENSE_MODERATOR=on
+ * (docs/DEFENSE.md, phase 4). The harness turns it on.
+ */
+export const DEFENSE_MODERATOR_ENABLED = DEFENSE_ENABLED && ENV.VITE_DEFENSE_MODERATOR === 'on';
+
+/**
  * The server's host, for the sentences that name it: this site's own unless
  * VITE_BACKEND_URL says otherwise. Read at render, so a module that imports
  * this still loads where there is no window.

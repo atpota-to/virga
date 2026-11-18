@@ -2,9 +2,10 @@
 
 Defense's process on the droplet (docs/DEFENSE.md). It does two things:
 
-- **The moderator.** It holds Virga's moderator account (`DEFENSE_MODERATOR_HANDLE` and an
-  app password with DM access), reads its DMs every few seconds (`dmLoop.js`) and answers
-  them:
+- **The moderator**, when `DEFENSE_MODERATOR=on` here and on Vercel. It's off for the first
+  release; the rest of this section is what it does once it's turned on. It holds Virga's
+  moderator account (`DEFENSE_MODERATOR_HANDLE` and an app password with DM access), reads
+  its DMs every few seconds (`dmLoop.js`) and answers them:
   - Linking, the one line for anyone who hasn't linked, and typed commands are answered by
     Virga's server by code.
   - Anything else from a linked owner goes to the agent (`agent.js`), through the Vercel AI
@@ -48,6 +49,7 @@ Or without Docker: `cd worker && npm ci && cd .. && VIRGA_URL=… DEFENSE_WORKER
 | `VIRGA_URL` | Virga's deployment, an https origin |
 | `DEFENSE_WORKER_SECRET` | The same value as on Vercel, 32 characters or more |
 | `WORKER_INTERVAL_SECONDS` | How often to call the list writer, at least 15; 60 by default |
+| `DEFENSE_MODERATOR` | `on` reads the moderator's DMs; off for the first release. Vercel needs it on too |
 | `DEFENSE_MODERATOR_HANDLE` | The moderator account. Set it on Vercel too, where it's only shown |
 | `DEFENSE_MODERATOR_PASSWORD` | An app password for it, with "Allow access to your direct messages" ticked |
 | `DEFENSE_MODERATOR_SERVICE` | Where it signs in: its PDS or entryway; `https://bsky.social` by default |

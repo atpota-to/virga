@@ -29,7 +29,7 @@ const LAB = 'did:plc:lab';
 const STRANGER_DID = 'did:plc:stranger';
 const TROLL = 'did:plc:troll';
 const SECRET = 'w'.repeat(64);
-const ENV = { DEFENSE_WRITES: 'on', OAUTH_PUBLIC_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET };
+const ENV = { DEFENSE_MODERATOR: 'on', DEFENSE_WRITES: 'on', OAUTH_PUBLIC_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET };
 const CREATE = 'chat.bsky.convo.defs#logCreateMessage';
 const REACTION = 'chat.bsky.convo.defs#logAddReaction';
 const HANDLES = { 'troll.example.com': TROLL, 'mira.example.com': MIRA, 'friend.example.com': 'did:plc:friend' };
@@ -250,6 +250,18 @@ describe('a pass', () => {
     expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/moderator', body: '{"op":"message","owner":"did:plc:lab"}' }) })).toBe(401);
     expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/run', body }) })).toBe(401);
     expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/moderator', body }) })).toBe(200);
+  });
+
+  it('answers nothing while the moderator is off, as for the first release', async () => {
+    await linked(MIRA);
+    await seeded();
+    chat.dm(MIRA, 'block @troll.example.com');
+    const { DEFENSE_MODERATOR, ...off } = ENV;
+    expect(DEFENSE_MODERATOR).toBe('on');
+    const out = await pass({ env: off });
+    expect(out.errors[0]).toMatch(/moderator isn’t turned on/);
+    expect(await as(MIRA).history()).toEqual([]);
+    await expect(route({ env: off }).virga.call('tool', { owner: MIRA, turnId: 'x', name: 'lists', args: {} })).rejects.toMatchObject({ status: 503, code: 'MODERATOR_OFF' });
   });
 
   it('runs an agent’s tools only for a linked owner', async () => {

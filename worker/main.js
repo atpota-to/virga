@@ -2,8 +2,9 @@
 //
 //   - The list writer's clock: it calls Virga's run route, signed, so lists
 //     are written whether or not Vercel Cron runs.
-//   - The moderator: it holds the moderator account (DEFENSE_MODERATOR_HANDLE
-//     and DEFENSE_MODERATOR_PASSWORD), reads its DMs every few seconds, and
+//   - The moderator, when DEFENSE_MODERATOR=on (off for the first release):
+//     it holds the moderator account (DEFENSE_MODERATOR_HANDLE and
+//     DEFENSE_MODERATOR_PASSWORD), reads its DMs every few seconds, and
 //     answers them, with the agent when AI_GATEWAY_API_KEY is set. Whatever a
 //     DM asks of an owner's lists is done by Virga's server, as that owner.
 //
@@ -17,7 +18,7 @@ import { driveOnce, nextDelay, readConfig } from './drive.js';
 import { atmosphereTools } from './atmosphere.js';
 import { runDmPass } from './dmLoop.js';
 import { modelConfig } from './model.js';
-import { moderatorConfigured, openModerator } from './moderator.js';
+import { moderatorConfigured, moderatorWanted, openModerator } from './moderator.js';
 import { fileState } from './state.js';
 import { virgaClient } from './virga.js';
 
@@ -101,7 +102,8 @@ async function moderatorLoop() {
 }
 
 const loops = [writerLoop()];
-if (moderatorConfigured(process.env)) loops.push(moderatorLoop());
-else console.info('[worker] no moderator account set (DEFENSE_MODERATOR_HANDLE, DEFENSE_MODERATOR_PASSWORD); not reading DMs');
+if (moderatorWanted(process.env)) loops.push(moderatorLoop());
+else if (process.env.DEFENSE_MODERATOR !== 'on') console.info('[worker] the moderator is off (DEFENSE_MODERATOR); not reading DMs');
+else if (!moderatorConfigured(process.env)) console.info('[worker] no moderator account set (DEFENSE_MODERATOR_HANDLE, DEFENSE_MODERATOR_PASSWORD); not reading DMs');
 await Promise.all(loops);
 console.info('[worker] stopped');

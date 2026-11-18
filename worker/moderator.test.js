@@ -2,7 +2,7 @@
 // resumed when it can be, signed in afresh when it can't.
 
 import { describe, expect, it, vi } from 'vitest';
-import { CHAT_PROXY, ModeratorError, moderatorConfigured, openModerator } from './moderator.js';
+import { CHAT_PROXY, ModeratorError, moderatorConfigured, moderatorWanted, openModerator } from './moderator.js';
 
 const ENV = { DEFENSE_MODERATOR_HANDLE: 'mod.virga.example', DEFENSE_MODERATOR_PASSWORD: 'app-pass' };
 const SESSION = { did: 'did:plc:moderator', handle: 'mod.virga.example', accessJwt: 'a', refreshJwt: 'r', active: true };
@@ -42,6 +42,12 @@ describe('the moderator’s session', () => {
   it('needs an account and its app password', () => {
     expect(moderatorConfigured({})).toBe(false);
     expect(moderatorConfigured(ENV)).toBe(true);
+  });
+
+  it('isn’t read unless the moderator is turned on, as for the first release', () => {
+    expect(moderatorWanted(ENV)).toBe(false);
+    expect(moderatorWanted({ ...ENV, DEFENSE_MODERATOR: 'on' })).toBe(true);
+    expect(moderatorWanted({ DEFENSE_MODERATOR: 'on' })).toBe(false);
   });
 
   it('resumes a kept session, keeps what it refreshed, and talks to the chat service', async () => {

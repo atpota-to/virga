@@ -3,11 +3,11 @@
 
 import { methodGuard, readJson, sendJson } from '../../http.js';
 import { storeFor } from '../store.js';
-import { authorize, requireStore, sendFailure, uuidOrNull } from '../respond.js';
+import { authorize, requireStore, sendFailure, uuidOrNull, requireModerator } from '../respond.js';
 
 export default async function handler(req, res) {
   if (!methodGuard(req, res, ['POST'])) return;
-  if (!requireStore(res)) return;
+  if (!requireModerator(res) || !requireStore(res)) return;
   try {
     const owner = await authorize(req, res);
     if (!owner) return;

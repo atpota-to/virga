@@ -35,7 +35,7 @@ import { checkIntent, sourcesLine } from '../moderator/check.js';
 import { OP_NAMES, OpError, WRITE_OPS, opsFor } from '../moderator/ops.js';
 import { VerifyError, openVerifier, verifierOver, verifyOff } from '../moderator/verifier.js';
 import { storeFor } from '../store.js';
-import { didOrNull, sendFailure } from '../respond.js';
+import { didOrNull, moderatorEnabled, sendFailure } from '../respond.js';
 import { isWorkerAuthorized } from '../workerAuth.js';
 
 const MAX_BODY = 64 * 1024;
@@ -66,6 +66,9 @@ const str = (v, max = 200) => (typeof v === 'string' ? v.slice(0, max) : '');
 
 export default async function handler(req, res, { deps = {}, env = process.env } = {}) {
   if (!methodGuard(req, res, ['POST'])) return;
+  // Off for the first release (DEFENSE_MODERATOR=on turns it on): nothing a
+  // worker sends is read.
+  if (!moderatorEnabled(env)) return sendJson(res, 503, { success: false, code: 'MODERATOR_OFF', error: 'Defense’s moderator isn’t turned on on Virga’s server.' });
   let raw;
   try {
     raw = await readRaw(req, { maxBytes: MAX_BODY });

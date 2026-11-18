@@ -236,8 +236,25 @@ describe('the run route', () => {
 
 describe('linking the moderator', () => {
   beforeEach(() => {
+    vi.stubEnv('DEFENSE_MODERATOR', 'on');
     // Only the handle is set on Vercel: the password is the droplet's.
     vi.stubEnv('DEFENSE_MODERATOR_HANDLE', 'mod.virga.example');
+  });
+
+  it('is off unless the server turns it on, as for the first release', async () => {
+    vi.stubEnv('DEFENSE_MODERATOR', '');
+    for (const [h, m] of [
+      [link, 'GET'],
+      [linkCode, 'POST'],
+      [unlink, 'POST'],
+      [linkList, 'POST'],
+    ]) {
+      const out = await call(h, { method: m, body: {} });
+      expect(out.status).toBe(503);
+      expect(out.body.code).toBe('MODERATOR_OFF');
+    }
+    const { rows } = await t.query(`SELECT count(*)::int AS n FROM defense_link`);
+    expect(rows[0].n).toBe(0);
   });
 
   it('makes a code bound to the caller, shown once and kept as a hash', async () => {

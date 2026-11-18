@@ -6,12 +6,17 @@ yourself (a block list that can't take your own people, scans of who piled onto 
 closing replies and quotes when strangers arrive, attack mode) and makes it something you
 turn on in Virga, with the infrastructure run for you.
 
-This is the plan as of 2026-11-18. Three phases are built: the in-browser scan and score
-engine (`src/defense/`), scanning a post on screen with the permission it needs asked for
-only when it's turned on (phase 2), and lists in the owner's own repo, written by Virga's
-server with the veto at every write (phase 3; mode 2, the helper account, isn't yet). The
-threat model for the write path is [DEFENSE-THREATS.md](DEFENSE-THREATS.md). All of it is
-behind `VITE_DEFENSE` on screen and `DEFENSE_WRITES` on the server, until phase 6.
+This is the plan as of 2026-11-18. Four phases are built:
+- the in-browser scan and score engine (`src/defense/`);
+- scanning a post on screen, with the permission it needs asked for only when it's turned
+  on (phase 2);
+- lists in the owner's own repo, written by Virga's server with the veto at every write
+  (phase 3; mode 2, the helper account, isn't yet);
+- the moderator in DMs (phase 4), which is switched off for the first release (below).
+
+The threat model is [DEFENSE-THREATS.md](DEFENSE-THREATS.md). All of it is behind
+`VITE_DEFENSE` on screen and `DEFENSE_WRITES` on the server, until phase 6, and the moderator
+is also behind `VITE_DEFENSE_MODERATOR` and `DEFENSE_MODERATOR`.
 
 ## The idea it keeps
 
@@ -177,16 +182,16 @@ a few dozen users to each holder, which still splits the limits and the blast ra
 
 - **Free:** scan a post and see its radar. Read-only, runs in the browser, costs Virga
   nothing, and is the reason to upgrade.
-- **Paid:** lists and writes, the moderator in DMs, the shield and attack mode, watches,
+- **Paid:** lists and writes, the shield and attack mode, watches, later the moderator in DMs,
   and the model features within an allowance (Virga already counts `AI_*_MONTHLY_LIMIT`).
 - **The entitlement is checked in three places:** Vercel's routes, the worker before any job
   or DM action, and the page. A lapsed plan stops the bot and the shield and puts any
   closed gates back. The lists stay where they are. A Virga-held holder is kept, read-only,
   for a notice period, during which its lists can be copied to your own account.
-- **Day one** means launching with the moderator, the shield and attack mode working, so
-  the phases below all land before launch except the model features. Agent mode (talking
-  to it in sentences) is the riskiest piece: it is built (phase 4), and is turned on in
-  production only when its review is done.
+- **The first release** launches with scans and lists, and the shield and attack mode once
+  phase 5 lands. The moderator in DMs is held back: it is built (phase 4), with agent mode,
+  but it is a lot to put in front of strangers at once. It stays switched off until what is
+  listed under "Phase 4, as built" is done.
 
 ## What comes over from bluesky-mod
 
@@ -217,7 +222,8 @@ also hold the PDS's keys.
    the worker's first job, batch writes with the veto at the write; decisions, undo,
    history. *Done, but for mode 2* (below).
 4. **The moderator.** The shared account, linking, tenancy, the command grammar, background
-   writes, scans by DM, and agent mode (brought forward from phase 7). *Done* (below).
+   writes, scans by DM, and agent mode (brought forward from phase 7). *Built, and switched
+   off for the first release* (below).
 5. **The shield and attack mode.** Spacedust on the droplet, the internal gates route,
    per-post guards, attack mode, putting everything back.
 6. **Premium and policy.** Entitlement and payments; the Terms and Privacy Policy;
@@ -408,6 +414,21 @@ had happened. Fixed in `server/defense/run.js` and
 
 ### Phase 4, as built
 
+- **Switched off for the first release.** Everything below is built and tested, and stays
+  in the code, but nothing of it runs until it is turned on in three places:
+  - `DEFENSE_MODERATOR=on` on Vercel. Until then the moderator route and the linking routes
+    answer 503 `MODERATOR_OFF`, and nothing a worker sends is read.
+  - `DEFENSE_MODERATOR=on` on the droplet. Until then the worker reads no DMs, and only
+    keeps the list writer's clock.
+  - `VITE_DEFENSE_MODERATOR=on` in the build. Until then Defense › Lists doesn't show the
+    card that links it.
+
+  The tests run with it on, and check that it is off by default. The harness shows it.
+  Before it is turned on:
+  - an adversarial review of phase 4, agent mode above all;
+  - a run against Bluesky's real chat service, with both keys, and the real AI Gateway;
+  - the moderator's chat limits measured (below, "Still open");
+  - the Terms and the Privacy Policy saying what it reads and what goes to a model provider.
 - **The droplet reads the DMs.** The worker (`worker/`) holds the moderator account: its
   app password, its session (kept in the worker's data volume between restarts), and a lock
   so one copy reads the log. Every few seconds it reads the chat log from where it stopped
