@@ -4,10 +4,11 @@
 **/.env.*
 !**/.env.example
 .git
-node_modules
+**/node_modules
 dist
 harness
-src
+src/**
+!src/defense/command.js
 api
 public
 supabase

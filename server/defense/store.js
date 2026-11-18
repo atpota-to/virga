@@ -172,6 +172,21 @@ export function storeFor(ownerDid, { client = null } = {}) {
       return unwrap(await q, 'history') || [];
     },
 
+    /** The owner's plans, approved or not and not expired, newest first. */
+    async recentPlans({ limit = 20 } = {}) {
+      return (
+        unwrap(
+          await db()
+            .from('defense_plan')
+            .select('id, list_id, post_uri, created_at, approved_at, approved_bands, expires_at')
+            .eq('owner_did', owner)
+            .order('created_at', { ascending: false })
+            .limit(Math.max(1, Math.min(50, limit))),
+          'recent plans',
+        ) || []
+      ).filter((p) => !p.expires_at || Date.parse(p.expires_at) > Date.now());
+    },
+
     /** The owner's approved plans, newest first, each with what came of its adds. */
     async plans({ limit = 50 } = {}) {
       return unwrap(await db().rpc('defense_plans', { p_owner_did: owner, p_limit: limit }), 'plans') || [];
@@ -323,6 +338,14 @@ export function storeFor(ownerDid, { client = null } = {}) {
           'history of',
         ) || []
       );
+    },
+
+    /**
+     * Count an agent turn against the owner's monthly allowance (`limit`,
+     * null for none): the turns used this month, or null when it is spent.
+     */
+    async agentTurn(limit) {
+      return unwrap(await db().rpc('defense_agent_turn', { p_owner_did: owner, p_limit: limit ?? null }), 'agent turn');
     },
 
     /** The newest add still live, whatever it came from, or null. */

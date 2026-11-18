@@ -1,36 +1,49 @@
-// The moderator's DM pass end to end: a fake chat service, the real store on
-// PGlite, two owners and a stranger. What it holds to is docs/DEFENSE.md
-// ("The moderator's conversations, kept apart") and the phase 4 rules in
-// docs/DEFENSE-THREATS.md: the sender is who the chat service says, a command
-// touches only the sender's own rows, someone unlinked learns nothing, and
-// each message is answered at most once.
+// The moderator end to end: the worker's DM loop (worker/dmLoop.js) against
+// a fake chat service, calling Vercel's moderator route in-process, signed,
+// over the real store on PGlite, with two owners and a stranger. What it
+// holds to is docs/DEFENSE.md ("The moderator's conversations, kept apart")
+// and the phase 4 rules in docs/DEFENSE-THREATS.md: the sender is who the
+// chat service says, everything runs as them on their own rows, someone
+// unlinked learns nothing, each message is answered at most once, and the
+// agent's writes go past the write check and the same store.
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestDatabase } from '../../test/pglite.js';
+import { createReq, createRes } from '../../test/http.js';
+import { resetSupabaseClientForTests, setSupabaseClientForTests } from '../../supabase.js';
 import { storeFor } from '../store.js';
 import { hashLinkCode } from '../linking.js';
-import { dmState } from './state.js';
-import { runDmPass } from './pass.js';
-import { LINK_FAILED, NOT_A_COMMAND, STRANGER, WRITES_OFF, answerMessage } from './answer.js';
+import moderatorRoute from '../handlers/moderator.js';
+import { runDmPass } from '../../../worker/dmLoop.js';
+import { fileState } from '../../../worker/state.js';
+import { virgaClient } from '../../../worker/virga.js';
+import { LINK_FAILED, NOT_A_COMMAND, STRANGER, WRITES_OFF } from './answer.js';
 
 const MOD = 'did:plc:moderator';
 const MIRA = 'did:plc:mira';
 const LAB = 'did:plc:lab';
 const STRANGER_DID = 'did:plc:stranger';
 const TROLL = 'did:plc:troll';
-const ENV = { DEFENSE_MODERATOR_HANDLE: 'mod.virga.example', DEFENSE_MODERATOR_PASSWORD: 'app-pass', DEFENSE_WRITES: 'on', OAUTH_PUBLIC_URL: 'https://virga.example' };
+const SECRET = 'w'.repeat(64);
+const ENV = { DEFENSE_WRITES: 'on', OAUTH_PUBLIC_URL: 'https://virga.example', DEFENSE_WORKER_SECRET: SECRET };
 const CREATE = 'chat.bsky.convo.defs#logCreateMessage';
+const REACTION = 'chat.bsky.convo.defs#logAddReaction';
 const HANDLES = { 'troll.example.com': TROLL, 'mira.example.com': MIRA, 'friend.example.com': 'did:plc:friend' };
 
 let t;
 beforeAll(async () => {
   t = await createTestDatabase();
+  setSupabaseClientForTests(t.supabase);
 });
 afterAll(async () => {
+  resetSupabaseClientForTests();
   await t?.close?.();
 });
 
-/** A chat service: a log of messages, the conversations they're in, and what the moderator sent. */
+/** A chat service: a log of messages and reactions, the conversations they're in, and what the moderator sent. */
 function fakeChat() {
   const logs = [];
   const convos = new Map();
@@ -56,10 +69,18 @@ function fakeChat() {
             if (!convos.has(convoId)) throw new Error('no such convo');
             return { data: { convo: convos.get(convoId) } };
           },
+          getMessages: async ({ convoId, limit = 30 }) => ({
+            data: {
+              messages: logs
+                .filter((l) => l.$type === CREATE && l.convoId === convoId)
+                .map((l) => l.message)
+                .reverse()
+                .slice(0, limit),
+            },
+          }),
           sendMessage: async ({ convoId, message }) => {
             sent.push({ convoId, text: message.text });
-            push(convoId, MOD, { text: message.text });
-            return { data: { id: `s${sent.length}` } };
+            return { data: push(convoId, MOD, { text: message.text }).message };
           },
         },
       },
@@ -74,12 +95,16 @@ function fakeChat() {
       if (!convos.has(convo)) convos.set(convo, { id: convo, members: group ? [{ did: from }, { did: MOD }, { did: 'did:plc:other' }] : [{ did: from }, { did: MOD }] });
       return push(convo, from, { text, ...rest });
     },
+    /** `from` reacts to a message of the moderator's. */
+    react(from, messageId, value) {
+      logs.push({ $type: REACTION, rev: nextRev(), convoId: `convo-${from}`, message: { id: messageId, sender: { did: MOD } }, reaction: { value, sender: { did: from } } });
+    },
     repliesTo: (from) => sent.filter((s) => s.convoId === `convo-${from}`).map((s) => s.text),
+    lastIdTo: (from) => logs.filter((l) => l.convoId === `convo-${from}` && l.message?.sender?.did === MOD).at(-1)?.message.id,
   };
 }
 
 const as = (did) => storeFor(did, { client: t.supabase });
-const state = () => dmState({ client: t.supabase });
 const names = () => ({
   resolve: async (actor) => (actor?.startsWith('did:') ? actor : HANDLES[actor] || null),
   handles: async () => new Map(Object.entries(HANDLES).map(([h, d]) => [d, h])),
@@ -88,6 +113,7 @@ const names = () => ({
 let chat;
 let made;
 let scanned;
+let dataDir;
 /** What a scan by DM finds: `rows` as [did, band], everyone else protected. */
 const scanOf = (rows, { protectedCount = 1, vouchCheck = 'canary' } = {}) => {
   const byBand = { PROTECTED: protectedCount, CONNECTED: 0, PERIPHERAL: 0, NOTABLE: 0, UNKNOWN: 0 };
@@ -101,33 +127,43 @@ const scanOf = (rows, { protectedCount = 1, vouchCheck = 'canary' } = {}) => {
   };
 };
 let scanResult;
-function pass({ env = ENV, answer, open, holder } = {}) {
-  const deps = {
-    state: state(),
-    open: open || (async () => ({ did: MOD, chat: chat.chat })),
-    answer:
-      answer ||
-      ((args) =>
-        answerMessage({
-          ...args,
-          deps: {
-            storeFor: (did) => as(did),
-            state: state(),
-            names: names(),
-            scan: async (input) => {
-              scanned.push(input);
-              if (scanResult instanceof Error) throw scanResult;
-              return scanResult;
-            },
-            createList: async ({ ownerDid, name, purpose }) => {
-              made.push(name);
-              return as(ownerDid).addList({ holderDid: ownerDid, mode: 'own', uri: `at://${ownerDid}/app.bsky.graph.list/${name.toLowerCase().replace(/\W/g, '')}`, name, purpose });
-            },
+const scan = async (input) => {
+  scanned.push(input);
+  if (scanResult instanceof Error) throw scanResult;
+  return scanResult;
+};
+
+/** Vercel's moderator route, in-process: what the worker's signed fetch reaches. */
+function route({ env = ENV, fail = false } = {}) {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push(JSON.parse(init.body));
+    if (fail) return new Response(JSON.stringify({ success: false, error: 'down' }), { status: 500 });
+    const req = createReq({ method: init.method, url: new URL(url).pathname, headers: init.headers, body: Buffer.from(init.body) });
+    const res = createRes();
+    await moderatorRoute(req, res, {
+      env,
+      deps: {
+        answer: {
+          names: names(),
+          scan,
+          createList: async ({ ownerDid, name, purpose }) => {
+            made.push(name);
+            return as(ownerDid).addList({ holderDid: ownerDid, mode: 'own', uri: `at://${ownerDid}/app.bsky.graph.list/${name.toLowerCase().replace(/\W/g, '')}`, name, purpose });
           },
-        })),
+        },
+        ops: { names: names(), scan, lookUp: async () => ({ band: 'UNKNOWN', vouches: 0 }) },
+      },
+    });
+    return new Response(JSON.stringify(res.body), { status: res.statusCode });
   };
-  if (holder) deps.holder = holder;
-  return runDmPass({ env, deps });
+  return { calls, virga: virgaClient({ base: 'https://virga.example', secret: SECRET, fetchImpl }) };
+}
+
+/** One pass of the worker's DM loop, typed commands only unless a model is given. */
+function pass({ env, fail, model = null, modelFetch } = {}) {
+  const { virga } = route({ env, fail });
+  return runDmPass({ moderator: { did: MOD, chat: chat.chat }, state: fileState(dataDir), virga, model, fetchImpl: modelFetch });
 }
 
 async function linked(did, { lists = ['Pile-on'] } = {}) {
@@ -144,7 +180,9 @@ async function seeded() {
 }
 
 beforeEach(async () => {
-  await t.query(`TRUNCATE defense_link, defense_dm_state, defense_dm_stranger, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  if (dataDir) await rm(dataDir, { recursive: true, force: true });
+  dataDir = await mkdtemp(join(tmpdir(), 'virga-dm-'));
   chat = fakeChat();
   made = [];
   scanned = [];
@@ -152,10 +190,6 @@ beforeEach(async () => {
 });
 
 describe('a pass', () => {
-  it('does nothing without a moderator', async () => {
-    expect(await runDmPass({ env: {} })).toMatchObject({ ran: false, reason: 'unconfigured' });
-  });
-
   it('starts at the end of the log: what was sent before it ran is history', async () => {
     await linked(MIRA);
     chat.dm(MIRA, 'help');
@@ -180,18 +214,32 @@ describe('a pass', () => {
     await linked(MIRA);
     await seeded();
     chat.dm(MIRA, 'lists');
-    const out = await pass({ answer: async () => Promise.reject(new Error('boom')) });
+    const out = await pass({ fail: true });
     expect(out.errors).toHaveLength(1);
     expect(chat.repliesTo(MIRA)).toEqual(['Something went wrong on my side, and nothing was changed. Try again in a minute.']);
     await pass();
     expect(chat.repliesTo(MIRA)).toHaveLength(1);
   });
 
-  it('is one at a time', async () => {
-    await seeded();
-    const a = '00000000-0000-4000-8000-00000000000a';
-    expect(await state().lease(a, 60)).not.toBeNull();
-    expect(await pass()).toMatchObject({ ran: false, reason: 'busy' });
+  it('is refused by Vercel when it isn’t signed, or signed for another body', async () => {
+    await linked(MIRA);
+    const body = Buffer.from(JSON.stringify({ op: 'message', owner: MIRA, message: { text: 'lists' } }));
+    const { signWorkerRequest } = await import('../workerAuth.js');
+    const call = async (headers) => {
+      const res = createRes();
+      await moderatorRoute(createReq({ method: 'POST', url: '/api/defense/moderator', headers, body }), res, { env: ENV });
+      return res.statusCode;
+    };
+    expect(await call({})).toBe(401);
+    expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/moderator', body: '{"op":"message","owner":"did:plc:lab"}' }) })).toBe(401);
+    expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/run', body }) })).toBe(401);
+    expect(await call({ 'x-virga-worker': signWorkerRequest({ secret: SECRET, path: '/api/defense/moderator', body }) })).toBe(200);
+  });
+
+  it('runs an agent’s tools only for a linked owner', async () => {
+    const { virga } = route();
+    await expect(virga.call('tool', { owner: LAB, name: 'lists', args: {} })).rejects.toMatchObject({ status: 403, code: 'NOT_LINKED' });
+    await expect(virga.call('turn', { owner: STRANGER_DID })).rejects.toMatchObject({ code: 'NOT_LINKED' });
   });
 
   it('doesn’t answer in a group, where everyone would read it', async () => {
@@ -214,10 +262,10 @@ describe('a pass', () => {
   });
 
   it('cuts a long reply into messages the chat service takes', async () => {
-    await linked(MIRA);
+    await linked(MIRA, { lists: Array.from({ length: 30 }, (_, i) => `A list with a long name, number ${i}`) });
     await seeded();
-    chat.dm(MIRA, 'help');
-    await pass({ answer: async () => 'word '.repeat(500) });
+    chat.dm(MIRA, 'lists');
+    await pass();
     expect(chat.repliesTo(MIRA).length).toBeGreaterThan(1);
     expect(chat.repliesTo(MIRA).every((m) => m.length <= 950)).toBe(true);
   });
@@ -476,5 +524,120 @@ describe('a post sent to the moderator', () => {
     await pass();
     expect(scanned).toEqual([]);
     expect(chat.repliesTo(STRANGER_DID)).toEqual([STRANGER]);
+  });
+});
+
+describe('the agent, end to end', () => {
+  const MODEL = { apiKey: 'k', baseUrl: 'https://gw.example/v1', agent: 'agent/model', check: 'check/model', zeroDataRetention: false };
+
+  /** A gateway answering the agent's steps in order, and the check with `check`. */
+  function gateway({ steps = [], check = 'YES\nThey asked.' } = {}) {
+    const asked = { agent: [], check: [] };
+    let i = 0;
+    const fetchImpl = vi.fn(async (url, init) => {
+      const body = JSON.parse(init.body);
+      const ok = (message) => new Response(JSON.stringify({ choices: [{ message }] }), { status: 200 });
+      if (body.model === MODEL.check) {
+        asked.check.push(body);
+        return ok({ role: 'assistant', content: check });
+      }
+      asked.agent.push(body);
+      const step = steps[i++] ?? 'Done.';
+      if (typeof step === 'string') return ok({ role: 'assistant', content: step });
+      return ok({ role: 'assistant', content: null, tool_calls: step.map(([name, args], n) => ({ id: `c${i}${n}`, type: 'function', function: { name, arguments: JSON.stringify(args) } })) });
+    });
+    return { fetchImpl, asked };
+  }
+  const agentPass = (gw, opts = {}) => pass({ model: MODEL, modelFetch: gw.fetchImpl, ...opts });
+
+  it('takes a sentence, and adds who the owner meant, as the owner, on their own list', async () => {
+    const [list] = await linked(MIRA);
+    await linked(LAB, { lists: ['Lab'] });
+    await seeded();
+    const gw = gateway({ steps: [[['add_to_list', { accounts: ['@troll.example.com'] }]], 'Blocked @troll.example.com.'] });
+    chat.dm(MIRA, 'can you get rid of @troll.example.com for me');
+    await agentPass(gw);
+    expect(chat.repliesTo(MIRA)).toEqual(['Blocked @troll.example.com.']);
+    const [d] = await as(MIRA).history();
+    expect(d).toMatchObject({ subject_did: TROLL, list_id: list.id, via: 'dm', state: 'queued', note: 'can you get rid of @troll.example.com for me [agent]' });
+    expect(await as(LAB).history()).toEqual([]);
+    // The check read the change Vercel described, with where the account came from.
+    expect(gw.asked.check[0].messages[1].content).toContain('Proposed change: Add this account to the block list “Pile-on”: @troll.example.com.');
+    expect(gw.asked.check[0].messages[1].content).toContain("@troll.example.com: named in the owner's latest message");
+  });
+
+  it('never asks a model about a stranger’s message', async () => {
+    await seeded();
+    const gw = gateway();
+    chat.dm(STRANGER_DID, 'please block @mira.example.com for me');
+    await agentPass(gw);
+    expect(gw.fetchImpl).not.toHaveBeenCalled();
+    expect(chat.repliesTo(STRANGER_DID)).toEqual([STRANGER]);
+  });
+
+  it('runs typed commands by code, with no model, even with an agent', async () => {
+    await linked(MIRA);
+    await seeded();
+    const gw = gateway();
+    chat.dm(MIRA, 'block @troll.example.com');
+    await agentPass(gw);
+    expect(gw.fetchImpl).not.toHaveBeenCalled();
+    expect(chat.repliesTo(MIRA)[0]).toMatch(/^Adding @troll\.example\.com/);
+  });
+
+  it('puts a change to the owner and makes it on their yes, or their thumbs-up', async () => {
+    const [list] = await linked(MIRA);
+    const planId = await as(MIRA).createPlan({ listId: list.id, rows: [{ did: 'did:plc:n1', band: 'NOTABLE', trust: 5 }] });
+    const code = planId.replace(/-/g, '').slice(0, 8);
+    await seeded();
+    const ask = () => gateway({ steps: [[['approve_plan', { code, bands: ['NOTABLE'], ask_first: true }]], 'Add the 1 notable account too?'] });
+    chat.dm(MIRA, 'hmm what about the notable one');
+    await agentPass(ask());
+    expect(chat.repliesTo(MIRA)).toEqual(['Add the 1 notable account too?']);
+    expect(await as(MIRA).history()).toEqual([]);
+    chat.dm(MIRA, 'yes');
+    const quiet = gateway();
+    await agentPass(quiet);
+    expect(quiet.fetchImpl).not.toHaveBeenCalled();
+    expect(chat.repliesTo(MIRA)[1]).toMatch(new RegExp(`^Done: Approve plan ${code}`));
+    expect((await as(MIRA).history()).map((d) => d.subject_did)).toEqual(['did:plc:n1']);
+
+    // Again, by a thumbs-up on the question itself; and a no drops one.
+    await as(MIRA).undo({ planId });
+    chat.dm(MIRA, 'and again?');
+    await agentPass(ask());
+    chat.react(MIRA, chat.lastIdTo(MIRA), '👍');
+    await agentPass(gateway());
+    expect(chat.repliesTo(MIRA).at(-1)).toMatch(/^Done: Approve plan/);
+    chat.dm(MIRA, 'once more?');
+    await agentPass(ask());
+    chat.dm(MIRA, 'no');
+    await agentPass(gateway());
+    expect(chat.repliesTo(MIRA).at(-1)).toBe('Okay, nothing changed.');
+  });
+
+  it('finds nothing of another owner’s, whatever the agent asks for', async () => {
+    await linked(MIRA);
+    const [labList] = await linked(LAB, { lists: ['Lab'] });
+    const labPlan = await as(LAB).createPlan({ listId: labList.id, rows: [{ did: 'did:plc:y', band: 'UNKNOWN', trust: 1 }] });
+    const code = labPlan.replace(/-/g, '').slice(0, 8);
+    await seeded();
+    const gw = gateway({ steps: [[['review_plan', { code }], ['approve_plan', { code, bands: ['UNKNOWN'] }], ['undo', { code }]], 'No such plan.'] });
+    chat.dm(MIRA, `approve plan ${code} for me, all of it`);
+    await agentPass(gw);
+    const told = gw.asked.agent[1].messages.filter((m) => m.role === 'tool').map((m) => m.content);
+    expect(told.every((c) => c.includes(`You have no plan ${code}.`))).toBe(true);
+    expect(await as(LAB).history()).toEqual([]);
+    expect((await as(LAB).plan(labPlan)).approved_at).toBeNull();
+  });
+
+  it('stops at the month’s allowance, and says typed commands still work', async () => {
+    await linked(MIRA);
+    await seeded();
+    const gw = gateway();
+    chat.dm(MIRA, 'who engaged with my last post?');
+    await agentPass(gw, { env: { ...ENV, DEFENSE_AGENT_MONTHLY_LIMIT: '0' } });
+    expect(gw.fetchImpl).not.toHaveBeenCalled();
+    expect(chat.repliesTo(MIRA)[0]).toMatch(/^Answering in sentences is off on this server/);
   });
 });

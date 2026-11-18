@@ -6,7 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createTestDatabase } from '../test/pglite.js';
 import { storeFor } from './store.js';
 import { hashLinkCode, hashSender } from './linking.js';
-import { dmState } from './dm/state.js';
+import { strangerDue } from './moderator/strangers.js';
 
 const MIRA = 'did:plc:mira';
 const LAB = 'did:plc:lab';
@@ -22,7 +22,7 @@ afterAll(async () => {
 });
 
 async function reset() {
-  await t.query(`TRUNCATE defense_link, defense_dm_state, defense_dm_stranger, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
+  await t.query(`TRUNCATE defense_link, defense_dm_stranger, defense_agent_usage, defense_decision, defense_job, defense_pace, defense_plan_row, defense_plan, defense_protected, defense_list CASCADE`);
 }
 
 const as = (did) => storeFor(did, { client: t.supabase });
@@ -146,47 +146,29 @@ describe('plans by code', () => {
   });
 });
 
-describe('the passes’ lease', () => {
+describe('strangers, and the agent’s allowance', () => {
   beforeEach(reset);
-  const A = '00000000-0000-4000-8000-00000000000a';
-  const B = '00000000-0000-4000-8000-00000000000b';
-  const state = () => dmState({ client: t.supabase });
 
-  it('is held by one pass at a time', async () => {
-    expect(await state().lease(A, 60)).toMatchObject({ log_cursor: null, seeded: false, session: null });
-    expect(await state().lease(B, 60)).toBeNull();
-    // The holder may renew it.
-    expect(await state().lease(A, 60)).not.toBeNull();
-    await state().release(A);
-    expect(await state().lease(B, 60)).not.toBeNull();
-  });
-
-  it('moves the cursor and keeps the session only for the holder', async () => {
-    await state().lease(A, 60);
-    expect(await state().advance(A, 'rev-1')).toBe(true);
-    expect(await state().advance(B, 'rev-x')).toBe(false);
-    expect(await state().saveSession(A, 'v1:sealed', 'did:plc:moderator')).toBe(true);
-    expect(await state().saveSession(B, 'v1:other', 'did:plc:other')).toBe(false);
-    await state().release(A);
-    expect(await state().lease(B, 60)).toMatchObject({ log_cursor: 'rev-1', seeded: true, session: 'v1:sealed', session_did: 'did:plc:moderator' });
-  });
-
-  it('passes to the next once it lapses', async () => {
-    await state().lease(A, 60);
-    await t.query(`UPDATE defense_dm_state SET lease_until = NOW() - INTERVAL '1 second'`);
-    expect(await state().advance(A, 'rev-2')).toBe(false);
-    expect(await state().lease(B, 60)).not.toBeNull();
-  });
-
-  it('answers a stranger at most once a day', async () => {
+  it('answers a stranger at most once a day, keeping only a hash', async () => {
     const h = hashSender(STRANGER);
-    expect(await state().strangerDue(h)).toBe(true);
-    expect(await state().strangerDue(h)).toBe(false);
+    expect(await strangerDue(h, { client: t.supabase })).toBe(true);
+    expect(await strangerDue(h, { client: t.supabase })).toBe(false);
     await t.query(`UPDATE defense_dm_stranger SET answered_at = NOW() - INTERVAL '25 hours'`);
-    expect(await state().strangerDue(h)).toBe(true);
-    // Nobody's DID is kept: only its hash.
+    expect(await strangerDue(h, { client: t.supabase })).toBe(true);
     const { rows } = await t.query(`SELECT sender_hash FROM defense_dm_stranger`);
     expect(rows.map((r) => r.sender_hash)).toEqual([h]);
+  });
+
+  it('counts agent turns per owner per month, and stops at the limit', async () => {
+    expect(await as(MIRA).agentTurn(2)).toBe(1);
+    expect(await as(MIRA).agentTurn(2)).toBe(2);
+    expect(await as(MIRA).agentTurn(2)).toBeNull();
+    // Another owner's allowance is their own; no limit is no limit.
+    expect(await as(LAB).agentTurn(2)).toBe(1);
+    expect(await as(LAB).agentTurn(null)).toBe(2);
+    // Last month's turns don't count against this one.
+    await t.query(`UPDATE defense_agent_usage SET month = month - INTERVAL '1 month' WHERE owner_did = $1`, [MIRA]);
+    expect(await as(MIRA).agentTurn(2)).toBe(1);
   });
 });
 

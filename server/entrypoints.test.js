@@ -50,7 +50,7 @@ const MAP = {
     history: 'server/defense/handlers/history.js',
     undo: 'server/defense/handlers/undo.js',
     run: 'server/defense/handlers/run.js',
-    dm: 'server/defense/handlers/dm.js',
+    moderator: 'server/defense/handlers/moderator.js',
     link: 'server/defense/handlers/link.js',
     'link-code': 'server/defense/handlers/linkCode.js',
     unlink: 'server/defense/handlers/unlink.js',
@@ -95,7 +95,7 @@ vi.mock('./defense/handlers/approve.js', () => answer('server/defense/handlers/a
 vi.mock('./defense/handlers/history.js', () => answer('server/defense/handlers/history.js'));
 vi.mock('./defense/handlers/undo.js', () => answer('server/defense/handlers/undo.js'));
 vi.mock('./defense/handlers/run.js', () => answer('server/defense/handlers/run.js'));
-vi.mock('./defense/handlers/dm.js', () => answer('server/defense/handlers/dm.js'));
+vi.mock('./defense/handlers/moderator.js', () => answer('server/defense/handlers/moderator.js'));
 vi.mock('./defense/handlers/link.js', () => answer('server/defense/handlers/link.js'));
 vi.mock('./defense/handlers/linkCode.js', () => answer('server/defense/handlers/linkCode.js'));
 vi.mock('./defense/handlers/unlink.js', () => answer('server/defense/handlers/unlink.js'));

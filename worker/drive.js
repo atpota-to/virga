@@ -1,18 +1,16 @@
-// What the worker does, apart from its loop: call Virga's routes, signed, and
-// work out how long to wait before the next call. Pure enough to test against
-// the server's own check (drive.test.js).
+// What the worker does for the list writer, apart from its loop: call Virga's
+// run route, signed, and work out how long to wait before the next call; and
+// the worker's settings. Pure enough to test against the server's own check
+// (drive.test.js).
 //
-// It holds one secret, DEFENSE_WORKER_SECRET, and calls two routes: the list
-// writer (/api/defense/run) and the moderator's DM pass (/api/defense/dm).
-// Virga's server chooses the work, opens the sessions, reads the DMs and
-// writes; the worker is the clock that keeps them coming sooner than Vercel
-// Cron's minute (docs/DEFENSE.md). The shield's socket and attack mode join
-// it in phase 5.
+// The worker holds DEFENSE_WORKER_SECRET, which signs its calls to Vercel, and
+// the moderator account it reads DMs as (moderator.js, dmLoop.js). Virga's
+// server chooses the list writer's work, opens the sessions and writes; the
+// worker is its clock. The shield's socket and attack mode join it in phase 5.
 
 import { signWorkerRequest } from '../server/defense/workerAuth.js';
 
 export const RUN_PATH = '/api/defense/run';
-export const DM_PATH = '/api/defense/dm';
 const MAX_BACKOFF_MS = 10 * 60_000;
 
 /** The worker's settings from its environment; throws a sentence naming what's missing. */
@@ -31,11 +29,11 @@ export function readConfig(env = process.env) {
   if (secret.length < 32) throw new Error('DEFENSE_WORKER_SECRET must be set, 32 characters or more (openssl rand -hex 32), the same as on Vercel');
   const seconds = Number(env.WORKER_INTERVAL_SECONDS || 60);
   const intervalMs = Number.isFinite(seconds) && seconds >= 15 ? seconds * 1000 : 60_000;
-  // The DM pass, more often, so a command is answered in seconds; 0 leaves it to the cron.
-  const dmRaw = env.WORKER_DM_SECONDS ?? '15';
-  const dmSeconds = Number(dmRaw);
-  const dmIntervalMs = String(dmRaw).trim() === '0' ? 0 : Number.isFinite(dmSeconds) && dmSeconds >= 5 ? dmSeconds * 1000 : 15_000;
-  return { base: base.origin, secret, intervalMs, dmIntervalMs };
+  // How often the moderator's DMs are read, so a message is answered in seconds.
+  const dmSeconds = Number(env.WORKER_DM_SECONDS || 5);
+  const dmIntervalMs = Number.isFinite(dmSeconds) && dmSeconds >= 2 ? dmSeconds * 1000 : 5_000;
+  const dataDir = String(env.WORKER_DATA_DIR || '/data').trim() || '/data';
+  return { base: base.origin, secret, intervalMs, dmIntervalMs, dataDir };
 }
 
 /**

@@ -281,10 +281,11 @@ The sixth part, for moderation and defence, being ported from
 built: the engine (`src/defense/`: the harvest from Constellation, the
 scoring and its canary), **Scan a post**, at `/defense`, **lists**: adding who a scan found
 to a block or mute list in your own repo, at `/defense/lists` and `/defense/history`, and
-**the moderator**: a Bluesky account you link from Defense › Lists and DM posts and
-commands to (a post to scan, "approve 3f9a2c1b UNKNOWN", "block @someone", "undo",
-"history"; `src/defense/command.js` is the grammar). Closing replies when strangers arrive
-is still to come. It is all off unless
+**the moderator**: a Bluesky account you link from Defense › Lists and DM, in sentences
+("block whoever's piling on in the quotes of this") or typed commands ("approve 3f9a2c1b
+UNKNOWN", "block @someone", "undo"). The worker on the droplet reads its DMs; an agent
+through the Vercel AI Gateway answers sentences, with every change checked against what you
+said. Closing replies when strangers arrive is still to come. It is all off unless
 the build says `VITE_DEFENSE=on`, and writes nothing unless the server says
 `DEFENSE_WRITES=on`.
 
@@ -589,11 +590,10 @@ functions: `api/client-metadata.js` (the browser client's metadata, per host, as
 and one function per area, `api/{oauth,schedule,self-destruct,ai,limits,terms,defense}/[action].js`,
 each dispatching to the handlers in `server/`. `vercel.json` sets their time limits,
 rewrites the two OAuth `.json` addresses, sends every other path to `index.html`, and
-runs four crons every minute: `/api/schedule/run` (scheduled posts),
-`/api/self-destruct/run` (post timers), `/api/defense/run` (Defense's lists; it writes
-nothing until `DEFENSE_WRITES` is `on`) and `/api/defense/dm` (the moderator's DMs; it
-does nothing until the moderator account is set). Defense's worker (`worker/`, for the
-droplet) calls the last two more often; see worker/README.md.
+runs three crons every minute: `/api/schedule/run` (scheduled posts),
+`/api/self-destruct/run` (post timers) and `/api/defense/run` (Defense's lists; it writes
+nothing until `DEFENSE_WRITES` is `on`). Defense's worker (`worker/`, for the droplet) calls
+the last one too, and reads the moderator's DMs; see worker/README.md.
 
 Without the server settings below, the app still works with browser sign-ins; the
 server's routes answer 503 and the posting pages that need it say so.
@@ -644,9 +644,9 @@ server's routes answer 503 and the posting pages that need it say so.
      consent screen should link somewhere other than this site's `/terms` and `/privacy`
    - `VITE_AUTH_MODE=backend`, to give new sign-ins long sessions
    - `VITE_DEFENSE=on` to show Defense, `DEFENSE_WRITES=on` to let it write lists,
-     `DEFENSE_WORKER_SECRET` for the worker, and `DEFENSE_MODERATOR_HANDLE` and
-     `DEFENSE_MODERATOR_PASSWORD` for the moderator. Leave them all off until the Terms and
-     the Privacy Policy describe Defense (docs/DEFENSE.md)
+     `DEFENSE_WORKER_SECRET` for the worker, and `DEFENSE_MODERATOR_HANDLE` for the
+     moderator (its password goes on the droplet; worker/README.md). Leave them all off until
+     the Terms and the Privacy Policy describe Defense (docs/DEFENSE.md)
 4. **Keep `/api/oauth/*` outside Vercel's deployment protection**, so an account's server
    can fetch the client metadata and keys for the life of every sign-in. After deploying,
    `curl https://<origin>/api/oauth/client-metadata.json` should show a `client_id` that

@@ -21,7 +21,6 @@ const { default: approve } = await import('./handlers/approve.js');
 const { default: history } = await import('./handlers/history.js');
 const { default: undo } = await import('./handlers/undo.js');
 const { default: run } = await import('./handlers/run.js');
-const { default: dm } = await import('./handlers/dm.js');
 const { default: link } = await import('./handlers/link.js');
 const { default: linkCode } = await import('./handlers/linkCode.js');
 const { default: unlink } = await import('./handlers/unlink.js');
@@ -235,30 +234,10 @@ describe('the run route', () => {
   });
 });
 
-describe('the DM route', () => {
-  const URL_PATH = '/api/defense/dm';
-  const passer = () => vi.fn(async () => ({ ran: true, answered: 0, skipped: 0, errors: [] }));
-
-  it('runs for the worker’s signed call and the cron, and for nothing else', async () => {
-    vi.stubEnv('DEFENSE_WORKER_SECRET', 'w-secret');
-    vi.stubEnv('CRON_SECRET', 'c-secret');
-    const p = passer();
-    expect((await call(dm, { url: URL_PATH, headers: { 'x-virga-worker': signWorkerRequest({ secret: 'w-secret', path: URL_PATH }) } }, { run: p })).status).toBe(200);
-    expect((await call(dm, { method: 'GET', url: URL_PATH, headers: { authorization: 'Bearer c-secret' } }, { run: p })).status).toBe(200);
-    expect(p).toHaveBeenCalledTimes(2);
-    const refused = passer();
-    // The writer's signature doesn't open the DM pass, nor an owner's token.
-    for (const headers of [{ 'x-virga-worker': signWorkerRequest({ secret: 'w-secret', path: '/api/defense/run' }) }, TOKEN, {}]) {
-      expect((await call(dm, { url: URL_PATH, headers }, { run: refused })).status).toBe(401);
-    }
-    expect(refused).not.toHaveBeenCalled();
-  });
-});
-
 describe('linking the moderator', () => {
   beforeEach(() => {
+    // Only the handle is set on Vercel: the password is the droplet's.
     vi.stubEnv('DEFENSE_MODERATOR_HANDLE', 'mod.virga.example');
-    vi.stubEnv('DEFENSE_MODERATOR_PASSWORD', 'app-pass');
   });
 
   it('makes a code bound to the caller, shown once and kept as a hash', async () => {
@@ -272,7 +251,7 @@ describe('linking the moderator', () => {
   });
 
   it('says when there is no moderator to link', async () => {
-    vi.stubEnv('DEFENSE_MODERATOR_PASSWORD', '');
+    vi.stubEnv('DEFENSE_MODERATOR_HANDLE', '');
     expect((await call(linkCode, {})).body.code).toBe('NO_MODERATOR');
     expect((await call(link, { method: 'GET' })).body.data.moderator).toBeNull();
   });

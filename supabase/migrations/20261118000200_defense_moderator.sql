@@ -1,16 +1,17 @@
 -- Defense, phase 4: the moderator in DMs (docs/DEFENSE.md).
 --
--- One Bluesky account, Virga's moderator, that owners DM commands to. Its
--- conversations are read on Vercel (server/defense/dm/), a pass at a time;
--- this holds what the passes share and what linking needs, and no message
--- text: a DM is answered and then dropped.
+-- One Bluesky account, Virga's moderator, that owners DM. Its conversations
+-- are read by the worker on the droplet, which holds the account; every
+-- message it answers comes here through Vercel's moderator route
+-- (server/defense/handlers/moderator.js), signed. This holds what linking and
+-- the agent's allowance need, and no message text: a DM is answered and then
+-- dropped.
 --
 --   defense_link        an owner's link to the moderator, and the list its adds go to
---   defense_dm_state    where the passes have read to, the lease one pass holds,
---                       and the moderator's session, encrypted
 --   defense_dm_stranger when someone who hasn't linked was last answered, by a
 --                       hash of their DID, so the moderator says its one line at
 --                       most once a day and keeps no list of who wrote to it
+--   defense_agent_usage how many agent turns each owner has had this month
 --
 -- Every function that reads or writes a link takes its owner first, as phase
 -- 3's do (docs/DEFENSE-THREATS.md, rule 4). Granted to service_role only.
@@ -32,33 +33,26 @@ CREATE TABLE IF NOT EXISTS virga.defense_link (
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ─── The passes ─────────────────────────────────────────────────────────────
--- One row. `seeded` is false until the first pass has found the end of the
--- log, so the moderator doesn't answer everything ever sent to it the first
--- time it runs. The lease is held by one pass at a time: two passes reading
--- the same log would answer every message twice, and refreshing the same
--- session at once would sign one of them out.
-CREATE TABLE IF NOT EXISTS virga.defense_dm_state (
-  id            SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-  log_cursor    TEXT CHECK (log_cursor IS NULL OR char_length(log_cursor) <= 512),
-  seeded        BOOLEAN NOT NULL DEFAULT FALSE,
-  lease_holder  UUID,
-  lease_until   TIMESTAMPTZ,
-  session       TEXT CHECK (session IS NULL OR char_length(session) <= 16384),
-  session_did   TEXT CHECK (session_did IS NULL OR char_length(session_did) <= 512),
-  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
+-- ─── Strangers, and the agent's allowance ────────────────────────────────
 CREATE TABLE IF NOT EXISTS virga.defense_dm_stranger (
   sender_hash  TEXT PRIMARY KEY CHECK (sender_hash ~ '^[0-9a-f]{64}$'),
   answered_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- A turn is one message the agent answered, whatever it called. Counted
+-- before the model is asked, so a turn that fails still counts.
+CREATE TABLE IF NOT EXISTS virga.defense_agent_usage (
+  owner_did  TEXT NOT NULL CHECK (char_length(owner_did) <= 512),
+  month      DATE NOT NULL,
+  turns      INTEGER NOT NULL DEFAULT 0 CHECK (turns >= 0),
+  PRIMARY KEY (owner_did, month)
+);
+
 ALTER TABLE virga.defense_link ENABLE ROW LEVEL SECURITY;
-ALTER TABLE virga.defense_dm_state ENABLE ROW LEVEL SECURITY;
 ALTER TABLE virga.defense_dm_stranger ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE virga.defense_link, virga.defense_dm_state, virga.defense_dm_stranger FROM PUBLIC, anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.defense_link, virga.defense_dm_state, virga.defense_dm_stranger TO service_role;
+ALTER TABLE virga.defense_agent_usage ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE virga.defense_link, virga.defense_dm_stranger, virga.defense_agent_usage TO service_role;
 
 -- ─── A code, made ───────────────────────────────────────────────────────────
 -- A new code replaces the last; an account already linked stays linked.
@@ -202,76 +196,6 @@ BEGIN
 END;
 $$;
 
--- ─── The lease ──────────────────────────────────────────────────────────────
--- Taken when free, expired, or already this pass's. Returns the state to
--- carry on from, or nothing when another pass holds it.
-CREATE OR REPLACE FUNCTION virga.defense_dm_lease(
-  p_holder  UUID,
-  p_seconds INTEGER
-) RETURNS TABLE (log_cursor TEXT, seeded BOOLEAN, session TEXT, session_did TEXT)
-LANGUAGE plpgsql
-SET search_path = virga, pg_temp
-AS $$
-#variable_conflict use_column
-BEGIN
-  IF p_holder IS NULL THEN RAISE EXCEPTION 'a lease holder is required'; END IF;
-  INSERT INTO defense_dm_state (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
-  RETURN QUERY
-    UPDATE defense_dm_state s
-       SET lease_holder = p_holder,
-           lease_until = NOW() + make_interval(secs => GREATEST(1, LEAST(COALESCE(p_seconds, 60), 600))),
-           updated_at = NOW()
-     WHERE s.id = 1 AND (s.lease_until IS NULL OR s.lease_until <= NOW() OR s.lease_holder = p_holder)
-    RETURNING s.log_cursor, s.seeded, s.session, s.session_did;
-END;
-$$;
-
--- Where the log has been read to; false when the lease is no longer held, and
--- the pass should stop.
-CREATE OR REPLACE FUNCTION virga.defense_dm_advance(
-  p_holder UUID,
-  p_cursor TEXT
-) RETURNS BOOLEAN
-LANGUAGE plpgsql
-SET search_path = virga, pg_temp
-AS $$
-BEGIN
-  UPDATE defense_dm_state
-     SET log_cursor = p_cursor, seeded = TRUE, updated_at = NOW()
-   WHERE id = 1 AND lease_holder = p_holder AND lease_until > NOW();
-  RETURN FOUND;
-END;
-$$;
-
--- The moderator's session, as the pass that holds the lease last saw it.
-CREATE OR REPLACE FUNCTION virga.defense_dm_save_session(
-  p_holder  UUID,
-  p_session TEXT,
-  p_did     TEXT
-) RETURNS BOOLEAN
-LANGUAGE plpgsql
-SET search_path = virga, pg_temp
-AS $$
-BEGIN
-  UPDATE defense_dm_state
-     SET session = p_session, session_did = p_did, updated_at = NOW()
-   WHERE id = 1 AND lease_holder = p_holder AND lease_until > NOW();
-  RETURN FOUND;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION virga.defense_dm_release(
-  p_holder UUID
-) RETURNS VOID
-LANGUAGE plpgsql
-SET search_path = virga, pg_temp
-AS $$
-BEGIN
-  UPDATE defense_dm_state SET lease_holder = NULL, lease_until = NULL, updated_at = NOW()
-   WHERE id = 1 AND lease_holder = p_holder;
-END;
-$$;
-
 -- Whether to answer someone who hasn't linked: true at most once a day per
 -- sender, and the time is set as it answers.
 CREATE OR REPLACE FUNCTION virga.defense_dm_stranger_due(
@@ -288,23 +212,42 @@ BEGIN
 END;
 $$;
 
+-- An agent turn, counted against the owner's monthly allowance: the turns
+-- used this month after this one, or NULL when the allowance is spent (and
+-- nothing is counted). A NULL limit is unlimited.
+CREATE OR REPLACE FUNCTION virga.defense_agent_turn(
+  p_owner_did TEXT,
+  p_limit     INTEGER
+) RETURNS INTEGER
+LANGUAGE plpgsql
+SET search_path = virga, pg_temp
+AS $$
+DECLARE
+  v_month DATE := date_trunc('month', NOW() AT TIME ZONE 'UTC')::DATE;
+  v_turns INTEGER;
+BEGIN
+  IF p_owner_did IS NULL THEN RAISE EXCEPTION 'an owner is required'; END IF;
+  INSERT INTO defense_agent_usage (owner_did, month, turns) VALUES (p_owner_did, v_month, 0)
+    ON CONFLICT (owner_did, month) DO NOTHING;
+  UPDATE defense_agent_usage
+     SET turns = turns + 1
+   WHERE owner_did = p_owner_did AND month = v_month AND (p_limit IS NULL OR turns < p_limit)
+  RETURNING turns INTO v_turns;
+  RETURN v_turns;
+END;
+$$;
+
 REVOKE ALL ON FUNCTION virga.defense_link_code(TEXT, TEXT, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_link_claim(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_link_list(TEXT, UUID) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_add_named(TEXT, UUID, TEXT, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_plan_by_code(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION virga.defense_dm_lease(UUID, INTEGER) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION virga.defense_dm_advance(UUID, TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION virga.defense_dm_save_session(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION virga.defense_dm_release(UUID) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_dm_stranger_due(TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.defense_agent_turn(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION virga.defense_link_code(TEXT, TEXT, TIMESTAMPTZ) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_link_claim(TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_link_list(TEXT, UUID) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_add_named(TEXT, UUID, TEXT, TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_plan_by_code(TEXT, TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION virga.defense_dm_lease(UUID, INTEGER) TO service_role;
-GRANT EXECUTE ON FUNCTION virga.defense_dm_advance(UUID, TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION virga.defense_dm_save_session(UUID, TEXT, TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION virga.defense_dm_release(UUID) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_dm_stranger_due(TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.defense_agent_turn(TEXT, INTEGER) TO service_role;

@@ -3,13 +3,14 @@
 // The moderator's handle comes with it, for the page to say who to DM.
 
 import { methodGuard, sendJson } from '../../http.js';
-import { moderatorConfigured } from '../dm/moderator.js';
 import { storeFor } from '../store.js';
 import { authorize, requireStore, sendFailure } from '../respond.js';
 
-/** The moderator's handle, as Settings names it, or null when there is none. */
+/**
+ * The moderator's handle, as Settings names it, or null when there is none.
+ * Only the handle is set on Vercel; the account's password is the droplet's.
+ */
 export function moderatorHandle(env = process.env) {
-  if (!moderatorConfigured(env)) return null;
   const h = String(env.DEFENSE_MODERATOR_HANDLE || '').replace(/^@/, '').trim();
   return /^[a-z0-9.-]+\.[a-z]+$/i.test(h) ? h.toLowerCase() : null;
 }

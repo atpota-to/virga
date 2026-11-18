@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chunkText, isDirect, sharedUri } from './pass.js';
+import { chunkText, isDirect, sharedUri } from './dmLoop.js';
 
 describe('the pass’s helpers', () => {
   it('cut a reply at line ends, then spaces, never past the limit', () => {

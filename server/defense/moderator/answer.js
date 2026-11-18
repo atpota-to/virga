@@ -1,13 +1,19 @@
 // One DM, answered: what the moderator says back to the account that sent it,
-// and what it does for them on the way. Parsed by the grammar
-// (src/defense/command.js), never interpreted; no model is involved.
+// and what it does for them on the way. Called through Vercel's moderator
+// route (../handlers/moderator.js) by the worker on the droplet, which reads
+// the moderator's DMs and says who sent each one.
 //
-// Who the sender is comes from the chat service (pass.js), and everything
-// here runs as them: storeFor(sender), and nothing else. Someone who hasn't
-// linked the moderator gets one line, the same whoever they are, at most once
-// a day, so a DM can't tell anyone whether a handle uses Virga. A linked
-// owner's commands touch only their own lists, and the replies name only
-// their own lists, plans and decisions (docs/DEFENSE-THREATS.md, phase 4).
+// A message the grammar (src/defense/command.js) reads whole, a typed
+// command, is run here by code; no model is involved. Anything else from a
+// linked owner goes to the agent on the worker when it has one
+// (`{ agent: true }`), and is asked back when it hasn't.
+//
+// Everything here runs as the sender: storeFor(sender), and nothing else.
+// Someone who hasn't linked the moderator gets one line, the same whoever
+// they are, at most once a day, so a DM can't tell anyone whether a handle
+// uses Virga. A linked owner's commands touch only their own lists, and the
+// replies name only their own lists, plans and decisions
+// (docs/DEFENSE-THREATS.md, phase 4).
 
 import { HELP, KINDS, facetLinks, facetMentions, parseCommand, parsePostScan, shortCode } from '../../../src/defense/command.js';
 import { decisionPhrase } from '../../../src/defense/historyModel.js';
@@ -23,7 +29,7 @@ import { defenseWritesEnabled } from '../run.js';
 import { storeFor as storeForOwner } from '../store.js';
 import { atName, namer } from './names.js';
 import { DmScanError, scanForOwner } from './scan.js';
-import { dmState } from './state.js';
+import { strangerDue } from './strangers.js';
 
 const DID = /^did:[a-z]+:[a-zA-Z0-9._:%-]+$/;
 
@@ -34,28 +40,35 @@ export const LINK_HOW = 'Send “link” and the code Virga shows under Defense 
 export const LINK_FAILED =
   'That code didn’t link anything. A code lasts fifteen minutes and works only from the account that made it. Make a new one in Virga, under Defense › Lists, and send it here.';
 export const NOT_A_COMMAND = 'I didn’t read that as something I do. Send “help” for what I answer to.';
+/** Help when an agent answers too: say it in your own words, or type a command. */
+export const HELP_AGENT = `Tell me what you want in your own words: “block whoever is piling on in the quotes of this”, “who are the people near me on that post?”, “undo that, the second one is a friend”. I check every change against what you asked before I make it.
+
+Typed commands work too, and skip the model:
+${HELP}`;
 export const WRITES_OFF =
   'Defense’s lists aren’t turned on on Virga’s server yet, so I can’t add anyone. “lists”, “history” and “undo” still work.';
 const WHO =
   'Who? Name them with a full handle (“block @someone.bsky.social”), a DID or a profile link. I don’t work out who you mean from anything else.';
 
-const dateOf = (iso) => {
+export const dateOf = (iso) => {
   const t = Date.parse(iso || '');
   return Number.isFinite(t) ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) : '';
 };
 
 /**
- * The reply to one message, or null for none.
+ * What to do with one message: `{ reply }` (null for no reply), or
+ * `{ agent: true }` when it is the agent's to answer.
  *
  * @param {object} opts
  * @param {string} opts.sender    the DID the chat service says sent it
  * @param {object} opts.message   the chat service's message view
  * @param {string|null} opts.sharedUri  the record the message shares, if any
- * @param {object} [opts.deps]    stand-ins for tests: storeFor, state, names, createList, scan
+ * @param {boolean} [opts.agent]  whether the worker has an agent to hand to
+ * @param {object} [opts.deps]    stand-ins for tests: storeFor, strangerDue, names, createList, scan
  */
-export async function answerMessage({ sender, message, sharedUri = null, env = process.env, deps = {} }) {
-  if (!DID.test(sender || '')) return null;
-  const d = { storeFor: storeForOwner, state: dmState(), names: namer(), createList: createOwnList, scan: scanForOwner, ...deps };
+export async function answerMessage({ sender, message, sharedUri = null, agent = false, env = process.env, deps = {} }) {
+  if (!DID.test(sender || '')) return { reply: null };
+  const d = { storeFor: storeForOwner, strangerDue, names: namer(), createList: createOwnList, scan: scanForOwner, ...deps };
   const store = d.storeFor(sender);
   const text = typeof message?.text === 'string' ? message.text : '';
   const opts = { embedUri: sharedUri, links: facetLinks(message), mentions: facetMentions(message) };
@@ -68,27 +81,36 @@ export async function answerMessage({ sender, message, sharedUri = null, env = p
   // Linking is the one thing anyone may send. What comes back is the same
   // for a wrong code, an expired one, and an account with none.
   if (cmd?.action === 'link') {
-    if (!cmd.code) return LINK_HOW;
+    if (!cmd.code) return { reply: LINK_HOW };
     const out = await store.claimLink(hashLinkCode(sender, cmd.code));
-    if (out !== 'linked') return LINK_FAILED;
+    if (out !== 'linked') return { reply: LINK_FAILED };
     const lists = await store.lists();
-    return [
-      'Linked. I answer this account now, and only this one. Send “help” for what I do.',
-      lists.length === 1 ? `When you send “block @someone”, they go on “${lists[0].name}”.` : lists.length ? 'Choose the list “block @someone” adds to in Virga, under Defense › Lists.' : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
+    return {
+      reply: [
+        'Linked. I answer this account now, and only this one. Send “help” for what I do.',
+        lists.length === 1 ? `When you send “block @someone”, they go on “${lists[0].name}”.` : lists.length ? 'Choose the list “block @someone” adds to in Virga, under Defense › Lists.' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    };
   }
 
   const link = await store.link();
-  if (!link?.linked_at) return (await d.state.strangerDue(hashSender(sender))) ? STRANGER : null;
-  if (!cmd) return NOT_A_COMMAND;
+  if (!link?.linked_at) return { reply: (await d.strangerDue(hashSender(sender))) ? STRANGER : null };
+  // Not a command, or one that doesn't say who or which: the agent's, with
+  // the conversation to go on, or asked back when there's no agent.
+  if (!cmd) return agent ? { agent: true } : { reply: NOT_A_COMMAND };
+  if (agent && (cmd.needsTarget || (cmd.fromPost && cmd.confirm))) return { agent: true };
+  return { reply: await commandReply({ d, store, link, cmd, env, sender, agent }) };
+}
 
-  const ctx = { d, store, link, cmd, env, sender };
+/** A typed command, run by code. */
+async function commandReply(ctx) {
+  const { cmd } = ctx;
   if (cmd.needsTarget) return askBack(cmd);
   switch (cmd.action) {
     case 'help':
-      return HELP;
+      return ctx.agent ? HELP_AGENT : HELP;
     case 'lists':
       return listsReply(ctx);
     case 'status':
@@ -140,7 +162,7 @@ function askBack(cmd) {
 }
 
 /** The list "block @someone" adds to: the one chosen, or the only one. `{ list }` or `{ why }`. */
-async function dmList({ store, link }) {
+export async function dmList({ store, link }) {
   const lists = await store.lists();
   const chosen = link.list_id && lists.find((l) => l.id === link.list_id);
   if (chosen) return { list: chosen, lists };
@@ -199,7 +221,7 @@ async function historyReply({ d, store, cmd }) {
 }
 
 /** The one plan of the owner's a code names, or a sentence saying why not. */
-async function planFor(store, code) {
+export async function planFor(store, code) {
   const plans = await store.plansByCode(code);
   if (!plans.length) return { why: `You have no plan ${code}.` };
   if (plans.length > 1) return { why: `Two of your plans start ${code}. Do this one from Virga, under Defense › History.` };

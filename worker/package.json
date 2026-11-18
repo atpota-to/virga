@@ -1,0 +1,10 @@
+{
+  "name": "virga-worker",
+  "private": true,
+  "type": "module",
+  "description": "Defense's worker for the droplet: the list writer's clock and the moderator's DMs (worker/README.md).",
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "@atproto/api": "0.19.19"
+  }
+}

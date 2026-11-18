@@ -16,7 +16,8 @@
 import { Agent } from '@atproto/api';
 import { APPVIEW } from '../../../src/config.js';
 import { harvestPost } from '../../../src/defense/harvest.js';
-import { CANARY_CANDIDATES, canaryCandidates, runScan, signedInProfiles } from '../../../src/defense/scan.js';
+import { CANARY_CANDIDATES, CANARY_REQUIRED_AT, canaryCandidates, runScan, signedInProfiles } from '../../../src/defense/scan.js';
+import { createScorer, findCanary, publicRelationships } from '../../../src/defense/score.js';
 import { fetchWithTimeout } from '../../../src/lib/atproto.js';
 import { getOAuthClient } from '../../oauth/client.js';
 import { restoreWithRetry } from '../../oauth/restore.js';
@@ -101,4 +102,32 @@ export async function scanForOwner({ ownerDid, input, only = null, kept = new Ma
     if (signal.aborted) throw new DmScanError('That post has more engagement than I can read in a DM.', 'TOO_BIG');
     throw err;
   }
+}
+
+/**
+ * One account scored for an owner, the way a scan scores each of the people
+ * on a post: its band, how many of the owner's follows follow it, and how it
+ * and the owner follow each other. Null when it can't be scored. Throws a
+ * DmScanError as scanForOwner does.
+ */
+export async function lookUpForOwner({ ownerDid, did, kept = new Map(), deadlineMs = 15_000, deps = {} }) {
+  const d = {
+    restore: (owner) => restoreWithRetry(getOAuthClient(), owner, { tag: 'defense/dm-lookup' }),
+    Agent,
+    candidates: publicCandidates,
+    fetchImpl: undefined,
+    ...deps,
+  };
+  const session = await d.restore(ownerDid);
+  if (!session) throw new DmScanError('Looking someone up needs your long session on Virga’s server. Sign in to Virga again with a long session.', 'SIGNED_OUT');
+  const signal = AbortSignal.timeout(deadlineMs);
+  const getProfiles = signedInProfiles(new d.Agent(session));
+  const candidates = await d.candidates(ownerDid, { fetchImpl: d.fetchImpl, signal });
+  const canary = await findCanary({ ownerDid, candidates, getProfiles, signal });
+  if (!canary && candidates.length >= CANARY_REQUIRED_AT) {
+    throw new DmScanError('Bluesky isn’t saying who you know in common with anyone right now. Try again in a few minutes.', 'VOUCHES');
+  }
+  const scorer = createScorer({ ownerDid, getProfiles, getRelationships: publicRelationships(), canary, protectedSet: kept, selves: [ownerDid] });
+  const { scores } = await scorer.score([did], { signal });
+  return scores.get(did) || null;
 }
