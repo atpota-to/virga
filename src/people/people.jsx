@@ -110,7 +110,8 @@ export function FollowButton({ follow, did, name, size = 'sm', followLabel = 'Fo
  * already the name (someone with no display name), and "follows you" when
  * `rel` is false: a list where
  * everyone follows you (your newest followers, the follow-back queue)
- * would say it on every row.
+ * would say it on every row. `lead` comes first, before the face (a scan's
+ * band mark), and `rowProps` go on the row itself (its data attributes).
  */
 export function PersonRow({
   archive,
@@ -124,6 +125,8 @@ export function PersonRow({
   extra = null,
   history = true,
   rel = true,
+  lead = null,
+  rowProps = null,
 }) {
   // A card passed in (someone who has since left the follower list, as the
   // log remembers them) stands in until a fresher one is resolved.
@@ -133,7 +136,8 @@ export function PersonRow({
   const handle = card?.handle && name.replace(/^@/, '') !== card.handle ? card.handle : null;
   const followsYou = rel && relationSets(archive).followers.has(did);
   return (
-    <li className="person-row">
+    <li className="person-row" {...rowProps}>
+      {lead}
       <Avatar src={card?.avatar} name={card?.displayName || card?.handle || '?'} />
       <span className="person-main">
         <a className="person-name" href={profileUrl(card, did)} target="_blank" rel="noopener noreferrer">

@@ -72,6 +72,13 @@ describe('the login request', () => {
     expect(u.searchParams.get('handle')).toBe('mira.example.com');
     expect(u.searchParams.get('redirect_uri')).toBe('https://virga.example/oauth/return?n=abc123');
     expect(returnUrl).toBe('https://virga.example/oauth/return?n=abc123');
+    expect(u.searchParams.has('defense')).toBe(false);
+  });
+
+  it('asks for Defense’s permission only when told to', () => {
+    const base = { backendUrl: SERVER, handle: 'mira.example.com', origin: 'https://virga.example', returnPath: '/oauth/return', nonce: 'n' };
+    expect(new URL(buildLoginRequest({ ...base, defense: true }).url).searchParams.get('defense')).toBe('1');
+    expect(new URL(buildLoginRequest({ ...base, defense: 'yes' }).url).searchParams.has('defense')).toBe(false);
   });
 });
 

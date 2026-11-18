@@ -13,7 +13,7 @@
 // It is imported dynamically inside the client factory so it lands in its own
 // lazily-fetched chunk: the session provider only awaits it when a session
 // may exist or a sign-in starts.
-import { APP_NAME, OAUTH_CALLBACK_PATH, OAUTH_SCOPE } from '../config.js';
+import { APP_NAME, DECLARED_SCOPE, OAUTH_CALLBACK_PATH } from '../config.js';
 import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 
 let _clientPromise = null;
@@ -42,14 +42,16 @@ function isLoopbackHost(hostname) {
  * query params naming its redirect URI and scope, which the authorization
  * server parses instead of fetching a document. The scope has to be declared
  * here for the same reason it is in the production metadata: a server checks
- * each sign-in's request against what the client declared.
+ * each sign-in's request against what the client declared. It is everything
+ * any sign-in may ask for (DECLARED_SCOPE), Defense's token included; each
+ * sign-in asks for its own part of it.
  */
 export function buildLoopbackClientId(origin, redirectPath) {
   const redirect = new URL(redirectPath, origin);
   if (redirect.hostname === 'localhost') redirect.hostname = '127.0.0.1';
   const params = new URLSearchParams({
     redirect_uri: redirect.href,
-    scope: OAUTH_SCOPE,
+    scope: DECLARED_SCOPE,
   });
   return `http://localhost?${params}`;
 }
@@ -69,7 +71,9 @@ export function buildClientMetadata(origin) {
     tos_uri: `${origin}${TERMS_PATH}`,
     policy_uri: `${origin}${PRIVACY_PATH}`,
     redirect_uris: [`${origin}${OAUTH_CALLBACK_PATH}`],
-    scope: OAUTH_SCOPE,
+    // Every token any sign-in may ask for. A sign-in names its own scope
+    // (sessionController's signIn), which is this or less.
+    scope: DECLARED_SCOPE,
     grant_types: ['authorization_code', 'refresh_token'],
     response_types: ['code'],
     token_endpoint_auth_method: 'none',

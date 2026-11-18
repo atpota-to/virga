@@ -1045,7 +1045,7 @@
   font-size: var(--text-xs);
 }
 
-/* The bottom row stays: the four parts as icons, the one you are in with
+/* The bottom row stays: the five parts as icons, the one you are in with
    its name beside it on a tinted pill, and New post as a round button. The
    group is held to a phone's width and centred, so a tablet doesn't spread
    it from edge to edge. 64px tall with its rule, and the home indicator's
@@ -1098,10 +1098,11 @@
   font-weight: 600;
 }
 
-/* Too narrow for the name beside the icon (Dashboards would push New post
-   off the screen at 360): the part you are in is a tinted disc, and its
-   name is still read out. */
-@media (max-width: 374px) {
+/* Too narrow for the name beside the icon: with five parts, Dashboards
+   would push New post off the screen below 430 (four 48px keys, the gaps
+   and its own 133px leave no room at 390). The part you are in is a tinted
+   disc, and its name is still read out. */
+@media (max-width: 429px) {
   .tabbar-item[aria-current='page'] {
     padding: 0;
   }

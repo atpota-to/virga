@@ -198,6 +198,15 @@ export function createRouter(worlds, { server = null, now = () => Date.now(), vi
         case 'app.bsky.actor.getProfiles':
           // An account nobody can resolve is simply absent, as on the network.
           return json({ profiles: q.getAll('actors').map((a) => views.person(a)).filter(Boolean) });
+        case 'app.bsky.graph.getRelationships': {
+          // Who the actor follows and who follows them, read without a
+          // session: Defense's veto ("you follow them") rests on this.
+          const others = q.getAll('others');
+          if (others.length > 30) return xrpcError(400, 'InvalidRequest', 'Too many others: at most 30');
+          const world = worldOf(q.get('actor'));
+          if (!world) return xrpcError(400, 'InvalidRequest', 'Actor not found');
+          return json({ actor: world.me.did, relationships: others.map((d) => views.crowd.relationship(world, d)) });
+        }
         case 'app.bsky.actor.searchActorsTypeahead':
         case 'app.bsky.actor.searchActors':
           return json({ actors: views.searchActors(q.get('q') || q.get('term'), Math.min(100, Number(q.get('limit')) || 10)) });
@@ -325,7 +334,34 @@ export function createRouter(worlds, { server = null, now = () => Date.now(), vi
     }
 
     if (url.hostname === 'constellation.microcosm.blue') {
+      // Everything pointing at one of the accounts' posts, for a scan: the
+      // crowd (crowd.js), as `/links/all` lists its sources.
+      if (url.pathname === '/links/all') {
+        const by = views.crowd.engagersOf(q.get('target'));
+        const path = { like: ['app.bsky.feed.like', '.subject.uri'], repost: ['app.bsky.feed.repost', '.subject.uri'], reply: ['app.bsky.feed.post', '.reply.parent.uri'], threadReply: ['app.bsky.feed.post', '.reply.root.uri'], quote: ['app.bsky.feed.post', '.embed.record.uri'] };
+        const links = {};
+        for (const [kind, dids] of Object.entries(by)) {
+          if (!dids.length) continue;
+          const [collection, at] = path[kind];
+          links[collection] ||= {};
+          links[collection][at] = { records: dids.length, distinct_dids: dids.length };
+        }
+        return json({ links });
+      }
       const subject = q.get('subject');
+      const postKind = {
+        'app.bsky.feed.like:subject.uri': 'like',
+        'app.bsky.feed.repost:subject.uri': 'repost',
+        'app.bsky.feed.post:reply.parent.uri': 'reply',
+        'app.bsky.feed.post:reply.root.uri': 'threadReply',
+        'app.bsky.feed.post:embed.record.uri': 'quote',
+      }[q.get('source')];
+      if (postKind && String(subject).startsWith('at://') && method === 'blue.microcosm.links.getBacklinks') {
+        const [collection] = q.get('source').split(':');
+        const all = views.crowd.engagersOf(subject)[postKind].map((did, i) => ({ did, collection, rkey: tidAt(Date.parse('2026-01-01') + hashOf(`${subject}${did}`) % 9e9, i) }));
+        const { rows, cursor } = pageOf(all, q.get('limit'), q.get('cursor'));
+        return json({ total: all.length, records: rows, cursor: cursor ?? null });
+      }
       const source = q.get('source');
       const world = views.byDid.get(subject) || list.find((w) => w.lists.some((l) => l.uri === subject)) || list[0];
       const backlinks = () => {

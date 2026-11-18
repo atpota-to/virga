@@ -25,7 +25,7 @@ import {
   resetOAuthForTests,
 } from './client.js';
 import { restoreWithRetry } from './restore.js';
-import { clientMetadata } from './config.js';
+import { SCOPE, clientMetadata } from './config.js';
 import { createStorage } from './storage.js';
 import { installClientHooks } from './lockFastPath.js';
 import { installOAuthEnv } from './testing/env.js';
@@ -131,7 +131,7 @@ describe('generateLoginUrl and handleCallback', () => {
     ).toBe('https://as.example/authorize?x=1');
     expect(authorize).toHaveBeenCalledWith(
       'reader.example.com',
-      expect.objectContaining({ state: 's', scope: clientMetadata().scope }),
+      expect.objectContaining({ state: 's', scope: SCOPE }),
     );
 
     const cause = new Error('Failed to resolve identity: nobody.invalid');

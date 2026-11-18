@@ -75,8 +75,9 @@ const appview = (nsid) => `rpc:${nsid}?aud=${BSKY_APPVIEW_AUD}`;
  * (getServiceAuth names a bare DID as the audience: the video service, or the
  * account's own PDS), which a service-scoped token can't match.
  *
- * Virga's server imports OAUTH_SCOPE from here for its long-session
- * sign-in, so the two can't drift apart.
+ * Virga's server imports OAUTH_SCOPE, DEFENSE_SCOPE and DECLARED_SCOPE from
+ * here for its long-session sign-in, so the two can't drift apart. A group
+ * with `onlyWith` is asked for only when that feature is on.
  */
 export const PERMISSION_GROUPS = [
   {
@@ -148,11 +149,22 @@ export const PERMISSION_GROUPS = [
       appview('app.bsky.feed.searchPosts'),
     ],
   },
+  {
+    key: 'defense',
+    // Asked for only by an account that has turned Defense on (DEFENSE_SCOPE
+    // below); every other sign-in leaves it out.
+    onlyWith: 'defense',
+    title: 'Read who you know in common with an account, as you, when Defense is on.',
+    text: 'A scan sorts everyone who engaged with a post by how many of the people you follow also follow them, and only a signed-in read of their profiles says that. Asked for only after you turn Defense on.',
+    tokens: [appview('app.bsky.actor.getProfiles')],
+  },
 ];
 
 // The order the tokens are asked for in. Pinned by oauthClient.test.js, and
 // what Virga's server requests for a long session, so it is spelled out
 // rather than built from the groups above (which are ordered for reading).
+// Defense's token is not here: it is asked for only by an account that has
+// turned Defense on (DEFENSE_SCOPE, below).
 export const OAUTH_SCOPE = [
   'atproto',
   appview('app.bsky.graph.getFollowers'),
@@ -175,6 +187,29 @@ export const OAUTH_SCOPE = [
   'rpc:app.bsky.video.getUploadLimits?aud=*',
   'rpc:app.bsky.video.getJobStatus?aud=*',
 ].join(' ');
+
+/**
+ * What Defense adds to a sign-in: the signed-in `getProfiles`, the one read
+ * that carries `viewer.knownFollowers` (docs/DEFENSE.md). Asked for only by
+ * an account that has turned Defense on, so nobody else's sign-in grows.
+ */
+export const DEFENSE_TOKENS = [appview('app.bsky.actor.getProfiles')];
+
+/** What a sign-in asks for while Defense is on: everything else, then Defense. */
+export const DEFENSE_SCOPE = `${OAUTH_SCOPE} ${DEFENSE_TOKENS.join(' ')}`;
+
+/**
+ * What the client metadata declares: every token any sign-in may ask for. An
+ * authorization server refuses a request for anything the client didn't
+ * declare, and grants a request for less, so OAUTH_SCOPE and DEFENSE_SCOPE
+ * both fit under it.
+ */
+export const DECLARED_SCOPE = DEFENSE_SCOPE;
+
+/** The scope a sign-in asks for: with Defense's token only when `defense`. */
+export function signInScope({ defense = false } = {}) {
+  return defense ? DEFENSE_SCOPE : OAUTH_SCOPE;
+}
 
 /**
  * The tokens a session must have been granted to post: without them a write

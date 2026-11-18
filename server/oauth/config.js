@@ -11,7 +11,7 @@
 // grant stops refreshing.
 
 import crypto from 'node:crypto';
-import { APP_NAME, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
+import { APP_NAME, DECLARED_SCOPE, DEFENSE_SCOPE, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
 import { PRIVACY_PATH, TERMS_PATH } from '../../src/legal/version.js';
 import { isProduction } from '../env.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
@@ -26,10 +26,17 @@ export const TOKEN_PATTERN = /^vg_[0-9a-f]{64}$/;
 export const RETURN_PATH = OAUTH_RETURN_PATH;
 
 /**
- * What every sign-in asks for and what the metadata declares, so declared ⊇
- * requested holds trivially. The app's own definition, so the two can't drift.
+ * What a sign-in asks for, and what it asks for when the account has turned
+ * Defense on. The app's own definitions, so the two can't drift.
  */
 export const SCOPE = OAUTH_SCOPE;
+export const SCOPE_WITH_DEFENSE = DEFENSE_SCOPE;
+
+/**
+ * What the metadata declares: every token either sign-in may ask for, so
+ * declared ⊇ requested holds for both.
+ */
+export const DECLARED = DECLARED_SCOPE;
 
 export const CLIENT_METADATA_PATH = '/api/oauth/client-metadata.json';
 export const JWKS_PATH = '/api/oauth/jwks.json';
@@ -131,7 +138,7 @@ export function clientMetadata(env = process.env) {
     policy_uri: policy,
     redirect_uris: [`${origin}${CALLBACK_PATH}`],
     grant_types: ['authorization_code', 'refresh_token'],
-    scope: SCOPE,
+    scope: DECLARED,
     response_types: ['code'],
     application_type: 'web',
     token_endpoint_auth_method: 'private_key_jwt',

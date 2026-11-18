@@ -118,15 +118,17 @@ export function signInPrompt(prompt) {
  * The login request: the address the server is asked for, and where it
  * should send the person back. `handle` is a handle, a DID, or the address of
  * a host (to sign in there without naming an account, or with `prompt:
- * 'create'` to make one).
+ * 'create'` to make one). `defense` asks for Defense's permission as well
+ * (the server picks the scope; this only says which of its two).
  */
-export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt = null }) {
+export function buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt = null, defense = false }) {
   const returnUrl = new URL(returnPath, origin);
   returnUrl.search = new URLSearchParams({ n: nonce }).toString();
   const url = backendAddress(backendUrl, BACKEND_PATHS.login);
   url.searchParams.set('handle', handle);
   url.searchParams.set('redirect_uri', returnUrl.href);
   if (signInPrompt(prompt)) url.searchParams.set('prompt', prompt);
+  if (defense === true) url.searchParams.set('defense', '1');
   return { url: url.href, returnUrl: returnUrl.href };
 }
 
@@ -155,13 +157,14 @@ export async function startBackendSignIn({
   intent = 'add',
   did = null,
   prompt = null,
+  defense = false,
   signal = null,
   fetch = globalThis.fetch,
   sessionStorage,
   assign,
 }) {
   const nonce = randomNonce();
-  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt });
+  const { url } = buildLoginRequest({ backendUrl, handle, origin, returnPath, nonce, prompt, defense });
   const calledOff = () => Object.assign(new Error('The sign-in was called off'), { name: 'AbortError', code: 'CANCELLED' });
   let res;
   let body = null;

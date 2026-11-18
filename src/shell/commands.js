@@ -12,7 +12,7 @@
 import { PRIVACY_PATH, TERMS_PATH } from '../legal/version.js';
 
 /** The groups, in the order an empty palette lists them. */
-export const COMMAND_GROUPS = Object.freeze(['Actions', 'Dashboards', 'Reports', 'Posting', 'Tools', 'Settings', 'Period', 'Sky', 'Accounts']);
+export const COMMAND_GROUPS = Object.freeze(['Actions', 'Dashboards', 'Reports', 'Posting', 'Tools', 'Defense', 'Settings', 'Period', 'Sky', 'Accounts']);
 
 /** What the palette calls what was used last. */
 export const RECENT_GROUP = 'Recent';
@@ -49,6 +49,7 @@ function accountTitle(account) {
  * @param {Array<{ key: string, label: string, icon?: any, desc?: string }>} [context.reports]
  * @param {Array<{ key: string, name: string, icon?: any, desc?: string, planned?: boolean }>} [context.tools]
  * @param {Array<{ key: string, path: string, label: string, icon?: any, desc?: string }>} [context.postingPages]
+ * @param {Array<{ key: string, path: string, label: string, icon?: any, desc?: string }>} [context.defensePages]
  * @param {Array<{ key: string, label: string }>} [context.settingsSections]
  * @param {Array<{ did: string, handle?: string, displayName?: string, status?: string }>} [context.accounts]
  * @param {string} [context.activeDid]
@@ -59,7 +60,7 @@ function accountTitle(account) {
  * @param {{ built?: boolean, complete?: boolean, syncing?: boolean }} [context.archive]
  */
 export function buildCommands(context = {}) {
-  const { dashboards = [], reports = [], tools = [], postingPages = [], settingsSections = [], accounts = [], activeDid = null, periods = [], period = null, sky = null, route = {}, archive = {} } = context;
+  const { dashboards = [], reports = [], tools = [], postingPages = [], defensePages = [], settingsSections = [], accounts = [], activeDid = null, periods = [], period = null, sky = null, route = {}, archive = {} } = context;
   const out = [];
   const add = (command) => out.push(command);
 
@@ -97,6 +98,10 @@ export function buildCommands(context = {}) {
     add({ id: `go:/tools/${t.key}`, group: 'Tools', title: t.name, hint: t.desc, icon: t.icon, go: `/tools/${t.key}` });
   }
   if (live.length) add({ id: 'go:/tools', group: 'Tools', title: 'All tools', go: '/tools' });
+
+  for (const p of defensePages) {
+    add({ id: `go:${p.path}`, group: 'Defense', title: p.label, hint: p.desc, icon: p.icon, keywords: `${p.title} pile-on radar block list moderation`, go: p.path });
+  }
 
   for (const s of settingsSections) {
     add({ id: `go:/settings/${s.key}`, group: 'Settings', title: s.label, keywords: 'settings preferences', go: `/settings/${s.key}` });

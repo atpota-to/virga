@@ -8,6 +8,7 @@
 // of text, dated by its record key. That is what bookmarks, quotes and search
 // results point at.
 
+import { createCrowd } from './crowd.js';
 import { blobDataUrl, parseAtUri, readRecord } from './repo.js';
 import { hashOf, postRecord, tidAt } from './world.js';
 
@@ -107,7 +108,13 @@ export function createViews(worlds) {
       : { did, handle: 'handle.invalid', displayName: '' };
   };
 
-  /** A person by DID or handle: the account's whole profile, or the cast's card. */
+  // Who engages with the accounts' posts, for Defense's scans (crowd.js).
+  const crowd = createCrowd(list);
+
+  /**
+   * A person by DID or handle: the account's whole profile, the cast's card,
+   * or (by DID) one of the crowd or a follower, with their counts.
+   */
   function person(actor) {
     const p =
       people.get(actor) ||
@@ -116,7 +123,7 @@ export function createViews(worlds) {
           .replace(/^@/, '')
           .toLowerCase(),
       );
-    if (!p) return null;
+    if (!p) return crowd.profile(actor);
     return byDid.has(p.did) ? byDid.get(p.did).profile : card(p.did);
   }
 
@@ -536,6 +543,7 @@ export function createViews(worlds) {
     byDid,
     card,
     person,
+    crowd,
     resolveHandle,
     postView,
     embedView,

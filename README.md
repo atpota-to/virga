@@ -78,6 +78,17 @@ type sizes in use, and the place each menu opens all stayed within set targets a
 forced colours looked at too. Not looked at, as before: a real on-screen keyboard,
 dragging on a touch screen, and any browser but Chromium.
 
+Added on 2026-11-17: Defense's second phase, scanning a post (below, and
+[docs/DEFENSE.md](docs/DEFENSE.md)). Checked by its own tests (the scan, the canary's
+candidates, the radar's layout, the page's words, the in-memory store, the scope a sign-in
+asks for with and without Defense, the server's login route picking between its two scopes),
+by the real scan run against the harness's crowd, and in the harness at 1440, 1180, 430, 390
+and 360 wide, by night and by day: Turn on Defense, a scan of a post with its progress, the
+radar and its callout, the list, an AppView that fails open, and a link that isn't a post,
+with no console errors and no page that scrolls sideways. Not looked at: a real scan against
+Bluesky's AppView and Constellation, a real sign-in asking for the extra permission, the
+radar in high contrast and forced colours, or a phone's touch on the radar.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
 Vercel, the adviser against the real AI gateway, an account actually made at one of the
@@ -128,7 +139,7 @@ the address it was started from.
 
 ## What it shows
 
-Virga is a workspace with five parts. On a desk they are the sidebar; on a phone four of
+Virga is a workspace with six parts. On a desk they are the sidebar; on a phone five of
 them are the bar along the bottom, and Settings is behind the account.
 
 **Dashboards** are sets of report cards you arrange yourself. Three come to start with
@@ -260,15 +271,31 @@ The first build takes a minute or two for an account with thousands of posts. Af
 that a sync only fetches what is new, and runs by itself when the archive is more than an
 hour old.
 
-## Defense (planned)
+## Defense
 
-A sixth part, for moderation and defence: scans of who piled onto a post sorted by how
-close each account is to you, block lists that can't take your own people, a moderator
-account to DM, and closing replies and quotes when strangers arrive. It is being ported
-from [bluesky-mod](https://github.com/dame-is/bluesky-mod) as a hosted, paid feature.
-[docs/DEFENSE.md](docs/DEFENSE.md) is the plan. So far only its engine is written
-(`src/defense/`: the harvest from Constellation and the scoring, with tests); nothing of it
-is on screen.
+The sixth part, for moderation and defence, being ported from
+[bluesky-mod](https://github.com/dame-is/bluesky-mod) as a hosted feature:
+[docs/DEFENSE.md](docs/DEFENSE.md) is the plan. Two of its phases are built: the engine
+(`src/defense/`: the harvest from Constellation, the scoring and its canary) and **Scan a
+post**, at `/defense`. Block lists, the moderator account to DM and closing replies when
+strangers arrive are still to come; nothing in Defense writes anything yet.
+
+A scan takes a link to any post, or one of yours from the last 30 days that people have been
+answering, and finds everyone who engaged with it (from Constellation, so the people you
+already block or mute are counted too). Each is put in a band by one thing, how many of the
+people you follow also follow them, read live from Bluesky with your own session: protected
+(you follow them), connected, peripheral, notable (widely followed, no connection) and no
+connection, most of any pile-on. The result is the radar (you at the centre, a ring a band,
+a slice what they did), its table, the list of everyone near you with what they did and who
+you know in common, and an Export of the lot. Nothing is kept: the scan stays in the tab's
+memory until another replaces it. A batch whose counts the AppView quietly left off is
+caught by a canary and asked again, and scored from nothing if it never comes right
+(docs/DEFENSE.md says why).
+
+It needs one permission the ordinary sign-in doesn't ask for, so it starts with **Turn on
+Defense**, which signs the account in again asking for it as well; Turn off signs in again
+without it. Accounts that haven't turned it on are asked for exactly what they were asked for
+before.
 
 ## Signing in
 
@@ -374,8 +401,12 @@ The app asks for these and no others (`src/config.js`, where each is explained i
 | `blob:image/*`, `blob:video/*`, `rpc:com.atproto.repo.uploadBlob?aud=*`, `rpc:app.bsky.video.getUploadLimits?aud=*`, `rpc:app.bsky.video.getJobStatus?aud=*` | Images and video. Video goes through Bluesky's video service, which needs a short-lived pass from the PDS |
 | `rpc:app.bsky.draft.*` (get, create, update, delete) | Bluesky's private drafts |
 | `rpc:app.bsky.actor.getPreferences`, `rpc:app.bsky.bookmark.getBookmarks`, `rpc:app.bsky.feed.searchPosts` | Your default reply settings, saved posts for the library, and post search |
+| `rpc:app.bsky.actor.getProfiles`, **only once Defense is turned on** | How many of the people you follow follow each account a scan finds, which only a signed-in read of their profiles carries |
 
-The `rpc:` reads go to Bluesky's AppView (`did:web:api.bsky.app#bsky_appview`). It can't
+The client metadata declares all of these, Defense's included (`DECLARED_SCOPE`); a sign-in
+asks for `OAUTH_SCOPE`, or `DEFENSE_SCOPE` for an account that has turned Defense on, and an
+authorization server grants a request for less than was declared. The `rpc:` reads go to
+Bluesky's AppView (`did:web:api.bsky.app#bsky_appview`). It can't
 like, repost or read messages. Everything else it reads is public and fetched without the
 session. The syntax is from the [permission spec](https://atproto.com/specs/permission)
 (read 2026-11-12). A session from before posting arrived lacks the posting permissions;
@@ -427,7 +458,11 @@ scheduling, timers, the adviser and the agreement to the terms, Virga's server (
 site's `/api/*`). Signing in sends the handle being typed to `public.api.bsky.app`; a
 browser session's library also resolves it at `bsky.social`, and Virga's server looks it
 up at `dns.google` for a long one. Post again reads a post's pictures back from the
-account's PDS (`com.atproto.sync.getBlob`). A scheduled post's text and pictures wait in
+account's PDS (`com.atproto.sync.getBlob`). A Defense scan asks Constellation for
+everything pointing at the post it scans (anyone's post), and asks Bluesky about everyone it
+finds: their profiles signed in, and who you follow and who follows you from
+`public.api.bsky.app`, without the session; none of it goes to Virga's server. The Privacy
+Policy doesn't say this yet (docs/DEFENSE.md, Phase 2, as built). A scheduled post's text and pictures wait in
 Virga's schema in Supabase until it goes out. The pictures (in a private Storage bucket)
 are removed after publishing, or for a repeating post once its last occurrence has gone
 out or it is removed; the row, with the text, stays, and so does a timer's row once it
@@ -491,13 +526,14 @@ Quiet sky: your numbers set straight on the page, under a sky.
   figures so columns line up, and one scale of sizes. Monospace is kept for identifiers
   such as DIDs.
 - **Every chart has a table.** Hover shows a value; Show as table shows them all.
-- **The sidebar is words.** The five parts of Virga down the side, each with its icon, and
+- **The sidebar is words.** The six parts of Virga down the side, each with its icon, and
   only the one you are in opened out into its pages. It has no ground of its own: it sits
   on the sky. It folds to a rail of icons.
 - **On a phone,** the top of the page has the mark (or, on an inner page, the way back to
   the one above it), Search and the account (Settings and Sync now are in its menu), and
-  a bar along the bottom has the parts as icons: the one you are in says its name, and New
-  post is the round button at its end. Cards stack one to a row (figures two to a row), a
+  a bar along the bottom has the parts as icons: the one you are in says its name (from
+  430px wide; narrower, it is a tinted disc, since five parts leave no room for the name),
+  and New post is the round button at its end. Cards stack one to a row (figures two to a row), a
   row of tabs that doesn't fit scrolls sideways under a faded edge, a long menu rises from
   the foot of the screen as a sheet, Customize is a list of the cards with arrows to move
   them, and the composer and its dialogs are full-height sheets with the main button under
@@ -518,7 +554,9 @@ looked at and clicked through offline. Flags in the address show other states: o
 account (`?accounts=1`), browser sessions (`?mode=browser`), an ended session
 (`?expired=lab`), a session from before posting (`?scope=read`), limits
 (`?limits=3,1,1`, `?ailimits=…`), the adviser slow or down, the agreement screen
-(`?terms=ask`, `?terms=down`). See `harness/README.md`.
+(`?terms=ask`, `?terms=down`), Defense already turned on (`?defense=on`), and an AppView
+whose known-followers counts fail open (`?appview=failopen`, `?appview=flaky`). See
+`harness/README.md`.
 
 ## Deploying
 
@@ -647,8 +685,9 @@ on agreements read it, and Vercel's edge is what makes it trustworthy there.
 | `src/share/` | A card as a picture: what it shows, its alt text, the canvas that draws it, the dialog |
 | `src/dashboards/` | Layouts, the card library and the cards themselves |
 | `src/reports/`, `src/tools/`, `src/settings/` | The pages |
+| `src/defense/` | Defense: the harvest, the scoring and its canary, a scan in order (`scan.js`) and in memory (`scanStore.js`), the radar's layout and drawing, and the Scan a post page |
 | `src/charts/` | The time series, sparklines, heatmaps and bar lists |
-| `src/lib/router.jsx` | Real paths (`/dashboard/:id`, `/reports/:report`, `/tools/:tool`, `/posting/:page`, `/settings/:section`) on the History API |
+| `src/lib/router.jsx` | Real paths (`/dashboard/:id`, `/reports/:report`, `/tools/:tool`, `/posting/:page`, `/defense`, `/settings/:section`) on the History API |
 
 ## Not here yet
 

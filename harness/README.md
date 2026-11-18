@@ -17,8 +17,8 @@ small, quiet second account to switch to and post as. Each has an agent
 the default long-session mode, a requester for Virga's server: the real one from
 `src/session/backendClient.js`, pointed at a fake server (`harness/fakeServer.js`).
 `harness/fakeNetwork.js` replaces `fetch`, so the public reads (the author feed, posts,
-threads, profiles, feeds and lists, the DID documents, the repo download,
-Constellation), Bluesky's card and video services and Virga's server are answered from
+threads, profiles, feeds and lists, relationships, the DID documents, the repo download,
+Constellation, including everything pointing at a post), Bluesky's card and video services and Virga's server are answered from
 the same fixtures. Nothing leaves the machine, and a request to a host it doesn't know
 is refused with a warning in the console.
 
@@ -42,6 +42,8 @@ Clear the site's data to start over.
 | `?terms=ask` | nobody has agreed to the Terms of Service and Privacy Policy, so the agreement screen stands in front of the app until you agree (it comes back on every load). `?terms=down` is the same with a server that can't record the agreement, to show the error. Combine with `?mode=browser` for a browser session, whose agreement is kept in the browser and reported |
 | `?expired=lab` | that account (by handle) starts signed out; the other is open |
 | `?scope=read` | the sessions were granted what Virga asked for before it could post: posts, gates, templates, drafts and uploads are refused for a missing scope (following still works) |
+| `?defense=on` | the sessions were granted Defense's permission too, as after Turn on Defense. By default they weren't, so `/defense` offers to ask for it; Turn on Defense (and Turn off) changes the grant in place, for the agent and the server alike |
+| `?appview=failopen`, `?appview=flaky` | the signed-in `getProfiles` leaves `knownFollowers` off every answer (a scan finds no canary and says it couldn't check who you know in common), or off the first answer for each batch (the canary catches it, and the batch is asked again and counted) |
 | `?limits=3,1,1` | limits on scheduled posts, plain timers and conditional timers per account, as the server's `SCHEDULED_POSTS_LIMIT`, `POST_TIMERS_LIMIT` and `CONDITIONAL_TIMERS_LIMIT` would set them; a blank or `0` leaves one unlimited. By default there are none, as on the server, only its flat caps (50 scheduled posts, 200 timers) |
 | `?ailimits=30,15,3` | the monthly AI allowances: adviser reads, image descriptions, style readings (these are the defaults); `?ailimits=unlimited` counts nothing |
 | `?ai=slow`, `?ai=down` | the adviser and alt text take longer than the composer waits, or are unavailable |
@@ -64,6 +66,16 @@ moderation lists with subscribers.
 Field Lab is five months old, with nine posts, forty followers from the same cast and
 nothing pointing at it.
 
+For Defense, a crowd engages with Mira's posts (`harness/crowd.js`, drawn from a hash of each
+post's address, so a post meets the same crowd every time): as many accounts as the post's
+counts say, up to 1,800 likes, 400 reposts, 320 replies and 160 quotes, from a few of the
+cast she follows, a few she doesn't, some of her followers, and 1,200 strangers, who are
+more of the replies and quotes. Among the strangers some are widely followed, some post all
+day, a few are followed by one or more of the people Mira follows, and a few block her. The
+cast follow one another along a fixed hash, so "how many of the people you follow follow
+them" is worked out for whoever asks: Field Lab sees smaller counts, and no stranger counted.
+A post that isn't one of the accounts' own has nobody on it.
+
 On the posting side, Mira has two Bluesky drafts (one a thread), six bookmarks, two
 feeds and two lists of her own, two templates in her repo, and a Bluesky setting that
 lets only people she follows and people she mentions reply. Field Lab has none of it,
@@ -76,7 +88,9 @@ and looking, not for shipping.
 
 Any property chain on the fake agent is an NSID, and calling it answers from the
 account's world (`agent.app.bsky.feed.searchPosts(params)` resolves to `{ data }`, as an
-`@atproto/api` Agent's call does). It answers the dashboard's reads; the repo writes
+`@atproto/api` Agent's call does). It answers the dashboard's reads; the signed-in
+`getProfiles` with `viewer.knownFollowers`, `following`, `followedBy` and `blockedBy` (25 at
+most, as the AppView takes); the repo writes
 (`createRecord`, `putRecord`, `deleteRecord`, `applyWrites`, `getRecord`, `listRecords`,
 `uploadBlob`); Bluesky drafts, kept in memory per account; preferences; bookmarks; post
 search; and service-auth tokens for the video service. A method it doesn't know fails
@@ -137,8 +151,8 @@ addressed to the right place (the upload's to the account's PDS for `uploadBlob`
 rest to the video service), keeps the upload as one of the account's blobs and reports
 it processed after a few seconds.
 
-`harness/world.test.js`, `fakeXrpc.test.js` and `fakeServer.test.js` run with
-`npm test`. They check that the real code still reads the fixtures the way it reads real
+`harness/world.test.js`, `fakeXrpc.test.js`, `fakeServer.test.js` and `crowd.test.js` run
+with `npm test` (`crowd.test.js` runs the real Defense scan against the fixtures). They check that the real code still reads the fixtures the way it reads real
 answers, and that the posting services (publish, drafts, scheduling, timers) work
 against the fakes, which is the only thing that stops them drifting.
 

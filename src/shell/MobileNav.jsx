@@ -9,12 +9,14 @@
 // parentOf), since the page header has no crumbs on a phone.
 //
 // The bottom bar is icons. The part you are in is the one that also says its
-// name, so the bar reads as "you are here" at a glance, and New post is the
-// round button at its end. Settings is behind the account, in its menu.
+// name where there is room (a tinted disc on a narrower phone, shell.css),
+// so the bar reads as "you are here" at a glance, and New post is the round
+// button at its end. Settings is behind the account, in its menu.
 
 import { BarChart3, ChevronLeft, LayoutDashboard, Search, Send, SquarePen, Wrench } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import { Link } from '../lib/router.jsx';
+import { DEFENSE_BASE, DEFENSE_ICON } from '../defense/routes.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 
@@ -50,6 +52,7 @@ export function TabBar({ route, dashboardId, onNewPost }) {
     { key: 'reports', label: 'Reports', icon: BarChart3, to: '/reports' },
     { key: 'posting', label: 'Posting', icon: Send, to: '/posting' },
     { key: 'tools', label: 'Tools', icon: Wrench, to: '/tools' },
+    { key: 'defense', label: 'Defense', icon: DEFENSE_ICON, to: DEFENSE_BASE },
   ];
   return (
     <nav className="tabbar" aria-label="Main">

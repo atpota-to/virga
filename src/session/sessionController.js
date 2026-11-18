@@ -4,7 +4,7 @@
 // signing in and out, and noticing a sign-in that has ended. The provider in
 // useAtprotoSession.jsx holds the state; this decides what goes in it.
 
-import { OAUTH_RETURN_PATH, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
+import { DEFENSE_TOKENS, OAUTH_RETURN_PATH, OAUTH_SCOPE, POSTING_TOKENS, signInScope } from '../config.js';
 import { readSessionHint, syncSessionHint, writeSessionHint } from '../lib/sessionHint.js';
 import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import { missingScopes } from './scopes.js';
@@ -20,12 +20,17 @@ const GRANT_GONE_CODES = new Set(['OAUTH_SESSION_MISSING', 'SESSION_EXPIRED']);
 
 /**
  * What an account can do here, from its row and its status:
- * `{ mode, canPost, canSchedule, canUseAi, missing }`. `missing` lists the
- * tokens Virga asks for that the session wasn't granted (well-formed ones
- * only). A grant nobody has read yet is taken to be enough; a write that
- * fails for want of it then asks for a fresh sign-in (scopes.js
- * isMissingScopeError). Scheduling and the adviser run on Virga's server,
- * so they need a long session that still holds.
+ * `{ mode, canPost, canSchedule, canUseAi, defense, missing }`. `missing`
+ * lists the tokens Virga asks for that the session wasn't granted
+ * (well-formed ones only). A grant nobody has read yet is taken to be
+ * enough; a write that fails for want of it then asks for a fresh sign-in
+ * (scopes.js isMissingScopeError). Scheduling and the adviser run on Virga's
+ * server, so they need a long session that still holds.
+ *
+ * `defense` says whether the session holds Defense's permission, which only
+ * an account that turned Defense on asked for: 'granted', 'missing', or
+ * 'unknown' while nobody has read the grant. It is not in `missing`, which
+ * is what every sign-in asks for.
  */
 export function capabilitiesFrom(row, status) {
   const mode = row?.mode || null;
@@ -34,7 +39,13 @@ export function capabilitiesFrom(row, status) {
   const missing = granted == null ? [] : missingScopes(granted, OAUTH_SCOPE);
   const postingGranted = granted == null || missingScopes(granted, POSTING_TOKENS).length === 0;
   const longSession = mode === 'backend' && live;
-  return { mode, canPost: live && postingGranted, canSchedule: longSession, canUseAi: longSession, missing };
+  const defense = granted == null ? 'unknown' : holdsDefense(granted) ? 'granted' : 'missing';
+  return { mode, canPost: live && postingGranted, canSchedule: longSession, canUseAi: longSession, defense, missing };
+}
+
+/** Whether a granted scope covers Defense's permission. */
+export function holdsDefense(granted) {
+  return typeof granted === 'string' && missingScopes(granted, DEFENSE_TOKENS).length === 0;
 }
 
 /**
@@ -75,6 +86,12 @@ export function createSessionController(set, env) {
 
   const rows = () => A.readAccounts(env.storage);
   const find = (did) => A.findAccount(rows(), did);
+  /** The remembered account a sign-in's input names (its DID or handle), or null. */
+  const rememberedFor = (input) => {
+    const text = String(input || '').toLowerCase();
+    if (!text) return null;
+    return rows().find((r) => r.did === input || (r.handle && r.handle.toLowerCase() === text)) || null;
+  };
 
   function refreshRows() {
     const list = rows();
@@ -588,10 +605,16 @@ export function createSessionController(set, env) {
      * (https://bsky.social): with a host the account is chosen on its page,
      * and `prompt: 'create'` opens that page on making a new one. `signal`
      * calls it off, for as long as the browser hasn't left.
+     *
+     * `defense` asks for Defense's permission too (true) or leaves it out
+     * (false). Unsaid, an account this browser remembers keeps what it has:
+     * signing in again doesn't take Defense away from an account that had
+     * turned it on, nor give it to one that hadn't.
      */
-    async signIn(input, { mode = env.authMode, intent = 'add', prompt = null, signal = null } = {}) {
+    async signIn(input, { mode = env.authMode, intent = 'add', prompt = null, signal = null, defense = null } = {}) {
       const handle = String(input || '').trim().replace(/^@/, '');
       const ask = B.signInPrompt(prompt);
+      const withDefense = typeof defense === 'boolean' ? defense : holdsDefense(rememberedFor(handle)?.scope);
       A.writeOpenAtSignIn(env.tabStorage, intent === 'reauth' ? active.did : null);
       if (mode === 'backend') {
         return B.startBackendSignIn({
@@ -603,6 +626,7 @@ export function createSessionController(set, env) {
           mode,
           intent,
           prompt: ask,
+          defense: withDefense,
           signal,
           sessionStorage: env.tabStorage,
           assign: env.assign,
@@ -610,7 +634,8 @@ export function createSessionController(set, env) {
       }
       // Marked before the redirect, so the load after it restores.
       writeSessionHint(env.storage);
-      return browser.signIn(handle, { scope: OAUTH_SCOPE, intent, ...(ask ? { prompt: ask } : {}), ...(signal ? { signal } : {}) });
+      const scope = signInScope({ defense: withDefense });
+      return browser.signIn(handle, { scope, intent, ...(ask ? { prompt: ask } : {}), ...(signal ? { signal } : {}) });
     },
 
     async signOutAccount(did) {

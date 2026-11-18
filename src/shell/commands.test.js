@@ -4,6 +4,7 @@ import { buildCommands, COMMAND_GROUPS, fold, moveActive, paletteGroups, parseRe
 import { REPORTS } from '../reports/registry.js';
 import { TOOLS } from '../tools/registry.js';
 import { POSTING_PAGES } from '../posting/routes.js';
+import { DEFENSE_PAGES } from '../defense/routes.js';
 import { ANALYTICS_PERIODS } from '../lib/analytics.js';
 import { parseRoute } from './routes.js';
 
@@ -23,6 +24,7 @@ const context = (overrides = {}) => ({
   reports: REPORTS,
   tools: TOOLS,
   postingPages: POSTING_PAGES,
+  defensePages: DEFENSE_PAGES,
   settingsSections: SECTIONS,
   accounts: [MIRA, LAB],
   activeDid: MIRA.did,
@@ -43,6 +45,7 @@ describe('buildCommands', () => {
     for (const r of REPORTS) expect(byId(commands, `go:/reports/${r.key}`)).toMatchObject({ group: 'Reports', title: r.label, go: `/reports/${r.key}` });
     for (const p of POSTING_PAGES) expect(byId(commands, `go:${p.path}`)).toMatchObject({ group: 'Posting', title: p.label });
     for (const s of SECTIONS) expect(byId(commands, `go:/settings/${s.key}`)).toMatchObject({ group: 'Settings', title: s.label });
+    for (const p of DEFENSE_PAGES) expect(byId(commands, `go:${p.path}`)).toMatchObject({ group: 'Defense', title: p.label });
     expect(byId(commands, 'go:/dashboard/d2')).toMatchObject({ group: 'Dashboards', title: 'Growth' });
     // The two legal pages are the app's own, drawn before the shell (App.jsx),
     // so the shell's routes don't list them.
