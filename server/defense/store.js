@@ -151,20 +151,9 @@ export function storeFor(ownerDid, { client = null } = {}) {
       return unwrap(await q, 'history') || [];
     },
 
-    /** The owner's plans that something was approved from, newest first. */
+    /** The owner's approved plans, newest first, each with what came of its adds. */
     async plans({ limit = 50 } = {}) {
-      return (
-        unwrap(
-          await db()
-            .from('defense_plan')
-            .select('id, list_id, post_uri, created_at, approved_at, approved_bands, note, totals')
-            .eq('owner_did', owner)
-            .not('approved_at', 'is', null)
-            .order('approved_at', { ascending: false })
-            .limit(Math.max(1, Math.min(200, limit))),
-          'plans',
-        ) || []
-      );
+      return unwrap(await db().rpc('defense_plans', { p_owner_did: owner, p_limit: limit }), 'plans') || [];
     },
 
     /** Of one job of the owner's, what to send next: those already sent first, then the queued. */

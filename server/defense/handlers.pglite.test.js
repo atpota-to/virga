@@ -133,7 +133,12 @@ describe('a plan, approved and undone', () => {
       ['did:plc:b', 'add', 'queued', 'the quote pile-on'],
       ['did:plc:a', 'add', 'queued', 'the quote pile-on'],
     ]);
-    expect(h.body.data.plans[0]).toMatchObject({ bands: ['UNKNOWN'], note: 'the quote pile-on', totals: { participants: 9, UNKNOWN: 2 } });
+    expect(h.body.data.plans[0]).toMatchObject({
+      bands: ['UNKNOWN'],
+      note: 'the quote pile-on',
+      totals: { participants: 9, UNKNOWN: 2 },
+      counts: { added: 0, waiting: 2, kept: 0, failed: 0, undone: 0, live: 2 },
+    });
     const back = await call(undo, { body: { planId: made.body.data.planId, note: 'wrong post' } });
     expect(back.body.data).toMatchObject({ cancelled: 2, queued: 0 });
   });

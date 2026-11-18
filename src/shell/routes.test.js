@@ -45,7 +45,11 @@ describe('routes', () => {
   it('name Defense, and nothing under it that isn’t there', () => {
     expect(parseRoute('/defense')).toEqual({ section: 'defense', page: null });
     expect(parseRoute('/defense/')).toEqual({ section: 'defense', page: null });
-    expect(parseRoute('/defense/lists')).toEqual({ section: 'missing' });
+    expect(parseRoute('/defense/lists')).toEqual({ section: 'defense', page: 'lists' });
+    expect(parseRoute('/defense/history')).toEqual({ section: 'defense', page: 'history' });
+    expect(parseRoute('/defense/shield')).toEqual({ section: 'missing' });
+    expect(parseRoute('/defense/lists/x')).toEqual({ section: 'missing' });
+    expect(parentOf(parseRoute('/defense/lists'))).toEqual({ label: 'Defense', to: '/defense' });
     expect(SECTION_TITLE.defense).toBe('Defense');
     // A scan's canary comes from the archive's follows.
     expect(needsArchive(parseRoute('/defense'))).toBe(true);

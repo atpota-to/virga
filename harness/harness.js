@@ -14,6 +14,9 @@
 //                    after Turn on Defense (by default they weren't, so the
 //                    Defense page offers to ask for it); ?defense=lists the
 //                    list writes as well, as after making a first list
+//   ?defensewrites=off
+//                    Virga's server doesn't write Defense's lists (its
+//                    DEFENSE_WRITES isn't on): scans work, lists don't
 //   ?appview=failopen|flaky
 //                    the signed-in getProfiles leaves known followers off
 //                    every answer (failopen: a scan can't count anyone) or
@@ -104,6 +107,7 @@ export function readFlags(search) {
       params.get('defense') === 'lists' ? 'lists' : params.get('defense') === 'on' ? 'scan' : false,
     ),
     appview: ['failopen', 'flaky'].includes(params.get('appview')) ? params.get('appview') : 'ok',
+    defenseWrites: params.get('defensewrites') !== 'off',
     limits: readLimits(params.get('limits')),
     aiLimits: readAiLimits(params.get('ailimits')),
     ai: ['slow', 'down'].includes(params.get('ai')) ? params.get('ai') : 'ok',
@@ -132,6 +136,7 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     aiLimits: flags.aiLimits,
     ai: flags.ai,
     terms: flags.terms,
+    defenseWrites: flags.defenseWrites,
   });
   const agents = new Map();
   const worldOf = (did) => worlds.find((w) => w.me.did === did) || null;
@@ -185,7 +190,8 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
       installFakeNetwork(worlds, { latency: flags.latency, server });
       let timer = null;
       const cron = async () => {
-        const { published, settled } = await server.runCron();
+        const { published, settled, listed } = await server.runCron();
+        if (listed) console.info(`[harness] the server wrote ${listed} list item(s)`);
         if (published.length || settled.length) {
           console.info(
             `[harness] the server published ${published.length} scheduled post(s) and settled ${settled.length} timer(s)`,

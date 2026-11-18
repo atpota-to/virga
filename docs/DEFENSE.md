@@ -6,10 +6,12 @@ yourself (a block list that can't take your own people, scans of who piled onto 
 closing replies and quotes when strangers arrive, attack mode) and makes it something you
 turn on in Virga, with the infrastructure run for you.
 
-This is the plan as of 2026-11-17. The first two phases are built: the in-browser scan and
-score engine (`src/defense/`), and scanning a post on screen, in the Defense part of the
-sidebar, with the permission it needs asked for only when it's turned on (phase 2, below).
-Nothing of Defense writes anything yet.
+This is the plan as of 2026-11-18. Three phases are built: the in-browser scan and score
+engine (`src/defense/`), scanning a post on screen with the permission it needs asked for
+only when it's turned on (phase 2), and lists in the owner's own repo, written by Virga's
+server with the veto at every write (phase 3; mode 2, the helper account, isn't yet). The
+threat model for the write path is [DEFENSE-THREATS.md](DEFENSE-THREATS.md). All of it is
+behind `VITE_DEFENSE` on screen and `DEFENSE_WRITES` on the server, until phase 6.
 
 ## The idea it keeps
 
@@ -190,8 +192,8 @@ a few dozen users to each holder, which still splits the limits and the blast ra
 | bluesky-mod | Virga |
 | --- | --- |
 | `lib/score.js`, `lib/harvest.js`, `lib/limit.js` | `src/defense/`. **Done**, with the canary in place of the snapshot |
-| `bot/bulkPlan.js` (proposing, `estimateWrites`) | `src/defense/plan.js` in the browser; the server stores and approves |
-| `bot/listWrite.js` (the veto at the write, pacing) | `worker/`, with the veto as a shared module both sides test |
+| `bot/bulkPlan.js` (proposing, `estimateWrites`) | `src/defense/plan.js` in the browser; the server stores and approves. **Done** |
+| `bot/listWrite.js` (the veto at the write, pacing) | `server/defense/run.js`, driven by Vercel Cron or `worker/`, with the veto as a shared module both sides test (`src/defense/veto.js`). **Done** |
 | `gates.js` | `server/defense/internal/gates.js` on Vercel, the only door to a user's session |
 | `shield.js`, `ownerActivity.js`, `spacedust.js`, `jetstream.js` | `worker/`, one connection for all subscribers |
 | `lib/command.js`, `bot/dmLoop.js`, `bot/operator.js` | `worker/`, rewritten for many owners; the command grammar and its tests come across |
@@ -212,7 +214,7 @@ also hold the PDS's keys.
    fixtures, including an AppView that fails open. Free. *Done* (below).
 3. **Lists and writes.** Migrations; lists in modes 1 and 2; plans sent to the server;
    the worker's first job, batch writes with the veto at the write; decisions, undo,
-   history.
+   history. *Done, but for mode 2* (below).
 4. **The moderator.** The shared account, linking, tenancy, the command grammar, background
    writes, scans by DM.
 5. **The shield and attack mode.** Spacedust on the droplet, the internal gates route,
@@ -294,6 +296,71 @@ Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to 
   and the Terms' list of what the permission lets Virga do don't say so yet. They are left for
   phase 6 as planned, because changing either document means deciding whether everyone agrees
   again (`TERMS_VERSION`); until then a scan shouldn't be put in front of anyone but us.
+
+### Phase 3, as built
+
+- **The threat model came first** ([DEFENSE-THREATS.md](DEFENSE-THREATS.md)), and its
+  rules are each held by a test.
+- **A second level of permission.** Making lists asks for `repo:app.bsky.graph.list`
+  (create) and `repo:app.bsky.graph.listitem` (create, delete) on top of the scan's read
+  (`LISTS_SCOPE`), when the owner first makes a list (Let Defense make lists). The server's
+  login takes `defense=lists`. A sign-in again keeps whichever level the account had.
+- **The tables** (`supabase/migrations/20261118000100_defense_lists.sql`): `defense_list`,
+  `defense_protected`, `defense_plan` and `defense_plan_row`, `defense_job`, `defense_pace`
+  (when each holder may next be written to) and `defense_decision`. Each function takes the
+  owner. `server/defense/store.js` is the only way in, bound to one owner. A PGlite test runs
+  everything as one owner and checks the other's rows haven't moved.
+- **The veto** (`src/defense/veto.js`) is one module both sides run:
+  - the owner and the holder;
+  - the people kept by hand;
+  - anyone the owner follows, read fresh from the public AppView;
+  - anyone on a curation list of theirs.
+
+  If any of these can't be read, nothing is written. A scan now puts curation-list members
+  and the people kept by hand in PROTECTED too, best effort.
+- **Writing** (`server/defense/run.js`):
+  - **What it writes.** It claims due jobs, at most one per holder, every two minutes per
+    holder, and writes a batch of 50 list items with one `applyWrites`. It takes nothing from
+    its caller.
+  - **Record keys.** Each item's key is chosen before it is sent, so a batch whose reply was
+    lost is read back by key and never written twice. Undo deletes by the same key.
+  - **Holds.** A rate limit holds the job for an hour. A sign-in without the list permission,
+    or a holder signed out, holds it with a sentence the Lists page shows.
+- **Who drives it: a change from the plan.** The plan had the worker on the droplet do batch
+  writes through Vercel's internal routes. As built:
+  - The writing is a route on Vercel, `/api/defense/run`, the only place a session is opened.
+  - Vercel Cron calls it every minute, and so can the worker, by a call signed with
+    `DEFENSE_WORKER_SECRET` (HMAC over the time, the method and the path, good for five
+    minutes).
+  - The worker (`worker/`, Docker Compose after bluesky-mod's) holds that secret and nothing
+    else: no database key, no session.
+
+  That gives the plan's split (the droplet never opens a session) with less on the droplet
+  than the plan allowed, and lists work before the droplet exists. bluesky-mod's lease isn't
+  needed for this: claims use `FOR UPDATE SKIP LOCKED` and the pace table. The lease comes
+  back with the DM loop in phase 4.
+- **Plans** hold DIDs, bands and trust keys only. A plan naming anyone PROTECTED is refused
+  whole. Approving one queues an add for everyone in the ticked bands, except the people
+  kept by hand and anyone the list already has. A plan expires after 30 days unless
+  something was written from it.
+- **The pages.**
+  - **Add to a list** sits under a scan's result: tick bands, pick or make a list, add your
+    own words, confirm.
+  - **Defense › Lists** shows each list's count and progress, makes a new list, and keeps
+    people by hand.
+  - **Defense › History** shows each approval with server-side counts and everyone added or
+    taken off, and undoes either.
+  - Nothing can be added from a scan that couldn't count vouches.
+- **Not built yet:**
+  - **Mode 2, a helper account.** A list held by a second account the owner signed in to
+    Virga. The tables, the veto and the writer already take a holder that isn't the owner
+    (`mode: 'helper'`). What's missing is proving the owner holds both sessions when a list is
+    made, and the page.
+  - **Subscribing for the owner.** The owner blocks or mutes the list in Bluesky. Doing it for
+    them would take `repo:app.bsky.graph.listblock` and the mute-list call, which aren't asked
+    for.
+  - **The second wall** (row-level security keyed on the owner) and the entitlement, in
+    phases 4 and 6.
 
 ## Security and policy
 

@@ -47,7 +47,17 @@ export default async function handler(req, res) {
       success: true,
       data: {
         decisions: decisions.map(publicDecision),
-        plans: plans.map((p) => ({ id: p.id, listId: p.list_id, postUri: p.post_uri, createdAt: p.created_at, approvedAt: p.approved_at, bands: p.approved_bands, note: p.note, totals: p.totals })),
+        plans: plans.map((p) => ({
+          id: p.id,
+          listId: p.list_id,
+          postUri: p.post_uri,
+          createdAt: p.created_at,
+          approvedAt: p.approved_at,
+          bands: p.approved_bands,
+          note: p.note,
+          totals: p.totals,
+          counts: { added: p.added, waiting: p.waiting, kept: p.kept, failed: p.failed, undone: p.undone, live: p.live },
+        })),
       },
     });
   } catch (error) {

@@ -1,11 +1,12 @@
-import { Eye, Lock, PenLine, Server, UserCheck } from 'lucide-react';
+import { Eye, ListPlus, Lock, PenLine, Server, UserCheck } from 'lucide-react';
 
 /**
  * What a feature can touch, in a word or two, for the header of a tool or a
  * posting page. 'read' only reads; 'follow' uses the follow permission;
  * 'post' writes and deletes posts; 'server' runs on Virga's server (a long
  * session); 'ask' would need a permission Virga doesn't ask for today, the
- * one that is a warning. How loud each is said is the stylesheet's
+ * one that is a warning; 'lists' adds people to Defense's lists when the
+ * owner approves it. How loud each is said is the stylesheet's
  * (.access-item in controls.css): writing a little louder than reading.
  */
 export const ACCESS = Object.freeze({
@@ -13,6 +14,7 @@ export const ACCESS = Object.freeze({
   follow: { label: 'Can follow and unfollow', icon: UserCheck },
   post: { label: 'Can post and delete posts', icon: PenLine },
   server: { label: 'Uses Virga’s server', icon: Server },
+  lists: { label: 'Can add people to your lists, when you approve it', icon: ListPlus },
   ask: { label: 'Would ask for a new permission', tone: 'warn', icon: Lock },
 });
 

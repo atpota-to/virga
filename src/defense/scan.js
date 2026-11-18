@@ -17,6 +17,7 @@ import { parsePostLink } from '../posting/lib/postLink.js';
 import { resolveHandle as publicResolveHandle } from '../posting/library/sources.js';
 import { harvestPost } from './harvest.js';
 import { pause } from './limit.js';
+import { curationMembers } from './veto.js';
 import { PROFILE_BATCH, ScoreError, createScorer, findCanary, publicRelationships, summarise, withoutSelves } from './score.js';
 
 const POST = 'app.bsky.feed.post';
@@ -120,6 +121,18 @@ export function signedInProfiles(agent) {
   };
 }
 
+/** The owner's curation lists' members as did -> reason, or none when they can't be read. */
+async function readCurationLists(ownerDid, { signal } = {}) {
+  try {
+    const members = await curationMembers(ownerDid, { signal });
+    return new Map([...members].map(([did, name]) => [did, `on your list “${name}”`]));
+  } catch (err) {
+    signal?.throwIfAborted();
+    console.warn('[defense] couldn’t read your curation lists for the scan:', err?.message || err);
+    return new Map();
+  }
+}
+
 /** A failure from any stage, as a ScanError the page can word. */
 export function scanErrorFrom(err, signal) {
   if (signal?.aborted || err?.name === 'AbortError') return new ScanError('The scan was stopped.', { code: 'aborted', cause: err });
@@ -154,6 +167,8 @@ export async function runScan({
   resolveHandle,
   harvest = harvestPost,
   getRelationships = publicRelationships(),
+  readCurated = readCurationLists,
+  kept = null,
   retryDelaysMs,
   now = () => Date.now(),
 }) {
@@ -170,6 +185,11 @@ export async function runScan({
     const people = withoutSelves(harvested, [ownerDid, post.authorDid]);
 
     say('canary');
+    // Who the owner keeps: on a curation list of theirs, or by hand (the
+    // caller's `kept`). Read best effort: the veto at the write reads them
+    // again, and fails closed, so a scan that can't is only less exact.
+    const curated = await readCurated(ownerDid, { signal });
+    const protectedSet = new Map([...curated, ...(kept || new Map())]);
     const retry = retryDelaysMs ? { retryDelaysMs } : {};
     let canary = await findCanary({ ownerDid, candidates, getProfiles, signal, ...retry });
     if (!canary && candidates.length) {
@@ -194,6 +214,7 @@ export async function runScan({
       // since the archive's last sync): the next best, without it.
       refindCanary: () => findCanary({ ownerDid, candidates: candidates.filter((d) => d !== canary), getProfiles, signal, ...retry }),
       selves: [ownerDid, post.authorDid],
+      protectedSet,
       ...retry,
     });
 

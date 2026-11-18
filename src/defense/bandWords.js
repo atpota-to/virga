@@ -16,3 +16,12 @@ export const BAND_MEANS = Object.freeze({
   NOTABLE: 'No connection to you, but they have 10,000 followers or more, or post a lot to a real audience.',
   UNKNOWN: 'Nobody you follow follows them, and they don’t follow you. Most of any pile-on.',
 });
+
+/** A band after a number, in a sentence: "494 with no connection, 13 notable". */
+export const BAND_COUNTED = Object.freeze({
+  PROTECTED: 'protected',
+  CONNECTED: 'connected',
+  PERIPHERAL: 'peripheral',
+  NOTABLE: 'notable',
+  UNKNOWN: 'with no connection',
+});

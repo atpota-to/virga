@@ -9,7 +9,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['src/**/*.test.js', 'harness/**/*.test.js', 'server/**/*.test.js'],
+    include: ['src/**/*.test.js', 'harness/**/*.test.js', 'server/**/*.test.js', 'worker/**/*.test.js'],
     // A PGlite database starts in beforeAll and takes a few seconds.
     hookTimeout: 60_000,
     testTimeout: 15_000,

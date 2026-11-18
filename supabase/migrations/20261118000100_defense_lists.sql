@@ -474,6 +474,34 @@ AS $$
    ORDER BY l.created_at;
 $$;
 
+-- The owner's approved plans, newest first, each with what came of its adds.
+-- Counted here rather than from a page of decisions, which an approval of
+-- thousands outruns.
+CREATE OR REPLACE FUNCTION virga.defense_plans(
+  p_owner_did TEXT,
+  p_limit     INTEGER DEFAULT 50
+) RETURNS TABLE (
+  id UUID, list_id UUID, post_uri TEXT, created_at TIMESTAMPTZ, approved_at TIMESTAMPTZ, approved_bands TEXT[],
+  note TEXT, totals JSONB, added INTEGER, waiting INTEGER, kept INTEGER, failed INTEGER, undone INTEGER, live INTEGER
+)
+LANGUAGE sql
+SET search_path = virga, pg_temp
+AS $$
+  SELECT p.id, p.list_id, p.post_uri, p.created_at, p.approved_at, p.approved_bands, p.note, p.totals,
+         (count(d.id) FILTER (WHERE d.state IN ('done', 'already') AND d.undone_at IS NULL))::INTEGER,
+         (count(d.id) FILTER (WHERE d.state IN ('queued', 'sent') AND d.undone_at IS NULL))::INTEGER,
+         (count(d.id) FILTER (WHERE d.state = 'vetoed'))::INTEGER,
+         (count(d.id) FILTER (WHERE d.state = 'failed'))::INTEGER,
+         (count(d.id) FILTER (WHERE d.undone_at IS NOT NULL))::INTEGER,
+         (count(d.id) FILTER (WHERE d.state IN ('queued', 'sent', 'done') AND d.undone_at IS NULL))::INTEGER
+    FROM defense_plan p
+    LEFT JOIN defense_decision d ON d.plan_id = p.id AND d.action = 'add' AND d.owner_did = p_owner_did
+   WHERE p.owner_did = p_owner_did AND p.approved_at IS NOT NULL
+   GROUP BY p.id
+   ORDER BY p.approved_at DESC
+   LIMIT GREATEST(1, LEAST(200, p_limit));
+$$;
+
 REVOKE ALL ON FUNCTION virga.defense_create_plan(TEXT, UUID, TEXT, JSONB, JSONB) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_approve_plan(TEXT, UUID, TEXT[], TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_claim_jobs(INTEGER, INTEGER) FROM PUBLIC, anon, authenticated;
@@ -482,6 +510,7 @@ REVOKE ALL ON FUNCTION virga.defense_settle(TEXT, UUID, JSONB) FROM PUBLIC, anon
 REVOKE ALL ON FUNCTION virga.defense_hold_job(TEXT, UUID, TIMESTAMPTZ, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_undo(TEXT, UUID, BIGINT[], TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION virga.defense_list_summary(TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION virga.defense_plans(TEXT, INTEGER) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION virga.defense_create_plan(TEXT, UUID, TEXT, JSONB, JSONB) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_approve_plan(TEXT, UUID, TEXT[], TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_claim_jobs(INTEGER, INTEGER) TO service_role;
@@ -490,3 +519,4 @@ GRANT EXECUTE ON FUNCTION virga.defense_settle(TEXT, UUID, JSONB) TO service_rol
 GRANT EXECUTE ON FUNCTION virga.defense_hold_job(TEXT, UUID, TIMESTAMPTZ, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_undo(TEXT, UUID, BIGINT[], TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION virga.defense_list_summary(TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION virga.defense_plans(TEXT, INTEGER) TO service_role;

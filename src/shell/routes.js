@@ -19,7 +19,7 @@ export function parseRoute(path) {
   }
   if (section === 'defense') {
     const defense = parseDefenseRoute(parts);
-    return defense ? { section, page: null } : { section: 'missing' };
+    return defense ? { section, page: defense.key === 'scan' ? null : defense.key } : { section: 'missing' };
   }
   if (section === 'intent' && page === 'compose' && parts.length === 2) return { section: 'intent', page: 'compose' };
   return { section: 'missing' };
@@ -64,7 +64,7 @@ export function opensBeforeArchive(route) {
 export function parentOf(route) {
   const { section, page } = route || {};
   if (!page) return null;
-  if (section === 'reports' || section === 'tools' || section === 'settings') {
+  if (section === 'reports' || section === 'tools' || section === 'settings' || section === 'defense') {
     return { label: SECTION_TITLE[section], to: `/${section}` };
   }
   if (section === 'posting' && page !== 'hub') {

@@ -1,0 +1,17 @@
+# The worker on the droplet. Put VIRGA_URL and DEFENSE_WORKER_SECRET in
+# worker/.env (never committed), then from the repository's root:
+#   docker compose -f worker/compose.yaml up -d --build
+services:
+  worker:
+    build:
+      context: ..
+      dockerfile: worker/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    # Let a call in flight finish before the container stops.
+    stop_grace_period: 75s
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: "3"

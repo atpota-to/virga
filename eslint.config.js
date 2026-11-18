@@ -6,7 +6,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 const APP_FILES = ['src/**/*.{js,jsx}', 'harness/**/*.{js,jsx}'];
-const NODE_FILES = ['api/**/*.js', 'server/**/*.js', 'scripts/**/*.js', '*.config.js'];
+const NODE_FILES = ['api/**/*.js', 'server/**/*.js', 'worker/**/*.js', 'scripts/**/*.js', '*.config.js'];
 
 // src/ is the browser bundle. Server code would drag service-role clients and
 // Node built-ins into it (and break the build), so nothing there may reach
