@@ -26,7 +26,7 @@ export function exportRows(archive, what, rows) {
   const now = Date.now();
   const cell = (v) => {
     const s = v == null ? '' : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const csv = `\uFEFF${rows.map((r) => r.map(cell).join(',')).join('\r\n')}\r\n`;
   downloadText(csv, exportFilename(fileStem(archive), what, 'csv', now), 'text/csv;charset=utf-8');

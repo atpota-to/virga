@@ -36,7 +36,7 @@ export default function SessionNotices() {
   const reauth = useCallback(
     async (account) => {
       const row = accounts.find((a) => a.did === account.did) || account;
-      await signIn(accountSignInId(row), { mode: reauthModeFor(row, authMode), intent: 'reauth' });
+      await signIn(accountSignInId(row), { mode: reauthModeFor(row, authMode), intent: 'reauth', did: row.did });
     },
     [accounts, signIn, authMode],
   );

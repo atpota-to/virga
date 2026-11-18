@@ -17,6 +17,7 @@ import { BarChart3, ChevronLeft, LayoutDashboard, Search, Send, SquarePen, Wrenc
 import Button from '../components/Button.jsx';
 import { Link } from '../lib/router.jsx';
 import { DEFENSE_BASE, DEFENSE_ICON } from '../defense/routes.js';
+import { DEFENSE_ENABLED } from '../config.js';
 import { LogoMark, useSkyTaps } from './bits.jsx';
 import { AccountMenu } from '../accounts/AccountMenu.jsx';
 
@@ -52,7 +53,7 @@ export function TabBar({ route, dashboardId, onNewPost }) {
     { key: 'reports', label: 'Reports', icon: BarChart3, to: '/reports' },
     { key: 'posting', label: 'Posting', icon: Send, to: '/posting' },
     { key: 'tools', label: 'Tools', icon: Wrench, to: '/tools' },
-    { key: 'defense', label: 'Defense', icon: DEFENSE_ICON, to: DEFENSE_BASE },
+    ...(DEFENSE_ENABLED ? [{ key: 'defense', label: 'Defense', icon: DEFENSE_ICON, to: DEFENSE_BASE }] : []),
   ];
   return (
     <nav className="tabbar" aria-label="Main">

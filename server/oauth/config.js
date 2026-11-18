@@ -11,7 +11,7 @@
 // grant stops refreshing.
 
 import crypto from 'node:crypto';
-import { APP_NAME, DECLARED_SCOPE, DEFENSE_SCOPE, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
+import { APP_NAME, DECLARED_SCOPE, DEFENSE_SCOPE, LISTS_SCOPE, OAUTH_RETURN_PATH, OAUTH_SCOPE } from '../../src/config.js';
 import { PRIVACY_PATH, TERMS_PATH } from '../../src/legal/version.js';
 import { isProduction } from '../env.js';
 import { frontendOrigins, publicUrl } from '../origins.js';
@@ -26,11 +26,13 @@ export const TOKEN_PATTERN = /^vg_[0-9a-f]{64}$/;
 export const RETURN_PATH = OAUTH_RETURN_PATH;
 
 /**
- * What a sign-in asks for, and what it asks for when the account has turned
- * Defense on. The app's own definitions, so the two can't drift.
+ * What a sign-in asks for, what it asks for when the account has turned
+ * Defense on, and when it keeps Defense's lists too. The app's own
+ * definitions, so the two can't drift.
  */
 export const SCOPE = OAUTH_SCOPE;
 export const SCOPE_WITH_DEFENSE = DEFENSE_SCOPE;
+export const SCOPE_WITH_LISTS = LISTS_SCOPE;
 
 /**
  * What the metadata declares: every token either sign-in may ask for, so

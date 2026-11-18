@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import handler from '../../api/client-metadata.js';
-import { AUTH_MODE, BACKEND_URL, DECLARED_SCOPE, DEFENSE_SCOPE, DEFENSE_TOKENS, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost, signInScope } from '../config.js';
+import { AUTH_MODE, BACKEND_URL, DECLARED_SCOPE, DEFENSE_SCOPE, DEFENSE_TOKENS, LISTS_SCOPE, LIST_TOKENS, OAUTH_SCOPE, PERMISSION_GROUPS, backendHost, defenseLevel, signInScope } from '../config.js';
 import { isValidScopeToken } from '../session/scopes.js';
 import {
   buildClientMetadata,
@@ -99,21 +99,35 @@ describe('the scope with Defense on', () => {
     expect(OAUTH_SCOPE.split(' ')).not.toContain(DEFENSE_TOKENS[0]);
   });
 
-  it('is asked for only when Defense is on', () => {
+  it('is asked for only when Defense is on, and the lists only when they are', () => {
     expect(signInScope()).toBe(OAUTH_SCOPE);
     expect(signInScope({ defense: false })).toBe(OAUTH_SCOPE);
     expect(signInScope({ defense: true })).toBe(DEFENSE_SCOPE);
+    expect(signInScope({ defense: 'scan' })).toBe(DEFENSE_SCOPE);
+    expect(signInScope({ defense: 'lists' })).toBe(LISTS_SCOPE);
+    for (const odd of ['1', 'constructor', '__proto__', 'all', 2, null, {}]) expect(signInScope({ defense: odd })).toBe(OAUTH_SCOPE);
+    expect(defenseLevel('lists')).toBe('lists');
+    expect(defenseLevel(true)).toBe('scan');
   });
 
-  it('is explained by a group of its own, marked as Defense’s', () => {
+  it('adds writing lists, and only lists and their items, on top of the read', () => {
+    expect(LIST_TOKENS).toEqual(['repo:app.bsky.graph.list?action=create', 'repo:app.bsky.graph.listitem?action=create&action=delete']);
+    expect(LISTS_SCOPE.split(' ')).toEqual([...DEFENSE_SCOPE.split(' '), ...LIST_TOKENS]);
+    for (const token of LIST_TOKENS) expect(isValidScopeToken(token), token).toBe(true);
+    // Never a block, a mute or another account's list.
+    expect(LISTS_SCOPE).not.toMatch(/graph\.block|listblock|muteActor/);
+  });
+
+  it('is explained by groups of its own, marked as Defense’s', () => {
     const groups = PERMISSION_GROUPS.filter((g) => g.onlyWith);
-    expect(groups.map((g) => g.onlyWith)).toEqual(['defense']);
+    expect(groups.map((g) => g.onlyWith)).toEqual(['defense', 'lists']);
     expect(groups[0].tokens).toEqual(DEFENSE_TOKENS);
+    expect(groups[1].tokens).toEqual(LIST_TOKENS);
   });
 
-  it('is what the client declares, so either sign-in fits under it', () => {
+  it('is what the client declares, so every sign-in fits under it', () => {
     const declared = new Set(DECLARED_SCOPE.split(' '));
-    for (const token of [...OAUTH_SCOPE.split(' '), ...DEFENSE_SCOPE.split(' ')]) expect(declared.has(token), token).toBe(true);
+    for (const token of [...OAUTH_SCOPE.split(' '), ...DEFENSE_SCOPE.split(' '), ...LISTS_SCOPE.split(' ')]) expect(declared.has(token), token).toBe(true);
     expect(new Set(DECLARED_SCOPE.split(' ')).size).toBe(DECLARED_SCOPE.split(' ').length);
   });
 });

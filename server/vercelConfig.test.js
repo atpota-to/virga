@@ -8,7 +8,7 @@ const catchAll = rewrites.find((r) => r.destination === '/index.html');
 const matchesCatchAll = (path) => new RegExp(`^${catchAll.source}$`).test(path);
 
 describe('vercel.json functions', () => {
-  it('gives the six area functions their durations', () => {
+  it('gives the seven area functions their durations', () => {
     expect(functions).toEqual({
       'api/oauth/[action].js': { maxDuration: 60 },
       'api/schedule/[action].js': { maxDuration: 60 },
@@ -16,6 +16,7 @@ describe('vercel.json functions', () => {
       'api/ai/[action].js': { maxDuration: 60 },
       'api/limits/[action].js': { maxDuration: 30 },
       'api/terms/[action].js': { maxDuration: 30 },
+      'api/defense/[action].js': { maxDuration: 60 },
     });
   });
 
@@ -25,10 +26,11 @@ describe('vercel.json functions', () => {
 });
 
 describe('vercel.json crons', () => {
-  it('runs both workers every minute', () => {
+  it('runs the three workers every minute', () => {
     expect(crons).toEqual([
       { path: '/api/schedule/run', schedule: '* * * * *' },
       { path: '/api/self-destruct/run', schedule: '* * * * *' },
+      { path: '/api/defense/run', schedule: '* * * * *' },
     ]);
   });
 

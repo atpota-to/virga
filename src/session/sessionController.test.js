@@ -6,7 +6,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { Agent } from '@atproto/api';
-import { DEFENSE_SCOPE, DEFENSE_TOKENS, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
+import { DEFENSE_SCOPE, DEFENSE_TOKENS, LISTS_SCOPE, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
 import { SESSION_HINT_KEY } from '../lib/sessionHint.js';
 import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import {
@@ -626,14 +626,41 @@ describe('signing in', () => {
     await ctrl.signIn(MIRA, { mode: 'browser', intent: 'reauth', defense: false });
     expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
   });
+
+  it('finds the account by its DID when the sign-in says which, and trusts no handle two accounts share', async () => {
+    const storage = memoryStorage();
+    // Lab once had the handle Mira has now, and still says so here.
+    recordSignIn(storage, { did: LAB, mode: 'browser', handle: 'shared.example', scope: DEFENSE_SCOPE }, 3);
+    recordSignIn(storage, { did: MIRA, mode: 'browser', handle: 'shared.example', scope: OAUTH_SCOPE }, 2);
+    const { ctrl, browser } = setup({ storage });
+    await ctrl.signIn('shared.example', { mode: 'browser', intent: 'reauth', did: MIRA });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
+    await ctrl.signIn('shared.example', { mode: 'browser', intent: 'reauth', did: LAB });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(DEFENSE_SCOPE);
+    // Without a DID, a handle two rows hold names neither.
+    await ctrl.signIn('shared.example', { mode: 'browser', intent: 'reauth' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(OAUTH_SCOPE);
+  });
+
+  it('keeps the lists for an account that has them, and asks for them when told to', async () => {
+    const storage = memoryStorage();
+    recordSignIn(storage, { did: MIRA, mode: 'browser', handle: 'mira.example.com', scope: LISTS_SCOPE }, 2);
+    const { ctrl, browser } = setup({ storage });
+    await ctrl.signIn(MIRA, { mode: 'browser', intent: 'reauth' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(LISTS_SCOPE);
+    await ctrl.signIn('lab.example.org', { mode: 'browser', defense: 'lists' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(LISTS_SCOPE);
+    await ctrl.signIn(MIRA, { mode: 'browser', intent: 'reauth', defense: 'scan' });
+    expect(browser.signIn.mock.lastCall[1].scope).toBe(DEFENSE_SCOPE);
+  });
 });
 
 describe('capabilitiesFrom', () => {
   const old = 'atproto repo:app.bsky.graph.follow?action=create&action=delete';
 
   it('lets a long session schedule and use the adviser, a browser one neither', () => {
-    expect(capabilitiesFrom({ mode: 'backend' }, 'ready')).toEqual({ mode: 'backend', canPost: true, canSchedule: true, canUseAi: true, defense: 'unknown', missing: [] });
-    expect(capabilitiesFrom({ mode: 'browser' }, 'ready')).toEqual({ mode: 'browser', canPost: true, canSchedule: false, canUseAi: false, defense: 'unknown', missing: [] });
+    expect(capabilitiesFrom({ mode: 'backend' }, 'ready')).toEqual({ mode: 'backend', canPost: true, canSchedule: true, canUseAi: true, defense: 'unknown', lists: 'unknown', canWriteLists: true, missing: [] });
+    expect(capabilitiesFrom({ mode: 'browser' }, 'ready')).toEqual({ mode: 'browser', canPost: true, canSchedule: false, canUseAi: false, defense: 'unknown', lists: 'unknown', canWriteLists: false, missing: [] });
     expect(capabilitiesFrom({ mode: 'backend' }, 'unknown').canSchedule).toBe(true);
     expect(capabilitiesFrom({ mode: 'backend' }, 'needsSignIn')).toMatchObject({ canPost: false, canSchedule: false, canUseAi: false });
     expect(capabilitiesFrom(null, 'needsSignIn')).toMatchObject({ mode: null, canPost: false });
@@ -651,6 +678,13 @@ describe('capabilitiesFrom', () => {
     expect(capabilitiesFrom({ mode: 'browser', scope: DEFENSE_SCOPE }, 'ready')).toMatchObject({ defense: 'granted', missing: [] });
     expect(capabilitiesFrom({ mode: 'backend', scope: `atproto ${DEFENSE_TOKENS[0]}` }, 'ready').defense).toBe('granted');
     expect(capabilitiesFrom({ mode: 'browser' }, 'ready').defense).toBe('unknown');
+  });
+
+  it('says whether the grant writes lists, and lets only a long session have them written', () => {
+    expect(capabilitiesFrom({ mode: 'backend', scope: LISTS_SCOPE }, 'ready')).toMatchObject({ defense: 'granted', lists: 'granted', canWriteLists: true });
+    expect(capabilitiesFrom({ mode: 'backend', scope: DEFENSE_SCOPE }, 'ready')).toMatchObject({ defense: 'granted', lists: 'missing', canWriteLists: false });
+    expect(capabilitiesFrom({ mode: 'browser', scope: LISTS_SCOPE }, 'ready')).toMatchObject({ lists: 'granted', canWriteLists: false });
+    expect(capabilitiesFrom({ mode: 'backend', scope: LISTS_SCOPE }, 'needsSignIn').canWriteLists).toBe(false);
   });
 });
 

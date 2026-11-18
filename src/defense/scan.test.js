@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CANARY_CANDIDATES, ScanError, canaryCandidates, readPostInput, resolvePost, runScan, scanErrorFrom, signedInProfiles } from './scan.js';
+import { CANARY_CANDIDATES, CANARY_REQUIRED_AT, ScanError, canaryCandidates, readPostInput, resolvePost, runScan, scanErrorFrom, signedInProfiles } from './scan.js';
 import { ScoreError } from './score.js';
 
 const OWNER = 'did:plc:owner';
@@ -196,6 +196,23 @@ describe('a scan', () => {
     expect(result.canary).toBeNull();
     expect(result.vouchCheck).toBe('unavailable');
     expect(result.rows.find((r) => r.did === 'did:plc:fan').band).toBe('CONNECTED');
+    // Without the count, "no connection" is a guess: nothing is eligible on it.
+    expect(result.autoEligible).toEqual([]);
+  });
+
+  it('stops rather than scoring without vouches when you follow plenty of people', async () => {
+    const many = Array.from({ length: CANARY_REQUIRED_AT }, (_, i) => `did:plc:follow${i}`);
+    await expect(
+      runScan({
+        input: `at://${AUTHOR}/app.bsky.feed.post/3abc`,
+        ownerDid: OWNER,
+        getProfiles: fakeAppview({ failOpen: true }),
+        getRelationships: relationships,
+        candidates: many,
+        harvest: fakeHarvest(['did:plc:far']),
+        retryDelaysMs: NO_WAIT,
+      }),
+    ).rejects.toMatchObject({ code: 'vouches' });
   });
 
   it('stops when asked to, and says so', async () => {

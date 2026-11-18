@@ -156,9 +156,15 @@ describe('a scan against the fixtures', () => {
 
   it('scores nobody when the AppView always fails open, rather than calling them strangers', async () => {
     useFakeFetch();
-    const result = await scan('failopen');
-    // No canary could be found, so nothing claims vouches were checked.
-    expect(result.canary).toBeNull();
-    expect(result.vouchCheck).toBe('unavailable');
+    // Mira follows dozens of people who follow her back: no canary among them
+    // means the counts are missing, not that nobody is connected.
+    await expect(scan('failopen')).rejects.toMatchObject({ name: 'ScanError', code: 'vouches' });
+  });
+
+  it('never calls someone who follows Mira a stranger', async () => {
+    useFakeFetch();
+    const result = await scan('ok');
+    const fans = new Set(mira.followers.map((f) => f.did));
+    for (const row of result.rows) if (fans.has(row.did)) expect(row.band, row.did).not.toBe('UNKNOWN');
   });
 });

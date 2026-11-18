@@ -31,6 +31,15 @@ export const CANARY_CANDIDATES = PROFILE_BATCH * 6;
 /** The pause before looking for a canary a second time. */
 const SECOND_LOOK_MS = 1500;
 
+/**
+ * How many of your follows it takes for "none of them is followed by any
+ * other" to be past believing. With this many and no canary after two looks,
+ * the AppView is leaving its counts off, and a scan that went on would call
+ * friends of friends strangers: it stops instead. Below it, a small account
+ * really may have no canary, and is scored without vouches, saying so.
+ */
+export const CANARY_REQUIRED_AT = 20;
+
 /** What went wrong, as a code the page can word and a sentence it can show. */
 export class ScanError extends Error {
   constructor(message, { code, cause } = {}) {
@@ -169,6 +178,12 @@ export async function runScan({
       // for the second and scoring without vouches.
       await pause(retryDelaysMs?.[0] ?? SECOND_LOOK_MS, signal);
       canary = await findCanary({ ownerDid, candidates, getProfiles, signal, ...retry });
+    }
+    if (!canary && candidates.length >= CANARY_REQUIRED_AT) {
+      throw new ScanError(
+        'Bluesky isn’t saying who you know in common with anyone right now, so nobody was sorted: they would all have looked like strangers. Try again in a few minutes.',
+        { code: 'vouches' },
+      );
     }
     const scorer = createScorer({
       ownerDid,

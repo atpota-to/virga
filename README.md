@@ -123,6 +123,7 @@ Two build settings (in `.env.local` or the host's environment):
 | --- | --- | --- |
 | `VITE_AUTH_MODE` | `browser` | How a new sign-in is held: `browser` (OAuth in this browser, as before) or `backend` (a long session held by Virga's server) |
 | `VITE_BACKEND_URL` | `''` (this site) | Where Virga's server is. Leave it empty in a deployment; set it only to point a local dev server at a deployed one |
+| `VITE_DEFENSE` | off | `on` shows Defense. Off until the Terms and the Privacy Policy describe it (docs/DEFENSE.md); the harness turns it on |
 
 The server's own settings are in `.env.example` and under Deploying below.
 
@@ -284,8 +285,9 @@ A scan takes a link to any post, or one of yours from the last 30 days that peop
 answering, and finds everyone who engaged with it (from Constellation, so the people you
 already block or mute are counted too). Each is put in a band by one thing, how many of the
 people you follow also follow them, read live from Bluesky with your own session: protected
-(you follow them), connected, peripheral, notable (widely followed, no connection) and no
-connection, most of any pile-on. The result is the radar (you at the centre, a ring a band,
+(you follow them), connected, peripheral (one or two of your follows follow them, or they
+follow you), notable (widely followed, no connection) and no connection, most of any
+pile-on. The result is the radar (you at the centre, a ring a band,
 a slice what they did), its table, the list of everyone near you with what they did and who
 you know in common, and an Export of the lot. Nothing is kept: the scan stays in the tab's
 memory until another replaces it. A batch whose counts the AppView quietly left off is

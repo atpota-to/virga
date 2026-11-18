@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeRow, didPhrase, postsToScan, rowFacts, scanCsvRows, stageFraction, stageLine, vouchPhrase } from './pageModel.js';
+import { describeRow, didPhrase, inertCell, postsToScan, rowFacts, scanCsvRows, stageCount, stageFraction, stageLabel, stageLine, vouchPhrase } from './pageModel.js';
 
 const NOW = Date.parse('2026-11-17T12:00:00Z');
 const daysAgo = (n) => new Date(NOW - n * 86_400_000).toISOString();
@@ -71,6 +71,13 @@ describe('a scan under way', () => {
     expect(stageLine({ stage: 'canary' })).toBe('Checking the AppView counts…');
   });
 
+  it('announces the stage on its own, and keeps the count beside it', () => {
+    expect(stageLabel({ stage: 'score', progress: { done: 3, total: 9 } })).toBe('Sorting by who you know');
+    expect(stageCount({ stage: 'score', progress: { done: 3, total: 9 } })).toBe(': 3 of 9 accounts');
+    expect(stageCount({ stage: 'canary' })).toBe('');
+    expect(stageLabel(null)).toBe('Starting');
+  });
+
   it('moves a bar forward stage by stage', () => {
     expect(stageFraction(null)).toBe(0);
     expect(stageFraction({ stage: 'post' })).toBe(0);
@@ -87,5 +94,13 @@ describe('a scan as a CSV', () => {
     expect(first).toEqual(['did:plc:x', 'x.test', '', 'PERIPHERAL', 40, 2, 'no', 'no', 9, 'like', 1]);
     expect(scanCsvRows({ ...summary, vouchCheck: 'unavailable' })[1][5]).toBe('');
     expect(scanCsvRows(null)).toHaveLength(1);
+  });
+
+  it('keeps a stranger’s name from running as a formula in a spreadsheet', () => {
+    for (const bad of ['=HYPERLINK("x")', '+1', '-2+3', '@SUM(A1)', '\tx', '\rx']) expect(inertCell(bad)).toBe(`'${bad}`);
+    expect(inertCell('Mira')).toBe('Mira');
+    expect(inertCell(42)).toBe(42);
+    const [, row] = scanCsvRows({ vouchCheck: 'canary', rows: [{ did: 'did:plc:x', handle: 'x.test', displayName: '=cmd|calc', band: 'UNKNOWN' }] });
+    expect(row[2]).toBe("'=cmd|calc");
   });
 });

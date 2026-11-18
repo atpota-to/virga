@@ -9,8 +9,8 @@
 // fragment, and what login requests is what the metadata declares.
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { DEFENSE_SCOPE, OAUTH_SCOPE } from '../../src/config.js';
-import { DECLARED, SCOPE, SCOPE_WITH_DEFENSE, clientMetadata } from './config.js';
+import { DEFENSE_SCOPE, LISTS_SCOPE, LIST_TOKENS, OAUTH_SCOPE } from '../../src/config.js';
+import { DECLARED, SCOPE, SCOPE_WITH_DEFENSE, SCOPE_WITH_LISTS, clientMetadata } from './config.js';
 import { parsePermission } from './testing/permissionScope.js';
 import { installOAuthEnv } from './testing/env.js';
 
@@ -138,9 +138,24 @@ describe('the scope with Defense on', () => {
       expect(() => parsePermission(token), token).not.toThrow();
   });
 
-  it('is what the metadata declares, so both sign-ins fit under it', () => {
-    expect(clientMetadata().scope).toBe(SCOPE_WITH_DEFENSE);
+  it('fits under what the metadata declares', () => {
     const declared = new Set(tokens(clientMetadata().scope));
     for (const token of list) expect(declared.has(token), token).toBe(true);
+  });
+});
+
+describe('the scope with Defense’s lists', () => {
+  const list = tokens(SCOPE_WITH_LISTS);
+
+  it('is the Defense scope and the list writes, nothing more', () => {
+    expect(SCOPE_WITH_LISTS).toBe(LISTS_SCOPE);
+    expect(list).toEqual([...tokens(SCOPE_WITH_DEFENSE), ...LIST_TOKENS]);
+    for (const token of list)
+      expect(() => parsePermission(token), token).not.toThrow();
+  });
+
+  it('is what the metadata declares, so every sign-in fits under it', () => {
+    expect(clientMetadata().scope).toBe(SCOPE_WITH_LISTS);
+    expect(DECLARED).toBe(SCOPE_WITH_LISTS);
   });
 });

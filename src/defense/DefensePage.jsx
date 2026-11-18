@@ -32,7 +32,7 @@ import { accountSignInId } from '../session/accounts.js';
 import { useAtprotoSession } from '../session/useAtprotoSession.jsx';
 import { PageHeader } from '../shell/bits.jsx';
 import { BAND_MEANS, BAND_WORD } from './bandWords.js';
-import { describeRow, postsToScan, rowFacts, scanCsvRows, stageFraction, stageLine } from './pageModel.js';
+import { describeRow, postsToScan, rowFacts, scanCsvRows, stageCount, stageFraction, stageLabel } from './pageModel.js';
 import Radar, { BandMark } from './Radar.jsx';
 import { radarTable, scanRadar } from './radar.js';
 import { canaryCandidates, runScan, signedInProfiles } from './scan.js';
@@ -77,7 +77,7 @@ export default function DefensePage() {
     if (!account) return;
     setAsking({ busy: true });
     try {
-      await session.signIn(accountSignInId(account), { mode: account.mode || reauthModeFor(account, session.authMode), intent: 'reauth', defense: on });
+      await session.signIn(accountSignInId(account), { mode: account.mode || reauthModeFor(account, session.authMode), intent: 'reauth', defense: on, did: account.did });
       setAsking(null);
     } catch (error) {
       console.warn('[defense] the sign-in didn’t start:', error);
@@ -138,8 +138,11 @@ function TurnOn({ account, asking, onTurnOn, refused }) {
           you in again, asking for that one read as well. It reads; it can’t block, mute or post.
         </p>
         <p>
-          Who engaged comes from Constellation, the public index of the network, from this browser. Nothing a scan finds is sent to
-          Virga’s server or kept after this tab closes.
+          Who engaged comes from Constellation, the public index of the network, from this browser.{' '}
+          {account?.mode === 'backend'
+            ? 'This account’s session is held by Virga’s server, so the read of their profiles goes through it, which passes it on to Bluesky and keeps none of it.'
+            : 'The read of their profiles goes from this browser straight to Bluesky.'}{' '}
+          Nothing a scan finds is kept after this tab closes.
         </p>
       </div>
       <div className="defense-actions">
@@ -264,14 +267,16 @@ function ScanForm({ archive, scan, onScan }) {
 function ScanProgress({ scan, onStop }) {
   const frac = stageFraction(scan);
   return (
-    <section className="card defense-progress" aria-labelledby="defense-progress-title" aria-busy="true">
+    <section className="card defense-progress" aria-labelledby="defense-progress-title">
       <div className="card-head">
         <div>
           <h2 id="defense-progress-title" className="card-title">
             Scanning
           </h2>
-          <p className="card-sub" role="status">
-            {stageLine(scan)}
+          {/* The stage is announced as it changes; the running count isn't, or every batch would be. */}
+          <p className="card-sub">
+            <span role="status">{stageLabel(scan)}</span>
+            <span className="num">{stageCount(scan)}</span>
           </p>
         </div>
         <button type="button" className="link-action" onClick={onStop}>
@@ -469,8 +474,8 @@ function ScanResult({ archive, result, onRescan }) {
               {fmtInt(totals.byBand.UNKNOWN)} with no connection
             </h2>
             <p className="card-sub">
-              Nobody you follow follows them, and they aren’t widely followed. They are what a block list built from this post would
-              hold. Defense can’t make one yet: for now a scan only shows you, and Export takes everyone with you.
+              Nobody you follow follows them, they don’t follow you, and they aren’t widely followed. They are what a block list built
+              from this post would hold.
             </p>
           </div>
         </div>

@@ -79,6 +79,8 @@ describe('the login request', () => {
     const base = { backendUrl: SERVER, handle: 'mira.example.com', origin: 'https://virga.example', returnPath: '/oauth/return', nonce: 'n' };
     expect(new URL(buildLoginRequest({ ...base, defense: true }).url).searchParams.get('defense')).toBe('1');
     expect(new URL(buildLoginRequest({ ...base, defense: 'yes' }).url).searchParams.has('defense')).toBe(false);
+    expect(new URL(buildLoginRequest({ ...base, defense: 'scan' }).url).searchParams.get('defense')).toBe('1');
+    expect(new URL(buildLoginRequest({ ...base, defense: 'lists' }).url).searchParams.get('defense')).toBe('lists');
   });
 });
 

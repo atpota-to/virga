@@ -271,7 +271,7 @@ export default function SignInFlow({ variant = 'page', remembered = false, compo
   async function openRemembered(account) {
     if (opening || flowRef.current.step !== STEP.ENTRY) return;
     dispatch({ type: 'notice', notice: null });
-    const again = (signal) => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth', signal });
+    const again = (signal) => signIn(accountSignInId(account), { mode: reauthModeFor(account, authMode), intent: 'reauth', signal, did: account.did });
     const stepOut = () => {
       setOpening(null);
       const next = flowRef.current.trips + 1;

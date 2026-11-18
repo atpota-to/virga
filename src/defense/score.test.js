@@ -65,9 +65,11 @@ describe('bands', () => {
     expect(assignBand({ vouches: 0, protectedReason: 'you follow them' })).toBe('PROTECTED');
   });
 
-  it('counts following you as close only when asked to', () => {
-    expect(assignBand({ followsYou: true })).toBe('UNKNOWN');
+  it('never calls someone who follows you a stranger, and counts them as close only when asked to', () => {
+    expect(assignBand({ followsYou: true })).toBe('PERIPHERAL');
+    expect(assignBand({ followsYou: true, followers: 50_000 })).toBe('PERIPHERAL');
     expect(assignBand({ followsYou: true }, { followsYouConnects: true })).toBe('CONNECTED');
+    expect(assignBand({ followsYou: true }, { followsYouPeripheral: false })).toBe('UNKNOWN');
   });
 
   it('keeps the trust key between 0 and 99', () => {

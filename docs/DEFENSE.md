@@ -24,9 +24,9 @@ words.
 | --- | --- |
 | `PROTECTED` | You follow them, or they're on a curation list you made, or you kept them by hand. Never added |
 | `CONNECTED` | 3 or more of your follows follow them, or 1 does and they have 5,000+ followers |
-| `PERIPHERAL` | 1 or 2 of your follows follow them |
+| `PERIPHERAL` | 1 or 2 of your follows follow them, or they follow you |
 | `NOTABLE` | No connection, but 10,000+ followers or very active with real reach |
-| `UNKNOWN` | No connection. Most of any pile-on |
+| `UNKNOWN` | No connection: none of your follows follow them, and they don't follow you. Most of any pile-on |
 
 ## What was checked: the vouches come from the AppView
 
@@ -254,6 +254,40 @@ Mode 3 (Virga-held accounts) runs alongside 4 and 5, once the PDS is cleared to 
   starts with the permission granted; `?appview=failopen` leaves every count off, and
   `?appview=flaky` leaves it off the first time each batch is asked.
   `harness/crowd.test.js` runs the real scan against all of it.
+- **Reviewed** at the boundary into phase 3, by an agent that hadn't written it, reading the
+  merged commit. Fixed:
+  - **No canary, no scan, for anyone following 20 or more.** Both looks finding no canary
+    used to score anyway, with `vouchCheck: 'unavailable'`. Then anyone vouched for but not
+    following the owner was UNKNOWN: 72 of them in the harness's crowd. Now a scan stops when
+    the owner has `CANARY_REQUIRED_AT` (20) candidates or more. A summary without a canary
+    also never marks anyone auto-eligible.
+  - **A follower is never UNKNOWN.** With vouches counted, a follower nobody else vouched for
+    used to be "no connection", while without them the same follower was CONNECTED. A follower
+    is now at least PERIPHERAL (`followsYouPeripheral` in score.js), and the words for the
+    bands say so.
+  - **Behind a flag.** Defense is on screen only where `VITE_DEFENSE=on` (the harness sets
+    it). This enforces the policy gap below.
+  - **The privacy sentence was wrong for long sessions.** A long session's `getProfiles`
+    goes through Virga's server (`/api/oauth/proxy`), which passes it on and keeps nothing.
+    Turn on Defense now says which way this account's read goes.
+  - **CSV.** The export guards a stranger's handle or name against running as a spreadsheet
+    formula.
+  - **Sign-in.** A sign-in again finds its account by DID, and a handle two remembered
+    accounts share decides nothing.
+  - **Scope.** A long session's return reads its grant again instead of keeping the old one.
+  - **Small fixes.**
+    - A scan that failed with an AbortError of its own (a timeout) is shown, not dropped.
+    - Only the stage is announced as a scan goes.
+    - A scan is forgotten when its account signs out of the tab.
+
+  Written down, not fixed:
+  - **Old local sign-ins.** The loopback client used by `npm run dev` on 127.0.0.1 puts its
+    scope in its client_id, so a local sign-in made before a scope is declared may need doing
+    again. Production's client_id is a URL and is unaffected.
+  - **Very large posts.** A very large post is scored in full: every like, up to the harvest's
+    caps, through the signed-in `getProfiles`. That could be thousands of calls, and a rate
+    limit that outlasts the retries fails the whole scan. Scoring likes last, or sampling
+    them, is for when it is seen.
 - **Not yet true to the code: the Terms and the Privacy Policy.** A scan sends any post's
   address to Constellation and other accounts' DIDs to Bluesky's AppView, signed in, and the
   sign-in can carry one more permission. The Privacy Policy's Constellation and AppView rows

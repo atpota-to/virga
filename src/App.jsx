@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { ArchiveProvider } from './archive/ArchiveContext.jsx';
 import { DashboardsProvider } from './dashboards/DashboardsContext.jsx';
 import SessionNotices from './accounts/SessionNotices.jsx';
+import { keepScansFor } from './defense/scanStore.js';
 import { documentFor } from './legal/documents.js';
 import LegalPage from './legal/LegalPage.jsx';
 import TermsGate from './legal/TermsGate.jsx';
@@ -60,6 +61,13 @@ function AppInner() {
   const terms = useTermsAcceptance({ did: session && agent ? did : null, mode, backendFor });
 
   const returning = path.startsWith(OAUTH_CALLBACK_PATH) || path.startsWith(OAUTH_RETURN_PATH);
+
+  // A Defense scan holds other people's names: it goes when its account is
+  // signed out or forgotten in this tab.
+  const signedIn = accounts.filter((a) => a.status !== 'needsSignIn').map((a) => a.did).join(' ');
+  useEffect(() => {
+    keepScansFor(signedIn ? signedIn.split(' ') : []);
+  }, [signedIn]);
 
   // The sign-in comes back to its own address. Once it has been dealt with,
   // the address is the app's again, so a reload doesn't replay it. A failure
