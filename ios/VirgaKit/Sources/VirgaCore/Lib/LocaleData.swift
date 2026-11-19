@@ -102,9 +102,20 @@ public enum LocaleData {
   /// a script (en-Latn-GB) is plain `en`, as Intl resolves it: ICU has no
   /// English locale with a script, so lookup falls back past the region.
   public static func profile(for tag: String) -> Profile {
-    guard let parsed = LanguageTag(tag), parsed.script == nil else { return profile(region: nil) }
-    return profile(region: parsed.maximizedRegion)
+    if let cached = profiles.wrappedValue[tag] { return cached }
+    let found: Profile
+    if let parsed = LanguageTag(tag), parsed.script == nil {
+      found = profile(region: parsed.maximizedRegion)
+    } else {
+      found = profile(region: nil)
+    }
+    profiles.withLock { $0[tag] = found }
+    return found
   }
+
+  /// Profiles by tag, as read: formatting a chart's labels asks for the same
+  /// one thousands of times.
+  static let profiles = Locked<[String: Profile]>([:])
 
   /// The profile of `en-<region>`.
   public static func profile(region: String?) -> Profile {
