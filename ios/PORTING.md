@@ -62,6 +62,16 @@ means porting the code, not reimagining it.
   `jsTrimmed`), or work on `Array(text.utf16)`. Don't index by `Character`
   where the web indexes by code unit. Graphemes (`Graphemes.countGraphemes`)
   are only for what the web counts with Intl.Segmenter.
+- **Strings compare by code unit.** Swift's `==` on String, and so `Set<String>`,
+  `Dictionary` keys, `contains` and `firstIndex(of:)`, is canonical
+  equivalence: "é" equals "e\u{301}", and the Kelvin sign equals "K".
+  JavaScript's `===`, `includes`, `indexOf`, Sets and object keys compare
+  UTF-16 code units. Wherever the web compares strings that come from outside
+  the code (ids, DIDs, handles, keys read back from storage, user text), use
+  VirgaCore's `jsEquals`, `JSKey` (a Set/Dictionary key), `jsIncludes` and
+  `jsValue` (`Support/JSStrings.swift`). Comparing with an ASCII literal is
+  exact unless it contains "K", ";" or "`". `Parity.diff` compares strings
+  by code unit, so fixtures catch the difference.
 - **Regular expressions.** Port JS regexes to `NSRegularExpression` matched over
   `NSString`/UTF-16 ranges, which gives JS-compatible offsets. Watch the
   differences: JS `\w`, `\d`, `\b` are ASCII-only unless the regex has `u`

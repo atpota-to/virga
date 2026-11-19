@@ -12,10 +12,7 @@ import Foundation
 import VirgaCore
 
 extension String {
-  /// `a === b`: the same UTF-16 code units.
-  func jsEquals(_ other: String) -> Bool {
-    utf16.elementsEqual(other.utf16)
-  }
+  // `jsEquals` (a === b) is VirgaCore's (Support/JSStrings.swift).
 
   /// `str.startsWith(prefix)`, by code unit.
   func jsStartsWith(_ prefix: String) -> Bool {

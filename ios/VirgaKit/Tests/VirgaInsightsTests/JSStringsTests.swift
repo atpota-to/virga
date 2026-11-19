@@ -3,6 +3,7 @@
 // function that compares strings to the web over canonically equivalent
 // ids, DIDs, groups and the Kelvin sign; these pin the helpers themselves.
 
+import VirgaCore
 import Foundation
 import Testing
 @testable import VirgaInsights

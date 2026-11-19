@@ -6,7 +6,7 @@
 // `indexOf`, a Set and an object's keys compare UTF-16 code units, so
 // those are two strings there. Wherever the web compares two strings that
 // come from outside the code (ids, DIDs, keys read back from storage, a
-// caller's registry), this target compares them with these.
+// caller's registry), compare them with these.
 //
 // A comparison with a literal or a constant table of ASCII words is exact
 // either way, unless the word has "K", ";" or "`": those three are the
@@ -14,20 +14,21 @@
 // Kelvin sign, the Greek question mark and the Greek varia). So the
 // key "K" of a key press is compared here too.
 //
-// (VirgaCore has no such helper yet; this is internal until it does.)
+// Moved here from VirgaInsights, where an audit found the difference; every
+// target uses these (ios/PORTING.md, "Strings compare by code unit").
 
 import Foundation
 
 extension String {
   /// `a === b`: the same UTF-16 code units.
-  func jsEquals(_ other: String) -> Bool {
+  public func jsEquals(_ other: String) -> Bool {
     utf16.elementsEqual(other.utf16)
   }
 }
 
 extension Optional where Wrapped == String {
   /// `a === b` for values that may be missing: nil only equals nil.
-  func jsEquals(_ other: String?) -> Bool {
+  public func jsEquals(_ other: String?) -> Bool {
     switch (self, other) {
     case (nil, nil): return true
     case (let a?, let b?): return a.jsEquals(b)
@@ -38,13 +39,13 @@ extension Optional where Wrapped == String {
 
 /// A string as a JavaScript Set or Map holds it: equal only to the same
 /// code units.
-struct JSKey: Hashable, Sendable {
-  let value: String
-  init(_ value: String) { self.value = value }
+public struct JSKey: Hashable, Sendable {
+  public let value: String
+  public init(_ value: String) { self.value = value }
 
-  static func == (a: JSKey, b: JSKey) -> Bool { a.value.jsEquals(b.value) }
+  public static func == (a: JSKey, b: JSKey) -> Bool { a.value.jsEquals(b.value) }
 
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     for unit in value.utf16 { hasher.combine(unit) }
   }
 }
@@ -52,7 +53,7 @@ struct JSKey: Hashable, Sendable {
 extension Dictionary where Key == String {
   /// `object[key]` over an object's own keys, matched by code units (a
   /// key that is only canonically equivalent isn't the same key).
-  func jsValue(_ key: String) -> Value? {
+  public func jsValue(_ key: String) -> Value? {
     guard let index = index(forKey: key), self[index].key.jsEquals(key) else { return nil }
     return self[index].value
   }
@@ -60,7 +61,7 @@ extension Dictionary where Key == String {
 
 extension Sequence where Element == String {
   /// `list.includes(value)`, by code units.
-  func jsIncludes(_ value: String) -> Bool {
+  public func jsIncludes(_ value: String) -> Bool {
     contains { $0.jsEquals(value) }
   }
 }

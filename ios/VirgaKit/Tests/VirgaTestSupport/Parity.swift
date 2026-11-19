@@ -85,6 +85,8 @@ public enum Parity {
   ///
   /// - Numbers match within a relative 1e-9 (JavaScript and Swift can round
   ///   the last bit of a float differently).
+  /// - Strings match by UTF-16 code unit, as JavaScript's `===` does, not by
+  ///   Swift's canonical equivalence.
   /// - A missing member matches `null` (JSON.stringify drops `undefined`,
   ///   and Swift's encoders drop nil), unless `strictNulls` is set.
   public static func diff(
@@ -99,6 +101,13 @@ public enum Parity {
       let scale = Swift.max(1, abs(a), abs(b))
       return abs(a - b) <= 1e-9 * scale ? nil : "\(path): \(a) ≠ expected \(b)"
     case (.object(let a), .object(let b)):
+      // Dictionary keys match by canonical equivalence; JavaScript's keys by
+      // code unit.
+      for key in a.keys.sorted() where b[key] != nil {
+        if !b.keys.contains(where: { $0.jsEquals(key) }) {
+          return "\(path): key \(key.debugDescription) is not, code unit for code unit, the expected key"
+        }
+      }
       for key in Set(a.keys).union(b.keys).sorted() {
         let left = a[key] ?? .null
         let right = b[key] ?? .null
@@ -120,6 +129,11 @@ public enum Parity {
         }
       }
       return nil
+    case (.string(let a), .string(let b)):
+      // By UTF-16 code unit, as JavaScript compares strings. Swift's String
+      // == is canonical equivalence, which would let an NFC/NFD difference
+      // (or the Kelvin sign for K) through.
+      return a.jsEquals(b) ? nil : "\(path): \(short(actual)) ≠ expected \(short(expected))"
     default:
       return actual == expected ? nil : "\(path): \(short(actual)) ≠ expected \(short(expected))"
     }
