@@ -1,0 +1,2005 @@
+{
+  "name": "repo.encoding",
+  "sources": [
+    "src/lib/carRepo.js",
+    "src/posting/lib/recordCid.js"
+  ],
+  "cases": [
+    {
+      "id": "varint.encode#1",
+      "fn": "varint.encode",
+      "input": {
+        "num": 0
+      },
+      "output": {
+        "hex": "00",
+        "length": 1
+      }
+    },
+    {
+      "id": "varint.encode#2",
+      "fn": "varint.encode",
+      "input": {
+        "num": 1
+      },
+      "output": {
+        "hex": "01",
+        "length": 1
+      }
+    },
+    {
+      "id": "varint.encode#3",
+      "fn": "varint.encode",
+      "input": {
+        "num": 23
+      },
+      "output": {
+        "hex": "17",
+        "length": 1
+      }
+    },
+    {
+      "id": "varint.encode#4",
+      "fn": "varint.encode",
+      "input": {
+        "num": 24
+      },
+      "output": {
+        "hex": "18",
+        "length": 1
+      }
+    },
+    {
+      "id": "varint.encode#5",
+      "fn": "varint.encode",
+      "input": {
+        "num": 127
+      },
+      "output": {
+        "hex": "7f",
+        "length": 1
+      }
+    },
+    {
+      "id": "varint.encode#6",
+      "fn": "varint.encode",
+      "input": {
+        "num": 128
+      },
+      "output": {
+        "hex": "8001",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#7",
+      "fn": "varint.encode",
+      "input": {
+        "num": 129
+      },
+      "output": {
+        "hex": "8101",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#8",
+      "fn": "varint.encode",
+      "input": {
+        "num": 255
+      },
+      "output": {
+        "hex": "ff01",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#9",
+      "fn": "varint.encode",
+      "input": {
+        "num": 256
+      },
+      "output": {
+        "hex": "8002",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#10",
+      "fn": "varint.encode",
+      "input": {
+        "num": 300
+      },
+      "output": {
+        "hex": "ac02",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#11",
+      "fn": "varint.encode",
+      "input": {
+        "num": 16383
+      },
+      "output": {
+        "hex": "ff7f",
+        "length": 2
+      }
+    },
+    {
+      "id": "varint.encode#12",
+      "fn": "varint.encode",
+      "input": {
+        "num": 16384
+      },
+      "output": {
+        "hex": "808001",
+        "length": 3
+      }
+    },
+    {
+      "id": "varint.encode#13",
+      "fn": "varint.encode",
+      "input": {
+        "num": 2097151
+      },
+      "output": {
+        "hex": "ffff7f",
+        "length": 3
+      }
+    },
+    {
+      "id": "varint.encode#14",
+      "fn": "varint.encode",
+      "input": {
+        "num": 2097152
+      },
+      "output": {
+        "hex": "80808001",
+        "length": 4
+      }
+    },
+    {
+      "id": "varint.encode#15",
+      "fn": "varint.encode",
+      "input": {
+        "num": 268435455
+      },
+      "output": {
+        "hex": "ffffff7f",
+        "length": 4
+      }
+    },
+    {
+      "id": "varint.encode#16",
+      "fn": "varint.encode",
+      "input": {
+        "num": 268435456
+      },
+      "output": {
+        "hex": "8080808001",
+        "length": 5
+      }
+    },
+    {
+      "id": "varint.encode#17",
+      "fn": "varint.encode",
+      "input": {
+        "num": 2147483647
+      },
+      "output": {
+        "hex": "ffffffff07",
+        "length": 5
+      }
+    },
+    {
+      "id": "varint.encode#18",
+      "fn": "varint.encode",
+      "input": {
+        "num": 2147483648
+      },
+      "output": {
+        "hex": "8080808008",
+        "length": 5
+      }
+    },
+    {
+      "id": "varint.encode#19",
+      "fn": "varint.encode",
+      "input": {
+        "num": 4294967295
+      },
+      "output": {
+        "hex": "ffffffff0f",
+        "length": 5
+      }
+    },
+    {
+      "id": "varint.encode#20",
+      "fn": "varint.encode",
+      "input": {
+        "num": 4294967296
+      },
+      "output": {
+        "hex": "8080808010",
+        "length": 5
+      }
+    },
+    {
+      "id": "varint.encode#21",
+      "fn": "varint.encode",
+      "input": {
+        "num": 34359738368
+      },
+      "output": {
+        "hex": "808080808001",
+        "length": 6
+      }
+    },
+    {
+      "id": "varint.encode#22",
+      "fn": "varint.encode",
+      "input": {
+        "num": 4398046511103
+      },
+      "output": {
+        "hex": "ffffffffff7f",
+        "length": 6
+      }
+    },
+    {
+      "id": "varint.encode#23",
+      "fn": "varint.encode",
+      "input": {
+        "num": 562949953421312
+      },
+      "output": {
+        "hex": "8080808080808001",
+        "length": 8
+      }
+    },
+    {
+      "id": "varint.encode#24",
+      "fn": "varint.encode",
+      "input": {
+        "num": 4503599627370503
+      },
+      "output": {
+        "hex": "8780808080808008",
+        "length": 8
+      }
+    },
+    {
+      "id": "varint.encode#25",
+      "fn": "varint.encode",
+      "input": {
+        "num": 9007199254740991
+      },
+      "output": {
+        "hex": "ffffffffffffff0f",
+        "length": 8
+      }
+    },
+    {
+      "id": "varint.encode#26",
+      "fn": "varint.encode",
+      "input": {
+        "num": 9007199254740992
+      },
+      "output": {
+        "$throws": "could not encode varint"
+      }
+    },
+    {
+      "id": "varint.encode#27",
+      "fn": "varint.encode",
+      "input": {
+        "num": -1
+      },
+      "output": {
+        "$throws": "could not encode varint"
+      }
+    },
+    {
+      "id": "varint.encode#28",
+      "fn": "varint.encode",
+      "input": {
+        "num": 1.5
+      },
+      "output": {
+        "$throws": "could not encode varint"
+      }
+    },
+    {
+      "id": "zero",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "00"
+      },
+      "output": {
+        "value": 0,
+        "nextOffset": 1
+      }
+    },
+    {
+      "id": "max-one-byte",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "7f"
+      },
+      "output": {
+        "value": 127,
+        "nextOffset": 1
+      }
+    },
+    {
+      "id": "two-bytes",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "8001"
+      },
+      "output": {
+        "value": 128,
+        "nextOffset": 2
+      }
+    },
+    {
+      "id": "three-bytes",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffff03"
+      },
+      "output": {
+        "value": 65535,
+        "nextOffset": 3
+      }
+    },
+    {
+      "id": "non-minimal-zero",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "8000"
+      },
+      "output": {
+        "value": 0,
+        "nextOffset": 2
+      }
+    },
+    {
+      "id": "non-minimal-long",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "8080808000"
+      },
+      "output": {
+        "value": 0,
+        "nextOffset": 5
+      }
+    },
+    {
+      "id": "cut-short",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "80"
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "varint.decode",
+      "input": {
+        "hex": ""
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "five-bytes",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffffffff0f"
+      },
+      "output": {
+        "value": 4294967295,
+        "nextOffset": 5
+      }
+    },
+    {
+      "id": "seven-bytes",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffffffffffff3f"
+      },
+      "output": {
+        "value": 281474976710655,
+        "nextOffset": 7
+      }
+    },
+    {
+      "id": "eight-bytes-max-safe",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffffffffffffff0f"
+      },
+      "output": {
+        "value": 9007199254740991,
+        "nextOffset": 8
+      }
+    },
+    {
+      "id": "eight-bytes-past-safe",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffffffffffffff7f"
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "nine-bytes-limit-eight",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "808080808080808001",
+        "length": 8
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "nine-bytes-no-limit",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "808080808080808001"
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "ten-bytes-past-safe",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "ffffffffffffffffff01"
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "offset",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "aabb9601",
+        "offset": 2
+      },
+      "output": {
+        "value": 150,
+        "nextOffset": 4
+      }
+    },
+    {
+      "id": "offset-past-end",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "aabb",
+        "offset": 2
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "limit-cuts",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "9601",
+        "length": 1
+      },
+      "output": {
+        "$throws": "could not decode varint"
+      }
+    },
+    {
+      "id": "limit-past-end",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "9601",
+        "offset": 0,
+        "length": 9
+      },
+      "output": {
+        "value": 150,
+        "nextOffset": 2
+      }
+    },
+    {
+      "id": "trailing-ignored",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "0501ff"
+      },
+      "output": {
+        "value": 5,
+        "nextOffset": 1
+      }
+    },
+    {
+      "id": "car-header-58",
+      "fn": "varint.decode",
+      "input": {
+        "hex": "3aa265726f6f7473"
+      },
+      "output": {
+        "value": 58,
+        "nextOffset": 1
+      }
+    },
+    {
+      "id": "toBase32#1",
+      "fn": "toBase32",
+      "input": {
+        "hex": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "toBase32#2",
+      "fn": "toBase32",
+      "input": {
+        "hex": "00"
+      },
+      "output": "aa"
+    },
+    {
+      "id": "toBase32#3",
+      "fn": "toBase32",
+      "input": {
+        "hex": "ff"
+      },
+      "output": "74"
+    },
+    {
+      "id": "toBase32#4",
+      "fn": "toBase32",
+      "input": {
+        "hex": "0001"
+      },
+      "output": "aaaq"
+    },
+    {
+      "id": "toBase32#5",
+      "fn": "toBase32",
+      "input": {
+        "hex": "000102"
+      },
+      "output": "aaaqe"
+    },
+    {
+      "id": "toBase32#6",
+      "fn": "toBase32",
+      "input": {
+        "hex": "00010203"
+      },
+      "output": "aaaqeay"
+    },
+    {
+      "id": "toBase32#7",
+      "fn": "toBase32",
+      "input": {
+        "hex": "0001020304"
+      },
+      "output": "aaaqeaye"
+    },
+    {
+      "id": "toBase32#8",
+      "fn": "toBase32",
+      "input": {
+        "hex": "000102030405"
+      },
+      "output": "aaaqeayeau"
+    },
+    {
+      "id": "toBase32#9",
+      "fn": "toBase32",
+      "input": {
+        "hex": "deadbeef"
+      },
+      "output": "32w353y"
+    },
+    {
+      "id": "toBase32#10",
+      "fn": "toBase32",
+      "input": {
+        "hex": "ffffffffff"
+      },
+      "output": "77777777"
+    },
+    {
+      "id": "toBase32#11",
+      "fn": "toBase32",
+      "input": {
+        "hex": "fffefdfcfbfaf9f8f7f6"
+      },
+      "output": "777p37h37l47r57w"
+    },
+    {
+      "id": "toBase32#12",
+      "fn": "toBase32",
+      "input": {
+        "hex": "017112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": "afyreiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+    },
+    {
+      "id": "toBase32#13",
+      "fn": "toBase32",
+      "input": {
+        "hex": "01551220abababababababababababababababababababababababababababababababab"
+      },
+      "output": "afkreiflvov2xk5lvov2xk5lvov2xk5lvov2xk5lvov2xk5lvov2xk5lvm"
+    },
+    {
+      "id": "toBase32#14",
+      "fn": "toBase32",
+      "input": {
+        "hex": "68656c6c6f20776f726c64"
+      },
+      "output": "nbswy3dpeb3w64tmmq"
+    },
+    {
+      "id": "fromBase32#1",
+      "fn": "fromBase32",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fromBase32#2",
+      "fn": "fromBase32",
+      "input": {
+        "text": "a"
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "fromBase32#3",
+      "fn": "fromBase32",
+      "input": {
+        "text": "ae"
+      },
+      "output": "01"
+    },
+    {
+      "id": "fromBase32#4",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aa"
+      },
+      "output": "00"
+    },
+    {
+      "id": "fromBase32#5",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaa"
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "fromBase32#6",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaa"
+      },
+      "output": "0000"
+    },
+    {
+      "id": "fromBase32#7",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaa"
+      },
+      "output": "000000"
+    },
+    {
+      "id": "fromBase32#8",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaa"
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "fromBase32#9",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaaa"
+      },
+      "output": "00000000"
+    },
+    {
+      "id": "fromBase32#10",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaaaa"
+      },
+      "output": "0000000000"
+    },
+    {
+      "id": "fromBase32#11",
+      "fn": "fromBase32",
+      "input": {
+        "text": "my"
+      },
+      "output": "66"
+    },
+    {
+      "id": "fromBase32#12",
+      "fn": "fromBase32",
+      "input": {
+        "text": "mz"
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "fromBase32#13",
+      "fn": "fromBase32",
+      "input": {
+        "text": "MY"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#14",
+      "fn": "fromBase32",
+      "input": {
+        "text": "nbswy3dp"
+      },
+      "output": "68656c6c6f"
+    },
+    {
+      "id": "fromBase32#15",
+      "fn": "fromBase32",
+      "input": {
+        "text": "nbswy3dpeb3w64tmmq"
+      },
+      "output": "68656c6c6f20776f726c64"
+    },
+    {
+      "id": "fromBase32#16",
+      "fn": "fromBase32",
+      "input": {
+        "text": "1aaaaaaa"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#17",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaaa1"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#18",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaaa="
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#19",
+      "fn": "fromBase32",
+      "input": {
+        "text": "aaaaaaaaé"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#20",
+      "fn": "fromBase32",
+      "input": {
+        "text": "é"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#21",
+      "fn": "fromBase32",
+      "input": {
+        "text": " my"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "fromBase32#22",
+      "fn": "fromBase32",
+      "input": {
+        "text": "afyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+      },
+      "output": "01711220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "toBase64#1",
+      "fn": "toBase64",
+      "input": {
+        "hex": ""
+      },
+      "output": {
+        "unpadded": "",
+        "padded": ""
+      }
+    },
+    {
+      "id": "toBase64#2",
+      "fn": "toBase64",
+      "input": {
+        "hex": "00"
+      },
+      "output": {
+        "unpadded": "AA",
+        "padded": "AA=="
+      }
+    },
+    {
+      "id": "toBase64#3",
+      "fn": "toBase64",
+      "input": {
+        "hex": "ff"
+      },
+      "output": {
+        "unpadded": "/w",
+        "padded": "/w=="
+      }
+    },
+    {
+      "id": "toBase64#4",
+      "fn": "toBase64",
+      "input": {
+        "hex": "0001"
+      },
+      "output": {
+        "unpadded": "AAE",
+        "padded": "AAE="
+      }
+    },
+    {
+      "id": "toBase64#5",
+      "fn": "toBase64",
+      "input": {
+        "hex": "000102"
+      },
+      "output": {
+        "unpadded": "AAEC",
+        "padded": "AAEC"
+      }
+    },
+    {
+      "id": "toBase64#6",
+      "fn": "toBase64",
+      "input": {
+        "hex": "00010203"
+      },
+      "output": {
+        "unpadded": "AAECAw",
+        "padded": "AAECAw=="
+      }
+    },
+    {
+      "id": "toBase64#7",
+      "fn": "toBase64",
+      "input": {
+        "hex": "0001020304"
+      },
+      "output": {
+        "unpadded": "AAECAwQ",
+        "padded": "AAECAwQ="
+      }
+    },
+    {
+      "id": "toBase64#8",
+      "fn": "toBase64",
+      "input": {
+        "hex": "000102030405"
+      },
+      "output": {
+        "unpadded": "AAECAwQF",
+        "padded": "AAECAwQF"
+      }
+    },
+    {
+      "id": "toBase64#9",
+      "fn": "toBase64",
+      "input": {
+        "hex": "deadbeef"
+      },
+      "output": {
+        "unpadded": "3q2+7w",
+        "padded": "3q2+7w=="
+      }
+    },
+    {
+      "id": "toBase64#10",
+      "fn": "toBase64",
+      "input": {
+        "hex": "ffffffffff"
+      },
+      "output": {
+        "unpadded": "//////8",
+        "padded": "//////8="
+      }
+    },
+    {
+      "id": "toBase64#11",
+      "fn": "toBase64",
+      "input": {
+        "hex": "fffefdfcfbfaf9f8f7f6"
+      },
+      "output": {
+        "unpadded": "//79/Pv6+fj39g",
+        "padded": "//79/Pv6+fj39g=="
+      }
+    },
+    {
+      "id": "toBase64#12",
+      "fn": "toBase64",
+      "input": {
+        "hex": "017112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "unpadded": "AXESIBERERERERERERERERERERERERERERERERERERERERER",
+        "padded": "AXESIBERERERERERERERERERERERERERERERERERERERERER"
+      }
+    },
+    {
+      "id": "toBase64#13",
+      "fn": "toBase64",
+      "input": {
+        "hex": "01551220abababababababababababababababababababababababababababababababab"
+      },
+      "output": {
+        "unpadded": "AVUSIKurq6urq6urq6urq6urq6urq6urq6urq6urq6urq6ur",
+        "padded": "AVUSIKurq6urq6urq6urq6urq6urq6urq6urq6urq6urq6ur"
+      }
+    },
+    {
+      "id": "toBase64#14",
+      "fn": "toBase64",
+      "input": {
+        "hex": "68656c6c6f20776f726c64"
+      },
+      "output": {
+        "unpadded": "aGVsbG8gd29ybGQ",
+        "padded": "aGVsbG8gd29ybGQ="
+      }
+    },
+    {
+      "id": "fromBase64#1",
+      "fn": "fromBase64",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fromBase64#2",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AA"
+      },
+      "output": "00"
+    },
+    {
+      "id": "fromBase64#3",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQ"
+      },
+      "output": "01"
+    },
+    {
+      "id": "fromBase64#4",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AR"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#5",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQI"
+      },
+      "output": "0102"
+    },
+    {
+      "id": "fromBase64#6",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQM"
+      },
+      "output": "0103"
+    },
+    {
+      "id": "fromBase64#7",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQID"
+      },
+      "output": "010203"
+    },
+    {
+      "id": "fromBase64#8",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQIDBA"
+      },
+      "output": "01020304"
+    },
+    {
+      "id": "fromBase64#9",
+      "fn": "fromBase64",
+      "input": {
+        "text": "A"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#10",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQIDB"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#11",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AA=="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#12",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQ=="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#13",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQI="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#14",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQID"
+      },
+      "output": "010203"
+    },
+    {
+      "id": "fromBase64#15",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQ="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#16",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQ==="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#17",
+      "fn": "fromBase64",
+      "input": {
+        "text": "A==="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#18",
+      "fn": "fromBase64",
+      "input": {
+        "text": "===="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#19",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AA=A"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#20",
+      "fn": "fromBase64",
+      "input": {
+        "text": "+/+/"
+      },
+      "output": "fbffbf"
+    },
+    {
+      "id": "fromBase64#21",
+      "fn": "fromBase64",
+      "input": {
+        "text": "-_-_"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#22",
+      "fn": "fromBase64",
+      "input": {
+        "text": "aGVsbG8gd29ybGQ"
+      },
+      "output": "68656c6c6f20776f726c64"
+    },
+    {
+      "id": "fromBase64#23",
+      "fn": "fromBase64",
+      "input": {
+        "text": "aGVsbG8gd29ybGQ="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#24",
+      "fn": "fromBase64",
+      "input": {
+        "text": " AQID"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#25",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQID "
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#26",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQ\nID"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64#27",
+      "fn": "fromBase64",
+      "input": {
+        "text": "AQIé"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#1",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fromBase64Pad#2",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AA"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#3",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQ"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#4",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AR"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#5",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQI"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#6",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQM"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#7",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQID"
+      },
+      "output": "010203"
+    },
+    {
+      "id": "fromBase64Pad#8",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQIDBA"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#9",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "A"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#10",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQIDB"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#11",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AA=="
+      },
+      "output": "00"
+    },
+    {
+      "id": "fromBase64Pad#12",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQ=="
+      },
+      "output": "01"
+    },
+    {
+      "id": "fromBase64Pad#13",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQI="
+      },
+      "output": "0102"
+    },
+    {
+      "id": "fromBase64Pad#14",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQID"
+      },
+      "output": "010203"
+    },
+    {
+      "id": "fromBase64Pad#15",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQ="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#16",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQ==="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#17",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "A==="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#18",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "===="
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#19",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AA=A"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#20",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "+/+/"
+      },
+      "output": "fbffbf"
+    },
+    {
+      "id": "fromBase64Pad#21",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "-_-_"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#22",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "aGVsbG8gd29ybGQ"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#23",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "aGVsbG8gd29ybGQ="
+      },
+      "output": "68656c6c6f20776f726c64"
+    },
+    {
+      "id": "fromBase64Pad#24",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": " AQID"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#25",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQID "
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#26",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQ\nID"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "fromBase64Pad#27",
+      "fn": "fromBase64Pad",
+      "input": {
+        "text": "AQIé"
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "CID.fromString#1",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      },
+      "output": {
+        "string": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu",
+        "codec": 113,
+        "version": 1,
+        "digest": "de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d",
+        "bytes": "01711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+      }
+    },
+    {
+      "id": "CID.fromString#2",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+      },
+      "output": {
+        "string": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64",
+        "codec": 85,
+        "version": 1,
+        "digest": "b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f7",
+        "bytes": "01551220b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f7"
+      }
+    },
+    {
+      "id": "CID.fromString#3",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreigov2ns6elnyiksqufzr6ctfg4i4eiodharfupyoc5sq23tvyew4a"
+      },
+      "output": {
+        "string": "bafyreigov2ns6elnyiksqufzr6ctfg4i4eiodharfupyoc5sq23tvyew4a",
+        "codec": 113,
+        "version": 1,
+        "digest": "ceae9b2f116dc2152850b98f85329b88e110e19c112d1f870bb286b73ae096e0",
+        "bytes": "01711220ceae9b2f116dc2152850b98f85329b88e110e19c112d1f870bb286b73ae096e0"
+      }
+    },
+    {
+      "id": "CID.fromString#4",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "BAFYREIG6KGWGAIXXENKFV62GKZ43FGDYOE2DDBGQBFR2EDKQV5YA5KGINU"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#5",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "Bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#6",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kgin"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#7",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginuu"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#8",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kgin1"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "CID.fromString#9",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginv"
+      },
+      "output": {
+        "$throws": "unexpected end of data"
+      }
+    },
+    {
+      "id": "CID.fromString#10",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#11",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "zdj7WhuEjrB52m1BisYCtmjH1hSKa7yZ3jEZ9JcXaFRD51wVz"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#12",
+      "fn": "CID.fromString",
+      "input": {
+        "text": ""
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#13",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "b"
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "CID.fromString#14",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginé"
+      },
+      "output": {
+        "$throws": "invalid base string"
+      }
+    },
+    {
+      "id": "CID.fromString#15",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bajyreiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+      },
+      "output": {
+        "$throws": "incorrect cid version (got v2)"
+      }
+    },
+    {
+      "id": "CID.fromString#16",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafybeiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x70)"
+      }
+    },
+    {
+      "id": "CID.fromString#17",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyrgiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+      },
+      "output": {
+        "$throws": "incorrect cid digest codec (got 0x13)"
+      }
+    },
+    {
+      "id": "CID.fromString#18",
+      "fn": "CID.fromString",
+      "input": {
+        "text": "bafyreiirceirceirceirceirceirceirceirceirceirceirceirceirce"
+      },
+      "output": {
+        "$throws": "incorrect cid digest size (got 33)"
+      }
+    },
+    {
+      "id": "dag-cbor",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "017112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "string": "bafyreiarceirceirceirceirceirceirceirceirceirceirceirceirce",
+        "codec": 113,
+        "version": 1,
+        "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "bytes": "017112201111111111111111111111111111111111111111111111111111111111111111"
+      }
+    },
+    {
+      "id": "raw",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "01551220abababababababababababababababababababababababababababababababab"
+      },
+      "output": {
+        "string": "bafkreiflvov2xk5lvov2xk5lvov2xk5lvov2xk5lvov2xk5lvov2xk5lvm",
+        "codec": 85,
+        "version": 1,
+        "digest": "abababababababababababababababababababababababababababababababab",
+        "bytes": "01551220abababababababababababababababababababababababababababababababab"
+      }
+    },
+    {
+      "id": "too-short",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "0171122011111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "cid too short"
+      }
+    },
+    {
+      "id": "remainder",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "01711220111111111111111111111111111111111111111111111111111111111111111100"
+      },
+      "output": {
+        "$throws": "cid bytes includes remainder"
+      }
+    },
+    {
+      "id": "version-0",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "007112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid version (got v0)"
+      }
+    },
+    {
+      "id": "version-18",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "122012201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid version (got v18)"
+      }
+    },
+    {
+      "id": "codec-dag-pb",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "017012201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x70)"
+      }
+    },
+    {
+      "id": "codec-json",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "018012201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x80)"
+      }
+    },
+    {
+      "id": "hash-blake",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "0171e4201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid digest codec (got 0xe4)"
+      }
+    },
+    {
+      "id": "digest-size-31",
+      "fn": "CID.decode",
+      "input": {
+        "hex": "0171121f1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid digest size (got 31)"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "CID.decode",
+      "input": {
+        "hex": ""
+      },
+      "output": {
+        "$throws": "cid too short"
+      }
+    },
+    {
+      "id": "ok",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "00017112202222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "output": {
+        "string": "bafyreibceirceirceirceirceirceirceirceirceirceirceirceircei",
+        "codec": 113,
+        "version": 1,
+        "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "bytes": "017112202222222222222222222222222222222222222222222222222222222222222222"
+      }
+    },
+    {
+      "id": "no-prefix",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "01711220222222222222222222222222222222222222222222222222222222222222222200"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "prefix-01",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "01017112202222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "short",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "000171122022222222222222222222222222222222222222222222222222222222222222"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "long",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "0001711220222222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "bad-codec",
+      "fn": "CID.fromBinary",
+      "input": {
+        "hex": "00017212202222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x72)"
+      }
+    },
+    {
+      "id": "raw-empty",
+      "fn": "CID.create",
+      "input": {
+        "codec": 85,
+        "hex": ""
+      },
+      "output": {
+        "string": "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+        "codec": 85,
+        "version": 1,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": "01551220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "dcbor-empty-map",
+      "fn": "CID.create",
+      "input": {
+        "codec": 113,
+        "hex": "a0"
+      },
+      "output": {
+        "string": "bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua",
+        "codec": 113,
+        "version": 1,
+        "digest": "c19a797fa1fd590cd2e5b42d1cf5f246e29b91684e2f87404b81dc345c7a56a0",
+        "bytes": "01711220c19a797fa1fd590cd2e5b42d1cf5f246e29b91684e2f87404b81dc345c7a56a0"
+      }
+    },
+    {
+      "id": "dcbor-null",
+      "fn": "CID.create",
+      "input": {
+        "codec": 113,
+        "hex": "f6"
+      },
+      "output": {
+        "string": "bafyreifqwkmiw256ojf2zws6tzjeonw6bpd5vza4i22ccpcq4hjv2ts7cm",
+        "codec": 113,
+        "version": 1,
+        "digest": "b0b2988b6bbe724bacda5e9e524736de0bc7dae41c46b4213c50e1d35d4e5f13",
+        "bytes": "01711220b0b2988b6bbe724bacda5e9e524736de0bc7dae41c46b4213c50e1d35d4e5f13"
+      }
+    },
+    {
+      "id": "raw-hello",
+      "fn": "CID.create",
+      "input": {
+        "codec": 85,
+        "hex": "68656c6c6f"
+      },
+      "output": {
+        "string": "bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq",
+        "codec": 85,
+        "version": 1,
+        "digest": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        "bytes": "015512202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+      }
+    },
+    {
+      "id": "raw-1k",
+      "fn": "CID.create",
+      "input": {
+        "codec": 85,
+        "hex": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+      },
+      "output": {
+        "string": "bafkreicfkvkv3runq4wce4f2rhwml5xqssas6zjxfm36kadr7ziwqay4je",
+        "codec": 85,
+        "version": 1,
+        "digest": "4555555dc68d872c2270ba89ecc5f6f094812f65372b37e50071fe5168031c49",
+        "bytes": "015512204555555dc68d872c2270ba89ecc5f6f094812f65372b37e50071fe5168031c49"
+      }
+    },
+    {
+      "id": "ok",
+      "fn": "CID.fromDigest",
+      "input": {
+        "codec": 113,
+        "hex": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "output": {
+        "string": "bafyreibtgmztgmztgmztgmztgmztgmztgmztgmztgmztgmztgmztgmztgm",
+        "codec": 113,
+        "version": 1,
+        "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "bytes": "017112203333333333333333333333333333333333333333333333333333333333333333"
+      }
+    },
+    {
+      "id": "short",
+      "fn": "CID.fromDigest",
+      "input": {
+        "codec": 113,
+        "hex": "33333333333333333333333333333333333333333333333333333333333333"
+      },
+      "output": {
+        "$throws": "invalid digest length"
+      }
+    },
+    {
+      "id": "long",
+      "fn": "CID.fromDigest",
+      "input": {
+        "codec": 85,
+        "hex": "333333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "output": {
+        "$throws": "invalid digest length"
+      }
+    },
+    {
+      "id": "CID.toBinary#1",
+      "fn": "CID.toBinary",
+      "input": {
+        "string": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      },
+      "output": "0001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+    }
+  ]
+}
