@@ -37,7 +37,8 @@ public enum PDS {
       return nil
     }
     guard let url = try? WebURL(endpoint), url.protocol == "https:" || url.protocol == "http:" else { return nil }
-    var t = endpoint; while t.hasSuffix("/") { t.removeLast() }; return t
+    // `endpoint.replace(/\/+$/, '')`, by code unit.
+    return endpoint.jsRemovingTrailingSlashes()
   }
 
   /// `createPdsResolver({ getDidDocument })`.

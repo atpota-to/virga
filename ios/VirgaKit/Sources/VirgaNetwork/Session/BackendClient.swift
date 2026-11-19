@@ -362,7 +362,9 @@ public enum BackendClient {
     if truthy(token) == nil && truthy(did) == nil { return nil }
     let nonce = get(query, "n")
     // `pending.nonce !== nonce`: the same string, code unit for code unit.
-    let nonceMatches = pending?["nonce"] == .string(nonce ?? "")
+    // (JSONValue's == compares strings by canonical equivalence.)
+    var nonceMatches = false
+    if case .string(let held)? = pending?["nonce"], let nonce { nonceMatches = held.jsEquals(nonce) }
     if pending.truthy.isPresent == false || truthy(nonce) == nil || !nonceMatches {
       let error = ReturnError("unexpected_return", "This sign-in wasn’t started from this tab, so it was ignored.")
       return .error(error, orphanToken: isToken(token ?? "") ? token : nil)

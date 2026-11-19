@@ -82,9 +82,9 @@ public enum PublicAppView {
   public static func getPosts(_ uris: [String?]?, transport: any HTTPTransport = HTTP.transport) async -> GetPostsResult {
     // `[...new Set(uris.filter(…))]`: by code unit.
     var unique: [String] = []
-    var seen = Set<String>()
+    var seen = Set<JSKey>()
     for uri in uris ?? [] {
-      guard let uri, !uri.isEmpty, seen.insert(uri).inserted else { continue }
+      guard let uri, !uri.isEmpty, seen.insert(JSKey(uri)).inserted else { continue }
       unique.append(uri)
     }
     let parts = chunk(unique)
