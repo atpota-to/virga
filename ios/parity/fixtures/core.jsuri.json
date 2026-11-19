@@ -1,0 +1,1377 @@
+{
+  "name": "core.jsuri",
+  "sources": [
+    "ios/VirgaKit/Sources/VirgaCore/Support/JSURI.swift",
+    "ios/VirgaKit/Sources/VirgaCore/Support/JSCoercion.swift",
+    "ios/VirgaKit/Sources/VirgaCore/Support/JSCompat.swift"
+  ],
+  "cases": [
+    {
+      "id": "encodeURIComponent#1",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "encodeURIComponent#2",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "hello world"
+      },
+      "output": "hello%20world"
+    },
+    {
+      "id": "encodeURIComponent#3",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "a+b=c&d"
+      },
+      "output": "a%2Bb%3Dc%26d"
+    },
+    {
+      "id": "encodeURIComponent#4",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "-_.!~*'()"
+      },
+      "output": "-_.!~*'()"
+    },
+    {
+      "id": "encodeURIComponent#5",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": ";/?:@&=+$,#"
+      },
+      "output": "%3B%2F%3F%3A%40%26%3D%2B%24%2C%23"
+    },
+    {
+      "id": "encodeURIComponent#6",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": "na%C3%AFve%20caf%C3%A9"
+    },
+    {
+      "id": "encodeURIComponent#7",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": "%F0%9F%91%8D%F0%9F%8F%BD%20thumbs"
+    },
+    {
+      "id": "encodeURIComponent#8",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "日本語"
+      },
+      "output": "%E6%97%A5%E6%9C%AC%E8%AA%9E"
+    },
+    {
+      "id": "encodeURIComponent#9",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": "at%3A%2F%2Fdid%3Aplc%3Aabc%2Fapp.bsky.feed.post%2F3k"
+    },
+    {
+      "id": "encodeURIComponent#10",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "100%"
+      },
+      "output": "100%25"
+    },
+    {
+      "id": "encodeURIComponent#11",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "tab\tnew\nline"
+      },
+      "output": "tab%09new%0Aline"
+    },
+    {
+      "id": "encodeURIComponent#12",
+      "fn": "encodeURIComponent",
+      "input": {
+        "s": "[brackets]{braces}|pipe\\back^caret`tick\"quote<>"
+      },
+      "output": "%5Bbrackets%5D%7Bbraces%7D%7Cpipe%5Cback%5Ecaret%60tick%22quote%3C%3E"
+    },
+    {
+      "id": "encodeURI#1",
+      "fn": "encodeURI",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "encodeURI#2",
+      "fn": "encodeURI",
+      "input": {
+        "s": "hello world"
+      },
+      "output": "hello%20world"
+    },
+    {
+      "id": "encodeURI#3",
+      "fn": "encodeURI",
+      "input": {
+        "s": "a+b=c&d"
+      },
+      "output": "a+b=c&d"
+    },
+    {
+      "id": "encodeURI#4",
+      "fn": "encodeURI",
+      "input": {
+        "s": "-_.!~*'()"
+      },
+      "output": "-_.!~*'()"
+    },
+    {
+      "id": "encodeURI#5",
+      "fn": "encodeURI",
+      "input": {
+        "s": ";/?:@&=+$,#"
+      },
+      "output": ";/?:@&=+$,#"
+    },
+    {
+      "id": "encodeURI#6",
+      "fn": "encodeURI",
+      "input": {
+        "s": "naïve café"
+      },
+      "output": "na%C3%AFve%20caf%C3%A9"
+    },
+    {
+      "id": "encodeURI#7",
+      "fn": "encodeURI",
+      "input": {
+        "s": "👍🏽 thumbs"
+      },
+      "output": "%F0%9F%91%8D%F0%9F%8F%BD%20thumbs"
+    },
+    {
+      "id": "encodeURI#8",
+      "fn": "encodeURI",
+      "input": {
+        "s": "日本語"
+      },
+      "output": "%E6%97%A5%E6%9C%AC%E8%AA%9E"
+    },
+    {
+      "id": "encodeURI#9",
+      "fn": "encodeURI",
+      "input": {
+        "s": "at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.post/3k"
+    },
+    {
+      "id": "encodeURI#10",
+      "fn": "encodeURI",
+      "input": {
+        "s": "100%"
+      },
+      "output": "100%25"
+    },
+    {
+      "id": "encodeURI#11",
+      "fn": "encodeURI",
+      "input": {
+        "s": "tab\tnew\nline"
+      },
+      "output": "tab%09new%0Aline"
+    },
+    {
+      "id": "encodeURI#12",
+      "fn": "encodeURI",
+      "input": {
+        "s": "[brackets]{braces}|pipe\\back^caret`tick\"quote<>"
+      },
+      "output": "%5Bbrackets%5D%7Bbraces%7D%7Cpipe%5Cback%5Ecaret%60tick%22quote%3C%3E"
+    },
+    {
+      "id": "decodeURIComponent#1",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "decodeURIComponent#2",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "hello%20world"
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "decodeURIComponent#3",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "my%20board"
+      },
+      "output": "my board"
+    },
+    {
+      "id": "decodeURIComponent#4",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "caf%C3%A9"
+      },
+      "output": "café"
+    },
+    {
+      "id": "decodeURIComponent#5",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "caf%c3%a9"
+      },
+      "output": "café"
+    },
+    {
+      "id": "decodeURIComponent#6",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%F0%9F%91%8D"
+      },
+      "output": "👍"
+    },
+    {
+      "id": "decodeURIComponent#7",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%E6%97%A5%E6%9C%AC"
+      },
+      "output": "日本"
+    },
+    {
+      "id": "decodeURIComponent#8",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%2F%3F%23%26%3D%2B%24%2C%3B%3A%40"
+      },
+      "output": "/?#&=+$,;:@"
+    },
+    {
+      "id": "decodeURIComponent#9",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%41%42%43"
+      },
+      "output": "ABC"
+    },
+    {
+      "id": "decodeURIComponent#10",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#11",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%2"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#12",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%zz"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#13",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "100%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#14",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%%41"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#15",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C3"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#16",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C3%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#17",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C3%2"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#18",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C3%28"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#19",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%E6%97"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#20",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#21",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%BF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#22",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C0%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#23",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%C1%BF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#24",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%E0%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#25",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%ED%A0%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#26",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%ED%9F%BF"
+      },
+      "output": "퟿"
+    },
+    {
+      "id": "decodeURIComponent#27",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%EE%80%80"
+      },
+      "output": ""
+    },
+    {
+      "id": "decodeURIComponent#28",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%F0%80%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#29",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%F4%8F%BF%BF"
+      },
+      "output": "􏿿"
+    },
+    {
+      "id": "decodeURIComponent#30",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%F4%90%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#31",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%F8%80%80%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#32",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "%FF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURIComponent#33",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "plain text"
+      },
+      "output": "plain text"
+    },
+    {
+      "id": "decodeURIComponent#34",
+      "fn": "decodeURIComponent",
+      "input": {
+        "s": "a%20b%2Fc"
+      },
+      "output": "a b/c"
+    },
+    {
+      "id": "decodeURI#1",
+      "fn": "decodeURI",
+      "input": {
+        "s": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "decodeURI#2",
+      "fn": "decodeURI",
+      "input": {
+        "s": "hello%20world"
+      },
+      "output": "hello world"
+    },
+    {
+      "id": "decodeURI#3",
+      "fn": "decodeURI",
+      "input": {
+        "s": "my%20board"
+      },
+      "output": "my board"
+    },
+    {
+      "id": "decodeURI#4",
+      "fn": "decodeURI",
+      "input": {
+        "s": "caf%C3%A9"
+      },
+      "output": "café"
+    },
+    {
+      "id": "decodeURI#5",
+      "fn": "decodeURI",
+      "input": {
+        "s": "caf%c3%a9"
+      },
+      "output": "café"
+    },
+    {
+      "id": "decodeURI#6",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%F0%9F%91%8D"
+      },
+      "output": "👍"
+    },
+    {
+      "id": "decodeURI#7",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%E6%97%A5%E6%9C%AC"
+      },
+      "output": "日本"
+    },
+    {
+      "id": "decodeURI#8",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%2F%3F%23%26%3D%2B%24%2C%3B%3A%40"
+      },
+      "output": "%2F%3F%23%26%3D%2B%24%2C%3B%3A%40"
+    },
+    {
+      "id": "decodeURI#9",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%41%42%43"
+      },
+      "output": "ABC"
+    },
+    {
+      "id": "decodeURI#10",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#11",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%2"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#12",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%zz"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#13",
+      "fn": "decodeURI",
+      "input": {
+        "s": "100%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#14",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%%41"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#15",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C3"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#16",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C3%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#17",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C3%2"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#18",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C3%28"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#19",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%E6%97"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#20",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#21",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%BF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#22",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C0%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#23",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%C1%BF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#24",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%E0%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#25",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%ED%A0%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#26",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%ED%9F%BF"
+      },
+      "output": "퟿"
+    },
+    {
+      "id": "decodeURI#27",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%EE%80%80"
+      },
+      "output": ""
+    },
+    {
+      "id": "decodeURI#28",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%F0%80%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#29",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%F4%8F%BF%BF"
+      },
+      "output": "􏿿"
+    },
+    {
+      "id": "decodeURI#30",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%F4%90%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#31",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%F8%80%80%80%80"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#32",
+      "fn": "decodeURI",
+      "input": {
+        "s": "%FF"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "decodeURI#33",
+      "fn": "decodeURI",
+      "input": {
+        "s": "plain text"
+      },
+      "output": "plain text"
+    },
+    {
+      "id": "decodeURI#34",
+      "fn": "decodeURI",
+      "input": {
+        "s": "a%20b%2Fc"
+      },
+      "output": "a b%2Fc"
+    },
+    {
+      "id": "Number#1",
+      "fn": "Number",
+      "input": {
+        "value": null
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#2",
+      "fn": "Number",
+      "input": {
+        "value": true
+      },
+      "output": 1
+    },
+    {
+      "id": "Number#3",
+      "fn": "Number",
+      "input": {
+        "value": false
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#4",
+      "fn": "Number",
+      "input": {
+        "value": 0
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#5",
+      "fn": "Number",
+      "input": {
+        "value": 12.5
+      },
+      "output": 12.5
+    },
+    {
+      "id": "Number#6",
+      "fn": "Number",
+      "input": {
+        "value": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#7",
+      "fn": "Number",
+      "input": {
+        "value": " "
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#8",
+      "fn": "Number",
+      "input": {
+        "value": "12"
+      },
+      "output": 12
+    },
+    {
+      "id": "Number#9",
+      "fn": "Number",
+      "input": {
+        "value": " 12 "
+      },
+      "output": 12
+    },
+    {
+      "id": "Number#10",
+      "fn": "Number",
+      "input": {
+        "value": "\n12\t"
+      },
+      "output": 12
+    },
+    {
+      "id": "Number#11",
+      "fn": "Number",
+      "input": {
+        "value": " 12﻿"
+      },
+      "output": 12
+    },
+    {
+      "id": "Number#12",
+      "fn": "Number",
+      "input": {
+        "value": "12px"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#13",
+      "fn": "Number",
+      "input": {
+        "value": "1e3"
+      },
+      "output": 1000
+    },
+    {
+      "id": "Number#14",
+      "fn": "Number",
+      "input": {
+        "value": "1E-3"
+      },
+      "output": 0.001
+    },
+    {
+      "id": "Number#15",
+      "fn": "Number",
+      "input": {
+        "value": "1e"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#16",
+      "fn": "Number",
+      "input": {
+        "value": ".5"
+      },
+      "output": 0.5
+    },
+    {
+      "id": "Number#17",
+      "fn": "Number",
+      "input": {
+        "value": "5."
+      },
+      "output": 5
+    },
+    {
+      "id": "Number#18",
+      "fn": "Number",
+      "input": {
+        "value": "."
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#19",
+      "fn": "Number",
+      "input": {
+        "value": "+5"
+      },
+      "output": 5
+    },
+    {
+      "id": "Number#20",
+      "fn": "Number",
+      "input": {
+        "value": "-5"
+      },
+      "output": -5
+    },
+    {
+      "id": "Number#21",
+      "fn": "Number",
+      "input": {
+        "value": "+-5"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#22",
+      "fn": "Number",
+      "input": {
+        "value": "0x1F"
+      },
+      "output": 31
+    },
+    {
+      "id": "Number#23",
+      "fn": "Number",
+      "input": {
+        "value": "0X1f"
+      },
+      "output": 31
+    },
+    {
+      "id": "Number#24",
+      "fn": "Number",
+      "input": {
+        "value": "-0x1F"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#25",
+      "fn": "Number",
+      "input": {
+        "value": "0x"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#26",
+      "fn": "Number",
+      "input": {
+        "value": "0xG"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#27",
+      "fn": "Number",
+      "input": {
+        "value": "0o17"
+      },
+      "output": 15
+    },
+    {
+      "id": "Number#28",
+      "fn": "Number",
+      "input": {
+        "value": "0b101"
+      },
+      "output": 5
+    },
+    {
+      "id": "Number#29",
+      "fn": "Number",
+      "input": {
+        "value": "0b102"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#30",
+      "fn": "Number",
+      "input": {
+        "value": "00012"
+      },
+      "output": 12
+    },
+    {
+      "id": "Number#31",
+      "fn": "Number",
+      "input": {
+        "value": "1_000"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#32",
+      "fn": "Number",
+      "input": {
+        "value": "1,000"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#33",
+      "fn": "Number",
+      "input": {
+        "value": "Infinity"
+      },
+      "output": "Infinity"
+    },
+    {
+      "id": "Number#34",
+      "fn": "Number",
+      "input": {
+        "value": "-Infinity"
+      },
+      "output": "-Infinity"
+    },
+    {
+      "id": "Number#35",
+      "fn": "Number",
+      "input": {
+        "value": "+Infinity"
+      },
+      "output": "Infinity"
+    },
+    {
+      "id": "Number#36",
+      "fn": "Number",
+      "input": {
+        "value": "infinity"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#37",
+      "fn": "Number",
+      "input": {
+        "value": "NaN"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#38",
+      "fn": "Number",
+      "input": {
+        "value": "1e1000"
+      },
+      "output": "Infinity"
+    },
+    {
+      "id": "Number#39",
+      "fn": "Number",
+      "input": {
+        "value": "-1e1000"
+      },
+      "output": "-Infinity"
+    },
+    {
+      "id": "Number#40",
+      "fn": "Number",
+      "input": {
+        "value": "١٢"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#41",
+      "fn": "Number",
+      "input": {
+        "value": "six"
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#42",
+      "fn": "Number",
+      "input": {
+        "value": []
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#43",
+      "fn": "Number",
+      "input": {
+        "value": [
+          5
+        ]
+      },
+      "output": 5
+    },
+    {
+      "id": "Number#44",
+      "fn": "Number",
+      "input": {
+        "value": [
+          "7"
+        ]
+      },
+      "output": 7
+    },
+    {
+      "id": "Number#45",
+      "fn": "Number",
+      "input": {
+        "value": [
+          1,
+          2
+        ]
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#46",
+      "fn": "Number",
+      "input": {
+        "value": [
+          null
+        ]
+      },
+      "output": 0
+    },
+    {
+      "id": "Number#47",
+      "fn": "Number",
+      "input": {
+        "value": [
+          [
+            3
+          ]
+        ]
+      },
+      "output": 3
+    },
+    {
+      "id": "Number#48",
+      "fn": "Number",
+      "input": {
+        "value": {}
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "Number#49",
+      "fn": "Number",
+      "input": {
+        "value": {
+          "a": 1
+        }
+      },
+      "output": "NaN"
+    },
+    {
+      "id": "round#1",
+      "fn": "round",
+      "input": {
+        "n": 0.5
+      },
+      "output": 1
+    },
+    {
+      "id": "round#2",
+      "fn": "round",
+      "input": {
+        "n": 1.5
+      },
+      "output": 2
+    },
+    {
+      "id": "round#3",
+      "fn": "round",
+      "input": {
+        "n": 2.5
+      },
+      "output": 3
+    },
+    {
+      "id": "round#4",
+      "fn": "round",
+      "input": {
+        "n": -0.5
+      },
+      "output": "-0"
+    },
+    {
+      "id": "round#5",
+      "fn": "round",
+      "input": {
+        "n": -1.5
+      },
+      "output": -1
+    },
+    {
+      "id": "round#6",
+      "fn": "round",
+      "input": {
+        "n": -2.5
+      },
+      "output": -2
+    },
+    {
+      "id": "round#7",
+      "fn": "round",
+      "input": {
+        "n": -0.4
+      },
+      "output": "-0"
+    },
+    {
+      "id": "round#8",
+      "fn": "round",
+      "input": {
+        "n": -0.6
+      },
+      "output": -1
+    },
+    {
+      "id": "round#9",
+      "fn": "round",
+      "input": {
+        "n": 0.49999999999999994
+      },
+      "output": 0
+    },
+    {
+      "id": "round#10",
+      "fn": "round",
+      "input": {
+        "n": -0.49999999999999994
+      },
+      "output": "-0"
+    },
+    {
+      "id": "round#11",
+      "fn": "round",
+      "input": {
+        "n": 4503599627370495.5
+      },
+      "output": 4503599627370496
+    },
+    {
+      "id": "round#12",
+      "fn": "round",
+      "input": {
+        "n": -4503599627370495.5
+      },
+      "output": -4503599627370495
+    },
+    {
+      "id": "round#13",
+      "fn": "round",
+      "input": {
+        "n": 9007199254740992
+      },
+      "output": 9007199254740992
+    },
+    {
+      "id": "round#14",
+      "fn": "round",
+      "input": {
+        "n": 1e+21
+      },
+      "output": 1e+21
+    },
+    {
+      "id": "round#15",
+      "fn": "round",
+      "input": {
+        "n": -1e-300
+      },
+      "output": "-0"
+    },
+    {
+      "id": "round#16",
+      "fn": "round",
+      "input": {
+        "n": 0.1
+      },
+      "output": 0
+    },
+    {
+      "id": "round#17",
+      "fn": "round",
+      "input": {
+        "n": 123.456
+      },
+      "output": 123
+    },
+    {
+      "id": "round#18",
+      "fn": "round",
+      "input": {
+        "n": -123.456
+      },
+      "output": -123
+    }
+  ]
+}

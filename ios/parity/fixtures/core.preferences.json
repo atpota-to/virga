@@ -1,0 +1,8668 @@
+{
+  "name": "core.preferences",
+  "sources": [
+    "src/lib/preferences.jsx"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "PREFERENCES_KEY": "virga:preferences",
+        "ACCENT_CHOICES": [
+          "blue",
+          "violet",
+          "teal",
+          "amber",
+          "rose",
+          "graphite"
+        ],
+        "SKY_CHOICES": [
+          "clock",
+          "dawn",
+          "day",
+          "dusk",
+          "night"
+        ],
+        "DEFAULT_PREFERENCES": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        }
+      }
+    },
+    {
+      "id": "readPreferences#1",
+      "fn": "readPreferences",
+      "input": {
+        "stored": null
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#2",
+      "fn": "readPreferences",
+      "input": {
+        "stored": ""
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#3",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{not json"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#4",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "null"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#5",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "5"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#6",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "0"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#7",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "true"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#8",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "\"dark\""
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#9",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "[]"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#10",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "[{\"sky\":\"dusk\"}]"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#11",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#12",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"density\":\"roomy\",\"liveSky\":true,\"period\":\"90d\",\"extra\":1}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": true,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "90d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#13",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"liveSky\":\"yes\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#14",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"dark\"}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#15",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"light\",\"sky\":true}"
+      },
+      "output": {
+        "sky": "day",
+        "liveSky": true,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#16",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"system\",\"sky\":false,\"skyTime\":\"dusk\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#17",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"dark\",\"sky\":\"dawn\"}"
+      },
+      "output": {
+        "sky": "dawn",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#18",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"dark\",\"sky\":\"clock\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#19",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"light\",\"sky\":false,\"liveSky\":true}"
+      },
+      "output": {
+        "sky": "day",
+        "liveSky": true,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#20",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"theme\":\"dark\",\"sky\":\"noon\"}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#21",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":true,\"liveSky\":false}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#22",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"locale\":\"en-GB\",\"weekStart\":\"sunday\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "en-GB",
+        "weekStart": "sunday"
+      }
+    },
+    {
+      "id": "readPreferences#23",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"locale\":\"tlh\",\"weekStart\":\"someday\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#24",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"locale\":\"en-gb\",\"weekStart\":\"Sunday\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#25",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"custom\",\"periodFrom\":\"2026-10-01\",\"periodTo\":\"2026-10-31\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "custom",
+        "periodFrom": "2026-10-01",
+        "periodTo": "2026-10-31",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#26",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"custom\",\"periodFrom\":\"2026-10-01\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "2026-10-01",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#27",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"custom\",\"periodFrom\":\"October\",\"periodTo\":\"2026-10-31\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "2026-10-31",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#28",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"custom\",\"periodFrom\":\"2026-10-01\\n\",\"periodTo\":\"2026-10-31\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "2026-10-31",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#29",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"custom\",\"periodFrom\":\"２０２６-10-01\",\"periodTo\":\"2026-10-31\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "2026-10-31",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#30",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"period\":\"7d\",\"periodFrom\":\"2026-10-01\",\"periodTo\":20261031}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "7d",
+        "periodFrom": "2026-10-01",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#31",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"teal\",\"contrast\":\"high\",\"sky\":\"dusk\"}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#32",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"#ff00ff\",\"contrast\":\"max\",\"sky\":\"noon\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#33",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sidebar\":\"collapsed\",\"density\":\"compact\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "compact",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "collapsed",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#34",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sidebar\":\"hidden\",\"density\":\"COMPACT\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#35",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":3,\"sky\":null,\"period\":[\"30d\"]}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#36",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"night\",\"liveSky\":true,\"accent\":\"graphite\",\"contrast\":\"normal\",\"density\":\"compact\",\"period\":\"all\",\"periodFrom\":\"\",\"periodTo\":\"\",\"sidebar\":\"collapsed\",\"locale\":\"en-IN\",\"weekStart\":\"saturday\"}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": true,
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "compact",
+        "period": "all",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "collapsed",
+        "locale": "en-IN",
+        "weekStart": "saturday"
+      }
+    },
+    {
+      "id": "readPreferences#37",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"clock\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#38",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dawn\"}"
+      },
+      "output": {
+        "sky": "dawn",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#39",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"day\"}"
+      },
+      "output": {
+        "sky": "day",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#40",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\"}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#41",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"night\"}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#42",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"blue\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#43",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"violet\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "violet",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#44",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"teal\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "teal",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#45",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"amber\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "amber",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#46",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"rose\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "rose",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#47",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"accent\":\"graphite\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "graphite",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferencesNoStore#1",
+      "fn": "readPreferencesNoStore",
+      "input": {},
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "effectiveContrast#1",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "system",
+        "systemMore": false
+      },
+      "output": "normal"
+    },
+    {
+      "id": "effectiveContrast#2",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "system",
+        "systemMore": true
+      },
+      "output": "high"
+    },
+    {
+      "id": "effectiveContrast#3",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "normal",
+        "systemMore": false
+      },
+      "output": "normal"
+    },
+    {
+      "id": "effectiveContrast#4",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "normal",
+        "systemMore": true
+      },
+      "output": "normal"
+    },
+    {
+      "id": "effectiveContrast#5",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "high",
+        "systemMore": false
+      },
+      "output": "high"
+    },
+    {
+      "id": "effectiveContrast#6",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "high",
+        "systemMore": true
+      },
+      "output": "high"
+    },
+    {
+      "id": "effectiveContrast#7",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "max",
+        "systemMore": false
+      },
+      "output": "normal"
+    },
+    {
+      "id": "effectiveContrast#8",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": "max",
+        "systemMore": true
+      },
+      "output": "high"
+    },
+    {
+      "id": "effectiveContrast#9",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": null,
+        "systemMore": false
+      },
+      "output": "normal"
+    },
+    {
+      "id": "effectiveContrast#10",
+      "fn": "effectiveContrast",
+      "input": {
+        "contrast": null,
+        "systemMore": true
+      },
+      "output": "high"
+    },
+    {
+      "id": "rootAttributes#1",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#2",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#3",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#4",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#5",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#6",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#7",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#8",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#9",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#10",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#11",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#12",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#13",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#14",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#15",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#16",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#17",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#18",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#19",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#20",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#21",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#22",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#23",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#24",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#25",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#26",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#27",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#28",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#29",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#30",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#31",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#32",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#33",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#34",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#35",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#36",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#37",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#38",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#39",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#40",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#41",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#42",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#43",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#44",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#45",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#46",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#47",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#48",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": null,
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#49",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#50",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#51",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#52",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#53",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#54",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#55",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#56",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#57",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#58",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#59",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#60",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#61",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#62",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#63",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#64",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#65",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#66",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#67",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#68",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#69",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#70",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#71",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#72",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributes#73",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#74",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#75",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#76",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#77",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#78",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#79",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#80",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#81",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#82",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#83",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#84",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#85",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#86",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#87",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#88",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#89",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#90",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#91",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#92",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#93",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#94",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#95",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#96",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#97",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#98",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#99",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#100",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#101",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#102",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#103",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#104",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#105",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#106",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#107",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#108",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#109",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#110",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#111",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#112",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#113",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#114",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#115",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#116",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#117",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#118",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#119",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#120",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#121",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#122",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#123",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#124",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#125",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#126",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#127",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#128",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#129",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#130",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#131",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#132",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#133",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#134",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#135",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#136",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#137",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#138",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#139",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#140",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#141",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#142",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#143",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#144",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#145",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#146",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#147",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#148",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#149",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#150",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#151",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#152",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#153",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#154",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#155",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#156",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#157",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#158",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#159",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#160",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#161",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#162",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#163",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#164",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#165",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#166",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#167",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#168",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#169",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#170",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#171",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#172",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#173",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#174",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#175",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#176",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#177",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#178",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#179",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#180",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#181",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#182",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#183",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#184",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#185",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#186",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#187",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#188",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#189",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#190",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#191",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#192",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#193",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#194",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#195",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#196",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#197",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#198",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#199",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#200",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#201",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#202",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#203",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#204",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#205",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#206",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#207",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#208",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#209",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#210",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#211",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#212",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#213",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#214",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#215",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#216",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#217",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#218",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#219",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#220",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#221",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#222",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#223",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#224",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#225",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#226",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#227",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#228",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#229",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#230",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#231",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#232",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#233",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#234",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#235",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#236",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#237",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#238",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#239",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#240",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#241",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#242",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#243",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#244",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#245",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#246",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#247",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#248",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#249",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#250",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#251",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#252",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#253",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#254",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#255",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#256",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#257",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#258",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#259",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#260",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#261",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#262",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#263",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#264",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "violet",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#265",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#266",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#267",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#268",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#269",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#270",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#271",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#272",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#273",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#274",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#275",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#276",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#277",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#278",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#279",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#280",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#281",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#282",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#283",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#284",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#285",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#286",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#287",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#288",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "teal",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#289",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#290",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#291",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#292",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#293",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#294",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#295",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#296",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#297",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#298",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#299",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#300",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#301",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#302",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#303",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#304",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#305",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#306",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#307",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#308",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#309",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#310",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#311",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#312",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "amber",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#313",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#314",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#315",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#316",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#317",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#318",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#319",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#320",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#321",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#322",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#323",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#324",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#325",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#326",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#327",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#328",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#329",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#330",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#331",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#332",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#333",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#334",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#335",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#336",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "rose",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#337",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#338",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#339",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#340",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#341",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#342",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#343",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#344",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#345",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "dawn",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#346",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#347",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#348",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": false,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#349",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#350",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#351",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#352",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#353",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#354",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": false,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#355",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 0
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#356",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 5
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#357",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 7.99
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#358",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 8
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#359",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 17
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributes#360",
+      "fn": "rootAttributes",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        },
+        "dark": true,
+        "moreContrast": true,
+        "hour": 20
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "graphite",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#1",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#2",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": null
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#3",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "sky": "dusk",
+          "accent": "rose",
+          "contrast": "normal",
+          "density": "compact"
+        }
+      },
+      "output": {
+        "sky": "dusk",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "compact"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#4",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "mauve",
+          "density": "roomy"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#5",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "sky": "night"
+        }
+      },
+      "output": {
+        "sky": "night",
+        "theme": "dark",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#6",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "sky": "day"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#7",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "sky": "noon",
+          "contrast": "max"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#8",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "contrast": "high"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "high",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#9",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "contrast": "normal"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#10",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "blue"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "blue",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#11",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "violet"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "violet",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#12",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "teal"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "teal",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#13",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "amber"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "amber",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#14",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "rose"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "rose",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "rootAttributesDefaults#15",
+      "fn": "rootAttributesDefaults",
+      "input": {
+        "prefs": {
+          "accent": "graphite"
+        }
+      },
+      "output": {
+        "sky": "day",
+        "theme": "light",
+        "accent": "graphite",
+        "contrast": "normal",
+        "density": "comfortable"
+      }
+    },
+    {
+      "id": "writePreferences#1",
+      "fn": "writePreferences",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "",
+          "periodTo": "",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "virga:preferences": "{\"sky\":\"clock\",\"liveSky\":false,\"accent\":\"blue\",\"contrast\":\"system\",\"density\":\"comfortable\",\"period\":\"30d\",\"periodFrom\":\"\",\"periodTo\":\"\",\"sidebar\":\"expanded\",\"locale\":\"system\",\"weekStart\":\"system\"}"
+      }
+    },
+    {
+      "id": "writePreferences#2",
+      "fn": "writePreferences",
+      "input": {
+        "prefs": {
+          "sky": "night",
+          "liveSky": true,
+          "accent": "rose",
+          "contrast": "high",
+          "density": "compact",
+          "period": "custom",
+          "periodFrom": "2026-01-01",
+          "periodTo": "2026-01-31",
+          "sidebar": "collapsed",
+          "locale": "en-CH",
+          "weekStart": "sunday"
+        }
+      },
+      "output": {
+        "virga:preferences": "{\"sky\":\"night\",\"liveSky\":true,\"accent\":\"rose\",\"contrast\":\"high\",\"density\":\"compact\",\"period\":\"custom\",\"periodFrom\":\"2026-01-01\",\"periodTo\":\"2026-01-31\",\"sidebar\":\"collapsed\",\"locale\":\"en-CH\",\"weekStart\":\"sunday\"}"
+      }
+    },
+    {
+      "id": "writePreferences#3",
+      "fn": "writePreferences",
+      "input": {
+        "prefs": {
+          "sky": "clock",
+          "liveSky": false,
+          "accent": "blue",
+          "contrast": "system",
+          "density": "comfortable",
+          "period": "30d",
+          "periodFrom": "quote \" and \\ back",
+          "periodTo": "👍",
+          "sidebar": "expanded",
+          "locale": "system",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "virga:preferences": "{\"sky\":\"clock\",\"liveSky\":false,\"accent\":\"blue\",\"contrast\":\"system\",\"density\":\"comfortable\",\"period\":\"30d\",\"periodFrom\":\"quote \\\" and \\\\ back\",\"periodTo\":\"👍\",\"sidebar\":\"expanded\",\"locale\":\"system\",\"weekStart\":\"system\"}"
+      }
+    },
+    {
+      "id": "applyFormats#1",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "en-GB",
+          "weekStart": "sunday"
+        }
+      },
+      "output": {
+        "stamp": "en-GB/0",
+        "locale": "en-GB",
+        "weekStart": 0
+      }
+    },
+    {
+      "id": "applyFormats#2",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "en-GB",
+          "weekStart": "monday"
+        }
+      },
+      "output": {
+        "stamp": "en-GB/1",
+        "locale": "en-GB",
+        "weekStart": 1
+      }
+    },
+    {
+      "id": "applyFormats#3",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "en-US",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "stamp": "en-US/0",
+        "locale": "en-US",
+        "weekStart": 0
+      }
+    },
+    {
+      "id": "applyFormats#4",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "en-DE",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "stamp": "en-DE/1",
+        "locale": "en-DE",
+        "weekStart": 1
+      }
+    },
+    {
+      "id": "applyFormats#5",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "en-IN",
+          "weekStart": "saturday"
+        }
+      },
+      "output": {
+        "stamp": "en-IN/6",
+        "locale": "en-IN",
+        "weekStart": 6
+      }
+    },
+    {
+      "id": "applyFormats#6",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "system",
+          "weekStart": "system"
+        }
+      },
+      "output": {
+        "stamp": "en-US/0",
+        "locale": "en-US",
+        "weekStart": 0
+      }
+    },
+    {
+      "id": "applyFormats#7",
+      "fn": "applyFormats",
+      "input": {
+        "prefs": {
+          "locale": "tlh",
+          "weekStart": "someday"
+        }
+      },
+      "output": {
+        "stamp": "en-US/0",
+        "locale": "en-US",
+        "weekStart": 0
+      }
+    }
+  ]
+}
