@@ -48,7 +48,7 @@ public enum Tags {
       }
       let tag = clampTag(cleaned.jsTrimmed())
       if tag.isEmpty { continue }
-      let key = Array(PostingJS.toLowerCase(tag).utf16)
+      let key = Array(tag.jsLowercased().utf16)
       if seen.contains(key) { continue }
       seen.insert(key)
       tags.append(tag)

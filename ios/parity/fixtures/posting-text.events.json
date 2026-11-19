@@ -602,6 +602,87 @@
       }
     },
     {
+      "id": "a DID filter compares code units",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "kelvin",
+            "name": "virga:drafts-changed",
+            "did": "did:web:K.test"
+          },
+          {
+            "op": "on",
+            "id": "k",
+            "name": "virga:drafts-changed",
+            "did": "did:web:K.test"
+          },
+          {
+            "op": "on",
+            "id": "composed",
+            "name": "virga:drafts-changed",
+            "did": "did:web:café.test"
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:web:K.test"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:web:K.test"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:web:café.test"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed́",
+            "detail": {
+              "did": "did:web:K.test"
+            }
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          "function",
+          "function",
+          true,
+          true,
+          true,
+          {
+            "$throws": "Not a posting event: virga:drafts-changed́",
+            "type": "TypeError"
+          }
+        ],
+        "heard": {
+          "kelvin": [
+            {
+              "did": "did:web:K.test"
+            }
+          ],
+          "k": [
+            {
+              "did": "did:web:K.test"
+            }
+          ],
+          "composed": []
+        }
+      }
+    },
+    {
       "id": "two listeners, in order, one stopped",
       "fn": "script",
       "input": {

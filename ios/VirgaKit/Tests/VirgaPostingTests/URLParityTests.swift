@@ -68,14 +68,14 @@ import VirgaTestSupport
 
   @Test func encodeURIComponent() throws {
     for c in try Parity.cases("posting-text.url", fn: "encodeURIComponent") {
-      let actual = URIComponent.encodeURIComponent(c["text"].stringValue ?? "")
+      let actual = JSURI.encodeURIComponent(c["text"].stringValue ?? "")
       #expect(Parity.diff(.string(actual), c.output) == nil, "\(c)")
     }
   }
 
   @Test func decodeURIComponent() throws {
     for c in try Parity.cases("posting-text.url", fn: "decodeURIComponent") {
-      let actual = Self.outcome { .string(try URIComponent.decodeURIComponent(c["text"].stringValue ?? "")) }
+      let actual = Self.outcome { .string(try JSURI.decodeURIComponent(c["text"].stringValue ?? "")) }
       let d = Parity.diff(actual, c.output)
       #expect(d == nil, "\(c): \(d ?? "")")
     }

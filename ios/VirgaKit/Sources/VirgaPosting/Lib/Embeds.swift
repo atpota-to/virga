@@ -34,8 +34,8 @@ public enum Embeds {
 
   static func ratio(_ aspectRatio: JSONValue?) -> JSONValue? {
     guard let aspectRatio, aspectRatio.isTruthy else { return nil }
-    let width = PostingJS.toNumber(aspectRatio["width"])
-    let height = PostingJS.toNumber(aspectRatio["height"])
+    let width = aspectRatio["width"].jsNumber
+    let height = aspectRatio["height"].jsNumber
     guard width > 0, height > 0 else { return nil }
     return ["width": .number(width.jsRounded), "height": .number(height.jsRounded)]
   }

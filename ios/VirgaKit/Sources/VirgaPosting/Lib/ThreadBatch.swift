@@ -95,7 +95,8 @@ public enum ThreadBatch {
   ///     otherwise each gets `nowMs` plus a millisecond per post.
   ///   - replyTo: when the thread's first post replies to an existing post.
   ///   - nowMs: the time in epoch milliseconds (the web's `now`, a Date, a
-  ///     number or a date string, read as `new Date(now).getTime()`).
+  ///     number or a date string, read as `new Date(now).getTime()`; read a
+  ///     string with VirgaCore's `JSDate.parse`).
   ///   - timeZone: the zone a zone-less `createdAt` is read in (the web reads
   ///     it in the browser's).
   ///   - mintTid: a TID for a time in milliseconds (the web's `nextTid`).
@@ -135,7 +136,7 @@ public enum ThreadBatch {
       let rkey = try mintTid(ms)
       guard ms.isFinite, let createdAt = VirgaCore.JSDate.toISOString(ms) else { throw InvalidTimeValueError() }
       let uri = "at://\(did)/\(collection)/\(rkey)"
-      var fields = base.objectValue ?? [:]
+      var fields = spread(base)
       fields["createdAt"] = .string(createdAt)
       fields["reply"] = nil
       if let parentRef, let rootRef {
@@ -175,6 +176,22 @@ public enum ThreadBatch {
   public static func nextTid(_ ms: Double) throws -> String {
     guard ms.isFinite else { throw TIDTimeError(ms: ms) }
     return TIDClock.shared.next(ms: ms)
+  }
+
+  /// `{ ...base }`: an object's own fields; an array's elements and a
+  /// string's code units under their indexes; nothing for anything else.
+  static func spread(_ base: JSONValue) -> [String: JSONValue] {
+    switch base {
+    case .object(let fields):
+      return fields
+    case .array(let items):
+      return Dictionary(uniqueKeysWithValues: items.enumerated().map { (String($0.offset), $0.element) })
+    case .string(let text):
+      return Dictionary(
+        uniqueKeysWithValues: text.utf16.enumerated().map { (String($0.offset), .string(String(jsUnits: [$0.element]))) })
+    default:
+      return [:]
+    }
   }
 
   static func refJSON(_ ref: StrongRef) -> JSONValue {

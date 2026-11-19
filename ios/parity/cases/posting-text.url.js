@@ -323,6 +323,9 @@ const QUERIES = [
   'name=%EF%BB%BFbom',
   'caf%C3%A9=na%C3%AFve',
   'x=\u{1F98B}&y=é',
+  // The leading ? is one code unit, even with a combining mark after it.
+  '?\u0301a=1',
+  '\u0301?a=1',
 ];
 
 const COMPONENTS = [

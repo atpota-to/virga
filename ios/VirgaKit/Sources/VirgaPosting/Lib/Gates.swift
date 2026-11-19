@@ -162,18 +162,19 @@ public enum Gates {
 
   static func replyRulesToLexicon(_ reply: [JSONValue]) -> [JSONValue] {
     var out: [JSONValue] = []
-    var seen = Set<String>()
+    // A JavaScript Set: two list URIs are the same only in the same code units.
+    var seen = Set<JSKey>()
     for rule in reply {
       guard let type = rule["type"]?.stringValue, let lexicon = ruleTypes[type] else { continue }
       if type == "list" {
         guard let list = rule["list"]?.stringValue, PostingJS.hasPrefix(list, "at://") else { continue }
-        let key = "list:\(list)"
+        let key = JSKey("list:\(list)")
         if seen.contains(key) { continue }
         seen.insert(key)
         out.append(["$type": .string(lexicon), "list": .string(list)])
       } else {
-        if seen.contains(type) { continue }
-        seen.insert(type)
+        if seen.contains(JSKey(type)) { continue }
+        seen.insert(JSKey(type))
         out.append(["$type": .string(lexicon)])
       }
     }

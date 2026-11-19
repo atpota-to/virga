@@ -72,7 +72,7 @@ public final class PostingEventBus: Sendable {
   /// `target.dispatchEvent(new CustomEvent(name, { detail }))`. A listener
   /// removed during the dispatch isn't called; one added isn't either.
   public func dispatch(_ name: String, _ detail: JSONValue) {
-    let listeners = state.withLock { $0.entries.filter { $0.name == name } }
+    let listeners = state.withLock { $0.entries.filter { $0.name.jsEquals(name) } }
     for entry in listeners {
       let stillThere = state.withLock { state in state.entries.contains { $0.id == entry.id } }
       if stillThere { entry.listener(detail) }
@@ -81,7 +81,7 @@ public final class PostingEventBus: Sendable {
 
   /// How many listeners are registered for `name` (for tests).
   public func listenerCount(_ name: String) -> Int {
-    state.withLock { $0.entries.filter { $0.name == name }.count }
+    state.withLock { $0.entries.filter { $0.name.jsEquals(name) }.count }
   }
 }
 
@@ -109,7 +109,7 @@ public enum PostingEvents {
   static let names = Set(postingEvents.values)
 
   static func checkName(_ name: String) throws {
-    if !names.contains(name) { throw PostingEventError(message: "Not a posting event: \(name)") }
+    if !names.jsIncludes(name) { throw PostingEventError(message: "Not a posting event: \(name)") }
   }
 
   /// Emit `name` with `detail` on the shared bus (or `target`). Throws on an
@@ -141,7 +141,8 @@ public enum PostingEvents {
     guard let target else { return {} }
     let id = target.addListener(name) { detail in
       guard detail.isTruthy else { return }
-      if let did, !did.isEmpty, detail["did"]?.stringValue != did { return }
+      // `detail.did !== did`, by code unit.
+      if let did, !did.isEmpty, !(detail["did"]?.stringValue).jsEquals(did) { return }
       fn(detail)
     }
     return { target.removeListener(id) }

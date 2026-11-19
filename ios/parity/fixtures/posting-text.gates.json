@@ -275,6 +275,42 @@
       }
     },
     {
+      "id": "gatesToRules#12",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": {
+        "threadgateAllow": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/café"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/café"
+          }
+        ],
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
       "id": "gatesFromRules#1",
       "fn": "gatesFromRules",
       "input": {
@@ -779,6 +815,38 @@
       }
     },
     {
+      "id": "gatesFromRules#26",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/café"
+          },
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/café"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
       "id": "gatesEqual#1",
       "fn": "gatesEqual",
       "input": {
@@ -1001,11 +1069,24 @@
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "reply": [],
+          "reply": null,
           "quotes": true
         },
         "b": {
-          "reply": null,
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
           "quotes": true
         }
       },
@@ -1020,11 +1101,11 @@
           "quotes": true
         },
         "b": {
-          "reply": [],
+          "reply": null,
           "quotes": true
         }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#14",
@@ -1036,10 +1117,10 @@
         },
         "b": {
           "reply": [],
-          "quotes": false
+          "quotes": true
         }
       },
-      "output": false
+      "output": true
     },
     {
       "id": "gatesEqual#15",
@@ -1050,21 +1131,7 @@
           "quotes": true
         },
         "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
+          "reply": [],
           "quotes": false
         }
       },
@@ -1084,16 +1151,17 @@
               "type": "mention"
             },
             {
-              "type": "mention"
+              "type": "following"
             },
             {
-              "type": "nope"
+              "type": "follower"
             },
             {
               "type": "list",
-              "list": "x"
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
             }
-          ]
+          ],
+          "quotes": false
         }
       },
       "output": false
@@ -1109,6 +1177,34 @@
         "b": {
           "reply": [
             {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#18",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
               "type": "list",
               "list": "at://did:plc:me/app.bsky.graph.list/3l"
             },
@@ -1139,7 +1235,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#18",
+      "id": "gatesEqual#19",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1154,7 +1250,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#19",
+      "id": "gatesEqual#20",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1168,7 +1264,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#20",
+      "id": "gatesEqual#21",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1180,7 +1276,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#21",
+      "id": "gatesEqual#22",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1192,7 +1288,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#22",
+      "id": "gatesEqual#23",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1215,30 +1311,28 @@
       "output": false
     },
     {
-      "id": "gatesEqual#23",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [],
-          "quotes": false
-        },
-        "b": {
-          "reply": null,
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
       "id": "gatesEqual#24",
       "fn": "gatesEqual",
       "input": {
         "a": {
           "reply": [],
-          "quotes": false
+          "quotes": true
         },
         "b": {
-          "reply": [],
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
           "quotes": true
         }
       },
@@ -1253,6 +1347,36 @@
           "quotes": false
         },
         "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#26",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#27",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
           "reply": [],
           "quotes": false
         }
@@ -1260,7 +1384,7 @@
       "output": true
     },
     {
-      "id": "gatesEqual#26",
+      "id": "gatesEqual#28",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1289,7 +1413,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#27",
+      "id": "gatesEqual#29",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1317,7 +1441,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#28",
+      "id": "gatesEqual#30",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1357,7 +1481,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#29",
+      "id": "gatesEqual#31",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1372,7 +1496,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#30",
+      "id": "gatesEqual#32",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1382,30 +1506,6 @@
         "b": {
           "quotes": false
         }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#31",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [],
-          "quotes": false
-        },
-        "b": {}
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#32",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [],
-          "quotes": false
-        },
-        "b": null
       },
       "output": false
     },
@@ -1417,18 +1517,7 @@
           "reply": [],
           "quotes": false
         },
-        "b": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        }
+        "b": {}
       },
       "output": false
     },
@@ -1437,27 +1526,10 @@
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
+          "reply": [],
           "quotes": false
         },
-        "b": {
-          "reply": null,
-          "quotes": true
-        }
+        "b": null
       },
       "output": false
     },
@@ -1466,13 +1538,11 @@
       "fn": "gatesEqual",
       "input": {
         "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
           "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
             {
               "type": "follower"
             },
@@ -1481,10 +1551,6 @@
               "list": "at://did:plc:me/app.bsky.graph.list/3l"
             }
           ],
-          "quotes": false
-        },
-        "b": {
-          "reply": [],
           "quotes": true
         }
       },
@@ -1495,26 +1561,25 @@
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
+          "reply": [],
           "quotes": false
         },
         "b": {
-          "reply": [],
-          "quotes": false
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
         }
       },
       "output": false
@@ -1542,25 +1607,11 @@
           "quotes": false
         },
         "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": false
+          "reply": null,
+          "quotes": true
         }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#38",
@@ -1585,21 +1636,8 @@
           "quotes": false
         },
         "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "mention"
-            },
-            {
-              "type": "nope"
-            },
-            {
-              "type": "list",
-              "list": "x"
-            }
-          ]
+          "reply": [],
+          "quotes": true
         }
       },
       "output": false
@@ -1627,6 +1665,120 @@
           "quotes": false
         },
         "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#40",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#41",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#42",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
           "reply": [
             {
               "type": "list",
@@ -1659,7 +1811,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#40",
+      "id": "gatesEqual#43",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1688,7 +1840,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#41",
+      "id": "gatesEqual#44",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1716,7 +1868,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#42",
+      "id": "gatesEqual#45",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1742,7 +1894,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#43",
+      "id": "gatesEqual#46",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1768,7 +1920,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#44",
+      "id": "gatesEqual#47",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1805,7 +1957,49 @@
       "output": false
     },
     {
-      "id": "gatesEqual#45",
+      "id": "gatesEqual#48",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#49",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1833,7 +2027,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#46",
+      "id": "gatesEqual#50",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1861,7 +2055,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#47",
+      "id": "gatesEqual#51",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1889,7 +2083,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#48",
+      "id": "gatesEqual#52",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1931,7 +2125,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#49",
+      "id": "gatesEqual#53",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -1972,7 +2166,7 @@
       "output": true
     },
     {
-      "id": "gatesEqual#50",
+      "id": "gatesEqual#54",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2025,7 +2219,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#51",
+      "id": "gatesEqual#55",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2053,7 +2247,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#52",
+      "id": "gatesEqual#56",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2080,7 +2274,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#53",
+      "id": "gatesEqual#57",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2105,7 +2299,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#54",
+      "id": "gatesEqual#58",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2130,7 +2324,7 @@
       "output": false
     },
     {
-      "id": "gatesEqual#55",
+      "id": "gatesEqual#59",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -2161,180 +2355,6 @@
             }
           ],
           "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#56",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": null,
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#57",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": [],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#58",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": [],
-          "quotes": false
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#59",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": false
         }
       },
       "output": false
@@ -2346,35 +2366,6 @@
         "a": {
           "reply": [
             {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": [
-            {
               "type": "mention"
             },
             {
@@ -2388,6 +2379,23 @@
               "list": "x"
             }
           ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
         }
       },
       "output": false
@@ -2426,36 +2434,11 @@
           "quotes": true
         },
         "b": {
-          "reply": [
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
-              "type": "follower"
-            }
-          ],
+          "reply": null,
           "quotes": true
         }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#62",
@@ -2491,8 +2474,8 @@
           "quotes": true
         },
         "b": {
-          "reply": "everyone",
-          "quotes": "no"
+          "reply": [],
+          "quotes": true
         }
       },
       "output": false
@@ -2531,6 +2514,7 @@
           "quotes": true
         },
         "b": {
+          "reply": [],
           "quotes": false
         }
       },
@@ -2569,7 +2553,24 @@
           ],
           "quotes": true
         },
-        "b": {}
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
       },
       "output": false
     },
@@ -2606,7 +2607,23 @@
           ],
           "quotes": true
         },
-        "b": null
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
       },
       "output": false
     },
@@ -2646,129 +2663,40 @@
         "b": {
           "reply": [
             {
-              "type": "follower"
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
             },
             {
               "type": "list",
               "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
             }
           ],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#67",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": null,
           "quotes": true
         }
       },
       "output": true
     },
     {
-      "id": "gatesEqual#68",
+      "id": "gatesEqual#67",
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": [],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#69",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": [],
-          "quotes": false
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#70",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": false
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#71",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "mention"
-            },
-            {
-              "type": "nope"
-            },
-            {
-              "type": "list",
-              "list": "x"
-            }
-          ]
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#72",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
           "reply": [
             {
               "type": "list",
@@ -2793,6 +2721,224 @@
             "mention",
             {
               "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#68",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#69",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#70",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#71",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#72",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
             }
           ],
           "quotes": true
@@ -2809,8 +2955,8 @@
           "quotes": "no"
         },
         "b": {
-          "reply": "everyone",
-          "quotes": "no"
+          "reply": null,
+          "quotes": true
         }
       },
       "output": true
@@ -2824,7 +2970,8 @@
           "quotes": "no"
         },
         "b": {
-          "quotes": false
+          "reply": [],
+          "quotes": true
         }
       },
       "output": false
@@ -2837,9 +2984,12 @@
           "reply": "everyone",
           "quotes": "no"
         },
-        "b": {}
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#76",
@@ -2848,82 +2998,6 @@
         "a": {
           "reply": "everyone",
           "quotes": "no"
-        },
-        "b": null
-      },
-      "output": true
-    },
-    {
-      "id": "gatesEqual#77",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": "everyone",
-          "quotes": "no"
-        },
-        "b": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#78",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "quotes": false
-        },
-        "b": {
-          "reply": null,
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#79",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "quotes": false
-        },
-        "b": {
-          "reply": [],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#80",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "quotes": false
-        },
-        "b": {
-          "reply": [],
-          "quotes": false
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#81",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "quotes": false
         },
         "b": {
           "reply": [
@@ -2947,11 +3021,12 @@
       "output": false
     },
     {
-      "id": "gatesEqual#82",
+      "id": "gatesEqual#77",
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "quotes": false
+          "reply": "everyone",
+          "quotes": "no"
         },
         "b": {
           "reply": [
@@ -2974,11 +3049,12 @@
       "output": false
     },
     {
-      "id": "gatesEqual#83",
+      "id": "gatesEqual#78",
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "quotes": false
+          "reply": "everyone",
+          "quotes": "no"
         },
         "b": {
           "reply": [
@@ -3013,15 +3089,105 @@
       "output": false
     },
     {
-      "id": "gatesEqual#84",
+      "id": "gatesEqual#79",
       "fn": "gatesEqual",
       "input": {
         "a": {
-          "quotes": false
+          "reply": "everyone",
+          "quotes": "no"
         },
         "b": {
           "reply": "everyone",
           "quotes": "no"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#80",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#81",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#82",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": null
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#83",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#84",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
         }
       },
       "output": false
@@ -3034,10 +3200,11 @@
           "quotes": false
         },
         "b": {
-          "quotes": false
+          "reply": null,
+          "quotes": true
         }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#86",
@@ -3046,7 +3213,10 @@
         "a": {
           "quotes": false
         },
-        "b": {}
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
       },
       "output": false
     },
@@ -3057,7 +3227,10 @@
         "a": {
           "quotes": false
         },
-        "b": null
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
       },
       "output": false
     },
@@ -3071,6 +3244,12 @@
         "b": {
           "reply": [
             {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
               "type": "follower"
             },
             {
@@ -3078,7 +3257,7 @@
               "list": "at://did:plc:me/app.bsky.graph.list/3l"
             }
           ],
-          "quotes": true
+          "quotes": false
         }
       },
       "output": false
@@ -3087,21 +3266,63 @@
       "id": "gatesEqual#89",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
+        "a": {
+          "quotes": false
+        },
         "b": {
-          "reply": null,
-          "quotes": true
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
         }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#90",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
+        "a": {
+          "quotes": false
+        },
         "b": {
-          "reply": [],
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
           "quotes": true
         }
       },
@@ -3111,10 +3332,12 @@
       "id": "gatesEqual#91",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
-        "b": {
-          "reply": [],
+        "a": {
           "quotes": false
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
         }
       },
       "output": false
@@ -3123,50 +3346,23 @@
       "id": "gatesEqual#92",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
+        "a": {
+          "quotes": false
+        },
         "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "following"
-            },
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
           "quotes": false
         }
       },
-      "output": false
+      "output": true
     },
     {
       "id": "gatesEqual#93",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
-        "b": {
-          "reply": [
-            {
-              "type": "mention"
-            },
-            {
-              "type": "mention"
-            },
-            {
-              "type": "nope"
-            },
-            {
-              "type": "list",
-              "list": "x"
-            }
-          ]
-        }
+        "a": {
+          "quotes": false
+        },
+        "b": {}
       },
       "output": false
     },
@@ -3174,32 +3370,28 @@
       "id": "gatesEqual#94",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
+        "a": {
+          "quotes": false
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#95",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
         "b": {
           "reply": [
             {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3m"
-            },
-            {
-              "type": "list"
-            },
-            {
-              "type": "list",
-              "list": 5
-            },
-            null,
-            "mention",
-            {
               "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
             }
           ],
           "quotes": true
@@ -3208,24 +3400,28 @@
       "output": false
     },
     {
-      "id": "gatesEqual#95",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {},
-        "b": {
-          "reply": "everyone",
-          "quotes": "no"
-        }
-      },
-      "output": true
-    },
-    {
       "id": "gatesEqual#96",
       "fn": "gatesEqual",
       "input": {
-        "a": {},
-        "b": {
+        "a": {
           "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
         }
       },
       "output": false
@@ -3235,44 +3431,6 @@
       "fn": "gatesEqual",
       "input": {
         "a": {},
-        "b": {}
-      },
-      "output": true
-    },
-    {
-      "id": "gatesEqual#98",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {},
-        "b": null
-      },
-      "output": true
-    },
-    {
-      "id": "gatesEqual#99",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {},
-        "b": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#100",
-      "fn": "gatesEqual",
-      "input": {
-        "a": null,
         "b": {
           "reply": null,
           "quotes": true
@@ -3281,10 +3439,10 @@
       "output": true
     },
     {
-      "id": "gatesEqual#101",
+      "id": "gatesEqual#98",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": [],
           "quotes": true
@@ -3293,10 +3451,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#102",
+      "id": "gatesEqual#99",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": [],
           "quotes": false
@@ -3305,10 +3463,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#103",
+      "id": "gatesEqual#100",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": [
             {
@@ -3331,10 +3489,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#104",
+      "id": "gatesEqual#101",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": [
             {
@@ -3356,10 +3514,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#105",
+      "id": "gatesEqual#102",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": [
             {
@@ -3393,10 +3551,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#106",
+      "id": "gatesEqual#103",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
           "reply": "everyone",
           "quotes": "no"
@@ -3405,12 +3563,50 @@
       "output": true
     },
     {
+      "id": "gatesEqual#104",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#105",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#106",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": null
+      },
+      "output": true
+    },
+    {
       "id": "gatesEqual#107",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
+        "a": {},
         "b": {
-          "quotes": false
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
         }
       },
       "output": false
@@ -3419,17 +3615,36 @@
       "id": "gatesEqual#108",
       "fn": "gatesEqual",
       "input": {
-        "a": null,
-        "b": {}
+        "a": {},
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        }
       },
-      "output": true
+      "output": false
     },
     {
       "id": "gatesEqual#109",
       "fn": "gatesEqual",
       "input": {
         "a": null,
-        "b": null
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
       },
       "output": true
     },
@@ -3439,15 +3654,7 @@
       "input": {
         "a": null,
         "b": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
+          "reply": [],
           "quotes": true
         }
       },
@@ -3457,64 +3664,7 @@
       "id": "gatesEqual#111",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": null,
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#112",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
-        "b": {
-          "reply": [],
-          "quotes": true
-        }
-      },
-      "output": false
-    },
-    {
-      "id": "gatesEqual#113",
-      "fn": "gatesEqual",
-      "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "reply": [],
           "quotes": false
@@ -3523,21 +3673,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#114",
+      "id": "gatesEqual#112",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "reply": [
             {
@@ -3560,21 +3699,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#115",
+      "id": "gatesEqual#113",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "reply": [
             {
@@ -3596,21 +3724,10 @@
       "output": false
     },
     {
-      "id": "gatesEqual#116",
+      "id": "gatesEqual#114",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "reply": [
             {
@@ -3644,44 +3761,22 @@
       "output": false
     },
     {
-      "id": "gatesEqual#117",
+      "id": "gatesEqual#115",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "reply": "everyone",
           "quotes": "no"
         }
       },
-      "output": false
+      "output": true
     },
     {
-      "id": "gatesEqual#118",
+      "id": "gatesEqual#116",
       "fn": "gatesEqual",
       "input": {
-        "a": {
-          "reply": [
-            {
-              "type": "follower"
-            },
-            {
-              "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
-            }
-          ],
-          "quotes": true
-        },
+        "a": null,
         "b": {
           "quotes": false
         }
@@ -3689,10 +3784,29 @@
       "output": false
     },
     {
+      "id": "gatesEqual#117",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#118",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "output": true
+    },
+    {
       "id": "gatesEqual#119",
       "fn": "gatesEqual",
       "input": {
-        "a": {
+        "a": null,
+        "b": {
           "reply": [
             {
               "type": "follower"
@@ -3703,8 +3817,7 @@
             }
           ],
           "quotes": true
-        },
-        "b": {}
+        }
       },
       "output": false
     },
@@ -3712,19 +3825,24 @@
       "id": "gatesEqual#120",
       "fn": "gatesEqual",
       "input": {
-        "a": {
+        "a": null,
+        "b": {
           "reply": [
             {
-              "type": "follower"
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
             },
             {
               "type": "list",
-              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
             }
           ],
           "quotes": true
-        },
-        "b": null
+        }
       },
       "output": false
     },
@@ -3745,6 +3863,281 @@
           "quotes": true
         },
         "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#122",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#123",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#124",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#125",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#126",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#127",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#128",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#129",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#130",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#131",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
           "reply": [
             {
               "type": "follower"
@@ -3760,7 +4153,445 @@
       "output": true
     },
     {
-      "id": "gatesEqual#122",
+      "id": "gatesEqual#132",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#133",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#134",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#135",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#136",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#137",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#138",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#139",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#140",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#141",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#142",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#143",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#144",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/café"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#145",
       "fn": "gatesEqual",
       "input": {
         "a": {
@@ -3789,7 +4620,7 @@
       "output": true
     },
     {
-      "id": "gatesEqual#123",
+      "id": "gatesEqual#146",
       "fn": "gatesEqual",
       "input": {
         "a": {

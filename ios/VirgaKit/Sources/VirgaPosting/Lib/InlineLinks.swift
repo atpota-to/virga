@@ -109,7 +109,7 @@ public enum InlineLinks {
   }
 
   static func bareHost(_ host: String) -> String {
-    let lower = PostingJS.toLowerCase(host)
+    let lower = host.jsLowercased()
     return PostingJS.hasPrefix(lower, "www.") ? String(jsUnits: lower.utf16.dropFirst(4)) : lower
   }
 

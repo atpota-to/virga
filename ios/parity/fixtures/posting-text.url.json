@@ -4552,6 +4552,38 @@
       }
     },
     {
+      "id": "searchParams#18",
+      "fn": "searchParams",
+      "input": {
+        "query": "?́a=1"
+      },
+      "output": {
+        "pairs": [
+          [
+            "́a",
+            "1"
+          ]
+        ],
+        "serialized": "%CC%81a=1"
+      }
+    },
+    {
+      "id": "searchParams#19",
+      "fn": "searchParams",
+      "input": {
+        "query": "́?a=1"
+      },
+      "output": {
+        "pairs": [
+          [
+            "́?a",
+            "1"
+          ]
+        ],
+        "serialized": "%CC%81%3Fa=1"
+      }
+    },
+    {
       "id": "searchParamsSet#1",
       "fn": "searchParamsSet",
       "input": {

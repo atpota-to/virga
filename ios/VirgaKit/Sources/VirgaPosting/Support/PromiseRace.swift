@@ -26,13 +26,22 @@ enum PromiseRace {
           continuation,
           work: Task { race.finish(await work()) },
           timer: Task {
-            try? await Task.sleep(for: .milliseconds(max(0, timeoutMs)))
+            try? await Task.sleep(for: timerDelay(timeoutMs))
             race.finish(fallback)
           })
       }
     } onCancel: {
       race.finish(fallback)
     }
+  }
+
+  /// The wait `setTimeout(fn, ms)` makes: `ms` itself from 0 to 2^31 - 1,
+  /// and none for anything else (not a number, infinite, negative or past
+  /// the timer's range), which a browser and Node both run at once. (Past
+  /// 2^32 a browser's wraps round to some other wait; that isn't followed.)
+  static func timerDelay(_ ms: Double) -> Duration {
+    guard ms >= 0, ms <= 2_147_483_647 else { return .zero }
+    return .milliseconds(ms)
   }
 
   /// One race's state: the continuation to resume once, and the two tasks to

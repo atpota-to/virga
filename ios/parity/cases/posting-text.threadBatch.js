@@ -173,6 +173,13 @@ const INPUTS = [
     now: NOW,
   },
   { $id: 'null and non-object records', records: [null, base('b')], now: NOW },
+  // `{ ...base }` spreads what it is given: a string's code units and an
+  // array's elements under their indexes, nothing of a number or a boolean.
+  {
+    $id: 'spreads of strings, arrays and scalars',
+    records: ['ab\u{1F98B}', ['x', { y: 1 }], 7, true, false, ''],
+    now: NOW,
+  },
   // The shared clock's nextTid refuses a time that isn't a number before
   // toISOString is reached, and before the clock moves, so these throw
   // the same whatever ran before.
