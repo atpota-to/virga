@@ -48,6 +48,8 @@ const tagFacet = (text, substring, tag) => ({
 
 const URLS = [
   LONG_URL,
+  'https://xn--a-.com/a/long/path/to/somewhere',
+  'https://XN--XN--A-.example/x',
   'https://example.org/branding',
   'https://example.org/',
   'https://example.org',

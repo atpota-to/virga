@@ -107,6 +107,16 @@ public enum Embeds {
     return refs.isEmpty ? nil : refs
   }
 
+  /// `value[index]` as JavaScript reads it: an array's element, or a
+  /// string's code unit as a one-unit string; nil (undefined) otherwise.
+  static func element(_ value: JSONValue?, _ index: Int) -> JSONValue? {
+    switch value {
+    case .array(let items)? where items.indices.contains(index): return .some(items[index])
+    case .string(let text)? where index >= 0 && index < text.jsLength: return .some(.string(text.jsCharAt(index)))
+    default: return .none
+    }
+  }
+
   /// A JavaScript `length > 0` on an array or a string.
   static func hasLength(_ value: JSONValue?) -> Bool {
     switch value {
@@ -130,7 +140,7 @@ public enum Embeds {
     } else if hasLength(post?["images"]), hasLength(blobs["images"]), let images = post?["images"]?.arrayValue {
       media = buildImagesEmbed(
         images.enumerated().map { index, image in
-          buildImageRecord(alt: image["alt"], blob: blobs["images"]?[index], aspectRatio: image["aspectRatio"])
+          buildImageRecord(alt: image["alt"], blob: element(blobs["images"], index), aspectRatio: image["aspectRatio"])
         })
     } else if let card = post?["card"], let url = card["url"], url.isTruthy {
       let thumb = blobs["cardThumb"]

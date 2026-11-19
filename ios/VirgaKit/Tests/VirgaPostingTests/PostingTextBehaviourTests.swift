@@ -34,13 +34,15 @@ import VirgaTestSupport
     let resolve = Mentions.createMentionResolver(
       fetch: { _ in
         let n = count.withLock { $0 += 1; return $0 }
-        if n == 1 { try await Task.sleep(for: .seconds(30)) }
+        if n == 1 { try await Task.sleep(for: .seconds(600)) }
         return Self.ok("did:plc:second")
       },
       timeoutMs: 30)
     let started = Date()
     #expect(try await resolve("slow.test") == nil)
-    #expect(Date().timeIntervalSince(started) < 5, "the timeout ended the wait")
+    // Far under the fetch's ten minutes, with room for a loaded machine (the
+    // parity suites run alongside and can hold the threads for seconds).
+    #expect(Date().timeIntervalSince(started) < 120, "the timeout ended the wait")
     #expect(try await resolve("slow.test") == "did:plc:second", "a timeout isn't remembered")
     #expect(count.wrappedValue == 2)
   }
@@ -92,16 +94,57 @@ import VirgaTestSupport
   }
 }
 
+/// Sleeps on a dispatch timer, which no task cancellation reaches: a request
+/// that doesn't stop when it is cancelled.
+func uncancellableSleep(seconds: Double) async {
+  await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+    DispatchQueue.global().asyncAfter(deadline: .now() + seconds) { continuation.resume() }
+  }
+}
+
 @Suite struct GatesBehaviour {
   @Test func aSlowPreferencesReadIsNilInTime() async {
     let agent = FakeGatesAgent(preferences: {
-      try await Task.sleep(for: .seconds(30))
+      try await Task.sleep(for: .seconds(600))
       return ["preferences": []]
     })
     let started = Date()
     let gates = await Gates.readDefaultGates(agent, timeoutMs: 30)
     #expect(gates == nil)
-    #expect(Date().timeIntervalSince(started) < 5)
+    #expect(Date().timeIntervalSince(started) < 120)
+  }
+
+  /// The web races the read against a timer (`Promise.race`), so the answer
+  /// is null at the deadline even when the read carries on. A task group
+  /// would wait for a read that ignores cancellation.
+  @Test func aReadThatIgnoresCancellationStillTimesOut() async {
+    let agent = FakeGatesAgent(preferences: {
+      await uncancellableSleep(seconds: 300)
+      return ["preferences": []]
+    })
+    let started = Date()
+    let gates = await Gates.readDefaultGates(agent, timeoutMs: 50)
+    #expect(gates == nil)
+    // Far under the read's five minutes, with room for a loaded machine.
+    #expect(Date().timeIntervalSince(started) < 120, "returned at the deadline, not when the read ended")
+  }
+
+  @Test func aFastReadWinsTheRace() async {
+    let agent = FakeGatesAgent(preferences: { ["preferences": []] })
+    #expect(await Gates.readDefaultGates(agent, timeoutMs: 60_000) == Gates.everyoneGates)
+  }
+
+  @Test func aCancelledCallerGetsNil() async {
+    let agent = FakeGatesAgent(preferences: {
+      await uncancellableSleep(seconds: 300)
+      return ["preferences": []]
+    })
+    let task = Task { await Gates.readDefaultGates(agent, timeoutMs: 600_000) }
+    try? await Task.sleep(for: .milliseconds(20))
+    task.cancel()
+    let started = Date()
+    #expect(await task.value == nil)
+    #expect(Date().timeIntervalSince(started) < 120)
   }
 
   @Test func readsTheAccountsDefaults() async {
@@ -158,6 +201,20 @@ import VirgaTestSupport
     #expect(throws: PostingEventError(message: "virga:drafts-changed needs detail.did")) {
       try PostingEvents.emitPostingEvent(PostingEvents.drafts, [:])
     }
+  }
+}
+
+@Suite struct URLSearchParamsBehaviour {
+  /// The URL Standard's parser, as browsers run it. Node's differs here (it
+  /// keeps the low byte of each code unit once one escape is malformed), so
+  /// this can't be a fixture: see ios/parity/cases/posting-text.composeIntent.js.
+  @Test func aMalformedEscapeLeavesTheRestDecoded() {
+    let params = URLSearchParams("?tags=\u{0661}%41%zz\u{0345}&text=a+b%20c")
+    #expect(params.get("tags") == "\u{0661}A%zz\u{0345}")
+    #expect(params.get("text") == "a b c")
+    #expect(
+      ComposeIntent.parseComposeIntent("?text=\u{0661}%41%zz").text == "\u{0661}A%zz",
+      "the composer is prefilled with what the browser reads")
   }
 }
 

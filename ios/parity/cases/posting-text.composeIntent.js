@@ -7,6 +7,13 @@
 // scheme, URLs that normalize, the post limit in emoji and around a link,
 // and origins that aren't URLs. A URLSearchParams input is written as
 // { $params: [[name, value], …] }.
+//
+// Node's URLSearchParams isn't the browser's on one input: a query whose
+// value holds a valid escape (`%41`), a malformed one (`%zz`) and a
+// non-ASCII character. Node then decodes with querystring.unescapeBuffer,
+// which keeps only the low byte of each code unit ('١' becomes 'a'); browsers
+// and the Swift port follow the URL Standard's parser and keep '١'. The web
+// app runs in a browser, so no case here combines the three.
 
 import {
   buildComposeIntentUrl,

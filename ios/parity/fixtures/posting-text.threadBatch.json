@@ -2341,6 +2341,167 @@
           }
         ]
       }
+    },
+    {
+      "id": "invalid now, the default minter",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": "nope",
+        "defaultMinter": true
+      },
+      "output": {
+        "$throws": "The number NaN cannot be converted to a BigInt because it is not an integer"
+      }
+    },
+    {
+      "id": "now past the end of time, the default minter",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 8640000000000001,
+        "defaultMinter": true
+      },
+      "output": {
+        "$throws": "The number NaN cannot be converted to a BigInt because it is not an integer"
+      }
+    },
+    {
+      "id": "no records, the default minter",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [],
+        "now": "nope",
+        "defaultMinter": true
+      },
+      "output": {
+        "writes": [],
+        "created": []
+      }
+    },
+    {
+      "id": "invalid now",
+      "fn": "mintTidCalls",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": "nope"
+      },
+      "output": {
+        "calls": [
+          "NaN"
+        ],
+        "$throws": "Invalid time value"
+      }
+    },
+    {
+      "id": "the end of time",
+      "fn": "mintTidCalls",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "c",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 8639999999999999
+      },
+      "output": {
+        "calls": [
+          "8639999999999999",
+          "8640000000000000",
+          "8640000000000001"
+        ],
+        "$throws": "Invalid time value"
+      }
+    },
+    {
+      "id": "own times",
+      "fn": "mintTidCalls",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2025-01-01T00:00:00.000Z"
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "calls": [
+          "1767225600000",
+          "1767225600001"
+        ],
+        "created": 2
+      }
     }
   ]
 }

@@ -114,9 +114,12 @@ public enum InlineLinks {
   }
 
   // The domain a word starts with, past an opening bracket or quote, a scheme
-  // or an @. The web's `/iu`: `s` also matches the long s (ſ) there.
+  // or an @. The web's `/iu` matches by simple case folding, written out
+  // here: `s` also matches the long s (ſ), and `[\p{L}\p{N}]` also matches
+  // U+0345 COMBINING GREEK YPOGEGRAMMENI, a mark that folds to the letter ι
+  // (the only code point outside the two classes that folds into them).
   static let namedDomain = JSRegex(
-    #"^[(\["'“‘]*(?:[hH][tT][tT][pP][sSſ]?://)?@?((?:[\p{L}\p{N}](?:[\p{L}\p{N}\-]*[\p{L}\p{N}])?\.)+[\p{L}\p{N}\-]{2,})"#
+    #"^[(\["'“‘]*(?:[hH][tT][tT][pP][sSſ]?://)?@?((?:[\p{L}\p{N}ͅ](?:[\p{L}\p{N}ͅ\-]*[\p{L}\p{N}ͅ])?\.)+[\p{L}\p{N}ͅ\-]{2,})"#
   )
 
   /// The hosts a label names: every word that reads as a web address or a

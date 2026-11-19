@@ -1977,6 +1977,45 @@
       }
     },
     {
+      "id": "image blobs as a string",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "alt": "a"
+            },
+            {
+              "alt": "b"
+            },
+            {
+              "alt": "c"
+            }
+          ]
+        },
+        "blobs": {
+          "images": "x🦋"
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "a",
+            "image": "x"
+          },
+          {
+            "alt": "b",
+            "image": "�"
+          },
+          {
+            "alt": "c",
+            "image": "�"
+          }
+        ]
+      }
+    },
+    {
       "id": "normalizeImageEmbed#1",
       "fn": "normalizeImageEmbed",
       "input": {

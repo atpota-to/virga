@@ -2085,6 +2085,216 @@
       "id": "parse#130",
       "fn": "parse",
       "input": {
+        "input": "https://xn--a-.com"
+      },
+      "output": {
+        "href": "https://xn--a-.com/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--a-.com",
+        "hostname": "xn--a-.com",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#131",
+      "fn": "parse",
+      "input": {
+        "input": "https://XN--ABC-.COM/x"
+      },
+      "output": {
+        "href": "https://xn--abc-.com/x",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--abc-.com",
+        "hostname": "xn--abc-.com",
+        "port": "",
+        "pathname": "/x",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#132",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn----.com"
+      },
+      "output": {
+        "href": "https://xn----.com/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn----.com",
+        "hostname": "xn----.com",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#133",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn---.com"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "parse#134",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn--xn--.com"
+      },
+      "output": {
+        "href": "https://xn--xn--.com/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--xn--.com",
+        "hostname": "xn--xn--.com",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#135",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn--xn--a-.com"
+      },
+      "output": {
+        "href": "https://xn--xn--a-.com/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--xn--a-.com",
+        "hostname": "xn--xn--a-.com",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#136",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn--xn--a.com"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "parse#137",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn--a_b-.com"
+      },
+      "output": {
+        "href": "https://xn--a_b-.com/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--a_b-.com",
+        "hostname": "xn--a_b-.com",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#138",
+      "fn": "parse",
+      "input": {
+        "input": "https://xn--ab--"
+      },
+      "output": {
+        "href": "https://xn--ab--/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--ab--",
+        "hostname": "xn--ab--",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#139",
+      "fn": "parse",
+      "input": {
+        "input": "https://a.xn--a-"
+      },
+      "output": {
+        "href": "https://a.xn--a-/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "a.xn--a-",
+        "hostname": "a.xn--a-",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#140",
+      "fn": "parse",
+      "input": {
+        "input": "https://bücher.xn--a-.de"
+      },
+      "output": {
+        "href": "https://xn--bcher-kva.xn--a-.de/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--bcher-kva.xn--a-.de",
+        "hostname": "xn--bcher-kva.xn--a-.de",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#141",
+      "fn": "parse",
+      "input": {
+        "input": "https://bücher.XN--BCHER-KVA.de"
+      },
+      "output": {
+        "href": "https://xn--bcher-kva.xn--bcher-kva.de/",
+        "protocol": "https:",
+        "username": "",
+        "password": "",
+        "host": "xn--bcher-kva.xn--bcher-kva.de",
+        "hostname": "xn--bcher-kva.xn--bcher-kva.de",
+        "port": "",
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    },
+    {
+      "id": "parse#142",
+      "fn": "parse",
+      "input": {
         "input": "https://日本.jp"
       },
       "output": {
@@ -2101,7 +2311,7 @@
       }
     },
     {
-      "id": "parse#131",
+      "id": "parse#143",
       "fn": "parse",
       "input": {
         "input": "https://例え.テスト"
@@ -2120,7 +2330,7 @@
       }
     },
     {
-      "id": "parse#132",
+      "id": "parse#144",
       "fn": "parse",
       "input": {
         "input": "https://한국.kr"
@@ -2139,7 +2349,7 @@
       }
     },
     {
-      "id": "parse#133",
+      "id": "parse#145",
       "fn": "parse",
       "input": {
         "input": "https://пример.рф"
@@ -2158,7 +2368,7 @@
       }
     },
     {
-      "id": "parse#134",
+      "id": "parse#146",
       "fn": "parse",
       "input": {
         "input": "https://ПРИМЕР.РФ"
@@ -2177,7 +2387,7 @@
       }
     },
     {
-      "id": "parse#135",
+      "id": "parse#147",
       "fn": "parse",
       "input": {
         "input": "https://παράδειγμα.δοκιμή"
@@ -2196,7 +2406,7 @@
       }
     },
     {
-      "id": "parse#136",
+      "id": "parse#148",
       "fn": "parse",
       "input": {
         "input": "https://ΣΊΣΥΦΟΣ.gr"
@@ -2215,7 +2425,7 @@
       }
     },
     {
-      "id": "parse#137",
+      "id": "parse#149",
       "fn": "parse",
       "input": {
         "input": "https://ς.gr"
@@ -2234,7 +2444,7 @@
       }
     },
     {
-      "id": "parse#138",
+      "id": "parse#150",
       "fn": "parse",
       "input": {
         "input": "https://σ.gr"
@@ -2253,7 +2463,7 @@
       }
     },
     {
-      "id": "parse#139",
+      "id": "parse#151",
       "fn": "parse",
       "input": {
         "input": "https://ß.de"
@@ -2272,7 +2482,7 @@
       }
     },
     {
-      "id": "parse#140",
+      "id": "parse#152",
       "fn": "parse",
       "input": {
         "input": "https://ẞ.de"
@@ -2291,7 +2501,7 @@
       }
     },
     {
-      "id": "parse#141",
+      "id": "parse#153",
       "fn": "parse",
       "input": {
         "input": "https://straße.de"
@@ -2310,7 +2520,7 @@
       }
     },
     {
-      "id": "parse#142",
+      "id": "parse#154",
       "fn": "parse",
       "input": {
         "input": "https://موقع.مصر"
@@ -2329,7 +2539,7 @@
       }
     },
     {
-      "id": "parse#143",
+      "id": "parse#155",
       "fn": "parse",
       "input": {
         "input": "https://aא.com"
@@ -2348,7 +2558,7 @@
       }
     },
     {
-      "id": "parse#144",
+      "id": "parse#156",
       "fn": "parse",
       "input": {
         "input": "https://עברית.il"
@@ -2367,7 +2577,7 @@
       }
     },
     {
-      "id": "parse#145",
+      "id": "parse#157",
       "fn": "parse",
       "input": {
         "input": "https://हिन्दी.भारत"
@@ -2386,7 +2596,7 @@
       }
     },
     {
-      "id": "parse#146",
+      "id": "parse#158",
       "fn": "parse",
       "input": {
         "input": "https://ไทย.ไทย"
@@ -2405,7 +2615,7 @@
       }
     },
     {
-      "id": "parse#147",
+      "id": "parse#159",
       "fn": "parse",
       "input": {
         "input": "https://👍.ws"
@@ -2424,7 +2634,7 @@
       }
     },
     {
-      "id": "parse#148",
+      "id": "parse#160",
       "fn": "parse",
       "input": {
         "input": "https://🦋🦋.example"
@@ -2443,7 +2653,7 @@
       }
     },
     {
-      "id": "parse#149",
+      "id": "parse#161",
       "fn": "parse",
       "input": {
         "input": "https://👍🏽.ws"
@@ -2462,7 +2672,7 @@
       }
     },
     {
-      "id": "parse#150",
+      "id": "parse#162",
       "fn": "parse",
       "input": {
         "input": "https://👩‍🔬.ws"
@@ -2472,7 +2682,7 @@
       }
     },
     {
-      "id": "parse#151",
+      "id": "parse#163",
       "fn": "parse",
       "input": {
         "input": "https://a‍b.com"
@@ -2482,7 +2692,7 @@
       }
     },
     {
-      "id": "parse#152",
+      "id": "parse#164",
       "fn": "parse",
       "input": {
         "input": "https://a‌b.com"
@@ -2492,7 +2702,7 @@
       }
     },
     {
-      "id": "parse#153",
+      "id": "parse#165",
       "fn": "parse",
       "input": {
         "input": "https://क्‍.com"
@@ -2511,7 +2721,7 @@
       }
     },
     {
-      "id": "parse#154",
+      "id": "parse#166",
       "fn": "parse",
       "input": {
         "input": "https://क्‌.com"
@@ -2530,7 +2740,7 @@
       }
     },
     {
-      "id": "parse#155",
+      "id": "parse#167",
       "fn": "parse",
       "input": {
         "input": "https://می‌خواهم.com"
@@ -2549,7 +2759,7 @@
       }
     },
     {
-      "id": "parse#156",
+      "id": "parse#168",
       "fn": "parse",
       "input": {
         "input": "https://ab­.com"
@@ -2568,7 +2778,7 @@
       }
     },
     {
-      "id": "parse#157",
+      "id": "parse#169",
       "fn": "parse",
       "input": {
         "input": "https://ab​.com"
@@ -2587,7 +2797,7 @@
       }
     },
     {
-      "id": "parse#158",
+      "id": "parse#170",
       "fn": "parse",
       "input": {
         "input": "https://ab️.com"
@@ -2606,7 +2816,7 @@
       }
     },
     {
-      "id": "parse#159",
+      "id": "parse#171",
       "fn": "parse",
       "input": {
         "input": "https://ab﻿.com"
@@ -2625,7 +2835,7 @@
       }
     },
     {
-      "id": "parse#160",
+      "id": "parse#172",
       "fn": "parse",
       "input": {
         "input": "https://́a.com"
@@ -2635,7 +2845,7 @@
       }
     },
     {
-      "id": "parse#161",
+      "id": "parse#173",
       "fn": "parse",
       "input": {
         "input": "https://á.com"
@@ -2654,7 +2864,7 @@
       }
     },
     {
-      "id": "parse#162",
+      "id": "parse#174",
       "fn": "parse",
       "input": {
         "input": "https://é.com"
@@ -2673,7 +2883,7 @@
       }
     },
     {
-      "id": "parse#163",
+      "id": "parse#175",
       "fn": "parse",
       "input": {
         "input": "https://é.com"
@@ -2692,7 +2902,7 @@
       }
     },
     {
-      "id": "parse#164",
+      "id": "parse#176",
       "fn": "parse",
       "input": {
         "input": "https://ｅｘａｍｐｌｅ．ｃｏｍ"
@@ -2711,7 +2921,7 @@
       }
     },
     {
-      "id": "parse#165",
+      "id": "parse#177",
       "fn": "parse",
       "input": {
         "input": "https://ＥＸＡＭＰＬＥ.com"
@@ -2730,7 +2940,7 @@
       }
     },
     {
-      "id": "parse#166",
+      "id": "parse#178",
       "fn": "parse",
       "input": {
         "input": "https://a。b.com"
@@ -2749,7 +2959,7 @@
       }
     },
     {
-      "id": "parse#167",
+      "id": "parse#179",
       "fn": "parse",
       "input": {
         "input": "https://a｡b.com"
@@ -2768,7 +2978,7 @@
       }
     },
     {
-      "id": "parse#168",
+      "id": "parse#180",
       "fn": "parse",
       "input": {
         "input": "https://ﬁ.com"
@@ -2787,7 +2997,7 @@
       }
     },
     {
-      "id": "parse#169",
+      "id": "parse#181",
       "fn": "parse",
       "input": {
         "input": "https://ⓐⓑ.com"
@@ -2806,7 +3016,7 @@
       }
     },
     {
-      "id": "parse#170",
+      "id": "parse#182",
       "fn": "parse",
       "input": {
         "input": "https://𝐀𝐁.com"
@@ -2825,7 +3035,7 @@
       }
     },
     {
-      "id": "parse#171",
+      "id": "parse#183",
       "fn": "parse",
       "input": {
         "input": "https://x².com"
@@ -2844,7 +3054,7 @@
       }
     },
     {
-      "id": "parse#172",
+      "id": "parse#184",
       "fn": "parse",
       "input": {
         "input": "https://Ⅻ.com"
@@ -2863,7 +3073,7 @@
       }
     },
     {
-      "id": "parse#173",
+      "id": "parse#185",
       "fn": "parse",
       "input": {
         "input": "https://㎏.com"
@@ -2882,7 +3092,7 @@
       }
     },
     {
-      "id": "parse#174",
+      "id": "parse#186",
       "fn": "parse",
       "input": {
         "input": "https://İstanbul.tr"
@@ -2901,7 +3111,7 @@
       }
     },
     {
-      "id": "parse#175",
+      "id": "parse#187",
       "fn": "parse",
       "input": {
         "input": "https://K.com"
@@ -2920,7 +3130,7 @@
       }
     },
     {
-      "id": "parse#176",
+      "id": "parse#188",
       "fn": "parse",
       "input": {
         "input": "https://Å.com"
@@ -2939,7 +3149,7 @@
       }
     },
     {
-      "id": "parse#177",
+      "id": "parse#189",
       "fn": "parse",
       "input": {
         "input": "https://Ω.com"
@@ -2958,7 +3168,7 @@
       }
     },
     {
-      "id": "parse#178",
+      "id": "parse#190",
       "fn": "parse",
       "input": {
         "input": "https://ǅ.com"
@@ -2977,7 +3187,7 @@
       }
     },
     {
-      "id": "parse#179",
+      "id": "parse#191",
       "fn": "parse",
       "input": {
         "input": "https://ﾠ.com"
@@ -2987,7 +3197,7 @@
       }
     },
     {
-      "id": "parse#180",
+      "id": "parse#192",
       "fn": "parse",
       "input": {
         "input": "https://�.com"
@@ -2997,7 +3207,7 @@
       }
     },
     {
-      "id": "parse#181",
+      "id": "parse#193",
       "fn": "parse",
       "input": {
         "input": "https://a b.com"
@@ -3007,7 +3217,7 @@
       }
     },
     {
-      "id": "parse#182",
+      "id": "parse#194",
       "fn": "parse",
       "input": {
         "input": "https:// .com"
@@ -3017,7 +3227,7 @@
       }
     },
     {
-      "id": "parse#183",
+      "id": "parse#195",
       "fn": "parse",
       "input": {
         "input": "https://a b.com"
@@ -3027,7 +3237,7 @@
       }
     },
     {
-      "id": "parse#184",
+      "id": "parse#196",
       "fn": "parse",
       "input": {
         "input": "https://a　b.com"
@@ -3037,7 +3247,7 @@
       }
     },
     {
-      "id": "parse#185",
+      "id": "parse#197",
       "fn": "parse",
       "input": {
         "input": "https://a․b.com"
@@ -3047,7 +3257,7 @@
       }
     },
     {
-      "id": "parse#186",
+      "id": "parse#198",
       "fn": "parse",
       "input": {
         "input": "https://.com"
@@ -3057,7 +3267,7 @@
       }
     },
     {
-      "id": "parse#187",
+      "id": "parse#199",
       "fn": "parse",
       "input": {
         "input": "https://͸.com"
@@ -3067,7 +3277,7 @@
       }
     },
     {
-      "id": "parse#188",
+      "id": "parse#200",
       "fn": "parse",
       "input": {
         "input": "https://café.example/naïve"
@@ -3086,7 +3296,7 @@
       }
     },
     {
-      "id": "parse#189",
+      "id": "parse#201",
       "fn": "parse",
       "input": {
         "input": "https://münchen.de:8080/straße?ö=ü#ä"
@@ -3105,7 +3315,7 @@
       }
     },
     {
-      "id": "parse#190",
+      "id": "parse#202",
       "fn": "parse",
       "input": {
         "input": "ftp://example.com/x"
@@ -3124,7 +3334,7 @@
       }
     },
     {
-      "id": "parse#191",
+      "id": "parse#203",
       "fn": "parse",
       "input": {
         "input": "ws://example.com:80/"
@@ -3143,7 +3353,7 @@
       }
     },
     {
-      "id": "parse#192",
+      "id": "parse#204",
       "fn": "parse",
       "input": {
         "input": "wss://example.com:443/"
@@ -3162,7 +3372,7 @@
       }
     },
     {
-      "id": "parse#193",
+      "id": "parse#205",
       "fn": "parse",
       "input": {
         "input": "file:///etc/passwd"
@@ -3181,7 +3391,7 @@
       }
     },
     {
-      "id": "parse#194",
+      "id": "parse#206",
       "fn": "parse",
       "input": {
         "input": "file://localhost/etc"
@@ -3200,7 +3410,7 @@
       }
     },
     {
-      "id": "parse#195",
+      "id": "parse#207",
       "fn": "parse",
       "input": {
         "input": "file://host/share"
@@ -3219,7 +3429,7 @@
       }
     },
     {
-      "id": "parse#196",
+      "id": "parse#208",
       "fn": "parse",
       "input": {
         "input": "file:///C:/x/../.."
@@ -3238,7 +3448,7 @@
       }
     },
     {
-      "id": "parse#197",
+      "id": "parse#209",
       "fn": "parse",
       "input": {
         "input": "file:c:/x"
@@ -3257,7 +3467,7 @@
       }
     },
     {
-      "id": "parse#198",
+      "id": "parse#210",
       "fn": "parse",
       "input": {
         "input": "mailto:a@b.com"
@@ -3276,7 +3486,7 @@
       }
     },
     {
-      "id": "parse#199",
+      "id": "parse#211",
       "fn": "parse",
       "input": {
         "input": "javascript:alert(1)"
@@ -3295,7 +3505,7 @@
       }
     },
     {
-      "id": "parse#200",
+      "id": "parse#212",
       "fn": "parse",
       "input": {
         "input": "data:text/html,<script>alert(1)</script>"
@@ -3314,7 +3524,7 @@
       }
     },
     {
-      "id": "parse#201",
+      "id": "parse#213",
       "fn": "parse",
       "input": {
         "input": "vbscript:msgbox(1)"
@@ -3333,7 +3543,7 @@
       }
     },
     {
-      "id": "parse#202",
+      "id": "parse#214",
       "fn": "parse",
       "input": {
         "input": "at://did:plc:abc/app.bsky.feed.post/3x"
@@ -3343,7 +3553,7 @@
       }
     },
     {
-      "id": "parse#203",
+      "id": "parse#215",
       "fn": "parse",
       "input": {
         "input": "foo:a b?c d#e f"
@@ -3362,7 +3572,7 @@
       }
     },
     {
-      "id": "parse#204",
+      "id": "parse#216",
       "fn": "parse",
       "input": {
         "input": "foo://host/p a?q r#f g"
@@ -3381,7 +3591,7 @@
       }
     },
     {
-      "id": "parse#205",
+      "id": "parse#217",
       "fn": "parse",
       "input": {
         "input": "foo://ho st/"
@@ -3391,7 +3601,7 @@
       }
     },
     {
-      "id": "parse#206",
+      "id": "parse#218",
       "fn": "parse",
       "input": {
         "input": "foo://h%20st/"
@@ -3410,7 +3620,7 @@
       }
     },
     {
-      "id": "parse#207",
+      "id": "parse#219",
       "fn": "parse",
       "input": {
         "input": "foo://hōst/"
@@ -3429,7 +3639,7 @@
       }
     },
     {
-      "id": "parse#208",
+      "id": "parse#220",
       "fn": "parse",
       "input": {
         "input": "foo://[::1]/"
@@ -3448,7 +3658,7 @@
       }
     },
     {
-      "id": "parse#209",
+      "id": "parse#221",
       "fn": "parse",
       "input": {
         "input": "foo:/"
@@ -3467,7 +3677,7 @@
       }
     },
     {
-      "id": "parse#210",
+      "id": "parse#222",
       "fn": "parse",
       "input": {
         "input": "foo://"
@@ -3486,7 +3696,7 @@
       }
     },
     {
-      "id": "parse#211",
+      "id": "parse#223",
       "fn": "parse",
       "input": {
         "input": "foo:///x"
@@ -3505,7 +3715,7 @@
       }
     },
     {
-      "id": "parse#212",
+      "id": "parse#224",
       "fn": "parse",
       "input": {
         "input": "foo:"
@@ -3524,7 +3734,7 @@
       }
     },
     {
-      "id": "parse#213",
+      "id": "parse#225",
       "fn": "parse",
       "input": {
         "input": "a+b-c.d:x"
@@ -3543,7 +3753,7 @@
       }
     },
     {
-      "id": "parse#214",
+      "id": "parse#226",
       "fn": "parse",
       "input": {
         "input": "1http://example.com"
@@ -3553,7 +3763,7 @@
       }
     },
     {
-      "id": "parse#215",
+      "id": "parse#227",
       "fn": "parse",
       "input": {
         "input": ""
@@ -3563,7 +3773,7 @@
       }
     },
     {
-      "id": "parse#216",
+      "id": "parse#228",
       "fn": "parse",
       "input": {
         "input": " "
@@ -3573,7 +3783,7 @@
       }
     },
     {
-      "id": "parse#217",
+      "id": "parse#229",
       "fn": "parse",
       "input": {
         "input": "example.com"
@@ -3583,7 +3793,7 @@
       }
     },
     {
-      "id": "parse#218",
+      "id": "parse#230",
       "fn": "parse",
       "input": {
         "input": "example.org/faq"
@@ -3593,7 +3803,7 @@
       }
     },
     {
-      "id": "parse#219",
+      "id": "parse#231",
       "fn": "parse",
       "input": {
         "input": "/profile/x"
@@ -3603,7 +3813,7 @@
       }
     },
     {
-      "id": "parse#220",
+      "id": "parse#232",
       "fn": "parse",
       "input": {
         "input": "//example.com"
@@ -3613,7 +3823,7 @@
       }
     },
     {
-      "id": "parse#221",
+      "id": "parse#233",
       "fn": "parse",
       "input": {
         "input": "not a url"
@@ -3623,7 +3833,7 @@
       }
     },
     {
-      "id": "parse#222",
+      "id": "parse#234",
       "fn": "parse",
       "input": {
         "input": "https"
@@ -3633,7 +3843,7 @@
       }
     },
     {
-      "id": "parse#223",
+      "id": "parse#235",
       "fn": "parse",
       "input": {
         "input": ":"
@@ -3643,7 +3853,7 @@
       }
     },
     {
-      "id": "parse#224",
+      "id": "parse#236",
       "fn": "parse",
       "input": {
         "input": "?q"
@@ -3653,7 +3863,7 @@
       }
     },
     {
-      "id": "parse#225",
+      "id": "parse#237",
       "fn": "parse",
       "input": {
         "input": "#f"

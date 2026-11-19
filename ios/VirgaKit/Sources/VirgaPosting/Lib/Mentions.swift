@@ -48,7 +48,11 @@ public struct MentionFetchResponse: Sendable {
   public var ok: Bool { (200..<300).contains(status) }
 }
 
-/// `fetch(url)` for the resolver: throws for a network failure.
+/// `fetch(url)` for the resolver: throws for a network failure. The web hands
+/// its fetch an `AbortSignal.timeout`; here the lookup's task is cancelled at
+/// the timeout, so a fetch must stop when cancelled (URLSession's async calls
+/// do) for the timeout to end the wait, as the web's fetch must honour its
+/// signal.
 public typealias MentionFetch = @Sendable (_ url: String) async throws -> MentionFetchResponse
 
 /// `(handle) => Promise<did | null>`, as facet detection takes it.

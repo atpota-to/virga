@@ -16,12 +16,28 @@
       "id": "toShortUrl#2",
       "fn": "toShortUrl",
       "input": {
+        "url": "https://xn--a-.com/a/long/path/to/somewhere"
+      },
+      "output": "xn--a-.com/a/long/path/..."
+    },
+    {
+      "id": "toShortUrl#3",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://XN--XN--A-.example/x"
+      },
+      "output": "xn--xn--a-.example/x"
+    },
+    {
+      "id": "toShortUrl#4",
+      "fn": "toShortUrl",
+      "input": {
         "url": "https://example.org/branding"
       },
       "output": "example.org/branding"
     },
     {
-      "id": "toShortUrl#3",
+      "id": "toShortUrl#5",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.org/"
@@ -29,7 +45,7 @@
       "output": "example.org"
     },
     {
-      "id": "toShortUrl#4",
+      "id": "toShortUrl#6",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.org"
@@ -37,7 +53,7 @@
       "output": "example.org"
     },
     {
-      "id": "toShortUrl#5",
+      "id": "toShortUrl#7",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/a?ref=sample&utm=x"
@@ -45,7 +61,7 @@
       "output": "example.com/a?ref=sample..."
     },
     {
-      "id": "toShortUrl#6",
+      "id": "toShortUrl#8",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/#a-very-long-fragment"
@@ -53,7 +69,7 @@
       "output": "example.com#a-very-long-..."
     },
     {
-      "id": "toShortUrl#7",
+      "id": "toShortUrl#9",
       "fn": "toShortUrl",
       "input": {
         "url": "example.org/profile/testing.dame.is/very/long/path"
@@ -61,7 +77,7 @@
       "output": "example.org/profile/testing.dame.is/very/long/path"
     },
     {
-      "id": "toShortUrl#8",
+      "id": "toShortUrl#10",
       "fn": "toShortUrl",
       "input": {
         "url": "at://did:plc:abc/app.bsky.feed.post/3mtw6wbql5z2p"
@@ -69,7 +85,7 @@
       "output": "at://did:plc:abc/app.bsky.feed.post/3mtw6wbql5z2p"
     },
     {
-      "id": "toShortUrl#9",
+      "id": "toShortUrl#11",
       "fn": "toShortUrl",
       "input": {
         "url": ""
@@ -77,7 +93,7 @@
       "output": ""
     },
     {
-      "id": "toShortUrl#10",
+      "id": "toShortUrl#12",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/123456789012345"
@@ -85,7 +101,7 @@
       "output": "example.com/123456789012..."
     },
     {
-      "id": "toShortUrl#11",
+      "id": "toShortUrl#13",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/1234567890123456"
@@ -93,7 +109,7 @@
       "output": "example.com/123456789012..."
     },
     {
-      "id": "toShortUrl#12",
+      "id": "toShortUrl#14",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/12345678901234"
@@ -101,7 +117,7 @@
       "output": "example.com/12345678901234"
     },
     {
-      "id": "toShortUrl#13",
+      "id": "toShortUrl#15",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com:8080/a/b/c"
@@ -109,7 +125,7 @@
       "output": "example.com:8080/a/b/c"
     },
     {
-      "id": "toShortUrl#14",
+      "id": "toShortUrl#16",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com:443/a"
@@ -117,7 +133,7 @@
       "output": "example.com/a"
     },
     {
-      "id": "toShortUrl#15",
+      "id": "toShortUrl#17",
       "fn": "toShortUrl",
       "input": {
         "url": "https://user:pass@example.com/path/to/thing"
@@ -125,7 +141,7 @@
       "output": "example.com/path/to/thing"
     },
     {
-      "id": "toShortUrl#16",
+      "id": "toShortUrl#18",
       "fn": "toShortUrl",
       "input": {
         "url": "HTTPS://EXAMPLE.COM/PATH/TO/A/PLACE"
@@ -133,7 +149,7 @@
       "output": "example.com/PATH/TO/A/PL..."
     },
     {
-      "id": "toShortUrl#17",
+      "id": "toShortUrl#19",
       "fn": "toShortUrl",
       "input": {
         "url": "https://bücher.de/straße/und/mehr"
@@ -141,7 +157,7 @@
       "output": "xn--bcher-kva.de/stra%C3%9Fe/..."
     },
     {
-      "id": "toShortUrl#18",
+      "id": "toShortUrl#20",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/café/naïve/über"
@@ -149,7 +165,7 @@
       "output": "example.com/caf%C3%A9/na..."
     },
     {
-      "id": "toShortUrl#19",
+      "id": "toShortUrl#21",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/a b c d e f g h"
@@ -157,7 +173,7 @@
       "output": "example.com/a%20b%20c%20..."
     },
     {
-      "id": "toShortUrl#20",
+      "id": "toShortUrl#22",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/?"
@@ -165,7 +181,7 @@
       "output": "example.com"
     },
     {
-      "id": "toShortUrl#21",
+      "id": "toShortUrl#23",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/#"
@@ -173,7 +189,7 @@
       "output": "example.com"
     },
     {
-      "id": "toShortUrl#22",
+      "id": "toShortUrl#24",
       "fn": "toShortUrl",
       "input": {
         "url": "https://example.com/?q=1#f"
@@ -181,7 +197,7 @@
       "output": "example.com?q=1#f"
     },
     {
-      "id": "toShortUrl#23",
+      "id": "toShortUrl#25",
       "fn": "toShortUrl",
       "input": {
         "url": "http://example.com/x"
@@ -189,7 +205,7 @@
       "output": "example.com/x"
     },
     {
-      "id": "toShortUrl#24",
+      "id": "toShortUrl#26",
       "fn": "toShortUrl",
       "input": {
         "url": "ftp://example.com/a/long/path/here"
@@ -197,7 +213,7 @@
       "output": "ftp://example.com/a/long/path/here"
     },
     {
-      "id": "toShortUrl#25",
+      "id": "toShortUrl#27",
       "fn": "toShortUrl",
       "input": {
         "url": "mailto:someone@example.com"
@@ -205,7 +221,7 @@
       "output": "mailto:someone@example.com"
     },
     {
-      "id": "toShortUrl#26",
+      "id": "toShortUrl#28",
       "fn": "toShortUrl",
       "input": {
         "url": "https://[::1]:8080/path/to/the/thing"
@@ -213,7 +229,7 @@
       "output": "[::1]:8080/path/to/the/..."
     },
     {
-      "id": "toShortUrl#27",
+      "id": "toShortUrl#29",
       "fn": "toShortUrl",
       "input": {
         "url": "https://192.168.0.1/long/path/somewhere"
@@ -221,7 +237,7 @@
       "output": "192.168.0.1/long/path/so..."
     },
     {
-      "id": "toShortUrl#28",
+      "id": "toShortUrl#30",
       "fn": "toShortUrl",
       "input": {
         "url": "https://en.wikipedia.org/wiki/Bee_(disambiguation)"
@@ -229,7 +245,7 @@
       "output": "en.wikipedia.org/wiki/Bee_(di..."
     },
     {
-      "id": "toShortUrl#29",
+      "id": "toShortUrl#31",
       "fn": "toShortUrl",
       "input": {
         "url": "http:example.com/a/long/path/to/it"
@@ -237,7 +253,7 @@
       "output": "example.com/a/long/path/..."
     },
     {
-      "id": "toShortUrl#30",
+      "id": "toShortUrl#32",
       "fn": "toShortUrl",
       "input": {
         "url": "not a url"
@@ -245,7 +261,7 @@
       "output": "not a url"
     },
     {
-      "id": "toShortUrl#31",
+      "id": "toShortUrl#33",
       "fn": "toShortUrl",
       "input": {
         "url": "https://"

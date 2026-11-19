@@ -36,15 +36,19 @@ enum IDNA {
     return result
   }
 
-  /// UTS #46 ToASCII with the URL Standard's flags, or nil for an error.
+  /// UTS #46 ToASCII with the URL Standard's flags, or nil for an error. A
+  /// Punycode label is written as it came (mapped, so lower case), as Ada
+  /// writes it: its decoding is only checked, never encoded again.
   static func toASCII(_ domain: String) -> String? {
     guard let labels = process(domain) else { return nil }
     var out: [String] = []
     for label in labels {
-      if label.allSatisfy(\.isASCII) {
-        out.append(String(String.UnicodeScalarView(label)))
+      if let written = label.punycode {
+        out.append(written)
+      } else if label.scalars.allSatisfy(\.isASCII) {
+        out.append(String(String.UnicodeScalarView(label.scalars)))
       } else {
-        guard let encoded = Punycode.encode(label) else { return nil }
+        guard let encoded = Punycode.encode(label.scalars) else { return nil }
         out.append("xn--" + encoded)
       }
     }
@@ -159,7 +163,14 @@ enum IDNA {
 
   // MARK: Processing (UTS #46 §4)
 
-  static func process(_ domain: String) -> [[Unicode.Scalar]]? {
+  /// A processed label: its code points (a Punycode label's decoding) and,
+  /// for a Punycode label, the label as written.
+  struct Label {
+    var scalars: [Unicode.Scalar]
+    var punycode: String?
+  }
+
+  static func process(_ domain: String) -> [Label]? {
     guard let mapped = map(domain) else { return nil }
     let normalized = Array(mapped.precomposedStringWithCanonicalMapping.unicodeScalars)
     var labels: [[Unicode.Scalar]] = []
@@ -174,18 +185,21 @@ enum IDNA {
     }
     labels.append(current)
 
-    var out: [[Unicode.Scalar]] = []
-    for var label in labels {
-      var decodedFromPunycode = false
+    var out: [Label] = []
+    for label in labels {
       if label.count >= 4, String(String.UnicodeScalarView(label.prefix(4))) == "xn--" {
         guard label.allSatisfy(\.isASCII) else { return nil }
         guard let decoded = Punycode.decode(String(String.UnicodeScalarView(label.dropFirst(4)))) else { return nil }
-        if decoded.isEmpty || decoded.allSatisfy(\.isASCII) { return nil }
-        label = decoded
-        decodedFromPunycode = true
+        // Ada 2.9.2 (Node 22's URL parser) refuses an empty decoding only: a
+        // label that decodes to plain ASCII (`xn--a-` is "a", `xn----` is
+        // "-", `xn--xn--a-` is "xn--a") stands, written as it came.
+        if decoded.isEmpty { return nil }
+        guard isValid(decoded, decodedFromPunycode: true) else { return nil }
+        out.append(Label(scalars: decoded, punycode: String(String.UnicodeScalarView(label))))
+      } else {
+        guard isValid(label, decodedFromPunycode: false) else { return nil }
+        out.append(Label(scalars: label, punycode: nil))
       }
-      guard isValid(label, decodedFromPunycode: decodedFromPunycode) else { return nil }
-      out.append(label)
     }
     return out
   }
@@ -204,11 +218,11 @@ enum IDNA {
     return String(out)
   }
 
-  /// UTS #46 §4.1 validity, as Ada checks it.
+  /// UTS #46 §4.1 validity, as Ada checks it. CheckHyphens is off, and Ada
+  /// doesn't refuse a decoded label that starts `xn--` either (a label that
+  /// isn't decoded and starts so is always Punycode, so never gets here).
   static func isValid(_ label: [Unicode.Scalar], decodedFromPunycode: Bool) -> Bool {
     guard !label.isEmpty else { return true }
-    // CheckHyphens off: only the xn-- prefix is refused.
-    if label.count >= 4, String(String.UnicodeScalarView(label.prefix(4))) == "xn--" { return false }
     if label.contains(".") { return false }
     // A label may not start with a combining mark (Ada's list of them).
     if case .valid(_, _, true) = entry(label[0]) { return false }

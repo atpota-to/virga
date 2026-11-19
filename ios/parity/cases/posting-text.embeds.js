@@ -153,6 +153,12 @@ const POSTS = [
   },
   { $id: 'null post', post: null, blobs: {} },
   { $id: 'no blobs given', post: { card } },
+  // `blobs.images[i]` of a string is its i-th character.
+  {
+    $id: 'image blobs as a string',
+    post: { images: [{ alt: 'a' }, { alt: 'b' }, { alt: 'c' }] },
+    blobs: { images: 'x\u{1F98B}' },
+  },
 ];
 
 const GALLERIES = [

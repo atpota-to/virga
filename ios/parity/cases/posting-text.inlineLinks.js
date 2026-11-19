@@ -108,6 +108,17 @@ const MISLEADS = [
   ['ex-ample.co.uk', 'https://ex-ample.co.uk'],
   ['-bad-.com', 'https://elsewhere.example'],
   ['192.168.0.1', 'https://elsewhere.example'],
+  // `/iu` matches by case folding: U+0345 (a combining mark) folds to the
+  // letter ι, so it counts as a letter of a named domain, at either end or
+  // inside; the long s folds to s, so it can spell the scheme.
+  ['\u0345ab.com', 'https://x.com'],
+  ['ab\u0345.com', 'https://x.com'],
+  ['a\u0345b.com', 'https://x.com'],
+  ['ab.co\u0345', 'https://x.com'],
+  ['notes.txt\u0345', 'not a url'],
+  ['httpſ://bsky.app', 'https://elsewhere.example'],
+  ['\u212Aelvin.example', 'https://elsewhere.example'],
+  ['\u0345', 'https://x.com'],
 ];
 
 const INLINE = [
@@ -134,6 +145,8 @@ const INLINE = [
   '[🦋 émoji](https://example.com/é)',
   '[label](mailto:a@b.com)',
   '[label](/relative)',
+  '[\u0345ab.com](https://x.com) refused, as a domain that is not x.com',
+  '[x.co\u0345m](https://x.com)',
   'no links here',
   '](',
   '[',
@@ -183,6 +196,7 @@ const COUNTS = [
   '[bsky.app](https://elsewhere.example/a/long/path/here) ok',
   '[https://bücher.de/straße/und/mehr](https://bücher.de/straße/und/mehr)',
   'plain text only',
+  '[\u0345ab.com](https://x.com/a/long/path/that/shortens) and [ok](https://x.com/a/long/path/that/shortens)',
   '👨\u200D👩\u200D👧\u200D👦 [🇯🇵](https://example.jp) é',
   '',
   null,
@@ -218,6 +232,9 @@ export default async function cases() {
         null,
         'v1.2.3',
         'example.org example.com',
+        '\u0345ab.com',
+        'ſt.\u0345ab12',
+        ' \u0345ab.app\u0345 ',
       ].map((text) => ({ text })),
       ({ text }) => isSingleAddress(text),
     )),

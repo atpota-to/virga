@@ -141,6 +141,10 @@ const FIXED = [
     'It works, I.E. at the lab tomorrow we go over all of it again and again',
     'Ask St. Clair at the lab tomorrow to go over all of it again please now',
     'Ask ſt. Clair at the lab tomorrow to go over all of it again please now',
+    // U+0345 folds to ι under /iu, so it is an initial too (after a quote or
+    // a bracket: after a space it joins the space's grapheme cluster).
+    'Ask "\u0345. Clair at the lab tomorrow to go over all of it again please',
+    'Ask (\u0345. Clair at the lab tomorrow to go over all of it again please',
     'See \u201C(e.g. at the lab tomorrow we go over all of it again and again',
     'Read it. then at the lab tomorrow we go over all of it again and again',
     'Read it! Then at the lab tomorrow we go over all of it again and again',

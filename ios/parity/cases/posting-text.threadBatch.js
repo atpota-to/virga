@@ -173,20 +173,80 @@ const INPUTS = [
     now: NOW,
   },
   { $id: 'null and non-object records', records: [null, base('b')], now: NOW },
+  // The shared clock's nextTid refuses a time that isn't a number before
+  // toISOString is reached, and before the clock moves, so these throw
+  // the same whatever ran before.
+  {
+    $id: 'invalid now, the default minter',
+    records: [base('a')],
+    now: 'nope',
+    defaultMinter: true,
+  },
+  {
+    $id: 'now past the end of time, the default minter',
+    records: [base('a')],
+    now: 8.64e15 + 1,
+    defaultMinter: true,
+  },
+  {
+    $id: 'no records, the default minter',
+    records: [],
+    now: 'nope',
+    defaultMinter: true,
+  },
+];
+
+// The minter is asked for each post's key before its time is written, so
+// an invalid time reaches it first.
+const MINTED = [
+  { $id: 'invalid now', records: [base('a'), base('b')], now: 'nope' },
+  {
+    $id: 'the end of time',
+    records: [base('a'), base('b'), base('c')],
+    now: 8.64e15 - 1,
+  },
+  {
+    $id: 'own times',
+    records: [
+      base('a', { createdAt: '2026-01-01T00:00:00.000Z' }),
+      base('b', { createdAt: '2025-01-01T00:00:00.000Z' }),
+    ],
+    now: NOW,
+  },
 ];
 
 export default async function cases() {
-  return each(
+  const out = await each(
     'buildThreadWrites',
     INPUTS,
-    ({ records, collection, replyTo, now }) =>
+    ({ records, collection, replyTo, now, defaultMinter }) =>
       buildThreadWrites({
         did: DID,
         ...(collection ? { collection } : {}),
         records,
         replyTo: replyTo ?? null,
         now,
-        mintTid: (ms) => `tid${ms}`,
+        ...(defaultMinter ? {} : { mintTid: (ms) => `tid${ms}` }),
       }),
   );
+  out.push(
+    ...(await each('mintTidCalls', MINTED, async ({ records, now }) => {
+      const calls = [];
+      try {
+        const { created } = await buildThreadWrites({
+          did: DID,
+          records,
+          now,
+          mintTid: (ms) => {
+            calls.push(String(ms));
+            return `tid${ms}`;
+          },
+        });
+        return { calls, created: created.length };
+      } catch (error) {
+        return { calls, $throws: error.message };
+      }
+    })),
+  );
+  return out;
 }

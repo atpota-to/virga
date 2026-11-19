@@ -179,7 +179,8 @@ public enum ThreadSplit {
   // The end of a sentence, with whatever closes a quote or a bracket after it.
   static let sentenceEnd = JSRegex(#"[.!?…。！？।؟۔][)\]"'»”’」』）】]*\z"#)
   // A full stop that ends no sentence: an initial, a list number, a common
-  // abbreviation. The web's `/iu` written out (its `s` also matches ſ).
+  // abbreviation. The web's `/iu` written out: its `s` also matches ſ, and
+  // its `\p{L}` also matches U+0345, a combining mark that case-folds to ι.
   static let notASentence: JSRegex = {
     func ci(_ word: String) -> String {
       word.map { ch -> String in
@@ -194,7 +195,7 @@ public enum ThreadSplit {
       }.joined()
     }
     let words = ["Mr", "Mrs", "Ms", "Dr", "Prof", "St", "vs", "etc", "e.g", "i.e"].map(ci).joined(separator: "|")
-    return JSRegex(#"^[(\["'“‘]*(?:\p{L}|[0-9]+|"# + words + #")\.\z"#)
+    return JSRegex(#"^[(\["'“‘]*(?:[\p{L}ͅ]|[0-9]+|"# + words + #")\.\z"#)
   }()
   static let startsLowercase = JSRegex(#"^\p{Ll}"#)
   // Sentence ends in text written without spaces, and what may follow one.
