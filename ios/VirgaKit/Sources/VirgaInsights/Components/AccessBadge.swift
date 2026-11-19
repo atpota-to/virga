@@ -1,5 +1,5 @@
-// Ports ACCESS from src/components/AccessBadge.jsx (the table only), as
-// src/tools/registry.js re-exports it
+// Ports src/components/AccessBadge.jsx (its ACCESS table; AccessLine is VirgaUI's)
+// Ports src/tools/registry.js (which re-exports ACCESS)
 //
 // What a feature can touch, in a word or two, for the header of a tool or a
 // posting page. "read" only reads; "follow" uses the follow permission;

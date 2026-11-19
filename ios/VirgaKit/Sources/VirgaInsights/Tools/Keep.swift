@@ -23,13 +23,15 @@ public enum Keep {
   }
 
   /// The stored list: its strings, each once, in order; none when there is
-  /// no store, nothing stored, or what is stored isn't a JSON array.
+  /// no store, nothing stored, or what is stored isn't a JSON array. "Once"
+  /// is as a JavaScript Set has it, by code units: "é" and "e\u{301}" are
+  /// two DIDs.
   public static func read(_ key: String, store: KeyValueStore?) -> [String] {
     let text = store?.getItem(key) ?? ""
     guard case .array(let list)? = try? JSONValue.parse(text.isEmpty ? "[]" : text) else { return [] }
-    var seen = Set<String>()
+    var seen = Set<JSKey>()
     return list.compactMap { item in
-      guard case .string(let did) = item, seen.insert(did).inserted else { return nil }
+      guard case .string(let did) = item, seen.insert(JSKey(did)).inserted else { return nil }
       return did
     }
   }
@@ -51,7 +53,8 @@ public final class KeepListModel {
   public let name: String
   /// The kept DIDs, in the order they were added (the stored order).
   public private(set) var dids: [String]
-  private var members: Set<String>
+  /// `dids` as the web's Set holds them (by code units).
+  private var members: Set<JSKey>
 
   @ObservationIgnored private let store: KeyValueStore?
 
@@ -65,13 +68,13 @@ public final class KeepListModel {
     self.store = store
     let dids = Keep.read(Keep.keepKey(did, name), store: store)
     self.dids = dids
-    self.members = Set(dids)
+    self.members = Set(dids.map(JSKey.init))
   }
 
   /// Where the list is stored.
   public var key: String { Keep.keepKey(did, name) }
 
-  public func has(_ did: String) -> Bool { members.contains(did) }
+  public func has(_ did: String) -> Bool { members.contains(JSKey(did)) }
 
   public var size: Int { dids.count }
 
@@ -79,14 +82,14 @@ public final class KeepListModel {
   public func add(_ more: [String]) {
     var next = dids
     var seen = members
-    for did in more where seen.insert(did).inserted { next.append(did) }
+    for did in more where seen.insert(JSKey(did)).inserted { next.append(did) }
     save(next)
   }
 
   /// Stop keeping these.
   public func remove(_ these: [String]) {
-    let drop = Set(these)
-    save(dids.filter { !drop.contains($0) })
+    let drop = Set(these.map(JSKey.init))
+    save(dids.filter { !drop.contains(JSKey($0)) })
   }
 
   /// Keep none.
@@ -96,7 +99,7 @@ public final class KeepListModel {
 
   private func save(_ next: [String]) {
     dids = next
-    members = Set(next)
+    members = Set(next.map(JSKey.init))
     do {
       try store?.setItem(key, Keep.serialize(next))
     } catch {

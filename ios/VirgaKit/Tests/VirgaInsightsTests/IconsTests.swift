@@ -43,6 +43,11 @@ import VirgaTestSupport
     if let defense = try Parity.cases("insights-early.routes", fn: "DEFENSE_ICON")[0].output.stringValue {
       names.insert(defense)
     }
+    // The palette's own (CommandPalette.jsx's lucide import), which the
+    // commands fixture records as `{ name, icon }`.
+    let palette = try Parity.cases("insights-early.commands", fn: "paletteIcons")[0].output.arrayValue ?? []
+    #expect(palette.count > 10, "the palette's icons are recorded")
+    for entry in palette { #expect(entry["icon"]?.stringValue.map(names.contains) == true, "\(entry)") }
     #expect(names.count > 30, "the fixtures name the tables' icons")
     let missing = names.filter { !Icons.hasSymbol(lucide: $0) }.sorted()
     #expect(missing.isEmpty, "no SF Symbol for \(missing)")

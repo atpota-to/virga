@@ -33,9 +33,17 @@ import VirgaTestSupport
     return Commands.buildCommands(context)
   }
 
-  /// The case's commands: a named context's, or the list it gives.
+  /// The case's commands: a named context's, a list the fixture holds once
+  /// (`named`, e.g. the generated "fuzzCommands"), or the list it gives.
   func list(_ c: ParityCase, _ contexts: [String: JSONValue]) -> [Command] {
     if let name = c["context"].stringValue { return commands(name, c, contexts) }
+    if let name = c["named"].stringValue {
+      guard let held = try? cases(name).first?.output else {
+        Issue.record("\(c): the fixture holds no list named \(name)")
+        return []
+      }
+      return decoded(held, as: [Command].self, c) ?? []
+    }
     if c["commands"].isNull { return [] }
     return decoded(c["commands"], as: [Command].self, c) ?? []
   }

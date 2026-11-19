@@ -17,6 +17,8 @@ import {
   rankCommands,
   rememberRecent,
 } from '../../../src/shell/commands.js';
+import fs from 'node:fs';
+import * as lucide from 'lucide-react';
 import { REPORTS } from '../../../src/reports/registry.js';
 import { TOOLS } from '../../../src/tools/registry.js';
 import { POSTING_PAGES } from '../../../src/posting/routes.js';
@@ -24,9 +26,35 @@ import { DEFENSE_PAGES } from '../../../src/defense/routes.js';
 import { SECTIONS } from '../../../src/settings/sections.js';
 import { ANALYTICS_PERIODS } from '../../../src/lib/analytics.js';
 import { each, grid, value } from './_helpers.js';
-import { withIconNames } from './_insights.js';
+import { HARD_TEXT, iconName, seeded, withIconNames } from './_insights.js';
 
-export const sources = ['src/shell/commands.js'];
+export const sources = [
+  'src/shell/commands.js',
+  'src/shell/CommandPalette.jsx',
+];
+
+// The icons the palette draws for a command without one of its own (its
+// kind's, its sky's or its group's) are private to CommandPalette.jsx, so
+// they are read from its lucide-react import and recorded by name, each
+// as `{ name, icon }`: VirgaInsights' Icons.sfSymbol(lucide:) has to map
+// every one (IconsTests reads each `icon` a fixture records).
+function paletteIcons() {
+  const source = fs.readFileSync(
+    new URL('../../../src/shell/CommandPalette.jsx', import.meta.url),
+    'utf8',
+  );
+  const list = /import\s*\{([^}]*)\}\s*from\s*'lucide-react'/.exec(source);
+  if (!list)
+    throw new Error('CommandPalette.jsx no longer imports lucide-react');
+  return list[1]
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .map((name) => {
+      if (!lucide[name]) throw new Error(`lucide-react has no ${name}`);
+      return { name, icon: iconName(lucide[name]) };
+    });
+}
 
 const MIRA = {
   did: 'did:plc:mira',
@@ -119,6 +147,22 @@ const CONTEXTS = {
   }),
   noActive: full({ activeDid: null }),
   otherActive: full({ activeDid: 'did:plc:someone-else' }),
+  // Ids written two ways (é, and e with a combining accent): two strings to
+  // JavaScript's ===, one to Swift's ==.
+  accents: {
+    dashboards: [
+      { id: 'caf\u00e9', name: 'Composed' },
+      { id: 'cafe\u0301', name: 'Decomposed' },
+    ],
+    accounts: [
+      { did: 'caf\u00e9', handle: 'composed.example' },
+      { did: 'cafe\u0301', handle: 'decomposed.example' },
+    ],
+    activeDid: 'cafe\u0301',
+    periods: [{ key: 'caf\u00e9', days: 1, label: 'Day' }],
+    period: 'cafe\u0301',
+    route: { section: 'dashboard', dashboard: 'cafe\u0301' },
+  },
   dashboardsOnly: {
     dashboards: [
       { id: 'café', name: 'Café numbers' },
@@ -246,6 +290,11 @@ const CUSTOM = {
     { id: 'm2', title: 'No group' },
     { id: 'm3', group: 'Tools', title: 'Has all', hint: '', keywords: '' },
   ],
+  accents: [
+    { id: 'caf\u00e9', group: 'Caf\u00e9', title: 'Alpha one' },
+    { id: 'cafe\u0301', group: 'Cafe\u0301', title: 'Alpha two' },
+    { id: 'b', group: 'Caf\u00e9', title: 'Alpha three' },
+  ],
   dupes: [
     { id: 'd', group: 'Tools', title: 'Same id one' },
     { id: 'd', group: 'Reports', title: 'Same id two' },
@@ -306,6 +355,7 @@ const CUSTOM_QUERIES = {
   scattered: ['acf', 'abc', 'ace', 'aj', 'aceg', 'abd', 'bdf', 'ab'],
   missing: ['tools', 'no', 'has', 'group'],
   dupes: ['same', 'one', ''],
+  accents: ['alpha', 'one', ''],
   ties: ['alpha gamma', 'gamma alpha', 'gamma', 'zed'],
   tiesReversed: ['alpha gamma', 'gamma alpha'],
 };
@@ -331,10 +381,58 @@ const RECENTS = [
 
 const ids = (list) => list.map((c) => c.id);
 
+// Generated text, the same on every run: titles, hints, keywords and
+// queries made of HARD_TEXT, so folding, word splitting, the scores and
+// the UTF-16 positions the scattered match counts are held to the web's
+// over far more text than a hand-written list reaches. Queries are partly
+// cut from the titles (a word, its start, a word with a letter dropped),
+// so most of them match something.
+const fuzz = seeded(20261119);
+const FUZZ_TEXT = Array.from({ length: 160 }, () => fuzz.string(HARD_TEXT, 14));
+const FUZZ_COMMANDS = Array.from({ length: 40 }, (_, i) => {
+  const command = {
+    id: `f${i}`,
+    group: fuzz.pick(['Tools', 'Reports', 'Ünïcödé', 'Σύνολο', 'İşler']),
+    title: fuzz.string(HARD_TEXT, 16),
+  };
+  if (fuzz.int(2)) command.hint = fuzz.string(HARD_TEXT, 20);
+  if (fuzz.int(2)) command.keywords = fuzz.string(HARD_TEXT, 20);
+  return command;
+});
+const FUZZ_QUERIES = Array.from({ length: 120 }, () => {
+  const source = fuzz.pick(FUZZ_COMMANDS);
+  const text =
+    fuzz.pick([
+      source.title,
+      source.hint,
+      source.keywords,
+      source.group,
+      source.title,
+    ]) ?? '';
+  const words = text.split(/\s+/u).filter(Boolean);
+  const word = fuzz.pick(words.length ? words : [fuzz.string(HARD_TEXT, 4)]);
+  const points = [...word];
+  switch (fuzz.int(5)) {
+    case 0:
+      return word;
+    case 1:
+      return points.slice(0, 1 + fuzz.int(Math.max(1, points.length))).join('');
+    case 2:
+      points.splice(fuzz.int(Math.max(1, points.length)), 1);
+      return points.join('');
+    case 3:
+      return `${word} ${fuzz.string(HARD_TEXT, 3)}`;
+    default:
+      return fuzz.string(HARD_TEXT, 5);
+  }
+});
+
 export default async function cases() {
   return [
     value('constants', { COMMAND_GROUPS, RECENT_GROUP, MAX_RECENT }),
     value('contexts', CONTEXTS),
+    value('fuzzCommands', FUZZ_COMMANDS),
+    value('paletteIcons', paletteIcons()),
     ...(await each(
       'periodTitle',
       [
@@ -383,6 +481,7 @@ export default async function cases() {
         'ͅ',
         'ẍ̲y',
         ' spaced ',
+        ...FUZZ_TEXT,
       ].map((text) => ({ text })),
       ({ text }) => fold(text),
     )),
@@ -409,13 +508,29 @@ export default async function cases() {
         ),
         { commands: null, query: 'a' },
         { commands: null, query: '' },
+        { commands: CUSTOM.accents, query: 'alpha', recent: ['cafe\u0301'] },
+        { commands: CUSTOM.accents, query: 'alpha', recent: ['caf\u00e9'] },
+        // The generated list is written once (`fuzzCommands`), and named.
+        ...FUZZ_QUERIES.map((query, i) => ({
+          $id: `fuzz#${i + 1}`,
+          named: 'fuzzCommands',
+          query,
+          ...(i % 3 ? {} : { recent: ['f3', 'f1', 'f20', 'f0'] }),
+        })),
+        ...FUZZ_QUERIES.slice(0, 40).map((query, i) => ({
+          $id: `fuzz-full#${i + 1}`,
+          context: 'full',
+          query,
+        })),
       ],
-      ({ context, commands, query, recent }) => {
+      ({ context, named, commands, query, recent }) => {
         const list = context
           ? context === 'empty'
             ? buildCommands()
             : buildCommands(CONTEXTS[context])
-          : commands;
+          : named
+            ? FUZZ_COMMANDS
+            : commands;
         return ids(rankCommands(list, query, recent ? { recent } : undefined));
       },
     )),
@@ -432,6 +547,12 @@ export default async function cases() {
           query: ['', 'a'],
           recent: RECENTS.slice(2),
         }),
+        {
+          commands: CUSTOM.accents,
+          query: '',
+          recent: ['cafe\u0301', 'b'],
+        },
+        { commands: CUSTOM.accents, query: 'alpha', recent: [] },
         // (Not `missing`: a group the web leaves undefined is a group named
         // nothing, which JSON can't carry.)
         ...Object.keys(CUSTOM)
@@ -466,6 +587,7 @@ export default async function cases() {
         { recent: ['a', 3, null, 'b', ['c'], 'a'], id: 'z' },
         { recent: ['a', 'a', 'b'], id: null },
         { recent: ['a', 'b'], id: '' },
+        { recent: ['x', 'caf\u00e9', 'y'], id: 'cafe\u0301' },
         { recent: [], id: 'only' },
         { recent: ['x', 'y', 'z', 'w', 'v', 'u', 't', 's'], id: 'x' },
         { recent: ['x', 'y', 'z', 'w', 'v', 'u', 't', 's'], id: 'r' },

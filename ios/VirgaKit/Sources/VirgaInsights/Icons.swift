@@ -51,7 +51,9 @@ public enum Icons {
     "ListPlus": "text.badge.plus",
     "Lock": "lock",
     // The command palette's own (CommandPalette.jsx: a command without an
-    // icon gets its kind's, its sky's or its group's).
+    // icon gets its kind's, its sky's or its group's), as the commands
+    // fixture records them from its lucide-react import ("ChartColumn" is
+    // its BarChart3).
     "ChartColumn": "chart.bar",
     "Check": "checkmark",
     "LayoutDashboard": "square.grid.2x2",

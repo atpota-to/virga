@@ -45,7 +45,7 @@ function mount(did, name) {
 
 const PROBES = ['did:plc:a', 'did:plc:b', 'did:plc:c', 'did:web:x.example', ''];
 
-function run({ did, name, stored, others = {}, steps }) {
+function run({ did, name, stored, others = {}, steps, probes = PROBES }) {
   const key = keepKey(did, name);
   const items = new Map(Object.entries(others));
   if (stored !== null) items.set(key, stored);
@@ -56,7 +56,7 @@ function run({ did, name, stored, others = {}, steps }) {
         api,
         state: {
           size: api.size,
-          has: Object.fromEntries(PROBES.map((d) => [d, api.has(d)])),
+          has: Object.fromEntries(probes.map((d) => [d, api.has(d)])),
           stored: items.has(key) ? items.get(key) : null,
         },
       };
@@ -126,6 +126,41 @@ export default async function cases() {
           steps: STEPS,
         }))
         .concat([
+          {
+            // What JSON.stringify escapes in a DID, and what it leaves.
+            $id: 'escapes',
+            did: 'did:plc:me',
+            name: 'cleanup',
+            stored: '["did:plc:a","\\u0007\\n\\"q\\"\\\\"]',
+            steps: [
+              {
+                op: 'add',
+                dids: [
+                  'did:plc:b',
+                  'tab\there',
+                  '\u2028\u2029\u007f\u0000\u001f',
+                  'é 👍🏽 </script>',
+                  '\b\f\r',
+                ],
+              },
+              { op: 'remove', dids: ['did:plc:a'] },
+            ],
+          },
+          {
+            // Two ways to write é: a Set holds both, as JavaScript compares
+            // strings by code unit (Swift's == says they are the same).
+            $id: 'canonically-equivalent',
+            did: 'did:plc:me',
+            name: 'cleanup',
+            stored: JSON.stringify(['caf\u00e9', 'cafe\u0301', 'caf\u00e9']),
+            probes: ['caf\u00e9', 'x'],
+            steps: [
+              { op: 'add', dids: ['cafe\u0301', 'x'] },
+              { op: 'remove', dids: ['caf\u00e9'] },
+              { op: 'add', dids: ['caf\u00e9'] },
+              { op: 'remove', dids: ['cafe\u0301'] },
+            ],
+          },
           {
             $id: 'other-account-and-tool-untouched',
             did: 'did:plc:me',

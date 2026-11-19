@@ -1775,6 +1775,158 @@
       }
     },
     {
+      "id": "escapes",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"did:plc:a\",\"\\u0007\\n\\\"q\\\"\\\\\"]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "tab\there",
+              "  \u0000\u001f",
+              "é 👍🏽 </script>",
+              "\b\f\r"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"\\u0007\\n\\\"q\\\"\\\\\"]"
+          },
+          {
+            "size": 7,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"\\u0007\\n\\\"q\\\"\\\\\",\"did:plc:b\",\"tab\\there\",\"  \\u0000\\u001f\",\"é 👍🏽 </script>\",\"\\b\\f\\r\"]"
+          },
+          {
+            "size": 6,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"\\u0007\\n\\\"q\\\"\\\\\",\"did:plc:b\",\"tab\\there\",\"  \\u0000\\u001f\",\"é 👍🏽 </script>\",\"\\b\\f\\r\"]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "canonically-equivalent",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"café\",\"café\",\"café\"]",
+        "probes": [
+          "café",
+          "x"
+        ],
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "café",
+              "x"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "café"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "café"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "café"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 2,
+            "has": {
+              "café": true,
+              "x": false
+            },
+            "stored": "[\"café\",\"café\",\"café\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "café": true,
+              "x": true
+            },
+            "stored": "[\"café\",\"café\",\"x\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "café": false,
+              "x": true
+            },
+            "stored": "[\"café\",\"x\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "café": true,
+              "x": true
+            },
+            "stored": "[\"café\",\"x\",\"café\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "café": true,
+              "x": true
+            },
+            "stored": "[\"x\",\"café\"]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
       "id": "other-account-and-tool-untouched",
       "fn": "useKeepList",
       "input": {

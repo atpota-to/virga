@@ -397,6 +397,104 @@
       "output": false
     },
     {
+      "id": "isTypingTarget#38",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "INPUT",
+          "type": "WEEK"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isTypingTarget#39",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "INPUT",
+          "type": "DATEK"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isTypingTarget#40",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "İNPUT",
+          "type": "text"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isTypingTarget#41",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "INPUT",
+          "type": "TİME"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isTypingTarget#42",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "INPUT",
+          "type": "ſEARCH"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isTypingTarget#43",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "TEXTAREÁ"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isTypingTarget#44",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "SELECT",
+          "type": "checkbox"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isTypingTarget#45",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "TEXTAREA",
+          "isContentEditable": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isTypingTarget#46",
+      "fn": "isTypingTarget",
+      "input": {
+        "el": {
+          "tagName": "INPUT",
+          "type": "Datetime-Local"
+        }
+      },
+      "output": true
+    },
+    {
       "id": "isNewPostShortcut#1",
       "fn": "isNewPostShortcut",
       "input": {
@@ -10828,6 +10926,20 @@
         "inDialog": false
       },
       "output": true
+    },
+    {
+      "id": "isNewPostShortcut#582",
+      "fn": "isNewPostShortcut",
+      "input": {
+        "event": {
+          "key": "K",
+          "target": {
+            "tagName": "BODY"
+          }
+        },
+        "inDialog": false
+      },
+      "output": false
     },
     {
       "id": "isPaletteShortcut#1",
@@ -22283,6 +22395,38 @@
       "output": true
     },
     {
+      "id": "isPaletteShortcut#585",
+      "fn": "isPaletteShortcut",
+      "input": {
+        "event": {
+          "key": "K",
+          "metaKey": true,
+          "target": {
+            "tagName": "BODY"
+          }
+        },
+        "inDialog": false,
+        "mac": true
+      },
+      "output": false
+    },
+    {
+      "id": "isPaletteShortcut#586",
+      "fn": "isPaletteShortcut",
+      "input": {
+        "event": {
+          "key": "K",
+          "ctrlKey": true,
+          "target": {
+            "tagName": "BODY"
+          }
+        },
+        "inDialog": false,
+        "mac": false
+      },
+      "output": false
+    },
+    {
       "id": "isMacPlatform#1",
       "fn": "isMacPlatform",
       "input": {
@@ -22447,12 +22591,84 @@
       "id": "isMacPlatform#16",
       "fn": "isMacPlatform",
       "input": {
-        "nav": {}
+        "nav": {
+          "platform": "ıPhone"
+        }
       },
       "output": false
     },
     {
       "id": "isMacPlatform#17",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "platform": "İPAD"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isMacPlatform#18",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "platform": "MAС"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isMacPlatform#19",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "platform": "Ｍａｃ"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isMacPlatform#20",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "platform": "İPHONE"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isMacPlatform#21",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "platform": "iPad👍"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isMacPlatform#22",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {
+          "userAgentData": {
+            "platform": "MacKintosh"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isMacPlatform#23",
+      "fn": "isMacPlatform",
+      "input": {
+        "nav": {}
+      },
+      "output": false
+    },
+    {
+      "id": "isMacPlatform#24",
       "fn": "isMacPlatform",
       "input": {
         "nav": null

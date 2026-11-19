@@ -60,6 +60,18 @@ const ELEMENTS = [
   { tagName: '' },
   {},
   { type: 'text' },
+  // toLowerCase maps the Kelvin sign to k, so "WEE\u212A" is a week field;
+  // the dotted capital I lower-cases to i and a combining dot, so it isn't
+  // an INPUT; dotless i and the long s stay what they are.
+  { tagName: 'INPUT', type: 'WEE\u212A' },
+  { tagName: 'INPUT', type: 'DATE\u212A' },
+  { tagName: '\u0130NPUT', type: 'text' },
+  { tagName: 'INPUT', type: 'T\u0130ME' },
+  { tagName: 'INPUT', type: '\u017FEARCH' },
+  { tagName: 'TEXTAREA\u0301' },
+  { tagName: 'SELECT', type: 'checkbox' },
+  { tagName: 'TEXTAREA', isContentEditable: false },
+  { tagName: 'INPUT', type: 'Datetime-Local' },
 ];
 
 const MODIFIERS = grid({
@@ -93,6 +105,7 @@ export default async function cases() {
     })),
     { event: null, inDialog: false },
     { event: { key: 'n' }, inDialog: false },
+    { event: { key: '\u212A', target: TARGETS.body }, inDialog: false },
   ];
   const paletteEvents = [
     ...grid({
@@ -121,6 +134,18 @@ export default async function cases() {
     })),
     { event: null, inDialog: false, mac: true },
     { event: { key: 'k', metaKey: true }, inDialog: false, mac: true },
+    // The Kelvin sign is canonically the letter K (so Swift's == takes one
+    // for the other), but it isn't K to ===.
+    {
+      event: { key: '\u212A', metaKey: true, target: TARGETS.body },
+      inDialog: false,
+      mac: true,
+    },
+    {
+      event: { key: '\u212A', ctrlKey: true, target: TARGETS.body },
+      inDialog: false,
+      mac: false,
+    },
   ];
 
   return [
@@ -157,6 +182,14 @@ export default async function cases() {
         { nav: { userAgentData: { platform: '' }, platform: 'MacIntel' } },
         { nav: { userAgentData: { platform: 'Android' }, platform: 'iPhone' } },
         { nav: { userAgentData: {} } },
+        // Only ASCII letters fold under /i without the u flag.
+        { nav: { platform: '\u0131Phone' } },
+        { nav: { platform: '\u0130PAD' } },
+        { nav: { platform: 'MA\u0421' } },
+        { nav: { platform: 'Ｍａｃ' } },
+        { nav: { platform: 'I\u0307PHONE' } },
+        { nav: { platform: 'iPad\u{1F44D}' } },
+        { nav: { userAgentData: { platform: 'Mac\u212Aintosh' } } },
         { nav: {} },
         { nav: null },
       ],

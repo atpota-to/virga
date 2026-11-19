@@ -25,6 +25,9 @@
 // parity fixtures (ios/parity/cases/insights-early.layouts.js) get the
 // web's ids exactly.
 //
+// Ids, types and sizes are compared as JavaScript compares strings, by
+// code units (JSStrings.swift): "é" and "e\u{301}" are two ids.
+//
 // Where the web looks a type or a template up in a plain object, names
 // Object.prototype carries ("constructor", "toString") count as found
 // there; here only the tables' own keys do. And where the web would throw
@@ -327,7 +330,7 @@ public enum Layouts {
 
   /// The template a key names, or the overview for a key no table has.
   static func template(_ key: String?) -> DashboardTemplate {
-    key.flatMap { templates[$0] } ?? templates["overview"]!
+    key.flatMap { templates.jsValue($0) } ?? templates["overview"]!
   }
 
   /// A dashboard as a template starts it: its id is `id`, or the key; its
@@ -365,21 +368,21 @@ public enum Layouts {
     guard case .object(let object)? = raw, case .array(let stored)? = object["dashboards"] else {
       return defaultLayout(newId: newId)
     }
-    var seen = Set<String>()
+    var seen = Set<JSKey>()
     var dashboards: [Dashboard] = []
     for entry in stored {
-      guard case .object(let d) = entry, case .string(let id)? = d["id"], !seen.contains(id) else { continue }
-      seen.insert(id)
+      guard case .object(let d) = entry, case .string(let id)? = d["id"], seen.insert(JSKey(id)).inserted
+      else { continue }
       var name = "Untitled"
       if case .string(let text)? = d["name"] {
         let trimmed = text.jsTrimmed()
         if !trimmed.isEmpty { name = trimmed.jsSlice(0, nameMax) }
       }
-      let template = d["template"]?.stringValue.flatMap { templates[$0] == nil ? nil : $0 }
+      let template = d["template"]?.stringValue.flatMap { templates.jsValue($0) == nil ? nil : $0 }
       var cards: [DashboardCard] = []
       for card in d["widgets"]?.arrayValue ?? [] {
         guard case .object(let w) = card, case .string(let cardId)? = w["id"],
-          case .string(let type)? = w["type"], let def = widgets[type]
+          case .string(let type)? = w["type"], let def = widgets.jsValue(type)
         else { continue }
         let size = fitSize(w["size"]?.stringValue, def) ?? ""
         cards.append(withOptions(DashboardCard(id: cardId, type: type, size: size), cleanOptions(w["options"], def)))
@@ -395,7 +398,7 @@ public enum Layouts {
   /// default).
   public static func fitSize(_ size: String?, _ def: WidgetRules?) -> String? {
     let allowed = def?.sizes ?? sizeKeys
-    if let size, allowed.contains(size) { return size }
+    if let size, allowed.jsIncludes(size) { return size }
     return nonEmpty(def?.defaultSize) ?? allowed.first
   }
 
@@ -403,7 +406,7 @@ public enum Layouts {
     _ layout: DashboardLayout, _ id: String, _ fn: (Dashboard) -> Dashboard
   ) -> DashboardLayout {
     var layout = layout
-    layout.dashboards = layout.dashboards.map { $0.id == id ? fn($0) : $0 }
+    layout.dashboards = layout.dashboards.map { $0.id.jsEquals(id) ? fn($0) : $0 }
     return layout
   }
 
@@ -434,7 +437,7 @@ public enum Layouts {
     _ layout: DashboardLayout, _ sourceId: String, id: String? = nil, newId: (String) -> String = Layouts.newId
   ) -> (layout: DashboardLayout, id: String?) {
     let id = id ?? newId("d")
-    guard let at = layout.dashboards.firstIndex(where: { $0.id == sourceId }) else { return (layout, nil) }
+    guard let at = layout.dashboards.firstIndex(where: { $0.id.jsEquals(sourceId) }) else { return (layout, nil) }
     let source = layout.dashboards[at]
     let copy = Dashboard(
       id: id,
@@ -466,14 +469,14 @@ public enum Layouts {
   public static func deleteDashboard(_ layout: DashboardLayout, _ id: String) -> DashboardLayout {
     if layout.dashboards.count <= 1 { return layout }
     var layout = layout
-    layout.dashboards.removeAll { $0.id == id }
+    layout.dashboards.removeAll { $0.id.jsEquals(id) }
     return layout
   }
 
   /// Move a dashboard to `toIndex` in the order (clamped).
   public static func moveDashboard(_ layout: DashboardLayout, _ id: String, _ toIndex: Int) -> DashboardLayout {
-    guard let item = layout.dashboards.first(where: { $0.id == id }) else { return layout }
-    var list = layout.dashboards.filter { $0.id != id }
+    guard let item = layout.dashboards.first(where: { $0.id.jsEquals(id) }) else { return layout }
+    var list = layout.dashboards.filter { !$0.id.jsEquals(id) }
     list.insert(item, at: Swift.max(0, Swift.min(list.count, toIndex)))
     var layout = layout
     layout.dashboards = list
@@ -505,7 +508,7 @@ public enum Layouts {
   ) -> DashboardLayout {
     let id = id ?? newId("w")
     return mapDashboard(layout, dashboardId) { d in
-      let fits = nonEmpty(size).map { def?.sizes?.contains($0) ?? false } ?? false
+      let fits = nonEmpty(size).map { def?.sizes?.jsIncludes($0) ?? false } ?? false
       let card = DashboardCard(id: id, type: type, size: fits ? size! : nonEmpty(def?.defaultSize) ?? "m")
       var d = d
       let at = index.map { Swift.max(0, Swift.min(d.widgets.count, $0)) } ?? d.widgets.count
@@ -517,7 +520,7 @@ public enum Layouts {
   public static func removeWidget(_ layout: DashboardLayout, _ dashboardId: String, _ widgetId: String) -> DashboardLayout {
     mapDashboard(layout, dashboardId) { d in
       var d = d
-      d.widgets.removeAll { $0.id == widgetId }
+      d.widgets.removeAll { $0.id.jsEquals(widgetId) }
       return d
     }
   }
@@ -530,7 +533,7 @@ public enum Layouts {
     mapDashboard(layout, dashboardId) { d in
       var d = d
       d.widgets = d.widgets.map { w in
-        guard w.id == widgetId else { return w }
+        guard w.id.jsEquals(widgetId) else { return w }
         var w = w
         w.size = size
         return w
@@ -546,7 +549,7 @@ public enum Layouts {
   ) -> DashboardLayout {
     mapDashboard(layout, dashboardId) { d in
       var d = d
-      d.widgets = d.widgets.map { $0.id == widgetId ? withOptions($0, cleanOptions(options, def)) : $0 }
+      d.widgets = d.widgets.map { $0.id.jsEquals(widgetId) ? withOptions($0, cleanOptions(options, def)) : $0 }
       return d
     }
   }
@@ -556,7 +559,7 @@ public enum Layouts {
     _ layout: DashboardLayout, _ dashboardId: String, _ widgetId: String, _ toIndex: Int
   ) -> DashboardLayout {
     mapDashboard(layout, dashboardId) { d in
-      guard let from = d.widgets.firstIndex(where: { $0.id == widgetId }) else { return d }
+      guard let from = d.widgets.firstIndex(where: { $0.id.jsEquals(widgetId) }) else { return d }
       var d = d
       let card = d.widgets.remove(at: from)
       d.widgets.insert(card, at: Swift.max(0, Swift.min(d.widgets.count, toIndex)))

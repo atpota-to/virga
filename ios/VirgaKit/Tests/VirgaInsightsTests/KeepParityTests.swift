@@ -40,9 +40,9 @@ import VirgaTestSupport
       let states = c.output["states"]?.arrayValue ?? []
       let probes = (states.first?["has"]?.objectValue ?? [:]).keys.sorted()
 
-      #expect(Parity.diff(.string(Keep.keepKey(did, name)), c.output["key"] ?? .null) == nil, "\(c)")
+      #expect(exactDiff(.string(Keep.keepKey(did, name)), c.output["key"] ?? .null) == nil, "\(c)")
       let model = KeepListModel(did: did, name: name, store: store)
-      #expect(Parity.diff(state(model, probes: probes, store: store), states[0]) == nil, "\(c) at the start")
+      #expect(exactDiff(state(model, probes: probes, store: store), states[0]) == nil, "\(c) at the start")
 
       for (index, step) in (c["steps"].arrayValue ?? []).enumerated() {
         switch step["op"]?.stringValue {
@@ -51,17 +51,17 @@ import VirgaTestSupport
         default: model.clear()
         }
         let expected = states[index + 1]
-        let d = Parity.diff(state(model, probes: probes, store: store), expected)
+        let d = exactDiff(state(model, probes: probes, store: store), expected)
         #expect(d == nil, "\(c) after step \(index + 1): \(d ?? "")")
         // A model made afresh reads back what the hook would mount with.
         let fresh = KeepListModel(did: did, name: name, store: store)
-        let e = Parity.diff(state(fresh, probes: probes, store: store), expected)
+        let e = exactDiff(state(fresh, probes: probes, store: store), expected)
         #expect(e == nil, "\(c) read back after step \(index + 1): \(e ?? "")")
       }
 
       var others: [String: JSONValue] = [:]
       for (key, value) in store.snapshot where key != Keep.keepKey(did, name) { others[key] = .string(value) }
-      #expect(Parity.diff(.object(others), c.output["others"] ?? [:]) == nil, "\(c): other keys untouched")
+      #expect(exactDiff(.object(others), c.output["others"] ?? [:]) == nil, "\(c): other keys untouched")
     }
   }
 }

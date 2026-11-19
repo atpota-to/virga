@@ -128,8 +128,10 @@ public enum Shortcuts {
       !(event.isComposing ?? false)
     else { return false }
     if event.metaKey == true || event.ctrlKey == true || event.altKey == true { return false }
-    if event.key != "n" && event.key != "N" { return false }
-    if event.shiftKey == true && event.key == "N" { return false }
+    // By code units: Swift's == would take the Kelvin sign for "K" (see
+    // JSStrings.swift), so every key is compared that way.
+    if !event.key.jsEquals("n") && !event.key.jsEquals("N") { return false }
+    if event.shiftKey == true && event.key.jsEquals("N") { return false }
     if inDialog { return false }
     return !isTypingTarget(event.target)
   }
@@ -167,7 +169,7 @@ public enum Shortcuts {
     guard let event, !(event.defaultPrevented ?? false), !(event.repeat ?? false),
       !(event.isComposing ?? false)
     else { return false }
-    if event.key != "k" && event.key != "K" { return false }
+    if !event.key.jsEquals("k") && !event.key.jsEquals("K") { return false }
     if event.altKey == true || event.shiftKey == true { return false }
     let meta = event.metaKey == true
     let ctrl = event.ctrlKey == true

@@ -26,8 +26,8 @@ import {
   DEFENSE_PAGE_BY_KEY,
   parseDefenseRoute,
 } from '../../../src/defense/routes.js';
-import { each, value } from './_helpers.js';
-import { iconName, withIconNames } from './_insights.js';
+import { each, grid, value } from './_helpers.js';
+import { HARD_TEXT, iconName, seeded, withIconNames } from './_insights.js';
 
 export const sources = [
   'src/shell/routes.js',
@@ -118,6 +118,75 @@ const PATHS = [
   '/a/́b',
 ];
 
+// Generated addresses, the same on every run: the sections' and pages'
+// own names among stray slashes, dots, queries, percent-escapes (whole,
+// cut short and invalid UTF-8), escaped slashes and hard text, so the
+// splitting, decoding and each section's rules meet every mix of them.
+const fuzz = seeded(48151623);
+const PATH_PARTS = [
+  'dashboard',
+  'reports',
+  'tools',
+  'settings',
+  'posting',
+  'defense',
+  'intent',
+  'compose',
+  'hub',
+  'drafts',
+  'scheduled',
+  'schedule',
+  'lists',
+  'history',
+  'scan',
+  'followers',
+  'best-time',
+  '',
+  '.',
+  '..',
+  '%2F',
+  '%2f',
+  '%25',
+  '%20',
+  '%64rafts',
+  '%C3%A9',
+  '%F0%9F%91%8D',
+  '%E2%82',
+  '%C3',
+  '%ZZ',
+  '%',
+  '?q=1',
+  '#top',
+  'a b',
+  ...HARD_TEXT.slice(-40),
+];
+const SECTIONS = PATH_PARTS.slice(0, 7);
+// Every posting, Defense and compose page with each kind of part after it.
+const PAGE_PATHS = grid({
+  section: ['posting', 'defense', 'intent'],
+  page: [
+    ...POSTING_PAGES.map((p) => p.key),
+    ...DEFENSE_PAGES.map((p) => p.key),
+    'compose',
+    '',
+  ],
+  id: [null, 'x', '%2F', '%'],
+  more: [null, 'y'],
+}).map(({ section, page, id, more }) =>
+  ['', section, page, id, more].filter((p) => p !== null).join('/'),
+);
+const FUZZ_PATHS = Array.from({ length: 200 }, () => {
+  const count = fuzz.int(4);
+  const parts = Array.from({ length: count }, () => fuzz.pick(PATH_PARTS));
+  // Mostly a section's own name first, so each section's rules are reached.
+  if (fuzz.int(4)) parts.unshift(fuzz.pick(SECTIONS));
+  return (
+    (fuzz.int(5) ? '/' : '') +
+    parts.join(fuzz.int(6) ? '/' : '//') +
+    (fuzz.int(4) ? '' : '/')
+  );
+});
+
 const ROUTES_BY_HAND = [
   { section: 'tools', page: '' },
   { section: 'tools', page: 'unknown-tool' },
@@ -136,7 +205,7 @@ const ROUTES_BY_HAND = [
 
 function parsedRoutes() {
   const seen = new Map();
-  for (const path of PATHS) {
+  for (const path of [...PATHS, ...FUZZ_PATHS, ...PAGE_PATHS]) {
     let route;
     try {
       route = parseRoute(path);
@@ -212,6 +281,24 @@ export default async function cases() {
       'parseRoute',
       PATHS.map((path) => ({ path })),
       ({ path }) => parseRoute(path),
+    )),
+    ...(await each(
+      'parseRoute',
+      FUZZ_PATHS.map((path, i) => ({ $id: `fuzz#${i + 1}`, path })),
+      ({ path }) => parseRoute(path),
+    )),
+    ...(await each(
+      'parseRoute',
+      PAGE_PATHS.map((path, i) => ({ $id: `pages#${i + 1}`, path })),
+      ({ path }) => parseRoute(path),
+    )),
+    ...(await each(
+      'parsePostingRoute',
+      [...FUZZ_PATHS, ...PAGE_PATHS].map((path, i) => ({
+        $id: `fuzz#${i + 1}`,
+        path,
+      })),
+      ({ path }) => parsePostingRoute(path),
     )),
     ...(await each(
       'needsArchive',

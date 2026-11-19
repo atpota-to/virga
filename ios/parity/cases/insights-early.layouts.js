@@ -12,6 +12,7 @@
 import * as L from '../../../src/dashboards/layouts.js';
 import { WIDGETS } from '../../../src/dashboards/catalog.js';
 import { FIXED_NOW, each, grid, value } from './_helpers.js';
+import { HARD_TEXT, seeded } from './_insights.js';
 
 export const sources = ['src/dashboards/layouts.js'];
 
@@ -189,6 +190,27 @@ const DUPES = {
   ],
 };
 
+// Ids that are the same text written two ways (é, and e with a combining
+// accent): two strings to JavaScript, which compares code units, though
+// Swift's == calls them equal. Each change has to tell them apart.
+const NFC = 'caf\u00e9';
+const NFD = 'cafe\u0301';
+const ACCENTS = {
+  version: 1,
+  dashboards: [
+    {
+      id: NFC,
+      name: 'Composed',
+      template: null,
+      widgets: [
+        { id: NFC, type: 'top-posts', size: 'm' },
+        { id: NFD, type: 'stat-posts', size: 'xs' },
+      ],
+    },
+    { id: NFD, name: 'Decomposed', template: 'growth', widgets: [] },
+  ],
+};
+
 const STORED = [
   null,
   'nonsense',
@@ -292,7 +314,92 @@ const STORED = [
     ],
   },
   { dashboards: [null] },
+  ACCENTS,
 ];
+
+// A dashboard that holds two cards with one id, as a stored layout can
+// (sanitizeLayout keeps cards' ids as they are): each change finds the
+// first, or all, as the web's does.
+const TWINS = {
+  version: 1,
+  dashboards: [
+    {
+      id: 'a',
+      name: 'Twins',
+      template: null,
+      widgets: [
+        { id: 'x', type: 'top-posts', size: 'm' },
+        { id: 'y', type: 'stat-posts', size: 'xs' },
+        { id: 'x', type: 'best-time', size: 'l', options: { title: 'T' } },
+      ],
+    },
+    { id: 'b', name: 'Other', template: 'growth', widgets: [] },
+  ],
+};
+
+// Generated stored layouts and card options, the same on every run: ids
+// from a short list (so some repeat), names of hard text, padding and
+// lengths around the limit, templates and types known and not, sizes in
+// and out of range, and options of every shape. Names Object.prototype
+// carries are left out: there the port deliberately differs (see
+// Layouts.swift).
+const fuzz = seeded(31415926);
+const TYPES = [...Object.keys(WIDGETS), 'from-the-future', '', 'TOP-POSTS'];
+const fuzzText = () =>
+  fuzz.pick([
+    () => fuzz.string(HARD_TEXT, 12),
+    () => `  ${fuzz.string(HARD_TEXT, 6)}  `,
+    () => 'x'.repeat(55 + fuzz.int(10)) + fuzz.string(HARD_TEXT, 3),
+    () => '',
+    () => '   ',
+  ])();
+const fuzzValue = (choices) => fuzz.pick(choices);
+const fuzzOptionObject = () => {
+  const out = {};
+  if (fuzz.int(3)) out.title = fuzz.int(5) ? fuzzText() : fuzzValue([7, null]);
+  if (fuzz.int(2))
+    out.period = fuzzValue([...L.CARD_PERIODS, 'custom', '7D', 7, null]);
+  if (fuzz.int(2))
+    out.kind = fuzzValue([...L.CARD_KINDS, 'likes', 'LIKE', null]);
+  if (fuzz.int(2))
+    out.rows = fuzzValue([...L.CARD_ROWS, 4, 10.5, '5', -3, null]);
+  if (fuzz.int(4) === 0) out.extra = 1;
+  return out;
+};
+const fuzzOptions = () =>
+  fuzz.int(3)
+    ? fuzzOptionObject()
+    : fuzzValue([undefined, null, 'title', [], {}]);
+const fuzzCard = () => {
+  const card = {};
+  if (fuzz.int(8)) card.id = fuzzValue(['c1', 'c2', 'c3', '', 'c1']);
+  else card.id = fuzzValue([5, null]);
+  if (fuzz.int(10)) card.type = fuzzValue(TYPES);
+  if (fuzz.int(6))
+    card.size = fuzzValue([...Object.keys(L.SIZES), 'xxl', '', 'M', 3, null]);
+  const options = fuzzOptions();
+  if (options !== undefined) card.options = options;
+  return fuzz.int(12) ? card : fuzzValue([null, 5, 'card', []]);
+};
+const fuzzDashboard = () => {
+  const d = {};
+  if (fuzz.int(8)) d.id = fuzzValue(['d1', 'd2', 'd3', 'd4', '', 'd1']);
+  else d.id = fuzzValue([1, null, ['d1']]);
+  if (fuzz.int(5)) d.name = fuzz.int(8) ? fuzzText() : fuzzValue([3, null]);
+  if (fuzz.int(2))
+    d.template = fuzzValue([...Object.keys(L.TEMPLATES), 'nope', '', null, 4]);
+  if (fuzz.int(8)) d.widgets = Array.from({ length: fuzz.int(6) }, fuzzCard);
+  else d.widgets = fuzzValue([null, 'cards', {}]);
+  return fuzz.int(12) ? d : fuzzValue([null, 5, 'dashboard', []]);
+};
+const FUZZ_STORED = Array.from({ length: 50 }, () => ({
+  version: fuzzValue([1, 2, undefined]),
+  dashboards: Array.from({ length: fuzz.int(5) }, fuzzDashboard),
+}));
+const FUZZ_OPTIONS = Array.from({ length: 80 }, () => ({
+  raw: fuzzOptionObject(),
+  def: fuzzValue(Object.keys(DEFS)),
+}));
 
 const REGISTRY = {
   alpha: { sizes: ['m'], defaultSize: 'm', options: ['title'] },
@@ -344,6 +451,16 @@ export default async function cases() {
       ({ raw, def }) => L.cleanOptions(raw, def ?? undefined),
     )),
     ...(await each(
+      'cleanOptions',
+      FUZZ_OPTIONS.map(({ raw, def }, i) => ({
+        $id: `fuzz#${i + 1}`,
+        raw,
+        def: DEFS[def],
+        defName: def,
+      })),
+      ({ raw, def }) => L.cleanOptions(raw, def ?? undefined),
+    )),
+    ...(await each(
       'fitSize',
       grid({
         size: ['xs', 's', 'm', 'l', 'xl', 'xxl', '', null, 5, 'M'],
@@ -390,6 +507,11 @@ export default async function cases() {
       ],
       ({ raw, widgets }) => L.sanitizeLayout(raw, widgets || WIDGETS),
     )),
+    ...(await op(
+      'sanitizeLayout',
+      FUZZ_STORED.map((raw, i) => ({ $id: `fuzz#${i + 1}`, raw })),
+      ({ raw }) => L.sanitizeLayout(raw, WIDGETS),
+    )),
 
     ...(await op(
       'addDashboard',
@@ -420,6 +542,8 @@ export default async function cases() {
         { layout: SMALL, sourceId: 'c', id: 'c2' },
         { layout: DUPES, sourceId: 'a', id: 'z' },
         { layout: ONE, sourceId: 'only', id: '' },
+        { layout: TWINS, sourceId: 'a', id: 'a2' },
+        { layout: ACCENTS, sourceId: NFD, id: 'copy' },
       ],
       ({ layout, sourceId, id }) => L.duplicateDashboard(layout, sourceId, id),
     )),
@@ -439,6 +563,7 @@ export default async function cases() {
         .concat([
           { layout: SMALL, id: 'nope', name: 'Renamed' },
           { layout: DUPES, id: 'a', name: 'Both' },
+          { layout: ACCENTS, id: NFD, name: 'Renamed' },
         ]),
       ({ layout, id, name }) => L.renameDashboard(layout, id, name),
     )),
@@ -450,6 +575,7 @@ export default async function cases() {
         { layout: ONE, id: 'only' },
         { layout: ONE, id: 'nope' },
         { layout: DUPES, id: 'a' },
+        { layout: ACCENTS, id: NFC },
       ],
       ({ layout, id }) => L.deleteDashboard(layout, id),
     )),
@@ -464,6 +590,7 @@ export default async function cases() {
         { layout: DEFAULT, id: 'nope', toIndex: 0 },
         { layout: DUPES, id: 'a', toIndex: 1 },
         { layout: ONE, id: 'only', toIndex: 3 },
+        { layout: ACCENTS, id: NFD, toIndex: 0 },
       ],
       ({ layout, id, toIndex }) => L.moveDashboard(layout, id, toIndex),
     )),
@@ -476,6 +603,8 @@ export default async function cases() {
         { layout: SMALL, id: 'b' },
         { layout: SMALL, id: 'nope' },
         { layout: DUPES, id: 'a' },
+        { layout: TWINS, id: 'b' },
+        { layout: ACCENTS, id: NFD },
       ],
       ({ layout, id }) => L.resetDashboard(layout, id),
     )),
@@ -515,6 +644,30 @@ export default async function cases() {
             options: { id: 'n', size: 'm' },
           },
           {
+            $id: 'accented-dashboard',
+            layout: ACCENTS,
+            dashboardId: NFD,
+            type: 'unfollows',
+            def: rules(WIDGETS.unfollows),
+            options: { id: 'n' },
+          },
+          {
+            $id: 'into-twin-dashboards',
+            layout: DUPES,
+            dashboardId: 'a',
+            type: 'top-posts',
+            def: rules(WIDGETS['top-posts']),
+            options: { index: 0 },
+          },
+          {
+            $id: 'beside-twin-cards',
+            layout: TWINS,
+            dashboardId: 'a',
+            type: 'stat-posts',
+            def: rules(WIDGETS['stat-posts']),
+            options: { id: 'x', index: 1, size: 's' },
+          },
+          {
             $id: 'no-sizes',
             layout: SMALL,
             dashboardId: 'b',
@@ -533,6 +686,8 @@ export default async function cases() {
         { layout: SMALL, dashboardId: 'a', widgetId: 'nope' },
         { layout: SMALL, dashboardId: 'b', widgetId: 'w2' },
         { layout: DEFAULT, dashboardId: 'overview', widgetId: firstCard.id },
+        { layout: TWINS, dashboardId: 'a', widgetId: 'x' },
+        { layout: ACCENTS, dashboardId: NFC, widgetId: NFD },
       ],
       ({ layout, dashboardId, widgetId }) =>
         L.removeWidget(layout, dashboardId, widgetId),
@@ -545,6 +700,8 @@ export default async function cases() {
         { layout: SMALL, dashboardId: 'a', widgetId: 'nope', size: 'm' },
         { layout: SMALL, dashboardId: 'c', widgetId: 'w1', size: 'm' },
         { layout: SMALL, dashboardId: 'a', widgetId: 'w3', size: 'huge' },
+        { layout: TWINS, dashboardId: 'a', widgetId: 'x', size: 's' },
+        { layout: ACCENTS, dashboardId: NFC, widgetId: NFC, size: 'l' },
       ],
       ({ layout, dashboardId, widgetId, size }) =>
         L.resizeWidget(layout, dashboardId, widgetId, size),
@@ -608,6 +765,27 @@ export default async function cases() {
           options: { title: 'x' },
           def: rules(WIDGETS['top-posts']),
         },
+        {
+          layout: TWINS,
+          dashboardId: 'a',
+          widgetId: 'x',
+          options: { rows: 5, title: 'Both' },
+          def: rules(WIDGETS['top-posts']),
+        },
+        {
+          layout: TWINS,
+          dashboardId: 'a',
+          widgetId: 'x',
+          options: null,
+          def: rules(WIDGETS['top-posts']),
+        },
+        {
+          layout: ACCENTS,
+          dashboardId: NFC,
+          widgetId: NFD,
+          options: { title: 'Accent' },
+          def: rules(WIDGETS['stat-posts']),
+        },
       ],
       ({ layout, dashboardId, widgetId, options, def }) =>
         L.setWidgetOptions(
@@ -627,6 +805,10 @@ export default async function cases() {
         { layout: SMALL, dashboardId: 'a', widgetId: 'w1', toIndex: 1 },
         { layout: SMALL, dashboardId: 'a', widgetId: 'nope', toIndex: 0 },
         { layout: SMALL, dashboardId: 'b', widgetId: 'w1', toIndex: 0 },
+        { layout: TWINS, dashboardId: 'a', widgetId: 'x', toIndex: 2 },
+        { layout: TWINS, dashboardId: 'a', widgetId: 'x', toIndex: 1 },
+        { layout: DUPES, dashboardId: 'a', widgetId: 'w1', toIndex: 0 },
+        { layout: ACCENTS, dashboardId: NFC, widgetId: NFD, toIndex: 0 },
         {
           layout: DEFAULT,
           dashboardId: 'content',

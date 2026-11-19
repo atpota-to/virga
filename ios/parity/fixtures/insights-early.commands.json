@@ -1,7 +1,8 @@
 {
   "name": "insights-early.commands",
   "sources": [
-    "src/shell/commands.js"
+    "src/shell/commands.js",
+    "src/shell/CommandPalette.jsx"
   ],
   "cases": [
     {
@@ -6927,6 +6928,41 @@
             "syncing": false
           }
         },
+        "accents": {
+          "dashboards": [
+            {
+              "id": "café",
+              "name": "Composed"
+            },
+            {
+              "id": "café",
+              "name": "Decomposed"
+            }
+          ],
+          "accounts": [
+            {
+              "did": "café",
+              "handle": "composed.example"
+            },
+            {
+              "did": "café",
+              "handle": "decomposed.example"
+            }
+          ],
+          "activeDid": "café",
+          "periods": [
+            {
+              "key": "café",
+              "days": 1,
+              "label": "Day"
+            }
+          ],
+          "period": "café",
+          "route": {
+            "section": "dashboard",
+            "dashboard": "café"
+          }
+        },
         "dashboardsOnly": {
           "dashboards": [
             {
@@ -6945,6 +6981,323 @@
         },
         "empty": {}
       }
+    },
+    {
+      "id": "fuzzCommands",
+      "fn": "fuzzCommands",
+      "input": {},
+      "output": [
+        {
+          "id": "f0",
+          "group": "Tools",
+          "title": "の언I4'—ꭰÅZẞ국èIZ",
+          "hint": "ø1აöe本HΣ👨‍👩‍👧TcŒCßⅻ"
+        },
+        {
+          "id": "f1",
+          "group": "Ünïcödé",
+          "title": "VßÑक'- ’l—ÅΟं"
+        },
+        {
+          "id": "f2",
+          "group": "Tools",
+          "title": "—2﻿İọ̃B‘fΣiの",
+          "keywords": "ΔÅꭰD٣RK﻿ä.ÀΟΟuọ̃﻿wLΔの"
+        },
+        {
+          "id": "f3",
+          "group": "Σύνολο",
+          "title": "Ⅻΐg5ｂV",
+          "hint": " S-०²ς﻿",
+          "keywords": "yﬁqØΟ👍🏽xOǅ"
+        },
+        {
+          "id": "f4",
+          "group": "Σύνολο",
+          "title": "άა2x﻿ꭰ𐐀ÀᆫıuǅレÑw",
+          "hint": "Α /ZÉöﬀ_0YjñwCंNh6b"
+        },
+        {
+          "id": "f5",
+          "group": "Reports",
+          "title": "CΐⅫè𐐨ᅡc"
+        },
+        {
+          "id": "f6",
+          "group": "Ünïcödé",
+          "title": "",
+          "hint": "0ΟÀWØSÆ",
+          "keywords": ""
+        },
+        {
+          "id": "f7",
+          "group": "Σύνολο",
+          "title": "—B G𐐀ÖΩᄒTÉ",
+          "hint": "rw👍🏽ÇO"
+        },
+        {
+          "id": "f8",
+          "group": "Tools",
+          "title": "Yj",
+          "keywords": "ıZΒⅻBı2"
+        },
+        {
+          "id": "f9",
+          "group": "Ünïcödé",
+          "title": "VXÜèΣ",
+          "hint": "aｂᅡMςͅçA",
+          "keywords": "FuΑ5აHX👨‍👩‍👧ÀİΆ6ıΩᎠéR"
+        },
+        {
+          "id": "f10",
+          "group": "Ünïcödé",
+          "title": "é874Nσ",
+          "keywords": "V́ßfΐ"
+        },
+        {
+          "id": "f11",
+          "group": "Reports",
+          "title": "Å2üÑ‍Xfꭰ٣osÀᄒᲐ",
+          "keywords": "8W۴o4のΔ👍🏽éΑÆÆ어"
+        },
+        {
+          "id": "f12",
+          "group": "İşler",
+          "title": "DÇCΟǅ.ポ/èR0\t\t﻿8ä"
+        },
+        {
+          "id": "f13",
+          "group": "İşler",
+          "title": "ΩςQΔYCW8ź",
+          "hint": "ZÆØ०äI"
+        },
+        {
+          "id": "f14",
+          "group": "Σύνολο",
+          "title": "👍q"
+        },
+        {
+          "id": "f15",
+          "group": "Reports",
+          "title": "𐐨Cΐ3Σy7ọ̃日gＡÑø"
+        },
+        {
+          "id": "f16",
+          "group": "Σύνολο",
+          "title": "ᄒ—한0ͅᆫ6b",
+          "hint": "Ñ﻿👍🏽",
+          "keywords": "—𐒰Üの Ö어Σ"
+        },
+        {
+          "id": "f17",
+          "group": "Σύνολο",
+          "title": "²ßö"
+        },
+        {
+          "id": "f18",
+          "group": "Reports",
+          "title": "äL𐐀VüάレÑ۴"
+        },
+        {
+          "id": "f19",
+          "group": "Σύνολο",
+          "title": "レ84",
+          "hint": "ŒaΑςंæᲐZÀXΓrCΐ5́ŒÇé’",
+          "keywords": ""
+        },
+        {
+          "id": "f20",
+          "group": "Reports",
+          "title": "ọ̃٣́Å",
+          "hint": "ÇポQⅻß국ᆫΐ'⃝Zbbΐñọ̃🇳🇿w"
+        },
+        {
+          "id": "f21",
+          "group": "Reports",
+          "title": "HéÉå한OaQ",
+          "hint": "jfMtFzñ‘۴Ꭰაrﬀu"
+        },
+        {
+          "id": "f22",
+          "group": "Reports",
+          "title": "⃝Ü",
+          "keywords": "nᲐ_Γά-ÅΆü4ÑXⅫẞ٣dhᲐé本"
+        },
+        {
+          "id": "f23",
+          "group": "Reports",
+          "title": "Ο",
+          "hint": "TÜᅡL8T½d²5𐐀ọ̃yΑPﬁO",
+          "keywords": "åü﻿ΆᾈaH7’hk3CςL"
+        },
+        {
+          "id": "f24",
+          "group": "Σύνολο",
+          "title": "æ𐐨œçI۴gKςT",
+          "hint": "p ‘.ςZİᄒポΐ국.9üLXΔ\t"
+        },
+        {
+          "id": "f25",
+          "group": "Ünïcödé",
+          "title": "",
+          "keywords": "’8GöΟǅZŒVÖσéç٣Ა"
+        },
+        {
+          "id": "f26",
+          "group": "İşler",
+          "title": "𐒰uＡΣœLÅG　œÜのr",
+          "hint": "wÑHᆫ　B-ᄒ "
+        },
+        {
+          "id": "f27",
+          "group": "Tools",
+          "title": "ᆫ²çsÇＡ7-ーjG",
+          "hint": "p本 érZØKÖv05K"
+        },
+        {
+          "id": "f28",
+          "group": "Tools",
+          "title": "",
+          "keywords": "σÇ\tF日ς"
+        },
+        {
+          "id": "f29",
+          "group": "İşler",
+          "title": "éø/ÆFéoéı0ᲐΣwé—ﬀ",
+          "hint": "1"
+        },
+        {
+          "id": "f30",
+          "group": "Σύνολο",
+          "title": "eＡ2۴‍　Οz٣ xEn'o"
+        },
+        {
+          "id": "f31",
+          "group": "Σύνολο",
+          "title": "79å"
+        },
+        {
+          "id": "f32",
+          "group": "Tools",
+          "title": "어'﻿"
+        },
+        {
+          "id": "f33",
+          "group": "Σύνολο",
+          "title": "ÜMΒsc- M﻿ØYfｂfı　",
+          "keywords": "Ꭰà한ΣÖSGd　 ΒJß7'　ᾈ"
+        },
+        {
+          "id": "f34",
+          "group": "Tools",
+          "title": "۴Ა/日한⃝k👍🏽ᅡΣ𐐀/Ébẞg",
+          "hint": "άWकiLX/EΔᎠ4",
+          "keywords": "uä6ı’ΔkCNHのq²Xᆫm한ΓのŒ"
+        },
+        {
+          "id": "f35",
+          "group": "Ünïcödé",
+          "title": "ΆpQﬁY.ÉΣﬀ/Éᄒọ̃øw",
+          "hint": "MÅ🇳🇿pÉ𐐀ÅF ØEÅxﬀ०n",
+          "keywords": "K"
+        },
+        {
+          "id": "f36",
+          "group": "İşler",
+          "title": "𐒰²"
+        },
+        {
+          "id": "f37",
+          "group": "Reports",
+          "title": "ΓI국ßΔIᲐ﻿1dͅñSZ"
+        },
+        {
+          "id": "f38",
+          "group": "İşler",
+          "title": "日Lœ3👍"
+        },
+        {
+          "id": "f39",
+          "group": "Reports",
+          "title": "Οǅꭰ",
+          "keywords": "İÇ०.Ⅻ०XΣςåÅVΔΆ3qΔΟᄒσ"
+        }
+      ]
+    },
+    {
+      "id": "paletteIcons",
+      "fn": "paletteIcons",
+      "input": {},
+      "output": [
+        {
+          "name": "BarChart3",
+          "icon": "ChartColumn"
+        },
+        {
+          "name": "CalendarRange",
+          "icon": "CalendarRange"
+        },
+        {
+          "name": "Check",
+          "icon": "Check"
+        },
+        {
+          "name": "Clock",
+          "icon": "Clock"
+        },
+        {
+          "name": "LayoutDashboard",
+          "icon": "LayoutDashboard"
+        },
+        {
+          "name": "Moon",
+          "icon": "Moon"
+        },
+        {
+          "name": "Plus",
+          "icon": "Plus"
+        },
+        {
+          "name": "RefreshCw",
+          "icon": "RefreshCw"
+        },
+        {
+          "name": "Search",
+          "icon": "Search"
+        },
+        {
+          "name": "Send",
+          "icon": "Send"
+        },
+        {
+          "name": "Settings",
+          "icon": "Settings"
+        },
+        {
+          "name": "SlidersHorizontal",
+          "icon": "SlidersHorizontal"
+        },
+        {
+          "name": "SquarePen",
+          "icon": "SquarePen"
+        },
+        {
+          "name": "Sun",
+          "icon": "Sun"
+        },
+        {
+          "name": "Sunrise",
+          "icon": "Sunrise"
+        },
+        {
+          "name": "Sunset",
+          "icon": "Sunset"
+        },
+        {
+          "name": "Wrench",
+          "icon": "Wrench"
+        }
+      ]
     },
     {
       "id": "periodTitle#1",
@@ -15809,6 +16162,134 @@
       ]
     },
     {
+      "id": "accents",
+      "fn": "buildCommands",
+      "input": {
+        "context": "accents"
+      },
+      "output": [
+        {
+          "id": "do:new-post",
+          "group": "Actions",
+          "title": "New post",
+          "keywords": "write compose thread",
+          "shortcut": "N",
+          "do": "newPost"
+        },
+        {
+          "id": "do:sync",
+          "group": "Actions",
+          "title": "Build your archive",
+          "keywords": "sync refresh update archive fetch",
+          "do": "sync"
+        },
+        {
+          "id": "do:customize",
+          "group": "Actions",
+          "title": "Customize this dashboard",
+          "keywords": "edit arrange cards add remove",
+          "do": "customize"
+        },
+        {
+          "id": "do:new-dashboard",
+          "group": "Actions",
+          "title": "New dashboard",
+          "keywords": "create add",
+          "do": "newDashboard"
+        },
+        {
+          "id": "go:/dashboard/café",
+          "group": "Dashboards",
+          "title": "Composed",
+          "go": "/dashboard/café",
+          "current": false
+        },
+        {
+          "id": "go:/dashboard/café",
+          "group": "Dashboards",
+          "title": "Decomposed",
+          "go": "/dashboard/café",
+          "current": true
+        },
+        {
+          "id": "go:/terms",
+          "group": "Settings",
+          "title": "Terms of Service",
+          "keywords": "legal agreement rules",
+          "go": "/terms"
+        },
+        {
+          "id": "go:/privacy",
+          "group": "Settings",
+          "title": "Privacy Policy",
+          "keywords": "legal data kept sent",
+          "go": "/privacy"
+        },
+        {
+          "id": "period:café",
+          "group": "Period",
+          "title": "Last day",
+          "keywords": "period range window charts show",
+          "do": "period",
+          "arg": "café",
+          "current": false
+        },
+        {
+          "id": "sky:clock",
+          "group": "Sky",
+          "title": "Sky by the clock",
+          "keywords": "appearance theme mode colours colors automatic system time of day",
+          "do": "sky",
+          "arg": "clock",
+          "current": false
+        },
+        {
+          "id": "sky:dawn",
+          "group": "Sky",
+          "title": "Dawn sky",
+          "keywords": "appearance theme mode colours colors light morning",
+          "do": "sky",
+          "arg": "dawn",
+          "current": false
+        },
+        {
+          "id": "sky:day",
+          "group": "Sky",
+          "title": "Day sky",
+          "keywords": "appearance theme mode colours colors light",
+          "do": "sky",
+          "arg": "day",
+          "current": false
+        },
+        {
+          "id": "sky:dusk",
+          "group": "Sky",
+          "title": "Dusk sky",
+          "keywords": "appearance theme mode colours colors light evening",
+          "do": "sky",
+          "arg": "dusk",
+          "current": false
+        },
+        {
+          "id": "sky:night",
+          "group": "Sky",
+          "title": "Night sky",
+          "keywords": "appearance theme mode colours colors dark",
+          "do": "sky",
+          "arg": "night",
+          "current": false
+        },
+        {
+          "id": "account:café",
+          "group": "Accounts",
+          "title": "Switch to @composed.example",
+          "keywords": "account composed.example",
+          "do": "switchAccount",
+          "arg": "café"
+        }
+      ]
+    },
+    {
       "id": "dashboardsOnly",
       "fn": "buildCommands",
       "input": {
@@ -16168,6 +16649,1286 @@
         "text": " spaced "
       },
       "output": " spaced "
+    },
+    {
+      "id": "fold#21",
+      "fn": "fold",
+      "input": {
+        "text": "8U'yé‘국ᅡ"
+      },
+      "output": "8uye국ᅡ"
+    },
+    {
+      "id": "fold#22",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#23",
+      "fn": "fold",
+      "input": {
+        "text": "4ÀZ‘/q𐒰pv어É𐐨"
+      },
+      "output": "4az/q𐓘pv어e𐐨"
+    },
+    {
+      "id": "fold#24",
+      "fn": "fold",
+      "input": {
+        "text": "i1 "
+      },
+      "output": "i1 "
+    },
+    {
+      "id": "fold#25",
+      "fn": "fold",
+      "input": {
+        "text": "ᾈO näW어u"
+      },
+      "output": "αo naw어u"
+    },
+    {
+      "id": "fold#26",
+      "fn": "fold",
+      "input": {
+        "text": "ΒⅻaÅのÑ"
+      },
+      "output": "βⅻaaのn"
+    },
+    {
+      "id": "fold#27",
+      "fn": "fold",
+      "input": {
+        "text": "gåçU한r本ＡＡk"
+      },
+      "output": "gacu한r本ａａk"
+    },
+    {
+      "id": "fold#28",
+      "fn": "fold",
+      "input": {
+        "text": "N-　qß4本Bm०gèΔ"
+      },
+      "output": "n-　qß4本bm०geδ"
+    },
+    {
+      "id": "fold#29",
+      "fn": "fold",
+      "input": {
+        "text": "०E日٣İrfçägΩᎠ"
+      },
+      "output": "०e日٣irfcagωꭰ"
+    },
+    {
+      "id": "fold#30",
+      "fn": "fold",
+      "input": {
+        "text": "åxKeœΆΒÀᆫzjß한 "
+      },
+      "output": "axkeœαβaᆫzjß한 "
+    },
+    {
+      "id": "fold#31",
+      "fn": "fold",
+      "input": {
+        "text": "ΑK"
+      },
+      "output": "αk"
+    },
+    {
+      "id": "fold#32",
+      "fn": "fold",
+      "input": {
+        "text": "ı9pi7"
+      },
+      "output": "ı9pi7"
+    },
+    {
+      "id": "fold#33",
+      "fn": "fold",
+      "input": {
+        "text": "jwX'"
+      },
+      "output": "jwx"
+    },
+    {
+      "id": "fold#34",
+      "fn": "fold",
+      "input": {
+        "text": "　oꭰOx"
+      },
+      "output": "　oꭰox"
+    },
+    {
+      "id": "fold#35",
+      "fn": "fold",
+      "input": {
+        "text": "t"
+      },
+      "output": "t"
+    },
+    {
+      "id": "fold#36",
+      "fn": "fold",
+      "input": {
+        "text": "レåÜy﻿ΆkaQMé"
+      },
+      "output": "レauy﻿αkaqme"
+    },
+    {
+      "id": "fold#37",
+      "fn": "fold",
+      "input": {
+        "text": "In"
+      },
+      "output": "in"
+    },
+    {
+      "id": "fold#38",
+      "fn": "fold",
+      "input": {
+        "text": "👍iŒØQPﬀeTÜÉ8‘"
+      },
+      "output": "👍iœøqpﬀetue8"
+    },
+    {
+      "id": "fold#39",
+      "fn": "fold",
+      "input": {
+        "text": "ñy𐒰  άsⅻKÉäPG"
+      },
+      "output": "ny𐓘  αsⅻkeapg"
+    },
+    {
+      "id": "fold#40",
+      "fn": "fold",
+      "input": {
+        "text": "öO’ﬁᄒ ä"
+      },
+      "output": "ooﬁᄒ a"
+    },
+    {
+      "id": "fold#41",
+      "fn": "fold",
+      "input": {
+        "text": "²i　1æΒ‍ΑL"
+      },
+      "output": "²i　1æβ‍αl"
+    },
+    {
+      "id": "fold#42",
+      "fn": "fold",
+      "input": {
+        "text": "ⅻxÜİŒTjØ0ᾈMD﻿"
+      },
+      "output": "ⅻxuiœtjø0αmd﻿"
+    },
+    {
+      "id": "fold#43",
+      "fn": "fold",
+      "input": {
+        "text": "ﬀ"
+      },
+      "output": "ﬀ"
+    },
+    {
+      "id": "fold#44",
+      "fn": "fold",
+      "input": {
+        "text": "2üά\tGo½"
+      },
+      "output": "2uα\tgo½"
+    },
+    {
+      "id": "fold#45",
+      "fn": "fold",
+      "input": {
+        "text": "EᆫKﬀ½ΒW"
+      },
+      "output": "eᆫkﬀ½βw"
+    },
+    {
+      "id": "fold#46",
+      "fn": "fold",
+      "input": {
+        "text": "8B𐐨어Ø7mｂICy—hM"
+      },
+      "output": "8b𐐨어ø7mｂicy—hm"
+    },
+    {
+      "id": "fold#47",
+      "fn": "fold",
+      "input": {
+        "text": "日aÖᄒDv👨‍👩‍👧の🇳🇿́の"
+      },
+      "output": "日aoᄒdv👨‍👩‍👧の🇳🇿の"
+    },
+    {
+      "id": "fold#48",
+      "fn": "fold",
+      "input": {
+        "text": "　WάⅫé'ÆᎠüñ"
+      },
+      "output": "　wαⅻeæꭰun"
+    },
+    {
+      "id": "fold#49",
+      "fn": "fold",
+      "input": {
+        "text": "Α﻿"
+      },
+      "output": "α﻿"
+    },
+    {
+      "id": "fold#50",
+      "fn": "fold",
+      "input": {
+        "text": "P०ა’àQ"
+      },
+      "output": "p०აaq"
+    },
+    {
+      "id": "fold#51",
+      "fn": "fold",
+      "input": {
+        "text": "å7ß本İf5gﬁ Ü日"
+      },
+      "output": "a7ß本if5gﬁ u日"
+    },
+    {
+      "id": "fold#52",
+      "fn": "fold",
+      "input": {
+        "text": "ORÑⅫ1Oñu"
+      },
+      "output": "ornⅻ1onu"
+    },
+    {
+      "id": "fold#53",
+      "fn": "fold",
+      "input": {
+        "text": "Di👍ⅻ한 t8Uー7"
+      },
+      "output": "di👍ⅻ한 t8uー7"
+    },
+    {
+      "id": "fold#54",
+      "fn": "fold",
+      "input": {
+        "text": "ÇﬁꭰÅqRcÉ‘jåç𐐨Å"
+      },
+      "output": "cﬁꭰaqrcejac𐐨a"
+    },
+    {
+      "id": "fold#55",
+      "fn": "fold",
+      "input": {
+        "text": "bİ ۴𐐨σ한cR"
+      },
+      "output": "bi ۴𐐨σ한cr"
+    },
+    {
+      "id": "fold#56",
+      "fn": "fold",
+      "input": {
+        "text": "ポesgz4²"
+      },
+      "output": "ホesgz4²"
+    },
+    {
+      "id": "fold#57",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#58",
+      "fn": "fold",
+      "input": {
+        "text": "Gñ/K9"
+      },
+      "output": "gn/k9"
+    },
+    {
+      "id": "fold#59",
+      "fn": "fold",
+      "input": {
+        "text": "ñ‍‍jΓ80ΟÑOz"
+      },
+      "output": "n‍‍jγ80οnoz"
+    },
+    {
+      "id": "fold#60",
+      "fn": "fold",
+      "input": {
+        "text": "🇳🇿ǅ"
+      },
+      "output": "🇳🇿ǆ"
+    },
+    {
+      "id": "fold#61",
+      "fn": "fold",
+      "input": {
+        "text": "9cb²jànüΩᲐÖ﻿"
+      },
+      "output": "9cb²januωაo﻿"
+    },
+    {
+      "id": "fold#62",
+      "fn": "fold",
+      "input": {
+        "text": "ᅡ1IﬀÑK"
+      },
+      "output": "ᅡ1iﬀnk"
+    },
+    {
+      "id": "fold#63",
+      "fn": "fold",
+      "input": {
+        "text": "’X3ंuΣꭰpiＡ5Å"
+      },
+      "output": "x3uσꭰpiａ5a"
+    },
+    {
+      "id": "fold#64",
+      "fn": "fold",
+      "input": {
+        "text": "WΩrG8👍🏽ꭰ—a"
+      },
+      "output": "wωrg8👍🏽ꭰ—a"
+    },
+    {
+      "id": "fold#65",
+      "fn": "fold",
+      "input": {
+        "text": "ä"
+      },
+      "output": "a"
+    },
+    {
+      "id": "fold#66",
+      "fn": "fold",
+      "input": {
+        "text": " ÀURⅫ०ͅD👍🏽uho𐒰"
+      },
+      "output": " aurⅻ०d👍🏽uho𐓘"
+    },
+    {
+      "id": "fold#67",
+      "fn": "fold",
+      "input": {
+        "text": "BPeßÅÆ'c本👍🏽E²Ο"
+      },
+      "output": "bpeßaæc本👍🏽e²ο"
+    },
+    {
+      "id": "fold#68",
+      "fn": "fold",
+      "input": {
+        "text": "ΓÅ"
+      },
+      "output": "γa"
+    },
+    {
+      "id": "fold#69",
+      "fn": "fold",
+      "input": {
+        "text": "́🇳🇿hTΣΟ"
+      },
+      "output": "🇳🇿htσο"
+    },
+    {
+      "id": "fold#70",
+      "fn": "fold",
+      "input": {
+        "text": "xÀᅡBΟάकÉᄒᆫꭰǅ²ं"
+      },
+      "output": "xaᅡbοαकeᄒᆫꭰǆ²"
+    },
+    {
+      "id": "fold#71",
+      "fn": "fold",
+      "input": {
+        "text": "C6/०Σⅻ6ÇmB"
+      },
+      "output": "c6/०σⅻ6cmb"
+    },
+    {
+      "id": "fold#72",
+      "fn": "fold",
+      "input": {
+        "text": "한ΓtH국"
+      },
+      "output": "한γth국"
+    },
+    {
+      "id": "fold#73",
+      "fn": "fold",
+      "input": {
+        "text": "K👨‍👩‍👧𐐀ꭰレsᎠꭰ"
+      },
+      "output": "k👨‍👩‍👧𐐨ꭰレsꭰꭰ"
+    },
+    {
+      "id": "fold#74",
+      "fn": "fold",
+      "input": {
+        "text": "𐐨ẞ\tbΣⅻΣ0ᄒå RÅ"
+      },
+      "output": "𐐨ß\tbσⅻς0ᄒa ra"
+    },
+    {
+      "id": "fold#75",
+      "fn": "fold",
+      "input": {
+        "text": "KΆＡ ᅡÉ7PØᆫ4_ö/"
+      },
+      "output": "kαａ ᅡe7pøᆫ4_o/"
+    },
+    {
+      "id": "fold#76",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#77",
+      "fn": "fold",
+      "input": {
+        "text": "ⅻｂKAÉ’ᆫ-O"
+      },
+      "output": "ⅻｂkaeᆫ-o"
+    },
+    {
+      "id": "fold#78",
+      "fn": "fold",
+      "input": {
+        "text": "0d"
+      },
+      "output": "0d"
+    },
+    {
+      "id": "fold#79",
+      "fn": "fold",
+      "input": {
+        "text": "Axﬁ"
+      },
+      "output": "axﬁ"
+    },
+    {
+      "id": "fold#80",
+      "fn": "fold",
+      "input": {
+        "text": "ं ßHçAd"
+      },
+      "output": " ßhcad"
+    },
+    {
+      "id": "fold#81",
+      "fn": "fold",
+      "input": {
+        "text": "́"
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#82",
+      "fn": "fold",
+      "input": {
+        "text": "국nᆫ"
+      },
+      "output": "국nᆫ"
+    },
+    {
+      "id": "fold#83",
+      "fn": "fold",
+      "input": {
+        "text": "y5ΟGLä۴½‘0uÖ本‍"
+      },
+      "output": "y5οgla۴½0uo本‍"
+    },
+    {
+      "id": "fold#84",
+      "fn": "fold",
+      "input": {
+        "text": "kT𐒰9_﻿﻿N"
+      },
+      "output": "kt𐓘9_﻿﻿n"
+    },
+    {
+      "id": "fold#85",
+      "fn": "fold",
+      "input": {
+        "text": "ö "
+      },
+      "output": "o "
+    },
+    {
+      "id": "fold#86",
+      "fn": "fold",
+      "input": {
+        "text": "9fEXfWfｂÇᾈ"
+      },
+      "output": "9fexfwfｂcα"
+    },
+    {
+      "id": "fold#87",
+      "fn": "fold",
+      "input": {
+        "text": "ÑÅtﬀ𐐨Qéq𐐨D9ÖœE"
+      },
+      "output": "natﬀ𐐨qeq𐐨d9oœe"
+    },
+    {
+      "id": "fold#88",
+      "fn": "fold",
+      "input": {
+        "text": "BTt"
+      },
+      "output": "btt"
+    },
+    {
+      "id": "fold#89",
+      "fn": "fold",
+      "input": {
+        "text": "gåR4Ñ"
+      },
+      "output": "gar4n"
+    },
+    {
+      "id": "fold#90",
+      "fn": "fold",
+      "input": {
+        "text": "ｂÅMfͅΔ"
+      },
+      "output": "ｂamfδ"
+    },
+    {
+      "id": "fold#91",
+      "fn": "fold",
+      "input": {
+        "text": "‘F-k"
+      },
+      "output": "f-k"
+    },
+    {
+      "id": "fold#92",
+      "fn": "fold",
+      "input": {
+        "text": "ZøæΔOßọ̃한äsèिọ̃𐒰"
+      },
+      "output": "zøæδoßo한aseo𐓘"
+    },
+    {
+      "id": "fold#93",
+      "fn": "fold",
+      "input": {
+        "text": "CაレVcẞiﬁYŒ"
+      },
+      "output": "cაレvcßiﬁyœ"
+    },
+    {
+      "id": "fold#94",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#95",
+      "fn": "fold",
+      "input": {
+        "text": "6ᾈj"
+      },
+      "output": "6αj"
+    },
+    {
+      "id": "fold#96",
+      "fn": "fold",
+      "input": {
+        "text": "Ά‘j"
+      },
+      "output": "αj"
+    },
+    {
+      "id": "fold#97",
+      "fn": "fold",
+      "input": {
+        "text": "oΣ👨‍👩‍👧ÀZN3٣ñ"
+      },
+      "output": "oς👨‍👩‍👧azn3٣n"
+    },
+    {
+      "id": "fold#98",
+      "fn": "fold",
+      "input": {
+        "text": "lX"
+      },
+      "output": "lx"
+    },
+    {
+      "id": "fold#99",
+      "fn": "fold",
+      "input": {
+        "text": "Oͅ"
+      },
+      "output": "o"
+    },
+    {
+      "id": "fold#100",
+      "fn": "fold",
+      "input": {
+        "text": "'xÉΐh𐒰qöა한Yö"
+      },
+      "output": "xeιh𐓘qoა한yo"
+    },
+    {
+      "id": "fold#101",
+      "fn": "fold",
+      "input": {
+        "text": "fᅡHtọ̃ꭰ"
+      },
+      "output": "fᅡhtoꭰ"
+    },
+    {
+      "id": "fold#102",
+      "fn": "fold",
+      "input": {
+        "text": "Γi½ﬀxọ̃Hl‍ーüポΟ"
+      },
+      "output": "γi½ﬀxohl‍ーuホο"
+    },
+    {
+      "id": "fold#103",
+      "fn": "fold",
+      "input": {
+        "text": "ZÅp’აⅫΟè⃝ßL"
+      },
+      "output": "zapაⅻοeßl"
+    },
+    {
+      "id": "fold#104",
+      "fn": "fold",
+      "input": {
+        "text": "aΩj🇳🇿ᅡyＡx’p"
+      },
+      "output": "aωj🇳🇿ᅡyａxp"
+    },
+    {
+      "id": "fold#105",
+      "fn": "fold",
+      "input": {
+        "text": "7çÆのᎠ0Hg👨‍👩‍👧d‘E4'"
+      },
+      "output": "7cæのꭰ0hg👨‍👩‍👧de4"
+    },
+    {
+      "id": "fold#106",
+      "fn": "fold",
+      "input": {
+        "text": "7hⅫR"
+      },
+      "output": "7hⅻr"
+    },
+    {
+      "id": "fold#107",
+      "fn": "fold",
+      "input": {
+        "text": "ーFᲐ/ọ̃/—/—mー"
+      },
+      "output": "ーfა/o/—/—mー"
+    },
+    {
+      "id": "fold#108",
+      "fn": "fold",
+      "input": {
+        "text": "ıⅻｂ."
+      },
+      "output": "ıⅻｂ."
+    },
+    {
+      "id": "fold#109",
+      "fn": "fold",
+      "input": {
+        "text": "Q‍"
+      },
+      "output": "q‍"
+    },
+    {
+      "id": "fold#110",
+      "fn": "fold",
+      "input": {
+        "text": "कि"
+      },
+      "output": "क"
+    },
+    {
+      "id": "fold#111",
+      "fn": "fold",
+      "input": {
+        "text": "'日ͅ2"
+      },
+      "output": "日2"
+    },
+    {
+      "id": "fold#112",
+      "fn": "fold",
+      "input": {
+        "text": "uHA.—Yﬀ.oᆫ.👍🏽PΔ"
+      },
+      "output": "uha.—yﬀ.oᆫ.👍🏽pδ"
+    },
+    {
+      "id": "fold#113",
+      "fn": "fold",
+      "input": {
+        "text": " AΟ—e7"
+      },
+      "output": " aο—e7"
+    },
+    {
+      "id": "fold#114",
+      "fn": "fold",
+      "input": {
+        "text": "_5"
+      },
+      "output": "_5"
+    },
+    {
+      "id": "fold#115",
+      "fn": "fold",
+      "input": {
+        "text": "ー0🇳🇿f7SéꭰÅöⅫ"
+      },
+      "output": "ー0🇳🇿f7seꭰaoⅻ"
+    },
+    {
+      "id": "fold#116",
+      "fn": "fold",
+      "input": {
+        "text": ".𐒰ñ"
+      },
+      "output": ".𐓘n"
+    },
+    {
+      "id": "fold#117",
+      "fn": "fold",
+      "input": {
+        "text": "한Δ/p_ọ̃"
+      },
+      "output": "한δ/p_o"
+    },
+    {
+      "id": "fold#118",
+      "fn": "fold",
+      "input": {
+        "text": "-NQ"
+      },
+      "output": "-nq"
+    },
+    {
+      "id": "fold#119",
+      "fn": "fold",
+      "input": {
+        "text": "ǅǅAZ½é½’Œά9Ας"
+      },
+      "output": "ǆǆaz½e½œα9ας"
+    },
+    {
+      "id": "fold#120",
+      "fn": "fold",
+      "input": {
+        "text": "-5éX한ΩR"
+      },
+      "output": "-5ex한ωr"
+    },
+    {
+      "id": "fold#121",
+      "fn": "fold",
+      "input": {
+        "text": "ßﬀΣ"
+      },
+      "output": "ßﬀς"
+    },
+    {
+      "id": "fold#122",
+      "fn": "fold",
+      "input": {
+        "text": "⃝uØ_ẞ_"
+      },
+      "output": "uø_ß_"
+    },
+    {
+      "id": "fold#123",
+      "fn": "fold",
+      "input": {
+        "text": "ΟK﻿ọ̃の०ẞLDÀVc"
+      },
+      "output": "οk﻿oの०ßldavc"
+    },
+    {
+      "id": "fold#124",
+      "fn": "fold",
+      "input": {
+        "text": "É—SAM8"
+      },
+      "output": "e—sam8"
+    },
+    {
+      "id": "fold#125",
+      "fn": "fold",
+      "input": {
+        "text": "レᾈ"
+      },
+      "output": "レα"
+    },
+    {
+      "id": "fold#126",
+      "fn": "fold",
+      "input": {
+        "text": "‍I"
+      },
+      "output": "‍i"
+    },
+    {
+      "id": "fold#127",
+      "fn": "fold",
+      "input": {
+        "text": "Y4어́ W"
+      },
+      "output": "y4어 w"
+    },
+    {
+      "id": "fold#128",
+      "fn": "fold",
+      "input": {
+        "text": "ŒrﬀL9PPÑ국yकjvポ"
+      },
+      "output": "œrﬀl9ppn국yकjvホ"
+    },
+    {
+      "id": "fold#129",
+      "fn": "fold",
+      "input": {
+        "text": "Ა7ᆫ日SーPwσ۴Δᅡ"
+      },
+      "output": "ა7ᆫ日sーpwσ۴δᅡ"
+    },
+    {
+      "id": "fold#130",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#131",
+      "fn": "fold",
+      "input": {
+        "text": "⃝Σ7άsY👨‍👩‍👧OœのＡ"
+      },
+      "output": "σ7αsy👨‍👩‍👧oœのａ"
+    },
+    {
+      "id": "fold#132",
+      "fn": "fold",
+      "input": {
+        "text": "3ı"
+      },
+      "output": "3ı"
+    },
+    {
+      "id": "fold#133",
+      "fn": "fold",
+      "input": {
+        "text": "ーÜ"
+      },
+      "output": "ーu"
+    },
+    {
+      "id": "fold#134",
+      "fn": "fold",
+      "input": {
+        "text": "ᄒMÅ ०ΔtİmvXgı"
+      },
+      "output": "ᄒma ०δtimvxgı"
+    },
+    {
+      "id": "fold#135",
+      "fn": "fold",
+      "input": {
+        "text": "dŒzσ2BΣèÜ/8"
+      },
+      "output": "dœzσ2bσeu/8"
+    },
+    {
+      "id": "fold#136",
+      "fn": "fold",
+      "input": {
+        "text": "ıœ"
+      },
+      "output": "ıœ"
+    },
+    {
+      "id": "fold#137",
+      "fn": "fold",
+      "input": {
+        "text": " ÜA어ｂᲐ국어ｂÉー'Ꭰè"
+      },
+      "output": " ua어ｂა국어ｂeーꭰe"
+    },
+    {
+      "id": "fold#138",
+      "fn": "fold",
+      "input": {
+        "text": "本ᎠᾈXbNレ"
+      },
+      "output": "本ꭰαxbnレ"
+    },
+    {
+      "id": "fold#139",
+      "fn": "fold",
+      "input": {
+        "text": "ꭰÇI०👍🏽ポ"
+      },
+      "output": "ꭰci०👍🏽ホ"
+    },
+    {
+      "id": "fold#140",
+      "fn": "fold",
+      "input": {
+        "text": "०-JC本ⅻÉ²Ceb7한"
+      },
+      "output": "०-jc本ⅻe²ceb7한"
+    },
+    {
+      "id": "fold#141",
+      "fn": "fold",
+      "input": {
+        "text": "R𐒰\tdç"
+      },
+      "output": "r𐓘\tdc"
+    },
+    {
+      "id": "fold#142",
+      "fn": "fold",
+      "input": {
+        "text": "Å6۴Άu_6ÀΣ"
+      },
+      "output": "a6۴αu_6aς"
+    },
+    {
+      "id": "fold#143",
+      "fn": "fold",
+      "input": {
+        "text": "국ŒOtW𐐨fR1"
+      },
+      "output": "국œotw𐐨fr1"
+    },
+    {
+      "id": "fold#144",
+      "fn": "fold",
+      "input": {
+        "text": "äꭰ۴Æ𐐀DKάTdY"
+      },
+      "output": "aꭰ۴æ𐐨dkαtdy"
+    },
+    {
+      "id": "fold#145",
+      "fn": "fold",
+      "input": {
+        "text": "SΆÑmGBÅ"
+      },
+      "output": "sαnmgba"
+    },
+    {
+      "id": "fold#146",
+      "fn": "fold",
+      "input": {
+        "text": "i wHÉ"
+      },
+      "output": "i whe"
+    },
+    {
+      "id": "fold#147",
+      "fn": "fold",
+      "input": {
+        "text": "́O"
+      },
+      "output": "o"
+    },
+    {
+      "id": "fold#148",
+      "fn": "fold",
+      "input": {
+        "text": ".vᆫ👍ᾈS.　XİS०ﬀ"
+      },
+      "output": ".vᆫ👍αs.　xis०ﬀ"
+    },
+    {
+      "id": "fold#149",
+      "fn": "fold",
+      "input": {
+        "text": "Q²ΐÅWΟ"
+      },
+      "output": "q²ιawο"
+    },
+    {
+      "id": "fold#150",
+      "fn": "fold",
+      "input": {
+        "text": "Δ_"
+      },
+      "output": "δ_"
+    },
+    {
+      "id": "fold#151",
+      "fn": "fold",
+      "input": {
+        "text": "j'ΣQⅫ\tpå²G٣m6۴"
+      },
+      "output": "jσqⅻ\tpa²g٣m6۴"
+    },
+    {
+      "id": "fold#152",
+      "fn": "fold",
+      "input": {
+        "text": "rD.qRw\tæÅsw"
+      },
+      "output": "rd.qrw\tæasw"
+    },
+    {
+      "id": "fold#153",
+      "fn": "fold",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#154",
+      "fn": "fold",
+      "input": {
+        "text": "Hwー　Ο"
+      },
+      "output": "hwー　ο"
+    },
+    {
+      "id": "fold#155",
+      "fn": "fold",
+      "input": {
+        "text": "აि"
+      },
+      "output": "ა"
+    },
+    {
+      "id": "fold#156",
+      "fn": "fold",
+      "input": {
+        "text": "8ñọ̃ᄒYÖ"
+      },
+      "output": "8noᄒyo"
+    },
+    {
+      "id": "fold#157",
+      "fn": "fold",
+      "input": {
+        "text": "r٣ΆoDAO𐐀uΆ"
+      },
+      "output": "r٣αodao𐐨uα"
+    },
+    {
+      "id": "fold#158",
+      "fn": "fold",
+      "input": {
+        "text": "J𐐨2ΟレΩy éÇÅレl"
+      },
+      "output": "j𐐨2οレωy ecaレl"
+    },
+    {
+      "id": "fold#159",
+      "fn": "fold",
+      "input": {
+        "text": "レFᲐ　Γ6Ａ👍🏽ﬁ"
+      },
+      "output": "レfა　γ6ａ👍🏽ﬁ"
+    },
+    {
+      "id": "fold#160",
+      "fn": "fold",
+      "input": {
+        "text": "4—ﬁeaß4D𐐀qQX"
+      },
+      "output": "4—ﬁeaß4d𐐨qqx"
+    },
+    {
+      "id": "fold#161",
+      "fn": "fold",
+      "input": {
+        "text": "한OŒ"
+      },
+      "output": "한oœ"
+    },
+    {
+      "id": "fold#162",
+      "fn": "fold",
+      "input": {
+        "text": "DoS-ÆŒt—A"
+      },
+      "output": "dos-æœt—a"
+    },
+    {
+      "id": "fold#163",
+      "fn": "fold",
+      "input": {
+        "text": "5👍🏽ẞMς0👍y2é"
+      },
+      "output": "5👍🏽ßmς0👍y2e"
+    },
+    {
+      "id": "fold#164",
+      "fn": "fold",
+      "input": {
+        "text": "Ა"
+      },
+      "output": "ა"
+    },
+    {
+      "id": "fold#165",
+      "fn": "fold",
+      "input": {
+        "text": "Δაà⃝ŕÑΔV"
+      },
+      "output": "δაarnδv"
+    },
+    {
+      "id": "fold#166",
+      "fn": "fold",
+      "input": {
+        "text": "ÇΔGKcaΟ"
+      },
+      "output": "cδgkcaο"
+    },
+    {
+      "id": "fold#167",
+      "fn": "fold",
+      "input": {
+        "text": "²ÜXÉñGςwᎠ4ŒOq"
+      },
+      "output": "²uxengςwꭰ4œoq"
+    },
+    {
+      "id": "fold#168",
+      "fn": "fold",
+      "input": {
+        "text": "Çi ‘w日ⅫΩbŒ"
+      },
+      "output": "ci w日ⅻωbœ"
+    },
+    {
+      "id": "fold#169",
+      "fn": "fold",
+      "input": {
+        "text": "K"
+      },
+      "output": "k"
+    },
+    {
+      "id": "fold#170",
+      "fn": "fold",
+      "input": {
+        "text": "éæÉèIिpX²Σçﬁ5À"
+      },
+      "output": "eæeeipx²σcﬁ5a"
+    },
+    {
+      "id": "fold#171",
+      "fn": "fold",
+      "input": {
+        "text": "のVİΩBø𐐨bq"
+      },
+      "output": "のviωbø𐐨bq"
+    },
+    {
+      "id": "fold#172",
+      "fn": "fold",
+      "input": {
+        "text": "Zᅡ"
+      },
+      "output": "zᅡ"
+    },
+    {
+      "id": "fold#173",
+      "fn": "fold",
+      "input": {
+        "text": "👍🏽ΐΟA²ि𐐨17ა"
+      },
+      "output": "👍🏽ιοa²𐐨17ა"
+    },
+    {
+      "id": "fold#174",
+      "fn": "fold",
+      "input": {
+        "text": "iⅻèdnΐNिAͅǅΆ"
+      },
+      "output": "iⅻednιnaǆα"
+    },
+    {
+      "id": "fold#175",
+      "fn": "fold",
+      "input": {
+        "text": " RΟä²ͅΣÅQーーyि-"
+      },
+      "output": " rοa²σaqーーy-"
+    },
+    {
+      "id": "fold#176",
+      "fn": "fold",
+      "input": {
+        "text": "🇳🇿ᅡw"
+      },
+      "output": "🇳🇿ᅡw"
+    },
+    {
+      "id": "fold#177",
+      "fn": "fold",
+      "input": {
+        "text": "²क.å　٣ñọ̃ßbάl"
+      },
+      "output": "²क.a　٣noßbαl"
+    },
+    {
+      "id": "fold#178",
+      "fn": "fold",
+      "input": {
+        "text": "⃝"
+      },
+      "output": ""
+    },
+    {
+      "id": "fold#179",
+      "fn": "fold",
+      "input": {
+        "text": "ŒΒ Ék"
+      },
+      "output": "œβ ek"
+    },
+    {
+      "id": "fold#180",
+      "fn": "fold",
+      "input": {
+        "text": "0qᾈΣ_ა한٣T👍6ं۴ﬁ"
+      },
+      "output": "0qας_ა한٣t👍6۴ﬁ"
     },
     {
       "id": "rankCommands#1",
@@ -24575,6 +26336,194 @@
       "input": {
         "commands": [
           {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "alpha"
+      },
+      "output": [
+        "café",
+        "café",
+        "b"
+      ]
+    },
+    {
+      "id": "rankCommands#243",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "alpha",
+        "recent": [
+          "b",
+          "d",
+          "e",
+          "s3"
+        ]
+      },
+      "output": [
+        "b",
+        "café",
+        "café"
+      ]
+    },
+    {
+      "id": "rankCommands#244",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "one"
+      },
+      "output": [
+        "café"
+      ]
+    },
+    {
+      "id": "rankCommands#245",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "one",
+        "recent": [
+          "b",
+          "d",
+          "e",
+          "s3"
+        ]
+      },
+      "output": [
+        "café"
+      ]
+    },
+    {
+      "id": "rankCommands#246",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": ""
+      },
+      "output": [
+        "café",
+        "café",
+        "b"
+      ]
+    },
+    {
+      "id": "rankCommands#247",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "",
+        "recent": [
+          "b",
+          "d",
+          "e",
+          "s3"
+        ]
+      },
+      "output": [
+        "café",
+        "café",
+        "b"
+      ]
+    },
+    {
+      "id": "rankCommands#248",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
             "id": "a1",
             "group": "Tools",
             "title": "Zed alpha",
@@ -24620,7 +26569,7 @@
       ]
     },
     {
-      "id": "rankCommands#243",
+      "id": "rankCommands#249",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24676,7 +26625,7 @@
       ]
     },
     {
-      "id": "rankCommands#244",
+      "id": "rankCommands#250",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24726,7 +26675,7 @@
       ]
     },
     {
-      "id": "rankCommands#245",
+      "id": "rankCommands#251",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24782,7 +26731,7 @@
       ]
     },
     {
-      "id": "rankCommands#246",
+      "id": "rankCommands#252",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24832,7 +26781,7 @@
       ]
     },
     {
-      "id": "rankCommands#247",
+      "id": "rankCommands#253",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24888,7 +26837,7 @@
       ]
     },
     {
-      "id": "rankCommands#248",
+      "id": "rankCommands#254",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24934,7 +26883,7 @@
       ]
     },
     {
-      "id": "rankCommands#249",
+      "id": "rankCommands#255",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -24986,7 +26935,7 @@
       ]
     },
     {
-      "id": "rankCommands#250",
+      "id": "rankCommands#256",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -25036,7 +26985,7 @@
       ]
     },
     {
-      "id": "rankCommands#251",
+      "id": "rankCommands#257",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -25092,7 +27041,7 @@
       ]
     },
     {
-      "id": "rankCommands#252",
+      "id": "rankCommands#258",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -25142,7 +27091,7 @@
       ]
     },
     {
-      "id": "rankCommands#253",
+      "id": "rankCommands#259",
       "fn": "rankCommands",
       "input": {
         "commands": [
@@ -25198,7 +27147,7 @@
       ]
     },
     {
-      "id": "rankCommands#254",
+      "id": "rankCommands#260",
       "fn": "rankCommands",
       "input": {
         "commands": null,
@@ -25207,11 +27156,3311 @@
       "output": []
     },
     {
-      "id": "rankCommands#255",
+      "id": "rankCommands#261",
       "fn": "rankCommands",
       "input": {
         "commands": null,
         "query": ""
+      },
+      "output": []
+    },
+    {
+      "id": "rankCommands#262",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "alpha",
+        "recent": [
+          "café"
+        ]
+      },
+      "output": [
+        "café",
+        "café",
+        "b"
+      ]
+    },
+    {
+      "id": "rankCommands#263",
+      "fn": "rankCommands",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "alpha",
+        "recent": [
+          "café"
+        ]
+      },
+      "output": [
+        "café",
+        "café",
+        "b"
+      ]
+    },
+    {
+      "id": "fuzz#1",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ıZΒⅻBı2 Ü",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#2",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "👍q"
+      },
+      "output": [
+        "f14",
+        "f13",
+        "f21",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#3",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Repots"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#4",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "CGqd",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#5",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "K"
+      },
+      "output": [
+        "f24",
+        "f34",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#6",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#7",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "érZØKÖv0K",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#8",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "S äͅά"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#9",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "어'"
+      },
+      "output": [
+        "f32",
+        "f0"
+      ]
+    },
+    {
+      "id": "fuzz#10",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Re",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f20",
+        "f5",
+        "f11",
+        "f15",
+        "f18",
+        "f21",
+        "f22",
+        "f23",
+        "f37",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#11",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Οǅꭰ აkH"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#12",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "िYＡü"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#13",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Ünïc",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f1",
+        "f6",
+        "f9",
+        "f10",
+        "f25",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#14",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "/⃝o"
+      },
+      "output": [
+        "f20",
+        "f2",
+        "f7",
+        "f11",
+        "f15",
+        "f17",
+        "f21",
+        "f29",
+        "f30",
+        "f35",
+        "f16"
+      ]
+    },
+    {
+      "id": "fuzz#15",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "レ"
+      },
+      "output": [
+        "f19",
+        "f4",
+        "f18"
+      ]
+    },
+    {
+      "id": "fuzz#16",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ÉᆫǅÜ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#17",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": " lΟ "
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#18",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "レ8"
+      },
+      "output": [
+        "f19"
+      ]
+    },
+    {
+      "id": "fuzz#19",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ि",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#20",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "⃝"
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#21",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ıZΒⅻB2"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#22",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "p",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f35",
+        "f24",
+        "f27"
+      ]
+    },
+    {
+      "id": "fuzz#23",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ΩςQΔYCW8ź"
+      },
+      "output": [
+        "f13"
+      ]
+    },
+    {
+      "id": "fuzz#24",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#25",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ZÆØäI",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#26",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "79å "
+      },
+      "output": [
+        "f31"
+      ]
+    },
+    {
+      "id": "fuzz#27",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "👨‍👩‍👧"
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#28",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "p𐐀",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#29",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "İşler"
+      },
+      "output": [
+        "f12",
+        "f13",
+        "f26",
+        "f29",
+        "f36",
+        "f38"
+      ]
+    },
+    {
+      "id": "fuzz#30",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "6"
+      },
+      "output": [
+        "f16"
+      ]
+    },
+    {
+      "id": "fuzz#31",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ΩςQΔYCW8ź cǅx",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#32",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Reports /o"
+      },
+      "output": [
+        "f20",
+        "f11",
+        "f15",
+        "f21"
+      ]
+    },
+    {
+      "id": "fuzz#33",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "1"
+      },
+      "output": [
+        "f37",
+        "f29"
+      ]
+    },
+    {
+      "id": "fuzz#34",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "⃝",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#35",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "/vı ⃝"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#36",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "1"
+      },
+      "output": [
+        "f37",
+        "f29"
+      ]
+    },
+    {
+      "id": "fuzz#37",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "B-",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f7",
+        "f2",
+        "f16",
+        "f34",
+        "f26"
+      ]
+    },
+    {
+      "id": "fuzz#38",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "9å"
+      },
+      "output": [
+        "f31"
+      ]
+    },
+    {
+      "id": "fuzz#39",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "𐒰uＡΣœLÅ"
+      },
+      "output": [
+        "f26"
+      ]
+    },
+    {
+      "id": "fuzz#40",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "　zM",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#41",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "V́fΐ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#42",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#43",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "어' ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f32",
+        "f0"
+      ]
+    },
+    {
+      "id": "fuzz#44",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ŒaΑςंæᲐ"
+      },
+      "output": [
+        "f19"
+      ]
+    },
+    {
+      "id": "fuzz#45",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ı"
+      },
+      "output": [
+        "f4",
+        "f29",
+        "f33",
+        "f8"
+      ]
+    },
+    {
+      "id": "fuzz#46",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "CΐⅫè𐐨ᅡc",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f5"
+      ]
+    },
+    {
+      "id": "fuzz#47",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "nა"
+      },
+      "output": [
+        "f22"
+      ]
+    },
+    {
+      "id": "fuzz#48",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "٣"
+      },
+      "output": [
+        "f11",
+        "f20",
+        "f30"
+      ]
+    },
+    {
+      "id": "fuzz#49",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ა Æ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f29"
+      ]
+    },
+    {
+      "id": "fuzz#50",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Ñ½ta"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#51",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Y"
+      },
+      "output": [
+        "f8",
+        "f13",
+        "f15",
+        "f33",
+        "f35",
+        "f3"
+      ]
+    },
+    {
+      "id": "fuzz#52",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#53",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Ünïcö"
+      },
+      "output": [
+        "f1",
+        "f6",
+        "f9",
+        "f10",
+        "f25",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#54",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#55",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "MÅ🇳🇿pÉ𐐀ÅF",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#56",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Reports "
+      },
+      "output": [
+        "f5",
+        "f11",
+        "f15",
+        "f18",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f37",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#57",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "r어"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#58",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "VXÜèΣ ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f9"
+      ]
+    },
+    {
+      "id": "fuzz#59",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ẞØ "
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#60",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ς"
+      },
+      "output": [
+        "f9",
+        "f13",
+        "f24"
+      ]
+    },
+    {
+      "id": "fuzz#61",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "𐒰uＡΣœLÅG ÖΑ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#62",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": " _"
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#63",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": " ﬁ"
+      },
+      "output": [
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#64",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "B",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f7",
+        "f2",
+        "f16",
+        "f34",
+        "f26"
+      ]
+    },
+    {
+      "id": "fuzz#65",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Tj"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#66",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "—B"
+      },
+      "output": [
+        "f7",
+        "f2",
+        "f16",
+        "f34",
+        "f26"
+      ]
+    },
+    {
+      "id": "fuzz#67",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#68",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Οz٣"
+      },
+      "output": [
+        "f30"
+      ]
+    },
+    {
+      "id": "fuzz#69",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "FuΑ5აHX👨‍👩‍👧ÀİΆ6ıΩᎠéR"
+      },
+      "output": [
+        "f9"
+      ]
+    },
+    {
+      "id": "fuzz#70",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#71",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "æ𐐨œçI۴KςT"
+      },
+      "output": [
+        "f24"
+      ]
+    },
+    {
+      "id": "fuzz#72",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "é874Nσ"
+      },
+      "output": [
+        "f10"
+      ]
+    },
+    {
+      "id": "fuzz#73",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Å",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f11",
+        "f18",
+        "f1",
+        "f20",
+        "f0",
+        "f4",
+        "f12",
+        "f21",
+        "f26",
+        "f31",
+        "f2",
+        "f9",
+        "f22",
+        "f23"
+      ]
+    },
+    {
+      "id": "fuzz#74",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ΩςQΔYCW8ź"
+      },
+      "output": [
+        "f13"
+      ]
+    },
+    {
+      "id": "fuzz#75",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Œßwﬁ👨‍👩‍👧"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#76",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "7",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f31",
+        "f10",
+        "f15",
+        "f27"
+      ]
+    },
+    {
+      "id": "fuzz#77",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "𐒰² "
+      },
+      "output": [
+        "f36"
+      ]
+    },
+    {
+      "id": "fuzz#78",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "²ßö ́"
+      },
+      "output": [
+        "f17"
+      ]
+    },
+    {
+      "id": "fuzz#79",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Ⅻΐg5ｂV Å𐒰ø",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#80",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#81",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "—2 f"
+      },
+      "output": [
+        "f2",
+        "f11"
+      ]
+    },
+    {
+      "id": "fuzz#82",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "q",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f14",
+        "f13",
+        "f21",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#83",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "nᲐ_Γά-ÅΆü4ÑXⅫ٣dhᲐé本"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#84",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Q"
+      },
+      "output": [
+        "f14",
+        "f13",
+        "f21",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#85",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#86",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Οǅ"
+      },
+      "output": [
+        "f39",
+        "f12"
+      ]
+    },
+    {
+      "id": "fuzz#87",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "²ß"
+      },
+      "output": [
+        "f17"
+      ]
+    },
+    {
+      "id": "fuzz#88",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Σύνολο",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f3",
+        "f4",
+        "f7",
+        "f14",
+        "f16",
+        "f17",
+        "f19",
+        "f24",
+        "f30",
+        "f31",
+        "f33"
+      ]
+    },
+    {
+      "id": "fuzz#89",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#90",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Σύολο"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#91",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ΐＡΆ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#92",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "\t K"
+      },
+      "output": [
+        "f24",
+        "f34",
+        "f35"
+      ]
+    },
+    {
+      "id": "fuzz#93",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "S-०²ς "
+      },
+      "output": [
+        "f3"
+      ]
+    },
+    {
+      "id": "fuzz#94",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Σύνολο ᄒ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f16",
+        "f7"
+      ]
+    },
+    {
+      "id": "fuzz#95",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "V́ßfΐ "
+      },
+      "output": [
+        "f10"
+      ]
+    },
+    {
+      "id": "fuzz#96",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "İşler — Ⅻ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#97",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "uä6ı’ΔkCNHのq²Xᆫm한ΓのŒ cl本",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#98",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "CΐⅫè𐐨ᅡc"
+      },
+      "output": [
+        "f5"
+      ]
+    },
+    {
+      "id": "fuzz#99",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "۴Ა/日한⃝k👍🏽Σ𐐀/Ébẞg"
+      },
+      "output": [
+        "f34"
+      ]
+    },
+    {
+      "id": "fuzz#100",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#101",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Ⅻg5ｂV"
+      },
+      "output": [
+        "f3"
+      ]
+    },
+    {
+      "id": "fuzz#102",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "rŒ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#103",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "  ",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#104",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "æ𐐨œçI۴gKςT"
+      },
+      "output": [
+        "f24"
+      ]
+    },
+    {
+      "id": "fuzz#105",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": ""
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#106",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30",
+        "f31",
+        "f32",
+        "f33",
+        "f34",
+        "f35",
+        "f36",
+        "f37",
+        "f38",
+        "f39"
+      ]
+    },
+    {
+      "id": "fuzz#107",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "σ"
+      },
+      "output": [
+        "f2",
+        "f10",
+        "f15",
+        "f26",
+        "f29",
+        "f34",
+        "f35",
+        "f3",
+        "f4",
+        "f7",
+        "f14",
+        "f16",
+        "f17",
+        "f19",
+        "f24",
+        "f30",
+        "f31",
+        "f33",
+        "f28"
+      ]
+    },
+    {
+      "id": "fuzz#108",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ọ̃٣́Å"
+      },
+      "output": [
+        "f20"
+      ]
+    },
+    {
+      "id": "fuzz#109",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ßW👍K Ο2—",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#110",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "Yj"
+      },
+      "output": [
+        "f8"
+      ]
+    },
+    {
+      "id": "fuzz#111",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "a "
+      },
+      "output": [
+        "f11",
+        "f18",
+        "f1",
+        "f0",
+        "f4",
+        "f12",
+        "f20",
+        "f21",
+        "f26",
+        "f31",
+        "f2",
+        "f9",
+        "f22",
+        "f23"
+      ]
+    },
+    {
+      "id": "fuzz#112",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "f",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f2",
+        "f11",
+        "f29",
+        "f33",
+        "f9",
+        "f28"
+      ]
+    },
+    {
+      "id": "fuzz#113",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "½Σ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#114",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ø1აöe本HΣ‍👩‍👧TcŒCßⅻ"
+      },
+      "output": [
+        "f0"
+      ]
+    },
+    {
+      "id": "fuzz#115",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "—𐒰Üの",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f16"
+      ]
+    },
+    {
+      "id": "fuzz#116",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "T"
+      },
+      "output": [
+        "f7",
+        "f24",
+        "f0",
+        "f2",
+        "f8",
+        "f27",
+        "f28",
+        "f32",
+        "f34",
+        "f23"
+      ]
+    },
+    {
+      "id": "fuzz#117",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "7å"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#118",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "CΐⅫè𐐨ᅡc",
+        "recent": [
+          "f3",
+          "f1",
+          "f20",
+          "f0"
+        ]
+      },
+      "output": [
+        "f5"
+      ]
+    },
+    {
+      "id": "fuzz#119",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "ØÅxﬀ०n"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz#120",
+      "fn": "rankCommands",
+      "input": {
+        "named": "fuzzCommands",
+        "query": "’8GöΟǅZŒVÖσ"
+      },
+      "output": [
+        "f25"
+      ]
+    },
+    {
+      "id": "fuzz-full#1",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ıZΒⅻBı2 Ü"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#2",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "👍q"
+      },
+      "output": [
+        "go:/tools/follow-back",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup"
+      ]
+    },
+    {
+      "id": "fuzz-full#3",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "Repots"
+      },
+      "output": [
+        "go:/reports"
+      ]
+    },
+    {
+      "id": "fuzz-full#4",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "CGqd"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#5",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "K"
+      },
+      "output": [
+        "go:/reports/blocks",
+        "go:/posting/schedule",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/interaction-lookup",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "go:/privacy",
+        "go:/reports/content",
+        "go:/posting/drafts",
+        "go:/defense/lists"
+      ]
+    },
+    {
+      "id": "fuzz-full#6",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": ""
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#7",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "érZØKÖv0K"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#8",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "S äͅά"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#9",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "어'"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#10",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "Re"
+      },
+      "output": [
+        "go:/reports",
+        "go:/reports/atmosphere",
+        "go:/tools/lists",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "do:sync",
+        "do:customize",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/interaction-lookup",
+        "go:/tools/identity"
+      ]
+    },
+    {
+      "id": "fuzz-full#11",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "Οǅꭰ აkH"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#12",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "िYＡü"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#13",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "Ünïc"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#14",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "/⃝o"
+      },
+      "output": [
+        "go:/dashboard/d1",
+        "go:/posting",
+        "go:/tools/lists",
+        "go:/terms",
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting/posted",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/privacy",
+        "sky:clock",
+        "account:did:plc:lab",
+        "go:/defense/lists",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/library"
+      ]
+    },
+    {
+      "id": "fuzz-full#15",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "レ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#16",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ÉᆫǅÜ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#17",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": " lΟ "
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#18",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "レ8"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#19",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ि"
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#20",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "⃝"
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#21",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ıZΒⅻB2"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#22",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "p"
+      },
+      "output": [
+        "go:/reports/posts",
+        "go:/reports/people",
+        "go:/posting/posted",
+        "go:/settings/posting",
+        "go:/settings/permissions",
+        "go:/privacy",
+        "do:new-post",
+        "go:/tools/best-time",
+        "go:/defense",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting/templates",
+        "go:/tools/follow-cleanup",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/settings/appearance",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/library",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/about",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/tools/follow-back"
+      ]
+    },
+    {
+      "id": "fuzz-full#23",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ΩςQΔYCW8ź"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#24",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": ""
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#25",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ZÆØäI"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#26",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "79å "
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#27",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "👨‍👩‍👧"
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#28",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "p𐐀"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#29",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "İşler"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#30",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "6"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#31",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "ΩςQΔYCW8ź cǅx"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#32",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "Reports /o"
+      },
+      "output": [
+        "go:/reports",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/people",
+        "go:/reports/atmosphere"
+      ]
+    },
+    {
+      "id": "fuzz-full#33",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "1"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#34",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "⃝"
+      },
+      "output": [
+        "do:new-post",
+        "do:sync",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/dashboard/d1",
+        "go:/dashboard/d2",
+        "go:/reports/followers",
+        "go:/reports/blocks",
+        "go:/reports/posts",
+        "go:/reports/content",
+        "go:/reports/engagement",
+        "go:/reports/people",
+        "go:/reports/atmosphere",
+        "go:/reports",
+        "go:/posting",
+        "go:/posting/drafts",
+        "go:/posting/scheduled",
+        "go:/posting/schedule",
+        "go:/posting/timers",
+        "go:/posting/posted",
+        "go:/posting/templates",
+        "go:/posting/library",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/follow-back",
+        "go:/tools/best-time",
+        "go:/tools/lists",
+        "go:/tools/interaction-lookup",
+        "go:/tools/archive",
+        "go:/tools/identity",
+        "go:/tools",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/settings/account",
+        "go:/settings/data",
+        "go:/settings/dashboards",
+        "go:/settings/posting",
+        "go:/settings/appearance",
+        "go:/settings/permissions",
+        "go:/settings/about",
+        "go:/terms",
+        "go:/privacy",
+        "period:7d",
+        "period:30d",
+        "period:90d",
+        "period:1y",
+        "period:all",
+        "sky:clock",
+        "sky:dawn",
+        "sky:day",
+        "sky:dusk",
+        "sky:night",
+        "account:did:plc:lab"
+      ]
+    },
+    {
+      "id": "fuzz-full#35",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "/vı ⃝"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#36",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "1"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#37",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "B-"
+      },
+      "output": [
+        "go:/reports/blocks",
+        "go:/tools/best-time",
+        "go:/tools/follow-back",
+        "sky:clock",
+        "do:customize",
+        "do:new-dashboard",
+        "go:/posting/library",
+        "go:/settings/dashboards",
+        "go:/settings/about",
+        "account:did:plc:lab",
+        "go:/defense",
+        "go:/defense/lists",
+        "go:/defense/history",
+        "go:/reports/content",
+        "go:/posting/drafts",
+        "go:/tools/follow-cleanup",
+        "go:/tools/unfollow-tracker",
+        "go:/tools/interaction-lookup"
+      ]
+    },
+    {
+      "id": "fuzz-full#38",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "9å"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#39",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "𐒰uＡΣœLÅ"
+      },
+      "output": []
+    },
+    {
+      "id": "fuzz-full#40",
+      "fn": "rankCommands",
+      "input": {
+        "context": "full",
+        "query": "　zM"
       },
       "output": []
     },
@@ -28865,6 +34114,89 @@
       "input": {
         "commands": [
           {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "",
+        "recent": [
+          "café",
+          "b"
+        ]
+      },
+      "output": [
+        {
+          "group": "Recent",
+          "items": [
+            "café",
+            "b"
+          ]
+        },
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paletteGroups#60",
+      "fn": "paletteGroups",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "alpha",
+        "recent": []
+      },
+      "output": [
+        {
+          "group": "Café",
+          "items": [
+            "café",
+            "b"
+          ]
+        },
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paletteGroups#61",
+      "fn": "paletteGroups",
+      "input": {
+        "commands": [
+          {
             "id": "a",
             "group": "Tools",
             "title": "Alpha one"
@@ -28901,7 +34233,7 @@
       ]
     },
     {
-      "id": "paletteGroups#60",
+      "id": "paletteGroups#62",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -28937,7 +34269,7 @@
       ]
     },
     {
-      "id": "paletteGroups#61",
+      "id": "paletteGroups#63",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -28972,7 +34304,7 @@
       ]
     },
     {
-      "id": "paletteGroups#62",
+      "id": "paletteGroups#64",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29002,7 +34334,7 @@
       ]
     },
     {
-      "id": "paletteGroups#63",
+      "id": "paletteGroups#65",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29032,7 +34364,7 @@
       ]
     },
     {
-      "id": "paletteGroups#64",
+      "id": "paletteGroups#66",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29055,7 +34387,7 @@
       "output": []
     },
     {
-      "id": "paletteGroups#65",
+      "id": "paletteGroups#67",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29133,7 +34465,7 @@
       ]
     },
     {
-      "id": "paletteGroups#66",
+      "id": "paletteGroups#68",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29205,7 +34537,7 @@
       ]
     },
     {
-      "id": "paletteGroups#67",
+      "id": "paletteGroups#69",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29268,7 +34600,7 @@
       "output": []
     },
     {
-      "id": "paletteGroups#68",
+      "id": "paletteGroups#70",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29335,7 +34667,7 @@
       ]
     },
     {
-      "id": "paletteGroups#69",
+      "id": "paletteGroups#71",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29393,7 +34725,7 @@
       ]
     },
     {
-      "id": "paletteGroups#70",
+      "id": "paletteGroups#72",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29443,7 +34775,7 @@
       "output": []
     },
     {
-      "id": "paletteGroups#71",
+      "id": "paletteGroups#73",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29514,7 +34846,7 @@
       ]
     },
     {
-      "id": "paletteGroups#72",
+      "id": "paletteGroups#74",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29580,7 +34912,7 @@
       ]
     },
     {
-      "id": "paletteGroups#73",
+      "id": "paletteGroups#75",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29633,7 +34965,146 @@
       "output": []
     },
     {
-      "id": "paletteGroups#74",
+      "id": "paletteGroups#76",
+      "fn": "paletteGroups",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "",
+        "recent": [
+          "b",
+          "d",
+          "d",
+          "e",
+          "s3",
+          "zzz"
+        ]
+      },
+      "output": [
+        {
+          "group": "Recent",
+          "items": [
+            "b"
+          ]
+        },
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        },
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paletteGroups#77",
+      "fn": "paletteGroups",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "a",
+        "recent": [
+          "b",
+          "d",
+          "d",
+          "e",
+          "s3",
+          "zzz"
+        ]
+      },
+      "output": [
+        {
+          "group": "Café",
+          "items": [
+            "b",
+            "café"
+          ]
+        },
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paletteGroups#78",
+      "fn": "paletteGroups",
+      "input": {
+        "commands": [
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha one"
+          },
+          {
+            "id": "café",
+            "group": "Café",
+            "title": "Alpha two"
+          },
+          {
+            "id": "b",
+            "group": "Café",
+            "title": "Alpha three"
+          }
+        ],
+        "query": "one",
+        "recent": [
+          "b",
+          "d",
+          "d",
+          "e",
+          "s3",
+          "zzz"
+        ]
+      },
+      "output": [
+        {
+          "group": "Café",
+          "items": [
+            "café"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paletteGroups#79",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29675,7 +35146,7 @@
       ]
     },
     {
-      "id": "paletteGroups#75",
+      "id": "paletteGroups#80",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29721,7 +35192,7 @@
       ]
     },
     {
-      "id": "paletteGroups#76",
+      "id": "paletteGroups#81",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29761,7 +35232,7 @@
       ]
     },
     {
-      "id": "paletteGroups#77",
+      "id": "paletteGroups#82",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29829,7 +35300,7 @@
       ]
     },
     {
-      "id": "paletteGroups#78",
+      "id": "paletteGroups#83",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29897,7 +35368,7 @@
       ]
     },
     {
-      "id": "paletteGroups#79",
+      "id": "paletteGroups#84",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -29955,7 +35426,7 @@
       ]
     },
     {
-      "id": "paletteGroups#80",
+      "id": "paletteGroups#85",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -30023,7 +35494,7 @@
       ]
     },
     {
-      "id": "paletteGroups#81",
+      "id": "paletteGroups#86",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -30091,7 +35562,7 @@
       ]
     },
     {
-      "id": "paletteGroups#82",
+      "id": "paletteGroups#87",
       "fn": "paletteGroups",
       "input": {
         "commands": [
@@ -30390,6 +35861,24 @@
       "id": "rememberRecent#12",
       "fn": "rememberRecent",
       "input": {
+        "recent": [
+          "x",
+          "café",
+          "y"
+        ],
+        "id": "café"
+      },
+      "output": [
+        "café",
+        "x",
+        "café",
+        "y"
+      ]
+    },
+    {
+      "id": "rememberRecent#13",
+      "fn": "rememberRecent",
+      "input": {
         "recent": [],
         "id": "only"
       },
@@ -30398,7 +35887,7 @@
       ]
     },
     {
-      "id": "rememberRecent#13",
+      "id": "rememberRecent#14",
       "fn": "rememberRecent",
       "input": {
         "recent": [
@@ -30425,7 +35914,7 @@
       ]
     },
     {
-      "id": "rememberRecent#14",
+      "id": "rememberRecent#15",
       "fn": "rememberRecent",
       "input": {
         "recent": [

@@ -12,7 +12,8 @@
 // ios/parity/cases/insights-early.commands.js holds every function here to
 // the web's: the whole list in each situation the app can be in, the
 // ranking of every query the web's tests type and many more, the groups,
-// and the recent list.
+// and the recent list. Ids, groups and DIDs are compared by code units,
+// as the web compares them (JSStrings.swift).
 
 import Foundation
 import VirgaCore
@@ -274,7 +275,10 @@ public struct CommandContext: Codable, Hashable, Sendable {
 
   /// The context the palette opens with (CommandPalette.jsx): this
   /// target's registries, Defense's pages only where Defense is on, and the
-  /// account's own state.
+  /// account's own state. `route` is the shell's, with `dashboard` set to
+  /// the dashboard it shows (Shell.jsx passes `dashboard?.id || null`: the
+  /// one the address names if there is one, nil otherwise), so "Customize
+  /// this dashboard" is offered only on a dashboard that exists.
   public static func app(
     dashboards: [Dashboard], accounts: [Account], activeDid: String?, periods: [Period], period: String?,
     sky: String?, route: AppRoute, archive: Archive, defenseEnabled: Bool
@@ -370,7 +374,7 @@ public enum Commands {
         Command(id: "do:sync", group: "Actions", title: title, keywords: "sync refresh update archive fetch", do: "sync"))
     }
     let onDashboard =
-      route.section == "dashboard" && context.dashboards.contains { route.dashboard != nil && $0.id == route.dashboard }
+      route.section == "dashboard" && context.dashboards.contains { route.dashboard.jsEquals($0.id) }
     if onDashboard {
       out.append(
         Command(
@@ -383,7 +387,7 @@ public enum Commands {
       out.append(
         Command(
           id: "go:/dashboard/\(d.id)", group: "Dashboards", title: d.name,
-          current: onDashboard && route.dashboard == d.id, go: "/dashboard/\(d.id)"))
+          current: onDashboard && route.dashboard.jsEquals(d.id), go: "/dashboard/\(d.id)"))
     }
 
     for r in context.reports {
@@ -435,19 +439,19 @@ public enum Commands {
       out.append(
         Command(
           id: "period:\(p.key ?? "undefined")", group: "Period", title: periodTitle(p),
-          keywords: "period range window charts show", current: p.key != nil && p.key == context.period, do: "period",
-          arg: p.key))
+          keywords: "period range window charts show",
+          current: p.key != nil && p.key.jsEquals(context.period), do: "period", arg: p.key))
     }
 
     for k in skies {
       out.append(
         Command(
           id: "sky:\(k.value)", group: "Sky", title: k.title,
-          keywords: "appearance theme mode colours colors \(k.keywords)", current: k.value == context.sky, do: "sky",
-          arg: k.value))
+          keywords: "appearance theme mode colours colors \(k.keywords)",
+          current: context.sky.jsEquals(k.value), do: "sky", arg: k.value))
     }
 
-    for a in context.accounts where a.did != context.activeDid {
+    for a in context.accounts where !context.activeDid.jsEquals(a.did) {
       let hint: String?
       if a.status == "needsSignIn" {
         hint = "Signed out. Opens the sign-in."
@@ -560,7 +564,7 @@ public enum Commands {
   public static func rankCommands(_ commands: [Command], _ query: String?, recent: [String] = []) -> [Command] {
     let typed = wordsOf(query)
     if typed.isEmpty { return commands }
-    func recency(_ id: String) -> Int? { recent.firstIndex(of: id) }
+    func recency(_ id: String) -> Int? { recent.firstIndex { $0.jsEquals(id) } }
     var entries: [(command: Command, score: Int, order: Int, recency: Int?)] = []
     for (order, command) in commands.enumerated() {
       var score = 0
@@ -595,22 +599,22 @@ public enum Commands {
     let ranked = rankCommands(commands, query, recent: recent)
     var groups: [PaletteGroup] = []
     func into(_ name: String, _ command: Command) {
-      if let at = groups.firstIndex(where: { $0.group == name }) {
+      if let at = groups.firstIndex(where: { $0.group.jsEquals(name) }) {
         groups[at].items.append(command)
       } else {
         groups.append(PaletteGroup(group: name, items: [command]))
       }
     }
     let searching = !wordsOf(query).isEmpty
-    var shown = Set<String>()
+    var shown = Set<JSKey>()
     if !searching {
       for id in recent {
-        guard let command = ranked.first(where: { $0.id == id }), shown.count < shownRecent else { continue }
-        shown.insert(id)
+        guard let command = ranked.first(where: { $0.id.jsEquals(id) }), shown.count < shownRecent else { continue }
+        shown.insert(JSKey(id))
         into(recentGroup, command)
       }
     }
-    for command in ranked where !shown.contains(command.id) { into(command.group, command) }
+    for command in ranked where !shown.contains(JSKey(command.id)) { into(command.group, command) }
     return groups
   }
 
@@ -624,7 +628,7 @@ public enum Commands {
 
   /// `rememberRecent` over a list as it was read, keeping only its strings.
   public static func rememberRecent(stored recent: JSONValue?, _ id: String?) -> [String] {
-    let list = (recent?.arrayValue ?? []).compactMap(\.stringValue).filter { $0 != id }
+    let list = (recent?.arrayValue ?? []).compactMap(\.stringValue).filter { !id.jsEquals($0) }
     if let id, !id.isEmpty { return Array(([id] + list).prefix(maxRecent)) }
     return Array(list.prefix(maxRecent))
   }

@@ -22,6 +22,7 @@
       "fixtures": [
         "insights-early.layouts"
       ],
+      "note": "All of it, with newId injectable so the fixtures check the web's ids exactly. Deliberate differences, all in input the app never produces (pinned by LayoutsBehaviour): names Object.prototype carries are not card types or templates (the web's plain-object lookups keep them, and then throws resetting such a dashboard); resetting a dashboard whose template no table has gives the overview's cards, as dashboardFromTemplate made them, where the web throws; non-string template or type values in a stored layout are dropped where the web keeps them; a registry rule with no sizes and no default gives a card size \"\" where the web leaves `size` out.",
       "synced": "bde558a77e4a"
     },
     "src/defense/routes.js": {
@@ -42,6 +43,7 @@
       "fixtures": [
         "insights-early.routes"
       ],
+      "note": "All of it. One deliberate difference, in addresses the app never makes: the web looks a page up in a plain object, so names Object.prototype carries ('constructor', 'toString', '__proto__') count as pages there ('/posting/constructor' is page 'constructor', for which PostingPage.jsx has no real page); here only the table's own keys name a page, so such an address is missing. Reported as a web bug; RoutesInheritedNames pins it.",
       "synced": "19dcb674517d"
     },
     "src/reports/annotations.js": {
@@ -102,6 +104,7 @@
       "fixtures": [
         "insights-early.commands"
       ],
+      "note": "All of it. TERMS_PATH and PRIVACY_PATH (src/legal/version.js, VirgaSession's) are private copies in Commands.swift until that module is merged. Null where the app's tables always have a value reads as missing: a period with key null (the web writes `period:null`, arg null, and current true when no period is in use) or a Defense page with title null (the web's keywords start \"null\", here \"undefined\", as for a missing one).",
       "synced": "0d6f37bbb1a8"
     },
     "src/shell/routes.js": {
@@ -148,6 +151,7 @@
       "fixtures": [
         "insights-early.registries"
       ],
+      "note": "All of it. The ACCESS table it re-exports from src/components/AccessBadge.jsx is ported in Components/AccessBadge.swift, whose header names both files; AccessBadge.jsx's own entry (ui-shell) is still pending: its AccessLine is a view, VirgaUI's.",
       "synced": "2db4cac86133"
     }
   }
