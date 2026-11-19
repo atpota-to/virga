@@ -1,8 +1,8 @@
-// A leading U+FEFF, step by step from a fixture to a regex match, so that a
-// failure on iOS names the step that loses it. CI's first iOS run found
-// findHashtags("\u{FEFF}#bom") one code unit short there, where Linux and
-// the web agree; JSRegexSubject now builds the regex's NSString from the
-// text's own code units. Every expectation here holds on Linux.
+// A leading U+FEFF, step by step from a fixture to a regex match. CI's iOS
+// run found findHashtags("\u{FEFF}#bom") one code unit short, where Linux
+// and the web agree, and these steps named the cause: Apple's
+// NSString(string:) drops a leading U+FEFF. JSRegexSubject builds the
+// regex's NSString from the text's own code units instead.
 
 import Foundation
 import Testing
@@ -24,7 +24,15 @@ import VirgaCore
   }
 
   @Test func foundationsStringsKeepIt() {
-    #expect(NSString(string: text).length == 5, "NSString(string:)")
+    // What CI's iOS run found: Apple's NSString(string:) drops a leading
+    // U+FEFF, taking it for a byte order mark; Linux's Foundation keeps it.
+    // That's why regexes run over JSRegexSubject and lengths come from
+    // utf16. If Apple's behaviour changes, this says so.
+    #if canImport(Darwin)
+    #expect(NSString(string: text).length == 4, "Apple's NSString(string:) drops a leading U+FEFF")
+    #else
+    #expect(NSString(string: text).length == 5)
+    #endif
     let (subject, length) = JSRegexSubject.make(text)
     #expect(length == 5)
     #expect(subject.utf16.count == 5, "the regex subject")

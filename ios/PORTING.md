@@ -123,7 +123,9 @@ means porting the code, not reimagining it.
   `FileManager.DirectoryEnumerator`, `NSLock.lock()`/`unlock()`,
   `DispatchSemaphore.wait()`, `Thread.sleep`) can't be called directly in an
   `async` function in Swift 6 mode. Do that work in a synchronous helper, or
-  through `Locked.withLock`. CI builds with Xcode 26.6 (iOS 26.5 SDK); keep to
+  through `Locked.withLock`. And Apple's `NSString(string:)` drops a leading
+  U+FEFF (Linux's keeps it): never take lengths or offsets from a bridged
+  NSString; use `utf16` and VirgaCore's `JSRegexSubject`. CI builds with Xcode 26.6 (iOS 26.5 SDK); keep to
   Swift 6.2's language features.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
 
