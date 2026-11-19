@@ -1,0 +1,4490 @@
+{
+  "name": "insights-early.routes",
+  "sources": [
+    "src/shell/routes.js",
+    "src/posting/routes.js",
+    "src/defense/routes.js"
+  ],
+  "cases": [
+    {
+      "id": "SECTION_TITLE",
+      "fn": "SECTION_TITLE",
+      "input": {},
+      "output": {
+        "dashboard": "Dashboards",
+        "reports": "Reports",
+        "tools": "Tools",
+        "settings": "Settings",
+        "posting": "Posting",
+        "defense": "Defense",
+        "intent": "Posting",
+        "missing": "Not found"
+      }
+    },
+    {
+      "id": "POSTING_BASE",
+      "fn": "POSTING_BASE",
+      "input": {},
+      "output": "/posting"
+    },
+    {
+      "id": "POSTING_PAGES",
+      "fn": "POSTING_PAGES",
+      "input": {},
+      "output": [
+        {
+          "key": "hub",
+          "path": "/posting",
+          "label": "Overview",
+          "title": "Posting",
+          "icon": "SquarePen",
+          "needsBackend": false,
+          "pinned": false,
+          "access": [
+            "post"
+          ],
+          "desc": "Write a post or a thread, pick up a draft, and see what’s going out."
+        },
+        {
+          "key": "drafts",
+          "path": "/posting/drafts",
+          "label": "Drafts",
+          "title": "Drafts",
+          "icon": "FileText",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Posts you’ve started, kept as private drafts on your Bluesky account."
+        },
+        {
+          "key": "scheduled",
+          "path": "/posting/scheduled",
+          "label": "Scheduled",
+          "title": "Scheduled posts",
+          "icon": "CalendarClock",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "post",
+            "server"
+          ],
+          "desc": "Posts waiting to go out, and the queue they go out from."
+        },
+        {
+          "key": "schedule",
+          "path": "/posting/schedule",
+          "label": "Weekly schedule",
+          "title": "Weekly schedule",
+          "icon": "CalendarRange",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "server"
+          ],
+          "desc": "The times each week that a post added to the queue goes out."
+        },
+        {
+          "key": "timers",
+          "path": "/posting/timers",
+          "label": "Timers",
+          "title": "Post timers",
+          "icon": "Timer",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "post",
+            "server"
+          ],
+          "desc": "Posts set to delete themselves after a while, or when something happens."
+        },
+        {
+          "key": "posted",
+          "path": "/posting/posted",
+          "label": "Posted",
+          "title": "Posted",
+          "icon": "Send",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Everything you’ve posted."
+        },
+        {
+          "key": "templates",
+          "path": "/posting/templates",
+          "label": "Templates",
+          "title": "Templates",
+          "icon": "LayoutTemplate",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Posts and replies to start from, saved in your repo where anyone can read them."
+        },
+        {
+          "key": "library",
+          "path": "/posting/library",
+          "label": "Library",
+          "title": "Library",
+          "icon": "Library",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Your posts, saved posts, links, feeds and lists, ready to quote or attach."
+        }
+      ]
+    },
+    {
+      "id": "POSTING_PAGE_BY_KEY",
+      "fn": "POSTING_PAGE_BY_KEY",
+      "input": {},
+      "output": {
+        "hub": {
+          "key": "hub",
+          "path": "/posting",
+          "label": "Overview",
+          "title": "Posting",
+          "icon": "SquarePen",
+          "needsBackend": false,
+          "pinned": false,
+          "access": [
+            "post"
+          ],
+          "desc": "Write a post or a thread, pick up a draft, and see what’s going out."
+        },
+        "drafts": {
+          "key": "drafts",
+          "path": "/posting/drafts",
+          "label": "Drafts",
+          "title": "Drafts",
+          "icon": "FileText",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Posts you’ve started, kept as private drafts on your Bluesky account."
+        },
+        "scheduled": {
+          "key": "scheduled",
+          "path": "/posting/scheduled",
+          "label": "Scheduled",
+          "title": "Scheduled posts",
+          "icon": "CalendarClock",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "post",
+            "server"
+          ],
+          "desc": "Posts waiting to go out, and the queue they go out from."
+        },
+        "schedule": {
+          "key": "schedule",
+          "path": "/posting/schedule",
+          "label": "Weekly schedule",
+          "title": "Weekly schedule",
+          "icon": "CalendarRange",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "server"
+          ],
+          "desc": "The times each week that a post added to the queue goes out."
+        },
+        "timers": {
+          "key": "timers",
+          "path": "/posting/timers",
+          "label": "Timers",
+          "title": "Post timers",
+          "icon": "Timer",
+          "needsBackend": true,
+          "pinned": true,
+          "access": [
+            "post",
+            "server"
+          ],
+          "desc": "Posts set to delete themselves after a while, or when something happens."
+        },
+        "posted": {
+          "key": "posted",
+          "path": "/posting/posted",
+          "label": "Posted",
+          "title": "Posted",
+          "icon": "Send",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Everything you’ve posted."
+        },
+        "templates": {
+          "key": "templates",
+          "path": "/posting/templates",
+          "label": "Templates",
+          "title": "Templates",
+          "icon": "LayoutTemplate",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Posts and replies to start from, saved in your repo where anyone can read them."
+        },
+        "library": {
+          "key": "library",
+          "path": "/posting/library",
+          "label": "Library",
+          "title": "Library",
+          "icon": "Library",
+          "needsBackend": false,
+          "pinned": true,
+          "access": [
+            "post"
+          ],
+          "desc": "Your posts, saved posts, links, feeds and lists, ready to quote or attach."
+        }
+      }
+    },
+    {
+      "id": "DEFENSE_BASE",
+      "fn": "DEFENSE_BASE",
+      "input": {},
+      "output": "/defense"
+    },
+    {
+      "id": "DEFENSE_ICON",
+      "fn": "DEFENSE_ICON",
+      "input": {},
+      "output": "ShieldHalf"
+    },
+    {
+      "id": "DEFENSE_PAGES",
+      "fn": "DEFENSE_PAGES",
+      "input": {},
+      "output": [
+        {
+          "key": "scan",
+          "path": "/defense",
+          "label": "Scan a post",
+          "title": "Defense",
+          "icon": "ShieldHalf",
+          "desc": "Everyone who engaged with a post, sorted by how close each of them is to you."
+        },
+        {
+          "key": "lists",
+          "path": "/defense/lists",
+          "label": "Lists",
+          "title": "Lists",
+          "icon": "List",
+          "desc": "The block and mute lists Defense keeps for you, what is being written to them, and who you keep off them."
+        },
+        {
+          "key": "history",
+          "path": "/defense/history",
+          "label": "History",
+          "title": "History",
+          "icon": "RotateCcwClock",
+          "desc": "Everyone added to or taken off your lists, when and why, and the way to undo it."
+        }
+      ]
+    },
+    {
+      "id": "DEFENSE_PAGE_BY_KEY",
+      "fn": "DEFENSE_PAGE_BY_KEY",
+      "input": {},
+      "output": {
+        "scan": {
+          "key": "scan",
+          "path": "/defense",
+          "label": "Scan a post",
+          "title": "Defense",
+          "icon": "ShieldHalf",
+          "desc": "Everyone who engaged with a post, sorted by how close each of them is to you."
+        },
+        "lists": {
+          "key": "lists",
+          "path": "/defense/lists",
+          "label": "Lists",
+          "title": "Lists",
+          "icon": "List",
+          "desc": "The block and mute lists Defense keeps for you, what is being written to them, and who you keep off them."
+        },
+        "history": {
+          "key": "history",
+          "path": "/defense/history",
+          "label": "History",
+          "title": "History",
+          "icon": "RotateCcwClock",
+          "desc": "Everyone added to or taken off your lists, when and why, and the way to undo it."
+        }
+      }
+    },
+    {
+      "id": "parseRoute#1",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#2",
+      "fn": "parseRoute",
+      "input": {
+        "path": ""
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#3",
+      "fn": "parseRoute",
+      "input": {
+        "path": null
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#4",
+      "fn": "parseRoute",
+      "input": {
+        "path": "//"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#5",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#6",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": null
+      }
+    },
+    {
+      "id": "parseRoute#7",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/abc"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "abc"
+      }
+    },
+    {
+      "id": "parseRoute#8",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/abc/extra"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "abc"
+      }
+    },
+    {
+      "id": "parseRoute#9",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/my%20board"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "my board"
+      }
+    },
+    {
+      "id": "parseRoute#10",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/%F0%9F%91%8D"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "👍"
+      }
+    },
+    {
+      "id": "parseRoute#11",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/%2F"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "/"
+      }
+    },
+    {
+      "id": "parseRoute#12",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/overview?x=1"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "overview?x=1"
+      }
+    },
+    {
+      "id": "parseRoute#13",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports"
+      },
+      "output": {
+        "section": "reports",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#14",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports/followers"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#15",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports/followers/"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#16",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports/followers/more"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#17",
+      "fn": "parseRoute",
+      "input": {
+        "path": "//reports//followers//"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#18",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports/%66ollowers"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#19",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/tools"
+      },
+      "output": {
+        "section": "tools",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#20",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/tools/best-time"
+      },
+      "output": {
+        "section": "tools",
+        "page": "best-time"
+      }
+    },
+    {
+      "id": "parseRoute#21",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/tools/archive"
+      },
+      "output": {
+        "section": "tools",
+        "page": "archive"
+      }
+    },
+    {
+      "id": "parseRoute#22",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/settings"
+      },
+      "output": {
+        "section": "settings",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#23",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/settings/posting"
+      },
+      "output": {
+        "section": "settings",
+        "page": "posting"
+      }
+    },
+    {
+      "id": "parseRoute#24",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/settings/appearance"
+      },
+      "output": {
+        "section": "settings",
+        "page": "appearance"
+      }
+    },
+    {
+      "id": "parseRoute#25",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting"
+      },
+      "output": {
+        "section": "posting",
+        "page": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#26",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/"
+      },
+      "output": {
+        "section": "posting",
+        "page": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#27",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/hub"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#28",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#29",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#30",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/xyz"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": "xyz"
+      }
+    },
+    {
+      "id": "parseRoute#31",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/3lbx2"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": "3lbx2"
+      }
+    },
+    {
+      "id": "parseRoute#32",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/a/b"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#33",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/a%2Fb"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": "a/b"
+      }
+    },
+    {
+      "id": "parseRoute#34",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/%64rafts"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#35",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/scheduled"
+      },
+      "output": {
+        "section": "posting",
+        "page": "scheduled",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#36",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/scheduled/abc"
+      },
+      "output": {
+        "section": "posting",
+        "page": "scheduled",
+        "id": "abc"
+      }
+    },
+    {
+      "id": "parseRoute#37",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/schedule"
+      },
+      "output": {
+        "section": "posting",
+        "page": "schedule",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#38",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/timers"
+      },
+      "output": {
+        "section": "posting",
+        "page": "timers",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#39",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/posted"
+      },
+      "output": {
+        "section": "posting",
+        "page": "posted",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#40",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/templates"
+      },
+      "output": {
+        "section": "posting",
+        "page": "templates",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#41",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/library"
+      },
+      "output": {
+        "section": "posting",
+        "page": "library",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#42",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/compose"
+      },
+      "output": {
+        "section": "posting",
+        "page": "compose",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#43",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/compose/"
+      },
+      "output": {
+        "section": "posting",
+        "page": "compose",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#44",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/compose/extra"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#45",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/nothing"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#46",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/Drafts"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#47",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/drafts/caf%C3%A9"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": "café"
+      }
+    },
+    {
+      "id": "parseRoute#48",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/POSTING"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#49",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#50",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent/compose"
+      },
+      "output": {
+        "section": "intent",
+        "page": "compose"
+      }
+    },
+    {
+      "id": "parseRoute#51",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent/compose/"
+      },
+      "output": {
+        "section": "intent",
+        "page": "compose"
+      }
+    },
+    {
+      "id": "parseRoute#52",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent/compose/x"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#53",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent/other"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#54",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/intent/Compose"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#55",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense"
+      },
+      "output": {
+        "section": "defense",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#56",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/"
+      },
+      "output": {
+        "section": "defense",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#57",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/scan"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#58",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/lists"
+      },
+      "output": {
+        "section": "defense",
+        "page": "lists"
+      }
+    },
+    {
+      "id": "parseRoute#59",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/history"
+      },
+      "output": {
+        "section": "defense",
+        "page": "history"
+      }
+    },
+    {
+      "id": "parseRoute#60",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/lists/x"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#61",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/shield"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#62",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/defense/%6Cists"
+      },
+      "output": {
+        "section": "defense",
+        "page": "lists"
+      }
+    },
+    {
+      "id": "parseRoute#63",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/nowhere"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#64",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/nowhere/at/all"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#65",
+      "fn": "parseRoute",
+      "input": {
+        "path": "reports"
+      },
+      "output": {
+        "section": "reports",
+        "page": null
+      }
+    },
+    {
+      "id": "parseRoute#66",
+      "fn": "parseRoute",
+      "input": {
+        "path": "reports/followers"
+      },
+      "output": {
+        "section": "reports",
+        "page": "followers"
+      }
+    },
+    {
+      "id": "parseRoute#67",
+      "fn": "parseRoute",
+      "input": {
+        "path": "posting/drafts"
+      },
+      "output": {
+        "section": "posting",
+        "page": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parseRoute#68",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parseRoute#69",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/bad/%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parseRoute#70",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/reports/%zz"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parseRoute#71",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/posting/%C3%28"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parseRoute#72",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/%E0%A4%A"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parseRoute#73",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/emoji/👍🏽"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "parseRoute#74",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/dashboard/日本"
+      },
+      "output": {
+        "section": "dashboard",
+        "dashboard": "日本"
+      }
+    },
+    {
+      "id": "parseRoute#75",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/settings/́"
+      },
+      "output": {
+        "section": "settings",
+        "page": "́"
+      }
+    },
+    {
+      "id": "parseRoute#76",
+      "fn": "parseRoute",
+      "input": {
+        "path": "/a/́b"
+      },
+      "output": {
+        "section": "missing"
+      }
+    },
+    {
+      "id": "needsArchive#1",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#2",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#3",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "my board"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#4",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "👍"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#5",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "/"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#6",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "overview?x=1"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#7",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#8",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": "followers"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#9",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#10",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "best-time"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#11",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "archive"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#12",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#13",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "posting"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#14",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "appearance"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#15",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#16",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "missing"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#17",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#18",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "xyz"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#19",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "3lbx2"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#20",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "a/b"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#21",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#22",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": "abc"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#23",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#24",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "timers",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#25",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "posted",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#26",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "templates",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#27",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "library",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#28",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#29",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "café"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#30",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "compose"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#31",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#32",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "lists"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#33",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "history"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#34",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "日本"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#35",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "́"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#36",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#37",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "unknown-tool"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#38",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "reports"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#39",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#40",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#41",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#42",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "nothing",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#43",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#44",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "shield"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsArchive#45",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "other"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#46",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#47",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "missing",
+          "page": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsArchive#48",
+      "fn": "needsArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc",
+          "page": "x"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#1",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#2",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#3",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "my board"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#4",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "👍"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#5",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "/"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#6",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "overview?x=1"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#7",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#8",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": "followers"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#9",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#10",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "best-time"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#11",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "archive"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#12",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#13",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "posting"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#14",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "appearance"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#15",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#16",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "missing"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#17",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#18",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "xyz"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#19",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "3lbx2"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#20",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "a/b"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#21",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#22",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": "abc"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#23",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#24",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "timers",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#25",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "posted",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#26",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "templates",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#27",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "library",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#28",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#29",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "café"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#30",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "compose"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#31",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#32",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "lists"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#33",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "history"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#34",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "日本"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#35",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "́"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#36",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#37",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "unknown-tool"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#38",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "reports"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#39",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#40",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": "x"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#41",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#42",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "nothing",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#43",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#44",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "shield"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#45",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "other"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "opensBeforeArchive#46",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#47",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "missing",
+          "page": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "opensBeforeArchive#48",
+      "fn": "opensBeforeArchive",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc",
+          "page": "x"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "parentOf#1",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#2",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#3",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "my board"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#4",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "👍"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#5",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "/"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#6",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "overview?x=1"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#7",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#8",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": "followers"
+        }
+      },
+      "output": {
+        "label": "Reports",
+        "to": "/reports"
+      }
+    },
+    {
+      "id": "parentOf#9",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#10",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "best-time"
+        }
+      },
+      "output": {
+        "label": "Tools",
+        "to": "/tools"
+      }
+    },
+    {
+      "id": "parentOf#11",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "archive"
+        }
+      },
+      "output": {
+        "label": "Tools",
+        "to": "/tools"
+      }
+    },
+    {
+      "id": "parentOf#12",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#13",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "posting"
+        }
+      },
+      "output": {
+        "label": "Settings",
+        "to": "/settings"
+      }
+    },
+    {
+      "id": "parentOf#14",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "appearance"
+        }
+      },
+      "output": {
+        "label": "Settings",
+        "to": "/settings"
+      }
+    },
+    {
+      "id": "parentOf#15",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#16",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "missing"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#17",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#18",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "xyz"
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#19",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "3lbx2"
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#20",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "a/b"
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#21",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#22",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": "abc"
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#23",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Scheduled posts",
+        "to": "/posting/scheduled"
+      }
+    },
+    {
+      "id": "parentOf#24",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "timers",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#25",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "posted",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#26",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "templates",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#27",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "library",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#28",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#29",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "café"
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#30",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "compose"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#31",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#32",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "lists"
+        }
+      },
+      "output": {
+        "label": "Defense",
+        "to": "/defense"
+      }
+    },
+    {
+      "id": "parentOf#33",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "history"
+        }
+      },
+      "output": {
+        "label": "Defense",
+        "to": "/defense"
+      }
+    },
+    {
+      "id": "parentOf#34",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "日本"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#35",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "́"
+        }
+      },
+      "output": {
+        "label": "Settings",
+        "to": "/settings"
+      }
+    },
+    {
+      "id": "parentOf#36",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": ""
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#37",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "unknown-tool"
+        }
+      },
+      "output": {
+        "label": "Tools",
+        "to": "/tools"
+      }
+    },
+    {
+      "id": "parentOf#38",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "reports"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#39",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#40",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": "x"
+        }
+      },
+      "output": {
+        "label": "Scheduled posts",
+        "to": "/posting/scheduled"
+      }
+    },
+    {
+      "id": "parentOf#41",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#42",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "nothing",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#43",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": {
+        "label": "Posting",
+        "to": "/posting"
+      }
+    },
+    {
+      "id": "parentOf#44",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "shield"
+        }
+      },
+      "output": {
+        "label": "Defense",
+        "to": "/defense"
+      }
+    },
+    {
+      "id": "parentOf#45",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "other"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#46",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": ""
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#47",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "missing",
+          "page": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#48",
+      "fn": "parentOf",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc",
+          "page": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "parentOf#49",
+      "fn": "parentOf",
+      "input": {
+        "route": null
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#1",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#2",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#3",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "my board"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#4",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "👍"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#5",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "/"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#6",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "overview?x=1"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#7",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#8",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "reports",
+          "page": "followers"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#9",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#10",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "best-time"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#11",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "archive"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#12",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#13",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "posting"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#14",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "appearance"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#15",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#16",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "missing"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#17",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": null
+        }
+      },
+      "output": "Drafts"
+    },
+    {
+      "id": "postingTitle#18",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "xyz"
+        }
+      },
+      "output": "Drafts"
+    },
+    {
+      "id": "postingTitle#19",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "3lbx2"
+        }
+      },
+      "output": "Drafts"
+    },
+    {
+      "id": "postingTitle#20",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "a/b"
+        }
+      },
+      "output": "Drafts"
+    },
+    {
+      "id": "postingTitle#21",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": null
+        }
+      },
+      "output": "Scheduled posts"
+    },
+    {
+      "id": "postingTitle#22",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "scheduled",
+          "id": "abc"
+        }
+      },
+      "output": "Scheduled posts"
+    },
+    {
+      "id": "postingTitle#23",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": null
+        }
+      },
+      "output": "Weekly schedule"
+    },
+    {
+      "id": "postingTitle#24",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "timers",
+          "id": null
+        }
+      },
+      "output": "Post timers"
+    },
+    {
+      "id": "postingTitle#25",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "posted",
+          "id": null
+        }
+      },
+      "output": "Posted"
+    },
+    {
+      "id": "postingTitle#26",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "templates",
+          "id": null
+        }
+      },
+      "output": "Templates"
+    },
+    {
+      "id": "postingTitle#27",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "library",
+          "id": null
+        }
+      },
+      "output": "Library"
+    },
+    {
+      "id": "postingTitle#28",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#29",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "drafts",
+          "id": "café"
+        }
+      },
+      "output": "Drafts"
+    },
+    {
+      "id": "postingTitle#30",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "compose"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#31",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#32",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "lists"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#33",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "history"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#34",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "日本"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#35",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": "́"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#36",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": ""
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#37",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "tools",
+          "page": "unknown-tool"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#38",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "reports"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#39",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting"
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#40",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "schedule",
+          "id": "x"
+        }
+      },
+      "output": "Weekly schedule"
+    },
+    {
+      "id": "postingTitle#41",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "hub",
+          "id": null
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#42",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "nothing",
+          "id": null
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#43",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "posting",
+          "page": "compose",
+          "id": null
+        }
+      },
+      "output": "Posting"
+    },
+    {
+      "id": "postingTitle#44",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "defense",
+          "page": "shield"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#45",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "intent",
+          "page": "other"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#46",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "settings",
+          "page": ""
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#47",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "missing",
+          "page": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingTitle#48",
+      "fn": "postingTitle",
+      "input": {
+        "route": {
+          "section": "dashboard",
+          "dashboard": "abc",
+          "page": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "postingPath#1",
+      "fn": "postingPath",
+      "input": {
+        "key": "hub"
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "postingPath#2",
+      "fn": "postingPath",
+      "input": {
+        "key": "drafts"
+      },
+      "output": "/posting/drafts"
+    },
+    {
+      "id": "postingPath#3",
+      "fn": "postingPath",
+      "input": {
+        "key": "scheduled"
+      },
+      "output": "/posting/scheduled"
+    },
+    {
+      "id": "postingPath#4",
+      "fn": "postingPath",
+      "input": {
+        "key": "schedule"
+      },
+      "output": "/posting/schedule"
+    },
+    {
+      "id": "postingPath#5",
+      "fn": "postingPath",
+      "input": {
+        "key": "timers"
+      },
+      "output": "/posting/timers"
+    },
+    {
+      "id": "postingPath#6",
+      "fn": "postingPath",
+      "input": {
+        "key": "posted"
+      },
+      "output": "/posting/posted"
+    },
+    {
+      "id": "postingPath#7",
+      "fn": "postingPath",
+      "input": {
+        "key": "templates"
+      },
+      "output": "/posting/templates"
+    },
+    {
+      "id": "postingPath#8",
+      "fn": "postingPath",
+      "input": {
+        "key": "library"
+      },
+      "output": "/posting/library"
+    },
+    {
+      "id": "postingPath#9",
+      "fn": "postingPath",
+      "input": {
+        "key": "compose"
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "postingPath#10",
+      "fn": "postingPath",
+      "input": {
+        "key": "nothing"
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "postingPath#11",
+      "fn": "postingPath",
+      "input": {
+        "key": ""
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "postingPath#12",
+      "fn": "postingPath",
+      "input": {
+        "key": null
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "postingPath#13",
+      "fn": "postingPath",
+      "input": {
+        "key": "Drafts"
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "parsePostingRoute#1",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#2",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": ""
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#3",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": null
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#4",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "//"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#5",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#6",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#7",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#8",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/abc/extra"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#9",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/my%20board"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#10",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/%F0%9F%91%8D"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#11",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/%2F"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#12",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/overview?x=1"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#13",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#14",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports/followers"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#15",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports/followers/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#16",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports/followers/more"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#17",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "//reports//followers//"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#18",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports/%66ollowers"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#19",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/tools"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#20",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/tools/best-time"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#21",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/tools/archive"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#22",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/settings"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#23",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/settings/posting"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#24",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/settings/appearance"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#25",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting"
+      },
+      "output": {
+        "key": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#26",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/"
+      },
+      "output": {
+        "key": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#27",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/hub"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#28",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts"
+      },
+      "output": {
+        "key": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#29",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/"
+      },
+      "output": {
+        "key": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#30",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/xyz"
+      },
+      "output": {
+        "key": "drafts",
+        "id": "xyz"
+      }
+    },
+    {
+      "id": "parsePostingRoute#31",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/3lbx2"
+      },
+      "output": {
+        "key": "drafts",
+        "id": "3lbx2"
+      }
+    },
+    {
+      "id": "parsePostingRoute#32",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/a/b"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#33",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/a%2Fb"
+      },
+      "output": {
+        "key": "drafts",
+        "id": "a/b"
+      }
+    },
+    {
+      "id": "parsePostingRoute#34",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/%64rafts"
+      },
+      "output": {
+        "key": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#35",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/scheduled"
+      },
+      "output": {
+        "key": "scheduled",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#36",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/scheduled/abc"
+      },
+      "output": {
+        "key": "scheduled",
+        "id": "abc"
+      }
+    },
+    {
+      "id": "parsePostingRoute#37",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/schedule"
+      },
+      "output": {
+        "key": "schedule",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#38",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/timers"
+      },
+      "output": {
+        "key": "timers",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#39",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/posted"
+      },
+      "output": {
+        "key": "posted",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#40",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/templates"
+      },
+      "output": {
+        "key": "templates",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#41",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/library"
+      },
+      "output": {
+        "key": "library",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#42",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/compose"
+      },
+      "output": {
+        "key": "compose",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#43",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/compose/"
+      },
+      "output": {
+        "key": "compose",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#44",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/compose/extra"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#45",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/nothing"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#46",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/Drafts"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#47",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/drafts/caf%C3%A9"
+      },
+      "output": {
+        "key": "drafts",
+        "id": "café"
+      }
+    },
+    {
+      "id": "parsePostingRoute#48",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/POSTING"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#49",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#50",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent/compose"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#51",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent/compose/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#52",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent/compose/x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#53",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent/other"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#54",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/intent/Compose"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#55",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#56",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#57",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/scan"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#58",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/lists"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#59",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/history"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#60",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/lists/x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#61",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/shield"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#62",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/defense/%6Cists"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#63",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/nowhere"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#64",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/nowhere/at/all"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#65",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "reports"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#66",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "reports/followers"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#67",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "posting/drafts"
+      },
+      "output": {
+        "key": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#68",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parsePostingRoute#69",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/bad/%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parsePostingRoute#70",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/reports/%zz"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parsePostingRoute#71",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/posting/%C3%28"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parsePostingRoute#72",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/%E0%A4%A"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "parsePostingRoute#73",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/emoji/👍🏽"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#74",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/dashboard/日本"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#75",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/settings/́"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#76",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/a/́b"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#77",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": "/tools"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#78",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting"
+        ]
+      },
+      "output": {
+        "key": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#79",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "scheduled",
+          "abc"
+        ]
+      },
+      "output": {
+        "key": "scheduled",
+        "id": "abc"
+      }
+    },
+    {
+      "id": "parsePostingRoute#80",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "drafts"
+        ]
+      },
+      "output": {
+        "key": "drafts",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#81",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "drafts",
+          "a",
+          "b"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#82",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "compose"
+        ]
+      },
+      "output": {
+        "key": "compose",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#83",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "compose",
+          "x"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#84",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          ""
+        ]
+      },
+      "output": {
+        "key": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#85",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "",
+          "x"
+        ]
+      },
+      "output": {
+        "key": "hub",
+        "id": null
+      }
+    },
+    {
+      "id": "parsePostingRoute#86",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "hub"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#87",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "posting",
+          "timers",
+          ""
+        ]
+      },
+      "output": {
+        "key": "timers",
+        "id": ""
+      }
+    },
+    {
+      "id": "parsePostingRoute#88",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": [
+          "tools",
+          "drafts"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostingRoute#89",
+      "fn": "parsePostingRoute",
+      "input": {
+        "path": []
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#1",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense"
+        ]
+      },
+      "output": {
+        "key": "scan"
+      }
+    },
+    {
+      "id": "parseDefenseRoute#2",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "lists"
+        ]
+      },
+      "output": {
+        "key": "lists"
+      }
+    },
+    {
+      "id": "parseDefenseRoute#3",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "history"
+        ]
+      },
+      "output": {
+        "key": "history"
+      }
+    },
+    {
+      "id": "parseDefenseRoute#4",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "scan"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#5",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "shield"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#6",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "lists",
+          "x"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#7",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          "Lists"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#8",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "defense",
+          ""
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#9",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "posting"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#10",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": [
+          "Defense"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "parseDefenseRoute#11",
+      "fn": "parseDefenseRoute",
+      "input": {
+        "parts": []
+      },
+      "output": null
+    }
+  ]
+}

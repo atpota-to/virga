@@ -1,0 +1,1847 @@
+{
+  "name": "insights-early.keep",
+  "sources": [
+    "src/tools/keep.js"
+  ],
+  "cases": [
+    {
+      "id": "keepKey#1",
+      "fn": "keepKey",
+      "input": {
+        "did": "did:plc:abc",
+        "name": "cleanup"
+      },
+      "output": "virga:keep:cleanup:did:plc:abc"
+    },
+    {
+      "id": "keepKey#2",
+      "fn": "keepKey",
+      "input": {
+        "did": "did:plc:abc",
+        "name": "followback"
+      },
+      "output": "virga:keep:followback:did:plc:abc"
+    },
+    {
+      "id": "keepKey#3",
+      "fn": "keepKey",
+      "input": {
+        "did": "did:web:example.com",
+        "name": "cleanup"
+      },
+      "output": "virga:keep:cleanup:did:web:example.com"
+    },
+    {
+      "id": "keepKey#4",
+      "fn": "keepKey",
+      "input": {
+        "did": "",
+        "name": ""
+      },
+      "output": "virga:keep::"
+    },
+    {
+      "id": "keepKey#5",
+      "fn": "keepKey",
+      "input": {
+        "did": "did:plc:a:b",
+        "name": "x:y"
+      },
+      "output": "virga:keep:x:y:did:plc:a:b"
+    },
+    {
+      "id": "keepKey#6",
+      "fn": "keepKey",
+      "input": {
+        "did": "did:plc:é",
+        "name": "naïve 👍"
+      },
+      "output": "virga:keep:naïve 👍:did:plc:é"
+    },
+    {
+      "id": "useKeepList#1",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": null,
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": null
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#2",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": ""
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#3",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#4",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"did:plc:a\",\"did:plc:b\"]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#5",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"did:plc:b\",\"did:plc:a\",\"did:plc:b\"]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:a\",\"did:plc:b\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:a\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#6",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"did:plc:a\",1,null,{\"x\":1},\"did:plc:c\",[\"did:plc:b\"]]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",1,null,{\"x\":1},\"did:plc:c\",[\"did:plc:b\"]]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:c\",\"did:plc:b\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:c\",\"did:plc:b\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:c\",\"did:plc:b\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:c\",\"did:plc:b\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#7",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "not json",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "not json"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#8",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "{\"did:plc:a\":true}",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "{\"did:plc:a\":true}"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#9",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "\"did:plc:a\"",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "\"did:plc:a\""
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#10",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "5",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "5"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#11",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "null",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "null"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "useKeepList#12",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "cleanup",
+        "stored": "[\"did:web:x.example\",\"\", \"\\u00e9\"]",
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:b",
+              "did:plc:a",
+              "did:plc:c"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:a",
+              "did:plc:zz"
+            ]
+          },
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": []
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "add",
+            "dids": []
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:cleanup:did:plc:me",
+        "states": [
+          {
+            "size": 3,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\", \"\\u00e9\"]"
+          },
+          {
+            "size": 4,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\",\"é\",\"did:plc:a\"]"
+          },
+          {
+            "size": 6,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\",\"é\",\"did:plc:a\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 5,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\",\"é\",\"did:plc:b\",\"did:plc:c\"]"
+          },
+          {
+            "size": 6,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\",\"é\",\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 6,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": true,
+              "did:plc:c": true,
+              "did:web:x.example": true,
+              "": true
+            },
+            "stored": "[\"did:web:x.example\",\"\",\"é\",\"did:plc:b\",\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          },
+          {
+            "size": 0,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[]"
+          }
+        ],
+        "others": {}
+      }
+    },
+    {
+      "id": "other-account-and-tool-untouched",
+      "fn": "useKeepList",
+      "input": {
+        "did": "did:plc:me",
+        "name": "followback",
+        "stored": "[\"did:plc:c\"]",
+        "others": {
+          "virga:keep:cleanup:did:plc:me": "[\"did:plc:a\"]",
+          "virga:keep:followback:did:plc:other": "[\"did:plc:b\"]"
+        },
+        "steps": [
+          {
+            "op": "add",
+            "dids": [
+              "did:plc:a"
+            ]
+          },
+          {
+            "op": "remove",
+            "dids": [
+              "did:plc:c"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "key": "virga:keep:followback:did:plc:me",
+        "states": [
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": false,
+              "did:plc:b": false,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:c\"]"
+          },
+          {
+            "size": 2,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": true,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:c\",\"did:plc:a\"]"
+          },
+          {
+            "size": 1,
+            "has": {
+              "did:plc:a": true,
+              "did:plc:b": false,
+              "did:plc:c": false,
+              "did:web:x.example": false,
+              "": false
+            },
+            "stored": "[\"did:plc:a\"]"
+          }
+        ],
+        "others": {
+          "virga:keep:cleanup:did:plc:me": "[\"did:plc:a\"]",
+          "virga:keep:followback:did:plc:other": "[\"did:plc:b\"]"
+        }
+      }
+    }
+  ]
+}

@@ -5,20 +5,44 @@
   "summary": "Routes, dashboards, reports, tools, sharing a chart, settings sections and the command palette.",
   "files": {
     "src/dashboards/catalog.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Dashboards/Catalog.swift"
+      ],
+      "fixtures": [
+        "insights-early.catalog"
+      ],
+      "synced": "72a501e76bf6"
     },
     "src/dashboards/layouts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Dashboards/Layouts.swift"
+      ],
+      "fixtures": [
+        "insights-early.layouts"
+      ],
+      "synced": "bde558a77e4a"
     },
     "src/defense/routes.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Defense/DefenseRoutes.swift"
+      ],
+      "fixtures": [
+        "insights-early.routes"
+      ],
+      "synced": "29dd25e5b420"
     },
     "src/posting/routes.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Posting/PostingRoutes.swift"
+      ],
+      "fixtures": [
+        "insights-early.routes"
+      ],
+      "synced": "19dcb674517d"
     },
     "src/reports/annotations.js": {
       "status": "pending",
@@ -29,20 +53,38 @@
       "swift": []
     },
     "src/reports/registry.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportsRegistry.swift"
+      ],
+      "fixtures": [
+        "insights-early.registries"
+      ],
+      "synced": "e4c9cfb2e819"
     },
     "src/reports/useAnnotations.js": {
       "status": "pending",
       "swift": []
     },
     "src/settings/radioKeys.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Settings/RadioKeys.swift"
+      ],
+      "fixtures": [
+        "insights-early.settings"
+      ],
+      "synced": "923da1f76cd8"
     },
     "src/settings/sections.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Settings/SettingsSections.swift"
+      ],
+      "fixtures": [
+        "insights-early.settings"
+      ],
+      "synced": "943739766b94"
     },
     "src/share/chartImage.js": {
       "status": "pending",
@@ -53,28 +95,60 @@
       "swift": []
     },
     "src/shell/commands.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Shell/Commands.swift"
+      ],
+      "fixtures": [
+        "insights-early.commands"
+      ],
+      "synced": "0d6f37bbb1a8"
     },
     "src/shell/routes.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Shell/ShellRoutes.swift"
+      ],
+      "fixtures": [
+        "insights-early.routes"
+      ],
+      "synced": "0d794d37155e"
     },
     "src/shell/shortcuts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Shell/Shortcuts.swift"
+      ],
+      "fixtures": [
+        "insights-early.shortcuts"
+      ],
+      "note": "Every function is ported, over values instead of the DOM: isTypingTarget, isNewPostShortcut, isMacPlatform, paletteShortcutLabel, paletteShortcutAria and isPaletteShortcut read a KeyEvent, its KeyTarget and a Navigator (Shortcuts.swift). What the web reads from the document (the keydown event, event.target as an element, navigator.platform) is UI: VirgaUI's shell (the Shell.jsx port) turns a hardware keyboard's key presses (UIKeyCommand / .onKeyPress) and where focus is into those values, and works out inDialog from what it presents.",
+      "synced": "4c893aae30dd"
     },
     "src/tools/interactionModel.js": {
       "status": "pending",
       "swift": []
     },
     "src/tools/keep.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/Keep.swift"
+      ],
+      "fixtures": [
+        "insights-early.keep"
+      ],
+      "synced": "7d386d500a44"
     },
     "src/tools/registry.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Tools/ToolsRegistry.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Components/AccessBadge.swift"
+      ],
+      "fixtures": [
+        "insights-early.registries"
+      ],
+      "synced": "2db4cac86133"
     }
   }
 }
