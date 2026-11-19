@@ -95,48 +95,66 @@ public enum Parity {
     path: String = "$",
     strictNulls: Bool = false
   ) -> String? {
-    switch (actual, expected) {
-    case (.number(let a), .number(let b)):
-      if a == b { return nil }
-      let scale = Swift.max(1, abs(a), abs(b))
-      return abs(a - b) <= 1e-9 * scale ? nil : "\(path): \(a) ≠ expected \(b)"
-    case (.object(let a), .object(let b)):
-      // Dictionary keys match by canonical equivalence; JavaScript's keys by
-      // code unit.
-      for key in a.keys.sorted() where b[key] != nil {
-        if !b.keys.contains(where: { $0.jsEquals(key) }) {
-          return "\(path): key \(key.debugDescription) is not, code unit for code unit, the expected key"
-        }
-      }
-      for key in Set(a.keys).union(b.keys).sorted() {
-        let left = a[key] ?? .null
-        let right = b[key] ?? .null
-        if strictNulls, (a[key] == nil) != (b[key] == nil) {
-          return "\(path).\(key): present on one side only"
-        }
-        if let difference = diff(left, right, path: "\(path).\(key)", strictNulls: strictNulls) {
-          return difference
-        }
-      }
-      return nil
-    case (.array(let a), .array(let b)):
-      if a.count != b.count {
-        return "\(path): \(a.count) elements ≠ expected \(b.count)\n  actual:   \(short(actual))\n  expected: \(short(expected))"
-      }
-      for (index, pair) in zip(a, b).enumerated() {
-        if let difference = diff(pair.0, pair.1, path: "\(path)[\(index)]", strictNulls: strictNulls) {
-          return difference
-        }
-      }
-      return nil
-    case (.string(let a), .string(let b)):
-      // By UTF-16 code unit, as JavaScript compares strings. Swift's String
-      // == is canonical equivalence, which would let an NFC/NFD difference
-      // (or the Kelvin sign for K) through.
-      return a.jsEquals(b) ? nil : "\(path): \(short(actual)) ≠ expected \(short(expected))"
-    default:
-      return actual == expected ? nil : "\(path): \(short(actual)) ≠ expected \(short(expected))"
+    // An explicit stack, not recursion: fixtures nest deeply (JSON.parse's,
+    // DAG-CBOR's), and a recursive walk overflowed the small stacks Swift
+    // concurrency's threads have on iOS, taking the whole test process
+    // down. Children are pushed in reverse, so the walk is the same
+    // depth-first order as a recursive one and the first difference
+    // reported is the same.
+    enum Item {
+      case pair(JSONValue, JSONValue, String)
+      case oneSided(String)
     }
+    var stack: [Item] = [.pair(actual, expected, path)]
+    while let item = stack.popLast() {
+      guard case .pair(let actual, let expected, let path) = item else {
+        if case .oneSided(let path) = item { return "\(path): present on one side only" }
+        continue
+      }
+      switch (actual, expected) {
+      case (.number(let a), .number(let b)):
+        if a == b { continue }
+        let scale = Swift.max(1, abs(a), abs(b))
+        if abs(a - b) > 1e-9 * scale { return "\(path): \(a) ≠ expected \(b)" }
+      case (.object(let a), .object(let b)):
+        // Dictionary keys match by canonical equivalence; JavaScript's keys
+        // by code unit.
+        for key in a.keys.sorted() where b[key] != nil {
+          if !b.keys.contains(where: { $0.jsEquals(key) }) {
+            return "\(path): key \(key.debugDescription) is not, code unit for code unit, the expected key"
+          }
+        }
+        var children: [Item] = []
+        for key in Set(a.keys).union(b.keys).sorted() {
+          if strictNulls, (a[key] == nil) != (b[key] == nil) {
+            children.append(.oneSided("\(path).\(key)"))
+          } else {
+            children.append(.pair(a[key] ?? .null, b[key] ?? .null, "\(path).\(key)"))
+          }
+        }
+        stack.append(contentsOf: children.reversed())
+      case (.array(let a), .array(let b)):
+        if a.count != b.count {
+          return "\(path): \(a.count) elements ≠ expected \(b.count)\n  actual:   \(short(actual))\n  expected: \(short(expected))"
+        }
+        for index in a.indices.reversed() {
+          stack.append(.pair(a[index], b[index], "\(path)[\(index)]"))
+        }
+      case (.string(let a), .string(let b)):
+        // By UTF-16 code unit, as JavaScript compares strings. Swift's
+        // String == is canonical equivalence, which would let an NFC/NFD
+        // difference (or the Kelvin sign for K) through.
+        if !a.jsEquals(b) { return "\(path): \(short(actual)) ≠ expected \(short(expected))" }
+      case (.null, .null):
+        continue
+      case (.bool(let a), .bool(let b)):
+        if a != b { return "\(path): \(short(actual)) ≠ expected \(short(expected))" }
+      default:
+        // Different kinds of value.
+        return "\(path): \(short(actual)) ≠ expected \(short(expected))"
+      }
+    }
+    return nil
   }
 
   /// `diff` for any Encodable value against a fixture's expected JSON.
@@ -153,8 +171,46 @@ public enum Parity {
     }
   }
 
+  /// A preview of `value` for a failure message: JSON, at most 400
+  /// characters, written with an explicit stack (a deep value's jsonString
+  /// would recurse as deep as it nests).
   private static func short(_ value: JSONValue) -> String {
-    let text = value.jsonString()
-    return text.count > 400 ? String(text.prefix(400)) + "…" : text
+    enum Token {
+      case value(JSONValue)
+      case text(String)
+    }
+    let limit = 400
+    var out = ""
+    var stack: [Token] = [.value(value)]
+    while let token = stack.popLast(), out.count <= limit {
+      switch token {
+      case .text(let text):
+        out += text
+      case .value(let value):
+        switch value {
+        case .null: out += "null"
+        case .bool(let b): out += b ? "true" : "false"
+        case .number(let n): out += JSNumber.format(n)
+        case .string(let text): out += text.jsJSONQuoted
+        case .array(let items):
+          out += "["
+          stack.append(.text("]"))
+          for index in items.indices.reversed() {
+            stack.append(.value(items[index]))
+            if index > 0 { stack.append(.text(",")) }
+          }
+        case .object(let members):
+          out += "{"
+          stack.append(.text("}"))
+          let keys = members.keys.sorted()
+          for (index, key) in keys.enumerated().reversed() {
+            stack.append(.value(members[key]!))
+            stack.append(.text(key.jsJSONQuoted + ":"))
+            if index > 0 { stack.append(.text(",")) }
+          }
+        }
+      }
+    }
+    return out.count > limit || !stack.isEmpty ? String(out.prefix(limit)) + "…" : out
   }
 }

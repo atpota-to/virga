@@ -13,16 +13,27 @@ ios="$(cd "$here/.." && pwd)"
 for bundle in "$ios"/build/*.xcresult; do
   [ -d "$bundle" ] || continue
   echo "::group::Failures in $(basename "$bundle")"
-  if ! xcrun xcresulttool get test-results summary --path "$bundle" --format json 2>/dev/null | python3 -c '
+  summary="$(mktemp)"
+  if xcrun xcresulttool get test-results summary --path "$bundle" --format json > "$summary" 2>/dev/null; then
+    python3 - "$summary" <<'PY'
 import json, sys
-summary = json.load(sys.stdin)
+from collections import Counter
+summary = json.load(open(sys.argv[1]))
+print("%s: %s passed, %s failed" % (summary.get("result"), summary.get("passedTests"), summary.get("failedTests")))
 failures = summary.get("testFailures", [])
-print(f"{summary.get(\"result\", \"?\")}: {summary.get(\"passedTests\", \"?\")} passed, {summary.get(\"failedTests\", \"?\")} failed")
+crashed = [f for f in failures if f.get("failureText", "").startswith("Test crashed")]
+for text, count in Counter(f.get("failureText", "") for f in crashed).items():
+    targets = sorted({f.get("targetName", "") for f in crashed if f.get("failureText") == text})
+    print("%d tests: %s (in %s; see the crash report below)" % (count, text, ", ".join(targets)))
 for f in failures:
-    print(f"- {f.get(\"targetName\", \"\")} {f.get(\"testName\", \"\")}: {f.get(\"failureText\", \"\")}")
-'; then
+    if f in crashed:
+        continue
+    print("- %s %s: %s" % (f.get("targetName", ""), f.get("testIdentifierString", f.get("testName", "")), f.get("failureText", "")))
+PY
+  else
     xcrun xcresulttool get test-results summary --path "$bundle" 2>&1 | head -200
   fi
+  rm -f "$summary"
   echo "::endgroup::"
 done
 
@@ -50,9 +61,17 @@ for thread in crash.get("threads", []):
     if not thread.get("triggered"):
         continue
     print("crashed thread:", thread.get("name", ""), thread.get("queue", ""))
-    for frame in thread.get("frames", [])[:60]:
-        image = images[frame["imageIndex"]].get("name", "?") if frame.get("imageIndex", -1) < len(images) else "?"
-        print(f"  {image:30} {frame.get('symbol', hex(frame.get('imageOffset', 0)))} + {frame.get('symbolLocation', 0)}")
+    frames = thread.get("frames", [])
+    # A deep recursion's cause is at the bottom of the stack: show both ends.
+    shown = frames if len(frames) <= 70 else frames[:40] + [None] + frames[-30:]
+    for frame in shown:
+        if frame is None:
+            print("  ... %d frames ..." % (len(frames) - 70))
+            continue
+        index = frame.get("imageIndex", -1)
+        image = images[index].get("name", "?") if 0 <= index < len(images) else "?"
+        symbol = frame.get("symbol", hex(frame.get("imageOffset", 0)))
+        print("  %-30s %s + %s" % (image, symbol, frame.get("symbolLocation", 0)))
 PY
   echo "::endgroup::"
 done < <(find "$HOME/Library/Logs/DiagnosticReports" -name '*.ips' -mmin -120 2>/dev/null)
