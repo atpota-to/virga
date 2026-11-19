@@ -1,0 +1,1541 @@
+{
+  "name": "repo.recordCid",
+  "sources": [
+    "src/posting/lib/recordCid.js"
+  ],
+  "cases": [
+    {
+      "id": "pds: post with record embed, facets, unicode",
+      "fn": "computeRecordCid",
+      "input": {
+        "expect": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu",
+        "record": {
+          "text": "Personnel news: @toni.bsky.team is dropping the “interim” from his title and will serve as our permanent CEO!",
+          "$type": "app.bsky.feed.post",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "cid": "bafyreigov2ns6elnyiksqufzr6ctfg4i4eiodharfupyoc5sq23tvyew4a",
+              "uri": "at://did:plc:cwf4mmm7mpzistinx3ox2zhj/app.bsky.feed.post/3mqcp425edfgx"
+            }
+          },
+          "langs": [
+            "en"
+          ],
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "index": {
+                "byteEnd": 31,
+                "byteStart": 16
+              },
+              "features": [
+                {
+                  "did": "did:plc:cwf4mmm7mpzistinx3ox2zhj",
+                  "$type": "app.bsky.richtext.facet#mention"
+                }
+              ]
+            }
+          ],
+          "createdAt": "2026-07-10T17:43:30.972Z"
+        }
+      },
+      "output": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+    },
+    {
+      "id": "pds: post with an image blob over 1MB",
+      "fn": "computeRecordCid",
+      "input": {
+        "expect": "bafyreibowb4zpdgv74mzhpn3w433q4affyql5jd6c43tluinucj4q2jdzy",
+        "record": {
+          "text": "v1.127 is live! We're rolling out improvements to search over the coming weeks. You'll get more relevant results and more ways to find what you're looking for. \n\nThe new \"Filters\" button lets you query and filter by keywords, people, date range, language and more. You can even share your searches!",
+          "$type": "app.bsky.feed.post",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": [
+              {
+                "alt": "A rendering of the new \"Filters\" button and option fields, which allow you to query and filter by keywords, people, date range, language and more.",
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 1554074
+                },
+                "aspectRatio": {
+                  "width": 2140,
+                  "height": 2000
+                }
+              }
+            ]
+          },
+          "langs": [
+            "en"
+          ],
+          "createdAt": "2026-07-09T19:50:16.599Z"
+        }
+      },
+      "output": "bafyreibowb4zpdgv74mzhpn3w433q4affyql5jd6c43tluinucj4q2jdzy"
+    },
+    {
+      "id": "pds: reply with an image blob",
+      "fn": "computeRecordCid",
+      "input": {
+        "expect": "bafyreib3xpze6k6lagrwhjn75wj4daeaj73hvhhjkmt3d5umm6qkqba5fa",
+        "record": {
+          "text": "wait a minute",
+          "$type": "app.bsky.feed.post",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": [
+              {
+                "alt": "two spidermen pointing at each other",
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 161421
+                },
+                "aspectRatio": {
+                  "width": 686,
+                  "height": 386
+                }
+              }
+            ]
+          },
+          "langs": [
+            "en"
+          ],
+          "reply": {
+            "root": {
+              "cid": "bafyreigjxsxzw2ywmz3uu5pr33eg5j7xqwzarpjthc4nxmpn3cy4v3vopu",
+              "uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mpoezgevvc23"
+            },
+            "parent": {
+              "cid": "bafyreifzkundbxh3docpjjd5oyffcxyjk63ha7zoht6iy4y6bjvvct5zgy",
+              "uri": "at://did:plc:xxj5ugkba3k6ftpmcl67vv6r/app.bsky.feed.post/3mpog44tffs2r"
+            }
+          },
+          "createdAt": "2026-07-02T17:21:51.498Z"
+        }
+      },
+      "output": "bafyreib3xpze6k6lagrwhjn75wj4daeaj73hvhhjkmt3d5umm6qkqba5fa"
+    },
+    {
+      "id": "pds vector with undefined fields",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "text": "Personnel news: @toni.bsky.team is dropping the “interim” from his title and will serve as our permanent CEO!",
+          "$type": "app.bsky.feed.post",
+          "embed": {
+            "$type": "app.bsky.embed.record",
+            "record": {
+              "cid": "bafyreigov2ns6elnyiksqufzr6ctfg4i4eiodharfupyoc5sq23tvyew4a",
+              "uri": "at://did:plc:cwf4mmm7mpzistinx3ox2zhj/app.bsky.feed.post/3mqcp425edfgx"
+            }
+          },
+          "langs": [
+            "en"
+          ],
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "index": {
+                "byteEnd": 31,
+                "byteStart": 16
+              },
+              "features": [
+                {
+                  "did": "did:plc:cwf4mmm7mpzistinx3ox2zhj",
+                  "$type": "app.bsky.richtext.facet#mention"
+                }
+              ]
+            }
+          ],
+          "createdAt": "2026-07-10T17:43:30.972Z"
+        }
+      },
+      "output": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+    },
+    {
+      "id": "empty post",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreic3547eul2dqeaeaduunxzf4vmj7tlpjkovr4fgoks4p3hwj4sqwu"
+    },
+    {
+      "id": "plain text",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "hello world",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreihudzu7472jsx55pkh7gyzm4kaffmggkt3ok34lnktrwxtng27m4e"
+    },
+    {
+      "id": "emoji and zwj",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "👨‍👩‍👧‍👦 🏳️‍🌈 👍🏽 🇬🇧",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreidus77ce54tj2mmknisctsmn7xs632mvki6u2nmmsamtjzuz3qwh4"
+    },
+    {
+      "id": "cjk",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "日本語のテキスト、한국어, 中文",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreics3ztslhszc6eethp5qn6cj3dkzuslokjji2hvrr7gvjcv5l4vta"
+    },
+    {
+      "id": "rtl and combining",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "مرحبا שלום é ä",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreieowdtrf2o6ivwq4rx3at6z7k6j4gdck4oka3j4dcbory2jyhvcp4"
+    },
+    {
+      "id": "nul and controls",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "a\u0000b\u0007c\td\ne\r\n",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreiefyulwaewlylo4wstzr2uhebnf22i44qejxudsyfe5xbek57scfa"
+    },
+    {
+      "id": "bom",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "﻿bom",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreidjpadpzcav4ktsmxxcpm42wns525xczwge2mwjajgdzr337htwee"
+    },
+    {
+      "id": "long text",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreig7rm5n5pntmuesspltxilua3akdrwrqrvbp2naql7uqegmxhcifi"
+    },
+    {
+      "id": "long unicode text",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ünïcödé ",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreietv53eo5jc2rk4g3j5rfxc5gznwohfwhhc2aw74a6d53siqbvnjm"
+    },
+    {
+      "id": "facets of every kind",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "@alice.test https://example.com #tag",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 11
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:alice"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 12,
+                "byteEnd": 31
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 32,
+                "byteEnd": 36
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "tag"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "bafyreiaf3ukfbl3u5den3jvg2blrpxagspk34pdqz5h5udiuptvsfjw7je"
+    },
+    {
+      "id": "external embed with thumb",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "a link",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+              "uri": "https://example.com/a?b=c&d=é",
+              "title": "Title “quoted”",
+              "description": "",
+              "thumb": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                },
+                "mimeType": "image/png",
+                "size": 9
+              }
+            }
+          }
+        }
+      },
+      "output": "bafyreifvy7szddpphfk6t5xczapbmtpi6ur6wqkoqiu5tjybznncj2euze"
+    },
+    {
+      "id": "record with media",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "embed": {
+            "$type": "app.bsky.embed.recordWithMedia",
+            "record": {
+              "$type": "app.bsky.embed.record",
+              "record": {
+                "uri": "at://did:plc:x/app.bsky.feed.post/3k2",
+                "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+              }
+            },
+            "media": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "alt": "one",
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 1234
+                  }
+                },
+                {
+                  "alt": "two",
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                    },
+                    "mimeType": "image/webp",
+                    "size": 0
+                  },
+                  "aspectRatio": {
+                    "width": 1,
+                    "height": 1
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "output": "bafyreia4bgrbixt6frondvwyzqs4e6ieibprhouuxn2x2jfms6p37n24y4"
+    },
+    {
+      "id": "video",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "embed": {
+            "$type": "app.bsky.embed.video",
+            "video": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+              },
+              "mimeType": "video/mp4",
+              "size": 50000000
+            },
+            "captions": [
+              {
+                "lang": "en",
+                "file": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "text/vtt",
+                  "size": 120
+                }
+              }
+            ],
+            "alt": "a video",
+            "aspectRatio": {
+              "width": 16,
+              "height": 9
+            }
+          }
+        }
+      },
+      "output": "bafyreifrd7lvu3mnjzvut26vhdw5n4zxlpvpf5f5uo5cn72ffkpqyhcfxq"
+    },
+    {
+      "id": "self labels and tags",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "text": "nsfw",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "labels": {
+            "$type": "com.atproto.label.defs#selfLabels",
+            "values": [
+              {
+                "val": "porn"
+              }
+            ]
+          },
+          "tags": [
+            "one",
+            "two"
+          ],
+          "langs": [
+            "en",
+            "ja",
+            "pt-BR"
+          ]
+        }
+      },
+      "output": "bafyreid4w7eofstyp7g3g3ubbbcemqiqiv7lebuiv7bl37cekq6uk2ffkq"
+    },
+    {
+      "id": "like",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.like",
+          "subject": {
+            "uri": "at://did:plc:x/app.bsky.feed.post/3k2",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreig4kzeau732son62sehjpsnqov5tf7jwcamj7vqwb7e57jonbzfvm"
+    },
+    {
+      "id": "repost via",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.repost",
+          "subject": {
+            "uri": "at://did:plc:x/app.bsky.feed.post/3k2",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "via": {
+            "uri": "at://did:plc:y/app.bsky.feed.repost/3k3",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreig2l3fxgtqw3sbdqrt6l6qzf5mhmlx7ifxjeqolabm5w4huvdwn54"
+    },
+    {
+      "id": "follow",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.graph.follow",
+          "subject": "did:plc:x",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreigomdckvgflhfkpqpsmomlweyu3hicluqwfmx4ab56caaoorbwo5a"
+    },
+    {
+      "id": "block",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.graph.block",
+          "subject": "did:plc:x",
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreiefx34jnbsa3jtyxg7jiuweep7ge6cva3y7y2ebi5dqrdngjbxj6i"
+    },
+    {
+      "id": "threadgate",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.threadgate",
+          "post": "at://did:plc:x/app.bsky.feed.post/3k2",
+          "allow": [
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:x/app.bsky.graph.list/3k"
+            }
+          ],
+          "hiddenReplies": [],
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreianmbv632b3i5n3itppy3j46db2hkrxh4s4mi3rq3q2vuxcdmzaji"
+    },
+    {
+      "id": "postgate",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.feed.postgate",
+          "post": "at://did:plc:x/app.bsky.feed.post/3k2",
+          "detachedEmbeddingUris": [],
+          "embeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ],
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreifkau2yd3oi7jdkqznq3kwqjlh6ljuq6ki2xj2hengbk4viorjg3m"
+    },
+    {
+      "id": "profile",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.actor.profile",
+          "displayName": "Ünïcödé ✨",
+          "description": "line one\nline two",
+          "avatar": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+            },
+            "mimeType": "image/png",
+            "size": 1
+          },
+          "banner": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+            },
+            "mimeType": "image/jpeg",
+            "size": 2
+          },
+          "pinnedPost": {
+            "uri": "at://did:plc:x/app.bsky.feed.post/3k2",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          }
+        }
+      },
+      "output": "bafyreibzqzsyy26auilsggc7m6dtoizkpdw5pej2mspjryltyaqnenciee"
+    },
+    {
+      "id": "list and listitem shapes",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "app.bsky.graph.list",
+          "purpose": "app.bsky.graph.defs#modlist",
+          "name": "Mods",
+          "descriptionFacets": [],
+          "createdAt": "2026-03-15T12:00:00.000Z"
+        }
+      },
+      "output": "bafyreiafjbictgmearqsq22myainhn7qsmvwlzkr3rgyh5n6ycdyooxlo4"
+    },
+    {
+      "id": "integers",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "a": 0,
+          "b": -1,
+          "c": 23,
+          "d": 24,
+          "e": 255,
+          "f": 65536,
+          "g": 4294967296
+        }
+      },
+      "output": "bafyreifm6yqchled4hari4ekhwywafk5mb3k2hfqmjts2wi5av3rev3fh4"
+    },
+    {
+      "id": "largest integers",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "max": 9007199254740991,
+          "min": -9007199254740991
+        }
+      },
+      "output": "bafyreibw7wcmddy5w245wiol4xiljtd53nvodd563jhow5lxje2wqprnka"
+    },
+    {
+      "id": "floats",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "half": 0.5,
+          "tiny": 1e-7,
+          "pi": 3.141592653589793
+        }
+      },
+      "output": "bafyreif44p2nbaokg4slgjhd2hqzqvvm6apbamxdf4hlykatdx6danxpda"
+    },
+    {
+      "id": "negative zero",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "z": 0
+        }
+      },
+      "output": "bafyreig7c7bqinlhdev5lpi26mpj5gmxkmdeiwqusm3dlaffhzqytlayzm"
+    },
+    {
+      "id": "booleans and null",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "t": true,
+          "f": false,
+          "n": null
+        }
+      },
+      "output": "bafyreifv6nuumkc4yfszzsvejkhmobva3w5ytesnqkdn3izuxd3564dru4"
+    },
+    {
+      "id": "nested arrays",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "a": [
+            [
+              []
+            ],
+            [
+              [
+                1,
+                [
+                  2,
+                  [
+                    3
+                  ]
+                ]
+              ]
+            ],
+            [
+              {},
+              []
+            ]
+          ]
+        }
+      },
+      "output": "bafyreicxp2v3vxdq7g37j52md3icex2ovrulya37hm5d3qdnaamey3gsva"
+    },
+    {
+      "id": "empty objects",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "a": {},
+          "b": {
+            "c": {}
+          },
+          "d": [
+            {}
+          ]
+        }
+      },
+      "output": "bafyreicpjxrdaaa227v3vfjgbikqvf2j53pq4njghdlidtoaeno2dbvlk4"
+    },
+    {
+      "id": "empty record",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {}
+      },
+      "output": "bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua"
+    },
+    {
+      "id": "unicode keys",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "é": 1,
+          "z": 2,
+          "日本": 3,
+          "𐀀": 4,
+          "｡": 5,
+          "aa": 6
+        }
+      },
+      "output": "bafyreidgkmpzfqrnwam6jj5ceqnk7fdkmxqsojqsytdkzjfnktqfzdl7py"
+    },
+    {
+      "id": "many keys",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "key0": 0,
+          "key37": 1,
+          "key74": 2,
+          "key10": 3,
+          "key47": 4,
+          "key84": 5,
+          "key20": 6,
+          "key57": 7,
+          "key94": 8,
+          "key30": 9,
+          "key67": 10,
+          "key3": 11,
+          "key40": 12,
+          "key77": 13,
+          "key13": 14,
+          "key50": 15,
+          "key87": 16,
+          "key23": 17,
+          "key60": 18,
+          "key97": 19,
+          "key33": 20,
+          "key70": 21,
+          "key6": 22,
+          "key43": 23,
+          "key80": 24,
+          "key16": 25,
+          "key53": 26,
+          "key90": 27,
+          "key26": 28,
+          "key63": 29,
+          "key100": 30,
+          "key36": 31,
+          "key73": 32,
+          "key9": 33,
+          "key46": 34,
+          "key83": 35,
+          "key19": 36,
+          "key56": 37,
+          "key93": 38,
+          "key29": 39,
+          "key66": 40,
+          "key2": 41,
+          "key39": 42,
+          "key76": 43,
+          "key12": 44,
+          "key49": 45,
+          "key86": 46,
+          "key22": 47,
+          "key59": 48,
+          "key96": 49
+        }
+      },
+      "output": "bafyreib7avbk23rmiplozg3kzo424uwbcbsugsqzptud5t4axoiorwxm44"
+    },
+    {
+      "id": "same-length keys",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ab": 1,
+          "ba": 2,
+          "aB": 3,
+          "Ab": 4,
+          "a-": 5,
+          "a_": 6
+        }
+      },
+      "output": "bafyreibj2lc7b753mh5ewshnwt37naavlokrdycohebvfrqjmnb4ulrtoq"
+    },
+    {
+      "id": "bytes",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "sig": {
+            "$bytes": "AQIDBAUGBwg"
+          }
+        }
+      },
+      "output": "bafyreib56nf3kyp5qhltqyb4arhfqr46z75vpleuaer66ey3komss5ngp4"
+    },
+    {
+      "id": "bytes padded",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "sig": {
+            "$bytes": "AQIDBAUGBwg="
+          }
+        }
+      },
+      "output": "bafyreib56nf3kyp5qhltqyb4arhfqr46z75vpleuaer66ey3komss5ngp4"
+    },
+    {
+      "id": "link",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ref": {
+            "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          }
+        }
+      },
+      "output": "bafyreideqkv7rlo4av5mh6iakze44dbpaoa32sft2i3muvlft5pjkr2eqe"
+    },
+    {
+      "id": "raw link",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ref": {
+            "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+          }
+        }
+      },
+      "output": "bafyreidzylysy65xmidaez4rmvfvfeuhqy6h6btnvl2jvdwd2z3qyim2xm"
+    },
+    {
+      "id": "link-shaped map",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ref": {
+            "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu",
+            "note": "not a link"
+          }
+        }
+      },
+      "output": "bafyreibk2aocoouqz6dhjdbwzpbzpvfmr36bmn4x5v535qodzsu47svqo4"
+    },
+    {
+      "id": "a string",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": "hello"
+      },
+      "output": "bafyreiglqnkzhzh2gyz4zfy7zpi6wcamumrclarakshlocd35l4o63l76q"
+    },
+    {
+      "id": "a number",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": 42
+      },
+      "output": "bafyreid7qp333iwwhfm5gr3hncpqnvdvozud2n4nt24nbe4gzgqcaok4km"
+    },
+    {
+      "id": "an array",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": [
+          1,
+          "two",
+          null
+        ]
+      },
+      "output": "bafyreihmlsu77cczluxowwhtigz7cjbsqxfhugx6l75qqfj75x2ukbq3iq"
+    },
+    {
+      "id": "null",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": null
+      },
+      "output": "bafyreifqwkmiw256ojf2zws6tzjeonw6bpd5vza4i22ccpcq4hjv2ts7cm"
+    },
+    {
+      "id": "bad link",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ref": {
+            "$link": "not-a-cid"
+          }
+        }
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "link not a string",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "ref": {
+            "$link": 7
+          }
+        }
+      },
+      "output": {
+        "$throws": "unexpected cid-link value"
+      }
+    },
+    {
+      "id": "bad bytes",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "sig": {
+            "$bytes": "@@"
+          }
+        }
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "bytes not a string",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "sig": {
+            "$bytes": [
+              1
+            ]
+          }
+        }
+      },
+      "output": {
+        "$throws": "unexpected bytes value"
+      }
+    },
+    {
+      "id": "number past 2^53",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "big": 9007199254740992
+        }
+      },
+      "output": {
+        "$throws": "can't encode numbers beyond safe integer range"
+      }
+    },
+    {
+      "id": "constructor key",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "constructor": "z"
+        }
+      },
+      "output": {
+        "$throws": "unsupported type: [object Object]"
+      }
+    },
+    {
+      "id": "nested constructor key",
+      "fn": "computeRecordCid",
+      "input": {
+        "record": {
+          "$type": "x.y",
+          "o": {
+            "constructor": 1,
+            "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          }
+        }
+      },
+      "output": "bafyreiefwk573z7mh37lzdea7xzt2v4km6obrxivawnazcsooxczvrfdju"
+    },
+    {
+      "id": "pds vector with a BlobRef instance",
+      "fn": "computeRecordCid.instances",
+      "input": {
+        "value": {
+          "text": "v1.127 is live! We're rolling out improvements to search over the coming weeks. You'll get more relevant results and more ways to find what you're looking for. \n\nThe new \"Filters\" button lets you query and filter by keywords, people, date range, language and more. You can even share your searches!",
+          "$type": "app.bsky.feed.post",
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": [
+              {
+                "alt": "A rendering of the new \"Filters\" button and option fields, which allow you to query and filter by keywords, people, date range, language and more.",
+                "image": {
+                  "$blobRef": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 1554074
+                  }
+                },
+                "aspectRatio": {
+                  "width": 2140,
+                  "height": 2000
+                }
+              }
+            ]
+          },
+          "langs": [
+            "en"
+          ],
+          "createdAt": "2026-07-09T19:50:16.599Z"
+        }
+      },
+      "output": "bafyreibowb4zpdgv74mzhpn3w433q4affyql5jd6c43tluinucj4q2jdzy"
+    },
+    {
+      "id": "record with instances",
+      "fn": "computeRecordCid.instances",
+      "input": {
+        "value": {
+          "$lex": {
+            "$type": "app.bsky.feed.post",
+            "text": "x",
+            "embed": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "alt": "",
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 1234
+                  }
+                }
+              ]
+            },
+            "sig": {
+              "$bytes": "AQID"
+            },
+            "ref": {
+              "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+            },
+            "createdAt": "2026-03-15T12:00:00.000Z"
+          }
+        }
+      },
+      "output": "bafyreic5btfuaalkagp465hl4uqnsfmwfhqxiaxhjagasu5kkan6cnpciq"
+    },
+    {
+      "id": "blob ref",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "image": {
+            "$blobRef": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+              },
+              "mimeType": "image/jpeg",
+              "size": 42
+            }
+          }
+        }
+      },
+      "output": {
+        "image": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 42
+        }
+      }
+    },
+    {
+      "id": "legacy blob ref",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$blobRef": {
+            "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm",
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "output": {
+        "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "id": "bytes",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "b": {
+            "$u8": [
+              1,
+              2,
+              3
+            ]
+          }
+        }
+      },
+      "output": {
+        "b": {
+          "$bytes": "AQID"
+        }
+      }
+    },
+    {
+      "id": "bytes empty",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$u8": []
+        }
+      },
+      "output": {
+        "$bytes": ""
+      }
+    },
+    {
+      "id": "bytes one",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$u8": [
+            255
+          ]
+        }
+      },
+      "output": {
+        "$bytes": "/w"
+      }
+    },
+    {
+      "id": "bytes two",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$u8": [
+            255,
+            254
+          ]
+        }
+      },
+      "output": {
+        "$bytes": "//4"
+      }
+    },
+    {
+      "id": "bytes many",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$u8": [
+            0,
+            7,
+            14,
+            21,
+            28,
+            35,
+            42,
+            49,
+            56,
+            63,
+            70,
+            77,
+            84,
+            91,
+            98,
+            105,
+            112,
+            119,
+            126,
+            133,
+            140,
+            147,
+            154,
+            161,
+            168,
+            175,
+            182,
+            189,
+            196,
+            203,
+            210,
+            217,
+            224,
+            231,
+            238,
+            245,
+            252,
+            3,
+            10,
+            17,
+            24,
+            31,
+            38,
+            45,
+            52,
+            59,
+            66,
+            73,
+            80,
+            87,
+            94,
+            101,
+            108,
+            115,
+            122,
+            129,
+            136,
+            143,
+            150,
+            157,
+            164,
+            171,
+            178,
+            185,
+            192,
+            199,
+            206,
+            213,
+            220,
+            227,
+            234,
+            241,
+            248,
+            255,
+            6,
+            13,
+            20,
+            27,
+            34,
+            41,
+            48,
+            55,
+            62,
+            69,
+            76,
+            83,
+            90,
+            97,
+            104,
+            111,
+            118,
+            125,
+            132,
+            139,
+            146,
+            153,
+            160,
+            167,
+            174,
+            181
+          ]
+        }
+      },
+      "output": {
+        "$bytes": "AAcOFRwjKjE4P0ZNVFtiaXB3foWMk5qhqK+2vcTL0tng5+71/AMKERgfJi00O0JJUFdeZWxzeoGIj5adpKuyucDHztXc4+rx+P8GDRQbIikwNz5FTFNaYWhvdn2Ei5KZoKeutQ"
+      }
+    },
+    {
+      "id": "cid",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "ref": {
+            "$cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          }
+        }
+      },
+      "output": {
+        "ref": {
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+        }
+      }
+    },
+    {
+      "id": "raw cid",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$cid": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+        }
+      },
+      "output": {
+        "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+      }
+    },
+    {
+      "id": "date",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "at": {
+            "$date": "2026-03-15T12:00:00.000Z"
+          }
+        }
+      },
+      "output": {
+        "at": "2026-03-15T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "date with ms",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$date": "2026-03-15T12:00:00.123Z"
+        }
+      },
+      "output": "2026-03-15T12:00:00.123Z"
+    },
+    {
+      "id": "primitives and nesting",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "a": 1,
+          "b": "two",
+          "c": [
+            true,
+            null,
+            {
+              "d": "e",
+              "f": {
+                "$undefined": true
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "a": 1,
+        "b": "two",
+        "c": [
+          true,
+          null,
+          {
+            "d": "e"
+          }
+        ]
+      }
+    },
+    {
+      "id": "undefined members dropped",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "a": {
+            "$undefined": true
+          },
+          "b": 2
+        }
+      },
+      "output": {
+        "b": 2
+      }
+    },
+    {
+      "id": "undefined in an array",
+      "fn": "toJsonShape",
+      "input": {
+        "value": [
+          1,
+          {
+            "$undefined": true
+          }
+        ]
+      },
+      "output": [
+        1,
+        null
+      ]
+    },
+    {
+      "id": "string",
+      "fn": "toJsonShape",
+      "input": {
+        "value": "text"
+      },
+      "output": "text"
+    },
+    {
+      "id": "number",
+      "fn": "toJsonShape",
+      "input": {
+        "value": 3.5
+      },
+      "output": 3.5
+    },
+    {
+      "id": "null",
+      "fn": "toJsonShape",
+      "input": {
+        "value": null
+      },
+      "output": null
+    },
+    {
+      "id": "boolean",
+      "fn": "toJsonShape",
+      "input": {
+        "value": false
+      },
+      "output": false
+    },
+    {
+      "id": "empty object",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {}
+      },
+      "output": {}
+    },
+    {
+      "id": "record with instances",
+      "fn": "toJsonShape",
+      "input": {
+        "value": {
+          "$lex": {
+            "$type": "app.bsky.feed.post",
+            "text": "x",
+            "embed": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "alt": "",
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 1234
+                  }
+                }
+              ]
+            },
+            "sig": {
+              "$bytes": "AQID"
+            },
+            "ref": {
+              "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+            },
+            "createdAt": "2026-03-15T12:00:00.000Z"
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.feed.post",
+        "text": "x",
+        "embed": {
+          "$type": "app.bsky.embed.images",
+          "images": [
+            {
+              "alt": "",
+              "image": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                },
+                "mimeType": "image/jpeg",
+                "size": 1234
+              }
+            }
+          ]
+        },
+        "sig": {
+          "$bytes": "AQID"
+        },
+        "ref": {
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+        },
+        "createdAt": "2026-03-15T12:00:00.000Z"
+      }
+    }
+  ]
+}
