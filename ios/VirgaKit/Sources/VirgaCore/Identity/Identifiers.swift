@@ -90,9 +90,12 @@ public enum Handle {
   }
 
   /// A handle as the web keeps it: without a leading `@`, lower-cased
-  /// (postLink.js: `.replace(/^@/, '').toLowerCase()`).
+  /// (postLink.js: `.replace(/^@/, '').toLowerCase()`). The `@` is the first
+  /// code unit, whatever follows it (a combining mark after it would make
+  /// one Character of the two, which `hasPrefix("@")` wouldn't match).
   public static func normalize(_ handle: String) -> String {
-    (handle.hasPrefix("@") ? String(handle.dropFirst()) : handle).lowercased()
+    let rest = handle.utf16.first == 0x40 ? handle.jsSlice(1) : handle
+    return rest.jsLowercased()
   }
 
   /// The handle to show for an account: nil for none or `handle.invalid`.

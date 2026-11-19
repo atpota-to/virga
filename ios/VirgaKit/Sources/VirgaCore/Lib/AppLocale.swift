@@ -169,9 +169,11 @@ public enum AppLocale {
   }
 
   /// A whole number with the locale's separators: "1,234". The web's
-  /// `Math.round(Number(n) || 0).toLocaleString(locale)`.
+  /// `Math.round(Number(n) || 0).toLocaleString(locale)`: NaN and both
+  /// zeros are falsy, so -0 is "0" (where -0.4 rounds to -0, which Intl
+  /// writes "-0").
   public static func fmtInt(_ n: Double) -> String {
-    let number = n.isNaN ? 0 : n
+    let number = n.isNaN || n == 0 ? 0 : n
     return formatNumber(number.jsRounded)
   }
 

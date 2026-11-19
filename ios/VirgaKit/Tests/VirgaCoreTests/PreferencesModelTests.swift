@@ -160,6 +160,18 @@ extension ActiveFormats {
       #expect(model.formats == "en-IN/0")
     }
 
+    @Test @MainActor func reloadingOntoTheClockLooksAtItAtOnce() throws {
+      defer { withFormats {} }
+      let clock = TestClock(noon)
+      let (model, store) = try model(#"{"sky":"night"}"#, clock: clock)
+      #expect(!model.watchesClock)
+      clock.set(noon.addingTimeInterval(9 * 3600))  // 21:00
+      try store.setItem(Preferences.preferencesKey, #"{"sky":"clock"}"#)
+      model.reload()
+      #expect(model.hour == 21, "the sky follows the clock from where it is, not from when the model was made")
+      #expect(model.effectiveSky == .night)
+    }
+
     @Test @MainActor func aModelWithNoStoreStillWorks() {
       defer { withFormats {} }
       let model = PreferencesModel(store: nil, languages: [], timeZone: utc, now: { Date(timeIntervalSince1970: 0) })

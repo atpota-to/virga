@@ -84,6 +84,12 @@ import VirgaTestSupport
     #expect(DID.method("did:plc:abc") == "plc")
     #expect(DID.method("did:web:") == nil)
     #expect(Handle.normalize("@Alice.Bsky.Social") == "alice.bsky.social")
+    // `.replace(/^@/, '').toLowerCase()`: the @ is a code unit, whatever
+    // mark follows it, and the lowering is JavaScript's.
+    #expect(Handle.normalize("@\u{301}Alice") == "\u{301}alice")
+    #expect(Handle.normalize("@@alice") == "@alice")
+    #expect(Handle.normalize("ΟΔΟΣ.test") == "οδοσ.test", "a full stop is case-ignorable, so the sigma isn't final")
+    #expect(Handle.normalize("@ΟΔΟΣ") == "οδος")
     #expect(Handle.displayable("handle.invalid") == nil)
     #expect(Handle.displayable("jo.test") == "jo.test")
   }

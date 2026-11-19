@@ -222,19 +222,23 @@ public enum JSDate {
       date -= Double(offset) * 1000
       guard abs(date) <= maxTime else { return .nan }
     } else {
-      // V8's kMaxTimeBeforeUTCInMs: a day's grace either side.
+      // V8's kMaxTimeBeforeUTCInMs: ten days' grace either side.
       guard date.isFinite, abs(date) <= maxTime + 864_000_000 else { return .nan }
       date = localToUTC(date, timeZone: timeZone)
     }
     return timeClip(date)
   }
 
-  /// `Date.parse` for the shapes the web passes to its `toMs` helpers: a
-  /// number is already a time, a string is parsed, anything else is NaN.
+  /// The web's `toMs` helpers (`typeof date === 'number' ? date :
+  /// Date.parse(date)`): a number is already a time; anything else is
+  /// `Date.parse(String(value))`, so a string is parsed, an array is parsed
+  /// as its joined text (`['2026-03-15']` is that day), and null, a
+  /// boolean, an object or nothing at all is NaN.
   public static func toMs(_ value: JSONValue?, timeZone: TimeZone) -> Double {
     switch value {
     case .number(let n): return n
     case .string(let s): return parse(s, timeZone: timeZone)
+    case .array: return parse(value!.jsString, timeZone: timeZone)
     default: return .nan
     }
   }

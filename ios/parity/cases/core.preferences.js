@@ -107,6 +107,21 @@ const STORED = [
   }),
   ...SKY_CHOICES.map((sky) => JSON.stringify({ sky })),
   ...ACCENT_CHOICES.map((accent) => JSON.stringify({ accent })),
+  // What JSON.parse reads (or refuses) that other JSON readers don't: the
+  // stored text decides whether anything is kept.
+  '{"sky":"dusk",}',
+  '\uFEFF{"sky":"dusk"}',
+  ' \n\t{"sky":"dusk"}\r\n ',
+  '\u00a0{"sky":"dusk"}',
+  '{"sky":"dusk","sky":"night"}',
+  '{"sky":"dusk","big":1e400}',
+  '{"sky":"dusk","half":"\\ud800"}',
+  '{"sky":"dusk","n":01}',
+  '{"sky":"dusk"} x',
+  "{'sky':'dusk'}",
+  '{"sky":"dusk"/*c*/}',
+  '{"sky":"du\\u0073k"}',
+  '{"sky":"dusk","theme":"dark","sky":3}',
 ];
 
 const PREFS_FOR_ATTRIBUTES = [

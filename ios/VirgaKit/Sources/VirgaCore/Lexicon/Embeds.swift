@@ -176,8 +176,12 @@ public struct EmbedExternal: Codable, Hashable, Sendable {
   public var title: String
   public var description: String
   public var thumb: BlobRef?
-  /// records behind the page (standard.site), which the AppView hydrates
+  /// Records behind the page (standard.site), as the web writes them: under
+  /// `associatedRefs`, a name the lexicon doesn't have.
   public var associatedRefs: [StrongRef]?
+  /// The lexicon's own field for those records (app.bsky.embed.external
+  /// `associatedRecords`), as other clients write it.
+  public var associatedRecords: [StrongRef]?
   /// Fields this version doesn't read, kept for the round trip.
   public var extra: [String: JSONValue]
 
@@ -187,6 +191,7 @@ public struct EmbedExternal: Codable, Hashable, Sendable {
     description: String,
     thumb: BlobRef? = nil,
     associatedRefs: [StrongRef]? = nil,
+    associatedRecords: [StrongRef]? = nil,
     extra: [String: JSONValue] = [:]
   ) {
     self.uri = uri
@@ -194,6 +199,7 @@ public struct EmbedExternal: Codable, Hashable, Sendable {
     self.description = description
     self.thumb = thumb
     self.associatedRefs = associatedRefs
+    self.associatedRecords = associatedRecords
     self.extra = extra
   }
 
@@ -204,6 +210,7 @@ public struct EmbedExternal: Codable, Hashable, Sendable {
     description = try r.required("description")
     thumb = r.optional("thumb")
     associatedRefs = r.optional("associatedRefs")
+    associatedRecords = r.optional("associatedRecords")
     extra = try r.extra()
   }
 
@@ -214,6 +221,7 @@ public struct EmbedExternal: Codable, Hashable, Sendable {
     try w.put(description, "description")
     try w.put(thumb, "thumb")
     try w.put(associatedRefs, "associatedRefs")
+    try w.put(associatedRecords, "associatedRecords")
   }
 }
 

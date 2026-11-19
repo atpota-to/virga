@@ -169,6 +169,50 @@
       ]
     },
     {
+      "id": "pathParts#17",
+      "fn": "pathParts",
+      "input": {
+        "path": "/a/́b"
+      },
+      "output": [
+        "a",
+        "́b"
+      ]
+    },
+    {
+      "id": "pathParts#18",
+      "fn": "pathParts",
+      "input": {
+        "path": "/́/x"
+      },
+      "output": [
+        "́",
+        "x"
+      ]
+    },
+    {
+      "id": "pathParts#19",
+      "fn": "pathParts",
+      "input": {
+        "path": "/reports/́"
+      },
+      "output": [
+        "reports",
+        "́"
+      ]
+    },
+    {
+      "id": "pathParts#20",
+      "fn": "pathParts",
+      "input": {
+        "path": "/%CC%81/x"
+      },
+      "output": [
+        "́",
+        "x"
+      ]
+    },
+    {
       "id": "hrefFor#1",
       "fn": "hrefFor",
       "input": {
@@ -307,6 +351,36 @@
         "keepQuery": true
       },
       "output": "/reports"
+    },
+    {
+      "id": "hrefFor#15",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a?́b",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?́b"
+    },
+    {
+      "id": "hrefFor#16",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a#́b",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?x=1#́b"
+    },
+    {
+      "id": "hrefFor#17",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a?́b#c",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?́b#c"
     }
   ]
 }

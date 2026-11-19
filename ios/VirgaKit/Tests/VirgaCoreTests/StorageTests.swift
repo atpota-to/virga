@@ -145,6 +145,37 @@ struct Thing: Codable, Equatable {
     try await exercise(InMemoryFileStore())
   }
 
+  /// A combining mark joins the "/" before it into one Character; the
+  /// path is still cut at that "/", so ".." can't hide behind one.
+  func combiningMarks(_ store: FileStore) async throws {
+    for bad in ["../\u{301}", "a/../\u{301}", "..\u{301}/../x", "a/\u{301}/../../x"] {
+      let parts = bad.unicodeScalars.split(separator: "/").map { String(String.UnicodeScalarView($0)) }
+      if parts.contains("..") {
+        await #expect(throws: FileStoreError.invalidPath(bad)) { try await store.write(Data("x".utf8), to: bad) }
+      }
+    }
+    try await store.write(Data("x".utf8), to: "a/\u{301}b")
+    #expect(try await store.list("a") == ["a/\u{301}b"])
+    #expect(try await store.read("a/\u{301}b") == Data("x".utf8))
+    try await store.write(Data("y".utf8), to: "\u{301}top")
+    #expect(try await store.list("").contains("\u{301}top"))
+    try await store.delete("a")
+    #expect(try await store.read("a/\u{301}b") == nil, "deleting a directory takes what is under it")
+  }
+
+  @Test func combiningMarksInMemory() async throws {
+    try await combiningMarks(InMemoryFileStore())
+  }
+
+  @Test func combiningMarksOnDisk() async throws {
+    let base = try temporaryDirectory()
+    let inner = base.appendingPathComponent("store", isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: base) }
+    try await combiningMarks(DiskFileStore(baseURL: inner))
+    // Nothing was written beside the store.
+    #expect(try FileManager.default.contentsOfDirectory(atPath: base.path) == ["store"])
+  }
+
   @Test func inMemoryKeepsFilesAndDirectoriesApart() async throws {
     let store = InMemoryFileStore()
     try await store.write(Data("x".utf8), to: "a/b")

@@ -29,7 +29,9 @@ public enum Router {
     let at = to.jsIndexOf("#")
     let path = at == -1 ? to : to.jsSlice(0, at)
     let fragment = at == -1 ? "" : to.jsSlice(at)
-    let search = keepQuery && !path.contains("?") ? currentSearch : ""
+    // By code unit, as `path.includes('?')`: a `?` with a combining mark
+    // after it is one Character, which `contains("?")` wouldn't find.
+    let search = keepQuery && path.jsIndexOf("?") == -1 ? currentSearch : ""
     return "\(path)\(search)\(fragment)"
   }
 
@@ -39,7 +41,9 @@ public enum Router {
   /// part `decodeURIComponent` can't read, as the web does.
   public static func pathParts(_ path: String?) throws -> [String] {
     let text = (path?.isEmpty ?? true) ? "/" : path!
-    return try text.split(separator: "/", omittingEmptySubsequences: true)
-      .map { try JSURI.decodeURIComponent(String($0)) }
+    // `split('/')` cuts at every `/` code unit, even one a combining mark
+    // follows (which Character-wise splitting would leave whole).
+    return try text.utf16.split(separator: 0x2F, omittingEmptySubsequences: true)
+      .map { try JSURI.decodeURIComponent(String(jsUnits: $0)) }
   }
 }

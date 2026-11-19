@@ -1,0 +1,760 @@
+{
+  "name": "core.jsstring",
+  "sources": [
+    "ios/VirgaKit/Sources/VirgaCore/Support/JSCase.swift"
+  ],
+  "cases": [
+    {
+      "id": "toLowerCase#1",
+      "fn": "toLowerCase",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "toLowerCase#2",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Alice.Bsky.Social"
+      },
+      "output": "alice.bsky.social"
+    },
+    {
+      "id": "toLowerCase#3",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ABC xyz 123 _-."
+      },
+      "output": "abc xyz 123 _-."
+    },
+    {
+      "id": "toLowerCase#4",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΟΔΟΣ"
+      },
+      "output": "οδος"
+    },
+    {
+      "id": "toLowerCase#5",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΟΔΟΣ ΚΑΙ ΔΡΟΜΟΣ"
+      },
+      "output": "οδος και δρομος"
+    },
+    {
+      "id": "toLowerCase#6",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΣΑΣ"
+      },
+      "output": "σας"
+    },
+    {
+      "id": "toLowerCase#7",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Σ"
+      },
+      "output": "σ"
+    },
+    {
+      "id": "toLowerCase#8",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ"
+      },
+      "output": "ας"
+    },
+    {
+      "id": "toLowerCase#9",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΣΑ"
+      },
+      "output": "σα"
+    },
+    {
+      "id": "toLowerCase#10",
+      "fn": "toLowerCase",
+      "input": {
+        "text": " Σ "
+      },
+      "output": " σ "
+    },
+    {
+      "id": "toLowerCase#11",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ."
+      },
+      "output": "ας."
+    },
+    {
+      "id": "toLowerCase#12",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ.Β"
+      },
+      "output": "ασ.β"
+    },
+    {
+      "id": "toLowerCase#13",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΟΔΟΣ.test"
+      },
+      "output": "οδοσ.test"
+    },
+    {
+      "id": "toLowerCase#14",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ1"
+      },
+      "output": "ας1"
+    },
+    {
+      "id": "toLowerCase#15",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣΑ"
+      },
+      "output": "ασα"
+    },
+    {
+      "id": "toLowerCase#16",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ'"
+      },
+      "output": "ας'"
+    },
+    {
+      "id": "toLowerCase#17",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Α'Σ"
+      },
+      "output": "α'ς"
+    },
+    {
+      "id": "toLowerCase#18",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Α'Σ'Α"
+      },
+      "output": "α'σ'α"
+    },
+    {
+      "id": "toLowerCase#19",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΆΣ"
+      },
+      "output": "άς"
+    },
+    {
+      "id": "toLowerCase#20",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ́"
+      },
+      "output": "ας́"
+    },
+    {
+      "id": "toLowerCase#21",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ́Α"
+      },
+      "output": "ασ́α"
+    },
+    {
+      "id": "toLowerCase#22",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "aΣ"
+      },
+      "output": "aς"
+    },
+    {
+      "id": "toLowerCase#23",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "aΣb"
+      },
+      "output": "aσb"
+    },
+    {
+      "id": "toLowerCase#24",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΑΣ👍"
+      },
+      "output": "ας👍"
+    },
+    {
+      "id": "toLowerCase#25",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "#ΚΑΛΗΜΕΡΑΣ"
+      },
+      "output": "#καλημερας"
+    },
+    {
+      "id": "toLowerCase#26",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "σς"
+      },
+      "output": "σς"
+    },
+    {
+      "id": "toLowerCase#27",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "İstanbul"
+      },
+      "output": "i̇stanbul"
+    },
+    {
+      "id": "toLowerCase#28",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "İ"
+      },
+      "output": "i̇"
+    },
+    {
+      "id": "toLowerCase#29",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ß straße"
+      },
+      "output": "ß straße"
+    },
+    {
+      "id": "toLowerCase#30",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ǅǄǆ"
+      },
+      "output": "ǆǆǆ"
+    },
+    {
+      "id": "toLowerCase#31",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ﬀ ﬁ ﬂ ﬃ"
+      },
+      "output": "ﬀ ﬁ ﬂ ﬃ"
+    },
+    {
+      "id": "toLowerCase#32",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ΐ ΰ"
+      },
+      "output": "ΐ ΰ"
+    },
+    {
+      "id": "toLowerCase#33",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ŉ"
+      },
+      "output": "ŉ"
+    },
+    {
+      "id": "toLowerCase#34",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ǰ"
+      },
+      "output": "ǰ"
+    },
+    {
+      "id": "toLowerCase#35",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ﬓ"
+      },
+      "output": "ﬓ"
+    },
+    {
+      "id": "toLowerCase#36",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Ⅻ ⅻ"
+      },
+      "output": "ⅻ ⅻ"
+    },
+    {
+      "id": "toLowerCase#37",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ＡＢＣ ａｂｃ"
+      },
+      "output": "ａｂｃ ａｂｃ"
+    },
+    {
+      "id": "toLowerCase#38",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "𐐀𐐨"
+      },
+      "output": "𐐨𐐨"
+    },
+    {
+      "id": "toLowerCase#39",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Ꭰꭰ"
+      },
+      "output": "ꭰꭰ"
+    },
+    {
+      "id": "toLowerCase#40",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ᾈ ᾳ ῼ"
+      },
+      "output": "ᾀ ᾳ ῳ"
+    },
+    {
+      "id": "toLowerCase#41",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ı"
+      },
+      "output": "ı"
+    },
+    {
+      "id": "toLowerCase#42",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "K Å Ω"
+      },
+      "output": "k å ω"
+    },
+    {
+      "id": "toLowerCase#43",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "µ"
+      },
+      "output": "µ"
+    },
+    {
+      "id": "toLowerCase#44",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "ÿ Ÿ"
+      },
+      "output": "ÿ ÿ"
+    },
+    {
+      "id": "toLowerCase#45",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "Ꞵꞵ"
+      },
+      "output": "ꞵꞵ"
+    },
+    {
+      "id": "toLowerCase#46",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "👍🏽 日本語 ١٢٣"
+      },
+      "output": "👍🏽 日本語 ١٢٣"
+    },
+    {
+      "id": "toLowerCase#47",
+      "fn": "toLowerCase",
+      "input": {
+        "text": "́"
+      },
+      "output": "́"
+    },
+    {
+      "id": "toUpperCase#1",
+      "fn": "toUpperCase",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "toUpperCase#2",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Alice.Bsky.Social"
+      },
+      "output": "ALICE.BSKY.SOCIAL"
+    },
+    {
+      "id": "toUpperCase#3",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ABC xyz 123 _-."
+      },
+      "output": "ABC XYZ 123 _-."
+    },
+    {
+      "id": "toUpperCase#4",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΟΔΟΣ"
+      },
+      "output": "ΟΔΟΣ"
+    },
+    {
+      "id": "toUpperCase#5",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΟΔΟΣ ΚΑΙ ΔΡΟΜΟΣ"
+      },
+      "output": "ΟΔΟΣ ΚΑΙ ΔΡΟΜΟΣ"
+    },
+    {
+      "id": "toUpperCase#6",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΣΑΣ"
+      },
+      "output": "ΣΑΣ"
+    },
+    {
+      "id": "toUpperCase#7",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Σ"
+      },
+      "output": "Σ"
+    },
+    {
+      "id": "toUpperCase#8",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ"
+      },
+      "output": "ΑΣ"
+    },
+    {
+      "id": "toUpperCase#9",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΣΑ"
+      },
+      "output": "ΣΑ"
+    },
+    {
+      "id": "toUpperCase#10",
+      "fn": "toUpperCase",
+      "input": {
+        "text": " Σ "
+      },
+      "output": " Σ "
+    },
+    {
+      "id": "toUpperCase#11",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ."
+      },
+      "output": "ΑΣ."
+    },
+    {
+      "id": "toUpperCase#12",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ.Β"
+      },
+      "output": "ΑΣ.Β"
+    },
+    {
+      "id": "toUpperCase#13",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΟΔΟΣ.test"
+      },
+      "output": "ΟΔΟΣ.TEST"
+    },
+    {
+      "id": "toUpperCase#14",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ1"
+      },
+      "output": "ΑΣ1"
+    },
+    {
+      "id": "toUpperCase#15",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣΑ"
+      },
+      "output": "ΑΣΑ"
+    },
+    {
+      "id": "toUpperCase#16",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ'"
+      },
+      "output": "ΑΣ'"
+    },
+    {
+      "id": "toUpperCase#17",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Α'Σ"
+      },
+      "output": "Α'Σ"
+    },
+    {
+      "id": "toUpperCase#18",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Α'Σ'Α"
+      },
+      "output": "Α'Σ'Α"
+    },
+    {
+      "id": "toUpperCase#19",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΆΣ"
+      },
+      "output": "ΆΣ"
+    },
+    {
+      "id": "toUpperCase#20",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ́"
+      },
+      "output": "ΑΣ́"
+    },
+    {
+      "id": "toUpperCase#21",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ́Α"
+      },
+      "output": "ΑΣ́Α"
+    },
+    {
+      "id": "toUpperCase#22",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "aΣ"
+      },
+      "output": "AΣ"
+    },
+    {
+      "id": "toUpperCase#23",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "aΣb"
+      },
+      "output": "AΣB"
+    },
+    {
+      "id": "toUpperCase#24",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΑΣ👍"
+      },
+      "output": "ΑΣ👍"
+    },
+    {
+      "id": "toUpperCase#25",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "#ΚΑΛΗΜΕΡΑΣ"
+      },
+      "output": "#ΚΑΛΗΜΕΡΑΣ"
+    },
+    {
+      "id": "toUpperCase#26",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "σς"
+      },
+      "output": "ΣΣ"
+    },
+    {
+      "id": "toUpperCase#27",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "İstanbul"
+      },
+      "output": "İSTANBUL"
+    },
+    {
+      "id": "toUpperCase#28",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "İ"
+      },
+      "output": "İ"
+    },
+    {
+      "id": "toUpperCase#29",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ß straße"
+      },
+      "output": "SS STRASSE"
+    },
+    {
+      "id": "toUpperCase#30",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ǅǄǆ"
+      },
+      "output": "ǄǄǄ"
+    },
+    {
+      "id": "toUpperCase#31",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ﬀ ﬁ ﬂ ﬃ"
+      },
+      "output": "FF FI FL FFI"
+    },
+    {
+      "id": "toUpperCase#32",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ΐ ΰ"
+      },
+      "output": "Ϊ́ Ϋ́"
+    },
+    {
+      "id": "toUpperCase#33",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ŉ"
+      },
+      "output": "ʼN"
+    },
+    {
+      "id": "toUpperCase#34",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ǰ"
+      },
+      "output": "J̌"
+    },
+    {
+      "id": "toUpperCase#35",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ﬓ"
+      },
+      "output": "ՄՆ"
+    },
+    {
+      "id": "toUpperCase#36",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Ⅻ ⅻ"
+      },
+      "output": "Ⅻ Ⅻ"
+    },
+    {
+      "id": "toUpperCase#37",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ＡＢＣ ａｂｃ"
+      },
+      "output": "ＡＢＣ ＡＢＣ"
+    },
+    {
+      "id": "toUpperCase#38",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "𐐀𐐨"
+      },
+      "output": "𐐀𐐀"
+    },
+    {
+      "id": "toUpperCase#39",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Ꭰꭰ"
+      },
+      "output": "ᎠᎠ"
+    },
+    {
+      "id": "toUpperCase#40",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ᾈ ᾳ ῼ"
+      },
+      "output": "ἈΙ ΑΙ ΩΙ"
+    },
+    {
+      "id": "toUpperCase#41",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ı"
+      },
+      "output": "I"
+    },
+    {
+      "id": "toUpperCase#42",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "K Å Ω"
+      },
+      "output": "K Å Ω"
+    },
+    {
+      "id": "toUpperCase#43",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "µ"
+      },
+      "output": "Μ"
+    },
+    {
+      "id": "toUpperCase#44",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "ÿ Ÿ"
+      },
+      "output": "Ÿ Ÿ"
+    },
+    {
+      "id": "toUpperCase#45",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "Ꞵꞵ"
+      },
+      "output": "ꞴꞴ"
+    },
+    {
+      "id": "toUpperCase#46",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "👍🏽 日本語 ١٢٣"
+      },
+      "output": "👍🏽 日本語 ١٢٣"
+    },
+    {
+      "id": "toUpperCase#47",
+      "fn": "toUpperCase",
+      "input": {
+        "text": "́"
+      },
+      "output": "́"
+    }
+  ]
+}

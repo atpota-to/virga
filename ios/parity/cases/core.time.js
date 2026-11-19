@@ -68,6 +68,9 @@ const PAIRS = [
   ['date-only-string', () => ['2026-11-01', at(2026, 11, 12, 15, 0)]],
   ['not-a-date', () => ['not a date', at(2026, 11, 12, 15, 0)]],
   ['null', () => [null, at(2026, 11, 12, 15, 0)]],
+  // Date.parse(String(x)): an array reads as its joined text.
+  ['array', () => [['2026-11-01'], at(2026, 11, 12, 15, 0)]],
+  ['boolean', () => [true, at(2026, 11, 12, 15, 0)]],
   ['now-unreadable', () => [at(2026, 11, 12, 15, 0), 'never']],
   ['out-of-range', () => [-1e16, at(2026, 11, 12, 15, 0)]],
   [

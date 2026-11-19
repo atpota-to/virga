@@ -46,13 +46,18 @@ extension KeyValueStore {
     return try? JSONValue.parse(text)
   }
 
-  /// The stored JSON decoded as `T`, or nil when absent, unreadable or not a `T`.
+  /// The stored JSON decoded as `T`, or nil when absent, unreadable or not a
+  /// `T`. Read as JSON.parse reads it (so `{"a":1,}` is unreadable, as it is
+  /// on the web), then decoded.
   public func getJSON<T: Decodable>(_ key: String, as type: T.Type) -> T? {
-    guard let text = getItem(key), !text.isEmpty else { return nil }
-    return try? JSONDecoder().decode(T.self, from: Data(text.utf8))
+    guard let value = getJSON(key) else { return nil }
+    return try? value.decode(T.self)
   }
 
-  /// `store.setItem(key, JSON.stringify(value))`.
+  /// `store.setItem(key, JSON.stringify(value))`, as far as any reader can
+  /// tell: the same JSON, though with its keys sorted (JSON.stringify keeps
+  /// an object's insertion order). Where the stored text itself must be the
+  /// web's byte for byte, write it yourself (Preferences.jsonString()).
   public func setJSON<T: Encodable>(_ key: String, _ value: T) throws {
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]

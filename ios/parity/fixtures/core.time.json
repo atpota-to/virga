@@ -2585,6 +2585,28 @@
       "output": ""
     },
     {
+      "id": "UTC array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "UTC boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": true,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
       "id": "UTC now-unreadable",
       "fn": "relativeTime",
       "input": {
@@ -2850,6 +2872,28 @@
       "input": {
         "zone": "America/New_York",
         "date": null,
+        "now": 1794513600000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794513600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/New_York boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": true,
         "now": 1794513600000
       },
       "output": ""
@@ -3125,6 +3169,28 @@
       "output": ""
     },
     {
+      "id": "Europe/London array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Europe/London boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": true,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
       "id": "Europe/London now-unreadable",
       "fn": "relativeTime",
       "input": {
@@ -3390,6 +3456,28 @@
       "input": {
         "zone": "Asia/Kolkata",
         "date": null,
+        "now": 1794475800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794475800000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Asia/Kolkata boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": true,
         "now": 1794475800000
       },
       "output": ""
@@ -3665,6 +3753,28 @@
       "output": ""
     },
     {
+      "id": "Australia/Lord_Howe array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794456000000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": true,
+        "now": 1794456000000
+      },
+      "output": ""
+    },
+    {
       "id": "Australia/Lord_Howe now-unreadable",
       "fn": "relativeTime",
       "input": {
@@ -3935,6 +4045,28 @@
       "output": ""
     },
     {
+      "id": "Pacific/Chatham array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794446100000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Pacific/Chatham boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": true,
+        "now": 1794446100000
+      },
+      "output": ""
+    },
+    {
       "id": "Pacific/Chatham now-unreadable",
       "fn": "relativeTime",
       "input": {
@@ -4200,6 +4332,28 @@
       "input": {
         "zone": "America/Sao_Paulo",
         "date": null,
+        "now": 1794506400000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794506400000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/Sao_Paulo boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": true,
         "now": 1794506400000
       },
       "output": ""

@@ -981,6 +981,266 @@
       }
     },
     {
+      "id": "readPreferences#48",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#49",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "﻿{\"sky\":\"dusk\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#50",
+      "fn": "readPreferences",
+      "input": {
+        "stored": " \n\t{\"sky\":\"dusk\"}\r\n "
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#51",
+      "fn": "readPreferences",
+      "input": {
+        "stored": " {\"sky\":\"dusk\"}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#52",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"sky\":\"night\"}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#53",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"big\":1e400}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#54",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"half\":\"\\ud800\"}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#55",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"n\":01}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#56",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\"} x"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#57",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{'sky':'dusk'}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#58",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\"/*c*/}"
+      },
+      "output": {
+        "sky": "clock",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#59",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"du\\u0073k\"}"
+      },
+      "output": {
+        "sky": "dusk",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
+      "id": "readPreferences#60",
+      "fn": "readPreferences",
+      "input": {
+        "stored": "{\"sky\":\"dusk\",\"theme\":\"dark\",\"sky\":3}"
+      },
+      "output": {
+        "sky": "night",
+        "liveSky": false,
+        "accent": "blue",
+        "contrast": "system",
+        "density": "comfortable",
+        "period": "30d",
+        "periodFrom": "",
+        "periodTo": "",
+        "sidebar": "expanded",
+        "locale": "system",
+        "weekStart": "system"
+      }
+    },
+    {
       "id": "readPreferencesNoStore#1",
       "fn": "readPreferencesNoStore",
       "input": {},

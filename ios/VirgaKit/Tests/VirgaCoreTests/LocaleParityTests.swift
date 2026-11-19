@@ -230,6 +230,18 @@ extension ActiveFormats {
     }
   }
 
+  /// `Number(n) || 0`: -0 is falsy, so it is 0 before Math.round sees it
+  /// (a fixture can't carry it: JSON has no -0). -0.4 rounds to -0, which
+  /// Intl writes "-0", and the fixture holds that.
+  @Test func negativeZeroIsFalsy() {
+    withFormats {
+      #expect(AppLocale.fmtInt(-0.0) == "0")
+      #expect(AppLocale.fmtInt(JSONValue.number(-0.0)) == "0")
+      #expect(AppLocale.fmtInt(-0.4) == "-0")
+      #expect(AppLocale.fmtInt(.nan) == "0")
+    }
+  }
+
   @Test func localeSample() throws {
     for c in try Parity.cases("core.locale", fn: "localeSample") {
       let actual = AppLocale.localeSample(c["tag"].stringValue ?? "", timeZone: zone(c))

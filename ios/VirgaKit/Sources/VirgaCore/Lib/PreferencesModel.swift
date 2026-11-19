@@ -115,6 +115,9 @@ public final class PreferencesModel {
     let before = prefs
     prefs = Preferences.readPreferences(store: store)
     if prefs.locale != before.locale || prefs.weekStart != before.weekStart { applyFormats() }
+    // As setPrefs does: the web's useSkyHour looks at the clock as soon as
+    // the sky starts following it.
+    if prefs.sky == .clock && before.sky != .clock { lookAtClock() }
   }
 
   private func applyFormats() {

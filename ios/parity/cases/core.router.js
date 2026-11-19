@@ -28,6 +28,12 @@ export default async function cases() {
         '/bad/%C3%28',
         'relative/path',
         '/intent/compose',
+        // A combining mark after a '/' makes one grapheme of the two;
+        // split('/') still cuts there.
+        '/a/\u0301b',
+        '/\u0301/x',
+        '/reports/\u0301',
+        '/%CC%81/x',
       ].map((path) => ({ path })),
       ({ path }) => pathParts(path),
     )),
@@ -50,6 +56,10 @@ export default async function cases() {
         ['/x?', '?q=1', true],
         ['/👍#🙂', '?é=1', true],
         ['/reports', null, true],
+        // A '?' or '#' with a combining mark after it is still one.
+        ['/a?\u0301b', '?x=1', true],
+        ['/a#\u0301b', '?x=1', true],
+        ['/a?\u0301b#c', '?x=1', true],
       ].map(([to, currentSearch, keepQuery]) => ({
         to,
         currentSearch,

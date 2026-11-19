@@ -56,18 +56,36 @@ extension FileStore {
 }
 
 /// The checks every store applies to a path: relative, "/"-separated, no
-/// empty, "." or ".." segment. Returns the segments.
+/// empty, "." or ".." segment, no NUL or backslash. Returns the segments.
+///
+/// The checks are on Unicode scalars, not Characters: a combining mark
+/// after a "/" makes one Character of the two, so splitting by Character
+/// would leave that "/" inside a segment, and "../\u{301}" would pass as one
+/// harmless-looking segment while the file system reads it as a step out of
+/// the store.
 public enum FileStorePath {
   public static func segments(_ path: String, allowRoot: Bool = false) throws -> [String] {
     if path.isEmpty {
       if allowRoot { return [] }
       throw FileStoreError.invalidPath(path)
     }
-    let parts = path.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
-    for part in parts where part.isEmpty || part == "." || part == ".." || part.contains("\0") || part.contains("\\") {
-      throw FileStoreError.invalidPath(path)
+    let parts = path.unicodeScalars.split(separator: "/", omittingEmptySubsequences: false)
+    for part in parts {
+      let text = String(String.UnicodeScalarView(part))
+      if part.isEmpty || text == "." || text == ".." || part.contains("\0") || part.contains("\\") {
+        throw FileStoreError.invalidPath(path)
+      }
     }
-    return parts
+    return parts.map { String(String.UnicodeScalarView($0)) }
+  }
+
+  /// Whether `path` is `directory` itself or lies under it (by scalars, as
+  /// the segments are cut). An empty `directory` is the whole store.
+  static func isUnder(_ path: String, _ directory: String) -> Bool {
+    guard !directory.isEmpty else { return true }
+    let p = Array(path.unicodeScalars)
+    let d = Array(directory.unicodeScalars)
+    return p.count > d.count && p[d.count] == "/" && Array(p[0..<d.count]) == d
   }
 
   /// The path made canonical (it is already, once it passes the checks).
@@ -92,26 +110,25 @@ public actor InMemoryFileStore: FileStore {
   }
 
   public func write(_ data: Data, to path: String) async throws {
-    let key = try FileStorePath.normalize(path)
+    let parts = try FileStorePath.segments(path)
+    let key = parts.joined(separator: "/")
     // A file can't sit where a directory is, or under a file.
-    let parts = key.split(separator: "/")
     for end in parts.indices.dropLast() where files[parts[...end].joined(separator: "/")] != nil {
       throw FileStoreError.invalidPath(path)
     }
-    if files.keys.contains(where: { $0.hasPrefix(key + "/") }) { throw FileStoreError.invalidPath(path) }
+    if files.keys.contains(where: { FileStorePath.isUnder($0, key) }) { throw FileStoreError.invalidPath(path) }
     files[key] = data
   }
 
   public func delete(_ path: String) async throws {
     let key = try FileStorePath.normalize(path)
     files.removeValue(forKey: key)
-    for name in files.keys where name.hasPrefix(key + "/") { files.removeValue(forKey: name) }
+    for name in files.keys where FileStorePath.isUnder(name, key) { files.removeValue(forKey: name) }
   }
 
   public func list(_ directory: String) async throws -> [String] {
     let key = try FileStorePath.normalize(directory, allowRoot: true)
-    let prefix = key.isEmpty ? "" : key + "/"
-    return files.keys.filter { $0.hasPrefix(prefix) }.sorted()
+    return files.keys.filter { FileStorePath.isUnder($0, key) }.sorted()
   }
 }
 
@@ -169,9 +186,12 @@ public struct DiskFileStore: FileStore {
     for case let file as URL in walker {
       let values = try file.resourceValues(forKeys: [.isRegularFileKey])
       guard values.isRegularFile == true else { continue }
+      // By scalars: a name that starts with a combining mark joins the "/"
+      // before it into one Character, which hasPrefix and dropFirst by
+      // Character would miscount.
       let full = file.resolvingSymlinksInPath().path
-      guard full.hasPrefix(rootPath + "/") else { continue }
-      out.append(String(full.dropFirst(rootPath.count + 1)))
+      guard FileStorePath.isUnder(full, rootPath) else { continue }
+      out.append(String(String.UnicodeScalarView(full.unicodeScalars.dropFirst(rootPath.unicodeScalars.count + 1))))
     }
     return out.sorted()
   }
