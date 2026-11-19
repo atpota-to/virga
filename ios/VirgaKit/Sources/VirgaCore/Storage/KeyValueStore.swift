@@ -151,8 +151,13 @@ public final class UserDefaultsKeyValueStore: KeyValueStore, @unchecked Sendable
   }
 
   public func allKeys() -> [String] {
-    defaults.dictionaryRepresentation().keys
-      .filter { $0.hasPrefix(prefix) }
-      .map { String($0.dropFirst(prefix.count)) }
+    // By scalars: a key that starts with a combining mark would join the
+    // prefix's last character, and hasPrefix by Character would miss it.
+    let head = Array(prefix.unicodeScalars)
+    return defaults.dictionaryRepresentation().keys.compactMap { key in
+      let scalars = Array(key.unicodeScalars)
+      guard scalars.count >= head.count, Array(scalars[0..<head.count]) == head else { return nil }
+      return String(String.UnicodeScalarView(scalars[head.count...]))
+    }
   }
 }

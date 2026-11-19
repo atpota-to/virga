@@ -24,6 +24,7 @@
         "core.locale",
         "core.localeData"
       ],
+      "note": "Every export is ported. Numbers, dates and times are written from the web runtime's own Intl data (LocaleData+Table.swift, written by ios/parity/locale-data.mjs and held to Node by core.localeData), in English in every region, the only language the web activates. Two branches differ by design: the SUNDAY_REGIONS/SATURDAY_REGIONS fallback, for engines without Intl.Locale weekInfo, is not ported (week starts are weekInfo's, as Chrome, Safari and Node give them); and a tag's -u- keywords (fw, rg, hc, nu) are not read, which no tag the app activates carries.",
       "synced": "3b7c64391caf"
     },
     "src/lib/preferences.jsx": {
