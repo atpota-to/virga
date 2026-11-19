@@ -1,4 +1,5 @@
-// JavaScript's `Date.parse`, as V8 (Node, Chrome) parses: first the ES date
+// JavaScript's `Date.parse`, as V8 (Node, Chrome) parses (JSDate.parse calls
+// this; it came from VirgaRepo, whose fixtures exercise V8's quirks most): first the ES date
 // time string format (`2026-03-15T12:00:00.000Z` and its shorter forms),
 // then V8's legacy parser for everything else (`2026-03-15 12:00:00`,
 // `Mar 15 2026`, `Sun, 15 Mar 2026 12:00:00 GMT+0100`…). A port of V8's
@@ -12,9 +13,9 @@
 
 import Foundation
 
-public enum JSDate {
+enum V8Date {
   /// `Date.parse(text)`: epoch milliseconds, or NaN when V8 can't read it.
-  public static func parse(_ text: String, timeZone: TimeZone) -> Double {
+  static func parse(_ text: String, timeZone: TimeZone) -> Double {
     var out = [Double](repeating: 0, count: Parser.outputSize)
     guard Parser.parse(Array(text.utf16), &out) else { return .nan }
     let day = makeDay(out[Parser.year], out[Parser.month], out[Parser.day])
@@ -30,7 +31,7 @@ public enum JSDate {
   }
 
   /// `new Date(ms).toISOString()`, or nil for an invalid time.
-  public static func toISOString(_ ms: Double) -> String? {
+  static func toISOString(_ ms: Double) -> String? {
     let clipped = timeClip(ms)
     guard clipped.isFinite else { return nil }
     let msPerDay = 86_400_000.0

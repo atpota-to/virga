@@ -133,13 +133,16 @@ extension JSONValue: Codable {
 // MARK: - Conversions
 
 extension JSONValue {
-  /// Parses JSON text.
+  /// Parses a body as `await response.json()` does: UTF-8 (a leading
+  /// byte-order mark dropped), then `JSON.parse` (Support/JSONParse.swift).
   public static func parse(_ data: Data) throws -> JSONValue {
-    try JSONDecoder().decode(JSONValue.self, from: data)
+    try JSONText.parse(data)
   }
 
+  /// `JSON.parse(text)`, exactly (Support/JSONParse.swift): stricter than
+  /// JSONDecoder where JavaScript is, and laxer where it is.
   public static func parse(_ text: String) throws -> JSONValue {
-    try parse(Data(text.utf8))
+    try JSONText.parse(text)
   }
 
   /// Any Encodable as a JSONValue, through JSONEncoder.

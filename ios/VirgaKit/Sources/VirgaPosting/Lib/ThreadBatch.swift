@@ -126,14 +126,14 @@ public enum ThreadBatch {
     var parentRef = replyTo?.parent
 
     for base in records {
-      let own = base["createdAt"].map { VirgaRepo.JSDate.parse($0.jsString, timeZone: timeZone) } ?? .nan
+      let own = base["createdAt"].map { VirgaCore.JSDate.parse($0.jsString, timeZone: timeZone) } ?? .nan
       let hasOwn = own.isFinite && (first || own > lastMs)
       let ms = hasOwn ? own : first ? lastMs : lastMs + 1
       lastMs = ms
       first = false
 
       let rkey = try mintTid(ms)
-      guard ms.isFinite, let createdAt = VirgaRepo.JSDate.toISOString(ms) else { throw InvalidTimeValueError() }
+      guard ms.isFinite, let createdAt = VirgaCore.JSDate.toISOString(ms) else { throw InvalidTimeValueError() }
       let uri = "at://\(did)/\(collection)/\(rkey)"
       var fields = base.objectValue ?? [:]
       fields["createdAt"] = .string(createdAt)

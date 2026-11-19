@@ -169,9 +169,15 @@ extension Double {
   }
 
   /// `Math.round(n)`: halves round up (toward +∞), unlike Swift's
-  /// `.rounded()`, which rounds them away from zero.
+  /// `.rounded()`, which rounds them away from zero. Exact where `n + 0.5`
+  /// would round (0.49999999999999994 is 0), and -0 for anything in
+  /// [-0.5, -0], as JavaScript gives (so `Math.round(-0.4).toLocaleString()`
+  /// is "-0").
   public var jsRounded: Double {
-    (self + 0.5).rounded(.down)
+    guard isFinite, self != 0 else { return self }
+    let floor = rounded(.down)
+    let result = self - floor >= 0.5 ? floor + 1 : floor
+    return result == 0 && self < 0 ? -0.0 : result
   }
 }
 
@@ -231,5 +237,25 @@ public enum JSNumber {
     let expText = e < 0 ? "-\(-e)" : "+\(e)"
     if k == 1 { return sign + digits + "e" + expText }
     return sign + String(chars[0]) + "." + String(chars[1...]) + "e" + expText
+  }
+}
+
+/// What an NSRegularExpression runs over for a JavaScript-faithful match.
+///
+/// On Apple platforms, an NSString built from the text's own UTF-16 code
+/// units, so nothing in bridging can change what the offsets count: CI's iOS
+/// run found a leading U+FEFF going missing on the way to the regex, which
+/// Linux's Foundation keeps. Elsewhere the String itself. Use the returned
+/// length, not a bridged NSString's, for the search range.
+public enum JSRegexSubject {
+  public static func make(_ text: String) -> (subject: String, length: Int) {
+    let units = Array(text.utf16)
+    #if canImport(Darwin)
+    if units.isEmpty { return ("", 0) }
+    let ns = units.withUnsafeBufferPointer { NSString(characters: $0.baseAddress!, length: $0.count) }
+    return (ns as String, units.count)
+    #else
+    return (text, units.count)
+    #endif
   }
 }

@@ -1,0 +1,2070 @@
+{
+  "name": "defense-early.dmMessage",
+  "sources": [
+    "src/defense/dmMessage.js",
+    "src/defense/command.js"
+  ],
+  "cases": [
+    {
+      "id": "sharedUri#1",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block this",
+          "embed": {
+            "record": {
+              "uri": "at://did:plc:a/app.bsky.feed.post/3x"
+            }
+          },
+          "facets": [
+            {
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/x.example.com"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "at://did:plc:a/app.bsky.feed.post/3x"
+    },
+    {
+      "id": "sharedUri#2",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "hi"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#3",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block this",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          }
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#4",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "scan",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#5",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": null,
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#6",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": 5,
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#7",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "https://example.com"
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#8",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "AT://did:plc:a/x/y"
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#9",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": ""
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#10",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "record": null
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#11",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": "at://nope"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#12",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block bsky.app/profile/jo.e...",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#13",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block https://bsky.app/profile/jo.example.com/post/3lxyz",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#14",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @jo",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:jojojojojojo"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#15",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "two of them",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:b"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://x.example"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#16",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "everything at once",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#17",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          }
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#18",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": null,
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#19",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": 42,
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "42"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#20",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#21",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": {
+            "a": 1
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#22",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": 0
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#23",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": false
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#24",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "😀 emoji and “quotes”\nnew line"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#25",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "contains https://bsky.app/profile/jo",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#26",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "contains part",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "part of it"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#27",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "é vs é",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "é"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#28",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "K and K",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "K"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#29",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": 7
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#30",
+      "fn": "sharedUri",
+      "input": {
+        "message": {}
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#31",
+      "fn": "sharedUri",
+      "input": {
+        "message": null
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#32",
+      "fn": "sharedUri",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "sharedUri#33",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": {}
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#34",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": 3
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#35",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "features": {
+                "0": "x"
+              }
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#36",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "shared, then broken",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#37",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "a string of facets",
+          "facets": "abc"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "composeMessage#1",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block this",
+          "embed": {
+            "record": {
+              "uri": "at://did:plc:a/app.bsky.feed.post/3x"
+            }
+          },
+          "facets": [
+            {
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/x.example.com"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "block this\n\n[The post the owner shared: at://did:plc:a/app.bsky.feed.post/3x. Full links in that message: https://bsky.app/profile/x.example.com]"
+    },
+    {
+      "id": "composeMessage#2",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "hi"
+        }
+      },
+      "output": "hi"
+    },
+    {
+      "id": "composeMessage#3",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block this",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          }
+        }
+      },
+      "output": "block this\n\n[The post the owner shared: at://did:plc:author/app.bsky.feed.post/3xyz]"
+    },
+    {
+      "id": "composeMessage#4",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "scan",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": "scan\n\n[The post the owner shared: at://did:plc:author/app.bsky.feed.post/3xyz]"
+    },
+    {
+      "id": "composeMessage#5",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": null,
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": "x\n\n[The post the owner shared: at://did:plc:author/app.bsky.feed.post/3xyz]"
+    },
+    {
+      "id": "composeMessage#6",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": 5,
+              "record": {
+                "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+              }
+            }
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#7",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "https://example.com"
+            }
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#8",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "AT://did:plc:a/x/y"
+            }
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#9",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": ""
+            }
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#10",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": {
+            "record": null
+          }
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#11",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "x",
+          "embed": "at://nope"
+        }
+      },
+      "output": "x"
+    },
+    {
+      "id": "composeMessage#12",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block bsky.app/profile/jo.e...",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "block bsky.app/profile/jo.e...\n\n[Full links in that message: https://bsky.app/profile/jo.example.com/post/3lxyz]"
+    },
+    {
+      "id": "composeMessage#13",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block https://bsky.app/profile/jo.example.com/post/3lxyz",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "block https://bsky.app/profile/jo.example.com/post/3lxyz"
+    },
+    {
+      "id": "composeMessage#14",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @jo",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:jojojojojojo"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "block @jo\n\n[Accounts mentioned: did:plc:jojojojojojo]"
+    },
+    {
+      "id": "composeMessage#15",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "two of them",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:b"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://x.example"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "two of them\n\n[Full links in that message: https://bsky.app/profile/jo.example.com/post/3lxyz https://x.example. Accounts mentioned: did:plc:a did:plc:b]"
+    },
+    {
+      "id": "composeMessage#16",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "everything at once",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "everything at once\n\n[The post the owner shared: at://did:plc:author/app.bsky.feed.post/3xyz. Full links in that message: https://bsky.app/profile/jo.example.com/post/3lxyz. Accounts mentioned: did:plc:a]"
+    },
+    {
+      "id": "composeMessage#17",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          }
+        }
+      },
+      "output": "\n\n[The post the owner shared: at://did:plc:author/app.bsky.feed.post/3xyz]"
+    },
+    {
+      "id": "composeMessage#18",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": null,
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "\n\n[Accounts mentioned: did:plc:a]"
+    },
+    {
+      "id": "composeMessage#19",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": 42,
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "42"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "42"
+    },
+    {
+      "id": "composeMessage#20",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "output": "a,b"
+    },
+    {
+      "id": "composeMessage#21",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": {
+            "a": 1
+          }
+        }
+      },
+      "output": "[object Object]"
+    },
+    {
+      "id": "composeMessage#22",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": 0
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "composeMessage#23",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": false
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "composeMessage#24",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "😀 emoji and “quotes”\nnew line"
+        }
+      },
+      "output": "😀 emoji and “quotes”\nnew line"
+    },
+    {
+      "id": "composeMessage#25",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "contains https://bsky.app/profile/jo",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "contains https://bsky.app/profile/jo"
+    },
+    {
+      "id": "composeMessage#26",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "contains part",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "part of it"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "contains part\n\n[Full links in that message: part of it]"
+    },
+    {
+      "id": "composeMessage#27",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "é vs é",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "é"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "é vs é"
+    },
+    {
+      "id": "composeMessage#28",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "K and K",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "K"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "K and K"
+    },
+    {
+      "id": "composeMessage#29",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": 7
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": "\n\n[Full links in that message: 7]"
+    },
+    {
+      "id": "composeMessage#30",
+      "fn": "composeMessage",
+      "input": {
+        "message": {}
+      },
+      "output": ""
+    },
+    {
+      "id": "composeMessage#31",
+      "fn": "composeMessage",
+      "input": {
+        "message": null
+      },
+      "output": ""
+    },
+    {
+      "id": "composeMessage#32",
+      "fn": "composeMessage",
+      "input": {},
+      "output": ""
+    },
+    {
+      "id": "composeMessage#33",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": {}
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#34",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": 3
+        }
+      },
+      "output": {
+        "$throws": "number 3 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#35",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "features": {
+                "0": "x"
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#36",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "shared, then broken",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#37",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "a string of facets",
+          "facets": "abc"
+        }
+      },
+      "output": "a string of facets"
+    },
+    {
+      "id": "isDirect#1",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {
+            "$type": "chat.bsky.convo.defs#directConvo"
+          }
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isDirect#2",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {
+            "$type": "chat.bsky.convo.defs#groupConvo"
+          },
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#3",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {
+            "$type": ""
+          },
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isDirect#4",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {
+            "$type": 1
+          },
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#5",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {},
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isDirect#6",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isDirect#7",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "members": [
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#8",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "members": [
+            {}
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#9",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "members": "ab"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#10",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "members": {
+            "length": 2
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#11",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": {
+            "$type": "CHAT.BSKY.CONVO.DEFS#DIRECTCONVO"
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#12",
+      "fn": "isDirect",
+      "input": {
+        "convo": {
+          "kind": "chat.bsky.convo.defs#directConvo",
+          "members": [
+            {},
+            {}
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isDirect#13",
+      "fn": "isDirect",
+      "input": {
+        "convo": {}
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#14",
+      "fn": "isDirect",
+      "input": {
+        "convo": null
+      },
+      "output": false
+    },
+    {
+      "id": "isDirect#15",
+      "fn": "isDirect",
+      "input": {},
+      "output": false
+    },
+    {
+      "id": "answerTo#1",
+      "fn": "answerTo",
+      "input": {
+        "text": "Yes!"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#2",
+      "fn": "answerTo",
+      "input": {
+        "text": "go ahead."
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#3",
+      "fn": "answerTo",
+      "input": {
+        "text": "Nope"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#4",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes but only the first two"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#5",
+      "fn": "answerTo",
+      "input": {
+        "text": "block @x"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#6",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#7",
+      "fn": "answerTo",
+      "input": {
+        "text": "Yes."
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#8",
+      "fn": "answerTo",
+      "input": {
+        "text": "YES!!!"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#9",
+      "fn": "answerTo",
+      "input": {
+        "text": "  y  "
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#10",
+      "fn": "answerTo",
+      "input": {
+        "text": "yep"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#11",
+      "fn": "answerTo",
+      "input": {
+        "text": "yeah"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#12",
+      "fn": "answerTo",
+      "input": {
+        "text": "yup"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#13",
+      "fn": "answerTo",
+      "input": {
+        "text": "ok"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#14",
+      "fn": "answerTo",
+      "input": {
+        "text": "OK!"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#15",
+      "fn": "answerTo",
+      "input": {
+        "text": "okay"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#16",
+      "fn": "answerTo",
+      "input": {
+        "text": "sure"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#17",
+      "fn": "answerTo",
+      "input": {
+        "text": "do it"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#18",
+      "fn": "answerTo",
+      "input": {
+        "text": "do it."
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#19",
+      "fn": "answerTo",
+      "input": {
+        "text": "go ahead"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#20",
+      "fn": "answerTo",
+      "input": {
+        "text": "go on"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#21",
+      "fn": "answerTo",
+      "input": {
+        "text": "please do"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#22",
+      "fn": "answerTo",
+      "input": {
+        "text": "confirm"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#23",
+      "fn": "answerTo",
+      "input": {
+        "text": "👍"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#24",
+      "fn": "answerTo",
+      "input": {
+        "text": "👍🏽"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#25",
+      "fn": "answerTo",
+      "input": {
+        "text": "👍🏿!"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#26",
+      "fn": "answerTo",
+      "input": {
+        "text": "👍🏽🏽"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#27",
+      "fn": "answerTo",
+      "input": {
+        "text": "👍👍"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#28",
+      "fn": "answerTo",
+      "input": {
+        "text": "no"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#29",
+      "fn": "answerTo",
+      "input": {
+        "text": "n"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#30",
+      "fn": "answerTo",
+      "input": {
+        "text": "nope"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#31",
+      "fn": "answerTo",
+      "input": {
+        "text": "don't"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#32",
+      "fn": "answerTo",
+      "input": {
+        "text": "dont"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#33",
+      "fn": "answerTo",
+      "input": {
+        "text": "don’t"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#34",
+      "fn": "answerTo",
+      "input": {
+        "text": "do not"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#35",
+      "fn": "answerTo",
+      "input": {
+        "text": "cancel"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#36",
+      "fn": "answerTo",
+      "input": {
+        "text": "stop"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#37",
+      "fn": "answerTo",
+      "input": {
+        "text": "never mind"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#38",
+      "fn": "answerTo",
+      "input": {
+        "text": "nevermind"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#39",
+      "fn": "answerTo",
+      "input": {
+        "text": "never  mind"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#40",
+      "fn": "answerTo",
+      "input": {
+        "text": "👎"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#41",
+      "fn": "answerTo",
+      "input": {
+        "text": "👎🏻"
+      },
+      "output": "no"
+    },
+    {
+      "id": "answerTo#42",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes please"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#43",
+      "fn": "answerTo",
+      "input": {
+        "text": "no thanks"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#44",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes!. "
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#45",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes "
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#46",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#47",
+      "fn": "answerTo",
+      "input": {
+        "text": "yes?"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#48",
+      "fn": "answerTo",
+      "input": {
+        "text": "y e s"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#49",
+      "fn": "answerTo",
+      "input": {
+        "text": "Ｙｅｓ"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#50",
+      "fn": "answerTo",
+      "input": {
+        "text": "İ"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#51",
+      "fn": "answerTo",
+      "input": {
+        "text": ""
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#52",
+      "fn": "answerTo",
+      "input": {
+        "text": null
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#53",
+      "fn": "answerTo",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "answerTo#54",
+      "fn": "answerTo",
+      "input": {
+        "text": 0
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#55",
+      "fn": "answerTo",
+      "input": {
+        "text": 42
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#56",
+      "fn": "answerTo",
+      "input": {
+        "text": "maybe"
+      },
+      "output": null
+    },
+    {
+      "id": "answerTo#57",
+      "fn": "answerTo",
+      "input": {
+        "text": "okay.!.!"
+      },
+      "output": "yes"
+    },
+    {
+      "id": "answerTo#58",
+      "fn": "answerTo",
+      "input": {
+        "text": ".yes"
+      },
+      "output": null
+    }
+  ]
+}

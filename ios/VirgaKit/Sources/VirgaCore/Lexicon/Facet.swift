@@ -71,16 +71,22 @@ extension FacetFeature: Codable {
   }
 }
 
-/// app.bsky.richtext.facet: a byte range and what it means.
+/// app.bsky.richtext.facet: a byte range and what it means. A facet made
+/// here carries its `$type`, as the web writes one; a facet read keeps
+/// whether it had one (other apps write facets without), so a record round
+/// trips as it came.
 public struct Facet: Codable, Hashable, Sendable {
   public static let type = "app.bsky.richtext.facet"
 
   public var index: ByteSlice
   public var features: [FacetFeature]
+  /// The `$type` this was read or made with, if any.
+  public var lexiconType: String?
 
-  public init(index: ByteSlice, features: [FacetFeature]) {
+  public init(index: ByteSlice, features: [FacetFeature], lexiconType: String? = Facet.type) {
     self.index = index
     self.features = features
+    self.lexiconType = lexiconType
   }
 
   public init(byteStart: Int, byteEnd: Int, feature: FacetFeature) {
@@ -96,24 +102,37 @@ public struct Facet: Codable, Hashable, Sendable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     index = try container.decode(ByteSlice.self, forKey: .index)
     features = try container.decodeIfPresent([FacetFeature].self, forKey: .features) ?? []
+    lexiconType = try container.decodeIfPresent(String.self, forKey: .type)
   }
 
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    try container.encode(Self.type, forKey: .type)
+    try container.encodeIfPresent(lexiconType, forKey: .type)
     try container.encode(features, forKey: .features)
     try container.encode(index, forKey: .index)
   }
 }
 
-/// com.atproto.repo.strongRef: a record's AT-URI and CID.
+/// com.atproto.repo.strongRef: a record's AT-URI and CID. Written without a
+/// `$type`, as the web writes one (`{ uri, cid }`), unless it was read with
+/// one or given one (the web's link cards write `associatedRefs` with it).
 public struct StrongRef: Codable, Hashable, Sendable {
+  public static let type = "com.atproto.repo.strongRef"
+
   public var uri: String
   public var cid: String
+  /// The `$type` this was read or made with, if any.
+  public var lexiconType: String?
 
-  public init(uri: String, cid: String) {
+  public init(uri: String, cid: String, lexiconType: String? = nil) {
     self.uri = uri
     self.cid = cid
+    self.lexiconType = lexiconType
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case lexiconType = "$type"
+    case uri, cid
   }
 }
 

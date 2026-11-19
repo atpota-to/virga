@@ -13,7 +13,7 @@ import VirgaTestSupport
   /// The web's `new Date(now).getTime()` of a fixture's `now`.
   static func nowMs(_ c: ParityCase) -> Double {
     switch c["now"] {
-    case .string(let text): return VirgaRepo.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
+    case .string(let text): return VirgaCore.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
     case .number(let ms): return ms
     default: return .nan
     }

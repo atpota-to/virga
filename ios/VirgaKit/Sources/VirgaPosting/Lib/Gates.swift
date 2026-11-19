@@ -358,7 +358,7 @@ public enum Gates {
     let nowMs = (now.timeIntervalSince1970 * 1000).rounded(.down)
     func createdAt(_ existing: JSONValue?) -> JSONValue {
       if let value = existing?["createdAt"], value.isTruthy { return value }
-      return .string(VirgaRepo.JSDate.toISOString(nowMs) ?? "")
+      return .string(VirgaCore.JSDate.toISOString(nowMs) ?? "")
     }
     let hiddenReplies = existingThreadgate?["hiddenReplies"]?.arrayValue ?? []
     let detached = existingPostgate?["detachedEmbeddingUris"]?.arrayValue ?? []

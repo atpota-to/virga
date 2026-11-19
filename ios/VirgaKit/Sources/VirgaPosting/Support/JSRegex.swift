@@ -16,6 +16,7 @@
 //   long s, the Kelvin sign).
 
 import Foundation
+import VirgaCore
 
 /// A compiled pattern. Immutable and safe to share across threads.
 final class JSRegex: @unchecked Sendable {
@@ -51,18 +52,24 @@ final class JSRegex: @unchecked Sendable {
   /// Every match, as a global regex's `exec` loop finds them (an empty match
   /// moves the search on by one code unit).
   func matches(in text: String, from start: Int = 0) -> [Match] {
-    let ns = NSString(string: text)
-    guard start <= ns.length else { return [] }
-    let found = regex.matches(in: text, options: [], range: NSRange(location: start, length: ns.length - start))
+    let (subject, length) = Self.subject(text)
+    guard start <= length else { return [] }
+    let found = regex.matches(in: subject, options: [], range: NSRange(location: start, length: length - start))
     return found.map(Self.convert)
   }
 
   /// The first match at or after `start`, as `exec` with `lastIndex = start`.
   func firstMatch(in text: String, from start: Int = 0) -> Match? {
-    let ns = NSString(string: text)
-    guard start <= ns.length else { return nil }
-    return regex.firstMatch(in: text, options: [], range: NSRange(location: start, length: ns.length - start))
+    let (subject, length) = Self.subject(text)
+    guard start <= length else { return nil }
+    return regex.firstMatch(in: subject, options: [], range: NSRange(location: start, length: length - start))
       .map(Self.convert)
+  }
+
+  /// What the regex runs over (VirgaCore's JSRegexSubject: the text's own
+  /// UTF-16 code units, whatever bridging would do), and its length.
+  static func subject(_ text: String) -> (String, Int) {
+    JSRegexSubject.make(text)
   }
 
   /// `regex.test(text)`.

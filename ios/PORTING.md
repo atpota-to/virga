@@ -62,6 +62,16 @@ means porting the code, not reimagining it.
   `jsTrimmed`), or work on `Array(text.utf16)`. Don't index by `Character`
   where the web indexes by code unit. Graphemes (`Graphemes.countGraphemes`)
   are only for what the web counts with Intl.Segmenter.
+- **Strings compare by code unit.** Swift's `==` on String, and so `Set<String>`,
+  `Dictionary` keys, `contains` and `firstIndex(of:)`, is canonical
+  equivalence: "é" equals "e\u{301}", and the Kelvin sign equals "K".
+  JavaScript's `===`, `includes`, `indexOf`, Sets and object keys compare
+  UTF-16 code units. Wherever the web compares strings that come from outside
+  the code (ids, DIDs, handles, keys read back from storage, user text), use
+  VirgaCore's `jsEquals`, `JSKey` (a Set/Dictionary key), `jsIncludes` and
+  `jsValue` (`Support/JSStrings.swift`). Comparing with an ASCII literal is
+  exact unless it contains "K", ";" or "`". `Parity.diff` compares strings
+  by code unit, so fixtures catch the difference.
 - **Regular expressions.** Port JS regexes to `NSRegularExpression` matched over
   `NSString`/UTF-16 ranges, which gives JS-compatible offsets. Watch the
   differences: JS `\w`, `\d`, `\b` are ASCII-only unless the regex has `u`
@@ -108,6 +118,13 @@ means porting the code, not reimagining it.
   small persisted values through VirgaCore's key-value store protocol (the
   web's localStorage), larger data through its file store protocol (the web's
   IndexedDB). Never touch `UserDefaults` or the file system directly from logic.
+- Apple's SDK is stricter than Linux's Foundation in places Linux can't
+  check. The one CI has caught: APIs marked `noasync` (iterating a
+  `FileManager.DirectoryEnumerator`, `NSLock.lock()`/`unlock()`,
+  `DispatchSemaphore.wait()`, `Thread.sleep`) can't be called directly in an
+  `async` function in Swift 6 mode. Do that work in a synchronous helper, or
+  through `Locked.withLock`. CI builds with Xcode 26.6 (iOS 26.5 SDK); keep to
+  Swift 6.2's language features.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
 
 ## Tests
@@ -120,6 +137,11 @@ means porting the code, not reimagining it.
   inputs adversarial: empty, unicode and emoji, boundaries, malformed data,
   every branch the web code has. The web module's own `*.test.js` is the best
   list of interesting inputs; reuse them.
+- **Local time.** Code that buckets or formats in local time takes a
+  `TimeZone` in Swift; its generator records cases in several zones with
+  `inZone(tz, fn)` (synchronous) or `withTimeZone(tz, fn)` (async) over
+  `ZONES` (`cases/_zones.js`, re-exported by `_helpers.js`), across DST
+  changes, and passes the zone in the case input.
 - **Recorded-fetch parity** for code that talks to the network: in the
   generator, wrap the web call in `withFakeFetch(responder, fn)`
   (`cases/_helpers.js`); the fixture records every request the web code made
