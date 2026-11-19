@@ -1,0 +1,1835 @@
+{
+  "name": "core.identity",
+  "sources": [
+    "src/session/accounts.js",
+    "src/defense/harvest.js",
+    "src/defense/command.js",
+    "src/tools/interactionModel.js",
+    "src/posting/lib/mentions.js",
+    "src/lib/atproto.js",
+    "src/lib/analytics.js",
+    "src/posting/lib/postLink.js"
+  ],
+  "cases": [
+    {
+      "id": "accounts.isDid#1",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:z72i7hdynmk6r22z27h6tvur"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#2",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:web:example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#3",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:web:localhost%3A8080"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#4",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:key:zQ3shokFTS3brHcDQrn82RUDfCZESWL1ZdCEJwekUDPQiYBme"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#5",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#6",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#7",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:PLC:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#8",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:abc:"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#9",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:abc%"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#10",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:abc%20"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#11",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:abc\n"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#12",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:a/b"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#13",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:a b"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#14",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:ab_c.d-e"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#15",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:a1:x"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#16",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "DID:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#17",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did::abc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#18",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:plc:abç"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#19",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": " did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#20",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:web:example.com:path:to"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#21",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "did:web::"
+      },
+      "output": true
+    },
+    {
+      "id": "accounts.isDid#22",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": ""
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#23",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": "at://did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#24",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": null
+      },
+      "output": false
+    },
+    {
+      "id": "accounts.isDid#25",
+      "fn": "accounts.isDid",
+      "input": {
+        "value": 42
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#1",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:z72i7hdynmk6r22z27h6tvur"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#2",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:web:example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#3",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:web:localhost%3A8080"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#4",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:key:zQ3shokFTS3brHcDQrn82RUDfCZESWL1ZdCEJwekUDPQiYBme"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#5",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#6",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#7",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:PLC:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#8",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:abc:"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#9",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:abc%"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#10",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:abc%20"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#11",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:abc\n"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#12",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:a/b"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#13",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:a b"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#14",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:ab_c.d-e"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#15",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:a1:x"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#16",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "DID:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#17",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did::abc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#18",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:plc:abç"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#19",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": " did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#20",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:web:example.com:path:to"
+      },
+      "output": true
+    },
+    {
+      "id": "harvest.isDid#21",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "did:web::"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#22",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": ""
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#23",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": "at://did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#24",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": null
+      },
+      "output": false
+    },
+    {
+      "id": "harvest.isDid#25",
+      "fn": "harvest.isDid",
+      "input": {
+        "value": 42
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#1",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:z72i7hdynmk6r22z27h6tvur"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#2",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:web:example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#3",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:web:localhost%3A8080"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#4",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:key:zQ3shokFTS3brHcDQrn82RUDfCZESWL1ZdCEJwekUDPQiYBme"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#5",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#6",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#7",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:PLC:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#8",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:abc:"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#9",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:abc%"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#10",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:abc%20"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#11",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:abc\n"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#12",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:a/b"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#13",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:a b"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#14",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:ab_c.d-e"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#15",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:a1:x"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#16",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "DID:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#17",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did::abc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#18",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:plc:abç"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#19",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": " did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#20",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:web:example.com:path:to"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#21",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "did:web::"
+      },
+      "output": true
+    },
+    {
+      "id": "interactionModel.isDid#22",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": ""
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#23",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": "at://did:plc:abc"
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#24",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": null
+      },
+      "output": false
+    },
+    {
+      "id": "interactionModel.isDid#25",
+      "fn": "interactionModel.isDid",
+      "input": {
+        "value": 42
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#1",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.bsky.social"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#2",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "jo.example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#3",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "xn--ls8h.test"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#4",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "a.b"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#5",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "a.b.c.d.e"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#6",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "Alice.Bsky.Social"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#7",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#8",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": ".alice.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#9",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.bsky.social."
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#10",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice..social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#11",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "-alice.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#12",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice-.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#13",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "al-ice.bsky.social"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#14",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.123"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#15",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.1bc"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#16",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.b2c"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#17",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "1alice.bsky.social"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#18",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice_bob.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#19",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alïce.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#20",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.bsky.social\n"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#21",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "@alice.bsky.social"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#22",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#23",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#24",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.co"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#25",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.co"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#26",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "handle.invalid"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#27",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#28",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": null
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#29",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": 7
+      },
+      "output": false
+    },
+    {
+      "id": "rkeyFromAtUri#1",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#2",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#3",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc//"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#4",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc?x=1"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#5",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc#frag"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#6",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/extra"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#7",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#8",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#9",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#10",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#11",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:a?b/app.bsky.feed.post/3k"
+      },
+      "output": "3k"
+    },
+    {
+      "id": "rkeyFromAtUri#12",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post?x/3k"
+      },
+      "output": "3k"
+    },
+    {
+      "id": "rkeyFromAtUri#13",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://alice.bsky.social/app.bsky.feed.post/3kabc"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#14",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:web:example.com/app.bsky.graph.list/3kx"
+      },
+      "output": "3kx"
+    },
+    {
+      "id": "rkeyFromAtUri#15",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/whats-hot"
+      },
+      "output": "whats-hot"
+    },
+    {
+      "id": "rkeyFromAtUri#16",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3ky"
+      },
+      "output": "3ky"
+    },
+    {
+      "id": "rkeyFromAtUri#17",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.follow/3kz"
+      },
+      "output": "3kz"
+    },
+    {
+      "id": "rkeyFromAtUri#18",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/net.anisota.feed.template/3kt"
+      },
+      "output": "3kt"
+    },
+    {
+      "id": "rkeyFromAtUri#19",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/👍"
+      },
+      "output": "👍"
+    },
+    {
+      "id": "rkeyFromAtUri#20",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at:///app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#21",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc//3k"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#22",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "AT://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#23",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "https://bsky.app/profile/alice/post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#24",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:/x/y"
+      },
+      "output": "y"
+    },
+    {
+      "id": "rkeyFromAtUri#25",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:/x/y"
+      },
+      "output": "y"
+    },
+    {
+      "id": "rkeyFromAtUri#26",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc:/app.bsky.feed.post/3k"
+      },
+      "output": "3k"
+    },
+    {
+      "id": "rkeyFromAtUri#27",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": " at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#28",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#29",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#1",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#2",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#3",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc//"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#4",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc?x=1"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#5",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc#frag"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#6",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/extra"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#7",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#8",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#9",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#10",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#11",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:a?b/app.bsky.feed.post/3k"
+      },
+      "output": "did:plc:a?b"
+    },
+    {
+      "id": "didFromAtUri#12",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post?x/3k"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#13",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://alice.bsky.social/app.bsky.feed.post/3kabc"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#14",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:web:example.com/app.bsky.graph.list/3kx"
+      },
+      "output": "did:web:example.com"
+    },
+    {
+      "id": "didFromAtUri#15",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/whats-hot"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#16",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3ky"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#17",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.follow/3kz"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#18",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/net.anisota.feed.template/3kt"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#19",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/👍"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#20",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at:///app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#21",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc//3k"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "didFromAtUri#22",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "AT://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#23",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "https://bsky.app/profile/alice/post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#24",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:/x/y"
+      },
+      "output": "did:plc:"
+    },
+    {
+      "id": "didFromAtUri#25",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:/x/y"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#26",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": "at://did:plc:abc:/app.bsky.feed.post/3k"
+      },
+      "output": "did:plc:abc:"
+    },
+    {
+      "id": "didFromAtUri#27",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": " at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#28",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "didFromAtUri#29",
+      "fn": "didFromAtUri",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#1",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#2",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#3",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc//"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#4",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc?x=1"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#5",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc#frag"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#6",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/extra"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#7",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#8",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#9",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#10",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#11",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:a?b/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#12",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post?x/3k"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#13",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://alice.bsky.social/app.bsky.feed.post/3kabc"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#14",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:web:example.com/app.bsky.graph.list/3kx"
+      },
+      "output": "did:web:example.com"
+    },
+    {
+      "id": "authorOf#15",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/whats-hot"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#16",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3ky"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#17",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.follow/3kz"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#18",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/net.anisota.feed.template/3kt"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#19",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/👍"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#20",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at:///app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#21",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc//3k"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "authorOf#22",
+      "fn": "authorOf",
+      "input": {
+        "uri": "AT://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#23",
+      "fn": "authorOf",
+      "input": {
+        "uri": "https://bsky.app/profile/alice/post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#24",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:/x/y"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#25",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:/x/y"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#26",
+      "fn": "authorOf",
+      "input": {
+        "uri": "at://did:plc:abc:/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#27",
+      "fn": "authorOf",
+      "input": {
+        "uri": " at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#28",
+      "fn": "authorOf",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "authorOf#29",
+      "fn": "authorOf",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#1",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc"
+      },
+      "output": {
+        "kind": "post",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3kabc"
+      }
+    },
+    {
+      "id": "parseRecordUri#2",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/"
+      },
+      "output": {
+        "kind": "post",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3kabc"
+      }
+    },
+    {
+      "id": "parseRecordUri#3",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc//"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#4",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc?x=1"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#5",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc#frag"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#6",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3kabc/extra"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#7",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#8",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#9",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#10",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#11",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:a?b/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#12",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post?x/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#13",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://alice.bsky.social/app.bsky.feed.post/3kabc"
+      },
+      "output": {
+        "kind": "post",
+        "did": "alice.bsky.social",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3kabc"
+      }
+    },
+    {
+      "id": "parseRecordUri#14",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:web:example.com/app.bsky.graph.list/3kx"
+      },
+      "output": {
+        "kind": "list",
+        "did": "did:web:example.com",
+        "collection": "app.bsky.graph.list",
+        "rkey": "3kx"
+      }
+    },
+    {
+      "id": "parseRecordUri#15",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/whats-hot"
+      },
+      "output": {
+        "kind": "feed",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.generator",
+        "rkey": "whats-hot"
+      }
+    },
+    {
+      "id": "parseRecordUri#16",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3ky"
+      },
+      "output": {
+        "kind": "starterpack",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.graph.starterpack",
+        "rkey": "3ky"
+      }
+    },
+    {
+      "id": "parseRecordUri#17",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.follow/3kz"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#18",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/net.anisota.feed.template/3kt"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#19",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/👍"
+      },
+      "output": {
+        "kind": "post",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.post",
+        "rkey": "👍"
+      }
+    },
+    {
+      "id": "parseRecordUri#20",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at:///app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#21",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc//3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#22",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "AT://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#23",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "https://bsky.app/profile/alice/post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#24",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:/x/y"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#25",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:/x/y"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#26",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc:/app.bsky.feed.post/3k"
+      },
+      "output": {
+        "kind": "post",
+        "did": "did:plc:abc:",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3k"
+      }
+    },
+    {
+      "id": "parseRecordUri#27",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": " at://did:plc:abc/app.bsky.feed.post/3k"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#28",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#29",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "recordUri#1",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "post",
+        "rkey": "3k"
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.post/3k"
+    },
+    {
+      "id": "recordUri#2",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "list",
+        "rkey": "x y"
+      },
+      "output": "at://did:plc:abc/app.bsky.graph.list/x y"
+    }
+  ]
+}
