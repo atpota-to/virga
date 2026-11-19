@@ -61,6 +61,21 @@ private func asWritten(_ value: JSONValue) -> JSONValue {
     #expect(throws: JSONParseError.self) { try JSONValue.parse(String(repeating: "[", count: depth)) }
   }
 
+  /// Parsing is linear in the input. (Containers copied on every insert,
+  /// as a popped and rebound stack frame is, made a 100,000-member array
+  /// take minutes; it takes well under a second.)
+  @Test func longContainersParseInLinearTime() throws {
+    let count = 100_000
+    let array = "[" + String(repeating: "0,", count: count - 1) + "0]"
+    let object = "{" + (0..<count).map { #""k\#($0)":\#($0)"# }.joined(separator: ",") + "}"
+    let clock = ContinuousClock()
+    var parsed: (JSONValue, JSONValue)?
+    let elapsed = try clock.measure { parsed = (try JSONValue.parse(array), try JSONValue.parse(object)) }
+    #expect(parsed?.0.arrayValue?.count == count)
+    #expect(parsed?.1.objectValue?.count == count)
+    #expect(elapsed < .seconds(20), "took \(elapsed)")
+  }
+
   @Test func aBodyIsReadAsResponseJsonReadsIt() throws {
     // response.json() drops a byte-order mark; JSON.parse on a string doesn't.
     let bom = Data([0xEF, 0xBB, 0xBF]) + Data(#"{"a":1}"#.utf8)
