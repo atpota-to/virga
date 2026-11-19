@@ -1,0 +1,516 @@
+{
+  "name": "posting-text.tags",
+  "sources": [
+    "src/posting/lib/tags.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "MAX_TAGS": 8,
+        "MAX_TAG_GRAPHEMES": 64,
+        "MAX_TAG_BYTES": 640
+      }
+    },
+    {
+      "id": "normalizeTags#1",
+      "fn": "normalizeTags",
+      "input": {
+        "input": " one, #two ,##three,  , ＃four"
+      },
+      "output": [
+        "one",
+        "two",
+        "three",
+        "four"
+      ]
+    },
+    {
+      "id": "normalizeTags#2",
+      "fn": "normalizeTags",
+      "input": {
+        "input": [
+          "#a",
+          "b",
+          3,
+          null,
+          " c "
+        ]
+      },
+      "output": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    {
+      "id": "normalizeTags#3",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "Rust, rust, RUST, go"
+      },
+      "output": [
+        "Rust",
+        "go"
+      ]
+    },
+    {
+      "id": "normalizeTags#4",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11"
+      },
+      "output": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7"
+      ]
+    },
+    {
+      "id": "normalizeTags#5",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    },
+    {
+      "id": "normalizeTags#6",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+      },
+      "output": [
+        "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+      ]
+    },
+    {
+      "id": "normalizeTags#7",
+      "fn": "normalizeTags",
+      "input": {
+        "input": [
+          "👩‍💻",
+          "می‌خواهم"
+        ]
+      },
+      "output": [
+        "👩‍💻",
+        "می‌خواهم"
+      ]
+    },
+    {
+      "id": "normalizeTags#8",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+      },
+      "output": [
+        "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+      ]
+    },
+    {
+      "id": "normalizeTags#9",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+      },
+      "output": [
+        "👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧"
+      ]
+    },
+    {
+      "id": "normalizeTags#10",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "tag​, tag"
+      },
+      "output": [
+        "tag"
+      ]
+    },
+    {
+      "id": "normalizeTags#11",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "tag﻿,  tag , t\u0000ag"
+      },
+      "output": [
+        "tag"
+      ]
+    },
+    {
+      "id": "normalizeTags#12",
+      "fn": "normalizeTags",
+      "input": {
+        "input": ""
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#13",
+      "fn": "normalizeTags",
+      "input": {
+        "input": null
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#14",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "birds, night ,lamp"
+      },
+      "output": [
+        "birds",
+        "night",
+        "lamp"
+      ]
+    },
+    {
+      "id": "normalizeTags#15",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "#birds, ##night"
+      },
+      "output": [
+        "birds",
+        "night"
+      ]
+    },
+    {
+      "id": "normalizeTags#16",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "Birds, birds, BIRDS"
+      },
+      "output": [
+        "Birds"
+      ]
+    },
+    {
+      "id": "normalizeTags#17",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,t27,t28,t29"
+      },
+      "output": [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7"
+      ]
+    },
+    {
+      "id": "normalizeTags#18",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": [
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      ]
+    },
+    {
+      "id": "normalizeTags#19",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "birds,,, ,night"
+      },
+      "output": [
+        "birds",
+        "night"
+      ]
+    },
+    {
+      "id": "normalizeTags#20",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "ΣΑΣ, σας, σασ"
+      },
+      "output": [
+        "ΣΑΣ",
+        "σασ"
+      ]
+    },
+    {
+      "id": "normalizeTags#21",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "İstanbul, i̇stanbul, istanbul"
+      },
+      "output": [
+        "İstanbul",
+        "istanbul"
+      ]
+    },
+    {
+      "id": "normalizeTags#22",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "Straße, STRASSE, strasse"
+      },
+      "output": [
+        "Straße",
+        "STRASSE"
+      ]
+    },
+    {
+      "id": "normalizeTags#23",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "é, é"
+      },
+      "output": [
+        "é",
+        "é"
+      ]
+    },
+    {
+      "id": "normalizeTags#24",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "#, ##, ＃＃, # #"
+      },
+      "output": [
+        "#"
+      ]
+    },
+    {
+      "id": "normalizeTags#25",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "#tag#, #tag"
+      },
+      "output": [
+        "tag#",
+        "tag"
+      ]
+    },
+    {
+      "id": "normalizeTags#26",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "a,b,c,d,e,f,g,h,i,j"
+      },
+      "output": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h"
+      ]
+    },
+    {
+      "id": "normalizeTags#27",
+      "fn": "normalizeTags",
+      "input": {
+        "input": 42
+      },
+      "output": [
+        "42"
+      ]
+    },
+    {
+      "id": "normalizeTags#28",
+      "fn": "normalizeTags",
+      "input": {
+        "input": 0
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#29",
+      "fn": "normalizeTags",
+      "input": {
+        "input": true
+      },
+      "output": [
+        "true"
+      ]
+    },
+    {
+      "id": "normalizeTags#30",
+      "fn": "normalizeTags",
+      "input": {
+        "input": false
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#31",
+      "fn": "normalizeTags",
+      "input": {
+        "input": {
+          "a": 1
+        }
+      },
+      "output": [
+        "[object Object]"
+      ]
+    },
+    {
+      "id": "normalizeTags#32",
+      "fn": "normalizeTags",
+      "input": {
+        "input": []
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#33",
+      "fn": "normalizeTags",
+      "input": {
+        "input": [
+          "",
+          " ",
+          "#"
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "normalizeTags#34",
+      "fn": "normalizeTags",
+      "input": {
+        "input": [
+          [
+            "nested"
+          ],
+          {
+            "x": 1
+          },
+          "ok"
+        ]
+      },
+      "output": [
+        "ok"
+      ]
+    },
+    {
+      "id": "normalizeTags#35",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "trailing,"
+      },
+      "output": [
+        "trailing"
+      ]
+    },
+    {
+      "id": "normalizeTags#36",
+      "fn": "normalizeTags",
+      "input": {
+        "input": ",leading"
+      },
+      "output": [
+        "leading"
+      ]
+    },
+    {
+      "id": "normalizeTags#37",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "　ideographic　space　, x"
+      },
+      "output": [
+        "ideographic　space",
+        "x"
+      ]
+    },
+    {
+      "id": "normalizeTags#38",
+      "fn": "normalizeTags",
+      "input": {
+        "input": "é,é"
+      },
+      "output": [
+        "é",
+        "é"
+      ]
+    },
+    {
+      "id": "formatTags#1",
+      "fn": "formatTags",
+      "input": {
+        "tags": [
+          "a",
+          "b"
+        ]
+      },
+      "output": "a, b"
+    },
+    {
+      "id": "formatTags#2",
+      "fn": "formatTags",
+      "input": {
+        "tags": null
+      },
+      "output": ""
+    },
+    {
+      "id": "formatTags#3",
+      "fn": "formatTags",
+      "input": {
+        "tags": []
+      },
+      "output": ""
+    },
+    {
+      "id": "formatTags#4",
+      "fn": "formatTags",
+      "input": {
+        "tags": [
+          "one"
+        ]
+      },
+      "output": "one"
+    },
+    {
+      "id": "formatTags#5",
+      "fn": "formatTags",
+      "input": {
+        "tags": [
+          "a",
+          null,
+          3,
+          "b"
+        ]
+      },
+      "output": "a, , 3, b"
+    },
+    {
+      "id": "formatTags#6",
+      "fn": "formatTags",
+      "input": {
+        "tags": "not an array"
+      },
+      "output": ""
+    },
+    {
+      "id": "formatTags#7",
+      "fn": "formatTags",
+      "input": {
+        "tags": {
+          "a": 1
+        }
+      },
+      "output": ""
+    }
+  ]
+}

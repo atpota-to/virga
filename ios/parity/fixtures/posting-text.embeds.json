@@ -1,0 +1,2239 @@
+{
+  "name": "posting-text.embeds",
+  "sources": [
+    "src/posting/lib/embeds.js"
+  ],
+  "cases": [
+    {
+      "id": "buildRecordEmbed#1",
+      "fn": "buildRecordEmbed",
+      "input": {
+        "record": {
+          "uri": "at://x",
+          "cid": "c",
+          "extra": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://x",
+          "cid": "c"
+        }
+      }
+    },
+    {
+      "id": "buildRecordEmbed#2",
+      "fn": "buildRecordEmbed",
+      "input": {
+        "record": {
+          "uri": "at://x"
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://x"
+        }
+      }
+    },
+    {
+      "id": "buildRecordEmbed#3",
+      "fn": "buildRecordEmbed",
+      "input": {
+        "record": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {}
+      }
+    },
+    {
+      "id": "combineRecordWithMedia#1",
+      "fn": "combineRecordWithMedia",
+      "input": {
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x",
+            "cid": "c"
+          }
+        },
+        "media": {
+          "$type": "app.bsky.embed.images",
+          "images": []
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia",
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x",
+            "cid": "c"
+          }
+        },
+        "media": {
+          "$type": "app.bsky.embed.images",
+          "images": []
+        }
+      }
+    },
+    {
+      "id": "combineRecordWithMedia#2",
+      "fn": "combineRecordWithMedia",
+      "input": {
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x",
+            "cid": "c"
+          }
+        },
+        "media": null
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://x",
+          "cid": "c"
+        }
+      }
+    },
+    {
+      "id": "combineRecordWithMedia#3",
+      "fn": "combineRecordWithMedia",
+      "input": {
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x",
+            "cid": "c"
+          }
+        },
+        "media": 0
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://x",
+          "cid": "c"
+        }
+      }
+    },
+    {
+      "id": "combineRecordWithMedia#4",
+      "fn": "combineRecordWithMedia",
+      "input": {
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://x",
+            "cid": "c"
+          }
+        },
+        "media": ""
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://x",
+          "cid": "c"
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#1",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a"
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#2",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": null
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#3",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 16,
+          "height": 9
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 16,
+          "height": 9
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#4",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 0,
+          "height": 3
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#5",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 5
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#6",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 4.5,
+          "height": 3.49
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 5,
+          "height": 3
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#7",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 0.4,
+          "height": 0.6
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 0,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#8",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": -1,
+          "height": 2
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#9",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": "1920",
+          "height": "1080"
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#10",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": "wide",
+          "height": 2
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#11",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": true,
+          "height": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#12",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 1000000000,
+          "height": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a",
+        "aspectRatio": {
+          "width": 1000000000,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildVideoEmbed#13",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": "square"
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#14",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": "a",
+        "aspectRatio": [
+          1,
+          2
+        ]
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": "a"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#15",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b"
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": ""
+      }
+    },
+    {
+      "id": "buildVideoEmbed#16",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "v"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        },
+        "alt": ""
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": {
+          "$type": "blob",
+          "ref": {
+            "$link": "v"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        },
+        "alt": ""
+      }
+    },
+    {
+      "id": "buildVideoEmbed#17",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "alt": "no blob"
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "alt": "no blob"
+      }
+    },
+    {
+      "id": "buildVideoEmbed#18",
+      "fn": "buildVideoEmbed",
+      "input": {
+        "blob": "b",
+        "alt": 7
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": "b",
+        "alt": 7
+      }
+    },
+    {
+      "id": "buildImageRecord#1",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x"
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#2",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": null
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#3",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 16,
+          "height": 9
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 16,
+          "height": 9
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#4",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 0,
+          "height": 3
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#5",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 5
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#6",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 4.5,
+          "height": 3.49
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 5,
+          "height": 3
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#7",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 0.4,
+          "height": 0.6
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 0,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#8",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": -1,
+          "height": 2
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#9",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": "1920",
+          "height": "1080"
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#10",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": "wide",
+          "height": 2
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#11",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": true,
+          "height": 1
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#12",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": {
+          "width": 1000000000,
+          "height": 1
+        }
+      },
+      "output": {
+        "alt": "x",
+        "image": "b",
+        "aspectRatio": {
+          "width": 1000000000,
+          "height": 1
+        }
+      }
+    },
+    {
+      "id": "buildImageRecord#13",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": "square"
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#14",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b",
+        "alt": "x",
+        "aspectRatio": [
+          1,
+          2
+        ]
+      },
+      "output": {
+        "alt": "x",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#15",
+      "fn": "buildImageRecord",
+      "input": {
+        "blob": "b"
+      },
+      "output": {
+        "alt": "",
+        "image": "b"
+      }
+    },
+    {
+      "id": "buildImageRecord#16",
+      "fn": "buildImageRecord",
+      "input": {
+        "alt": "only alt"
+      },
+      "output": {
+        "alt": "only alt"
+      }
+    },
+    {
+      "id": "buildImagesEmbed#1",
+      "fn": "buildImagesEmbed",
+      "input": {
+        "records": []
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": []
+      }
+    },
+    {
+      "id": "buildImagesEmbed#2",
+      "fn": "buildImagesEmbed",
+      "input": {
+        "records": [
+          {
+            "alt": "",
+            "image": "b"
+          }
+        ]
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "",
+            "image": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "buildExternalEmbed#1",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D"
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#2",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": null
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#3",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": []
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#4",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": [
+            {
+              "uri": "at://a/site.standard.document/1",
+              "cid": "c"
+            }
+          ]
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          },
+          "associatedRefs": [
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/site.standard.document/1",
+              "cid": "c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#5",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": [
+            {
+              "uri": " at://a/x/1 ",
+              "cid": " c1 "
+            },
+            {
+              "uri": "at://a/x/1",
+              "cid": "c2"
+            },
+            {
+              "uri": "https://not.at",
+              "cid": "c"
+            },
+            {
+              "uri": "at://a/x/2",
+              "cid": ""
+            },
+            {
+              "uri": "at://a/x/3"
+            },
+            null,
+            "at://a/x/4",
+            [],
+            {
+              "uri": 5,
+              "cid": "c"
+            },
+            {
+              "uri": "at://a/x/5",
+              "cid": "c5"
+            },
+            {
+              "uri": "at://a/x/6",
+              "cid": "c6"
+            },
+            {
+              "uri": "at://a/x/7",
+              "cid": "c7"
+            },
+            {
+              "uri": "at://a/x/8",
+              "cid": "c8"
+            }
+          ]
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          },
+          "associatedRefs": [
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/x/1",
+              "cid": "c1"
+            },
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/x/5",
+              "cid": "c5"
+            },
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/x/6",
+              "cid": "c6"
+            },
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/x/7",
+              "cid": "c7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#6",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": "not an array"
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#7",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "associatedRefs": {
+            "uri": "at://a/x/1",
+            "cid": "c"
+          }
+        },
+        "thumb": {
+          "$type": "blob",
+          "ref": {
+            "$link": "thumb"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "D",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "thumb"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#8",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com"
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#9",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {
+          "url": "https://e.com",
+          "title": "",
+          "description": null
+        },
+        "thumb": null
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "buildExternalEmbed#10",
+      "fn": "buildExternalEmbed",
+      "input": {
+        "card": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "title": "",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "nothing attached",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "text": "hi",
+          "images": [],
+          "video": null,
+          "record": null,
+          "card": null
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "images in order",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ]
+        },
+        "blobs": {
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "one",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            "aspectRatio": {
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "alt": "",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "fewer blobs than images",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ]
+        },
+        "blobs": {
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "one",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            "aspectRatio": {
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "alt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "images without blobs",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ]
+        },
+        "blobs": {}
+      },
+      "output": null
+    },
+    {
+      "id": "video first",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ],
+          "video": {
+            "alt": "v"
+          },
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {
+          "video": {
+            "$type": "blob",
+            "ref": {
+              "$link": "v"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          },
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": {
+          "$type": "blob",
+          "ref": {
+            "$link": "v"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        },
+        "alt": "v"
+      }
+    },
+    {
+      "id": "then images",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ],
+          "video": {
+            "alt": "v"
+          },
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "one",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            "aspectRatio": {
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "alt": "",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "then a card",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "card with thumb",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {
+          "cardThumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "t"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "",
+          "thumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "t"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "card without url",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "card": {
+            "title": "x"
+          }
+        },
+        "blobs": {}
+      },
+      "output": null
+    },
+    {
+      "id": "video with ratio",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "video": {
+            "alt": "",
+            "aspectRatio": {
+              "width": 1080,
+              "height": 1920
+            }
+          }
+        },
+        "blobs": {
+          "video": {
+            "$type": "blob",
+            "ref": {
+              "$link": "v"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.video",
+        "video": {
+          "$type": "blob",
+          "ref": {
+            "$link": "v"
+          },
+          "mimeType": "image/jpeg",
+          "size": 1
+        },
+        "alt": "",
+        "aspectRatio": {
+          "width": 1080,
+          "height": 1920
+        }
+      }
+    },
+    {
+      "id": "video without blob falls to images",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "video": {
+            "alt": "v"
+          },
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ]
+        },
+        "blobs": {
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": [
+          {
+            "alt": "one",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            "aspectRatio": {
+              "width": 2,
+              "height": 1
+            }
+          },
+          {
+            "alt": "",
+            "image": {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "record with media",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "post",
+            "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+            "cid": "bafyq"
+          },
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {
+          "cardThumb": {
+            "$type": "blob",
+            "ref": {
+              "$link": "t"
+            },
+            "mimeType": "image/jpeg",
+            "size": 1
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia",
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+            "cid": "bafyq"
+          }
+        },
+        "media": {
+          "$type": "app.bsky.embed.external",
+          "external": {
+            "uri": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": {
+              "$type": "blob",
+              "ref": {
+                "$link": "t"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "record alone",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "post",
+            "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+            "cid": "bafyq"
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+          "cid": "bafyq"
+        }
+      }
+    },
+    {
+      "id": "record feed",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "feed",
+            "uri": "at://did:plc:x/feed/1",
+            "cid": "bafyk"
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://did:plc:x/feed/1",
+          "cid": "bafyk"
+        }
+      }
+    },
+    {
+      "id": "record list",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "list",
+            "uri": "at://did:plc:x/list/1",
+            "cid": "bafyk"
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://did:plc:x/list/1",
+          "cid": "bafyk"
+        }
+      }
+    },
+    {
+      "id": "record starterpack",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "starterpack",
+            "uri": "at://did:plc:x/starterpack/1",
+            "cid": "bafyk"
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.record",
+        "record": {
+          "uri": "at://did:plc:x/starterpack/1",
+          "cid": "bafyk"
+        }
+      }
+    },
+    {
+      "id": "record without cid",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "post",
+            "uri": "at://x"
+          }
+        },
+        "blobs": {}
+      },
+      "output": null
+    },
+    {
+      "id": "record without cid keeps media",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "uri": "at://x"
+          },
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "record with images",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "record": {
+            "kind": "post",
+            "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+            "cid": "bafyq"
+          },
+          "images": [
+            {
+              "id": "a",
+              "alt": "one",
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "id": "b",
+              "alt": ""
+            }
+          ]
+        },
+        "blobs": {
+          "images": [
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "1"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            },
+            {
+              "$type": "blob",
+              "ref": {
+                "$link": "2"
+              },
+              "mimeType": "image/jpeg",
+              "size": 1
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia",
+        "record": {
+          "$type": "app.bsky.embed.record",
+          "record": {
+            "uri": "at://did:plc:q/app.bsky.feed.post/3q",
+            "cid": "bafyq"
+          }
+        },
+        "media": {
+          "$type": "app.bsky.embed.images",
+          "images": [
+            {
+              "alt": "one",
+              "image": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "1"
+                },
+                "mimeType": "image/jpeg",
+                "size": 1
+              },
+              "aspectRatio": {
+                "width": 2,
+                "height": 1
+              }
+            },
+            {
+              "alt": "",
+              "image": {
+                "$type": "blob",
+                "ref": {
+                  "$link": "2"
+                },
+                "mimeType": "image/jpeg",
+                "size": 1
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "card with refs",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null,
+            "associatedRefs": [
+              {
+                "uri": "at://a/b/c",
+                "cid": "d"
+              }
+            ]
+          }
+        },
+        "blobs": {}
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": "",
+          "associatedRefs": [
+            {
+              "$type": "com.atproto.repo.strongRef",
+              "uri": "at://a/b/c",
+              "cid": "d"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "null post",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": null,
+        "blobs": {}
+      },
+      "output": null
+    },
+    {
+      "id": "no blobs given",
+      "fn": "buildPostEmbed",
+      "input": {
+        "post": {
+          "card": {
+            "url": "https://e.com",
+            "title": "T",
+            "description": "",
+            "thumb": null
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {
+          "uri": "https://e.com",
+          "title": "T",
+          "description": ""
+        }
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#1",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.gallery",
+          "items": [
+            {
+              "image": "b",
+              "alt": "a",
+              "aspectRatio": {
+                "width": 1,
+                "height": 1
+              }
+            },
+            {
+              "image": "c"
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "items": [
+          {
+            "image": "b",
+            "alt": "a",
+            "aspectRatio": {
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "image": "c"
+          }
+        ],
+        "images": [
+          {
+            "image": "b",
+            "alt": "a",
+            "aspectRatio": {
+              "width": 1,
+              "height": 1
+            }
+          },
+          {
+            "image": "c",
+            "alt": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#2",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.gallery#view",
+          "items": [
+            {
+              "thumbnail": "t",
+              "fullsize": "f"
+            },
+            {
+              "thumbnail": "t2",
+              "fullsize": "f2",
+              "alt": "x",
+              "aspectRatio": {
+                "width": 3,
+                "height": 4
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images#view",
+        "items": [
+          {
+            "thumbnail": "t",
+            "fullsize": "f"
+          },
+          {
+            "thumbnail": "t2",
+            "fullsize": "f2",
+            "alt": "x",
+            "aspectRatio": {
+              "width": 3,
+              "height": 4
+            }
+          }
+        ],
+        "images": [
+          {
+            "thumb": "t",
+            "fullsize": "f",
+            "alt": ""
+          },
+          {
+            "thumb": "t2",
+            "fullsize": "f2",
+            "alt": "x",
+            "aspectRatio": {
+              "width": 3,
+              "height": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#3",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.recordWithMedia#view",
+          "record": {},
+          "media": {
+            "$type": "app.bsky.embed.gallery#view",
+            "items": [
+              {
+                "thumbnail": "t",
+                "fullsize": "f"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia#view",
+        "record": {},
+        "media": {
+          "$type": "app.bsky.embed.images#view",
+          "items": [
+            {
+              "thumbnail": "t",
+              "fullsize": "f"
+            }
+          ],
+          "images": [
+            {
+              "thumb": "t",
+              "fullsize": "f",
+              "alt": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#4",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.recordWithMedia",
+          "record": {
+            "record": {
+              "uri": "at://x",
+              "cid": "y"
+            }
+          },
+          "media": {
+            "$type": "app.bsky.embed.gallery",
+            "items": []
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia",
+        "record": {
+          "record": {
+            "uri": "at://x",
+            "cid": "y"
+          }
+        },
+        "media": {
+          "$type": "app.bsky.embed.images",
+          "items": [],
+          "images": []
+        }
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#5",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.gallery"
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.images",
+        "images": []
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#6",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.external",
+          "external": {}
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.external",
+        "external": {}
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#7",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": "app.bsky.embed.recordWithMedia",
+          "media": {
+            "$type": "app.bsky.embed.images"
+          }
+        }
+      },
+      "output": {
+        "$type": "app.bsky.embed.recordWithMedia",
+        "media": {
+          "$type": "app.bsky.embed.images"
+        }
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#8",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "$type": ""
+        }
+      },
+      "output": {
+        "$type": ""
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#9",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": {
+          "notype": true
+        }
+      },
+      "output": {
+        "notype": true
+      }
+    },
+    {
+      "id": "normalizeImageEmbed#10",
+      "fn": "normalizeImageEmbed",
+      "input": {
+        "embed": null
+      },
+      "output": null
+    }
+  ]
+}

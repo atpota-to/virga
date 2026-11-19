@@ -1,0 +1,6568 @@
+{
+  "name": "defense-early.historyModel",
+  "sources": [
+    "src/defense/historyModel.js"
+  ],
+  "cases": [
+    {
+      "id": "decisionPhrase#1",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#2",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#3",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#4",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#5",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#6",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#7",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#8",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#9",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#10",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#11",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#12",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#13",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#14",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#15",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#16",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#17",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#18",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#19",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#20",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#21",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#22",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#23",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#24",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#25",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#26",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#27",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#28",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#29",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#30",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#31",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#32",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#33",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#34",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#35",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#36",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#37",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#38",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#39",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#40",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#41",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#42",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#43",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#44",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#45",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#46",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#47",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Was on the list already"
+    },
+    {
+      "id": "decisionPhrase#48",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#49",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Kept off: protected"
+    },
+    {
+      "id": "decisionPhrase#50",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Kept off: protected"
+    },
+    {
+      "id": "decisionPhrase#51",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#52",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Kept off: protected"
+    },
+    {
+      "id": "decisionPhrase#53",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Kept off: protected"
+    },
+    {
+      "id": "decisionPhrase#54",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#55",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Kept off: you follow them"
+    },
+    {
+      "id": "decisionPhrase#56",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Kept off: you follow them"
+    },
+    {
+      "id": "decisionPhrase#57",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#58",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Kept off: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#59",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Kept off: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#60",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#61",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#62",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#63",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#64",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#65",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#66",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#67",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: you follow them"
+    },
+    {
+      "id": "decisionPhrase#68",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: you follow them"
+    },
+    {
+      "id": "decisionPhrase#69",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#70",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#71",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t add: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#72",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#73",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#74",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#75",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Undone before it was written"
+    },
+    {
+      "id": "decisionPhrase#76",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#77",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#78",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Undone before it was written"
+    },
+    {
+      "id": "decisionPhrase#79",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#80",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#81",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Undone before it was written"
+    },
+    {
+      "id": "decisionPhrase#82",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#83",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Cancelled"
+    },
+    {
+      "id": "decisionPhrase#84",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Undone before it was written"
+    },
+    {
+      "id": "decisionPhrase#85",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#86",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#87",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#88",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#89",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#90",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#91",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#92",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#93",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#94",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#95",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be added"
+    },
+    {
+      "id": "decisionPhrase#96",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Added, then taken off"
+    },
+    {
+      "id": "decisionPhrase#97",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#98",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#99",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#100",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#101",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#102",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#103",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#104",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#105",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#106",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#107",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#108",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "queued",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#109",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#110",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#111",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#112",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#113",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#114",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#115",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#116",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#117",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#118",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#119",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#120",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "sent",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#121",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#122",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#123",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#124",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#125",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#126",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#127",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#128",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#129",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#130",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#131",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#132",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "decisionPhrase#133",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#134",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#135",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#136",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#137",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#138",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#139",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#140",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#141",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#142",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#143",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#144",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "already",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Taken off (already gone)"
+    },
+    {
+      "id": "decisionPhrase#145",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#146",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#147",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#148",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#149",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#150",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#151",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#152",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#153",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#154",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#155",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#156",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "vetoed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#157",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#158",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#159",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#160",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#161",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#162",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: the PDS refused"
+    },
+    {
+      "id": "decisionPhrase#163",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: you follow them"
+    },
+    {
+      "id": "decisionPhrase#164",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: you follow them"
+    },
+    {
+      "id": "decisionPhrase#165",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: you follow them"
+    },
+    {
+      "id": "decisionPhrase#166",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#167",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#168",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "failed",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Couldn’t take off: Invalid subject"
+    },
+    {
+      "id": "decisionPhrase#169",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#170",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#171",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#172",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#173",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#174",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#175",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#176",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#177",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#178",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#179",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#180",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "cancelled",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#181",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#182",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#183",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#184",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#185",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#186",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#187",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#188",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#189",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "you follow them",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#190",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#191",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#192",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "unheard-of",
+          "reason": "Invalid subject",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": "2026-11-18T12:00:00.000Z",
+          "undoes": null
+        }
+      },
+      "output": "Waiting to be taken off"
+    },
+    {
+      "id": "decisionPhrase#193",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "add",
+          "band": null,
+          "trust": 3,
+          "via": "dm",
+          "note": "block @x",
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": null
+        }
+      },
+      "output": "Added"
+    },
+    {
+      "id": "decisionPhrase#194",
+      "fn": "decisionPhrase",
+      "input": {
+        "decision": {
+          "id": 1,
+          "listId": "list-1",
+          "planId": "p",
+          "did": "did:plc:someone",
+          "action": "remove",
+          "band": "UNKNOWN",
+          "trust": 3,
+          "via": "web",
+          "note": null,
+          "state": "done",
+          "reason": null,
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "actedAt": null,
+          "undoneAt": null,
+          "undoes": 41
+        }
+      },
+      "output": "Taken off"
+    },
+    {
+      "id": "planOutcome#1",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#2",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#3",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#4",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#5",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#6",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#7",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#8",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#9",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#10",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#11",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#12",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#13",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#14",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#15",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#16",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 3,
+        "live": 0,
+        "line": "3 undone"
+      }
+    },
+    {
+      "id": "planOutcome#17",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#18",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#19",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#20",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#21",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#22",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#23",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#24",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {},
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#25",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#26",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#27",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#28",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#29",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#30",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#31",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#32",
+      "fn": "planOutcome",
+      "input": {
+        "plan": null,
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#33",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#34",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#35",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#36",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#37",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#38",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#39",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#40",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": null
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
+      }
+    },
+    {
+      "id": "planOutcome#41",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#42",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#43",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#44",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#45",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#46",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#47",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#48",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#49",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1,234,567 added · 10,000 waiting · 999 kept off by the veto · 1,000 couldn’t be added · 12,345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#50",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1,234,567 added · 10,000 waiting · 999 kept off by the veto · 1,000 couldn’t be added · 12,345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#51",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "12,34,567 added · 10,000 waiting · 999 kept off by the veto · 1,000 couldn’t be added · 12,345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#52",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1.234.567 added · 10.000 waiting · 999 kept off by the veto · 1.000 couldn’t be added · 12.345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#53",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#54",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1'234'567 added · 10'000 waiting · 999 kept off by the veto · 1'000 couldn’t be added · 12'345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#55",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#56",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#57",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#58",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#59",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#60",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#61",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#62",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#63",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#64",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#65",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#66",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#67",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#68",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#69",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#70",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#71",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#72",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#73",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#74",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#75",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#76",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#77",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#78",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#79",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#80",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    }
+  ]
+}
