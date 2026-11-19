@@ -1,17 +1,20 @@
 // Domain to ASCII, as the WHATWG URL Standard defines it over UTS #46
-// (CheckHyphens off, CheckJoiners on, UseSTD3ASCIIRules off, nontransitional,
-// no DNS length check), with Punycode (RFC 3492). This is how `new URL()`
-// turns `bücher.de` into `xn--bcher-kva.de`.
+// (CheckHyphens off, CheckJoiners and CheckBidi on, UseSTD3ASCIIRules off,
+// nontransitional, no DNS length check), with Punycode (RFC 3492). This is how
+// `new URL()` turns `bücher.de` into `xn--bcher-kva.de`.
 //
-// UTS #46's mapping table isn't carried here. Its mapping is Unicode's
-// NFKC_Casefold with a handful of exceptions, so it is computed: ignorable
-// characters dropped, the deviations (ß, ς, ZWJ, ZWNJ) kept, every other
-// character lowercased and the result normalized with NFKC. Characters UTS #46
-// disallows are recognised by their general category (controls, formats,
-// private use, unassigned, separators) and a short list. Node doesn't apply
-// the bidi rule, so neither does this; the joiner rule is the virama half
-// (a joiner only after a virama). ios/parity/cases/posting-text.url.js holds
-// the result to Node for the scripts and symbols posts carry.
+// It follows Node's URL parser (Ada) rather than a reading of the standard,
+// because the web app runs on that, and Ada differs from the letter of the
+// RFCs in ways a host can show:
+// - the per-code-point data (UTS #46 status and mapping, bidi class, joining
+//   type, virama) is Ada's own, generated from Node into IDNATable.swift;
+// - the joiner check stops at the first ZWJ or ZWNJ: if its context holds,
+//   the label is valid there and then (later joiners and the bidi rule go
+//   unchecked); if not, it is refused. A ZWNJ's context is any L or D letter
+//   anywhere before it and any R or D letter anywhere after;
+// - the bidi rule is checked as satisfiesBidiRule describes.
+// ios/parity/cases/posting-text.url.js and posting-text.idna.js hold the
+// result to Node, host by host and character by character.
 
 import Foundation
 
@@ -46,6 +49,112 @@ enum IDNA {
       }
     }
     return out.joined(separator: ".")
+  }
+
+  // MARK: The table
+
+  enum Entry: Sendable {
+    case valid(bidi: BidiClass, join: JoinType, leadingMark: Bool)
+    case ignored
+    case mapped([Unicode.Scalar])
+    case disallowed
+  }
+
+  enum BidiClass: Sendable { case l, r, an, en, nsm, other }
+  enum JoinType: Sendable { case none, dual, left, right, virama }
+
+  struct Table: Sendable {
+    var starts: [UInt32] = []
+    var ends: [UInt32] = []
+    var entries: [Entry] = []
+
+    func lookup(_ v: UInt32) -> Entry {
+      var low = 0
+      var high = starts.count - 1
+      while low <= high {
+        let mid = (low + high) / 2
+        if v < starts[mid] {
+          high = mid - 1
+        } else if v > ends[mid] {
+          low = mid + 1
+        } else {
+          return entries[mid]
+        }
+      }
+      return .disallowed
+    }
+  }
+
+  static let table: Table = {
+    var table = Table()
+    for line in tableSource.split(separator: "\n") {
+      for item in line.split(separator: ";") {
+        let isMapping = item.contains("=")
+        let parts = item.split(separator: isMapping ? "=" : ":", maxSplits: 1)
+        let bounds = parts[0].split(separator: "-")
+        guard let start = UInt32(bounds[0], radix: 16) else { continue }
+        let end = bounds.count > 1 ? UInt32(bounds[1], radix: 16) ?? start : start
+        let payload = parts[1]
+        let entry: Entry
+        if isMapping {
+          entry = .mapped(payload.split(separator: ",").compactMap { UInt32($0, radix: 16).flatMap(Unicode.Scalar.init) })
+        } else if payload == "I" {
+          entry = .ignored
+        } else {
+          let chars = Array(payload)
+          let bidi: BidiClass
+          switch chars[1] {
+          case "L": bidi = .l
+          case "R": bidi = .r
+          case "A": bidi = .an
+          case "E": bidi = .en
+          case "N": bidi = .nsm
+          default: bidi = .other
+          }
+          let join: JoinType
+          switch chars[2] {
+          case "D": join = .dual
+          case "L": join = .left
+          case "R": join = .right
+          case "V": join = .virama
+          default: join = .none
+          }
+          entry = .valid(bidi: bidi, join: join, leadingMark: chars.count > 3 && chars[3] == "M")
+        }
+        table.starts.append(start)
+        table.ends.append(end)
+        table.entries.append(entry)
+      }
+    }
+    return table
+  }()
+
+  /// A code point's entry; ASCII is valid (the URL Standard refuses its own
+  /// forbidden characters afterwards).
+  static func entry(_ scalar: Unicode.Scalar) -> Entry {
+    let v = scalar.value
+    if v < 0x80 {
+      if (0x41...0x5A).contains(v) { return .mapped([Unicode.Scalar(v + 0x20)!]) }
+      let letter = (0x61...0x7A).contains(v)
+      let digit = (0x30...0x39).contains(v)
+      return .valid(bidi: letter ? .l : digit ? .en : .other, join: .none, leadingMark: false)
+    }
+    return table.lookup(v)
+  }
+
+  static func isValid(_ scalar: Unicode.Scalar) -> Bool {
+    if case .valid = entry(scalar) { return true }
+    return false
+  }
+
+  static func bidiClass(_ scalar: Unicode.Scalar) -> BidiClass {
+    if case .valid(let bidi, _, _) = entry(scalar) { return bidi }
+    return .other
+  }
+
+  static func joinType(_ scalar: Unicode.Scalar) -> JoinType {
+    if case .valid(_, let join, _) = entry(scalar) { return join }
+    return .none
   }
 
   // MARK: Processing (UTS #46 §4)
@@ -83,153 +192,66 @@ enum IDNA {
 
   /// The mapping step: nil when a disallowed character is met.
   static func map(_ domain: String) -> String? {
-    var first = String.UnicodeScalarView()
-    for scalar in domain.unicodeScalars {
-      if scalar.isASCII {
-        first.append(lowerASCII(scalar))
-        continue
-      }
-      if isIgnored(scalar) { continue }
-      // A character whose compatibility form holds a full stop (․ ‥ ⒈) is
-      // disallowed; only the ideographic and full-width stops map to one.
-      if ![0x3002, 0xFF0E, 0xFF61].contains(scalar.value),
-        String(scalar).precomposedStringWithCompatibilityMapping.contains(".")
-      {
-        return nil
-      }
-      switch scalar.value {
-      case 0x00DF, 0x03C2, 0x200C, 0x200D:
-        first.append(scalar)  // deviations, valid when nontransitional
-      case 0x1E9E:
-        first.append(contentsOf: "ss".unicodeScalars)
-      case 0x3002, 0xFF0E, 0xFF61:
-        first.append(".")
-      default:
-        first.append(contentsOf: scalar.properties.lowercaseMapping.unicodeScalars)
-      }
-    }
-    // Compatibility forms (full-width letters, ligatures, ℌ) fold under NFKC,
-    // and can come out in capitals, so lowercase once more.
-    let compatible = String(first).precomposedStringWithCompatibilityMapping
     var out = String.UnicodeScalarView()
-    for scalar in compatible.unicodeScalars {
-      if scalar.isASCII {
-        out.append(lowerASCII(scalar))
-      } else if scalar.value == 0x3002 || scalar.value == 0xFF61 {
-        out.append(".")
-      } else if isIgnored(scalar) {
-        continue
-      } else if [0x00DF, 0x03C2, 0x200C, 0x200D].contains(scalar.value) {
-        out.append(scalar)
-      } else {
-        out.append(contentsOf: scalar.properties.lowercaseMapping.unicodeScalars)
+    for scalar in domain.unicodeScalars {
+      switch entry(scalar) {
+      case .valid: out.append(scalar)
+      case .mapped(let target): out.append(contentsOf: target)
+      case .ignored: continue
+      case .disallowed: return nil
       }
     }
-    for scalar in out where isDisallowed(scalar) { return nil }
     return String(out)
   }
 
-  static func lowerASCII(_ scalar: Unicode.Scalar) -> Unicode.Scalar {
-    (0x41...0x5A).contains(scalar.value) ? Unicode.Scalar(scalar.value + 0x20)! : scalar
-  }
-
-  /// Characters UTS #46 maps to nothing.
-  static func isIgnored(_ scalar: Unicode.Scalar) -> Bool {
-    switch scalar.value {
-    case 0x00AD, 0x034F, 0x180B...0x180D, 0x180F, 0x200B, 0x2060, 0x2064, 0xFE00...0xFE0F, 0xFEFF,
-      0x1BCA0...0x1BCA3, 0xE0100...0xE01EF:
-      return true
-    default:
-      return false
-    }
-  }
-
-  /// Characters UTS #46 refuses (ASCII is always allowed here: the URL
-  /// Standard refuses its own forbidden characters afterwards).
-  static func isDisallowed(_ scalar: Unicode.Scalar) -> Bool {
-    if scalar.isASCII { return false }
-    switch scalar.value {
-    case 0x200C, 0x200D:
-      return false  // the joiner rule decides
-    case 0x115F, 0x1160, 0x3164, 0xFFA0, 0xFFFC, 0xFFFD, 0x1806, 0x180E, 0x2061...0x2063, 0x2065...0x206F:
-      return true
-    default:
-      break
-    }
-    if scalar.properties.isNoncharacterCodePoint { return true }
-    switch scalar.properties.generalCategory {
-    case .control, .format, .surrogate, .privateUse, .unassigned, .spaceSeparator, .lineSeparator,
-      .paragraphSeparator:
-      return true
-    default:
-      return false
-    }
-  }
-
-  /// UTS #46 §4.1 validity, as the URL Standard configures it.
+  /// UTS #46 §4.1 validity, as Ada checks it.
   static func isValid(_ label: [Unicode.Scalar], decodedFromPunycode: Bool) -> Bool {
     guard !label.isEmpty else { return true }
     // CheckHyphens off: only the xn-- prefix is refused.
     if label.count >= 4, String(String.UnicodeScalarView(label.prefix(4))) == "xn--" { return false }
     if label.contains(".") { return false }
-    switch label[0].properties.generalCategory {
-    case .nonspacingMark, .spacingMark, .enclosingMark: return false
-    default: break
-    }
+    // A label may not start with a combining mark (Ada's list of them).
+    if case .valid(_, _, true) = entry(label[0]) { return false }
     if decodedFromPunycode {
-      // A decoded label must already be in its mapped, normalized form.
+      // A decoded label must already be mapped and normalized.
       let text = String(String.UnicodeScalarView(label))
-      guard text.precomposedStringWithCanonicalMapping == text else { return false }
-      guard let mapped = map(text), mapped == text else { return false }
+      guard text.precomposedStringWithCanonicalMapping == text, label.allSatisfy(isValid) else { return false }
     }
-    // CheckJoiners (RFC 5892 appendix A): a joiner straight after a virama,
-    // or a ZWNJ between letters that join towards it.
+    // The joiners: the first one decides.
     for (index, scalar) in label.enumerated() where scalar.value == 0x200C || scalar.value == 0x200D {
-      if index > 0, label[index - 1].properties.canonicalCombiningClass.rawValue == 9 { continue }
-      guard scalar.value == 0x200C, zwnjJoins(label, at: index) else { return false }
+      if index > 0, joinType(label[index - 1]) == .virama { return true }
+      guard scalar.value == 0x200C, index > 0, index + 1 < label.count else { return false }
+      let before = label[..<index].contains { [.left, .dual].contains(joinType($0)) }
+      let after = label[(index + 1)...].contains { [.right, .dual].contains(joinType($0)) }
+      return before && after
     }
-    return true
+    return satisfiesBidiRule(label)
   }
 
-  /// `(Joining_Type:{L,D})(Joining_Type:T)* ZWNJ (Joining_Type:T)*(Joining_Type:{R,D})`.
-  static func zwnjJoins(_ label: [Unicode.Scalar], at index: Int) -> Bool {
-    var before = index - 1
-    while before >= 0, joiningType(label[before]) == .transparent { before -= 1 }
-    guard before >= 0, [.left, .dual].contains(joiningType(label[before])) else { return false }
-    var after = index + 1
-    while after < label.count, joiningType(label[after]) == .transparent { after += 1 }
-    guard after < label.count else { return false }
-    return [.right, .dual].contains(joiningType(label[after]))
-  }
+  // MARK: The bidi rule, as Node applies it
 
-  enum JoiningType { case none, left, right, dual, transparent }
-
-  /// Unicode's Joining_Type (ArabicShaping.txt) for the cursive scripts a
-  /// domain is written in: Arabic, N'Ko and Mongolian letters; marks and
-  /// formats are transparent.
-  static func joiningType(_ scalar: Unicode.Scalar) -> JoiningType {
-    let v = scalar.value
-    switch scalar.properties.generalCategory {
-    case .nonspacingMark, .enclosingMark: return .transparent
-    case .format where v != 0x200C && v != 0x200D: return .transparent
-    default: break
+  /// RFC 5893's bidi rule as Ada applies it, which is not quite as the RFC
+  /// writes it. A label that starts with an L character may not hold an R,
+  /// AL or AN character between its first and its last (marks at the end
+  /// aside); its last isn't checked. Any other label that holds an R, AL or
+  /// AN character is right-to-left: no L character between its first and
+  /// its last, a last character that is R, AL, EN or AN, and not both EN and
+  /// AN. Every other label passes. Held to Node over every label of up to
+  /// four characters drawn from each class.
+  static func satisfiesBidiRule(_ label: [Unicode.Scalar]) -> Bool {
+    let classes = label.map(bidiClass)
+    var last = classes.count - 1
+    while last >= 0, classes[last] == .nsm { last -= 1 }
+    if last < 0 { return false }
+    let rtl: Set<BidiClass> = [.r, .an]
+    if classes[0] == .l {
+      for i in stride(from: 1, to: last, by: 1) where rtl.contains(classes[i]) { return false }
+      return true
     }
-    let right: [ClosedRange<UInt32>] = [
-      0x0622...0x0625, 0x0627...0x0627, 0x0629...0x0629, 0x062F...0x0632, 0x0648...0x0648,
-      0x0671...0x0673, 0x0675...0x0677, 0x0688...0x0699, 0x06C0...0x06C0, 0x06C3...0x06CB,
-      0x06CD...0x06CD, 0x06CF...0x06CF, 0x06D2...0x06D3, 0x06D5...0x06D5, 0x06EE...0x06EF,
-      0x0759...0x075B, 0x076B...0x076C, 0x0771...0x0771, 0x0773...0x0774, 0x0778...0x0779,
-      0x08AA...0x08AC, 0x08AE...0x08AE, 0x08B1...0x08B2, 0x08B9...0x08B9,
-    ]
-    if right.contains(where: { $0.contains(v) }) { return .right }
-    let dual: [ClosedRange<UInt32>] = [
-      0x0620...0x0620, 0x0626...0x0626, 0x0628...0x0628, 0x062A...0x062E, 0x0633...0x063F,
-      0x0641...0x0647, 0x0649...0x064A, 0x066E...0x066F, 0x0678...0x0687, 0x069A...0x06BF,
-      0x06C1...0x06C2, 0x06CC...0x06CC, 0x06CE...0x06CE, 0x06D0...0x06D1, 0x06FA...0x06FC,
-      0x06FF...0x06FF, 0x0750...0x077F, 0x07CA...0x07EA, 0x08A0...0x08C8, 0x1820...0x1878,
-    ]
-    if dual.contains(where: { $0.contains(v) }) { return .dual }
-    return .none
+    guard classes.contains(where: rtl.contains) else { return true }
+    for i in stride(from: 1, to: last, by: 1) where classes[i] == .l { return false }
+    guard [.r, .en, .an].contains(classes[last]) else { return false }
+    return !(classes.contains(.en) && classes.contains(.an))
   }
 
   // MARK: Punycode (RFC 3492)

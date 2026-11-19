@@ -81,3 +81,34 @@ import VirgaTestSupport
     }
   }
 }
+
+/// Hosts character by character (ios/parity/cases/posting-text.idna.js):
+/// the generated UTS #46 table and Node's validity rules.
+@Suite struct IDNAParity {
+  static func hostname(_ label: String) -> String {
+    (try? WHATWGURL("https://\(label).com"))?.hostname ?? "-"
+  }
+
+  @Test func host() throws {
+    for c in try cases("posting-text.idna", "host") {
+      guard let scalar = Unicode.Scalar(UInt32(c.int("cp"))) else { continue }
+      let ch = String(scalar)
+      let forms = [ch, "a\(ch)a", "\(ch)\u{05D0}\u{05D0}", "\u{05D0}\(ch)", "\u{05D0}\u{0661}\(ch)"]
+      check(.string(forms.map(Self.hostname).joined(separator: " ")), c)
+    }
+  }
+
+  @Test func bidiShapes() throws {
+    for c in try cases("posting-text.idna", "bidiShapes") {
+      let first = c.string("first") ?? ""
+      let chars = [""] + c.strings("chars")
+      var bits = ""
+      for second in chars {
+        for third in chars where !(second.isEmpty && !third.isEmpty) {
+          bits += IDNA.domainToASCII(first + second + third) == nil ? "0" : "1"
+        }
+      }
+      check(.string(bits), c)
+    }
+  }
+}
