@@ -118,6 +118,13 @@ means porting the code, not reimagining it.
   small persisted values through VirgaCore's key-value store protocol (the
   web's localStorage), larger data through its file store protocol (the web's
   IndexedDB). Never touch `UserDefaults` or the file system directly from logic.
+- Apple's SDK is stricter than Linux's Foundation in places Linux can't
+  check. The one CI has caught: APIs marked `noasync` (iterating a
+  `FileManager.DirectoryEnumerator`, `NSLock.lock()`/`unlock()`,
+  `DispatchSemaphore.wait()`, `Thread.sleep`) can't be called directly in an
+  `async` function in Swift 6 mode. Do that work in a synchronous helper, or
+  through `Locked.withLock`. CI builds with Xcode 26.6 (iOS 26.5 SDK); keep to
+  Swift 6.2's language features.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
 
 ## Tests

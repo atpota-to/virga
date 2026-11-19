@@ -179,6 +179,13 @@ public struct DiskFileStore: FileStore {
     guard FileManager.default.fileExists(atPath: root.path, isDirectory: &isDirectory), isDirectory.boolValue else {
       return []
     }
+    return try Self.walk(root, under: rootPath).sorted()
+  }
+
+  /// Every regular file under `root`, relative to `rootPath`. Synchronous on
+  /// purpose: Apple's SDK marks iterating a DirectoryEnumerator unavailable
+  /// from async code (Linux's Foundation doesn't), so `list` calls this.
+  private static func walk(_ root: URL, under rootPath: String) throws -> [String] {
     guard let walker = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey]) else {
       return []
     }
@@ -193,6 +200,6 @@ public struct DiskFileStore: FileStore {
       guard FileStorePath.isUnder(full, rootPath) else { continue }
       out.append(String(String.UnicodeScalarView(full.unicodeScalars.dropFirst(rootPath.unicodeScalars.count + 1))))
     }
-    return out.sorted()
+    return out
   }
 }
