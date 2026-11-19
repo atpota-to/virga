@@ -51,7 +51,7 @@ var targets: [Target] = [
   ),
   .target(
     name: "VirgaPosting",
-    dependencies: ["VirgaCore", "VirgaNetwork", "VirgaSession", "VirgaArchive"],
+    dependencies: ["VirgaCore", "VirgaNetwork", "VirgaRepo", "VirgaSession", "VirgaArchive"],
     swiftSettings: strict
   ),
   .target(

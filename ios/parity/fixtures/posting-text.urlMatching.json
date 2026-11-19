@@ -1,0 +1,1875 @@
+{
+  "name": "posting-text.urlMatching",
+  "sources": [
+    "src/posting/lib/urlMatching.js"
+  ],
+  "cases": [
+    {
+      "id": "urlRegex#1",
+      "fn": "urlRegex",
+      "input": {
+        "text": "\"see https://example.com/x\" ok"
+      },
+      "output": [
+        "https://example.com/x"
+      ]
+    },
+    {
+      "id": "urlRegex#2",
+      "fn": "urlRegex",
+      "input": {
+        "text": "“see https://example.com/x” ok"
+      },
+      "output": [
+        "https://example.com/x"
+      ]
+    },
+    {
+      "id": "urlRegex#3",
+      "fn": "urlRegex",
+      "input": {
+        "text": "\"visit example.com/path\""
+      },
+      "output": [
+        "example.com/path"
+      ]
+    },
+    {
+      "id": "urlRegex#4",
+      "fn": "urlRegex",
+      "input": {
+        "text": "“visit example.com/path”"
+      },
+      "output": [
+        "example.com/path"
+      ]
+    },
+    {
+      "id": "urlRegex#5",
+      "fn": "urlRegex",
+      "input": {
+        "text": "\"example.com\""
+      },
+      "output": [
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#6",
+      "fn": "urlRegex",
+      "input": {
+        "text": "“example.com”"
+      },
+      "output": [
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#7",
+      "fn": "urlRegex",
+      "input": {
+        "text": "see https://example.com/x, then example.org."
+      },
+      "output": [
+        "https://example.com/x",
+        "example.org"
+      ]
+    },
+    {
+      "id": "urlRegex#8",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com"
+      },
+      "output": [
+        "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#9",
+      "fn": "urlRegex",
+      "input": {
+        "text": "sign up https://example.com/subscribe?email=reader@example.org&u=@someone.example.com today"
+      },
+      "output": [
+        "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#10",
+      "fn": "urlRegex",
+      "input": {
+        "text": "hi @someone.example.com, mail reader@example.org"
+      },
+      "output": [
+        "someone.example.com",
+        "example.org"
+      ]
+    },
+    {
+      "id": "urlRegex#11",
+      "fn": "urlRegex",
+      "input": {
+        "text": "Did you see https://example.com/page?"
+      },
+      "output": [
+        "https://example.com/page?"
+      ]
+    },
+    {
+      "id": "urlRegex#12",
+      "fn": "urlRegex",
+      "input": {
+        "text": "see a-b.example.co.uk/path?x=1#top now"
+      },
+      "output": [
+        "a-b.example.co.uk/path?x=1#top"
+      ]
+    },
+    {
+      "id": "urlRegex#13",
+      "fn": "urlRegex",
+      "input": {
+        "text": "www.example.com and sub.domain.example.org."
+      },
+      "output": [
+        "www.example.com",
+        "sub.domain.example.org"
+      ]
+    },
+    {
+      "id": "urlRegex#14",
+      "fn": "urlRegex",
+      "input": {
+        "text": "xn--bcher-kva.example and a--b.example"
+      },
+      "output": [
+        "xn--bcher-kva.example",
+        "a--b.example"
+      ]
+    },
+    {
+      "id": "urlRegex#15",
+      "fn": "urlRegex",
+      "input": {
+        "text": "no-dot-here and trailing-.com"
+      },
+      "output": []
+    },
+    {
+      "id": "urlRegex#16",
+      "fn": "urlRegex",
+      "input": {
+        "text": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz and then example.com"
+      },
+      "output": [
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#17",
+      "fn": "urlRegex",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/PATH and HtTp://x.org"
+      },
+      "output": [
+        "HTTPS://EXAMPLE.COM/PATH",
+        "HtTp://x.org"
+      ]
+    },
+    {
+      "id": "urlRegex#18",
+      "fn": "urlRegex",
+      "input": {
+        "text": "WWW.EXAMPLE.COM"
+      },
+      "output": [
+        "WWW.EXAMPLE.COM"
+      ]
+    },
+    {
+      "id": "urlRegex#19",
+      "fn": "urlRegex",
+      "input": {
+        "text": "example.COM example.c example.co example.123 example.xn--p1ai example.XN--P1AI"
+      },
+      "output": [
+        "example.COM",
+        "example.co",
+        "example.xn--p1ai",
+        "example.XN--P1AI"
+      ]
+    },
+    {
+      "id": "urlRegex#20",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://bücher.de/x and bücher.de"
+      },
+      "output": [
+        "https://bücher.de/x",
+        "cher.de"
+      ]
+    },
+    {
+      "id": "urlRegex#21",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com:8080/x"
+      },
+      "output": [
+        "https://example.com:8080/x"
+      ]
+    },
+    {
+      "id": "urlRegex#22",
+      "fn": "urlRegex",
+      "input": {
+        "text": "example.com:8080/x"
+      },
+      "output": []
+    },
+    {
+      "id": "urlRegex#23",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://en.wikipedia.org/wiki/Moth_(insect))."
+      },
+      "output": [
+        "https://en.wikipedia.org/wiki/Moth_(insect))."
+      ]
+    },
+    {
+      "id": "urlRegex#24",
+      "fn": "urlRegex",
+      "input": {
+        "text": "(https://example.com/page) or <https://example.com/x>"
+      },
+      "output": [
+        "https://example.com/page)",
+        "https://example.com/x>"
+      ]
+    },
+    {
+      "id": "urlRegex#25",
+      "fn": "urlRegex",
+      "input": {
+        "text": "[link](https://example.com/a)"
+      },
+      "output": [
+        "https://example.com/a)"
+      ]
+    },
+    {
+      "id": "urlRegex#26",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com/a!b;c,d…e\"f“g”h"
+      },
+      "output": [
+        "https://example.com/a"
+      ]
+    },
+    {
+      "id": "urlRegex#27",
+      "fn": "urlRegex",
+      "input": {
+        "text": "example.com!x example.com;x example.com,x example.com…x"
+      },
+      "output": [
+        "example.com",
+        "example.com",
+        "example.com",
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#28",
+      "fn": "urlRegex",
+      "input": {
+        "text": "example.com/a?b#c.d"
+      },
+      "output": [
+        "example.com/a?b#c.d"
+      ]
+    },
+    {
+      "id": "urlRegex#29",
+      "fn": "urlRegex",
+      "input": {
+        "text": "example.com/#frag?q"
+      },
+      "output": [
+        "example.com/#frag?q"
+      ]
+    },
+    {
+      "id": "urlRegex#30",
+      "fn": "urlRegex",
+      "input": {
+        "text": "v1.2.3 released and notes.txt and 192.168.0.1"
+      },
+      "output": [
+        "notes.txt"
+      ]
+    },
+    {
+      "id": "urlRegex#31",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://"
+      },
+      "output": []
+    },
+    {
+      "id": "urlRegex#32",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://."
+      },
+      "output": [
+        "https://."
+      ]
+    },
+    {
+      "id": "urlRegex#33",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://a"
+      },
+      "output": [
+        "https://a"
+      ]
+    },
+    {
+      "id": "urlRegex#34",
+      "fn": "urlRegex",
+      "input": {
+        "text": "http://x"
+      },
+      "output": [
+        "http://x"
+      ]
+    },
+    {
+      "id": "urlRegex#35",
+      "fn": "urlRegex",
+      "input": {
+        "text": "a.co #owl"
+      },
+      "output": [
+        "a.co"
+      ]
+    },
+    {
+      "id": "urlRegex#36",
+      "fn": "urlRegex",
+      "input": {
+        "text": "go example.com now"
+      },
+      "output": [
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#37",
+      "fn": "urlRegex",
+      "input": {
+        "text": "go \"example.com\" now"
+      },
+      "output": [
+        "example.com"
+      ]
+    },
+    {
+      "id": "urlRegex#38",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com/a*b**"
+      },
+      "output": [
+        "https://example.com/a*b**"
+      ]
+    },
+    {
+      "id": "urlRegex#39",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com/:"
+      },
+      "output": [
+        "https://example.com/:"
+      ]
+    },
+    {
+      "id": "urlRegex#40",
+      "fn": "urlRegex",
+      "input": {
+        "text": "see https://example.com/page..."
+      },
+      "output": [
+        "https://example.com/page..."
+      ]
+    },
+    {
+      "id": "urlRegex#41",
+      "fn": "urlRegex",
+      "input": {
+        "text": "mail me@example.com or @alice.test"
+      },
+      "output": [
+        "example.com",
+        "alice.test"
+      ]
+    },
+    {
+      "id": "urlRegex#42",
+      "fn": "urlRegex",
+      "input": {
+        "text": "https://example.com/@eupackardia.test/repo"
+      },
+      "output": [
+        "https://example.com/@eupackardia.test/repo"
+      ]
+    },
+    {
+      "id": "urlRegex#43",
+      "fn": "urlRegex",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test/post/3k,y"
+      },
+      "output": [
+        "https://bsky.app/profile/a.test/post/3k"
+      ]
+    },
+    {
+      "id": "urlRegex#44",
+      "fn": "urlRegex",
+      "input": {
+        "text": "end.Next and abc.de§§§"
+      },
+      "output": [
+        "end.Next"
+      ]
+    },
+    {
+      "id": "urlRegex#45",
+      "fn": "urlRegex",
+      "input": {
+        "text": "a.b.c.d.e.f.g.h.i.j.k"
+      },
+      "output": []
+    },
+    {
+      "id": "urlRegex#46",
+      "fn": "urlRegex",
+      "input": {
+        "text": "a example.com b.org　c.net﻿d.io"
+      },
+      "output": [
+        "example.com",
+        "b.org",
+        "c.net",
+        "d.io"
+      ]
+    },
+    {
+      "id": "urlRegex#47",
+      "fn": "urlRegex",
+      "input": {
+        "text": "tab\texample.com\nnext.org\r"
+      },
+      "output": [
+        "example.com",
+        "next.org"
+      ]
+    },
+    {
+      "id": "urlRegex#48",
+      "fn": "urlRegex",
+      "input": {
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "trimUrlMatch#1",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/page?"
+      },
+      "output": "https://example.com/page"
+    },
+    {
+      "id": "trimUrlMatch#2",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com:"
+      },
+      "output": "https://example.com"
+    },
+    {
+      "id": "trimUrlMatch#3",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/page."
+      },
+      "output": "https://example.com/page"
+    },
+    {
+      "id": "trimUrlMatch#4",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/page..."
+      },
+      "output": "https://example.com/page"
+    },
+    {
+      "id": "trimUrlMatch#5",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/x>"
+      },
+      "output": "https://example.com/x"
+    },
+    {
+      "id": "trimUrlMatch#6",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/x**"
+      },
+      "output": "https://example.com/x"
+    },
+    {
+      "id": "trimUrlMatch#7",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "example.com/page)."
+      },
+      "output": "example.com/page"
+    },
+    {
+      "id": "trimUrlMatch#8",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://en.wikipedia.org/wiki/Moth_(insect)"
+      },
+      "output": "https://en.wikipedia.org/wiki/Moth_(insect)"
+    },
+    {
+      "id": "trimUrlMatch#9",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://en.wikipedia.org/wiki/Moth_(insect))"
+      },
+      "output": "https://en.wikipedia.org/wiki/Moth_(insect)"
+    },
+    {
+      "id": "trimUrlMatch#10",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/a]"
+      },
+      "output": "https://example.com/a"
+    },
+    {
+      "id": "trimUrlMatch#11",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/a[b]]"
+      },
+      "output": "https://example.com/a[b]"
+    },
+    {
+      "id": "trimUrlMatch#12",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "https://example.com/?q=a.b&c=d"
+      },
+      "output": "https://example.com/?q=a.b&c=d"
+    },
+    {
+      "id": "trimUrlMatch#13",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": ".,;:!?>*"
+      },
+      "output": ""
+    },
+    {
+      "id": "trimUrlMatch#14",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": ")"
+      },
+      "output": ""
+    },
+    {
+      "id": "trimUrlMatch#15",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "(()))"
+      },
+      "output": "(())"
+    },
+    {
+      "id": "trimUrlMatch#16",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "trimUrlMatch#17",
+      "fn": "trimUrlMatch",
+      "input": {
+        "matchText": "a)!)."
+      },
+      "output": "a"
+    },
+    {
+      "id": "findUrlsAndMentions#1",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "\"see https://example.com/x\" ok"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 5,
+            "charEnd": 26,
+            "matchText": "https://example.com/x",
+            "rawEnd": 26
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#2",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "“see https://example.com/x” ok"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 5,
+            "charEnd": 26,
+            "matchText": "https://example.com/x",
+            "rawEnd": 26
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#3",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "\"visit example.com/path\""
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 7,
+            "charEnd": 23,
+            "matchText": "example.com/path",
+            "rawEnd": 23
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#4",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "“visit example.com/path”"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 7,
+            "charEnd": 23,
+            "matchText": "example.com/path",
+            "rawEnd": 23
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#5",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "\"example.com\""
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 1,
+            "charEnd": 12,
+            "matchText": "example.com",
+            "rawEnd": 12
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#6",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "“example.com”"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 1,
+            "charEnd": 12,
+            "matchText": "example.com",
+            "rawEnd": 12
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#7",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "see https://example.com/x, then example.org."
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 25,
+            "matchText": "https://example.com/x",
+            "rawEnd": 25
+          },
+          {
+            "charStart": 32,
+            "charEnd": 43,
+            "matchText": "example.org",
+            "rawEnd": 43
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#8",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 77,
+            "matchText": "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com",
+            "rawEnd": 77
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#9",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "sign up https://example.com/subscribe?email=reader@example.org&u=@someone.example.com today"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 8,
+            "charEnd": 85,
+            "matchText": "https://example.com/subscribe?email=reader@example.org&u=@someone.example.com",
+            "rawEnd": 85
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#10",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "hi @someone.example.com, mail reader@example.org"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 23,
+            "matchText": "someone.example.com",
+            "rawEnd": 23
+          },
+          {
+            "charStart": 37,
+            "charEnd": 48,
+            "matchText": "example.org",
+            "rawEnd": 48
+          }
+        ],
+        "mentions": [
+          {
+            "start": 3,
+            "end": 23,
+            "handle": "someone.example.com",
+            "email": false
+          },
+          {
+            "start": 36,
+            "end": 48,
+            "handle": "example.org",
+            "email": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#11",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "Did you see https://example.com/page?"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 12,
+            "charEnd": 36,
+            "matchText": "https://example.com/page",
+            "rawEnd": 37
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#12",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "see a-b.example.co.uk/path?x=1#top now"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 34,
+            "matchText": "a-b.example.co.uk/path?x=1#top",
+            "rawEnd": 34
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#13",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "www.example.com and sub.domain.example.org."
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 15,
+            "matchText": "www.example.com",
+            "rawEnd": 15
+          },
+          {
+            "charStart": 20,
+            "charEnd": 42,
+            "matchText": "sub.domain.example.org",
+            "rawEnd": 42
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#14",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "xn--bcher-kva.example and a--b.example"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 21,
+            "matchText": "xn--bcher-kva.example",
+            "rawEnd": 21
+          },
+          {
+            "charStart": 26,
+            "charEnd": 38,
+            "matchText": "a--b.example",
+            "rawEnd": 38
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#15",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "no-dot-here and trailing-.com"
+      },
+      "output": {
+        "urls": [],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#16",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz and then example.com"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 6010,
+            "charEnd": 6021,
+            "matchText": "example.com",
+            "rawEnd": 6021
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#17",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/PATH and HtTp://x.org"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 24,
+            "matchText": "HTTPS://EXAMPLE.COM/PATH",
+            "rawEnd": 24
+          },
+          {
+            "charStart": 29,
+            "charEnd": 41,
+            "matchText": "HtTp://x.org",
+            "rawEnd": 41
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#18",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "WWW.EXAMPLE.COM"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 15,
+            "matchText": "WWW.EXAMPLE.COM",
+            "rawEnd": 15
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#19",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "example.COM example.c example.co example.123 example.xn--p1ai example.XN--P1AI"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 11,
+            "matchText": "example.COM",
+            "rawEnd": 11
+          },
+          {
+            "charStart": 22,
+            "charEnd": 32,
+            "matchText": "example.co",
+            "rawEnd": 32
+          },
+          {
+            "charStart": 45,
+            "charEnd": 61,
+            "matchText": "example.xn--p1ai",
+            "rawEnd": 61
+          },
+          {
+            "charStart": 62,
+            "charEnd": 78,
+            "matchText": "example.XN--P1AI",
+            "rawEnd": 78
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#20",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://bücher.de/x and bücher.de"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 19,
+            "matchText": "https://bücher.de/x",
+            "rawEnd": 19
+          },
+          {
+            "charStart": 26,
+            "charEnd": 33,
+            "matchText": "cher.de",
+            "rawEnd": 33
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#21",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com:8080/x"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 26,
+            "matchText": "https://example.com:8080/x",
+            "rawEnd": 26
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#22",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "example.com:8080/x"
+      },
+      "output": {
+        "urls": [],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#23",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://en.wikipedia.org/wiki/Moth_(insect))."
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 43,
+            "matchText": "https://en.wikipedia.org/wiki/Moth_(insect)",
+            "rawEnd": 45
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#24",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "(https://example.com/page) or <https://example.com/x>"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 1,
+            "charEnd": 25,
+            "matchText": "https://example.com/page",
+            "rawEnd": 26
+          },
+          {
+            "charStart": 31,
+            "charEnd": 52,
+            "matchText": "https://example.com/x",
+            "rawEnd": 53
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#25",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "[link](https://example.com/a)"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 7,
+            "charEnd": 28,
+            "matchText": "https://example.com/a",
+            "rawEnd": 29
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#26",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com/a!b;c,d…e\"f“g”h"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 21,
+            "matchText": "https://example.com/a",
+            "rawEnd": 21
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#27",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "example.com!x example.com;x example.com,x example.com…x"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 11,
+            "matchText": "example.com",
+            "rawEnd": 11
+          },
+          {
+            "charStart": 14,
+            "charEnd": 25,
+            "matchText": "example.com",
+            "rawEnd": 25
+          },
+          {
+            "charStart": 28,
+            "charEnd": 39,
+            "matchText": "example.com",
+            "rawEnd": 39
+          },
+          {
+            "charStart": 42,
+            "charEnd": 53,
+            "matchText": "example.com",
+            "rawEnd": 53
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#28",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "example.com/a?b#c.d"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 19,
+            "matchText": "example.com/a?b#c.d",
+            "rawEnd": 19
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#29",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "example.com/#frag?q"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 19,
+            "matchText": "example.com/#frag?q",
+            "rawEnd": 19
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#30",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "v1.2.3 released and notes.txt and 192.168.0.1"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 20,
+            "charEnd": 29,
+            "matchText": "notes.txt",
+            "rawEnd": 29
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#31",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://"
+      },
+      "output": {
+        "urls": [],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#32",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://."
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 8,
+            "matchText": "https://",
+            "rawEnd": 9
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#33",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://a"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 9,
+            "matchText": "https://a",
+            "rawEnd": 9
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#34",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "http://x"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 8,
+            "matchText": "http://x",
+            "rawEnd": 8
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#35",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "a.co #owl"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 4,
+            "matchText": "a.co",
+            "rawEnd": 4
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#36",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "go example.com now"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 3,
+            "charEnd": 14,
+            "matchText": "example.com",
+            "rawEnd": 14
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#37",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "go \"example.com\" now"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 15,
+            "matchText": "example.com",
+            "rawEnd": 15
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#38",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com/a*b**"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 23,
+            "matchText": "https://example.com/a*b",
+            "rawEnd": 25
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#39",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com/:"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 20,
+            "matchText": "https://example.com/",
+            "rawEnd": 21
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#40",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "see https://example.com/page..."
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 28,
+            "matchText": "https://example.com/page",
+            "rawEnd": 31
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#41",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "mail me@example.com or @alice.test"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 8,
+            "charEnd": 19,
+            "matchText": "example.com",
+            "rawEnd": 19
+          },
+          {
+            "charStart": 24,
+            "charEnd": 34,
+            "matchText": "alice.test",
+            "rawEnd": 34
+          }
+        ],
+        "mentions": [
+          {
+            "start": 7,
+            "end": 19,
+            "handle": "example.com",
+            "email": true
+          },
+          {
+            "start": 23,
+            "end": 34,
+            "handle": "alice.test",
+            "email": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#42",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "https://example.com/@eupackardia.test/repo"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 42,
+            "matchText": "https://example.com/@eupackardia.test/repo",
+            "rawEnd": 42
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#43",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test/post/3k,y"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 2,
+            "charEnd": 41,
+            "matchText": "https://bsky.app/profile/a.test/post/3k",
+            "rawEnd": 41
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#44",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "end.Next and abc.de§§§"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 0,
+            "charEnd": 8,
+            "matchText": "end.Next",
+            "rawEnd": 8
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#45",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "a.b.c.d.e.f.g.h.i.j.k"
+      },
+      "output": {
+        "urls": [],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#46",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "a example.com b.org　c.net﻿d.io"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 2,
+            "charEnd": 13,
+            "matchText": "example.com",
+            "rawEnd": 13
+          },
+          {
+            "charStart": 14,
+            "charEnd": 19,
+            "matchText": "b.org",
+            "rawEnd": 19
+          },
+          {
+            "charStart": 20,
+            "charEnd": 25,
+            "matchText": "c.net",
+            "rawEnd": 25
+          },
+          {
+            "charStart": 26,
+            "charEnd": 30,
+            "matchText": "d.io",
+            "rawEnd": 30
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#47",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": "tab\texample.com\nnext.org\r"
+      },
+      "output": {
+        "urls": [
+          {
+            "charStart": 4,
+            "charEnd": 15,
+            "matchText": "example.com",
+            "rawEnd": 15
+          },
+          {
+            "charStart": 16,
+            "charEnd": 24,
+            "matchText": "next.org",
+            "rawEnd": 24
+          }
+        ],
+        "mentions": []
+      }
+    },
+    {
+      "id": "findUrlsAndMentions#48",
+      "fn": "findUrlsAndMentions",
+      "input": {
+        "text": ""
+      },
+      "output": {
+        "urls": [],
+        "mentions": []
+      }
+    },
+    {
+      "id": "isValidDomain#1",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#2",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "https://example.com/x"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#3",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "http://www.example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#4",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "HTTPS://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#5",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "www.example"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#6",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "v1.2.3"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#7",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "1.0.0"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#8",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "192.168.0.1"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#9",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "notes.txt"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#10",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "NOTES.TXT"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#11",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "photo.JPG"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#12",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "a.b.txt"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#13",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "example.c"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#14",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "example.12"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#15",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#16",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#17",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": ".com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#18",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "a..com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#19",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "example"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#20",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "example.com/path.txt"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#21",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "bücher.de"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#22",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "xn--bcher-kva.de"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidDomain#23",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#24",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "https://"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#25",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "https:///x.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidDomain#26",
+      "fn": "isValidDomain",
+      "input": {
+        "domain": "a.b"
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#1",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "\"example.com\"",
+        "charStart": 1
+      },
+      "output": true
+    },
+    {
+      "id": "isPrecededByQuote#2",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "“example.com”",
+        "charStart": 1
+      },
+      "output": true
+    },
+    {
+      "id": "isPrecededByQuote#3",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "example.com",
+        "charStart": 0
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#4",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "see example.com",
+        "charStart": 4
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#5",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "”example.com",
+        "charStart": 1
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#6",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "'example.com",
+        "charStart": 1
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#7",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "\"x",
+        "charStart": 0
+      },
+      "output": false
+    },
+    {
+      "id": "isPrecededByQuote#8",
+      "fn": "isPrecededByQuote",
+      "input": {
+        "text": "",
+        "charStart": 0
+      },
+      "output": false
+    }
+  ]
+}

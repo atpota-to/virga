@@ -1,0 +1,1369 @@
+{
+  "name": "posting-text.composeIntent",
+  "sources": [
+    "src/posting/lib/composeIntent.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "INTENT_COMPOSE_PATH": "/intent/compose",
+        "MAX_POST_GRAPHEMES": 300,
+        "COMPOSE_INTENT_PARAMS": [
+          "text",
+          "url",
+          "tags",
+          "title"
+        ]
+      }
+    },
+    {
+      "id": "parseComposeIntent#1",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=hello"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hello",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#2",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=I%27m%20reading%20through%20the%20Bluesky%20API%20docs%21%20%F0%9F%A6%8B%0Ahttps%3A//docs.bsky.app"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "I'm reading through the Bluesky API docs! 🦋\nhttps://docs.bsky.app",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#3",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": ""
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#4",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": null
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#5",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?utm_source=newsletter&ref=x"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#6",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=&tags="
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#7",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=%20%20%20"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#8",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "$params": [
+            [
+              "text",
+              "hi"
+            ]
+          ]
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hi",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#9",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "text=hi"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hi",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#10",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "https://virga.example/intent/compose?text=hi"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hi",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#11",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "hi"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hi",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#12",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "title": "A page worth reading"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "A page worth reading",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#13",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "title": "A page",
+          "text": "A page, with my note"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "A page, with my note",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#14",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "title": "A page",
+          "url": "https://example.com/a"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "A page\n\nhttps://example.com/a",
+        "url": "https://example.com/a",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#15",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "A good read",
+          "url": "https://example.com/a"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "A good read\n\nhttps://example.com/a",
+        "url": "https://example.com/a",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#16",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "url": "https://example.com/a"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "https://example.com/a",
+        "url": "https://example.com/a",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#17",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "see https://example.com/a for more",
+          "url": "https://example.com/a"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "see https://example.com/a for more",
+        "url": "https://example.com/a",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#18",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "javascript:alert(1)"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#19",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "data:text/html,<script>alert(1)</script>"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#20",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "vbscript:msgbox(1)"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#21",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "file:///etc/passwd"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#22",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "not a url"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#23",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "short"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "short",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#24",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "url": "",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#25",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽👍🏽",
+        "url": "",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#26",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "Shipping 👩‍💻 today, می‌خواهم"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "Shipping 👩‍💻 today, می‌خواهم",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#27",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "see​example.com"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "seeexample.com",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#28",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "url": "https://example.com/an-article-worth-reading"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\nhttps://example.com/an-article-worth-reading",
+        "url": "https://example.com/an-article-worth-reading",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#29",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "context",
+          "url": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "url": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#30",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "context",
+          "url": "https://example.com/ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "con\n\nhttps://example.com/ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "url": "https://example.com/ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#31",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "context",
+          "url": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "url": "https://example.com/pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+        "tags": [],
+        "truncated": true
+      }
+    },
+    {
+      "id": "parseComposeIntent#32",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "birds, night ,lamp"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "birds",
+          "night",
+          "lamp"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#33",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "#birds, ##night"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "birds",
+          "night"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#34",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "Birds, birds, BIRDS"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "Birds"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#35",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,t27,t28,t29"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "t0",
+          "t1",
+          "t2",
+          "t3",
+          "t4",
+          "t5",
+          "t6",
+          "t7"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#36",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#37",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "tags": "birds,,, ,night"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "birds",
+          "night"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#38",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "https://exa​mple.com"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "https://example.com",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#39",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "a b"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "a b",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#40",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "https://example.com"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look\n\nhttps://example.com/",
+        "url": "https://example.com/",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#41",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#42",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "  HTTPS://EXAMPLE.COM/A B?c d#e  "
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look\n\nhttps://example.com/A%20B?c%20d#e",
+        "url": "https://example.com/A%20B?c%20d#e",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#43",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "https://bücher.de/x"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look\n\nhttps://xn--bcher-kva.de/x",
+        "url": "https://xn--bcher-kva.de/x",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#44",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "look",
+          "url": "http:example.com"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "look\n\nhttp://example.com/",
+        "url": "http://example.com/",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#45",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=a+b%2Bc&text=second"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "a b+c",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#46",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?text=%zz%F0%9F"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "%zz�",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#47",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?TEXT=upper"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#48",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "??text=double"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "double",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#49",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "#text=fragment"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#50",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?title=only+title&tags=a"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "only title",
+        "url": "",
+        "tags": [
+          "a"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#51",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?url=https%3A%2F%2Fexample.com%2Fx&text="
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "https://example.com/x",
+        "url": "https://example.com/x",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#52",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": "?tags=one&tags=two"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "one"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#53",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": null,
+          "url": null,
+          "tags": null
+        }
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#54",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": 42
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "42",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#55",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "a,b",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#56",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": {
+            "nested": true
+          }
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "[object Object]",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#57",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "\u0000\u0007 control \u001f"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "control",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#58",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "   ",
+          "tags": "x"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "x"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#59",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": {
+          "text": "x",
+          "url": "https://example.com/x",
+          "tags": "a"
+        }
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "x\n\nhttps://example.com/x",
+        "url": "https://example.com/x",
+        "tags": [
+          "a"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#60",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": 42
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#61",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": true
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "parseComposeIntent#62",
+      "fn": "parseComposeIntent",
+      "input": {
+        "search": [
+          "text",
+          "array"
+        ]
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "buildComposeIntentUrl#1",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#2",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "tags": [
+            "birds",
+            "night"
+          ]
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose?tags=birds%2C+night"
+    },
+    {
+      "id": "buildComposeIntentUrl#3",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "tags": "birds, night"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose?tags=birds%2C+night"
+    },
+    {
+      "id": "buildComposeIntentUrl#4",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "I'm reading this 🦋",
+          "url": "https://docs.bsky.app/",
+          "tags": "birds, night"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose?text=I%27m+reading+this+%F0%9F%A6%8B&url=https%3A%2F%2Fdocs.bsky.app%2F&tags=birds%2C+night"
+    },
+    {
+      "id": "buildComposeIntentUrl#5",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {},
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose"
+    },
+    {
+      "id": "buildComposeIntentUrl#6",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "",
+          "url": "",
+          "tags": []
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose"
+    },
+    {
+      "id": "buildComposeIntentUrl#7",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "a b+c&d=e/f?g#h%"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": "https://virga.example/intent/compose?text=a+b%2Bc%26d%3De%2Ff%3Fg%23h%25"
+    },
+    {
+      "id": "buildComposeIntentUrl#8",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "https://virga.example/some/page?x=1#y"
+      },
+      "output": "https://virga.example/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#9",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "http://localhost:5173"
+      },
+      "output": "http://localhost:5173/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#10",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        }
+      },
+      "output": "http://localhost/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#11",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": ""
+      },
+      "output": "http://localhost/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#12",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "not a url"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "buildComposeIntentUrl#13",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "mailto:x"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "buildComposeIntentUrl#14",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "foo://host/p"
+      },
+      "output": "foo://host/intent/compose?text=hi"
+    },
+    {
+      "id": "buildComposeIntentUrl#15",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "tags": []
+        },
+        "origin": "https://v.example"
+      },
+      "output": "https://v.example/intent/compose"
+    },
+    {
+      "id": "buildComposeIntentUrl#16",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "url": "https://example.com/?a=1&b=2"
+        },
+        "origin": "https://v.example"
+      },
+      "output": "https://v.example/intent/compose?url=https%3A%2F%2Fexample.com%2F%3Fa%3D1%26b%3D2"
+    },
+    {
+      "id": "buildComposeIntentUrl#17",
+      "fn": "buildComposeIntentUrl",
+      "input": {
+        "intent": {
+          "text": "line\nbreak\ttab"
+        },
+        "origin": "https://bücher.de"
+      },
+      "output": "https://xn--bcher-kva.de/intent/compose?text=line%0Abreak%09tab"
+    },
+    {
+      "id": "roundTrip#1",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "text": "hi"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "hi",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#2",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "tags": [
+            "birds",
+            "night"
+          ]
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "birds",
+          "night"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#3",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "tags": "birds, night"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "",
+        "url": "",
+        "tags": [
+          "birds",
+          "night"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#4",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "text": "I'm reading this 🦋",
+          "url": "https://docs.bsky.app/",
+          "tags": "birds, night"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "I'm reading this 🦋\n\nhttps://docs.bsky.app/",
+        "url": "https://docs.bsky.app/",
+        "tags": [
+          "birds",
+          "night"
+        ],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#5",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {},
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#6",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "text": "",
+          "url": "",
+          "tags": []
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": false,
+        "text": "",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    },
+    {
+      "id": "roundTrip#7",
+      "fn": "roundTrip",
+      "input": {
+        "intent": {
+          "text": "a b+c&d=e/f?g#h%"
+        },
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "hasIntent": true,
+        "text": "a b+c&d=e/f?g#h%",
+        "url": "",
+        "tags": [],
+        "truncated": false
+      }
+    }
+  ]
+}
