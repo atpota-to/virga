@@ -1,0 +1,20 @@
+{
+  "name": "defense-early.pace",
+  "sources": [
+    "src/defense/pace.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "BATCH": 50,
+        "BATCH_GAP_MS": 120000,
+        "RATE_LIMIT_HOLD_MS": 3600000,
+        "POINTS_PER_CREATE": 3,
+        "POINTS_PER_HOUR": 5000
+      }
+    }
+  ]
+}

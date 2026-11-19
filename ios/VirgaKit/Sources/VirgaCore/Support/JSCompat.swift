@@ -169,9 +169,15 @@ extension Double {
   }
 
   /// `Math.round(n)`: halves round up (toward +∞), unlike Swift's
-  /// `.rounded()`, which rounds them away from zero.
+  /// `.rounded()`, which rounds them away from zero. Exact where `n + 0.5`
+  /// would round (0.49999999999999994 is 0), and -0 for anything in
+  /// [-0.5, -0], as JavaScript gives (so `Math.round(-0.4).toLocaleString()`
+  /// is "-0").
   public var jsRounded: Double {
-    (self + 0.5).rounded(.down)
+    guard isFinite, self != 0 else { return self }
+    let floor = rounded(.down)
+    let result = self - floor >= 0.5 ? floor + 1 : floor
+    return result == 0 && self < 0 ? -0.0 : result
   }
 }
 
