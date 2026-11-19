@@ -1,0 +1,678 @@
+{
+  "name": "network.blobs",
+  "sources": [
+    "src/posting/lib/blobs.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "BLOB_UPLOAD_BASE_MS": 30000,
+        "BLOB_UPLOAD_MIN_BYTES_PER_SECOND": 16384
+      }
+    },
+    {
+      "id": "blobUploadTimeoutMs#1",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 0
+      },
+      "output": 30000
+    },
+    {
+      "id": "blobUploadTimeoutMs#2",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 1
+      },
+      "output": 30001
+    },
+    {
+      "id": "blobUploadTimeoutMs#3",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 16384
+      },
+      "output": 31000
+    },
+    {
+      "id": "blobUploadTimeoutMs#4",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 16385
+      },
+      "output": 31001
+    },
+    {
+      "id": "blobUploadTimeoutMs#5",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 1992294
+      },
+      "output": 151600
+    },
+    {
+      "id": "blobUploadTimeoutMs#6",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 2000000
+      },
+      "output": 152071
+    },
+    {
+      "id": "blobUploadTimeoutMs#7",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 200000
+      },
+      "output": 42208
+    },
+    {
+      "id": "blobUploadTimeoutMs#8",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": -5
+      },
+      "output": 30000
+    },
+    {
+      "id": "blobUploadTimeoutMs#9",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": 0.5
+      },
+      "output": 30001
+    },
+    {
+      "id": "blobUploadTimeoutMs#10",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": null
+      },
+      "output": 30000
+    },
+    {
+      "id": "blobUploadTimeoutMs#11",
+      "fn": "blobUploadTimeoutMs",
+      "input": {
+        "bytes": "5000"
+      },
+      "output": 30000
+    },
+    {
+      "id": "blobUploadTimeoutMs#12",
+      "fn": "blobUploadTimeoutMs",
+      "input": {},
+      "output": 30000
+    },
+    {
+      "id": "blobCid#1",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 3
+        }
+      },
+      "output": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+    },
+    {
+      "id": "blobCid#2",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm",
+          "mimeType": "image/png"
+        }
+      },
+      "output": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+    },
+    {
+      "id": "blobCid#3",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "cid": "",
+          "mimeType": "image/png"
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "blobCid#4",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "cid": 5
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#5",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "ref": {}
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#6",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": ""
+          },
+          "cid": "legacy"
+        }
+      },
+      "output": "legacy"
+    },
+    {
+      "id": "blobCid#7",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": 5
+          }
+        }
+      },
+      "output": 5
+    },
+    {
+      "id": "blobCid#8",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": {
+              "nested": true
+            }
+          }
+        }
+      },
+      "output": {
+        "nested": true
+      }
+    },
+    {
+      "id": "blobCid#9",
+      "fn": "blobCid",
+      "input": {
+        "blob": {
+          "ref": "x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#10",
+      "fn": "blobCid",
+      "input": {
+        "blob": [
+          1,
+          2
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#11",
+      "fn": "blobCid",
+      "input": {
+        "blob": "bafy"
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#12",
+      "fn": "blobCid",
+      "input": {
+        "blob": 5
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#13",
+      "fn": "blobCid",
+      "input": {
+        "blob": null
+      },
+      "output": null
+    },
+    {
+      "id": "blobCid#14",
+      "fn": "blobCid",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "blobCidOfBlobRef#1",
+      "fn": "blobCidOfBlobRef",
+      "input": {
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 3
+        }
+      },
+      "output": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+    },
+    {
+      "id": "isBlob#1",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 3
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isBlob#2",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm",
+          "mimeType": "image/png"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isBlob#3",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isBlob#4",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": 5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isBlob#5",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": ""
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isBlob#6",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "ref": {}
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isBlob#7",
+      "fn": "isBlob",
+      "input": {
+        "blob": {
+          "cid": "",
+          "mimeType": "image/png"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isBlob#8",
+      "fn": "isBlob",
+      "input": {
+        "blob": null
+      },
+      "output": false
+    },
+    {
+      "id": "isBlob#9",
+      "fn": "isBlob",
+      "input": {
+        "blob": "bafy"
+      },
+      "output": false
+    },
+    {
+      "id": "jpeg",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1,
+          2,
+          3
+        ],
+        "encoding": "image/jpeg",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 3
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fjpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQID"
+              }
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm\"},\"mimeType\":\"image/jpeg\",\"size\":3}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 3
+        }
+      }
+    },
+    {
+      "id": "size-from-bytes",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "encoding": "image/png",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "image/png",
+                  "size": 5
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQIDBAU="
+              }
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm\"},\"mimeType\":\"image/png\",\"size\":5}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/png",
+          "size": 5
+        }
+      }
+    },
+    {
+      "id": "no-encoding",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "A blob upload needs its media type."
+      }
+    },
+    {
+      "id": "octet-stream",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "encoding": "application/octet-stream",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "A blob upload needs its media type."
+      }
+    },
+    {
+      "id": "server-error",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "encoding": "video/mp4",
+        "answers": [
+          {
+            "status": 504,
+            "json": {
+              "success": false,
+              "error": "The PDS took too long to accept the upload. Please try again.",
+              "code": "PDS_UPLOAD_TIMEOUT"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=video%2Fmp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQ=="
+              }
+            },
+            "response": {
+              "status": 504,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"The PDS took too long to accept the upload. Please try again.\",\"code\":\"PDS_UPLOAD_TIMEOUT\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "$throws": "The PDS took too long to accept the upload. Please try again."
+      }
+    },
+    {
+      "id": "session-gone",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "encoding": "image/png",
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "error": "OAuth session not found or expired. Please re-authenticate.",
+              "code": "OAUTH_SESSION_MISSING"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQ=="
+              }
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"OAuth session not found or expired. Please re-authenticate.\",\"code\":\"OAUTH_SESSION_MISSING\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "$throws": "OAuth session not found or expired. Please re-authenticate."
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "encoding": "image/png",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQ=="
+              }
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "$throws": "fetch failed"
+      }
+    }
+  ]
+}

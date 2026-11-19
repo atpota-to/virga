@@ -1,0 +1,1636 @@
+{
+  "name": "network.publicAppView",
+  "sources": [
+    "src/posting/library/sources.js"
+  ],
+  "cases": [
+    {
+      "id": "GET_POSTS_MAX",
+      "fn": "GET_POSTS_MAX",
+      "input": {},
+      "output": 25
+    },
+    {
+      "id": "chunk#1",
+      "fn": "chunk",
+      "input": {
+        "list": [],
+        "size": 25
+      },
+      "output": []
+    },
+    {
+      "id": "chunk#2",
+      "fn": "chunk",
+      "input": {
+        "list": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "size": 2
+      },
+      "output": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          5
+        ]
+      ]
+    },
+    {
+      "id": "chunk#3",
+      "fn": "chunk",
+      "input": {
+        "list": [
+          1,
+          2,
+          3
+        ],
+        "size": 3
+      },
+      "output": [
+        [
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "chunk#4",
+      "fn": "chunk",
+      "input": {
+        "list": [
+          1,
+          2,
+          3
+        ],
+        "size": 5
+      },
+      "output": [
+        [
+          1,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "chunk#5",
+      "fn": "chunk",
+      "input": {
+        "list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ]
+      },
+      "output": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        [
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50
+        ]
+      ]
+    },
+    {
+      "id": "params",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getAuthorFeed",
+        "params": {
+          "actor": "did:plc:a",
+          "limit": 50,
+          "filter": "posts_with_replies",
+          "includePins": false,
+          "skip": null
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "feed": []
+            }
+          }
+        ],
+        "keys": [
+          "actor",
+          "limit",
+          "cursor",
+          "filter",
+          "includePins",
+          "skip"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aa&limit=50&filter=posts_with_replies&includePins=false",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "feed": []
+          }
+        }
+      }
+    },
+    {
+      "id": "array",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPosts",
+        "params": {
+          "uris": [
+            "at://a/b/c",
+            "at://d/e/f?x&y"
+          ]
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "posts": []
+            }
+          }
+        ],
+        "keys": [
+          "uris"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fa%2Fb%2Fc&uris=at%3A%2F%2Fd%2Fe%2Ff%3Fx%26y",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "posts": []
+          }
+        }
+      }
+    },
+    {
+      "id": "no-params",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.unspecced.getConfig",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "ok": true
+            }
+          }
+        ],
+        "keys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.unspecced.getConfig?",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"ok\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "ok": true
+          }
+        }
+      }
+    },
+    {
+      "id": "unicode",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.searchPosts",
+        "params": {
+          "q": "é 😀 a+b&c=d",
+          "n": 2.5,
+          "flag": true,
+          "nested": [
+            [
+              1,
+              2
+            ],
+            "x"
+          ]
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "posts": []
+            }
+          }
+        ],
+        "keys": [
+          "q",
+          "n",
+          "flag",
+          "nested"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=%C3%A9+%F0%9F%98%80+a%2Bb%26c%3Dd&n=2.5&flag=true&nested=1%2C2&nested=x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "posts": []
+          }
+        }
+      }
+    },
+    {
+      "id": "appview",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.actor.getProfile",
+        "params": {
+          "actor": "x"
+        },
+        "appview": "https://api.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:x"
+            }
+          }
+        ],
+        "keys": [
+          "actor"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://api.example/xrpc/app.bsky.actor.getProfile?actor=x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "did": "did:plc:x"
+          }
+        }
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPostThread",
+        "params": {
+          "uri": "at://x"
+        },
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "NotFound",
+              "message": "Post not found: at://x"
+            }
+          }
+        ],
+        "keys": [
+          "uri"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"Post not found: at://x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "Post not found: at://x",
+            "status": 400,
+            "error": "NotFound"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-message",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPostThread",
+        "params": {
+          "uri": "at://x"
+        },
+        "answers": [
+          {
+            "status": 500,
+            "json": {
+              "error": "InternalError"
+            }
+          }
+        ],
+        "keys": [
+          "uri"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InternalError\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "HTTP 500 from app.bsky.feed.getPostThread",
+            "status": 500,
+            "error": "InternalError"
+          }
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPostThread",
+        "params": {
+          "uri": "at://x"
+        },
+        "answers": [
+          {
+            "status": 502,
+            "text": "Bad Gateway"
+          }
+        ],
+        "keys": [
+          "uri"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "Bad Gateway"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "HTTP 502 from app.bsky.feed.getPostThread",
+            "status": 502,
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": "odd-error-fields",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "x.y.z",
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": 0,
+              "message": 5
+            }
+          }
+        ],
+        "keys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/x.y.z?",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":0,\"message\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "5",
+            "status": 400,
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "x.y.z",
+        "answers": [
+          "offline"
+        ],
+        "keys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/x.y.z?",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "fetch failed",
+            "status": null,
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": "one-chunk",
+      "fn": "getPosts",
+      "input": {
+        "uris": [
+          "at://did:plc:author/app.bsky.feed.post/001",
+          "at://did:plc:author/app.bsky.feed.post/002",
+          "at://did:plc:author/app.bsky.feed.post/001",
+          "",
+          null,
+          5,
+          "at://did:plc:author/app.bsky.feed.post/003"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:author/app.bsky.feed.post/001\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/003\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "views": [
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/001",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/003",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            }
+          ],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "chunks",
+      "fn": "getPosts",
+      "input": {
+        "uris": [
+          "at://did:plc:author/app.bsky.feed.post/000",
+          "at://did:plc:author/app.bsky.feed.post/001",
+          "at://did:plc:author/app.bsky.feed.post/002",
+          "at://did:plc:author/app.bsky.feed.post/003",
+          "at://did:plc:author/app.bsky.feed.post/004",
+          "at://did:plc:author/app.bsky.feed.post/005",
+          "at://did:plc:author/app.bsky.feed.post/006",
+          "at://did:plc:author/app.bsky.feed.post/007",
+          "at://did:plc:author/app.bsky.feed.post/008",
+          "at://did:plc:author/app.bsky.feed.post/009",
+          "at://did:plc:author/app.bsky.feed.post/010",
+          "at://did:plc:author/app.bsky.feed.post/011",
+          "at://did:plc:author/app.bsky.feed.post/012",
+          "at://did:plc:author/app.bsky.feed.post/013",
+          "at://did:plc:author/app.bsky.feed.post/014",
+          "at://did:plc:author/app.bsky.feed.post/015",
+          "at://did:plc:author/app.bsky.feed.post/016",
+          "at://did:plc:author/app.bsky.feed.post/017",
+          "at://did:plc:author/app.bsky.feed.post/018",
+          "at://did:plc:author/app.bsky.feed.post/019",
+          "at://did:plc:author/app.bsky.feed.post/020",
+          "at://did:plc:author/app.bsky.feed.post/021",
+          "at://did:plc:author/app.bsky.feed.post/022",
+          "at://did:plc:author/app.bsky.feed.post/023",
+          "at://did:plc:author/app.bsky.feed.post/024",
+          "at://did:plc:author/app.bsky.feed.post/025",
+          "at://did:plc:author/app.bsky.feed.post/026",
+          "at://did:plc:author/app.bsky.feed.post/027",
+          "at://did:plc:author/app.bsky.feed.post/028",
+          "at://did:plc:author/app.bsky.feed.post/029",
+          "at://did:plc:author/app.bsky.feed.post/030",
+          "at://did:plc:author/app.bsky.feed.post/031",
+          "at://did:plc:author/app.bsky.feed.post/032",
+          "at://did:plc:author/app.bsky.feed.post/033",
+          "at://did:plc:author/app.bsky.feed.post/034",
+          "at://did:plc:author/app.bsky.feed.post/035",
+          "at://did:plc:author/app.bsky.feed.post/036",
+          "at://did:plc:author/app.bsky.feed.post/037",
+          "at://did:plc:author/app.bsky.feed.post/038",
+          "at://did:plc:author/app.bsky.feed.post/039",
+          "at://did:plc:author/app.bsky.feed.post/040",
+          "at://did:plc:author/app.bsky.feed.post/041",
+          "at://did:plc:author/app.bsky.feed.post/042",
+          "at://did:plc:author/app.bsky.feed.post/043",
+          "at://did:plc:author/app.bsky.feed.post/044",
+          "at://did:plc:author/app.bsky.feed.post/045",
+          "at://did:plc:author/app.bsky.feed.post/046",
+          "at://did:plc:author/app.bsky.feed.post/047",
+          "at://did:plc:author/app.bsky.feed.post/048",
+          "at://did:plc:author/app.bsky.feed.post/049",
+          "at://did:plc:author/app.bsky.feed.post/050",
+          "at://did:plc:author/app.bsky.feed.post/051",
+          "at://did:plc:author/app.bsky.feed.post/052",
+          "at://did:plc:author/app.bsky.feed.post/053",
+          "at://did:plc:author/app.bsky.feed.post/054",
+          "at://did:plc:author/app.bsky.feed.post/055",
+          "at://did:plc:author/app.bsky.feed.post/056",
+          "at://did:plc:author/app.bsky.feed.post/057",
+          "at://did:plc:author/app.bsky.feed.post/058",
+          "at://did:plc:author/app.bsky.feed.post/059"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F000&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F004&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F005&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F006&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F007&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F008&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F009&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F010&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F011&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F012&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F013&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F014&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F015&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F016&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F017&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F018&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F019&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F020&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F021&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F022&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F023&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F024",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:author/app.bsky.feed.post/000\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/001\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/003\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/004\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/005\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/006\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/007\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/008\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/009\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/010\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/011\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/013\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/014\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/015\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/016\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/017\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/018\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/019\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/020\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/021\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/023\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/024\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F025&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F026&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F027&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F028&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F029&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F030&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F031&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F032&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F033&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F034&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F035&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F036&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F037&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F038&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F039&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F040&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F041&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F042&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F043&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F044&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F045&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F046&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F047&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F048&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F049",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:author/app.bsky.feed.post/025\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/026\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/027\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/028\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/029\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/030\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/031\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/033\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/034\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/035\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/036\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/037\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/038\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/039\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/040\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/041\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/043\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/044\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/045\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/046\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/047\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/048\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/049\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F050&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F051&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F052&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F053&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F054&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F055&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F056&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F057&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F058&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F059",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:author/app.bsky.feed.post/050\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/051\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/053\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/054\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/055\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/056\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/057\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/058\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/059\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "views": [
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/000",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/001",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/003",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/004",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/005",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/006",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/007",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/008",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/009",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/010",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/011",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/013",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/014",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/015",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/016",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/017",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/018",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/019",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/020",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/021",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/023",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/024",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/025",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/026",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/027",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/028",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/029",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/030",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/031",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/033",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/034",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/035",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/036",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/037",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/038",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/039",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/040",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/041",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/043",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/044",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/045",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/046",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/047",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/048",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/049",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/050",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/051",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/053",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/054",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/055",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/056",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/057",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/058",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/059",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            }
+          ],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "chunk-fails",
+      "fn": "getPosts",
+      "input": {
+        "uris": [
+          "at://did:plc:author/app.bsky.feed.post/000",
+          "at://did:plc:author/app.bsky.feed.post/001",
+          "at://did:plc:author/app.bsky.feed.post/002",
+          "at://did:plc:author/app.bsky.feed.post/003",
+          "at://did:plc:author/app.bsky.feed.post/004",
+          "at://did:plc:author/app.bsky.feed.post/005",
+          "at://did:plc:author/app.bsky.feed.post/006",
+          "at://did:plc:author/app.bsky.feed.post/007",
+          "at://did:plc:author/app.bsky.feed.post/008",
+          "at://did:plc:author/app.bsky.feed.post/009",
+          "at://did:plc:author/app.bsky.feed.post/010",
+          "at://did:plc:author/app.bsky.feed.post/011",
+          "at://did:plc:author/app.bsky.feed.post/012",
+          "at://did:plc:author/app.bsky.feed.post/013",
+          "at://did:plc:author/app.bsky.feed.post/014",
+          "at://did:plc:author/app.bsky.feed.post/015",
+          "at://did:plc:author/app.bsky.feed.post/016",
+          "at://did:plc:author/app.bsky.feed.post/017",
+          "at://did:plc:author/app.bsky.feed.post/018",
+          "at://did:plc:author/app.bsky.feed.post/019",
+          "at://did:plc:author/app.bsky.feed.post/020",
+          "at://did:plc:author/app.bsky.feed.post/021",
+          "at://did:plc:author/app.bsky.feed.post/022",
+          "at://did:plc:author/app.bsky.feed.post/023",
+          "at://did:plc:author/app.bsky.feed.post/024",
+          "at://did:plc:author/app.bsky.feed.post/025",
+          "at://did:plc:author/app.bsky.feed.post/026",
+          "at://did:plc:author/app.bsky.feed.post/027",
+          "at://did:plc:author/app.bsky.feed.post/028",
+          "at://did:plc:author/app.bsky.feed.post/029"
+        ],
+        "failFirst": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F000&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F004&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F005&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F006&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F007&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F008&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F009&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F010&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F011&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F012&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F013&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F014&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F015&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F016&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F017&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F018&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F019&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F020&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F021&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F022&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F023&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F024",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InternalError\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F025&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F026&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F027&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F028&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F029",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:author/app.bsky.feed.post/025\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/026\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/027\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/028\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:author/app.bsky.feed.post/029\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "views": [
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/025",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/026",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/027",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/028",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:author/app.bsky.feed.post/029",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            }
+          ],
+          "failed": 25,
+          "error": "HTTP 500 from app.bsky.feed.getPosts"
+        }
+      }
+    },
+    {
+      "id": "odd-posts",
+      "fn": "getPosts",
+      "input": {
+        "uris": [
+          "at://did:plc:author/app.bsky.feed.post/001"
+        ],
+        "odd": true
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":\"odd\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "views": [
+            "odd"
+          ],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "none",
+      "fn": "getPosts",
+      "input": {
+        "uris": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "views": [],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "missing",
+      "fn": "getPosts",
+      "input": {
+        "uris": null
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "views": [],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "handle",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "mira.example.com",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:mira"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:mira\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "did:plc:mira"
+      }
+    },
+    {
+      "id": "at-and-case",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "  @Mira.Example.COM ",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:mira"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%40mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:mira\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "did:plc:mira"
+      }
+    },
+    {
+      "id": "only-one-at",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "@@mira",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:mira"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%40mira",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:mira\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "did:plc:mira"
+      }
+    },
+    {
+      "id": "trim-after-at",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "@ mira ",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:mira"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mira",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:mira\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "did:plc:mira"
+      }
+    },
+    {
+      "id": "final-sigma",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "ΟΔΟΣ.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:greek"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%CE%BF%CE%B4%CE%BF%CF%83.example",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:greek\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "did:plc:greek"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "just-at",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "@",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-string",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": 5,
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "no-did",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "x.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "did-not-string",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "x.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": 5
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "gone.example",
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "InvalidRequest",
+              "message": "Unable to resolve handle"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=gone.example",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\",\"message\":\"Unable to resolve handle\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "resolveHandle",
+      "input": {
+        "handle": "x.example",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,2911 @@
+{
+  "name": "network.atproto",
+  "sources": [
+    "src/lib/atproto.js"
+  ],
+  "cases": [
+    {
+      "id": "didWebDocumentUrl#1",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com"
+      },
+      "output": "https://example.com/.well-known/did.json"
+    },
+    {
+      "id": "didWebDocumentUrl#2",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:localhost%3A2583"
+      },
+      "output": "https://localhost:2583/.well-known/did.json"
+    },
+    {
+      "id": "didWebDocumentUrl#3",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:localhost%3a2583"
+      },
+      "output": "https://localhost:2583/.well-known/did.json"
+    },
+    {
+      "id": "didWebDocumentUrl#4",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:Example.COM"
+      },
+      "output": "https://Example.COM/.well-known/did.json"
+    },
+    {
+      "id": "didWebDocumentUrl#5",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com:path"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#6",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com%3Aabc"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#7",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com%3A"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#8",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:a_b.com"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#9",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:exa mple.com"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#10",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:exa\nmple.com"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#11",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#12",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:münchen.de"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#13",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com/x"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#14",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com?x"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#15",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com#x"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#16",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:%3A80"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#17",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:web:example.com%3A80%3A90"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#18",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "did:plc:abc"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#19",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": "DID:web:example.com"
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#20",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": ""
+      },
+      "output": null
+    },
+    {
+      "id": "didWebDocumentUrl#21",
+      "fn": "didWebDocumentUrl",
+      "input": {
+        "did": null
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#1",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3kabc"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#2",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3kabc?x#y"
+      },
+      "output": "3kabc"
+    },
+    {
+      "id": "rkeyFromAtUri#3",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#4",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#5",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": "https://bsky.app/profile/x/post/y"
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#6",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "rkeyFromAtUri#7",
+      "fn": "rkeyFromAtUri",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#1",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3kabcdefghijk"
+      },
+      "output": "2023-09-26T02:45:50.982Z"
+    },
+    {
+      "id": "tidToTimestamp#2",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3lcgnmbujy22x"
+      },
+      "output": "2024-12-03T22:07:35.518Z"
+    },
+    {
+      "id": "tidToTimestamp#3",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "2222222222222"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#4",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "2222222222223"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#5",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "22222222222zz"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#6",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "zzzzzzzzzzzzz"
+      },
+      "output": "3111-09-16T23:10:18.963Z"
+    },
+    {
+      "id": "tidToTimestamp#7",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "jzzzzzzzzzzzz"
+      },
+      "output": "2540-11-07T23:35:09.481Z"
+    },
+    {
+      "id": "tidToTimestamp#8",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "kaaaaaaaaaaaa"
+      },
+      "output": "2547-10-05T03:50:20.483Z"
+    },
+    {
+      "id": "tidToTimestamp#9",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3KABCDEFGHIJK"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#10",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3kabcdefghij"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#11",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3kabcdefghijkl"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#12",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3kabcdefghij1"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#13",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "3kabcdefghij😀"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#14",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": "self"
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#15",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": ""
+      },
+      "output": null
+    },
+    {
+      "id": "tidToTimestamp#16",
+      "fn": "tidToTimestamp",
+      "input": {
+        "rkey": null
+      },
+      "output": null
+    },
+    {
+      "id": "plc",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"@context\":[\"https://www.w3.org/ns/did/v1\"],\"id\":\"did:plc:virgaharnessmira2zq4x\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://morel.us-east.host.bsky.network/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "@context": [
+              "https://www.w3.org/ns/did/v1"
+            ],
+            "id": "did:plc:virgaharnessmira2zq4x",
+            "alsoKnownAs": [
+              "at://mira.example.com"
+            ],
+            "service": [
+              {
+                "id": "#bsky_notif",
+                "type": "BskyNotificationService",
+                "serviceEndpoint": "https://notify.example"
+              },
+              {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "plc-encoded",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:a/b c",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aa%2Fb%20c",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": "x"
+          }
+        }
+      }
+    },
+    {
+      "id": "web",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:web:example.com",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:web:example.com"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://example.com/.well-known/did.json",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:web:example.com\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": "did:web:example.com"
+          }
+        }
+      }
+    },
+    {
+      "id": "web-port",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:web:localhost%3A2583",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:web:localhost%3A2583"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://localhost:2583/.well-known/did.json",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:web:localhost%3A2583\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": "did:web:localhost%3A2583"
+          }
+        }
+      }
+    },
+    {
+      "id": "web-unusable",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:web:example.com:path",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "Unsupported did:web identifier did:web:example.com:path",
+            "status": null,
+            "url": null
+          }
+        }
+      }
+    },
+    {
+      "id": "missing",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "getDidDocument: missing did",
+            "status": null,
+            "url": null
+          }
+        }
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 404,
+            "json": {
+              "message": "DID not registered: did:plc:x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"message\":\"DID not registered: did:plc:x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "HTTP 404  for https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x :: {\"message\":\"DID not registered: did:plc:x\"}",
+            "status": 404,
+            "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x"
+          }
+        }
+      }
+    },
+    {
+      "id": "gone-text",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 410,
+            "text": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 410,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "HTTP 410  for https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x :: éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+            "status": 410,
+            "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x"
+          }
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "fetch failed",
+            "status": null,
+            "url": null
+          }
+        }
+      }
+    },
+    {
+      "id": "shared",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "twice": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"@context\":[\"https://www.w3.org/ns/did/v1\"],\"id\":\"did:plc:virgaharnessmira2zq4x\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://morel.us-east.host.bsky.network/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "value": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          },
+          {
+            "value": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "failure-forgotten",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "twice": true,
+        "answers": [
+          "offline",
+          {
+            "status": 200,
+            "json": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"@context\":[\"https://www.w3.org/ns/did/v1\"],\"id\":\"did:plc:virgaharnessmira2zq4x\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://morel.us-east.host.bsky.network/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "error": {
+              "message": "fetch failed",
+              "status": null,
+              "url": null
+            }
+          },
+          {
+            "value": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pds",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "@context": [
+                "https://www.w3.org/ns/did/v1"
+              ],
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"@context\":[\"https://www.w3.org/ns/did/v1\"],\"id\":\"did:plc:virgaharnessmira2zq4x\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://morel.us-east.host.bsky.network/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "https://morel.us-east.host.bsky.network"
+      }
+    },
+    {
+      "id": "first-service",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#other",
+                  "serviceEndpoint": "https://first.example//"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#other\",\"serviceEndpoint\":\"https://first.example//\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "https://first.example/"
+      }
+    },
+    {
+      "id": "no-services",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "No PDS endpoint for did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "empty-endpoint",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": ""
+                },
+                {
+                  "serviceEndpoint": "https://b.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":\"\"},{\"serviceEndpoint\":\"https://b.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "No PDS endpoint for did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "service-not-array",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": "https://x.example"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":\"https://x.example\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "services.find is not a function"
+      }
+    },
+    {
+      "id": "service-null-entry",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                null,
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": "https://x"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[null,{\"id\":\"#atproto_pds\",\"serviceEndpoint\":\"https://x\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Cannot read properties of null (reading 'id')"
+      }
+    },
+    {
+      "id": "service-null-after",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": "https://x/"
+                },
+                null
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":\"https://x/\"},null]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "https://x"
+      }
+    },
+    {
+      "id": "endpoint-not-string",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": 5
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":5}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "pds.replace is not a function"
+      }
+    },
+    {
+      "id": "endpoint-object",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": {
+                    "uri": "https://x"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":{\"uri\":\"https://x\"}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "pds.replace is not a function"
+      }
+    },
+    {
+      "id": "doc-is-array",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[1,2]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "No PDS endpoint for did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "doc-is-null",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": null
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "No PDS endpoint for did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "web",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:web:example.com",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": "https://pds.example.com"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://example.com/.well-known/did.json",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":\"https://pds.example.com\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "https://pds.example.com"
+      }
+    },
+    {
+      "id": "error",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 500,
+            "text": "boom"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "boom"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "HTTP 500  for https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x :: boom"
+      }
+    },
+    {
+      "id": "handle",
+      "fn": "getProfile",
+      "input": {
+        "actor": "mira.example.com",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": "Mira"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":\"Mira\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "mira.example.com",
+          "displayName": "Mira"
+        }
+      }
+    },
+    {
+      "id": "did",
+      "fn": "getProfile",
+      "input": {
+        "actor": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "mira.example.com"
+        }
+      }
+    },
+    {
+      "id": "encoded",
+      "fn": "getProfile",
+      "input": {
+        "actor": "a b/é?",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=a%20b%2F%C3%A9%3F",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "x"
+        }
+      }
+    },
+    {
+      "id": "appview",
+      "fn": "getProfile",
+      "input": {
+        "actor": "x",
+        "appview": "https://api.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://api.example/xrpc/app.bsky.actor.getProfile?actor=x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "x"
+        }
+      }
+    },
+    {
+      "id": "not-found",
+      "fn": "getProfile",
+      "input": {
+        "actor": "gone.example.com",
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "InvalidRequest",
+              "message": "Profile not found"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=gone.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\",\"message\":\"Profile not found\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "HTTP 400  for https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=gone.example.com :: {\"error\":\"InvalidRequest\",\"message\":\"Profile not found\"}"
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "getProfile",
+      "input": {
+        "actor": "x",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "fetch failed"
+      }
+    },
+    {
+      "id": "one-chunk",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:a",
+          "did:plc:b",
+          "did:plc:a",
+          "",
+          null,
+          "did:plc:c"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "profiles": [
+                {
+                  "did": "did:plc:a",
+                  "handle": "a.example",
+                  "displayName": "A",
+                  "avatar": "https://cdn/a"
+                },
+                {
+                  "did": "did:plc:b",
+                  "handle": "b.example"
+                },
+                {
+                  "handle": "nodid.example"
+                },
+                null,
+                {
+                  "did": "did:plc:c",
+                  "handle": "",
+                  "displayName": null
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa&actors=did%3Aplc%3Ab&actors=did%3Aplc%3Ac",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:a\",\"handle\":\"a.example\",\"displayName\":\"A\",\"avatar\":\"https://cdn/a\"},{\"did\":\"did:plc:b\",\"handle\":\"b.example\"},{\"handle\":\"nodid.example\"},null,{\"did\":\"did:plc:c\",\"handle\":\"\",\"displayName\":null}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did:plc:a": {
+            "handle": "a.example",
+            "displayName": "A",
+            "avatar": "https://cdn/a"
+          },
+          "did:plc:b": {
+            "handle": "b.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:c": {
+            "handle": "",
+            "displayName": "",
+            "avatar": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "chunks",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:000",
+          "did:plc:001",
+          "did:plc:002",
+          "did:plc:003",
+          "did:plc:004",
+          "did:plc:005",
+          "did:plc:006",
+          "did:plc:007",
+          "did:plc:008",
+          "did:plc:009",
+          "did:plc:010",
+          "did:plc:011",
+          "did:plc:012",
+          "did:plc:013",
+          "did:plc:014",
+          "did:plc:015",
+          "did:plc:016",
+          "did:plc:017",
+          "did:plc:018",
+          "did:plc:019",
+          "did:plc:020",
+          "did:plc:021",
+          "did:plc:022",
+          "did:plc:023",
+          "did:plc:024",
+          "did:plc:025",
+          "did:plc:026",
+          "did:plc:027",
+          "did:plc:028",
+          "did:plc:029",
+          "did:plc:030",
+          "did:plc:031",
+          "did:plc:032",
+          "did:plc:033",
+          "did:plc:034",
+          "did:plc:035",
+          "did:plc:036",
+          "did:plc:037",
+          "did:plc:038",
+          "did:plc:039",
+          "did:plc:040",
+          "did:plc:041",
+          "did:plc:042",
+          "did:plc:043",
+          "did:plc:044",
+          "did:plc:045",
+          "did:plc:046",
+          "did:plc:047",
+          "did:plc:048",
+          "did:plc:049",
+          "did:plc:050",
+          "did:plc:051",
+          "did:plc:052"
+        ],
+        "answers": [
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A000&actors=did%3Aplc%3A001&actors=did%3Aplc%3A002&actors=did%3Aplc%3A003&actors=did%3Aplc%3A004&actors=did%3Aplc%3A005&actors=did%3Aplc%3A006&actors=did%3Aplc%3A007&actors=did%3Aplc%3A008&actors=did%3Aplc%3A009&actors=did%3Aplc%3A010&actors=did%3Aplc%3A011&actors=did%3Aplc%3A012&actors=did%3Aplc%3A013&actors=did%3Aplc%3A014&actors=did%3Aplc%3A015&actors=did%3Aplc%3A016&actors=did%3Aplc%3A017&actors=did%3Aplc%3A018&actors=did%3Aplc%3A019&actors=did%3Aplc%3A020&actors=did%3Aplc%3A021&actors=did%3Aplc%3A022&actors=did%3Aplc%3A023&actors=did%3Aplc%3A024",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:000\",\"handle\":\"000.example\"},{\"did\":\"did:plc:001\",\"handle\":\"001.example\"},{\"did\":\"did:plc:002\",\"handle\":\"002.example\"},{\"did\":\"did:plc:003\",\"handle\":\"003.example\"},{\"did\":\"did:plc:004\",\"handle\":\"004.example\"},{\"did\":\"did:plc:005\",\"handle\":\"005.example\"},{\"did\":\"did:plc:006\",\"handle\":\"006.example\"},{\"did\":\"did:plc:007\",\"handle\":\"007.example\"},{\"did\":\"did:plc:008\",\"handle\":\"008.example\"},{\"did\":\"did:plc:009\",\"handle\":\"009.example\"},{\"did\":\"did:plc:010\",\"handle\":\"010.example\"},{\"did\":\"did:plc:011\",\"handle\":\"011.example\"},{\"did\":\"did:plc:012\",\"handle\":\"012.example\"},{\"did\":\"did:plc:013\",\"handle\":\"013.example\"},{\"did\":\"did:plc:014\",\"handle\":\"014.example\"},{\"did\":\"did:plc:015\",\"handle\":\"015.example\"},{\"did\":\"did:plc:016\",\"handle\":\"016.example\"},{\"did\":\"did:plc:017\",\"handle\":\"017.example\"},{\"did\":\"did:plc:018\",\"handle\":\"018.example\"},{\"did\":\"did:plc:019\",\"handle\":\"019.example\"},{\"did\":\"did:plc:020\",\"handle\":\"020.example\"},{\"did\":\"did:plc:021\",\"handle\":\"021.example\"},{\"did\":\"did:plc:022\",\"handle\":\"022.example\"},{\"did\":\"did:plc:023\",\"handle\":\"023.example\"},{\"did\":\"did:plc:024\",\"handle\":\"024.example\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A025&actors=did%3Aplc%3A026&actors=did%3Aplc%3A027&actors=did%3Aplc%3A028&actors=did%3Aplc%3A029&actors=did%3Aplc%3A030&actors=did%3Aplc%3A031&actors=did%3Aplc%3A032&actors=did%3Aplc%3A033&actors=did%3Aplc%3A034&actors=did%3Aplc%3A035&actors=did%3Aplc%3A036&actors=did%3Aplc%3A037&actors=did%3Aplc%3A038&actors=did%3Aplc%3A039&actors=did%3Aplc%3A040&actors=did%3Aplc%3A041&actors=did%3Aplc%3A042&actors=did%3Aplc%3A043&actors=did%3Aplc%3A044&actors=did%3Aplc%3A045&actors=did%3Aplc%3A046&actors=did%3Aplc%3A047&actors=did%3Aplc%3A048&actors=did%3Aplc%3A049",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:025\",\"handle\":\"025.example\"},{\"did\":\"did:plc:026\",\"handle\":\"026.example\"},{\"did\":\"did:plc:027\",\"handle\":\"027.example\"},{\"did\":\"did:plc:028\",\"handle\":\"028.example\"},{\"did\":\"did:plc:029\",\"handle\":\"029.example\"},{\"did\":\"did:plc:030\",\"handle\":\"030.example\"},{\"did\":\"did:plc:031\",\"handle\":\"031.example\"},{\"did\":\"did:plc:032\",\"handle\":\"032.example\"},{\"did\":\"did:plc:033\",\"handle\":\"033.example\"},{\"did\":\"did:plc:034\",\"handle\":\"034.example\"},{\"did\":\"did:plc:035\",\"handle\":\"035.example\"},{\"did\":\"did:plc:036\",\"handle\":\"036.example\"},{\"did\":\"did:plc:037\",\"handle\":\"037.example\"},{\"did\":\"did:plc:038\",\"handle\":\"038.example\"},{\"did\":\"did:plc:039\",\"handle\":\"039.example\"},{\"did\":\"did:plc:040\",\"handle\":\"040.example\"},{\"did\":\"did:plc:041\",\"handle\":\"041.example\"},{\"did\":\"did:plc:042\",\"handle\":\"042.example\"},{\"did\":\"did:plc:043\",\"handle\":\"043.example\"},{\"did\":\"did:plc:044\",\"handle\":\"044.example\"},{\"did\":\"did:plc:045\",\"handle\":\"045.example\"},{\"did\":\"did:plc:046\",\"handle\":\"046.example\"},{\"did\":\"did:plc:047\",\"handle\":\"047.example\"},{\"did\":\"did:plc:048\",\"handle\":\"048.example\"},{\"did\":\"did:plc:049\",\"handle\":\"049.example\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A050&actors=did%3Aplc%3A051&actors=did%3Aplc%3A052",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:050\",\"handle\":\"050.example\"},{\"did\":\"did:plc:051\",\"handle\":\"051.example\"},{\"did\":\"did:plc:052\",\"handle\":\"052.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did:plc:000": {
+            "handle": "000.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:001": {
+            "handle": "001.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:002": {
+            "handle": "002.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:003": {
+            "handle": "003.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:004": {
+            "handle": "004.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:005": {
+            "handle": "005.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:006": {
+            "handle": "006.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:007": {
+            "handle": "007.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:008": {
+            "handle": "008.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:009": {
+            "handle": "009.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:010": {
+            "handle": "010.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:011": {
+            "handle": "011.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:012": {
+            "handle": "012.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:013": {
+            "handle": "013.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:014": {
+            "handle": "014.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:015": {
+            "handle": "015.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:016": {
+            "handle": "016.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:017": {
+            "handle": "017.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:018": {
+            "handle": "018.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:019": {
+            "handle": "019.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:020": {
+            "handle": "020.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:021": {
+            "handle": "021.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:022": {
+            "handle": "022.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:023": {
+            "handle": "023.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:024": {
+            "handle": "024.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:025": {
+            "handle": "025.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:026": {
+            "handle": "026.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:027": {
+            "handle": "027.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:028": {
+            "handle": "028.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:029": {
+            "handle": "029.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:030": {
+            "handle": "030.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:031": {
+            "handle": "031.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:032": {
+            "handle": "032.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:033": {
+            "handle": "033.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:034": {
+            "handle": "034.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:035": {
+            "handle": "035.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:036": {
+            "handle": "036.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:037": {
+            "handle": "037.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:038": {
+            "handle": "038.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:039": {
+            "handle": "039.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:040": {
+            "handle": "040.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:041": {
+            "handle": "041.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:042": {
+            "handle": "042.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:043": {
+            "handle": "043.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:044": {
+            "handle": "044.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:045": {
+            "handle": "045.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:046": {
+            "handle": "046.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:047": {
+            "handle": "047.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:048": {
+            "handle": "048.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:049": {
+            "handle": "049.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:050": {
+            "handle": "050.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:051": {
+            "handle": "051.example",
+            "displayName": "",
+            "avatar": ""
+          },
+          "did:plc:052": {
+            "handle": "052.example",
+            "displayName": "",
+            "avatar": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "retry-once",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          "offline",
+          {
+            "status": 200,
+            "json": {
+              "profiles": [
+                {
+                  "did": "did:plc:a",
+                  "handle": "a.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:a\",\"handle\":\"a.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          400
+        ],
+        "result": {
+          "did:plc:a": {
+            "handle": "a.example",
+            "displayName": "",
+            "avatar": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "chunk-skipped",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:0",
+          "did:plc:1",
+          "did:plc:2",
+          "did:plc:3",
+          "did:plc:4",
+          "did:plc:5",
+          "did:plc:6",
+          "did:plc:7",
+          "did:plc:8",
+          "did:plc:9",
+          "did:plc:10",
+          "did:plc:11",
+          "did:plc:12",
+          "did:plc:13",
+          "did:plc:14",
+          "did:plc:15",
+          "did:plc:16",
+          "did:plc:17",
+          "did:plc:18",
+          "did:plc:19",
+          "did:plc:20",
+          "did:plc:21",
+          "did:plc:22",
+          "did:plc:23",
+          "did:plc:24",
+          "did:plc:25",
+          "did:plc:26",
+          "did:plc:27",
+          "did:plc:28",
+          "did:plc:29"
+        ],
+        "answers": [
+          {
+            "status": 500,
+            "text": "boom"
+          },
+          {
+            "status": 502,
+            "text": "again"
+          },
+          {
+            "status": 200,
+            "json": {
+              "profiles": [
+                {
+                  "did": "did:plc:29",
+                  "handle": "last.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A0&actors=did%3Aplc%3A1&actors=did%3Aplc%3A2&actors=did%3Aplc%3A3&actors=did%3Aplc%3A4&actors=did%3Aplc%3A5&actors=did%3Aplc%3A6&actors=did%3Aplc%3A7&actors=did%3Aplc%3A8&actors=did%3Aplc%3A9&actors=did%3Aplc%3A10&actors=did%3Aplc%3A11&actors=did%3Aplc%3A12&actors=did%3Aplc%3A13&actors=did%3Aplc%3A14&actors=did%3Aplc%3A15&actors=did%3Aplc%3A16&actors=did%3Aplc%3A17&actors=did%3Aplc%3A18&actors=did%3Aplc%3A19&actors=did%3Aplc%3A20&actors=did%3Aplc%3A21&actors=did%3Aplc%3A22&actors=did%3Aplc%3A23&actors=did%3Aplc%3A24",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "boom"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A0&actors=did%3Aplc%3A1&actors=did%3Aplc%3A2&actors=did%3Aplc%3A3&actors=did%3Aplc%3A4&actors=did%3Aplc%3A5&actors=did%3Aplc%3A6&actors=did%3Aplc%3A7&actors=did%3Aplc%3A8&actors=did%3Aplc%3A9&actors=did%3Aplc%3A10&actors=did%3Aplc%3A11&actors=did%3Aplc%3A12&actors=did%3Aplc%3A13&actors=did%3Aplc%3A14&actors=did%3Aplc%3A15&actors=did%3Aplc%3A16&actors=did%3Aplc%3A17&actors=did%3Aplc%3A18&actors=did%3Aplc%3A19&actors=did%3Aplc%3A20&actors=did%3Aplc%3A21&actors=did%3Aplc%3A22&actors=did%3Aplc%3A23&actors=did%3Aplc%3A24",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "again"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A25&actors=did%3Aplc%3A26&actors=did%3Aplc%3A27&actors=did%3Aplc%3A28&actors=did%3Aplc%3A29",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:29\",\"handle\":\"last.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          400
+        ],
+        "result": {
+          "did:plc:29": {
+            "handle": "last.example",
+            "displayName": "",
+            "avatar": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {}
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": null,
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {}
+      }
+    },
+    {
+      "id": "profiles-missing",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {}
+      }
+    },
+    {
+      "id": "appview",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:a"
+        ],
+        "appview": "https://api.example",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "profiles": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://api.example/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {}
+      }
+    },
+    {
+      "id": "log",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": [
+              {
+                "createdAt": "2023-04-01T00:00:00.000Z",
+                "nullified": false,
+                "operation": {
+                  "type": "create",
+                  "handle": "mira.bsky.social",
+                  "service": "https://bsky.social"
+                }
+              },
+              {
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "nullified": true,
+                "operation": {
+                  "type": "plc_operation",
+                  "alsoKnownAs": [
+                    "at://mira.example.com",
+                    "https://mira.example",
+                    "at://",
+                    null,
+                    5
+                  ],
+                  "services": {
+                    "atproto_pds": {
+                      "type": "AtprotoPersonalDataServer",
+                      "endpoint": "https://morel.example"
+                    }
+                  }
+                }
+              },
+              {
+                "createdAt": "2024-02-01T00:00:00.000Z",
+                "operation": {
+                  "type": "plc_tombstone"
+                }
+              },
+              null,
+              {
+                "operation": "weird"
+              },
+              {
+                "createdAt": "",
+                "nullified": 1,
+                "operation": {
+                  "alsoKnownAs": [],
+                  "handle": "ignored",
+                  "services": {
+                    "atproto_pds": {}
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[{\"createdAt\":\"2023-04-01T00:00:00.000Z\",\"nullified\":false,\"operation\":{\"type\":\"create\",\"handle\":\"mira.bsky.social\",\"service\":\"https://bsky.social\"}},{\"createdAt\":\"2024-01-01T00:00:00.000Z\",\"nullified\":true,\"operation\":{\"type\":\"plc_operation\",\"alsoKnownAs\":[\"at://mira.example.com\",\"https://mira.example\",\"at://\",null,5],\"services\":{\"atproto_pds\":{\"type\":\"AtprotoPersonalDataServer\",\"endpoint\":\"https://morel.example\"}}}},{\"createdAt\":\"2024-02-01T00:00:00.000Z\",\"operation\":{\"type\":\"plc_tombstone\"}},null,{\"operation\":\"weird\"},{\"createdAt\":\"\",\"nullified\":1,\"operation\":{\"alsoKnownAs\":[],\"handle\":\"ignored\",\"services\":{\"atproto_pds\":{}}}}]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "at": "2023-04-01T00:00:00.000Z",
+            "handles": [
+              "mira.bsky.social"
+            ],
+            "pds": "https://bsky.social",
+            "nullified": false,
+            "type": "create"
+          },
+          {
+            "at": "2024-01-01T00:00:00.000Z",
+            "handles": [
+              "mira.example.com",
+              "https://mira.example",
+              "null",
+              "5"
+            ],
+            "pds": "https://morel.example",
+            "nullified": true,
+            "type": "plc_operation"
+          },
+          {
+            "at": "2024-02-01T00:00:00.000Z",
+            "handles": [],
+            "pds": null,
+            "nullified": false,
+            "type": "plc_tombstone"
+          },
+          {
+            "at": null,
+            "handles": [],
+            "pds": null,
+            "nullified": false,
+            "type": null
+          },
+          {
+            "at": null,
+            "handles": [],
+            "pds": null,
+            "nullified": false,
+            "type": null
+          },
+          {
+            "at": null,
+            "handles": [],
+            "pds": null,
+            "nullified": true,
+            "type": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "aka-not-array",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": [
+              {
+                "operation": {
+                  "alsoKnownAs": "at://x"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[{\"operation\":{\"alsoKnownAs\":\"at://x\"}}]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-array",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "error": "x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-ok",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 404,
+            "json": {
+              "message": "DID not registered"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"message\":\"DID not registered\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "text": "<html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "web",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:web:example.com",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "unencoded",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:a b",
+        "answers": [
+          {
+            "status": 200,
+            "json": []
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:a b/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": []
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": null
+      }
+    },
+    {
+      "id": "passes-through",
+      "fn": "fetchWithTimeout",
+      "input": {
+        "url": "https://constellation.example/x?y=1",
+        "init": {
+          "method": "POST",
+          "headers": {
+            "Accept": "application/json"
+          },
+          "body": "{\"a\":1}"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "ok": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.example/x?y=1",
+              "method": "POST",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "a": 1
+                }
+              }
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"ok\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "body": {
+            "ok": true
+          }
+        }
+      }
+    }
+  ]
+}

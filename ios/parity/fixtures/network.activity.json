@@ -1,0 +1,677 @@
+{
+  "name": "network.activity",
+  "sources": [
+    "src/lib/activity.js"
+  ],
+  "cases": [
+    {
+      "id": "feedItemTime#1",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-01T10:00:00.000Z"
+            },
+            "indexedAt": "2026-03-01T10:00:05.000Z"
+          }
+        }
+      },
+      "output": "2026-03-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#2",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-01T10:00:00.000Z"
+            },
+            "indexedAt": "2026-03-01T10:00:05.000Z"
+          },
+          "reason": {
+            "indexedAt": "2026-06-02T08:00:00.000Z"
+          }
+        }
+      },
+      "output": "2026-06-02T08:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#3",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "indexedAt": "2026-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#4",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "not a date"
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "feedItemTime#5",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": ""
+            },
+            "indexedAt": "2026-01-01T00:00:00Z"
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#6",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#7",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#8",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00+05:30"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T04:30:00.000Z"
+    },
+    {
+      "id": "feedItemTime#9",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": 1767225600000
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "feedItemTime#10",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {
+          "reason": {
+            "indexedAt": null
+          },
+          "post": {
+            "indexedAt": "2026-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTime#11",
+      "fn": "feedItemTime",
+      "input": {
+        "item": {}
+      },
+      "output": null
+    },
+    {
+      "id": "feedItemTime#12",
+      "fn": "feedItemTime",
+      "input": {
+        "item": "x"
+      },
+      "output": null
+    },
+    {
+      "id": "feedItemTime#13",
+      "fn": "feedItemTime",
+      "input": {
+        "item": null
+      },
+      "output": null
+    },
+    {
+      "id": "mixed",
+      "fn": "checkActivity",
+      "input": {
+        "dids": [
+          "did:plc:post1",
+          "did:plc:repost1",
+          "did:plc:quiet1",
+          "did:plc:notfound1",
+          "did:plc:deactivated1",
+          "did:plc:takendown1",
+          "did:plc:NOTFOUND1",
+          "did:plc:blocked1",
+          "did:plc:weird400",
+          "did:plc:five1",
+          "did:plc:badjson1",
+          "did:plc:offline1",
+          "did:plc:numbers1",
+          "did:plc:odd1",
+          "did:plc:post1",
+          "",
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apost1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Arepost1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"},\"reason\":{\"$type\":\"app.bsky.feed.defs#reasonRepost\",\"indexedAt\":\"2026-06-02T08:00:00.000Z\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aquiet1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Anotfound1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\",\"message\":\"Profile not found\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Adeactivated1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"AccountDeactivated\",\"message\":\"Account is deactivated\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Atakendown1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"AccountTakedown\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3ANOTFOUND1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Ablocked1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"BlockedActor\",\"message\":\"Requester has blocked actor\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aweird400&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "not json"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Afive1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "boom"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Abadjson1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aoffline1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Anumbers1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":404,\"message\":\"suspended\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aodd1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":\"odd\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "results": [
+            {
+              "did": "did:plc:post1",
+              "lastActiveAt": "2026-03-01T10:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:repost1",
+              "lastActiveAt": "2026-06-02T08:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:quiet1",
+              "lastActiveAt": null,
+              "gone": false
+            },
+            {
+              "did": "did:plc:notfound1",
+              "lastActiveAt": null,
+              "gone": true
+            },
+            {
+              "did": "did:plc:deactivated1",
+              "lastActiveAt": null,
+              "gone": true
+            },
+            {
+              "did": "did:plc:takendown1",
+              "lastActiveAt": null,
+              "gone": false
+            },
+            {
+              "did": "did:plc:NOTFOUND1",
+              "lastActiveAt": null,
+              "gone": true
+            },
+            {
+              "did": "did:plc:blocked1",
+              "lastActiveAt": null,
+              "gone": false
+            },
+            {
+              "did": "did:plc:weird400",
+              "lastActiveAt": null,
+              "gone": false
+            },
+            {
+              "did": "did:plc:odd1",
+              "lastActiveAt": null,
+              "gone": false
+            },
+            {
+              "did": "did:plc:numbers1",
+              "lastActiveAt": null,
+              "gone": true
+            }
+          ],
+          "progress": [
+            {
+              "done": 0,
+              "total": 14
+            },
+            {
+              "done": 1,
+              "total": 14
+            },
+            {
+              "done": 2,
+              "total": 14
+            },
+            {
+              "done": 3,
+              "total": 14
+            },
+            {
+              "done": 4,
+              "total": 14
+            },
+            {
+              "done": 5,
+              "total": 14
+            },
+            {
+              "done": 6,
+              "total": 14
+            },
+            {
+              "done": 7,
+              "total": 14
+            },
+            {
+              "done": 8,
+              "total": 14
+            },
+            {
+              "done": 9,
+              "total": 14
+            },
+            {
+              "done": 10,
+              "total": 14
+            },
+            {
+              "done": 11,
+              "total": 14
+            },
+            {
+              "done": 12,
+              "total": 14
+            },
+            {
+              "done": 13,
+              "total": 14
+            },
+            {
+              "done": 14,
+              "total": 14
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "few",
+      "fn": "checkActivity",
+      "input": {
+        "dids": [
+          "did:plc:post2",
+          "did:plc:quiet2"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apost2&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aquiet2&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "results": [
+            {
+              "did": "did:plc:post2",
+              "lastActiveAt": "2026-03-01T10:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:quiet2",
+              "lastActiveAt": null,
+              "gone": false
+            }
+          ],
+          "progress": [
+            {
+              "done": 0,
+              "total": 2
+            },
+            {
+              "done": 1,
+              "total": 2
+            },
+            {
+              "done": 2,
+              "total": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "none",
+      "fn": "checkActivity",
+      "input": {
+        "dids": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "results": [],
+          "progress": [
+            {
+              "done": 0,
+              "total": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "missing",
+      "fn": "checkActivity",
+      "input": {
+        "dids": null
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "results": [],
+          "progress": [
+            {
+              "done": 0,
+              "total": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

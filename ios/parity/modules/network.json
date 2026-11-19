@@ -5,32 +5,81 @@
   "summary": "HTTP, XRPC, the public AppView, PDS and PLC resolution, Constellation, blobs and Virga's server API.",
   "files": {
     "src/lib/activity.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Activity.swift"
+      ],
+      "fixtures": [
+        "network.activity"
+      ],
+      "note": "checkActivity's results come in the order of the DIDs; the web's come in the order its reads finished, which nothing depends on (the archive keys them by DID).",
+      "synced": "0feb961f5be3"
     },
     "src/lib/atproto.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Atproto.swift"
+      ],
+      "fixtures": [
+        "network.atproto"
+      ],
+      "synced": "3762f459257e"
     },
     "src/lib/constellation.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Constellation.swift"
+      ],
+      "fixtures": [
+        "network.constellation",
+        "network.jssort"
+      ],
+      "synced": "ff54b888b847"
     },
     "src/posting/lib/asyncPool.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Posting/Lib/AsyncPool.swift"
+      ],
+      "fixtures": [
+        "network.asyncPool"
+      ],
+      "synced": "092de914ae14"
     },
     "src/posting/lib/blobs.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Posting/Lib/Blobs.swift"
+      ],
+      "fixtures": [
+        "network.blobs"
+      ],
+      "synced": "a3fe68a0a50f"
     },
     "src/session/backendClient.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/BackendClient.swift",
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/BackendFetchHandler.swift",
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/VirgaBackend.swift"
+      ],
+      "fixtures": [
+        "network.backendClient",
+        "network.agent",
+        "network.url"
+      ],
+      "note": "stripReturnFromAddress isn't ported: it takes the token out of the browser's address bar with history.replaceState, and on iOS the sign-in comes back through ASWebAuthenticationSession's callback URL, which never reaches an address bar (VirgaUI's sign-in reads that URL with BackendClient.readBackendReturn). startBackendSignIn returns the authorization address for ASWebAuthenticationSession (and hands it to `assign`) instead of navigating away and never settling. Where the web falls back to location.origin for an empty backendUrl, the port takes `origin` as a parameter.",
+      "synced": "0b4dec4501e2"
     },
     "src/session/pds.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/PDS.swift"
+      ],
+      "fixtures": [
+        "network.pds"
+      ],
+      "synced": "bc4a09ec2425"
     }
   }
 }

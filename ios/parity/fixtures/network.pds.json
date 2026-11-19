@@ -1,0 +1,1013 @@
+{
+  "name": "network.pds",
+  "sources": [
+    "src/session/pds.js"
+  ],
+  "cases": [
+    {
+      "id": "pdsFromDidDocument#1",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://morel.us-east.host.bsky.network/"
+            }
+          ]
+        }
+      },
+      "output": "https://morel.us-east.host.bsky.network"
+    },
+    {
+      "id": "pdsFromDidDocument#2",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example///"
+            }
+          ]
+        }
+      },
+      "output": "https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#3",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "did:plc:virgaharnessmira2zq4x#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        },
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": "https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#4",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "did:plc:virgaharnessmira2zq4x#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        }
+      },
+      "output": "https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#5",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "did:plc:other#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        },
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#6",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "did:plc:virgaharnessmira2zq4x#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#7",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": 5,
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "5#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        }
+      },
+      "output": "https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#8",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        },
+        "did": ""
+      },
+      "output": "https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#9",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "serviceEndpoint": "https://notify.example"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#10",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "javascript:alert(1)"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#11",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "ftp://pds.example"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#12",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "not a url"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#13",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "HTTPS://PDS.EXAMPLE/"
+            }
+          ]
+        }
+      },
+      "output": "HTTPS://PDS.EXAMPLE"
+    },
+    {
+      "id": "pdsFromDidDocument#14",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "http://localhost:2583"
+            }
+          ]
+        }
+      },
+      "output": "http://localhost:2583"
+    },
+    {
+      "id": "pdsFromDidDocument#15",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example/ "
+            }
+          ]
+        }
+      },
+      "output": "https://pds.example/ "
+    },
+    {
+      "id": "pdsFromDidDocument#16",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": " https://pds.example"
+            }
+          ]
+        }
+      },
+      "output": " https://pds.example"
+    },
+    {
+      "id": "pdsFromDidDocument#17",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#18",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": 5
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#19",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": {
+                "uri": "https://x"
+              }
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#20",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "service": "https://x"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#21",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "service": [
+            null,
+            "x",
+            {
+              "id": "#atproto_pds",
+              "serviceEndpoint": "https://second.example"
+            }
+          ]
+        }
+      },
+      "output": "https://second.example"
+    },
+    {
+      "id": "pdsFromDidDocument#22",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "service": [
+            {
+              "id": "#atproto_pds"
+            },
+            {
+              "id": "#atproto_pds",
+              "serviceEndpoint": "https://second.example"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#23",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": null
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#24",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": "did doc"
+      },
+      "output": null
+    },
+    {
+      "id": "resolves",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\",\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "value": "https://pds.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shared-and-kept",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolveTwiceAtOnce",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\",\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "value": [
+              "https://pds.example",
+              "https://pds.example"
+            ]
+          },
+          {
+            "value": "https://pds.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "forgets-failure",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          "offline",
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\",\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "error": "fetch failed"
+          },
+          {
+            "value": "https://pds.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-pds",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "error": "No PDS listed for did:plc:virgaharnessmira2zq4x"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing-did",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            ""
+          ]
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": [
+          {
+            "error": "resolvePdsUrl: missing did"
+          }
+        ]
+      }
+    },
+    {
+      "id": "remember",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "remember",
+            "did:plc:virgaharnessmira2zq4x",
+            "https://pds.example/"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "remember",
+            "did:plc:virgaharnessmira2zq4x",
+            "ftp://nope"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": [
+          null,
+          {
+            "value": "https://pds.example"
+          },
+          null,
+          {
+            "value": "https://pds.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "remember-ignored",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "remember",
+            "did:plc:virgaharnessmira2zq4x",
+            "HTTPS://pds.example"
+          ],
+          [
+            "remember",
+            "",
+            "https://x"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://from-doc.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\",\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://from-doc.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          null,
+          null,
+          {
+            "value": "https://from-doc.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "forget",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "forget",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://a.example"
+                }
+              ]
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "id": "did:plc:virgaharnessmira2zq4x",
+              "service": [
+                {
+                  "id": "#bsky_notif",
+                  "type": "BskyNotificationService",
+                  "serviceEndpoint": "https://notify.example"
+                },
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://b.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:virgaharnessmira2zq4x\",\"service\":[{\"id\":\"#bsky_notif\",\"type\":\"BskyNotificationService\",\"serviceEndpoint\":\"https://notify.example\"},{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://a.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "value": "https://a.example"
+          },
+          null,
+          {
+            "value": "https://a.example"
+          }
+        ]
+      }
+    },
+    {
+      "id": "did-web",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "resolve",
+            "did:web:example.com"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "id": "did:web:example.com",
+              "service": [
+                {
+                  "id": "did:web:example.com#atproto_pds",
+                  "serviceEndpoint": "https://pds.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://example.com/.well-known/did.json",
+              "method": "GET",
+              "headers": {},
+              "body": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:web:example.com\",\"service\":[{\"id\":\"did:web:example.com#atproto_pds\",\"serviceEndpoint\":\"https://pds.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "value": "https://pds.example"
+          }
+        ]
+      }
+    }
+  ]
+}
