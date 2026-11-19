@@ -75,6 +75,23 @@ export async function withNow(ms, fn) {
   }
 }
 
+/**
+ * Runs `fn` with the process's local zone set to `zone` (when there is one)
+ * for as long as it takes, async steps included, and puts it back. score.js
+ * reads a createdAt without an offset in local time after its reads, so
+ * `_zones.js`'s synchronous `inZone` can't hold it.
+ */
+export async function withZone(zone, fn) {
+  if (!zone) return fn();
+  const was = process.env.TZ;
+  process.env.TZ = zone;
+  try {
+    return await fn();
+  } finally {
+    process.env.TZ = was;
+  }
+}
+
 /** Runs `fn` with the fake network answering `fetch`. */
 async function withRouter(route, fn) {
   const real = globalThis.fetch;
@@ -298,7 +315,9 @@ export async function scoreScripted(spec) {
     concurrency: spec.concurrency,
   });
   try {
-    const out = await withNow(spec.now, () => scorer.score(spec.dids));
+    const out = await withZone(spec.zone, () =>
+      withNow(spec.now, () => scorer.score(spec.dids)),
+    );
     const sortedBatches = (list) =>
       list
         .map((b) => JSON.stringify(b))

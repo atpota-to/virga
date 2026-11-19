@@ -116,10 +116,22 @@ public actor Scorer {
         continue
       }
       if let refindCanary, used == canary {
-        if refind == nil {
-          refind = Task { (try? await refindCanary()) ?? nil }
+        let repick: Task<String?, Never>
+        if let refind {
+          repick = refind
+        } else {
+          repick = Task { (try? await refindCanary()) ?? nil }
+          refind = repick
         }
-        let next = await refind!.value
+        // The re-pick is shared, so it isn't a child of this batch: a score
+        // that is stopped (or has failed elsewhere) stops it, as the web's
+        // re-pick reads with the scan's signal, rather than waiting it out.
+        let next = await withTaskCancellationHandler {
+          await repick.value
+        } onCancel: {
+          repick.cancel()
+        }
+        try Task.checkCancellation()
         if let next, !next.isEmpty, next != used {
           currentCanary = next
           attempt = 0  // a fresh set of tries with the new canary
@@ -138,17 +150,33 @@ public actor Scorer {
   ) async throws -> [String: JSONValue] {
     let size = currentCanary == nil ? Score.profileBatch : Score.profileBatch - 1
     let total = dids.count
+    // The web calls onProgress synchronously as each batch lands, so its
+    // reports only ever count up. Batches land side by side here, so each
+    // report is queued as it is counted and handed over one at a time, in
+    // that order, and all of them before the score returns or throws.
+    let (reports, queue) = AsyncStream.makeStream(of: Progress.self)
+    let reporter = Task {
+      for await progress in reports { await onProgress?(progress) }
+    }
     // This score's own count of what has been read, as the web's `done`.
     let done = Locked(0)
-    let found = try await Limit.mapLimit(Limit.chunks(dids, size), concurrency) { batch, _ in
-      let byDid = try await self.profileBatch(batch)
-      let progress = done.withLock { n -> Progress in
-        n += batch.count
-        return Progress(done: n, total: total)
+    let found: [[String: JSONValue]]
+    do {
+      found = try await Limit.mapLimit(Limit.chunks(dids, size), concurrency) { batch, _ in
+        let byDid = try await self.profileBatch(batch)
+        done.withLock { n in
+          n += batch.count
+          queue.yield(Progress(done: n, total: total))
+        }
+        return byDid
       }
-      await onProgress?(progress)
-      return byDid
+    } catch {
+      queue.finish()
+      await reporter.value
+      throw error
     }
+    queue.finish()
+    await reporter.value
     var out: [String: JSONValue] = [:]
     for byDid in found { out.merge(byDid) { _, last in last } }
     return out
@@ -186,7 +214,10 @@ public actor Scorer {
 
   /// Score a list of DIDs. Throws a ScoreError when any batch can't be read
   /// (or counted), rather than scoring part of the list from defaults, and
-  /// CancellationError when the calling task is cancelled.
+  /// CancellationError when the calling task is cancelled. `onProgress`
+  /// hears of each batch as it lands, one report at a time and counting
+  /// up, as the web's synchronous callback does, and every report is
+  /// handed over before this returns or throws.
   public func score(
     _ dids: [String],
     onProgress: (@Sendable (Progress) async -> Void)? = nil

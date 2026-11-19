@@ -43,7 +43,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaDefense/Harvest+Types.swift"
       ],
-      "note": "Only its data shapes so far (Harvest, Participant, HarvestSource, EngagementRecord, UnreadKind), which score.js and radar.js read. The harvest reads Constellation and comes with VirgaNetwork in wave 2."
+      "note": "Only its data shapes so far (Harvest, HarvestTotals, Participant, HarvestSource, EngagementRecord, UnreadKind), which score.js and radar.js read. harvestPost reads Constellation and comes with VirgaNetwork in wave 2, with the module's pure helpers (engagementKind, KIND_ORDER, primaryKind, isDid, MAX_PAGES), building these same structs."
     },
     "src/defense/historyModel.js": {
       "status": "ported",
@@ -104,7 +104,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaDefense/Scan+Types.swift"
       ],
-      "note": "Only its data shapes so far (ScanResult, ScanPost, ScanStageReport), which ScanStore keeps. The scan needs VirgaNetwork and VirgaSession (resolveHandle, the signed-in getProfiles, curation lists, scope errors) and comes in wave 2."
+      "note": "Only its data shapes so far (ScanResult, ScanPost, ScanStageReport, ScanStageHandler), which ScanStore keeps. runScan needs VirgaNetwork and VirgaSession (resolveHandle, the signed-in getProfiles, publicRelationships, curation lists through veto.js, isMissingScopeError) and VirgaPosting's parsePostLink (readPostInput), and comes in wave 2 with the rest of the module (STAGES, ScanError, scanErrorFrom, canaryCandidates, CANARY_CANDIDATES, CANARY_REQUIRED_AT). ScanStageHandler and Scorer's onProgress are async, so the port awaits each report."
     },
     "src/defense/scanStore.js": {
       "status": "ported",

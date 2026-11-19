@@ -115,7 +115,8 @@ func recorded(_ error: any Error) -> JSONValue {
         retryDelaysMs: c.input["retryDelaysMs"]?.arrayValue?.compactMap(\.doubleValue) ?? [0, 0],
         concurrency: c["concurrency"].intValue ?? Limit.appviewConcurrency,
         now: { Date(ms: nowMs) },
-        timeZone: utc)
+        // The zone the case ran in (the generator's runner is UTC).
+        timeZone: c["zone"].stringValue.flatMap(TimeZone.init(identifier:)) ?? utc)
       var actual: JSONValue
       do {
         actual = try JSONValue(encoding: try await scorer.score(c["dids"].strings))

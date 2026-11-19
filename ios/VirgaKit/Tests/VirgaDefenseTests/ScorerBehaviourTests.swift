@@ -142,7 +142,66 @@ private final class Calls: Sendable {
     let seen = reports.wrappedValue
     #expect(seen.count == 3)
     #expect(seen.map(\.total) == [70, 70, 70])
-    #expect(seen.map(\.done).sorted() == [24, 48, 70])
+    // Batches of 24, 24 and 22, counted in the order they land.
+    let done = seen.map(\.done)
+    #expect(done.last == 70)
+    #expect(zip(done, done.dropFirst()).allSatisfy { $1 - $0 == 24 || $1 - $0 == 22 }, "\(done)")
+  }
+
+  @Test func reportsProgressInOrderWhateverOrderBatchesLandIn() async throws {
+    // The last batch lands first and the first last, and the page is slow
+    // to take the first report: the web's synchronous reports still only
+    // count up, and every one is in before the score returns.
+    let reports = Locked([Int]())
+    let scorer = try Score.createScorer(
+      ownerDid: owner,
+      getProfiles: { batch in
+        let wait: UInt64 = batch.first == "did:plc:p0" ? 40 : batch.first == "did:plc:p24" ? 20 : 0
+        try await Task.sleep(nanoseconds: wait * 1_000_000)
+        return batch.map { prof($0, known: $0 == canary ? 1 : 0) }
+      },
+      getRelationships: noRelationships, canary: canary, retryDelaysMs: noWait)
+    let result = try await scorer.score(dids(70)) { progress in
+      if reports.wrappedValue.isEmpty { try? await Task.sleep(nanoseconds: 30_000_000) }
+      reports.withLock { $0.append(progress.done) }
+    }
+    let seen = reports.wrappedValue
+    #expect(result.scores.count == 70)
+    #expect(seen.count == 3)
+    #expect(seen.last == 70)
+    #expect(zip(seen, seen.dropFirst()).allSatisfy { $0 < $1 }, "\(seen)")
+  }
+
+  @Test func stopsTheCanaryRepickWhenTheScoreIsStopped() async throws {
+    // The canary never comes back counted, so the scorer asks for another;
+    // the reader leaves while that is being looked for.
+    let repick = Locked((started: false, cancelled: false))
+    let scorer = try Score.createScorer(
+      ownerDid: owner,
+      getProfiles: { batch in batch.map { prof($0) } },
+      getRelationships: noRelationships,
+      canary: canary,
+      refindCanary: {
+        repick.withLock { $0.started = true }
+        do {
+          try await Task.sleep(nanoseconds: 60_000_000_000)
+        } catch {
+          repick.withLock { $0.cancelled = true }
+          throw error
+        }
+        return "did:plc:newcanary"
+      },
+      retryDelaysMs: noWait)
+    let task = Task { try await scorer.score(dids(3)) }
+    for _ in 0..<2000 where !repick.wrappedValue.started { try await Task.sleep(nanoseconds: 10_000_000) }
+    #expect(repick.wrappedValue.started)
+    // Stopped, the score ends now, not when the minute-long re-pick would have.
+    let clock = ContinuousClock()
+    let stoppedAt = clock.now
+    task.cancel()
+    await #expect(throws: CancellationError.self) { _ = try await task.value }
+    #expect(clock.now - stoppedAt < .seconds(30))
+    #expect(repick.wrappedValue.cancelled)
   }
 
   @Test func needsAnOwner() {

@@ -92,6 +92,16 @@ const MESSAGES = [
   {},
   null,
   undefined,
+  // facets the web can't iterate: it throws
+  { text: 'block @x', facets: {} },
+  { text: 'block @x', facets: 3 },
+  { text: 'block @x', facets: [link(LINK), { features: { 0: 'x' } }] },
+  {
+    text: 'shared, then broken',
+    embed: recordEmbed({ uri: POST }),
+    facets: [mention('did:plc:a'), { features: true }],
+  },
+  { text: 'a string of facets', facets: 'abc' },
 ];
 
 const CONVOS = [

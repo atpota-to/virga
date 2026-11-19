@@ -253,6 +253,4206 @@
       "output": 62
     },
     {
+      "id": "fuzz-0",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 77,
+          "followers": 12022,
+          "ageDays": 184,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-1",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 12142,
+          "ageDays": 52,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 22
+    },
+    {
+      "id": "fuzz-2",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 34,
+          "followers": 144512,
+          "ageDays": 3,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-3",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 28,
+          "followers": 797,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 70
+    },
+    {
+      "id": "fuzz-4",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 34,
+          "followers": 3161245,
+          "ageDays": 903,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-5",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 1,
+          "ageDays": 5744,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 61
+    },
+    {
+      "id": "fuzz-6",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 561,
+          "followers": 470,
+          "ageDays": 163,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-7",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1389,
+          "followers": 2067117,
+          "ageDays": 0,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-8",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 68,
+          "followers": 11232,
+          "ageDays": 84,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 83
+    },
+    {
+      "id": "fuzz-9",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 240,
+          "followers": 1,
+          "ageDays": 274,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 64
+    },
+    {
+      "id": "fuzz-10",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 52,
+          "followers": 520,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-11",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 643,
+          "followers": 204,
+          "ageDays": 20,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 72
+    },
+    {
+      "id": "fuzz-12",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 71136,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 39
+    },
+    {
+      "id": "fuzz-13",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2930,
+          "followers": 3686001,
+          "ageDays": 37,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-14",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 39,
+          "followers": 233,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-15",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 31,
+          "followers": 7,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-16",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 78,
+          "followers": 5,
+          "ageDays": 245,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-17",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 162,
+          "followers": 44482,
+          "ageDays": 73,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-18",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 254,
+          "followers": 46102422,
+          "ageDays": 2,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-19",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3941,
+          "followers": 439,
+          "ageDays": 27,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-20",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 160,
+          "ageDays": 77,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 18
+    },
+    {
+      "id": "fuzz-21",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 452,
+          "followers": 264,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-22",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 1937188,
+          "ageDays": 768,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-23",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1397,
+          "followers": 24143,
+          "ageDays": 260,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 94
+    },
+    {
+      "id": "fuzz-24",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 64,
+          "followers": 17,
+          "ageDays": 0,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-25",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 183,
+          "followers": 262780,
+          "ageDays": 3405,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 95
+    },
+    {
+      "id": "fuzz-26",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 38836,
+          "ageDays": 39,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 59
+    },
+    {
+      "id": "fuzz-27",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 3641,
+          "ageDays": 39,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 19
+    },
+    {
+      "id": "fuzz-28",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 16,
+          "followers": 34090,
+          "ageDays": 5625,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-29",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 184611,
+          "ageDays": 144,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 79
+    },
+    {
+      "id": "fuzz-30",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 17,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 35
+    },
+    {
+      "id": "fuzz-31",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 216,
+          "followers": 2270697,
+          "ageDays": 1328,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 99
+    },
+    {
+      "id": "fuzz-32",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 564,
+          "followers": 44,
+          "ageDays": 19,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 74
+    },
+    {
+      "id": "fuzz-33",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 230,
+          "followers": 353400,
+          "ageDays": 808,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-34",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 668,
+          "followers": 54,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-35",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 120,
+          "followers": 27330968,
+          "ageDays": 98,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-36",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 88,
+          "followers": 822996,
+          "ageDays": 6009,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 99
+    },
+    {
+      "id": "fuzz-37",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 54,
+          "followers": 13704351,
+          "ageDays": 30,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-38",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 26,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 32
+    },
+    {
+      "id": "fuzz-39",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 107,
+          "followers": 24986,
+          "ageDays": 3910,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 97
+    },
+    {
+      "id": "fuzz-40",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 9,
+          "followers": 2,
+          "ageDays": 28,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-41",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 8065775,
+          "ageDays": 58,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 50
+    },
+    {
+      "id": "fuzz-42",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 126,
+          "followers": 15312,
+          "ageDays": 85,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-43",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 55,
+          "followers": 1357,
+          "ageDays": 7,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-44",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 509258,
+          "ageDays": 5,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 40
+    },
+    {
+      "id": "fuzz-45",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 166,
+          "followers": 45693,
+          "ageDays": 27,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 79
+    },
+    {
+      "id": "fuzz-46",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 15,
+          "followers": 295063,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-47",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 332,
+          "followers": 4,
+          "ageDays": 3207,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-48",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 25,
+          "followers": 301601,
+          "ageDays": 1030,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-49",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 292,
+          "ageDays": 507,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-50",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 1971,
+          "ageDays": 43,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 33
+    },
+    {
+      "id": "fuzz-51",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 4,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 23
+    },
+    {
+      "id": "fuzz-52",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 252,
+          "followers": 176,
+          "ageDays": 565,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-53",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4009,
+          "followers": 17856,
+          "ageDays": 126,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-54",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2132,
+          "followers": 4,
+          "ageDays": 48,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-55",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 143991,
+          "ageDays": 13,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 70
+    },
+    {
+      "id": "fuzz-56",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 29,
+          "followers": 4,
+          "ageDays": 52,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-57",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 1025,
+          "ageDays": 39,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 16
+    },
+    {
+      "id": "fuzz-58",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 18,
+          "followers": 48885,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-59",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 859,
+          "followers": 283109,
+          "ageDays": 4715,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 95
+    },
+    {
+      "id": "fuzz-60",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 8,
+          "ageDays": 1856,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 40
+    },
+    {
+      "id": "fuzz-61",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 2757183,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 30
+    },
+    {
+      "id": "fuzz-62",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 1526859,
+          "ageDays": 0,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 73
+    },
+    {
+      "id": "fuzz-63",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 23,
+          "followers": 7217,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 74
+    },
+    {
+      "id": "fuzz-64",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 485,
+          "ageDays": 2,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-65",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 634,
+          "followers": 886856,
+          "ageDays": 1984,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-66",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 196,
+          "followers": 106722,
+          "ageDays": 31,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-67",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 30,
+          "followers": 1754,
+          "ageDays": 14,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-68",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 219,
+          "followers": 8,
+          "ageDays": 6,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-69",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 25272484,
+          "ageDays": 22,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-70",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1833,
+          "followers": 9,
+          "ageDays": 1966,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-71",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2247,
+          "followers": 1189,
+          "ageDays": 21,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-72",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 103,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 10
+    },
+    {
+      "id": "fuzz-73",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 51,
+          "followers": 78,
+          "ageDays": 252,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-74",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 2290,
+          "ageDays": 490,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-75",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 233,
+          "followers": 99,
+          "ageDays": 340,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 84
+    },
+    {
+      "id": "fuzz-76",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 0,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 52
+    },
+    {
+      "id": "fuzz-77",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 81,
+          "followers": 320,
+          "ageDays": 585,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 83
+    },
+    {
+      "id": "fuzz-78",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 297,
+          "followers": 1707,
+          "ageDays": 30,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-79",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 15002824,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-80",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 0,
+          "ageDays": 74,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-81",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 407,
+          "followers": 150009,
+          "ageDays": 5,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-82",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 254,
+          "followers": 6,
+          "ageDays": 14,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-83",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3266,
+          "followers": 1,
+          "ageDays": 31,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-84",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 52,
+          "followers": 12,
+          "ageDays": 150,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-85",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 50,
+          "followers": 20629461,
+          "ageDays": 7,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-86",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 128,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-87",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2009,
+          "followers": 164,
+          "ageDays": 46,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-88",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 488,
+          "followers": 5,
+          "ageDays": 6,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 64
+    },
+    {
+      "id": "fuzz-89",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 27581,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 22
+    },
+    {
+      "id": "fuzz-90",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 599936,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 59
+    },
+    {
+      "id": "fuzz-91",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 0,
+          "ageDays": 2130,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 10
+    },
+    {
+      "id": "fuzz-92",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 164,
+          "followers": 862854,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-93",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 9,
+          "followers": 1384,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-94",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1766,
+          "followers": 351835,
+          "ageDays": 96,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-95",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 27,
+          "followers": 257889,
+          "ageDays": 27,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-96",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 25005,
+          "ageDays": 5,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-97",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 63,
+          "followers": 222,
+          "ageDays": 5454,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-98",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 223323,
+          "ageDays": 8,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 50
+    },
+    {
+      "id": "fuzz-99",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 120,
+          "followers": 32,
+          "ageDays": 25,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-100",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 555,
+          "ageDays": 10,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 39
+    },
+    {
+      "id": "fuzz-101",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 23101,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-102",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 506,
+          "followers": 5687,
+          "ageDays": 4099,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 94
+    },
+    {
+      "id": "fuzz-103",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 34,
+          "followers": 599284,
+          "ageDays": 736,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-104",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 199,
+          "ageDays": 361,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 21
+    },
+    {
+      "id": "fuzz-105",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 135,
+          "followers": 110781,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-106",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 109,
+          "followers": 30056,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 82
+    },
+    {
+      "id": "fuzz-107",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 41,
+          "followers": 1388,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-108",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 271,
+          "followers": 2608221,
+          "ageDays": 3,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-109",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3357,
+          "followers": 197028,
+          "ageDays": 16,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-110",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 58,
+          "followers": 11213122,
+          "ageDays": 44,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 91
+    },
+    {
+      "id": "fuzz-111",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 54,
+          "followers": 46767981,
+          "ageDays": 3,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-112",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 35,
+          "ageDays": 130,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 53
+    },
+    {
+      "id": "fuzz-113",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 31057,
+          "ageDays": 185,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-114",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1404,
+          "followers": 487,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-115",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 4,
+          "ageDays": 15,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 19
+    },
+    {
+      "id": "fuzz-116",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 25,
+          "followers": 21052,
+          "ageDays": 438,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 92
+    },
+    {
+      "id": "fuzz-117",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 924,
+          "followers": 14,
+          "ageDays": 3892,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-118",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 41,
+          "followers": 434,
+          "ageDays": 709,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-119",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 110,
+          "ageDays": 10,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 40
+    },
+    {
+      "id": "fuzz-120",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 105,
+          "followers": 9559574,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-121",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 245,
+          "followers": 22494963,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-122",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 181,
+          "ageDays": 438,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-123",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 3,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-124",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 781,
+          "followers": 164717,
+          "ageDays": 33,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 91
+    },
+    {
+      "id": "fuzz-125",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4801,
+          "followers": 575816,
+          "ageDays": 11,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-126",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 447,
+          "followers": 0,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 55
+    },
+    {
+      "id": "fuzz-127",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3630,
+          "followers": 34151381,
+          "ageDays": 1542,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-128",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1822,
+          "followers": 6,
+          "ageDays": 201,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 70
+    },
+    {
+      "id": "fuzz-129",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 2,
+          "ageDays": 235,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 39
+    },
+    {
+      "id": "fuzz-130",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 3845,
+          "ageDays": 149,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 37
+    },
+    {
+      "id": "fuzz-131",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 114,
+          "followers": 1,
+          "ageDays": 3,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-132",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 230,
+          "followers": 3127,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-133",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 175,
+          "followers": 980233,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-134",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 91,
+          "ageDays": 3,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-135",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 6,
+          "ageDays": 2,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 44
+    },
+    {
+      "id": "fuzz-136",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 57,
+          "ageDays": 505,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 53
+    },
+    {
+      "id": "fuzz-137",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 634,
+          "followers": 33649260,
+          "ageDays": 6,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-138",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1403,
+          "followers": 40,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-139",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 1,
+          "ageDays": 333,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-140",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 40,
+          "followers": 2,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-141",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 150,
+          "followers": 2828,
+          "ageDays": 1840,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 92
+    },
+    {
+      "id": "fuzz-142",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 1676,
+          "ageDays": 6,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 26
+    },
+    {
+      "id": "fuzz-143",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 75,
+          "followers": 11159,
+          "ageDays": 394,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-144",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 950,
+          "followers": 41710414,
+          "ageDays": 1201,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 95
+    },
+    {
+      "id": "fuzz-145",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 264831,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-146",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 328,
+          "followers": 34528,
+          "ageDays": 1700,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-147",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3178,
+          "followers": 0,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-148",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 493,
+          "followers": 110,
+          "ageDays": 403,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-149",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 42,
+          "followers": 3258694,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-150",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 387058,
+          "ageDays": 6335,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-151",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 119,
+          "followers": 2897680,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-152",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 34,
+          "followers": 300610,
+          "ageDays": 1549,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-153",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 79354,
+          "ageDays": 1447,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 89
+    },
+    {
+      "id": "fuzz-154",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 6,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 19
+    },
+    {
+      "id": "fuzz-155",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 959,
+          "followers": 11480697,
+          "ageDays": 2020,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-156",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 419,
+          "followers": 2306,
+          "ageDays": 186,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-157",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 628,
+          "followers": 29,
+          "ageDays": 308,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-158",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1210,
+          "followers": 121,
+          "ageDays": 184,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-159",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 17134611,
+          "ageDays": 14,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 49
+    },
+    {
+      "id": "fuzz-160",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1617,
+          "followers": 159,
+          "ageDays": 2490,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-161",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 86632,
+          "ageDays": 3,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-162",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4943,
+          "followers": 13414,
+          "ageDays": 20,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-163",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 10,
+          "followers": 5579,
+          "ageDays": 2119,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-164",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 430,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 73
+    },
+    {
+      "id": "fuzz-165",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 14915,
+          "ageDays": 11,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 36
+    },
+    {
+      "id": "fuzz-166",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1835,
+          "followers": 14925543,
+          "ageDays": 41,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-167",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 59,
+          "followers": 462,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-168",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1436,
+          "followers": 639,
+          "ageDays": 82,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-169",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 883,
+          "followers": 16670272,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-170",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 951,
+          "followers": 2747,
+          "ageDays": 1407,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 92
+    },
+    {
+      "id": "fuzz-171",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 40,
+          "followers": 36,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-172",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 25,
+          "followers": 11,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-173",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 8,
+          "followers": 91,
+          "ageDays": 10,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-174",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 19,
+          "followers": 12656,
+          "ageDays": 3290,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 86
+    },
+    {
+      "id": "fuzz-175",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1881,
+          "followers": 25555,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 82
+    },
+    {
+      "id": "fuzz-176",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 4339221,
+          "ageDays": 14,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 25
+    },
+    {
+      "id": "fuzz-177",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2136,
+          "followers": 20,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-178",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 4732868,
+          "ageDays": 22,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 64
+    },
+    {
+      "id": "fuzz-179",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 443,
+          "followers": 52,
+          "ageDays": 30,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-180",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 648,
+          "followers": 5037911,
+          "ageDays": 363,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-181",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 43,
+          "followers": 24257694,
+          "ageDays": 44,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 86
+    },
+    {
+      "id": "fuzz-182",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 65,
+          "followers": 28,
+          "ageDays": 13,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-183",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1848,
+          "followers": 0,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 55
+    },
+    {
+      "id": "fuzz-184",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 1,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 7
+    },
+    {
+      "id": "fuzz-185",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 54,
+          "followers": 4686660,
+          "ageDays": 98,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 93
+    },
+    {
+      "id": "fuzz-186",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3103,
+          "followers": 10,
+          "ageDays": 273,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-187",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3978,
+          "followers": 255364,
+          "ageDays": 5789,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 99
+    },
+    {
+      "id": "fuzz-188",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 7334,
+          "ageDays": 299,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-189",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 11,
+          "followers": 598,
+          "ageDays": 4,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-190",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2366,
+          "followers": 112,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-191",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 313,
+          "followers": 42910,
+          "ageDays": 911,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-192",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 185,
+          "followers": 23,
+          "ageDays": 42,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 63
+    },
+    {
+      "id": "fuzz-193",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 82,
+          "ageDays": 101,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 32
+    },
+    {
+      "id": "fuzz-194",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3142,
+          "followers": 3,
+          "ageDays": 128,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-195",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 315,
+          "followers": 0,
+          "ageDays": 1,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-196",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 0,
+          "ageDays": 923,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 25
+    },
+    {
+      "id": "fuzz-197",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 15,
+          "followers": 18122,
+          "ageDays": 680,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 86
+    },
+    {
+      "id": "fuzz-198",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 351,
+          "followers": 4793350,
+          "ageDays": 285,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 88
+    },
+    {
+      "id": "fuzz-199",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3402,
+          "followers": 250335,
+          "ageDays": 1,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-200",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1413,
+          "followers": 17,
+          "ageDays": 20,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-201",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 154,
+          "followers": 21500293,
+          "ageDays": 5,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-202",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 11416799,
+          "ageDays": 191,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-203",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 86,
+          "followers": 1835,
+          "ageDays": 268,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 89
+    },
+    {
+      "id": "fuzz-204",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 47,
+          "followers": 18,
+          "ageDays": 30,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-205",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 563,
+          "ageDays": 65,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 39
+    },
+    {
+      "id": "fuzz-206",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3301,
+          "followers": 781165,
+          "ageDays": 13,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-207",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1691,
+          "followers": 317,
+          "ageDays": 150,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 82
+    },
+    {
+      "id": "fuzz-208",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1263,
+          "followers": 1,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-209",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3587,
+          "followers": 334,
+          "ageDays": 5,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 68
+    },
+    {
+      "id": "fuzz-210",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 463,
+          "followers": 271,
+          "ageDays": 438,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-211",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 232,
+          "followers": 200,
+          "ageDays": null,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-212",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 193,
+          "followers": 64263,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 84
+    },
+    {
+      "id": "fuzz-213",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 19,
+          "followers": 830,
+          "ageDays": 3202,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-214",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 11,
+          "ageDays": 832,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 15
+    },
+    {
+      "id": "fuzz-215",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 90,
+          "followers": 7513635,
+          "ageDays": 2035,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 99
+    },
+    {
+      "id": "fuzz-216",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 529,
+          "followers": 27252,
+          "ageDays": 431,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 87
+    },
+    {
+      "id": "fuzz-217",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 27954394,
+          "ageDays": 4,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-218",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 166082,
+          "ageDays": 273,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-219",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 17,
+          "followers": 6730,
+          "ageDays": 3546,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 84
+    },
+    {
+      "id": "fuzz-220",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 9,
+          "followers": 477099,
+          "ageDays": 142,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 83
+    },
+    {
+      "id": "fuzz-221",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4349,
+          "followers": 0,
+          "ageDays": 279,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 73
+    },
+    {
+      "id": "fuzz-222",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 52,
+          "followers": 22,
+          "ageDays": 153,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 76
+    },
+    {
+      "id": "fuzz-223",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 1378,
+          "ageDays": 1663,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 26
+    },
+    {
+      "id": "fuzz-224",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 971981,
+          "ageDays": 0,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 50
+    },
+    {
+      "id": "fuzz-225",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 7,
+          "followers": 19961039,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-226",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 66730,
+          "ageDays": 5258,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 74
+    },
+    {
+      "id": "fuzz-227",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 74,
+          "followers": 1900,
+          "ageDays": 9,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 72
+    },
+    {
+      "id": "fuzz-228",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 6,
+          "followers": 1197,
+          "ageDays": 5918,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-229",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 4,
+          "followers": 2,
+          "ageDays": 101,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 45
+    },
+    {
+      "id": "fuzz-230",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 1767665,
+          "ageDays": 20,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-231",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 105,
+          "followers": 4,
+          "ageDays": 1850,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 78
+    },
+    {
+      "id": "fuzz-232",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 952576,
+          "ageDays": 781,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 40
+    },
+    {
+      "id": "fuzz-233",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1200,
+          "followers": 1177231,
+          "ageDays": 1872,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-234",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 26,
+          "followers": 1,
+          "ageDays": 7,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 57
+    },
+    {
+      "id": "fuzz-235",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 684,
+          "followers": 549377,
+          "ageDays": 1579,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-236",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 7,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 24
+    },
+    {
+      "id": "fuzz-237",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 8,
+          "followers": 153,
+          "ageDays": 4776,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 73
+    },
+    {
+      "id": "fuzz-238",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 380,
+          "followers": 225,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-239",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 105063,
+          "ageDays": 2145,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 50
+    },
+    {
+      "id": "fuzz-240",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 111,
+          "followers": 113635,
+          "ageDays": 3800,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 95
+    },
+    {
+      "id": "fuzz-241",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 189,
+          "followers": 7643297,
+          "ageDays": 366,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 99
+    },
+    {
+      "id": "fuzz-242",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3573,
+          "followers": 17344,
+          "ageDays": 5,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-243",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 48,
+          "followers": 0,
+          "ageDays": 179,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-244",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 280,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 12
+    },
+    {
+      "id": "fuzz-245",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1461,
+          "followers": 210088,
+          "ageDays": 3485,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-246",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 43923837,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-247",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 30,
+          "followers": 1500416,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-248",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2956,
+          "followers": 24,
+          "ageDays": 2174,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 72
+    },
+    {
+      "id": "fuzz-249",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 9,
+          "followers": 11753744,
+          "ageDays": 3266,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 89
+    },
+    {
+      "id": "fuzz-250",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 341,
+          "followers": 54700,
+          "ageDays": 6,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 84
+    },
+    {
+      "id": "fuzz-251",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 24,
+          "followers": 17,
+          "ageDays": 26,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-252",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 102,
+          "followers": 16971,
+          "ageDays": 7,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-253",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 52,
+          "followers": 27,
+          "ageDays": 74,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-254",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 257,
+          "followers": 2,
+          "ageDays": 927,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 72
+    },
+    {
+      "id": "fuzz-255",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 74,
+          "followers": 991,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-256",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2166,
+          "followers": 310,
+          "ageDays": 130,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 71
+    },
+    {
+      "id": "fuzz-257",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 136,
+          "ageDays": 2365,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 50
+    },
+    {
+      "id": "fuzz-258",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 476,
+          "followers": 579,
+          "ageDays": 51,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 70
+    },
+    {
+      "id": "fuzz-259",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 95,
+          "followers": 343559,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-260",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1421,
+          "followers": 4715503,
+          "ageDays": 57,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 82
+    },
+    {
+      "id": "fuzz-261",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1,
+          "followers": 327494,
+          "ageDays": 2,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 45
+    },
+    {
+      "id": "fuzz-262",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 131,
+          "followers": 607289,
+          "ageDays": 5,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-263",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 467,
+          "followers": 506695,
+          "ageDays": 1,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-264",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 35,
+          "followers": 7328,
+          "ageDays": 155,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 79
+    },
+    {
+      "id": "fuzz-265",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 87,
+          "followers": 597183,
+          "ageDays": 2,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-266",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 73,
+          "followers": 92,
+          "ageDays": 2,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-267",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 443,
+          "followers": 108172,
+          "ageDays": 42,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 81
+    },
+    {
+      "id": "fuzz-268",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 32,
+          "followers": 45172868,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 85
+    },
+    {
+      "id": "fuzz-269",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 521,
+          "followers": 21877,
+          "ageDays": 9,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 77
+    },
+    {
+      "id": "fuzz-270",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 8,
+          "followers": 4898041,
+          "ageDays": 1,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 72
+    },
+    {
+      "id": "fuzz-271",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 15,
+          "ageDays": 651,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 40
+    },
+    {
+      "id": "fuzz-272",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 175,
+          "followers": 287,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-273",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3235,
+          "followers": 9506139,
+          "ageDays": 3713,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-274",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 311,
+          "followers": 28527960,
+          "ageDays": 0,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-275",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 51,
+          "followers": 10986450,
+          "ageDays": 17,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-276",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2,
+          "followers": 7560369,
+          "ageDays": 2287,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 69
+    },
+    {
+      "id": "fuzz-277",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 14091,
+          "ageDays": 75,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 66
+    },
+    {
+      "id": "fuzz-278",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 20917553,
+          "ageDays": 5501,
+          "mutual": true,
+          "followsYou": false
+        }
+      },
+      "output": 75
+    },
+    {
+      "id": "fuzz-279",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 30,
+          "followers": 2,
+          "ageDays": 1,
+          "mutual": true,
+          "followsYou": true
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-280",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3,
+          "followers": 461,
+          "ageDays": 412,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 53
+    },
+    {
+      "id": "fuzz-281",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2097,
+          "followers": 207667,
+          "ageDays": 224,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 86
+    },
+    {
+      "id": "fuzz-282",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 3682,
+          "followers": 1035,
+          "ageDays": 4160,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-283",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 55,
+          "followers": 25846,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 82
+    },
+    {
+      "id": "fuzz-284",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1155,
+          "followers": 0,
+          "ageDays": 5864,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 65
+    },
+    {
+      "id": "fuzz-285",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 1174702,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 30
+    },
+    {
+      "id": "fuzz-286",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 362,
+          "followers": 3453734,
+          "ageDays": 376,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-287",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 2107,
+          "followers": 1,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 62
+    },
+    {
+      "id": "fuzz-288",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 14,
+          "followers": 9,
+          "ageDays": null,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 60
+    },
+    {
+      "id": "fuzz-289",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 108,
+          "followers": 2,
+          "ageDays": 2843,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-290",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 24,
+          "followers": 445968,
+          "ageDays": 4,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 80
+    },
+    {
+      "id": "fuzz-291",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 5,
+          "followers": 19661,
+          "ageDays": 61,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 67
+    },
+    {
+      "id": "fuzz-292",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 0,
+          "followers": 14644,
+          "ageDays": 54,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 22
+    },
+    {
+      "id": "fuzz-293",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 52,
+          "followers": 1307159,
+          "ageDays": 520,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 90
+    },
+    {
+      "id": "fuzz-294",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 91,
+          "followers": 48669,
+          "ageDays": 3,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 79
+    },
+    {
+      "id": "fuzz-295",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 1546,
+          "followers": 1942,
+          "ageDays": 2453,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 86
+    },
+    {
+      "id": "fuzz-296",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 10,
+          "followers": 2067075,
+          "ageDays": 52,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 83
+    },
+    {
+      "id": "fuzz-297",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 347,
+          "followers": 52,
+          "ageDays": 20,
+          "mutual": false,
+          "followsYou": false
+        }
+      },
+      "output": 64
+    },
+    {
+      "id": "fuzz-298",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 60,
+          "followers": 87,
+          "ageDays": 111,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 73
+    },
+    {
+      "id": "fuzz-299",
+      "fn": "trustScore",
+      "input": {
+        "f": {
+          "vouches": 96,
+          "followers": 9568,
+          "ageDays": 647,
+          "mutual": false,
+          "followsYou": true
+        }
+      },
+      "output": 90
+    },
+    {
       "id": "assignBand#1",
       "fn": "assignBand",
       "input": {
@@ -2409,6 +6609,170 @@
       "fn": "knownFollowersOf",
       "input": {
         "profile": "a string"
+      },
+      "output": null
+    },
+    {
+      "id": "knownFollowersOf#23",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": "0x10"
+            }
+          }
+        }
+      },
+      "output": 16
+    },
+    {
+      "id": "knownFollowersOf#24",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": " 7 \n"
+            }
+          }
+        }
+      },
+      "output": 7
+    },
+    {
+      "id": "knownFollowersOf#25",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": "1e2"
+            }
+          }
+        }
+      },
+      "output": 100
+    },
+    {
+      "id": "knownFollowersOf#26",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": "",
+              "followers": [
+                {}
+              ]
+            }
+          }
+        }
+      },
+      "output": 1
+    },
+    {
+      "id": "knownFollowersOf#27",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": "Infinity",
+              "followers": [
+                {},
+                {}
+              ]
+            }
+          }
+        }
+      },
+      "output": 2
+    },
+    {
+      "id": "knownFollowersOf#28",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": "-0",
+              "followers": [
+                {}
+              ]
+            }
+          }
+        }
+      },
+      "output": 1
+    },
+    {
+      "id": "knownFollowersOf#29",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": [],
+              "followers": [
+                {}
+              ]
+            }
+          }
+        }
+      },
+      "output": 1
+    },
+    {
+      "id": "knownFollowersOf#30",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": {},
+              "followers": []
+            }
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "knownFollowersOf#31",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": {
+              "count": 1e-7
+            }
+          }
+        }
+      },
+      "output": 1e-7
+    },
+    {
+      "id": "knownFollowersOf#32",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": true
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "knownFollowersOf#33",
+      "fn": "knownFollowersOf",
+      "input": {
+        "profile": {
+          "viewer": {
+            "knownFollowers": "yes"
+          }
+        }
       },
       "output": null
     },
@@ -14225,6 +18589,903 @@
             "did:plc:p6",
             "did:plc:p7",
             "did:plc:p8",
+            "did:plc:canary"
+          ]
+        ],
+        "relationshipCalls": 1
+      }
+    },
+    {
+      "id": "ages-in-America/Los_Angeles",
+      "fn": "score",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "now": 1794484800000,
+        "zone": "America/Los_Angeles",
+        "canary": "did:plc:canary",
+        "dids": [
+          "did:plc:p0",
+          "did:plc:p1",
+          "did:plc:p2",
+          "did:plc:p3",
+          "did:plc:p4",
+          "did:plc:p5",
+          "did:plc:p6",
+          "did:plc:p7"
+        ],
+        "profiles": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00",
+            "viewer": {}
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00Z",
+            "viewer": {}
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11",
+            "viewer": {}
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026/11/11 23:30",
+            "viewer": {}
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "Nov 10 2026 20:00",
+            "viewer": {}
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-12T11:30:00+05:30",
+            "viewer": {}
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 4,
+            "createdAt": 0,
+            "viewer": {}
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 9000,
+            "createdAt": "2026",
+            "viewer": {}
+          },
+          "did:plc:canary": {
+            "did": "did:plc:canary",
+            "handle": "canary.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "viewer": {
+              "knownFollowers": {
+                "count": 2,
+                "followers": [
+                  {
+                    "did": "did:plc:someone"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "scores": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 1,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 0,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 1,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 0,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 15,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 4,
+            "ageDays": 9812,
+            "postsPerDay": 0,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 14,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 9000,
+            "ageDays": 316,
+            "postsPerDay": 28.48,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          }
+        },
+        "vouchCheck": "canary",
+        "asked": [
+          [
+            "did:plc:p0",
+            "did:plc:p1",
+            "did:plc:p2",
+            "did:plc:p3",
+            "did:plc:p4",
+            "did:plc:p5",
+            "did:plc:p6",
+            "did:plc:p7",
+            "did:plc:canary"
+          ]
+        ],
+        "relationshipCalls": 1
+      }
+    },
+    {
+      "id": "ages-in-Asia/Kolkata",
+      "fn": "score",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "now": 1794484800000,
+        "zone": "Asia/Kolkata",
+        "canary": "did:plc:canary",
+        "dids": [
+          "did:plc:p0",
+          "did:plc:p1",
+          "did:plc:p2",
+          "did:plc:p3",
+          "did:plc:p4",
+          "did:plc:p5",
+          "did:plc:p6",
+          "did:plc:p7"
+        ],
+        "profiles": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00",
+            "viewer": {}
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00Z",
+            "viewer": {}
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11",
+            "viewer": {}
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026/11/11 23:30",
+            "viewer": {}
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "Nov 10 2026 20:00",
+            "viewer": {}
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-12T11:30:00+05:30",
+            "viewer": {}
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 4,
+            "createdAt": 0,
+            "viewer": {}
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 9000,
+            "createdAt": "2026",
+            "viewer": {}
+          },
+          "did:plc:canary": {
+            "did": "did:plc:canary",
+            "handle": "canary.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "viewer": {
+              "knownFollowers": {
+                "count": 2,
+                "followers": [
+                  {
+                    "did": "did:plc:someone"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "scores": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 1,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 0,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 15,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 4,
+            "ageDays": 9813,
+            "postsPerDay": 0,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 14,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 9000,
+            "ageDays": 316,
+            "postsPerDay": 28.48,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          }
+        },
+        "vouchCheck": "canary",
+        "asked": [
+          [
+            "did:plc:p0",
+            "did:plc:p1",
+            "did:plc:p2",
+            "did:plc:p3",
+            "did:plc:p4",
+            "did:plc:p5",
+            "did:plc:p6",
+            "did:plc:p7",
+            "did:plc:canary"
+          ]
+        ],
+        "relationshipCalls": 1
+      }
+    },
+    {
+      "id": "ages-in-Pacific/Chatham",
+      "fn": "score",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "now": 1794484800000,
+        "zone": "Pacific/Chatham",
+        "canary": "did:plc:canary",
+        "dids": [
+          "did:plc:p0",
+          "did:plc:p1",
+          "did:plc:p2",
+          "did:plc:p3",
+          "did:plc:p4",
+          "did:plc:p5",
+          "did:plc:p6",
+          "did:plc:p7"
+        ],
+        "profiles": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00",
+            "viewer": {}
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11T00:00:00Z",
+            "viewer": {}
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-11",
+            "viewer": {}
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026/11/11 23:30",
+            "viewer": {}
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "Nov 10 2026 20:00",
+            "viewer": {}
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2026-11-12T11:30:00+05:30",
+            "viewer": {}
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 4,
+            "createdAt": 0,
+            "viewer": {}
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 9000,
+            "createdAt": "2026",
+            "viewer": {}
+          },
+          "did:plc:canary": {
+            "did": "did:plc:canary",
+            "handle": "canary.test",
+            "followersCount": 10,
+            "followsCount": 5,
+            "postsCount": 10,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "viewer": {
+              "knownFollowers": {
+                "count": 2,
+                "followers": [
+                  {
+                    "did": "did:plc:someone"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "scores": {
+          "did:plc:p0": {
+            "did": "did:plc:p0",
+            "handle": "p0.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p1": {
+            "did": "did:plc:p1",
+            "handle": "p1.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p2": {
+            "did": "did:plc:p2",
+            "handle": "p2.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p3": {
+            "did": "did:plc:p3",
+            "handle": "p3.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 1,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p4": {
+            "did": "did:plc:p4",
+            "handle": "p4.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 2,
+            "postsPerDay": 5,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p5": {
+            "did": "did:plc:p5",
+            "handle": "p5.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 5,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 10,
+            "ageDays": 0,
+            "postsPerDay": null,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p6": {
+            "did": "did:plc:p6",
+            "handle": "p6.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 15,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 4,
+            "ageDays": 9813,
+            "postsPerDay": 0,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          },
+          "did:plc:p7": {
+            "did": "did:plc:p7",
+            "handle": "p7.test",
+            "displayName": null,
+            "avatar": null,
+            "missing": false,
+            "band": "UNKNOWN",
+            "trust": 14,
+            "alreadyListed": false,
+            "blocksYou": false,
+            "vouches": 0,
+            "followers": 10,
+            "follows": 5,
+            "posts": 9000,
+            "ageDays": 316,
+            "postsPerDay": 28.48,
+            "mutual": false,
+            "followsYou": false,
+            "youFollow": false,
+            "protectedReason": null
+          }
+        },
+        "vouchCheck": "canary",
+        "asked": [
+          [
+            "did:plc:p0",
+            "did:plc:p1",
+            "did:plc:p2",
+            "did:plc:p3",
+            "did:plc:p4",
+            "did:plc:p5",
+            "did:plc:p6",
+            "did:plc:p7",
             "did:plc:canary"
           ]
         ],

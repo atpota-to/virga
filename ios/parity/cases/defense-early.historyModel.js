@@ -104,7 +104,16 @@ const PLANS = [
   },
 ];
 
-const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-DE', 'en-CH', 'en-ZA', 'en-SE'];
+const LOCALES = [
+  'en-US',
+  'en-GB',
+  'en-IN',
+  'en-DE',
+  'en-FR',
+  'en-CH',
+  'en-ZA',
+  'en-SE',
+];
 
 export default async function cases() {
   return [

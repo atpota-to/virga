@@ -13369,6 +13369,54 @@
       }
     },
     {
+      "id": "estimateWrites#33",
+      "fn": "estimateWrites",
+      "input": {
+        "n": 123456
+      },
+      "output": {
+        "writes": 123456,
+        "points": 370368,
+        "minutes": 4938
+      }
+    },
+    {
+      "id": "estimateWrites#34",
+      "fn": "estimateWrites",
+      "input": {
+        "n": 1000000
+      },
+      "output": {
+        "writes": 1000000,
+        "points": 3000000,
+        "minutes": 39998
+      }
+    },
+    {
+      "id": "estimateWrites#35",
+      "fn": "estimateWrites",
+      "input": {
+        "n": 123456789.7
+      },
+      "output": {
+        "writes": 123456789,
+        "points": 370370367,
+        "minutes": 4938270
+      }
+    },
+    {
+      "id": "estimateWrites#36",
+      "fn": "estimateWrites",
+      "input": {
+        "n": 1000000000000
+      },
+      "output": {
+        "writes": 1000000000000,
+        "points": 3000000000000,
+        "minutes": 39999999998
+      }
+    },
+    {
       "id": "estimateWords#1",
       "fn": "estimateWords",
       "input": {
@@ -13409,7 +13457,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 0,
-        "locale": "en-CH"
+        "locale": "en-FR"
       },
       "output": "nothing to write"
     },
@@ -13418,7 +13466,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 0,
-        "locale": "en-ZA"
+        "locale": "en-CH"
       },
       "output": "nothing to write"
     },
@@ -13426,17 +13474,17 @@
       "id": "estimateWords#7",
       "fn": "estimateWords",
       "input": {
-        "n": 1,
-        "locale": "en-US"
+        "n": 0,
+        "locale": "en-ZA"
       },
-      "output": "a minute or two"
+      "output": "nothing to write"
     },
     {
       "id": "estimateWords#8",
       "fn": "estimateWords",
       "input": {
         "n": 1,
-        "locale": "en-GB"
+        "locale": "en-US"
       },
       "output": "a minute or two"
     },
@@ -13445,7 +13493,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 1,
-        "locale": "en-IN"
+        "locale": "en-GB"
       },
       "output": "a minute or two"
     },
@@ -13454,7 +13502,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 1,
-        "locale": "en-DE"
+        "locale": "en-IN"
       },
       "output": "a minute or two"
     },
@@ -13463,7 +13511,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 1,
-        "locale": "en-CH"
+        "locale": "en-DE"
       },
       "output": "a minute or two"
     },
@@ -13472,7 +13520,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 1,
-        "locale": "en-ZA"
+        "locale": "en-FR"
       },
       "output": "a minute or two"
     },
@@ -13480,8 +13528,8 @@
       "id": "estimateWords#13",
       "fn": "estimateWords",
       "input": {
-        "n": 10,
-        "locale": "en-US"
+        "n": 1,
+        "locale": "en-CH"
       },
       "output": "a minute or two"
     },
@@ -13489,8 +13537,8 @@
       "id": "estimateWords#14",
       "fn": "estimateWords",
       "input": {
-        "n": 10,
-        "locale": "en-GB"
+        "n": 1,
+        "locale": "en-ZA"
       },
       "output": "a minute or two"
     },
@@ -13499,7 +13547,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 10,
-        "locale": "en-IN"
+        "locale": "en-US"
       },
       "output": "a minute or two"
     },
@@ -13508,7 +13556,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 10,
-        "locale": "en-DE"
+        "locale": "en-GB"
       },
       "output": "a minute or two"
     },
@@ -13517,7 +13565,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 10,
-        "locale": "en-CH"
+        "locale": "en-IN"
       },
       "output": "a minute or two"
     },
@@ -13526,7 +13574,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 10,
-        "locale": "en-ZA"
+        "locale": "en-DE"
       },
       "output": "a minute or two"
     },
@@ -13534,35 +13582,35 @@
       "id": "estimateWords#19",
       "fn": "estimateWords",
       "input": {
-        "n": 49,
-        "locale": "en-US"
+        "n": 10,
+        "locale": "en-FR"
       },
-      "output": "about 2 minutes"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#20",
       "fn": "estimateWords",
       "input": {
-        "n": 49,
-        "locale": "en-GB"
+        "n": 10,
+        "locale": "en-CH"
       },
-      "output": "about 2 minutes"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#21",
       "fn": "estimateWords",
       "input": {
-        "n": 49,
-        "locale": "en-IN"
+        "n": 10,
+        "locale": "en-ZA"
       },
-      "output": "about 2 minutes"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#22",
       "fn": "estimateWords",
       "input": {
         "n": 49,
-        "locale": "en-DE"
+        "locale": "en-US"
       },
       "output": "about 2 minutes"
     },
@@ -13571,7 +13619,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 49,
-        "locale": "en-CH"
+        "locale": "en-GB"
       },
       "output": "about 2 minutes"
     },
@@ -13580,7 +13628,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 49,
-        "locale": "en-ZA"
+        "locale": "en-IN"
       },
       "output": "about 2 minutes"
     },
@@ -13588,8 +13636,8 @@
       "id": "estimateWords#25",
       "fn": "estimateWords",
       "input": {
-        "n": 50,
-        "locale": "en-US"
+        "n": 49,
+        "locale": "en-DE"
       },
       "output": "about 2 minutes"
     },
@@ -13597,8 +13645,8 @@
       "id": "estimateWords#26",
       "fn": "estimateWords",
       "input": {
-        "n": 50,
-        "locale": "en-GB"
+        "n": 49,
+        "locale": "en-FR"
       },
       "output": "about 2 minutes"
     },
@@ -13606,8 +13654,8 @@
       "id": "estimateWords#27",
       "fn": "estimateWords",
       "input": {
-        "n": 50,
-        "locale": "en-IN"
+        "n": 49,
+        "locale": "en-CH"
       },
       "output": "about 2 minutes"
     },
@@ -13615,8 +13663,8 @@
       "id": "estimateWords#28",
       "fn": "estimateWords",
       "input": {
-        "n": 50,
-        "locale": "en-DE"
+        "n": 49,
+        "locale": "en-ZA"
       },
       "output": "about 2 minutes"
     },
@@ -13625,7 +13673,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 50,
-        "locale": "en-CH"
+        "locale": "en-US"
       },
       "output": "about 2 minutes"
     },
@@ -13634,7 +13682,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 50,
-        "locale": "en-ZA"
+        "locale": "en-GB"
       },
       "output": "about 2 minutes"
     },
@@ -13642,8 +13690,8 @@
       "id": "estimateWords#31",
       "fn": "estimateWords",
       "input": {
-        "n": 51,
-        "locale": "en-US"
+        "n": 50,
+        "locale": "en-IN"
       },
       "output": "about 2 minutes"
     },
@@ -13651,8 +13699,8 @@
       "id": "estimateWords#32",
       "fn": "estimateWords",
       "input": {
-        "n": 51,
-        "locale": "en-GB"
+        "n": 50,
+        "locale": "en-DE"
       },
       "output": "about 2 minutes"
     },
@@ -13660,8 +13708,8 @@
       "id": "estimateWords#33",
       "fn": "estimateWords",
       "input": {
-        "n": 51,
-        "locale": "en-IN"
+        "n": 50,
+        "locale": "en-FR"
       },
       "output": "about 2 minutes"
     },
@@ -13669,8 +13717,8 @@
       "id": "estimateWords#34",
       "fn": "estimateWords",
       "input": {
-        "n": 51,
-        "locale": "en-DE"
+        "n": 50,
+        "locale": "en-CH"
       },
       "output": "about 2 minutes"
     },
@@ -13678,8 +13726,8 @@
       "id": "estimateWords#35",
       "fn": "estimateWords",
       "input": {
-        "n": 51,
-        "locale": "en-CH"
+        "n": 50,
+        "locale": "en-ZA"
       },
       "output": "about 2 minutes"
     },
@@ -13688,7 +13736,7 @@
       "fn": "estimateWords",
       "input": {
         "n": 51,
-        "locale": "en-ZA"
+        "locale": "en-US"
       },
       "output": "about 2 minutes"
     },
@@ -13696,61 +13744,61 @@
       "id": "estimateWords#37",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
-        "locale": "en-US"
+        "n": 51,
+        "locale": "en-GB"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#38",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
-        "locale": "en-GB"
+        "n": 51,
+        "locale": "en-IN"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#39",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
-        "locale": "en-IN"
+        "n": 51,
+        "locale": "en-DE"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#40",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
-        "locale": "en-DE"
+        "n": 51,
+        "locale": "en-FR"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#41",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
+        "n": 51,
         "locale": "en-CH"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#42",
       "fn": "estimateWords",
       "input": {
-        "n": 99,
+        "n": 51,
         "locale": "en-ZA"
       },
-      "output": "about 4 minutes"
+      "output": "about 2 minutes"
     },
     {
       "id": "estimateWords#43",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
+        "n": 99,
         "locale": "en-US"
       },
       "output": "about 4 minutes"
@@ -13759,7 +13807,7 @@
       "id": "estimateWords#44",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
+        "n": 99,
         "locale": "en-GB"
       },
       "output": "about 4 minutes"
@@ -13768,7 +13816,7 @@
       "id": "estimateWords#45",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
+        "n": 99,
         "locale": "en-IN"
       },
       "output": "about 4 minutes"
@@ -13777,7 +13825,7 @@
       "id": "estimateWords#46",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
+        "n": 99,
         "locale": "en-DE"
       },
       "output": "about 4 minutes"
@@ -13786,8 +13834,8 @@
       "id": "estimateWords#47",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
-        "locale": "en-CH"
+        "n": 99,
+        "locale": "en-FR"
       },
       "output": "about 4 minutes"
     },
@@ -13795,8 +13843,8 @@
       "id": "estimateWords#48",
       "fn": "estimateWords",
       "input": {
-        "n": 100,
-        "locale": "en-ZA"
+        "n": 99,
+        "locale": "en-CH"
       },
       "output": "about 4 minutes"
     },
@@ -13804,8 +13852,8 @@
       "id": "estimateWords#49",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-US"
+        "n": 99,
+        "locale": "en-ZA"
       },
       "output": "about 4 minutes"
     },
@@ -13813,8 +13861,8 @@
       "id": "estimateWords#50",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-GB"
+        "n": 100,
+        "locale": "en-US"
       },
       "output": "about 4 minutes"
     },
@@ -13822,8 +13870,8 @@
       "id": "estimateWords#51",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-IN"
+        "n": 100,
+        "locale": "en-GB"
       },
       "output": "about 4 minutes"
     },
@@ -13831,8 +13879,8 @@
       "id": "estimateWords#52",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-DE"
+        "n": 100,
+        "locale": "en-IN"
       },
       "output": "about 4 minutes"
     },
@@ -13840,8 +13888,8 @@
       "id": "estimateWords#53",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-CH"
+        "n": 100,
+        "locale": "en-DE"
       },
       "output": "about 4 minutes"
     },
@@ -13849,8 +13897,8 @@
       "id": "estimateWords#54",
       "fn": "estimateWords",
       "input": {
-        "n": 101,
-        "locale": "en-ZA"
+        "n": 100,
+        "locale": "en-FR"
       },
       "output": "about 4 minutes"
     },
@@ -13858,89 +13906,89 @@
       "id": "estimateWords#55",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-US"
+        "n": 100,
+        "locale": "en-CH"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#56",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-GB"
+        "n": 100,
+        "locale": "en-ZA"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#57",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-IN"
+        "n": 101,
+        "locale": "en-US"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#58",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-DE"
+        "n": 101,
+        "locale": "en-GB"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#59",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-CH"
+        "n": 101,
+        "locale": "en-IN"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#60",
       "fn": "estimateWords",
       "input": {
-        "n": 150,
-        "locale": "en-ZA"
+        "n": 101,
+        "locale": "en-DE"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#61",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-US"
+        "n": 101,
+        "locale": "en-FR"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#62",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-GB"
+        "n": 101,
+        "locale": "en-CH"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#63",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-IN"
+        "n": 101,
+        "locale": "en-ZA"
       },
-      "output": "about 6 minutes"
+      "output": "about 4 minutes"
     },
     {
       "id": "estimateWords#64",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-DE"
+        "n": 150,
+        "locale": "en-US"
       },
       "output": "about 6 minutes"
     },
@@ -13948,8 +13996,8 @@
       "id": "estimateWords#65",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-CH"
+        "n": 150,
+        "locale": "en-GB"
       },
       "output": "about 6 minutes"
     },
@@ -13957,8 +14005,8 @@
       "id": "estimateWords#66",
       "fn": "estimateWords",
       "input": {
-        "n": 151,
-        "locale": "en-ZA"
+        "n": 150,
+        "locale": "en-IN"
       },
       "output": "about 6 minutes"
     },
@@ -13966,989 +14014,989 @@
       "id": "estimateWords#67",
       "fn": "estimateWords",
       "input": {
-        "n": 600,
-        "locale": "en-US"
+        "n": 150,
+        "locale": "en-DE"
       },
-      "output": "about 22 minutes"
+      "output": "about 6 minutes"
     },
     {
       "id": "estimateWords#68",
       "fn": "estimateWords",
       "input": {
-        "n": 600,
-        "locale": "en-GB"
+        "n": 150,
+        "locale": "en-FR"
       },
-      "output": "about 22 minutes"
+      "output": "about 6 minutes"
     },
     {
       "id": "estimateWords#69",
       "fn": "estimateWords",
       "input": {
-        "n": 600,
-        "locale": "en-IN"
+        "n": 150,
+        "locale": "en-CH"
       },
-      "output": "about 22 minutes"
+      "output": "about 6 minutes"
     },
     {
       "id": "estimateWords#70",
       "fn": "estimateWords",
       "input": {
-        "n": 600,
-        "locale": "en-DE"
+        "n": 150,
+        "locale": "en-ZA"
       },
-      "output": "about 22 minutes"
+      "output": "about 6 minutes"
     },
     {
       "id": "estimateWords#71",
       "fn": "estimateWords",
       "input": {
-        "n": 600,
-        "locale": "en-CH"
+        "n": 151,
+        "locale": "en-US"
       },
-      "output": "about 22 minutes"
+      "output": "about 6 minutes"
     },
     {
       "id": "estimateWords#72",
       "fn": "estimateWords",
       "input": {
+        "n": 151,
+        "locale": "en-GB"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#73",
+      "fn": "estimateWords",
+      "input": {
+        "n": 151,
+        "locale": "en-IN"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#74",
+      "fn": "estimateWords",
+      "input": {
+        "n": 151,
+        "locale": "en-DE"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#75",
+      "fn": "estimateWords",
+      "input": {
+        "n": 151,
+        "locale": "en-FR"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#76",
+      "fn": "estimateWords",
+      "input": {
+        "n": 151,
+        "locale": "en-CH"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#77",
+      "fn": "estimateWords",
+      "input": {
+        "n": 151,
+        "locale": "en-ZA"
+      },
+      "output": "about 6 minutes"
+    },
+    {
+      "id": "estimateWords#78",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-US"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#79",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-GB"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#80",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-IN"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#81",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-DE"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#82",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-FR"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#83",
+      "fn": "estimateWords",
+      "input": {
+        "n": 600,
+        "locale": "en-CH"
+      },
+      "output": "about 22 minutes"
+    },
+    {
+      "id": "estimateWords#84",
+      "fn": "estimateWords",
+      "input": {
         "n": 600,
         "locale": "en-ZA"
       },
       "output": "about 22 minutes"
     },
     {
-      "id": "estimateWords#73",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-US"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#74",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-GB"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#75",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-IN"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#76",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-DE"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#77",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-CH"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#78",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1000,
-        "locale": "en-ZA"
-      },
-      "output": "about 38 minutes"
-    },
-    {
-      "id": "estimateWords#79",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-US"
-      },
-      "output": "about 58 minutes"
-    },
-    {
-      "id": "estimateWords#80",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-GB"
-      },
-      "output": "about 58 minutes"
-    },
-    {
-      "id": "estimateWords#81",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-IN"
-      },
-      "output": "about 58 minutes"
-    },
-    {
-      "id": "estimateWords#82",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-DE"
-      },
-      "output": "about 58 minutes"
-    },
-    {
-      "id": "estimateWords#83",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-CH"
-      },
-      "output": "about 58 minutes"
-    },
-    {
-      "id": "estimateWords#84",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1499,
-        "locale": "en-ZA"
-      },
-      "output": "about 58 minutes"
-    },
-    {
       "id": "estimateWords#85",
       "fn": "estimateWords",
       "input": {
-        "n": 1500,
+        "n": 1000,
         "locale": "en-US"
       },
-      "output": "about 58 minutes"
+      "output": "about 38 minutes"
     },
     {
       "id": "estimateWords#86",
       "fn": "estimateWords",
       "input": {
-        "n": 1500,
+        "n": 1000,
         "locale": "en-GB"
       },
-      "output": "about 58 minutes"
+      "output": "about 38 minutes"
     },
     {
       "id": "estimateWords#87",
       "fn": "estimateWords",
       "input": {
-        "n": 1500,
+        "n": 1000,
         "locale": "en-IN"
       },
-      "output": "about 58 minutes"
+      "output": "about 38 minutes"
     },
     {
       "id": "estimateWords#88",
       "fn": "estimateWords",
       "input": {
-        "n": 1500,
+        "n": 1000,
         "locale": "en-DE"
       },
-      "output": "about 58 minutes"
+      "output": "about 38 minutes"
     },
     {
       "id": "estimateWords#89",
       "fn": "estimateWords",
       "input": {
-        "n": 1500,
-        "locale": "en-CH"
+        "n": 1000,
+        "locale": "en-FR"
       },
-      "output": "about 58 minutes"
+      "output": "about 38 minutes"
     },
     {
       "id": "estimateWords#90",
       "fn": "estimateWords",
       "input": {
+        "n": 1000,
+        "locale": "en-CH"
+      },
+      "output": "about 38 minutes"
+    },
+    {
+      "id": "estimateWords#91",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000,
+        "locale": "en-ZA"
+      },
+      "output": "about 38 minutes"
+    },
+    {
+      "id": "estimateWords#92",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-US"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#93",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-GB"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#94",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-IN"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#95",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-DE"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#96",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-FR"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#97",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-CH"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#98",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1499,
+        "locale": "en-ZA"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#99",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-US"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#100",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-GB"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#101",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-IN"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#102",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-DE"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#103",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-FR"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#104",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1500,
+        "locale": "en-CH"
+      },
+      "output": "about 58 minutes"
+    },
+    {
+      "id": "estimateWords#105",
+      "fn": "estimateWords",
+      "input": {
         "n": 1500,
         "locale": "en-ZA"
       },
       "output": "about 58 minutes"
     },
     {
-      "id": "estimateWords#91",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-US"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#92",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-GB"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#93",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-IN"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#94",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-DE"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#95",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-CH"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#96",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1501,
-        "locale": "en-ZA"
-      },
-      "output": "about 60 minutes"
-    },
-    {
-      "id": "estimateWords#97",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-US"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#98",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-GB"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#99",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-IN"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#100",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-DE"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#101",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-CH"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#102",
-      "fn": "estimateWords",
-      "input": {
-        "n": 1667,
-        "locale": "en-ZA"
-      },
-      "output": "about 66 minutes"
-    },
-    {
-      "id": "estimateWords#103",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2000,
-        "locale": "en-US"
-      },
-      "output": "about 78 minutes"
-    },
-    {
-      "id": "estimateWords#104",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2000,
-        "locale": "en-GB"
-      },
-      "output": "about 78 minutes"
-    },
-    {
-      "id": "estimateWords#105",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2000,
-        "locale": "en-IN"
-      },
-      "output": "about 78 minutes"
-    },
-    {
       "id": "estimateWords#106",
       "fn": "estimateWords",
       "input": {
-        "n": 2000,
-        "locale": "en-DE"
+        "n": 1501,
+        "locale": "en-US"
       },
-      "output": "about 78 minutes"
+      "output": "about 60 minutes"
     },
     {
       "id": "estimateWords#107",
       "fn": "estimateWords",
       "input": {
-        "n": 2000,
-        "locale": "en-CH"
+        "n": 1501,
+        "locale": "en-GB"
       },
-      "output": "about 78 minutes"
+      "output": "about 60 minutes"
     },
     {
       "id": "estimateWords#108",
       "fn": "estimateWords",
       "input": {
+        "n": 1501,
+        "locale": "en-IN"
+      },
+      "output": "about 60 minutes"
+    },
+    {
+      "id": "estimateWords#109",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1501,
+        "locale": "en-DE"
+      },
+      "output": "about 60 minutes"
+    },
+    {
+      "id": "estimateWords#110",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1501,
+        "locale": "en-FR"
+      },
+      "output": "about 60 minutes"
+    },
+    {
+      "id": "estimateWords#111",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1501,
+        "locale": "en-CH"
+      },
+      "output": "about 60 minutes"
+    },
+    {
+      "id": "estimateWords#112",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1501,
+        "locale": "en-ZA"
+      },
+      "output": "about 60 minutes"
+    },
+    {
+      "id": "estimateWords#113",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-US"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#114",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-GB"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#115",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-IN"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#116",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-DE"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#117",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-FR"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#118",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-CH"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#119",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1667,
+        "locale": "en-ZA"
+      },
+      "output": "about 66 minutes"
+    },
+    {
+      "id": "estimateWords#120",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-US"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#121",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-GB"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#122",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-IN"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#123",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-DE"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#124",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-FR"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#125",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2000,
+        "locale": "en-CH"
+      },
+      "output": "about 78 minutes"
+    },
+    {
+      "id": "estimateWords#126",
+      "fn": "estimateWords",
+      "input": {
         "n": 2000,
         "locale": "en-ZA"
       },
       "output": "about 78 minutes"
     },
     {
-      "id": "estimateWords#109",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-US"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#110",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-GB"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#111",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-IN"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#112",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-DE"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#113",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-CH"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#114",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2250,
-        "locale": "en-ZA"
-      },
-      "output": "about 88 minutes"
-    },
-    {
-      "id": "estimateWords#115",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-US"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#116",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-GB"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#117",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-IN"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#118",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-DE"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#119",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-CH"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#120",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2251,
-        "locale": "en-ZA"
-      },
-      "output": "about 1.5 hours"
-    },
-    {
-      "id": "estimateWords#121",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-US"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
-      "id": "estimateWords#122",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-GB"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
-      "id": "estimateWords#123",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-IN"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
-      "id": "estimateWords#124",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-DE"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
-      "id": "estimateWords#125",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-CH"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
-      "id": "estimateWords#126",
-      "fn": "estimateWords",
-      "input": {
-        "n": 2500,
-        "locale": "en-ZA"
-      },
-      "output": "about 1.6 hours"
-    },
-    {
       "id": "estimateWords#127",
       "fn": "estimateWords",
       "input": {
-        "n": 5000,
+        "n": 2250,
         "locale": "en-US"
       },
-      "output": "about 3.3 hours"
+      "output": "about 88 minutes"
     },
     {
       "id": "estimateWords#128",
       "fn": "estimateWords",
       "input": {
-        "n": 5000,
+        "n": 2250,
         "locale": "en-GB"
       },
-      "output": "about 3.3 hours"
+      "output": "about 88 minutes"
     },
     {
       "id": "estimateWords#129",
       "fn": "estimateWords",
       "input": {
-        "n": 5000,
+        "n": 2250,
         "locale": "en-IN"
       },
-      "output": "about 3.3 hours"
+      "output": "about 88 minutes"
     },
     {
       "id": "estimateWords#130",
       "fn": "estimateWords",
       "input": {
-        "n": 5000,
+        "n": 2250,
         "locale": "en-DE"
       },
-      "output": "about 3.3 hours"
+      "output": "about 88 minutes"
     },
     {
       "id": "estimateWords#131",
       "fn": "estimateWords",
       "input": {
-        "n": 5000,
-        "locale": "en-CH"
+        "n": 2250,
+        "locale": "en-FR"
       },
-      "output": "about 3.3 hours"
+      "output": "about 88 minutes"
     },
     {
       "id": "estimateWords#132",
       "fn": "estimateWords",
       "input": {
+        "n": 2250,
+        "locale": "en-CH"
+      },
+      "output": "about 88 minutes"
+    },
+    {
+      "id": "estimateWords#133",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2250,
+        "locale": "en-ZA"
+      },
+      "output": "about 88 minutes"
+    },
+    {
+      "id": "estimateWords#134",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-US"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#135",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-GB"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#136",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-IN"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#137",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-DE"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#138",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-FR"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#139",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-CH"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#140",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2251,
+        "locale": "en-ZA"
+      },
+      "output": "about 1.5 hours"
+    },
+    {
+      "id": "estimateWords#141",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-US"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#142",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-GB"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#143",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-IN"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#144",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-DE"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#145",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-FR"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#146",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-CH"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#147",
+      "fn": "estimateWords",
+      "input": {
+        "n": 2500,
+        "locale": "en-ZA"
+      },
+      "output": "about 1.6 hours"
+    },
+    {
+      "id": "estimateWords#148",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-US"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#149",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-GB"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#150",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-IN"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#151",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-DE"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#152",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-FR"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#153",
+      "fn": "estimateWords",
+      "input": {
+        "n": 5000,
+        "locale": "en-CH"
+      },
+      "output": "about 3.3 hours"
+    },
+    {
+      "id": "estimateWords#154",
+      "fn": "estimateWords",
+      "input": {
         "n": 5000,
         "locale": "en-ZA"
       },
       "output": "about 3.3 hours"
     },
     {
-      "id": "estimateWords#133",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-US"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#134",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-GB"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#135",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-IN"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#136",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-DE"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#137",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-CH"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#138",
-      "fn": "estimateWords",
-      "input": {
-        "n": 9999,
-        "locale": "en-ZA"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#139",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-US"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#140",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-GB"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#141",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-IN"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#142",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-DE"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#143",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-CH"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#144",
-      "fn": "estimateWords",
-      "input": {
-        "n": 10000,
-        "locale": "en-ZA"
-      },
-      "output": "about 6.6 hours"
-    },
-    {
-      "id": "estimateWords#145",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-US"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#146",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-GB"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#147",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-IN"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#148",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-DE"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#149",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-CH"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#150",
-      "fn": "estimateWords",
-      "input": {
-        "n": 12345,
-        "locale": "en-ZA"
-      },
-      "output": "about 8.2 hours"
-    },
-    {
-      "id": "estimateWords#151",
-      "fn": "estimateWords",
-      "input": {
-        "n": 0.5,
-        "locale": "en-US"
-      },
-      "output": "nothing to write"
-    },
-    {
-      "id": "estimateWords#152",
-      "fn": "estimateWords",
-      "input": {
-        "n": 0.5,
-        "locale": "en-GB"
-      },
-      "output": "nothing to write"
-    },
-    {
-      "id": "estimateWords#153",
-      "fn": "estimateWords",
-      "input": {
-        "n": 0.5,
-        "locale": "en-IN"
-      },
-      "output": "nothing to write"
-    },
-    {
-      "id": "estimateWords#154",
-      "fn": "estimateWords",
-      "input": {
-        "n": 0.5,
-        "locale": "en-DE"
-      },
-      "output": "nothing to write"
-    },
-    {
       "id": "estimateWords#155",
       "fn": "estimateWords",
       "input": {
-        "n": 0.5,
-        "locale": "en-CH"
+        "n": 9999,
+        "locale": "en-US"
       },
-      "output": "nothing to write"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#156",
       "fn": "estimateWords",
       "input": {
-        "n": 0.5,
-        "locale": "en-ZA"
+        "n": 9999,
+        "locale": "en-GB"
       },
-      "output": "nothing to write"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#157",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-US"
+        "n": 9999,
+        "locale": "en-IN"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#158",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-GB"
+        "n": 9999,
+        "locale": "en-DE"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#159",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-IN"
+        "n": 9999,
+        "locale": "en-FR"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#160",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-DE"
+        "n": 9999,
+        "locale": "en-CH"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#161",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-CH"
+        "n": 9999,
+        "locale": "en-ZA"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#162",
       "fn": "estimateWords",
       "input": {
-        "n": 1.9,
-        "locale": "en-ZA"
+        "n": 10000,
+        "locale": "en-US"
       },
-      "output": "a minute or two"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#163",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
-        "locale": "en-US"
+        "n": 10000,
+        "locale": "en-GB"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#164",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
-        "locale": "en-GB"
+        "n": 10000,
+        "locale": "en-IN"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#165",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
-        "locale": "en-IN"
+        "n": 10000,
+        "locale": "en-DE"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#166",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
-        "locale": "en-DE"
+        "n": 10000,
+        "locale": "en-FR"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#167",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
+        "n": 10000,
         "locale": "en-CH"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#168",
       "fn": "estimateWords",
       "input": {
-        "n": 50.99,
+        "n": 10000,
         "locale": "en-ZA"
       },
-      "output": "about 2 minutes"
+      "output": "about 6.6 hours"
     },
     {
       "id": "estimateWords#169",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
+        "n": 12345,
         "locale": "en-US"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#170",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
+        "n": 12345,
         "locale": "en-GB"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#171",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
+        "n": 12345,
         "locale": "en-IN"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#172",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
+        "n": 12345,
         "locale": "en-DE"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#173",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
-        "locale": "en-CH"
+        "n": 12345,
+        "locale": "en-FR"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#174",
       "fn": "estimateWords",
       "input": {
-        "n": -1,
-        "locale": "en-ZA"
+        "n": 12345,
+        "locale": "en-CH"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#175",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-US"
+        "n": 12345,
+        "locale": "en-ZA"
       },
-      "output": "nothing to write"
+      "output": "about 8.2 hours"
     },
     {
       "id": "estimateWords#176",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-GB"
+        "n": 0.5,
+        "locale": "en-US"
       },
       "output": "nothing to write"
     },
@@ -14956,8 +15004,8 @@
       "id": "estimateWords#177",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-IN"
+        "n": 0.5,
+        "locale": "en-GB"
       },
       "output": "nothing to write"
     },
@@ -14965,8 +15013,8 @@
       "id": "estimateWords#178",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-DE"
+        "n": 0.5,
+        "locale": "en-IN"
       },
       "output": "nothing to write"
     },
@@ -14974,8 +15022,8 @@
       "id": "estimateWords#179",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-CH"
+        "n": 0.5,
+        "locale": "en-DE"
       },
       "output": "nothing to write"
     },
@@ -14983,8 +15031,8 @@
       "id": "estimateWords#180",
       "fn": "estimateWords",
       "input": {
-        "n": -0.5,
-        "locale": "en-ZA"
+        "n": 0.5,
+        "locale": "en-FR"
       },
       "output": "nothing to write"
     },
@@ -14992,8 +15040,8 @@
       "id": "estimateWords#181",
       "fn": "estimateWords",
       "input": {
-        "n": null,
-        "locale": "en-US"
+        "n": 0.5,
+        "locale": "en-CH"
       },
       "output": "nothing to write"
     },
@@ -15001,8 +15049,8 @@
       "id": "estimateWords#182",
       "fn": "estimateWords",
       "input": {
-        "n": null,
-        "locale": "en-GB"
+        "n": 0.5,
+        "locale": "en-ZA"
       },
       "output": "nothing to write"
     },
@@ -15010,40 +15058,256 @@
       "id": "estimateWords#183",
       "fn": "estimateWords",
       "input": {
-        "n": null,
-        "locale": "en-IN"
+        "n": 1.9,
+        "locale": "en-US"
       },
-      "output": "nothing to write"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#184",
       "fn": "estimateWords",
       "input": {
-        "n": null,
-        "locale": "en-DE"
+        "n": 1.9,
+        "locale": "en-GB"
       },
-      "output": "nothing to write"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#185",
       "fn": "estimateWords",
       "input": {
-        "n": null,
-        "locale": "en-CH"
+        "n": 1.9,
+        "locale": "en-IN"
       },
-      "output": "nothing to write"
+      "output": "a minute or two"
     },
     {
       "id": "estimateWords#186",
       "fn": "estimateWords",
       "input": {
-        "n": null,
+        "n": 1.9,
+        "locale": "en-DE"
+      },
+      "output": "a minute or two"
+    },
+    {
+      "id": "estimateWords#187",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1.9,
+        "locale": "en-FR"
+      },
+      "output": "a minute or two"
+    },
+    {
+      "id": "estimateWords#188",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1.9,
+        "locale": "en-CH"
+      },
+      "output": "a minute or two"
+    },
+    {
+      "id": "estimateWords#189",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1.9,
+        "locale": "en-ZA"
+      },
+      "output": "a minute or two"
+    },
+    {
+      "id": "estimateWords#190",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-US"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#191",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-GB"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#192",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-IN"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#193",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-DE"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#194",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-FR"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#195",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-CH"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#196",
+      "fn": "estimateWords",
+      "input": {
+        "n": 50.99,
+        "locale": "en-ZA"
+      },
+      "output": "about 2 minutes"
+    },
+    {
+      "id": "estimateWords#197",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-US"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#198",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-GB"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#199",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-IN"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#200",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-DE"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#201",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-FR"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#202",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
+        "locale": "en-CH"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#203",
+      "fn": "estimateWords",
+      "input": {
+        "n": -1,
         "locale": "en-ZA"
       },
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#187",
+      "id": "estimateWords#204",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-US"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#205",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-GB"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#206",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-IN"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#207",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-DE"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#208",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-FR"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#209",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-CH"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#210",
+      "fn": "estimateWords",
+      "input": {
+        "n": -0.5,
+        "locale": "en-ZA"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#211",
       "fn": "estimateWords",
       "input": {
         "n": null,
@@ -15052,7 +15316,7 @@
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#188",
+      "id": "estimateWords#212",
       "fn": "estimateWords",
       "input": {
         "n": null,
@@ -15061,7 +15325,7 @@
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#189",
+      "id": "estimateWords#213",
       "fn": "estimateWords",
       "input": {
         "n": null,
@@ -15070,7 +15334,7 @@
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#190",
+      "id": "estimateWords#214",
       "fn": "estimateWords",
       "input": {
         "n": null,
@@ -15079,7 +15343,16 @@
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#191",
+      "id": "estimateWords#215",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-FR"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#216",
       "fn": "estimateWords",
       "input": {
         "n": null,
@@ -15088,13 +15361,328 @@
       "output": "nothing to write"
     },
     {
-      "id": "estimateWords#192",
+      "id": "estimateWords#217",
       "fn": "estimateWords",
       "input": {
         "n": null,
         "locale": "en-ZA"
       },
       "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#218",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-US"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#219",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-GB"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#220",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-IN"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#221",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-DE"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#222",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-FR"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#223",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-CH"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#224",
+      "fn": "estimateWords",
+      "input": {
+        "n": null,
+        "locale": "en-ZA"
+      },
+      "output": "nothing to write"
+    },
+    {
+      "id": "estimateWords#225",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-US"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#226",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-GB"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#227",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-IN"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#228",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-DE"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#229",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-FR"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#230",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-CH"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#231",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456,
+        "locale": "en-ZA"
+      },
+      "output": "about 82.3 hours"
+    },
+    {
+      "id": "estimateWords#232",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-US"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#233",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-GB"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#234",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-IN"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#235",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-DE"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#236",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-FR"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#237",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-CH"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#238",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000,
+        "locale": "en-ZA"
+      },
+      "output": "about 666.6 hours"
+    },
+    {
+      "id": "estimateWords#239",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-US"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#240",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-GB"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#241",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-IN"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#242",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-DE"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#243",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-FR"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#244",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-CH"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#245",
+      "fn": "estimateWords",
+      "input": {
+        "n": 123456789.7,
+        "locale": "en-ZA"
+      },
+      "output": "about 82304.5 hours"
+    },
+    {
+      "id": "estimateWords#246",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-US"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#247",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-GB"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#248",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-IN"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#249",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-DE"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#250",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-FR"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#251",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-CH"
+      },
+      "output": "about 666666666.6 hours"
+    },
+    {
+      "id": "estimateWords#252",
+      "fn": "estimateWords",
+      "input": {
+        "n": 1000000000000,
+        "locale": "en-ZA"
+      },
+      "output": "about 666666666.6 hours"
     },
     {
       "id": "cleanNote#1",

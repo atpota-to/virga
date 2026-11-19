@@ -4887,6 +4887,557 @@
       }
     },
     {
+      "id": "parseCommand#302",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b liKers"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [],
+        "kinds": [
+          "likers"
+        ],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "approve 3f9a2c1b liKers"
+      }
+    },
+    {
+      "id": "parseCommand#303",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b perıpheral"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [
+          "PERIPHERAL"
+        ],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "approve 3f9a2c1b perıpheral"
+      }
+    },
+    {
+      "id": "parseCommand#304",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b PERİPHERAL"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": "I couldn’t place “PERİPHERAL” in that approval, so I haven’t added anyone. An approval names bands (“approve 3f9a2c1b UNKNOWN NOTABLE”), engagement (“approve 3f9a2c1b UNKNOWN repliers”) or accounts (“approve 3f9a2c1b @a.example.com”).",
+        "needsTarget": true,
+        "raw": "approve 3f9a2c1b PERİPHERAL"
+      }
+    },
+    {
+      "id": "parseCommand#305",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b UNKNOWN liKers"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [],
+        "kinds": [
+          "likers"
+        ],
+        "actors": [],
+        "refusal": "I couldn’t place “UNKNOWN” in that approval, so I haven’t added anyone. An approval names bands (“approve 3f9a2c1b UNKNOWN NOTABLE”), engagement (“approve 3f9a2c1b UNKNOWN repliers”) or accounts (“approve 3f9a2c1b @a.example.com”).",
+        "needsTarget": true,
+        "raw": "approve 3f9a2c1b UNKNOWN liKers"
+      }
+    },
+    {
+      "id": "parseCommand#306",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b ſomething"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": "I couldn’t place “ſomething” in that approval, so I haven’t added anyone. An approval names bands (“approve 3f9a2c1b UNKNOWN NOTABLE”), engagement (“approve 3f9a2c1b UNKNOWN repliers”) or accounts (“approve 3f9a2c1b @a.example.com”).",
+        "needsTarget": true,
+        "raw": "approve 3f9a2c1b ſomething"
+      }
+    },
+    {
+      "id": "parseCommand#307",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve3f9a2c1b UNKNOWN"
+      },
+      "output": null
+    },
+    {
+      "id": "parseCommand#308",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b NOTABLE UNKNOWN"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [
+          "NOTABLE",
+          "UNKNOWN"
+        ],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "approve 3f9a2c1b NOTABLE UNKNOWN"
+      }
+    },
+    {
+      "id": "parseCommand#309",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b\nUNKNOWN"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [
+          "UNKNOWN"
+        ],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "approve 3f9a2c1b\nUNKNOWN"
+      }
+    },
+    {
+      "id": "parseCommand#310",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b\u000bUNKNOWN"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [
+          "UNKNOWN"
+        ],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "approve 3f9a2c1b\u000bUNKNOWN"
+      }
+    },
+    {
+      "id": "parseCommand#311",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 3f9a2c1b UNKNOWN"
+      },
+      "output": {
+        "action": "approve",
+        "code": "3f9a2c1b",
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": "I couldn’t place “UNKNOWN” in that approval, so I haven’t added anyone. An approval names bands (“approve 3f9a2c1b UNKNOWN NOTABLE”), engagement (“approve 3f9a2c1b UNKNOWN repliers”) or accounts (“approve 3f9a2c1b @a.example.com”).",
+        "needsTarget": true,
+        "raw": "approve 3f9a2c1b UNKNOWN"
+      }
+    },
+    {
+      "id": "parseCommand#312",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Ｂlock @a.b.c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseCommand#313",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block\u000b@a.b.c"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "a.b.c",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block\u000b@a.b.c"
+      }
+    },
+    {
+      "id": "parseCommand#314",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history @A.B.C"
+      },
+      "output": {
+        "action": "history",
+        "actor": "a.b.c",
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "history @A.B.C"
+      }
+    },
+    {
+      "id": "parseCommand#315",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history @a.b.c"
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "refusal": "I couldn’t read “@a.b.c” as an account. Send “history” with a full handle, a DID or a profile link, or “history” alone for everything.",
+        "needsTarget": true,
+        "raw": "history @a.b.c"
+      }
+    },
+    {
+      "id": "parseCommand#316",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo ３f9a2c1b"
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undo ３f9a2c1b"
+      }
+    },
+    {
+      "id": "parseCommand#317",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo 3f9a2c1b-0000"
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undo 3f9a2c1b-0000"
+      }
+    },
+    {
+      "id": "parseCommand#318",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep @a.b.c AS a favour"
+      },
+      "output": {
+        "action": "keep",
+        "actor": "a.b.c",
+        "reason": "a favour",
+        "needsTarget": false,
+        "raw": "keep @a.b.c AS a favour"
+      }
+    },
+    {
+      "id": "parseCommand#319",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep @a.b.c — an old friend"
+      },
+      "output": {
+        "action": "keep",
+        "actor": "a.b.c",
+        "reason": "an old friend",
+        "needsTarget": false,
+        "raw": "keep @a.b.c — an old friend"
+      }
+    },
+    {
+      "id": "parseCommand#320",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep @a.b.c -- two dashes"
+      },
+      "output": {
+        "action": "keep",
+        "actor": "a.b.c",
+        "reason": "-- two dashes",
+        "needsTarget": false,
+        "raw": "keep @a.b.c -- two dashes"
+      }
+    },
+    {
+      "id": "parseCommand#321",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link abcd efgh"
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link abcd efgh"
+      }
+    },
+    {
+      "id": "parseCommand#322",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link abcd-efgh"
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link abcd-efgh"
+      }
+    },
+    {
+      "id": "parseCommand#323",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:abc",
+        "fromPost": true,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "parseCommand#324",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": "did:plc:abc",
+        "fromPost": true,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "parseCommand#325",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block",
+        "embedUri": "at://did:plc:author"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "parseCommand#326",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block",
+        "embedUri": "at://did:plc:author/"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:author",
+        "fromPost": true,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "parseCommand#327",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block them",
+        "mentions": [
+          "did:plc:aaa"
+        ],
+        "links": [
+          "https://bsky.app/profile/did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:aaa",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block them"
+      }
+    },
+    {
+      "id": "parseCommand#328",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block them",
+        "mentions": [
+          "did:plc:AAA",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block them"
+      }
+    },
+    {
+      "id": "parseCommand#329",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block them",
+        "links": [
+          "https://bsky.app/profile/A.B.C",
+          "https://bsky.app/profile/a.b.c"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "a.b.c",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block them"
+      }
+    },
+    {
+      "id": "parseCommand#330",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block them",
+        "links": [
+          "https://bsky.app/profile/a.b.c",
+          "https://example.com"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "a.b.c",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block them"
+      }
+    },
+    {
+      "id": "parseCommand#331",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "mentions": [
+          "did:plc:a",
+          "did:plc:b"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": "did:plc:author",
+        "fromPost": true,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "parseCommand#332",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep",
+        "mentions": [
+          "did:plc:kept"
+        ]
+      },
+      "output": {
+        "action": "keep",
+        "actor": "did:plc:kept",
+        "reason": null,
+        "needsTarget": false,
+        "raw": "keep"
+      }
+    },
+    {
+      "id": "parseCommand#333",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history",
+        "mentions": [
+          "did:plc:a"
+        ]
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "needsTarget": false,
+        "raw": "history"
+      }
+    },
+    {
+      "id": "parseCommand#334",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "needsTarget": false,
+        "raw": "scan"
+      }
+    },
+    {
+      "id": "parseCommand#335",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan",
+        "links": [
+          "look https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": "look https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "scan"
+      }
+    },
+    {
       "id": "parsePostScan#1",
       "fn": "parsePostScan",
       "input": {
@@ -5194,6 +5745,4818 @@
         "links": [
           "at://did:plc:abc/app.bsky.graph.list/3abc"
         ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-0",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "fuzz-7-1",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo @A.B.C:",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undo @A.B.C:"
+      }
+    },
+    {
+      "id": "fuzz-7-2",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep ３f9a2c1b",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "unkeep ３f9a2c1b"
+      }
+    },
+    {
+      "id": "fuzz-7-3",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists"
+      },
+      "output": {
+        "action": "lists",
+        "needsTarget": false,
+        "raw": "lists"
+      }
+    },
+    {
+      "id": "fuzz-7-4",
+      "fn": "parseCommand",
+      "input": {
+        "text": " blocK​👍)\n3f9a2c1\nplease."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-5",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help,please",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-6",
+      "fn": "parseCommand",
+      "input": {
+        "text": "ſcan﻿“quoted”,,👍"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-7",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK　@a.bsky.social)3f9a2c1b! &, @a.bsky.social:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-8",
+      "fn": "parseCommand",
+      "input": {
+        "text": ", list add everyone",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-9",
+      "fn": "parseCommand",
+      "input": {
+        "text": " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/x.y.z"
+        ],
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-10",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you dohttps://bsky.app/profile/did%3Aplc%3Aabc,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx? https://bsky.app/profile/did%3Aplc%3Aabc...　—",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-11",
+      "fn": "parseCommand",
+      "input": {
+        "text": " history",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "needsTarget": false,
+        "raw": "history"
+      }
+    },
+    {
+      "id": "fuzz-7-12",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-13",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve　https://bsky.app/profile/a.b.c:​for: guy?"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve　https://bsky.app/profile/a.b.c:​for: guy?"
+      }
+    },
+    {
+      "id": "fuzz-7-14",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my listsplease...\nquoters"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-15",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve and) a.b.c..."
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "a.b.c"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve and) a.b.c..."
+      }
+    },
+    {
+      "id": "fuzz-7-16",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "called",
+        "needsTarget": false,
+        "raw": "make a list called"
+      }
+    },
+    {
+      "id": "fuzz-7-17",
+      "fn": "parseCommand",
+      "input": {
+        "text": "review, UNKNOWN,",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "review",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "review, UNKNOWN,"
+      }
+    },
+    {
+      "id": "fuzz-7-18",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you do liKers... everyone!  them,bsky.app/profile/jo.e...?",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-19",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved  perıpheral everyone!,this...﻿!!!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-20",
+      "fn": "parseCommand",
+      "input": {
+        "text": "3f9a2c1b​https://bsky.app/profile/50%off ABCD-EFG0... reposters?",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-21",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help -",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-22",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-23",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called﻿UNKNOWN",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "UNKNOWN",
+        "needsTarget": false,
+        "raw": "make a list called﻿UNKNOWN"
+      }
+    },
+    {
+      "id": "fuzz-7-24",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove,CONNECTED likers) 3f9a2c1",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove,CONNECTED likers) 3f9a2c1"
+      }
+    },
+    {
+      "id": "fuzz-7-25",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-26",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve﻿<at://did:plc:abc/app.bsky.feed.post/3abc>)\tbsky.app/profile/jo.e…,\n!!,"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve﻿<at://did:plc:abc/app.bsky.feed.post/3abc>)\tbsky.app/profile/jo.e…,\n!!,"
+      }
+    },
+    {
+      "id": "fuzz-7-27",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history　https://bsky.app/profile/a.bsky.social/post/3abc. https://bsky.app/profile/a.b.c",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "history",
+        "actor": "did:plc:bbb",
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "history　https://bsky.app/profile/a.bsky.social/post/3abc. https://bsky.app/profile/a.b.c"
+      }
+    },
+    {
+      "id": "fuzz-7-28",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "",
+        "needsTarget": true,
+        "raw": "new list"
+      }
+    },
+    {
+      "id": "fuzz-7-29",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help ３f9a2c1b"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-30",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking for... CONNECTED!﻿PROTECTED\tat://did:plc:abc/app.bsky.graph.list/3abc:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-31",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeepand​@a @a.bsky.social."
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "unkeepand​@a @a.bsky.social."
+      }
+    },
+    {
+      "id": "fuzz-7-32",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list did:plc:abc123, bsky.app/profile/jo.e...,  .)"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "did:plc:abc123, bsky.app/profile/jo.e...,  .)",
+        "needsTarget": false,
+        "raw": "new list did:plc:abc123, bsky.app/profile/jo.e...,  .)"
+      }
+    },
+    {
+      "id": "fuzz-7-33",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock\tcalled) reposters\t&,",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock\tcalled) reposters\t&,"
+      }
+    },
+    {
+      "id": "fuzz-7-34",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block  3f9a2c1b...\ncalled...﻿did:web:example.com:user."
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block  3f9a2c1b...\ncalled...﻿did:web:example.com:user."
+      }
+    },
+    {
+      "id": "fuzz-7-35",
+      "fn": "parseCommand",
+      "input": {
+        "text": "review repliers\tthis, bsky.app/profile/jo.e..."
+      },
+      "output": {
+        "action": "review",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "review repliers\tthis, bsky.app/profile/jo.e..."
+      }
+    },
+    {
+      "id": "fuzz-7-36",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-37",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove\texcept 3f9a2c1b?"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove\texcept 3f9a2c1b?"
+      }
+    },
+    {
+      "id": "fuzz-7-38",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep﻿xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...﻿+)\t<at://did:plc:abc/app.bsky.feed.post/3abc>:"
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "unkeep﻿xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...﻿+)\t<at://did:plc:abc/app.bsky.feed.post/3abc>:"
+      }
+    },
+    {
+      "id": "fuzz-7-39",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists"
+      },
+      "output": {
+        "action": "lists",
+        "needsTarget": false,
+        "raw": "lists"
+      }
+    },
+    {
+      "id": "fuzz-7-40",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called​anda.b.c!​3f9a2c1bb​this"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "called​anda.b.c!​3f9a2c1bb​this",
+        "needsTarget": false,
+        "raw": "make a list called​anda.b.c!​3f9a2c1bb​this"
+      }
+    },
+    {
+      "id": "fuzz-7-41",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep​👍\t;:​-.​everyone!"
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": "​👍 ;:​-.​everyone!",
+        "needsTarget": true,
+        "raw": "keep​👍\t;:​-.​everyone!"
+      }
+    },
+    {
+      "id": "fuzz-7-42",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you do",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "help",
+        "needsTarget": false,
+        "raw": "what can you do"
+      }
+    },
+    {
+      "id": "fuzz-7-43",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep　é... perıpheral,"
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": "perıpheral,",
+        "needsTarget": true,
+        "raw": "keep　é... perıpheral,"
+      }
+    },
+    {
+      "id": "fuzz-7-44",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list  UNKNOWN !! <at://did:plc:abc/app.bsky.feed.post/3abc> @-a.b",
+        "embedUri": "https://example.com",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "UNKNOWN !! <at://did:plc:abc/app.bsky.feed.post/3abc> @-a.b",
+        "needsTarget": false,
+        "raw": "new list  UNKNOWN !! <at://did:plc:abc/app.bsky.feed.post/3abc> @-a.b"
+      }
+    },
+    {
+      "id": "fuzz-7-45",
+      "fn": "parseCommand",
+      "input": {
+        "text": "ſcan 3f9a2c1 @did:plc:abc123﻿the."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-46",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history ABCD-EFG0",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "history",
+        "actor": "a.bsky.social",
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "history ABCD-EFG0"
+      }
+    },
+    {
+      "id": "fuzz-7-47",
+      "fn": "parseCommand",
+      "input": {
+        "text": "statusABCD-EFG0: é.\n.)because"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-48",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my lists @😀.bsky.socialPROTECTED... “quoted”.",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-49",
+      "fn": "parseCommand",
+      "input": {
+        "text": "\tbecause　except  as"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-50",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK\n“quoted”, .. @stranger......​“quoted”",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:abc",
+        "fromPost": true,
+        "confirm": true,
+        "needsTarget": false,
+        "raw": "BLOCK\n“quoted”, .. @stranger......​“quoted”"
+      }
+    },
+    {
+      "id": "fuzz-7-51",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocKplease... &,@did:plc:abc123!",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-52",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "keep",
+        "actor": "x.y.z",
+        "reason": null,
+        "needsTarget": false,
+        "raw": "keep"
+      }
+    },
+    {
+      "id": "fuzz-7-53",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo﻿👍​3f9a2c1b\nbecause... !!!",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undo﻿👍​3f9a2c1b\nbecause... !!!"
+      }
+    },
+    {
+      "id": "fuzz-7-54",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?"
+      }
+    },
+    {
+      "id": "fuzz-7-55",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undothis <at://did:plc:abc/app.bsky.feed.post/3abc>　NOTABLE",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undothis <at://did:plc:abc/app.bsky.feed.post/3abc>　NOTABLE"
+      }
+    },
+    {
+      "id": "fuzz-7-56",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists  reposters,",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-57",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history!!) the:\n@did:plc:abc123,",
+        "embedUri": ""
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "refusal": "I couldn’t read “!!) the:\n@did:plc:abc123,” as an account. Send “history” with a full handle, a DID or a profile link, or “history” alone for everything.",
+        "needsTarget": true,
+        "raw": "history!!) the:\n@did:plc:abc123,"
+      }
+    },
+    {
+      "id": "fuzz-7-58",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan,-　please."
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan,-　please."
+      }
+    },
+    {
+      "id": "fuzz-7-59",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "BLOCK"
+      }
+    },
+    {
+      "id": "fuzz-7-60",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add likers﻿3f9a2c1... for. @did:plc:abc123:",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add likers﻿3f9a2c1... for. @did:plc:abc123:"
+      }
+    },
+    {
+      "id": "fuzz-7-61",
+      "fn": "parseCommand",
+      "input": {
+        "text": "status UNKNOWN:",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-62",
+      "fn": "parseCommand",
+      "input": {
+        "text": ",@did:plc:abc123 -,",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ],
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-63",
+      "fn": "parseCommand",
+      "input": {
+        "text": ""
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-64",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-65",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel  @😀.bsky.social.﻿did:plc:abc123:,@-a.b é)"
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "did:plc:abc123"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel  @😀.bsky.social.﻿did:plc:abc123:,@-a.b é)"
+      }
+    },
+    {
+      "id": "fuzz-7-66",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list　called...",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "called...",
+        "needsTarget": false,
+        "raw": "new list　called..."
+      }
+    },
+    {
+      "id": "fuzz-7-67",
+      "fn": "parseCommand",
+      "input": {
+        "text": "  bsky.app/profile/jo.e…,,because:　,!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-68",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve\tdid:web:example.com:user　—?",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "approve\tdid:web:example.com:user　—?"
+      }
+    },
+    {
+      "id": "fuzz-7-69",
+      "fn": "parseCommand",
+      "input": {
+        "text": "\nlists  guy,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-70",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep"
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "keep"
+      }
+    },
+    {
+      "id": "fuzz-7-71",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link, @a.bsky.social)",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link, @a.bsky.social)"
+      }
+    },
+    {
+      "id": "fuzz-7-72",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://example.com"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-73",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link at://did:plc:abc/app.bsky.feed.post/3abc: liKers.,<at://did:plc:abc/app.bsky.feed.post/3abc>)\tand"
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link at://did:plc:abc/app.bsky.feed.post/3abc: liKers.,<at://did:plc:abc/app.bsky.feed.post/3abc>)\tand"
+      }
+    },
+    {
+      "id": "fuzz-7-74",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add everyone"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "list add everyone"
+      }
+    },
+    {
+      "id": "fuzz-7-75",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep https://bsky.app/profile/50%off:"
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "keep https://bsky.app/profile/50%off:"
+      }
+    },
+    {
+      "id": "fuzz-7-76",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add,ＵＮＫＮＯＷＮ!​@did:plc:abc123...",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:author",
+        "fromPost": true,
+        "confirm": true,
+        "needsTarget": false,
+        "raw": "list add,ＵＮＫＮＯＷＮ!​@did:plc:abc123..."
+      }
+    },
+    {
+      "id": "fuzz-7-77",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan　PERIPHERAL... 👍...　perıpheral﻿it:"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan　PERIPHERAL... 👍...　perıpheral﻿it:"
+      }
+    },
+    {
+      "id": "fuzz-7-78",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep, the...  called",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": "x.y.z",
+        "reason": null,
+        "needsTarget": false,
+        "raw": "unkeep, the...  called"
+      }
+    },
+    {
+      "id": "fuzz-7-79",
+      "fn": "parseCommand",
+      "input": {
+        "text": "﻿cancel because, 😀😀 called, 3f9a2c1bb)"
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel because, 😀😀 called, 3f9a2c1bb)"
+      }
+    },
+    {
+      "id": "fuzz-7-80",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link​UNKNOWN"
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link​UNKNOWN"
+      }
+    },
+    {
+      "id": "fuzz-7-81",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved\trepliers,​3f9a2c1b  for",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-82",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking,last."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-83",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block,https://bsky.app/profile/50%off @a:　& PROTECTED!"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block,https://bsky.app/profile/50%off @a:　& PROTECTED!"
+      }
+    },
+    {
+      "id": "fuzz-7-84",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking​👍,for?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-85",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link"
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link"
+      }
+    },
+    {
+      "id": "fuzz-7-86",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove"
+      }
+    },
+    {
+      "id": "fuzz-7-87",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help　—. 3F9A2C1B perıpheral"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-88",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add everyone\tPROTECTED:",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "list add everyone\tPROTECTED:"
+      }
+    },
+    {
+      "id": "fuzz-7-89",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved for? this:  likers. did:plc:abc123",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-90",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock",
+        "embedUri": ""
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-91",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove",
+        "embedUri": ""
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove"
+      }
+    },
+    {
+      "id": "fuzz-7-92",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists"
+      },
+      "output": {
+        "action": "lists",
+        "needsTarget": false,
+        "raw": "lists"
+      }
+    },
+    {
+      "id": "fuzz-7-93",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel​@-a.b.﻿3f9a2c1 https://bsky.app/profile/a.b.c!"
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "a.b.c"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel​@-a.b.﻿3f9a2c1 https://bsky.app/profile/a.b.c!"
+      }
+    },
+    {
+      "id": "fuzz-7-94",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "help",
+        "needsTarget": false,
+        "raw": "help"
+      }
+    },
+    {
+      "id": "fuzz-7-95",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list　@-a.b last",
+        "embedUri": "https://example.com",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "@-a.b last",
+        "needsTarget": false,
+        "raw": "new list　@-a.b last"
+      }
+    },
+    {
+      "id": "fuzz-7-96",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan\nthe)\t😀😀",
+        "links": [
+          "https://example.com"
+        ],
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan\nthe)\t😀😀"
+      }
+    },
+    {
+      "id": "fuzz-7-97",
+      "fn": "parseCommand",
+      "input": {
+        "text": "review,@stranger...!",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "action": "review",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "review,@stranger...!"
+      }
+    },
+    {
+      "id": "fuzz-7-98",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists 👍)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-99",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep\nunknown?﻿., @A.B.C PERIPHERAL?",
+        "embedUri": ""
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": "unknown? ., @A.B.C PERIPHERAL?",
+        "needsTarget": true,
+        "raw": "keep\nunknown?﻿., @A.B.C PERIPHERAL?"
+      }
+    },
+    {
+      "id": "fuzz-7-100",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK, ,?",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-101",
+      "fn": "parseCommand",
+      "input": {
+        "text": " add the repliers"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-102",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove,<at://did:plc:abc/app.bsky.feed.post/3abc>PERIPHERAL: because?",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove,<at://did:plc:abc/app.bsky.feed.post/3abc>PERIPHERAL: because?"
+      }
+    },
+    {
+      "id": "fuzz-7-103",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block\neveryone"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block\neveryone"
+      }
+    },
+    {
+      "id": "fuzz-7-104",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep , https://bsky.app/profile/did%3Aplc%3Aabc)",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "keep",
+        "actor": "did:plc:aaa",
+        "reason": ", https://bsky.app/profile/did%3Aplc%3Aabc)",
+        "needsTarget": false,
+        "raw": "keep , https://bsky.app/profile/did%3Aplc%3Aabc)"
+      }
+    },
+    {
+      "id": "fuzz-7-105",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list\tCONNECTED\n&,　..　😀😀!"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "CONNECTED\n&,　..　😀😀!",
+        "needsTarget": false,
+        "raw": "new list\tCONNECTED\n&,　..　😀😀!"
+      }
+    },
+    {
+      "id": "fuzz-7-106",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved quoters\txxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.​UNKNOWN?",
+        "embedUri": "https://example.com",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-107",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock  UNKNOWN perıpheraldid:web:example.com:user!",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": "did:plc:author",
+        "fromPost": true,
+        "confirm": true,
+        "needsTarget": false,
+        "raw": "unblock  UNKNOWN perıpheraldid:web:example.com:user!"
+      }
+    },
+    {
+      "id": "fuzz-7-108",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add likers\t-...​@-a.b?",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "needsTarget": false,
+        "raw": "add likers\t-...​@-a.b?"
+      }
+    },
+    {
+      "id": "fuzz-7-109",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list, 3f9a2c1bb?\t3f9a2c1bb"
+      },
+      "output": {
+        "action": "new_list",
+        "name": ", 3f9a2c1bb?\t3f9a2c1bb",
+        "needsTarget": false,
+        "raw": "new list, 3f9a2c1bb?\t3f9a2c1bb"
+      }
+    },
+    {
+      "id": "fuzz-7-110",
+      "fn": "parseCommand",
+      "input": {
+        "text": "　link reposters.\nlast?　for."
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link reposters.\nlast?　for."
+      }
+    },
+    {
+      "id": "fuzz-7-111",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help quoters!",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-112",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking\t?...",
+        "links": [
+          "https://example.com",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-113",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel at://did:plc:abc/app.bsky.feed.post/3abc!, @a.bsky.social.\nhttps://bsky.app/profile/50%off!"
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "a.bsky.social"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel at://did:plc:abc/app.bsky.feed.post/3abc!, @a.bsky.social.\nhttps://bsky.app/profile/50%off!"
+      }
+    },
+    {
+      "id": "fuzz-7-114",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan﻿@😀.bsky.social!﻿please!  PERIPHERAL!"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan﻿@😀.bsky.social!﻿please!  PERIPHERAL!"
+      }
+    },
+    {
+      "id": "fuzz-7-115",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called,bsky.app/profile/jo.e...",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "called,bsky.app/profile/jo.e...",
+        "needsTarget": false,
+        "raw": "make a list called,bsky.app/profile/jo.e..."
+      }
+    },
+    {
+      "id": "fuzz-7-116",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel"
+      }
+    },
+    {
+      "id": "fuzz-7-117",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history\nthis,  reposters:",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "refusal": "I couldn’t read “this,  reposters:” as an account. Send “history” with a full handle, a DID or a profile link, or “history” alone for everything.",
+        "needsTarget": true,
+        "raw": "history\nthis,  reposters:"
+      }
+    },
+    {
+      "id": "fuzz-7-118",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK @A.B.C."
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "a.b.c",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "BLOCK @A.B.C."
+      }
+    },
+    {
+      "id": "fuzz-7-119",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my lists​@-a.b, ３f9a2c1b)﻿reposters.\t+",
+        "links": [
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-120",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help 3F9A2C1B xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx! .﻿ABCD-EFG0.",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ],
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-121",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking",
+        "links": [
+          "https://example.com",
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ],
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-122",
+      "fn": "parseCommand",
+      "input": {
+        "text": "",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-123",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add  @😀.bsky.social,\n3f9a2c1?　called, them"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list add  @😀.bsky.social,\n3f9a2c1?　called, them"
+      }
+    },
+    {
+      "id": "fuzz-7-124",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": "did:plc:bbb",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-125",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link did:plc:abc123:",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link did:plc:abc123:"
+      }
+    },
+    {
+      "id": "fuzz-7-126",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history"
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "needsTarget": false,
+        "raw": "history"
+      }
+    },
+    {
+      "id": "fuzz-7-127",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add likers @a.bsky.social?",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "add likers @a.bsky.social?"
+      }
+    },
+    {
+      "id": "fuzz-7-128",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove  3f9a2c1b"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove  3f9a2c1b"
+      }
+    },
+    {
+      "id": "fuzz-7-129",
+      "fn": "parseCommand",
+      "input": {
+        "text": "status\ndid:plc:abc123 because!them",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-130",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK this...​CONNECTED... !!... last",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-131",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo, .\n,!\nhttps://bsky.app/profile/a.bsky.social/post/3abc)﻿@-a.b!",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": true,
+        "needsTarget": false,
+        "raw": "undo, .\n,!\nhttps://bsky.app/profile/a.bsky.social/post/3abc)﻿@-a.b!"
+      }
+    },
+    {
+      "id": "fuzz-7-132",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists,UNKNOWN perıpheral,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-133",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block perıpheral?,https://bsky.app/profile/did%3Aplc%3Aabc),@-a.b?\tliKers:"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block perıpheral?,https://bsky.app/profile/did%3Aplc%3Aabc),@-a.b?\tliKers:"
+      }
+    },
+    {
+      "id": "fuzz-7-134",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add\n-\n&!",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ],
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list add\n-\n&!"
+      }
+    },
+    {
+      "id": "fuzz-7-135",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers +.reposters did:plc:abc123!  the)"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers +.reposters did:plc:abc123!  the)"
+      }
+    },
+    {
+      "id": "fuzz-7-136",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:bbb",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "BLOCK"
+      }
+    },
+    {
+      "id": "fuzz-7-137",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan​３f9a2c1b:\nquoters)&, -",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan​３f9a2c1b:\nquoters)&, -"
+      }
+    },
+    {
+      "id": "fuzz-7-138",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan, <at://did:plc:abc/app.bsky.feed.post/3abc> ,)",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": "at://did:plc:abc/app.bsky.feed.post/3abc",
+        "needsTarget": false,
+        "raw": "scan, <at://did:plc:abc/app.bsky.feed.post/3abc> ,)"
+      }
+    },
+    {
+      "id": "fuzz-7-139",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock﻿them: unknown, +... @a"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock﻿them: unknown, +... @a"
+      }
+    },
+    {
+      "id": "fuzz-7-140",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help @did:plc:abc123... everyone, @-a.b",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-141",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-142",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-143",
+      "fn": "parseCommand",
+      "input": {
+        "text": "ſcan likers",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-144",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep"
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "unkeep"
+      }
+    },
+    {
+      "id": "fuzz-7-145",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan\t-: é!for !!"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": null,
+        "needsTarget": true,
+        "raw": "scan\t-: é!for !!"
+      }
+    },
+    {
+      "id": "fuzz-7-146",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called　ABCD-EFG0!　xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?",
+        "embedUri": "",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "ABCD-EFG0!　xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?",
+        "needsTarget": false,
+        "raw": "make a list called　ABCD-EFG0!　xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?"
+      }
+    },
+    {
+      "id": "fuzz-7-147",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers  PERIPHERAL\n(https://bsky.app/profile/a.bsky.social/post/3abc), NOTABLE) https://bsky.app/profile/a.bsky.social/post/3abc."
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "add the repliers  PERIPHERAL\n(https://bsky.app/profile/a.bsky.social/post/3abc), NOTABLE) https://bsky.app/profile/a.bsky.social/post/3abc."
+      }
+    },
+    {
+      "id": "fuzz-7-148",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history @A.B.C:\nthe"
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "refusal": "I couldn’t read “@A.B.C:\nthe” as an account. Send “history” with a full handle, a DID or a profile link, or “history” alone for everything.",
+        "needsTarget": true,
+        "raw": "history @A.B.C:\nthe"
+      }
+    },
+    {
+      "id": "fuzz-7-149",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel .),likers...,repliers!&)"
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel .),likers...,repliers!&)"
+      }
+    },
+    {
+      "id": "fuzz-7-150",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you do",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "help",
+        "needsTarget": false,
+        "raw": "what can you do"
+      }
+    },
+    {
+      "id": "fuzz-7-151",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove\thttps://bsky.app/profile/a.b.c&.,@a."
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove\thttps://bsky.app/profile/a.b.c&.,@a."
+      }
+    },
+    {
+      "id": "fuzz-7-152",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block　as)",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "x.y.z",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "block　as)"
+      }
+    },
+    {
+      "id": "fuzz-7-153",
+      "fn": "parseCommand",
+      "input": {
+        "text": "\tit:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-154",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved﻿“quoted” for! this\tUNKNOWN!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-155",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK @😀.bsky.social... & @-a.b:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-156",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists\nCONNECTED?  UNKNOWN"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-157",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove　“quoted”? please",
+        "links": [
+          "https://example.com"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove　“quoted”? please"
+      }
+    },
+    {
+      "id": "fuzz-7-158",
+      "fn": "parseCommand",
+      "input": {
+        "text": "\tadd the repliers,the)",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers,the)"
+      }
+    },
+    {
+      "id": "fuzz-7-159",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep"
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": null,
+        "reason": null,
+        "needsTarget": true,
+        "raw": "unkeep"
+      }
+    },
+    {
+      "id": "fuzz-7-160",
+      "fn": "parseCommand",
+      "input": {
+        "text": "status﻿👍.\tlast? called,\tabcd-efgh..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-161",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you do liKers　them.",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-162",
+      "fn": "parseCommand",
+      "input": {
+        "text": "what can you do,３f9a2c1b? abcd-efgh ＵＮＫＮＯＷＮ)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-163",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK, at://did:plc:abc/app.bsky.feed.post/3abc...unknown\thttps://bsky.app/profile/a.bsky.social/post/3abc,",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-164",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "fuzz-7-165",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists 😀😀,  ABCD-EFG0﻿—. (https://bsky.app/profile/a.bsky.social/post/3abc)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-166",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-167",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blockingabcd-efgh:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-168",
+      "fn": "parseCommand",
+      "input": {
+        "text": ",undo\t....﻿called... at://did:plc:abc/app.bsky.feed.post/3abc",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-169",
+      "fn": "parseCommand",
+      "input": {
+        "text": "undo﻿@a.bsky.social?​repliers\tas...",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://example.com"
+        ]
+      },
+      "output": {
+        "action": "undo",
+        "code": null,
+        "last": false,
+        "needsTarget": true,
+        "raw": "undo﻿@a.bsky.social?​repliers\tas..."
+      }
+    },
+    {
+      "id": "fuzz-7-170",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve abcd-efgh,",
+        "embedUri": "",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ],
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "approve abcd-efgh,"
+      }
+    },
+    {
+      "id": "fuzz-7-171",
+      "fn": "parseCommand",
+      "input": {
+        "text": "review  abcd-efgh"
+      },
+      "output": {
+        "action": "review",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "review  abcd-efgh"
+      }
+    },
+    {
+      "id": "fuzz-7-172",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add  at://did:plc:abc/app.bsky.feed.post/3abc?　this.",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:aaa",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "list add  at://did:plc:abc/app.bsky.feed.post/3abc?　this."
+      }
+    },
+    {
+      "id": "fuzz-7-173",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-174",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve",
+        "links": [
+          "https://example.com",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "approve"
+      }
+    },
+    {
+      "id": "fuzz-7-175",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers\t?..."
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers\t?..."
+      }
+    },
+    {
+      "id": "fuzz-7-176",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve last https://bsky.app/profile/did%3Aplc%3Aabc.﻿as!",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "did:plc:abc"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "approve last https://bsky.app/profile/did%3Aplc%3Aabc.﻿as!"
+      }
+    },
+    {
+      "id": "fuzz-7-177",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link\nNOTABLE!\n@a\t3F9A2C1B,",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link\nNOTABLE!\n@a\t3F9A2C1B,"
+      }
+    },
+    {
+      "id": "fuzz-7-178",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-179",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock\nquoters.​this? because  @😀.bsky.social?"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock\nquoters.​this? because  @😀.bsky.social?"
+      }
+    },
+    {
+      "id": "fuzz-7-180",
+      "fn": "parseCommand",
+      "input": {
+        "text": " BLOCK\n3f9a2c1!perıpheral.​at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "BLOCK\n3f9a2c1!perıpheral.​at://did:plc:abc/app.bsky.feed.post/3abc"
+      }
+    },
+    {
+      "id": "fuzz-7-181",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called likershttps://bsky.app/profile/50%off...﻿3f9a2c1bb!"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "likershttps://bsky.app/profile/50%off...﻿3f9a2c1bb!",
+        "needsTarget": false,
+        "raw": "make a list called likershttps://bsky.app/profile/50%off...﻿3f9a2c1bb!"
+      }
+    },
+    {
+      "id": "fuzz-7-182",
+      "fn": "parseCommand",
+      "input": {
+        "text": "﻿unkeep",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": "did:plc:aaa",
+        "reason": null,
+        "needsTarget": false,
+        "raw": "unkeep"
+      }
+    },
+    {
+      "id": "fuzz-7-183",
+      "fn": "parseCommand",
+      "input": {
+        "text": "​at://did:plc:abc/app.bsky.feed.post/3abc? CONNECTED",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-184",
+      "fn": "parseCommand",
+      "input": {
+        "text": "NOTABLE\n@did:plc:abc123,​a.b.c."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-185",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-186",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK　—,\n@did:plc:abc123"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "BLOCK　—,\n@did:plc:abc123"
+      }
+    },
+    {
+      "id": "fuzz-7-187",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my listsPERIPHERAL)　é!​the",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-188",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called last, —",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "last, —",
+        "needsTarget": false,
+        "raw": "make a list called last, —"
+      }
+    },
+    {
+      "id": "fuzz-7-189",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keepdid:plc:abc123﻿did:plc:abc123)",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "keep",
+        "actor": null,
+        "reason": "did:plc:abc123 did:plc:abc123)",
+        "needsTarget": true,
+        "raw": "keepdid:plc:abc123﻿did:plc:abc123)"
+      }
+    },
+    {
+      "id": "fuzz-7-190",
+      "fn": "parseCommand",
+      "input": {
+        "text": "keep last﻿@a)",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "keep",
+        "actor": "x.y.z",
+        "reason": "last @a)",
+        "needsTarget": false,
+        "raw": "keep last﻿@a)"
+      }
+    },
+    {
+      "id": "fuzz-7-191",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add﻿!!:",
+        "links": [
+          "https://example.com",
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list add﻿!!:"
+      }
+    },
+    {
+      "id": "fuzz-7-192",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list﻿@did:plc:abc123",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "@did:plc:abc123",
+        "needsTarget": false,
+        "raw": "new list﻿@did:plc:abc123"
+      }
+    },
+    {
+      "id": "fuzz-7-193",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help  3f9a2c1",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-194",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called\tlikers３f9a2c1b)"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "likers３f9a2c1b)",
+        "needsTarget": false,
+        "raw": "make a list called\tlikers３f9a2c1b)"
+      }
+    },
+    {
+      "id": "fuzz-7-195",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock,!!), @😀.bsky.social. it  for",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "unblock,!!), @😀.bsky.social. it  for"
+      }
+    },
+    {
+      "id": "fuzz-7-196",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved﻿3F9A2C1B:\tPROTECTED:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-197",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve"
+      }
+    },
+    {
+      "id": "fuzz-7-198",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history https://bsky.app/profile/50%off, NOTABLE",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "history",
+        "actor": "x.y.z",
+        "refusal": null,
+        "needsTarget": false,
+        "raw": "history https://bsky.app/profile/50%off, NOTABLE"
+      }
+    },
+    {
+      "id": "fuzz-7-199",
+      "fn": "parseCommand",
+      "input": {
+        "text": "history,@did:plc:abc123 UNKNOWN  UNKNOWN,",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "history",
+        "actor": null,
+        "refusal": "I couldn’t read “,@did:plc:abc123 UNKNOWN  UNKNOWN,” as an account. Send “history” with a full handle, a DID or a profile link, or “history” alone for everything.",
+        "needsTarget": true,
+        "raw": "history,@did:plc:abc123 UNKNOWN  UNKNOWN,"
+      }
+    },
+    {
+      "id": "fuzz-7-200",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking CONNECTED)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-201",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my lists​guy,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-202",
+      "fn": "parseCommand",
+      "input": {
+        "text": ",what can you do　bsky.app/profile/jo.e...)",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "links": [
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-203",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocK @a..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-204",
+      "fn": "parseCommand",
+      "input": {
+        "text": "help\t!!:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-205",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve bsky.app/profile/jo.e...,,for?\nperıpheral",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [
+          "PERIPHERAL"
+        ],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve bsky.app/profile/jo.e...,,for?\nperıpheral"
+      }
+    },
+    {
+      "id": "fuzz-7-206",
+      "fn": "parseCommand",
+      "input": {
+        "text": "link  3f9a2c1bb...﻿this. @A.B.C?﻿https://bsky.app/profile/50%off.",
+        "links": [
+          "https://example.com",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "link",
+        "code": null,
+        "needsTarget": true,
+        "raw": "link  3f9a2c1bb...﻿this. @A.B.C?﻿https://bsky.app/profile/50%off."
+      }
+    },
+    {
+      "id": "fuzz-7-207",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add ３f9a2c1b.\n@did:plc:abc123, quoters:",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list add ３f9a2c1b.\n@did:plc:abc123, quoters:"
+      }
+    },
+    {
+      "id": "fuzz-7-208",
+      "fn": "parseCommand",
+      "input": {
+        "text": "helpit) 3f9a2c1. except!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-209",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve except",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve except"
+      }
+    },
+    {
+      "id": "fuzz-7-210",
+      "fn": "parseCommand",
+      "input": {
+        "text": "show me my lists​guy.​https://bsky.app/profile/did%3Aplc%3Aabc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-211",
+      "fn": "parseCommand",
+      "input": {
+        "text": "scan https://bsky.app/profile/a.bsky.social/post/3abc\n&!　—,  bsky.app/profile/jo.e…,",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "everyone",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "scan https://bsky.app/profile/a.bsky.social/post/3abc\n&!　—,  bsky.app/profile/jo.e…,"
+      }
+    },
+    {
+      "id": "fuzz-7-212",
+      "fn": "parseCommand",
+      "input": {
+        "text": "blocking,likers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-213",
+      "fn": "parseCommand",
+      "input": {
+        "text": "BLOCK"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "BLOCK"
+      }
+    },
+    {
+      "id": "fuzz-7-214",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approve 👍﻿please!﻿....\tbecause."
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "approve 👍﻿please!﻿....\tbecause."
+      }
+    },
+    {
+      "id": "fuzz-7-215",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called at://did:plc:abc/app.bsky.graph.list/3abc) “quoted”."
+      },
+      "output": {
+        "action": "new_list",
+        "name": "at://did:plc:abc/app.bsky.graph.list/3abc) “quoted”.",
+        "needsTarget": false,
+        "raw": "make a list called at://did:plc:abc/app.bsky.graph.list/3abc) “quoted”."
+      }
+    },
+    {
+      "id": "fuzz-7-216",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add the repliers"
+      }
+    },
+    {
+      "id": "fuzz-7-217",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "list_add",
+        "actor": "did:plc:bbb",
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "list add"
+      }
+    },
+    {
+      "id": "fuzz-7-218",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve 👍:"
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve 👍:"
+      }
+    },
+    {
+      "id": "fuzz-7-219",
+      "fn": "parseCommand",
+      "input": {
+        "text": "block"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "block"
+      }
+    },
+    {
+      "id": "fuzz-7-220",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add likers"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": null,
+        "needsTarget": true,
+        "raw": "add likers"
+      }
+    },
+    {
+      "id": "fuzz-7-221",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep, unknown.\tbsky.app/profile/jo.e….",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "unkeep",
+        "actor": "did:plc:bbb",
+        "reason": null,
+        "needsTarget": false,
+        "raw": "unkeep, unknown.\tbsky.app/profile/jo.e…."
+      }
+    },
+    {
+      "id": "fuzz-7-222",
+      "fn": "parseCommand",
+      "input": {
+        "text": "approved​+",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-223",
+      "fn": "parseCommand",
+      "input": {
+        "text": "　new list @😀.bsky.social... this! at://did:plc:abc/app.bsky.graph.list/3abc!",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": "@😀.bsky.social... this! at://did:plc:abc/app.bsky.graph.list/3a",
+        "needsTarget": false,
+        "raw": "new list @😀.bsky.social... this! at://did:plc:abc/app.bsky.graph.list/3abc!"
+      }
+    },
+    {
+      "id": "fuzz-7-224",
+      "fn": "parseCommand",
+      "input": {
+        "text": " add likers",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "needsTarget": false,
+        "raw": "add likers"
+      }
+    },
+    {
+      "id": "fuzz-7-225",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list add﻿“quoted”:\nrepliers"
+      },
+      "output": {
+        "action": "list_add",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list add﻿“quoted”:\nrepliers"
+      }
+    },
+    {
+      "id": "fuzz-7-226",
+      "fn": "parseCommand",
+      "input": {
+        "text": "repliers) https://bsky.app/profile/a.bsky.social/post/3abc",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-227",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unkeep https://bsky.app/profile/a.b.c,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-228",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add likers﻿é",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "likers",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "add likers﻿é"
+      }
+    },
+    {
+      "id": "fuzz-7-229",
+      "fn": "parseCommand",
+      "input": {
+        "text": "unblock",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": "did:plc:abc",
+        "fromPost": true,
+        "confirm": false,
+        "needsTarget": false,
+        "raw": "unblock"
+      }
+    },
+    {
+      "id": "fuzz-7-230",
+      "fn": "parseCommand",
+      "input": {
+        "text": "ſcan"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-231",
+      "fn": "parseCommand",
+      "input": {
+        "text": "review",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": {
+        "action": "review",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "review"
+      }
+    },
+    {
+      "id": "fuzz-7-232",
+      "fn": "parseCommand",
+      "input": {
+        "text": "list  remove,likers?​https://bsky.app/profile/did%3Aplc%3Aabc　bsky.app/profile/jo.e…,"
+      },
+      "output": {
+        "action": "list_remove",
+        "actor": null,
+        "fromPost": false,
+        "confirm": false,
+        "needsTarget": true,
+        "raw": "list  remove,likers?​https://bsky.app/profile/did%3Aplc%3Aabc　bsky.app/profile/jo.e…,"
+      }
+    },
+    {
+      "id": "fuzz-7-233",
+      "fn": "parseCommand",
+      "input": {
+        "text": "make a list called  “quoted”)",
+        "embedUri": "https://example.com"
+      },
+      "output": {
+        "action": "new_list",
+        "name": "“quoted”)",
+        "needsTarget": false,
+        "raw": "make a list called  “quoted”)"
+      }
+    },
+    {
+      "id": "fuzz-7-234",
+      "fn": "parseCommand",
+      "input": {
+        "text": "lists​; unknown bsky.app/profile/jo.e...:",
+        "links": [
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-235",
+      "fn": "parseCommand",
+      "input": {
+        "text": "Approve,👍. @A.B.C: +) them",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "approve",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [
+          "a.b.c"
+        ],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "Approve,👍. @A.B.C: +) them"
+      }
+    },
+    {
+      "id": "fuzz-7-236",
+      "fn": "parseCommand",
+      "input": {
+        "text": "cancel a.b.c",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": {
+        "action": "cancel",
+        "code": null,
+        "bands": [],
+        "kinds": [],
+        "actors": [],
+        "refusal": null,
+        "needsTarget": true,
+        "raw": "cancel a.b.c"
+      }
+    },
+    {
+      "id": "fuzz-7-237",
+      "fn": "parseCommand",
+      "input": {
+        "text": "﻿add the repliers　CONNECTED﻿@A.B.C)　unknown? (https://bsky.app/profile/a.bsky.social/post/3abc)"
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": "https://bsky.app/profile/a.bsky.social/post/3abc",
+        "needsTarget": false,
+        "raw": "add the repliers　CONNECTED﻿@A.B.C)　unknown? (https://bsky.app/profile/a.bsky.social/post/3abc)"
+      }
+    },
+    {
+      "id": "fuzz-7-238",
+      "fn": "parseCommand",
+      "input": {
+        "text": "new list　.\tand did:web:example.com:user, NOTABLE",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": {
+        "action": "new_list",
+        "name": ".\tand did:web:example.com:user, NOTABLE",
+        "needsTarget": false,
+        "raw": "new list　.\tand did:web:example.com:user, NOTABLE"
+      }
+    },
+    {
+      "id": "fuzz-7-239",
+      "fn": "parseCommand",
+      "input": {
+        "text": "add the repliers except,likers...",
+        "embedUri": "https://example.com",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": {
+        "action": "plan",
+        "kind": "repliers",
+        "target": "https://example.com",
+        "needsTarget": false,
+        "raw": "add the repliers except,likers..."
+      }
+    },
+    {
+      "id": "fuzz-7-0",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "block"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-3",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-6",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "ſcan﻿“quoted”,,👍"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-9",
+      "fn": "parsePostScan",
+      "input": {
+        "text": " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/x.y.z"
+        ],
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-12",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unblock"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-15",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "Approve and) a.b.c..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-18",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "what can you do liKers... everyone!  them,bsky.app/profile/jo.e...?",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-21",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "help -",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-24",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "list  remove,CONNECTED likers) 3f9a2c1",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-27",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "history　https://bsky.app/profile/a.bsky.social/post/3abc. https://bsky.app/profile/a.b.c",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-30",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "blocking for... CONNECTED!﻿PROTECTED\tat://did:plc:abc/app.bsky.graph.list/3abc:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-33",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unblock\tcalled) reposters\t&,",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-36",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "blocking"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-39",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-42",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "what can you do",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-45",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "ſcan 3f9a2c1 @did:plc:abc123﻿the."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-48",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "show me my lists @😀.bsky.socialPROTECTED... “quoted”.",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-51",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "blocKplease... &,@did:plc:abc123!",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-54",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "block,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-57",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "history!!) the:\n@did:plc:abc123,",
+        "embedUri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-60",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add likers﻿3f9a2c1... for. @did:plc:abc123:",
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-63",
+      "fn": "parsePostScan",
+      "input": {
+        "text": ""
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-66",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "new list　called...",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-69",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "\nlists  guy,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-72",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add the repliers",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-75",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "keep https://bsky.app/profile/50%off:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-78",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unkeep, the...  called",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-81",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "approved\trepliers,​3f9a2c1b  for",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-84",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "blocking​👍,for?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-87",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "help　—. 3F9A2C1B perıpheral"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-90",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unblock",
+        "embedUri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-93",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "cancel​@-a.b.﻿3f9a2c1 https://bsky.app/profile/a.b.c!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-96",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "scan\nthe)\t😀😀",
+        "links": [
+          "https://example.com"
+        ],
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-99",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "keep\nunknown?﻿., @A.B.C PERIPHERAL?",
+        "embedUri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-102",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "list  remove,<at://did:plc:abc/app.bsky.feed.post/3abc>PERIPHERAL: because?",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-105",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "new list\tCONNECTED\n&,　..　😀😀!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-108",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add likers\t-...​@-a.b?",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-111",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "help quoters!",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-114",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "scan﻿@😀.bsky.social!﻿please!  PERIPHERAL!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-117",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "history\nthis,  reposters:",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-120",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "help 3F9A2C1B xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx! .﻿ABCD-EFG0.",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ],
+        "mentions": [
+          "did:plc:bbb"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-123",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "list add  @😀.bsky.social,\n3f9a2c1?　called, them"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-126",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "history"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-129",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "status\ndid:plc:abc123 because!them",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-132",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists,UNKNOWN perıpheral,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-135",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add the repliers +.reposters did:plc:abc123!  the)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-138",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "scan, <at://did:plc:abc/app.bsky.feed.post/3abc> ,)",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.post/3abc"
+    },
+    {
+      "id": "fuzz-7-141",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add the repliers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-144",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unkeep"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-147",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add the repliers  PERIPHERAL\n(https://bsky.app/profile/a.bsky.social/post/3abc), NOTABLE) https://bsky.app/profile/a.bsky.social/post/3abc."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-150",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "what can you do",
+        "embedUri": "at://did:plc:abc/app.bsky.feed.post/3abc",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-153",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "\tit:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-156",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists\nCONNECTED?  UNKNOWN"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-159",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unkeep"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-162",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "what can you do,３f9a2c1b? abcd-efgh ＵＮＫＮＯＷＮ)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-165",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists 😀😀,  ABCD-EFG0﻿—. (https://bsky.app/profile/a.bsky.social/post/3abc)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-168",
+      "fn": "parsePostScan",
+      "input": {
+        "text": ",undo\t....﻿called... at://did:plc:abc/app.bsky.feed.post/3abc",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-171",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "review  abcd-efgh"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-174",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "approve",
+        "links": [
+          "https://example.com",
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-177",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "link\nNOTABLE!\n@a\t3F9A2C1B,",
+        "mentions": [
+          "did:plc:aaa",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-180",
+      "fn": "parsePostScan",
+      "input": {
+        "text": " BLOCK\n3f9a2c1!perıpheral.​at://did:plc:abc/app.bsky.feed.post/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-183",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "​at://did:plc:abc/app.bsky.feed.post/3abc? CONNECTED",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-186",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "BLOCK　—,\n@did:plc:abc123"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-189",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "keepdid:plc:abc123﻿did:plc:abc123)",
+        "links": [
+          "https://bsky.app/profile/a.bsky.social/post/3abc",
+          "https://bsky.app/profile/X.Y.Z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-192",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "new list﻿@did:plc:abc123",
+        "embedUri": "at://did:plc:abc/app.bsky.graph.list/3abc",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-195",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "unblock,!!), @😀.bsky.social. it  for",
+        "mentions": [
+          "did:plc:bbb",
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-198",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "history https://bsky.app/profile/50%off, NOTABLE",
+        "links": [
+          "https://bsky.app/profile/x.y.z"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-201",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "show me my lists​guy,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-204",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "help\t!!:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-207",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "list add ３f9a2c1b.\n@did:plc:abc123, quoters:",
+        "links": [
+          "at://did:plc:abc/app.bsky.graph.list/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-210",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "show me my lists​guy.​https://bsky.app/profile/did%3Aplc%3Aabc"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-213",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "BLOCK"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-216",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add the repliers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-219",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "block"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-222",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "approved​+",
+        "embedUri": "at://did:plc:author/app.bsky.feed.post/3xyz",
+        "links": [
+          "https://bsky.app/profile/x.y.z",
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-225",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "list add﻿“quoted”:\nrepliers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-228",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "add likers﻿é",
+        "links": [
+          "https://bsky.app/profile/X.Y.Z",
+          "https://bsky.app/profile/a.bsky.social/post/3abc"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-231",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "review",
+        "mentions": [
+          "did:plc:aaa"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-234",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "lists​; unknown bsky.app/profile/jo.e...:",
+        "links": [
+          "https://example.com"
+        ]
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-237",
+      "fn": "parsePostScan",
+      "input": {
+        "text": "﻿add the repliers　CONNECTED﻿@A.B.C)　unknown? (https://bsky.app/profile/a.bsky.social/post/3abc)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-1",
+      "fn": "parseActor",
+      "input": {
+        "token": "@A.B.C:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-4",
+      "fn": "parseActor",
+      "input": {
+        "token": "blocK​👍)"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-7",
+      "fn": "parseActor",
+      "input": {
+        "token": "@a.bsky.social)3f9a2c1b!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-10",
+      "fn": "parseActor",
+      "input": {
+        "token": "can"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-13",
+      "fn": "parseActor",
+      "input": {
+        "token": "https://bsky.app/profile/a.b.c:​for:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-16",
+      "fn": "parseActor",
+      "input": {
+        "token": "a"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-19",
+      "fn": "parseActor",
+      "input": {
+        "token": "perıpheral"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-22",
+      "fn": "parseActor",
+      "input": {
+        "token": "unblock"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-25",
+      "fn": "parseActor",
+      "input": {
+        "token": "blocking"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-28",
+      "fn": "parseActor",
+      "input": {
+        "token": "list"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-31",
+      "fn": "parseActor",
+      "input": {
+        "token": "@a.bsky.social."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-34",
+      "fn": "parseActor",
+      "input": {
+        "token": "3f9a2c1b..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-37",
+      "fn": "parseActor",
+      "input": {
+        "token": "remove"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-40",
+      "fn": "parseActor",
+      "input": {
+        "token": "a"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-43",
+      "fn": "parseActor",
+      "input": {
+        "token": "é..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-46",
+      "fn": "parseActor",
+      "input": {
+        "token": "ABCD-EFG0"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-49",
+      "fn": "parseActor",
+      "input": {
+        "token": "because"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-52",
+      "fn": "parseActor",
+      "input": {
+        "token": "keep"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-55",
+      "fn": "parseActor",
+      "input": {
+        "token": "<at://did:plc:abc/app.bsky.feed.post/3abc>"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-58",
+      "fn": "parseActor",
+      "input": {
+        "token": "please."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-61",
+      "fn": "parseActor",
+      "input": {
+        "token": "UNKNOWN:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-64",
+      "fn": "parseActor",
+      "input": {
+        "token": "unblock"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-67",
+      "fn": "parseActor",
+      "input": {
+        "token": "bsky.app/profile/jo.e…,,because:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-70",
+      "fn": "parseActor",
+      "input": {
+        "token": "keep"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-73",
+      "fn": "parseActor",
+      "input": {
+        "token": "at://did:plc:abc/app.bsky.feed.post/3abc:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-76",
+      "fn": "parseActor",
+      "input": {
+        "token": "add,ＵＮＫＮＯＷＮ!​@did:plc:abc123..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-79",
+      "fn": "parseActor",
+      "input": {
+        "token": "cancel"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-82",
+      "fn": "parseActor",
+      "input": {
+        "token": "blocking,last."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-85",
+      "fn": "parseActor",
+      "input": {
+        "token": "link"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-88",
+      "fn": "parseActor",
+      "input": {
+        "token": "add"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-91",
+      "fn": "parseActor",
+      "input": {
+        "token": "remove"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-94",
+      "fn": "parseActor",
+      "input": {
+        "token": "help"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-97",
+      "fn": "parseActor",
+      "input": {
+        "token": "review,@stranger...!"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-100",
+      "fn": "parseActor",
+      "input": {
+        "token": ",?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-103",
+      "fn": "parseActor",
+      "input": {
+        "token": "everyone"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-106",
+      "fn": "parseActor",
+      "input": {
+        "token": "quoters"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-109",
+      "fn": "parseActor",
+      "input": {
+        "token": "list,"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-112",
+      "fn": "parseActor",
+      "input": {
+        "token": "?..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-115",
+      "fn": "parseActor",
+      "input": {
+        "token": "a"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-118",
+      "fn": "parseActor",
+      "input": {
+        "token": "@A.B.C."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-121",
+      "fn": "parseActor",
+      "input": {
+        "token": "blocking"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-124",
+      "fn": "parseActor",
+      "input": {
+        "token": "unblock"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-127",
+      "fn": "parseActor",
+      "input": {
+        "token": "likers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-130",
+      "fn": "parseActor",
+      "input": {
+        "token": "this...​CONNECTED..."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-133",
+      "fn": "parseActor",
+      "input": {
+        "token": "perıpheral?,https://bsky.app/profile/did%3Aplc%3Aabc),@-a.b?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-136",
+      "fn": "parseActor",
+      "input": {
+        "token": "BLOCK"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-139",
+      "fn": "parseActor",
+      "input": {
+        "token": "them:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-142",
+      "fn": "parseActor",
+      "input": {
+        "token": "the"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-145",
+      "fn": "parseActor",
+      "input": {
+        "token": "-:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-148",
+      "fn": "parseActor",
+      "input": {
+        "token": "@A.B.C:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-151",
+      "fn": "parseActor",
+      "input": {
+        "token": "remove"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-154",
+      "fn": "parseActor",
+      "input": {
+        "token": "“quoted”"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-157",
+      "fn": "parseActor",
+      "input": {
+        "token": "remove"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-160",
+      "fn": "parseActor",
+      "input": {
+        "token": "👍."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-163",
+      "fn": "parseActor",
+      "input": {
+        "token": "at://did:plc:abc/app.bsky.feed.post/3abc...unknown"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-166",
+      "fn": "parseActor",
+      "input": {
+        "token": "blocK"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-169",
+      "fn": "parseActor",
+      "input": {
+        "token": "@a.bsky.social?​repliers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-172",
+      "fn": "parseActor",
+      "input": {
+        "token": "add"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-175",
+      "fn": "parseActor",
+      "input": {
+        "token": "the"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-178",
+      "fn": "parseActor",
+      "input": {
+        "token": "the"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-181",
+      "fn": "parseActor",
+      "input": {
+        "token": "a"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-184",
+      "fn": "parseActor",
+      "input": {
+        "token": "@did:plc:abc123,​a.b.c."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-187",
+      "fn": "parseActor",
+      "input": {
+        "token": "me"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-190",
+      "fn": "parseActor",
+      "input": {
+        "token": "last"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-193",
+      "fn": "parseActor",
+      "input": {
+        "token": "3f9a2c1"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-196",
+      "fn": "parseActor",
+      "input": {
+        "token": "3F9A2C1B:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-199",
+      "fn": "parseActor",
+      "input": {
+        "token": "UNKNOWN"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-202",
+      "fn": "parseActor",
+      "input": {
+        "token": "can"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-205",
+      "fn": "parseActor",
+      "input": {
+        "token": "bsky.app/profile/jo.e...,,for?"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-208",
+      "fn": "parseActor",
+      "input": {
+        "token": "3f9a2c1."
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-211",
+      "fn": "parseActor",
+      "input": {
+        "token": "https://bsky.app/profile/a.bsky.social/post/3abc"
+      },
+      "output": "a.bsky.social"
+    },
+    {
+      "id": "fuzz-7-214",
+      "fn": "parseActor",
+      "input": {
+        "token": "👍"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-217",
+      "fn": "parseActor",
+      "input": {
+        "token": "add"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-220",
+      "fn": "parseActor",
+      "input": {
+        "token": "likers"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-223",
+      "fn": "parseActor",
+      "input": {
+        "token": "new"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-226",
+      "fn": "parseActor",
+      "input": {
+        "token": "https://bsky.app/profile/a.bsky.social/post/3abc"
+      },
+      "output": "a.bsky.social"
+    },
+    {
+      "id": "fuzz-7-229",
+      "fn": "parseActor",
+      "input": {
+        "token": "unblock"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-232",
+      "fn": "parseActor",
+      "input": {
+        "token": "remove,likers?​https://bsky.app/profile/did%3Aplc%3Aabc"
+      },
+      "output": "did:plc:abc"
+    },
+    {
+      "id": "fuzz-7-235",
+      "fn": "parseActor",
+      "input": {
+        "token": "@A.B.C:"
+      },
+      "output": null
+    },
+    {
+      "id": "fuzz-7-238",
+      "fn": "parseActor",
+      "input": {
+        "token": "list"
       },
       "output": null
     },
@@ -6091,6 +11454,260 @@
       "output": []
     },
     {
+      "id": "facetLinks#12",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": {}
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#13",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": {
+            "0": {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a"
+                }
+              ]
+            },
+            "length": 1
+          }
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#14",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": 5
+        }
+      },
+      "output": {
+        "$throws": "number 5 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#15",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": -1.5
+        }
+      },
+      "output": {
+        "$throws": "number -1.5 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#16",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": true
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#17",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": false
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#18",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": 0
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#19",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": ""
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#20",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": {}
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#21",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": 7
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "number 7 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#22",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#23",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": 0
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#24",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a"
+                }
+              ]
+            },
+            {
+              "features": {}
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetLinks#25",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            [
+              {
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 24
+                },
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#link",
+                    "uri": "https://a"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#26",
+      "fn": "facetLinks",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": [
+                "x",
+                null,
+                5,
+                []
+              ]
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#27",
+      "fn": "facetLinks",
+      "input": {
+        "message": "not a message"
+      },
+      "output": []
+    },
+    {
+      "id": "facetLinks#28",
+      "fn": "facetLinks",
+      "input": {
+        "message": 42
+      },
+      "output": []
+    },
+    {
       "id": "facetMentions#1",
       "fn": "facetMentions",
       "input": {
@@ -6314,6 +11931,260 @@
             }
           ]
         }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#12",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": {}
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#13",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": {
+            "0": {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a"
+                }
+              ]
+            },
+            "length": 1
+          }
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#14",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": 5
+        }
+      },
+      "output": {
+        "$throws": "number 5 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#15",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": -1.5
+        }
+      },
+      "output": {
+        "$throws": "number -1.5 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#16",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": true
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#17",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": false
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#18",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": 0
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#19",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": ""
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#20",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": {}
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#21",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": 7
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "number 7 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#22",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#23",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": 0
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#24",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a"
+                }
+              ]
+            },
+            {
+              "features": {}
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "facetMentions#25",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            [
+              {
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 24
+                },
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#link",
+                    "uri": "https://a"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#26",
+      "fn": "facetMentions",
+      "input": {
+        "message": {
+          "facets": [
+            {
+              "features": [
+                "x",
+                null,
+                5,
+                []
+              ]
+            }
+          ]
+        }
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#27",
+      "fn": "facetMentions",
+      "input": {
+        "message": "not a message"
+      },
+      "output": []
+    },
+    {
+      "id": "facetMentions#28",
+      "fn": "facetMentions",
+      "input": {
+        "message": 42
       },
       "output": []
     },

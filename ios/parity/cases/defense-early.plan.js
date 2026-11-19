@@ -82,7 +82,7 @@ const TICKS = [
   ['NOTABLE', 'PERIPHERAL'],
 ];
 
-const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-DE', 'en-CH', 'en-ZA'];
+const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-DE', 'en-FR', 'en-CH', 'en-ZA'];
 
 const COUNTS = [
   0,
@@ -117,6 +117,11 @@ const COUNTS = [
   -0.5,
   null,
   Number.NaN,
+  // far past PLAN_MAX: the arithmetic still holds
+  123456,
+  1e6,
+  123456789.7,
+  1e12,
 ];
 
 export default async function cases() {

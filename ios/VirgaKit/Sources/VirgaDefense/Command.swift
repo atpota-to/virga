@@ -97,6 +97,22 @@ public struct ParsedCommand: Codable, Hashable, Sendable {
   }
 }
 
+/// The TypeError JavaScript throws when a `for…of` meets a value that isn't
+/// iterable: a DM whose `facets`, or a facet whose `features`, is an object,
+/// a number or `true` (`facetLinks`, `facetMentions`, `composeMessage`).
+/// `message` is V8's.
+public struct NotIterableError: Error, LocalizedError, CustomStringConvertible, Sendable {
+  public var message: String
+
+  /// For a value V8 describes as `described` ("object", "number 5", "boolean true").
+  init(described: String) {
+    message = "\(described) is not iterable (cannot read property Symbol(Symbol.iterator))"
+  }
+
+  public var errorDescription: String? { message }
+  public var description: String { message }
+}
+
 public enum Command {
   /// KINDS: the engagement kinds an approval or a plan can name, as
   /// harvest.js names them. `everyone` is nil: no filter, so engagement from
@@ -309,14 +325,29 @@ public enum Command {
     return found
   }
 
+  /// `for (const x of value || [])`: an array's elements. Nothing for a
+  /// falsy value, and nothing for a string, whose characters have no
+  /// `features` or `$type` to read; an object, a number or `true` isn't
+  /// iterable, and JavaScript throws, so this does too.
+  static func iterated(_ value: JSONValue?) throws(NotIterableError) -> [JSONValue] {
+    guard let value, value.isTruthy else { return [] }
+    switch value {
+    case .array(let elements): return elements
+    case .string, .null: return []
+    case .object: throw NotIterableError(described: "object")
+    case .number(let n): throw NotIterableError(described: "number \(JSNumber.format(n))")
+    case .bool(let b): throw NotIterableError(described: "boolean \(b)")
+    }
+  }
+
   /// The features of a message's facets whose `$type` is `type`, with
-  /// `field` truthy: `field` as a string. (The web iterates `facets` and
-  /// `features` as it finds them; anything but an array, which it would
-  /// throw on or read as nothing, is nothing here.)
-  static func facetValues(_ message: JSONValue?, type: String, field: String) -> [String] {
+  /// `field` truthy: `field` as a string. `facets` and each `features` are
+  /// iterated as the web iterates them, so a malformed message throws
+  /// where the web's does.
+  static func facetValues(_ message: JSONValue?, type: String, field: String) throws(NotIterableError) -> [String] {
     var out: [String] = []
-    for facet in message?["facets"]?.arrayValue ?? [] {
-      for f in facet["features"]?.arrayValue ?? [] {
+    for facet in try iterated(message?["facets"]) {
+      for f in try iterated(facet["features"]) {
         guard let t = f["$type"]?.stringValue, t.jsEquals(type), let value = f[field], value.isTruthy else { continue }
         out.append(value.jsString)
       }
@@ -324,14 +355,17 @@ public enum Command {
     return out
   }
 
-  /// The full URLs behind a message's links (a client truncates them in the text).
-  public static func facetLinks(_ message: JSONValue?) -> [String] {
-    facetValues(message, type: linkFeature, field: "uri")
+  /// The full URLs behind a message's links (a client truncates them in
+  /// the text). Throws, as the web does, when the message's `facets` (or a
+  /// facet's `features`) is an object, a number or `true`.
+  public static func facetLinks(_ message: JSONValue?) throws(NotIterableError) -> [String] {
+    try facetValues(message, type: linkFeature, field: "uri")
   }
 
   /// The DIDs behind a message's @mentions, which survive truncation whole.
-  public static func facetMentions(_ message: JSONValue?) -> [String] {
-    facetValues(message, type: mentionFeature, field: "did")
+  /// Throws where `facetLinks` does.
+  public static func facetMentions(_ message: JSONValue?) throws(NotIterableError) -> [String] {
+    try facetValues(message, type: mentionFeature, field: "did")
   }
 
   /// A handle, DID or profile link, as written by the owner, not as

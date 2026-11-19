@@ -615,6 +615,101 @@
       "output": null
     },
     {
+      "id": "sharedUri#33",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": {}
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#34",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": 3
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#35",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "features": {
+                "0": "x"
+              }
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "sharedUri#36",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "shared, then broken",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": "at://did:plc:author/app.bsky.feed.post/3xyz"
+    },
+    {
+      "id": "sharedUri#37",
+      "fn": "sharedUri",
+      "input": {
+        "message": {
+          "text": "a string of facets",
+          "facets": "abc"
+        }
+      },
+      "output": null
+    },
+    {
       "id": "composeMessage#1",
       "fn": "composeMessage",
       "input": {
@@ -1222,6 +1317,109 @@
       "fn": "composeMessage",
       "input": {},
       "output": ""
+    },
+    {
+      "id": "composeMessage#33",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": {}
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#34",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": 3
+        }
+      },
+      "output": {
+        "$throws": "number 3 is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#35",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "block @x",
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 24
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/jo.example.com/post/3lxyz"
+                }
+              ]
+            },
+            {
+              "features": {
+                "0": "x"
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#36",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "shared, then broken",
+          "embed": {
+            "$type": "app.bsky.embed.record#view",
+            "record": {
+              "uri": "at://did:plc:author/app.bsky.feed.post/3xyz"
+            }
+          },
+          "facets": [
+            {
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              },
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ]
+            },
+            {
+              "features": true
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "boolean true is not iterable (cannot read property Symbol(Symbol.iterator))"
+      }
+    },
+    {
+      "id": "composeMessage#37",
+      "fn": "composeMessage",
+      "input": {
+        "message": {
+          "text": "a string of facets",
+          "facets": "abc"
+        }
+      },
+      "output": "a string of facets"
     },
     {
       "id": "isDirect#1",

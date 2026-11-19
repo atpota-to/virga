@@ -223,11 +223,15 @@ export default async function cases() {
     { $id: 'rounding-halves', counts: [1, 3, 5, 7], max: 8 },
     { $id: 'zero-cap', counts: [10, 0, 5], max: 0 },
     { $id: 'tiny-cap', counts: [1000, 1000, 1000, 1000], max: 3 },
+    { $id: 'a-negative-count', counts: [-5, 10, 0] },
+    { $id: 'counts-cancelling-out', counts: [-5, 5] },
+    { $id: 'just-over-the-cap-in-one', counts: [71], max: 70 },
   ];
 
   const placedForQueries = [
     place(points(40, 5, 50), 5),
     place(testSummaryPoints(), 4),
+    tiedMarks(),
   ];
 
   return [
@@ -257,7 +261,7 @@ export default async function cases() {
     )),
     ...(await each(
       'sectorAt',
-      ANGLES.flatMap((angle) => [1, 2, 4, 5, 0].map((n) => ({ angle, n }))),
+      ANGLES.flatMap((angle) => [1, 2, 4, 5, 0, -3].map((n) => ({ angle, n }))),
       ({ angle, n }) => sectorAt(angle, n),
     )),
     ...(await each('place', placements, ({ points: pts, sectorCount }) =>
@@ -273,6 +277,10 @@ export default async function cases() {
       placedForQueries.map((placed, k) => {
         const rand = seeded(60 + k);
         const queries = [
+          // Two marks the same distance away: the later is found.
+          { x: 0, y: 0, within: 0.25 },
+          { x: 0, y: 0.5, within: 0.1 },
+          { x: 0, y: 0, within: 0.2499 },
           { x: placed[0].x, y: placed[0].y, within: 0.01 },
           { x: 5, y: 5, within: 0.01 },
           { x: 0, y: 0, within: 2 },
@@ -332,6 +340,39 @@ export default async function cases() {
         };
       },
     )),
+  ];
+}
+
+/**
+ * Marks placed by hand, for ties: two the same distance from the centre,
+ * two on the same spot, and several on the same ring at the same turn
+ * (straight up, written three ways), which the walk keeps in order.
+ */
+function tiedMarks() {
+  const mark = (id, band, ring, angle, r) => ({
+    id,
+    band,
+    sector: 0,
+    ring,
+    x: r * Math.cos(angle),
+    y: r * Math.sin(angle),
+    r,
+    angle,
+  });
+  return [
+    { ...mark('did:plc:t0', 'CONNECTED', 'CONNECTED', 0, 0.25), x: 0.25, y: 0 },
+    {
+      ...mark('did:plc:t1', 'CONNECTED', 'CONNECTED', Math.PI, 0.25),
+      x: -0.25,
+      y: 0,
+    },
+    { ...mark('did:plc:t2', 'PERIPHERAL', 'PERIPHERAL', 0, 0.5), x: 0, y: 0.5 },
+    { ...mark('did:plc:t3', 'PERIPHERAL', 'PERIPHERAL', 0, 0.5), x: 0, y: 0.5 },
+    mark('did:plc:t4', 'UNKNOWN', 'OUTER', -Math.PI / 2, 0.8),
+    mark('did:plc:t5', 'NOTABLE', 'OUTER', (3 * Math.PI) / 2, 0.8),
+    mark('did:plc:t6', 'UNKNOWN', 'OUTER', (-5 * Math.PI) / 2, 0.8),
+    mark('did:plc:t7', 'PROTECTED', 'PROTECTED', 1, 0.1),
+    mark('did:plc:t8', 'PROTECTED', 'PROTECTED', 1, 0.1),
   ];
 }
 

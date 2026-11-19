@@ -14,6 +14,15 @@ func json(_ cmd: ParsedCommand?) throws -> JSONValue {
   try cmd.map { try JSONValue(encoding: $0) } ?? .null
 }
 
+/// What a case records: the value, or `{ $throws: message }` when it threw.
+func outcome(_ body: () throws -> JSONValue) -> JSONValue {
+  do {
+    return try body()
+  } catch {
+    return ["$throws": .string((error as? LocalizedError)?.errorDescription ?? "\(error)")]
+  }
+}
+
 @Suite struct CommandParity {
   @Test func constants() throws {
     let c = try Parity.cases(fixture, fn: "constants")[0]
@@ -88,11 +97,13 @@ func json(_ cmd: ParsedCommand?) throws -> JSONValue {
 
   @Test func facetLinksAndMentions() throws {
     for c in try Parity.cases(fixture, fn: "facetLinks") {
-      let d = Parity.diff(.array(Command.facetLinks(c.input["message"]).map(JSONValue.string)), c.output)
+      let actual = outcome { .array(try Command.facetLinks(c.input["message"]).map(JSONValue.string)) }
+      let d = Parity.diff(actual, c.output, strictNulls: true)
       #expect(d == nil, "\(c) \(c.input): \(d ?? "")")
     }
     for c in try Parity.cases(fixture, fn: "facetMentions") {
-      let d = Parity.diff(.array(Command.facetMentions(c.input["message"]).map(JSONValue.string)), c.output)
+      let actual = outcome { .array(try Command.facetMentions(c.input["message"]).map(JSONValue.string)) }
+      let d = Parity.diff(actual, c.output, strictNulls: true)
       #expect(d == nil, "\(c) \(c.input): \(d ?? "")")
     }
   }
@@ -120,7 +131,8 @@ func json(_ cmd: ParsedCommand?) throws -> JSONValue {
 
   @Test func composeMessage() throws {
     for c in try Parity.cases(fixture, fn: "composeMessage") {
-      let d = Parity.diff(.string(DmMessage.composeMessage(c.input["message"])), c.output)
+      let actual = outcome { .string(try DmMessage.composeMessage(c.input["message"])) }
+      let d = Parity.diff(actual, c.output, strictNulls: true)
       #expect(d == nil, "\(c) \(c.input): \(d ?? "")")
     }
   }

@@ -31,15 +31,16 @@ public enum DmMessage {
 
   /// What a model is given of the owner's message: what they typed, plus
   /// the record they shared, the full links and the mentioned DIDs. Those
-  /// lines are built by code from the owner's own message.
-  public static func composeMessage(_ message: JSONValue?) -> String {
+  /// lines are built by code from the owner's own message. Throws where
+  /// `Command.facetLinks` does: a message whose facets can't be iterated.
+  public static func composeMessage(_ message: JSONValue?) throws(NotIterableError) -> String {
     let typed = message?["text"]
     let text = typed.map { $0.isTruthy ? $0.jsString : "" } ?? ""
     var extra: [String] = []
     if let shared = sharedUri(message) { extra.append("The post the owner shared: \(shared)") }
-    let links = Command.facetLinks(message).filter { !text.jsIncludes($0) }
+    let links = try Command.facetLinks(message).filter { !text.jsIncludes($0) }
     if !links.isEmpty { extra.append("Full links in that message: \(links.joined(separator: " "))") }
-    let mentions = Command.facetMentions(message)
+    let mentions = try Command.facetMentions(message)
     if !mentions.isEmpty { extra.append("Accounts mentioned: \(mentions.joined(separator: " "))") }
     return extra.isEmpty ? text : "\(text)\n\n[\(extra.joined(separator: ". "))]"
   }

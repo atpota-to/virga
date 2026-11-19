@@ -30,6 +30,7 @@ import {
   scoreOf,
   scoreScripted,
   scripted,
+  seeded,
   thrown,
 } from './_defense.js';
 
@@ -95,6 +96,25 @@ const TRUST = [
   { vouches: 7, followers: 31, ageDays: 3000 },
 ];
 
+/**
+ * Trust keys for accounts as the AppView counts them (seeded): whole counts
+ * of vouches and followers over a wide spread, whole days, and the ties.
+ * Math.log1p and Math.log10 decide where Math.round falls, so these hold
+ * Swift's logarithms to V8's.
+ */
+const TRUST_FUZZ = Number(process.env.DEFENSE_FUZZ || 0) || 300;
+function fuzzedTrust(n, seed) {
+  const rand = seeded(seed);
+  const spread = (max) => Math.floor(Math.exp(rand() * Math.log(max + 1)) - 1);
+  return Array.from({ length: n }, () => ({
+    vouches: spread(5000),
+    followers: spread(5e7),
+    ageDays: rand() < 0.1 ? null : spread(7000),
+    mutual: rand() < 0.2,
+    followsYou: rand() < 0.3,
+  }));
+}
+
 const FEATURES = [
   { vouches: 3 },
   { vouches: 1, followers: 6000 },
@@ -153,6 +173,18 @@ const KNOWN = [
   { viewer: { knownFollowers: '' } },
   { viewer: { knownFollowers: [] } },
   'a string',
+  // counts as Number() reads them
+  { viewer: { knownFollowers: { count: '0x10' } } },
+  { viewer: { knownFollowers: { count: ' 7 \n' } } },
+  { viewer: { knownFollowers: { count: '1e2' } } },
+  { viewer: { knownFollowers: { count: '', followers: [{}] } } },
+  { viewer: { knownFollowers: { count: 'Infinity', followers: [{}, {}] } } },
+  { viewer: { knownFollowers: { count: '-0', followers: [{}] } } },
+  { viewer: { knownFollowers: { count: [], followers: [{}] } } },
+  { viewer: { knownFollowers: { count: {}, followers: [] } } },
+  { viewer: { knownFollowers: { count: 1e-7 } } },
+  { viewer: { knownFollowers: true } },
+  { viewer: { knownFollowers: 'yes' } },
 ];
 
 /** score.test.js's AppView: counts from `known`, the canary at `canaryKnown`. */
@@ -447,6 +479,29 @@ function scorerCases() {
         prof(CANARY, { known: 2 }),
       ]),
     },
+    // An account's age read in the reader's own zone: a createdAt with no
+    // offset is local time, one with an offset or a Z is not, and the
+    // legacy forms Date.parse takes are read as V8 reads them.
+    ...['America/Los_Angeles', 'Asia/Kolkata', 'Pacific/Chatham'].map(
+      (zone) => ({
+        $id: `ages-in-${zone}`,
+        ...base,
+        zone,
+        canary: CANARY,
+        dids: dids(8),
+        profiles: table([
+          prof('did:plc:p0', { createdAt: '2026-11-11T00:00:00' }),
+          prof('did:plc:p1', { createdAt: '2026-11-11T00:00:00Z' }),
+          prof('did:plc:p2', { createdAt: '2026-11-11' }),
+          prof('did:plc:p3', { createdAt: '2026/11/11 23:30' }),
+          prof('did:plc:p4', { createdAt: 'Nov 10 2026 20:00' }),
+          prof('did:plc:p5', { createdAt: '2026-11-12T11:30:00+05:30' }),
+          prof('did:plc:p6', { createdAt: 0, postsCount: 4 }),
+          prof('did:plc:p7', { createdAt: '2026', postsCount: 9000 }),
+          prof(CANARY, { known: 2 }),
+        ]),
+      }),
+    ),
     {
       $id: 'loosely-typed-profiles',
       ...base,
@@ -715,6 +770,11 @@ export default async function cases() {
     ...(await each(
       'trustScore',
       TRUST.map((f) => ({ f })),
+      ({ f }) => trustScore(f),
+    )),
+    ...(await each(
+      'trustScore',
+      fuzzedTrust(TRUST_FUZZ, 11).map((f, i) => ({ $id: `fuzz-${i}`, f })),
       ({ f }) => trustScore(f),
     )),
     ...(await each(

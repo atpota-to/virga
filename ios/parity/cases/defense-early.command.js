@@ -20,6 +20,7 @@ import {
   shortCode,
 } from '../../../src/defense/command.js';
 import { each, value } from './_helpers.js';
+import { seeded } from './_defense.js';
 
 export const sources = ['src/defense/command.js'];
 
@@ -425,6 +426,54 @@ const COMMANDS = [
   C('add quoters', { embedUri: 'https://example.com' }),
   C('add reposters at://did:plc:abc/app.bsky.feed.post'),
   C('add repliers https://deer.social/profile/did:plc:x/post/3y'),
+  // look-alikes that JavaScript's own case mapping folds onto a band or a
+  // kind (the dotless i upper-cases to I, the Kelvin sign lower-cases to k)
+  C(`approve 3f9a2c1b li${KELVIN}ers`),
+  C('approve 3f9a2c1b per\u0131pheral'),
+  C('approve 3f9a2c1b PER\u0130PHERAL'),
+  C(`approve 3f9a2c1b UN${KELVIN}NOWN li${KELVIN}ers`),
+  C('approve 3f9a2c1b \u017Fomething'),
+  C('approve3f9a2c1b UNKNOWN'),
+  C('approve 3f9a2c1b NOTABLE\u00a0UNKNOWN'),
+  C('approve 3f9a2c1b\nUNKNOWN'),
+  C('approve 3f9a2c1b\u000bUNKNOWN'),
+  C('approve 3f9a2c1b \u0085UNKNOWN'),
+  C('Ｂlock @a.b.c'),
+  C('block\u000b@a.b.c'),
+  C('history @A.B.C'),
+  C('history @a.b.c\u0085'),
+  C('undo ３f9a2c1b'),
+  C('undo 3f9a2c1b-0000'),
+  C('keep @a.b.c AS a favour'),
+  C('keep @a.b.c —\u00a0an old friend'),
+  C('keep @a.b.c -- two dashes'),
+  C('link abcd\u00a0efgh'),
+  C('link abcd-efgh\u0085'),
+  // a shared record that isn't a post still names its author
+  C('block', { embedUri: LIST }),
+  C('unblock', { embedUri: FEED }),
+  C('block', { embedUri: 'at://did:plc:author' }),
+  C('block', { embedUri: 'at://did:plc:author/' }),
+  // facets that name one account twice, or two that read the same
+  C('block them', {
+    mentions: ['did:plc:aaa'],
+    links: ['https://bsky.app/profile/did:plc:aaa'],
+  }),
+  C('block them', { mentions: ['did:plc:AAA', 'did:plc:aaa'] }),
+  C('block them', {
+    links: ['https://bsky.app/profile/A.B.C', 'https://bsky.app/profile/a.b.c'],
+  }),
+  C('block them', {
+    links: ['https://bsky.app/profile/a.b.c', 'https://example.com'],
+  }),
+  C('unblock', {
+    embedUri: EMBED,
+    mentions: ['did:plc:a', 'did:plc:b'],
+  }),
+  C('keep', { mentions: ['did:plc:kept'] }),
+  C('history', { mentions: ['did:plc:a'] }),
+  C('scan', { embedUri: EMBED, links: [LIST] }),
+  C('scan', { links: [`look ${POST}`] }),
 ];
 
 const SCANS = [
@@ -564,6 +613,24 @@ const MESSAGES = [
       { features: [{ $type: 'APP.BSKY.RICHTEXT.FACET#LINK', uri: 'x' }] },
     ],
   },
+  // what the web can't iterate, it throws on; what it can, it reads
+  { facets: {} },
+  { facets: { 0: link('https://a'), length: 1 } },
+  { facets: 5 },
+  { facets: -1.5 },
+  { facets: true },
+  { facets: false },
+  { facets: 0 },
+  { facets: '' },
+  { facets: [{ features: {} }] },
+  { facets: [{ features: 7 }] },
+  { facets: [{ features: true }] },
+  { facets: [{ features: 0 }] },
+  { facets: [link('https://a'), { features: {} }] },
+  { facets: [[link('https://a')]] },
+  { facets: [{ features: ['x', null, 5, []] }] },
+  'not a message',
+  42,
 ];
 
 const WRITE_TEXTS = [
@@ -587,7 +654,175 @@ const WRITE_TEXTS = [
   null,
 ];
 
+/**
+ * Messages made at random (seeded) from the pieces a command is made of,
+ * and the pieces that break one: verbs in any case, codes good and bad,
+ * bands, kinds, handles, DIDs, links whole and shortened, punctuation,
+ * every kind of space and the look-alike letters. Each comes with facets
+ * and a shared post some of the time.
+ */
+const FUZZ = Number(process.env.DEFENSE_FUZZ || 0) || 240;
+function fuzzed(n, seed) {
+  const rand = seeded(seed);
+  const pick = (list) => list[Math.floor(rand() * list.length)];
+  const VERBS = [
+    'block',
+    'unblock',
+    'BLOCK',
+    'list add',
+    'list  remove',
+    'add likers',
+    'add the repliers',
+    'list add everyone',
+    'scan',
+    'approve',
+    'Approve',
+    'review',
+    'cancel',
+    'undo',
+    'history',
+    'keep',
+    'unkeep',
+    'link',
+    'new list',
+    'make a list called',
+    'help',
+    'status',
+    'lists',
+    'show me my lists',
+    'what can you do',
+    'blocking',
+    'approved',
+    'ſcan',
+    `bloc${KELVIN}`,
+    '',
+  ];
+  const WORDS = [
+    '3f9a2c1b',
+    '3F9A2C1B',
+    '3f9a2c1',
+    '3f9a2c1bb',
+    'abcd-efgh',
+    'ABCD-EFG0',
+    'UNKNOWN',
+    'unknown',
+    'NOTABLE',
+    'PERIPHERAL',
+    'per\u0131pheral',
+    'CONNECTED',
+    'PROTECTED',
+    `UN${KELVIN}NOWN`,
+    'likers',
+    `li${KELVIN}ers`,
+    'repliers',
+    'quoters',
+    'reposters',
+    'everyone',
+    'and',
+    'the',
+    '&',
+    '+',
+    'please',
+    'except',
+    'them',
+    'this',
+    'guy',
+    'last',
+    'it',
+    'because',
+    'as',
+    '—',
+    '-',
+    'called',
+    'for',
+    '@a.bsky.social',
+    '@A.B.C',
+    'a.b.c',
+    '@did:plc:abc123',
+    'did:plc:abc123',
+    'did:web:example.com:user',
+    '@a',
+    '@-a.b',
+    '@😀.bsky.social',
+    POST,
+    AT_POST,
+    LIST,
+    'https://bsky.app/profile/a.b.c',
+    'https://bsky.app/profile/did%3Aplc%3Aabc',
+    'https://bsky.app/profile/50%off',
+    'bsky.app/profile/jo.e...',
+    'bsky.app/profile/jo.e…',
+    '@stranger...',
+    `(${POST})`,
+    `<${AT_POST}>`,
+    '“quoted”',
+    '?',
+    '!!',
+    '.',
+    ',',
+    ';',
+    '👍',
+    '😀😀',
+    'é',
+    'ＵＮＫＮＯＷＮ',
+    '３f9a2c1b',
+    'x'.repeat(45),
+  ];
+  const SPACES = [
+    ' ',
+    ' ',
+    ' ',
+    '  ',
+    '\t',
+    '\n',
+    '\u00a0',
+    '\u3000',
+    '\u2028',
+    '\ufeff',
+    '\u200b',
+    '\u0085',
+    ',',
+    ', ',
+  ];
+  const PUNCT = ['', '', '', '', '.', '!', '?', ',', ':', ')', '...'];
+  return Array.from({ length: n }, (_, i) => {
+    const words = [pick(VERBS)];
+    const count = Math.floor(rand() * 5);
+    for (let w = 0; w < count; w += 1) words.push(pick(WORDS) + pick(PUNCT));
+    let text = '';
+    words.forEach((word, w) => {
+      text += (w ? pick(SPACES) : rand() < 0.1 ? pick(SPACES) : '') + word;
+    });
+    const opts = {};
+    if (rand() < 0.2)
+      opts.embedUri = pick([
+        EMBED,
+        AT_POST,
+        LIST,
+        FEED,
+        '',
+        'https://example.com',
+      ]);
+    if (rand() < 0.2)
+      opts.links = Array.from({ length: 1 + Math.floor(rand() * 2) }, () =>
+        pick([
+          POST,
+          LIST,
+          'https://bsky.app/profile/x.y.z',
+          'https://bsky.app/profile/X.Y.Z',
+          'https://example.com',
+        ]),
+      );
+    if (rand() < 0.2)
+      opts.mentions = Array.from({ length: 1 + Math.floor(rand() * 2) }, () =>
+        pick(['did:plc:aaa', 'did:plc:bbb', 'did:plc:aaa']),
+      );
+    return { $id: `fuzz-${seed}-${i}`, text, ...opts };
+  });
+}
+
 export default async function cases() {
+  const fuzz = fuzzed(FUZZ, 7);
   return [
     value('constants', { KINDS, HELP }),
     ...(await each(
@@ -600,6 +835,21 @@ export default async function cases() {
     )),
     ...(await each('parsePostScan', SCANS, ({ text, ...opts }) =>
       parsePostScan(text, opts),
+    )),
+    ...(await each('parseCommand', fuzz, ({ text, ...opts }) =>
+      parseCommand(text, opts),
+    )),
+    ...(await each(
+      'parsePostScan',
+      fuzz.filter((_, i) => i % 3 === 0),
+      ({ text, ...opts }) => parsePostScan(text, opts),
+    )),
+    ...(await each(
+      'parseActor',
+      fuzz
+        .filter((_, i) => i % 3 === 1)
+        .map(({ $id, text }) => ({ $id, token: text.split(/\s+/)[1] ?? text })),
+      ({ token }) => parseActor(token),
     )),
     ...(await each(
       'extractTargets',

@@ -4778,7 +4778,7 @@
             "live": 494
           }
         },
-        "locale": "en-CH"
+        "locale": "en-FR"
       },
       "output": {
         "added": 100,
@@ -4804,7 +4804,7 @@
             "live": 494
           }
         },
-        "locale": "en-ZA"
+        "locale": "en-CH"
       },
       "output": {
         "added": 100,
@@ -4830,7 +4830,7 @@
             "live": 494
           }
         },
-        "locale": "en-SE"
+        "locale": "en-ZA"
       },
       "output": {
         "added": 100,
@@ -4848,19 +4848,24 @@
       "input": {
         "plan": {
           "counts": {
-            "undone": 3
+            "added": 100,
+            "waiting": 394,
+            "kept": 2,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
           }
         },
-        "locale": "en-US"
+        "locale": "en-SE"
       },
       "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
+        "added": 100,
+        "waiting": 394,
+        "kept": 2,
         "failed": 0,
-        "undone": 3,
-        "live": 0,
-        "line": "3 undone"
+        "undone": 0,
+        "live": 494,
+        "line": "100 added · 394 waiting · 2 kept off by the veto"
       }
     },
     {
@@ -4872,7 +4877,7 @@
             "undone": 3
           }
         },
-        "locale": "en-GB"
+        "locale": "en-US"
       },
       "output": {
         "added": 0,
@@ -4893,7 +4898,7 @@
             "undone": 3
           }
         },
-        "locale": "en-IN"
+        "locale": "en-GB"
       },
       "output": {
         "added": 0,
@@ -4914,7 +4919,7 @@
             "undone": 3
           }
         },
-        "locale": "en-DE"
+        "locale": "en-IN"
       },
       "output": {
         "added": 0,
@@ -4935,7 +4940,7 @@
             "undone": 3
           }
         },
-        "locale": "en-CH"
+        "locale": "en-DE"
       },
       "output": {
         "added": 0,
@@ -4956,7 +4961,7 @@
             "undone": 3
           }
         },
-        "locale": "en-ZA"
+        "locale": "en-FR"
       },
       "output": {
         "added": 0,
@@ -4977,7 +4982,7 @@
             "undone": 3
           }
         },
-        "locale": "en-SE"
+        "locale": "en-CH"
       },
       "output": {
         "added": 0,
@@ -4993,34 +4998,42 @@
       "id": "planOutcome#15",
       "fn": "planOutcome",
       "input": {
-        "plan": {},
-        "locale": "en-US"
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-ZA"
       },
       "output": {
         "added": 0,
         "waiting": 0,
         "kept": 0,
         "failed": 0,
-        "undone": 0,
+        "undone": 3,
         "live": 0,
-        "line": "Nothing to add"
+        "line": "3 undone"
       }
     },
     {
       "id": "planOutcome#16",
       "fn": "planOutcome",
       "input": {
-        "plan": {},
-        "locale": "en-GB"
+        "plan": {
+          "counts": {
+            "undone": 3
+          }
+        },
+        "locale": "en-SE"
       },
       "output": {
         "added": 0,
         "waiting": 0,
         "kept": 0,
         "failed": 0,
-        "undone": 0,
+        "undone": 3,
         "live": 0,
-        "line": "Nothing to add"
+        "line": "3 undone"
       }
     },
     {
@@ -5028,7 +5041,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": {},
-        "locale": "en-IN"
+        "locale": "en-US"
       },
       "output": {
         "added": 0,
@@ -5045,7 +5058,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": {},
-        "locale": "en-DE"
+        "locale": "en-GB"
       },
       "output": {
         "added": 0,
@@ -5062,7 +5075,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": {},
-        "locale": "en-CH"
+        "locale": "en-IN"
       },
       "output": {
         "added": 0,
@@ -5079,7 +5092,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": {},
-        "locale": "en-ZA"
+        "locale": "en-DE"
       },
       "output": {
         "added": 0,
@@ -5096,7 +5109,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": {},
-        "locale": "en-SE"
+        "locale": "en-FR"
       },
       "output": {
         "added": 0,
@@ -5112,8 +5125,8 @@
       "id": "planOutcome#22",
       "fn": "planOutcome",
       "input": {
-        "plan": null,
-        "locale": "en-US"
+        "plan": {},
+        "locale": "en-CH"
       },
       "output": {
         "added": 0,
@@ -5129,8 +5142,8 @@
       "id": "planOutcome#23",
       "fn": "planOutcome",
       "input": {
-        "plan": null,
-        "locale": "en-GB"
+        "plan": {},
+        "locale": "en-ZA"
       },
       "output": {
         "added": 0,
@@ -5146,8 +5159,8 @@
       "id": "planOutcome#24",
       "fn": "planOutcome",
       "input": {
-        "plan": null,
-        "locale": "en-IN"
+        "plan": {},
+        "locale": "en-SE"
       },
       "output": {
         "added": 0,
@@ -5164,7 +5177,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": null,
-        "locale": "en-DE"
+        "locale": "en-US"
       },
       "output": {
         "added": 0,
@@ -5181,7 +5194,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": null,
-        "locale": "en-CH"
+        "locale": "en-GB"
       },
       "output": {
         "added": 0,
@@ -5198,7 +5211,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": null,
-        "locale": "en-ZA"
+        "locale": "en-IN"
       },
       "output": {
         "added": 0,
@@ -5215,7 +5228,7 @@
       "fn": "planOutcome",
       "input": {
         "plan": null,
-        "locale": "en-SE"
+        "locale": "en-DE"
       },
       "output": {
         "added": 0,
@@ -5231,10 +5244,8 @@
       "id": "planOutcome#29",
       "fn": "planOutcome",
       "input": {
-        "plan": {
-          "counts": null
-        },
-        "locale": "en-US"
+        "plan": null,
+        "locale": "en-FR"
       },
       "output": {
         "added": 0,
@@ -5250,10 +5261,8 @@
       "id": "planOutcome#30",
       "fn": "planOutcome",
       "input": {
-        "plan": {
-          "counts": null
-        },
-        "locale": "en-GB"
+        "plan": null,
+        "locale": "en-CH"
       },
       "output": {
         "added": 0,
@@ -5269,10 +5278,8 @@
       "id": "planOutcome#31",
       "fn": "planOutcome",
       "input": {
-        "plan": {
-          "counts": null
-        },
-        "locale": "en-IN"
+        "plan": null,
+        "locale": "en-ZA"
       },
       "output": {
         "added": 0,
@@ -5288,10 +5295,8 @@
       "id": "planOutcome#32",
       "fn": "planOutcome",
       "input": {
-        "plan": {
-          "counts": null
-        },
-        "locale": "en-DE"
+        "plan": null,
+        "locale": "en-SE"
       },
       "output": {
         "added": 0,
@@ -5310,7 +5315,7 @@
         "plan": {
           "counts": null
         },
-        "locale": "en-CH"
+        "locale": "en-US"
       },
       "output": {
         "added": 0,
@@ -5329,7 +5334,7 @@
         "plan": {
           "counts": null
         },
-        "locale": "en-ZA"
+        "locale": "en-GB"
       },
       "output": {
         "added": 0,
@@ -5348,7 +5353,7 @@
         "plan": {
           "counts": null
         },
-        "locale": "en-SE"
+        "locale": "en-IN"
       },
       "output": {
         "added": 0,
@@ -5365,25 +5370,18 @@
       "fn": "planOutcome",
       "input": {
         "plan": {
-          "counts": {
-            "added": 1,
-            "waiting": 1,
-            "kept": 1,
-            "failed": 1,
-            "undone": 1,
-            "live": 2
-          }
+          "counts": null
         },
-        "locale": "en-US"
+        "locale": "en-DE"
       },
       "output": {
-        "added": 1,
-        "waiting": 1,
-        "kept": 1,
-        "failed": 1,
-        "undone": 1,
-        "live": 2,
-        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
       }
     },
     {
@@ -5391,25 +5389,18 @@
       "fn": "planOutcome",
       "input": {
         "plan": {
-          "counts": {
-            "added": 1,
-            "waiting": 1,
-            "kept": 1,
-            "failed": 1,
-            "undone": 1,
-            "live": 2
-          }
+          "counts": null
         },
-        "locale": "en-GB"
+        "locale": "en-FR"
       },
       "output": {
-        "added": 1,
-        "waiting": 1,
-        "kept": 1,
-        "failed": 1,
-        "undone": 1,
-        "live": 2,
-        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
       }
     },
     {
@@ -5417,25 +5408,18 @@
       "fn": "planOutcome",
       "input": {
         "plan": {
-          "counts": {
-            "added": 1,
-            "waiting": 1,
-            "kept": 1,
-            "failed": 1,
-            "undone": 1,
-            "live": 2
-          }
+          "counts": null
         },
-        "locale": "en-IN"
+        "locale": "en-CH"
       },
       "output": {
-        "added": 1,
-        "waiting": 1,
-        "kept": 1,
-        "failed": 1,
-        "undone": 1,
-        "live": 2,
-        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
       }
     },
     {
@@ -5443,25 +5427,18 @@
       "fn": "planOutcome",
       "input": {
         "plan": {
-          "counts": {
-            "added": 1,
-            "waiting": 1,
-            "kept": 1,
-            "failed": 1,
-            "undone": 1,
-            "live": 2
-          }
+          "counts": null
         },
-        "locale": "en-DE"
+        "locale": "en-ZA"
       },
       "output": {
-        "added": 1,
-        "waiting": 1,
-        "kept": 1,
-        "failed": 1,
-        "undone": 1,
-        "live": 2,
-        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
       }
     },
     {
@@ -5469,25 +5446,18 @@
       "fn": "planOutcome",
       "input": {
         "plan": {
-          "counts": {
-            "added": 1,
-            "waiting": 1,
-            "kept": 1,
-            "failed": 1,
-            "undone": 1,
-            "live": 2
-          }
+          "counts": null
         },
-        "locale": "en-CH"
+        "locale": "en-SE"
       },
       "output": {
-        "added": 1,
-        "waiting": 1,
-        "kept": 1,
-        "failed": 1,
-        "undone": 1,
-        "live": 2,
-        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "Nothing to add"
       }
     },
     {
@@ -5504,7 +5474,7 @@
             "live": 2
           }
         },
-        "locale": "en-ZA"
+        "locale": "en-US"
       },
       "output": {
         "added": 1,
@@ -5530,7 +5500,7 @@
             "live": 2
           }
         },
-        "locale": "en-SE"
+        "locale": "en-GB"
       },
       "output": {
         "added": 1,
@@ -5544,6 +5514,162 @@
     },
     {
       "id": "planOutcome#43",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#44",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#45",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#46",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#47",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#48",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1,
+            "waiting": 1,
+            "kept": 1,
+            "failed": 1,
+            "undone": 1,
+            "live": 2
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 1,
+        "waiting": 1,
+        "kept": 1,
+        "failed": 1,
+        "undone": 1,
+        "live": 2,
+        "line": "1 added · 1 waiting · 1 kept off by the veto · 1 couldn’t be added · 1 undone"
+      }
+    },
+    {
+      "id": "planOutcome#49",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5569,7 +5695,7 @@
       }
     },
     {
-      "id": "planOutcome#44",
+      "id": "planOutcome#50",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5595,7 +5721,7 @@
       }
     },
     {
-      "id": "planOutcome#45",
+      "id": "planOutcome#51",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5621,7 +5747,7 @@
       }
     },
     {
-      "id": "planOutcome#46",
+      "id": "planOutcome#52",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5647,7 +5773,33 @@
       }
     },
     {
-      "id": "planOutcome#47",
+      "id": "planOutcome#53",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#54",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5673,181 +5825,29 @@
       }
     },
     {
-      "id": "planOutcome#48",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "added": 1234567,
-            "waiting": 10000,
-            "kept": 999,
-            "failed": 1000,
-            "undone": 12345,
-            "live": 1244567
-          }
-        },
-        "locale": "en-ZA"
-      },
-      "output": {
-        "added": 1234567,
-        "waiting": 10000,
-        "kept": 999,
-        "failed": 1000,
-        "undone": 12345,
-        "live": 1244567,
-        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
-      }
-    },
-    {
-      "id": "planOutcome#49",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "added": 1234567,
-            "waiting": 10000,
-            "kept": 999,
-            "failed": 1000,
-            "undone": 12345,
-            "live": 1244567
-          }
-        },
-        "locale": "en-SE"
-      },
-      "output": {
-        "added": 1234567,
-        "waiting": 10000,
-        "kept": 999,
-        "failed": 1000,
-        "undone": 12345,
-        "live": 1244567,
-        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
-      }
-    },
-    {
-      "id": "planOutcome#50",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "failed": 7
-          }
-        },
-        "locale": "en-US"
-      },
-      "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
-      }
-    },
-    {
-      "id": "planOutcome#51",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "failed": 7
-          }
-        },
-        "locale": "en-GB"
-      },
-      "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
-      }
-    },
-    {
-      "id": "planOutcome#52",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "failed": 7
-          }
-        },
-        "locale": "en-IN"
-      },
-      "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
-      }
-    },
-    {
-      "id": "planOutcome#53",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "failed": 7
-          }
-        },
-        "locale": "en-DE"
-      },
-      "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
-      }
-    },
-    {
-      "id": "planOutcome#54",
-      "fn": "planOutcome",
-      "input": {
-        "plan": {
-          "counts": {
-            "failed": 7
-          }
-        },
-        "locale": "en-CH"
-      },
-      "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
-      }
-    },
-    {
       "id": "planOutcome#55",
       "fn": "planOutcome",
       "input": {
         "plan": {
           "counts": {
-            "failed": 7
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
           }
         },
         "locale": "en-ZA"
       },
       "output": {
-        "added": 0,
-        "waiting": 0,
-        "kept": 0,
-        "failed": 7,
-        "undone": 0,
-        "live": 0,
-        "line": "7 couldn’t be added"
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
       }
     },
     {
@@ -5856,6 +5856,179 @@
       "input": {
         "plan": {
           "counts": {
+            "added": 1234567,
+            "waiting": 10000,
+            "kept": 999,
+            "failed": 1000,
+            "undone": 12345,
+            "live": 1244567
+          }
+        },
+        "locale": "en-SE"
+      },
+      "output": {
+        "added": 1234567,
+        "waiting": 10000,
+        "kept": 999,
+        "failed": 1000,
+        "undone": 12345,
+        "live": 1244567,
+        "line": "1 234 567 added · 10 000 waiting · 999 kept off by the veto · 1 000 couldn’t be added · 12 345 undone"
+      }
+    },
+    {
+      "id": "planOutcome#57",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-US"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#58",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-GB"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#59",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-IN"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#60",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-DE"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#61",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#62",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-CH"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#63",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "failed": 7
+          }
+        },
+        "locale": "en-ZA"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 7,
+        "undone": 0,
+        "live": 0,
+        "line": "7 couldn’t be added"
+      }
+    },
+    {
+      "id": "planOutcome#64",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
             "failed": 7
           }
         },
@@ -5872,7 +6045,7 @@
       }
     },
     {
-      "id": "planOutcome#57",
+      "id": "planOutcome#65",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5894,7 +6067,7 @@
       }
     },
     {
-      "id": "planOutcome#58",
+      "id": "planOutcome#66",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5916,7 +6089,7 @@
       }
     },
     {
-      "id": "planOutcome#59",
+      "id": "planOutcome#67",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5938,7 +6111,7 @@
       }
     },
     {
-      "id": "planOutcome#60",
+      "id": "planOutcome#68",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5960,7 +6133,29 @@
       }
     },
     {
-      "id": "planOutcome#61",
+      "id": "planOutcome#69",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "counts": {
+            "kept": 5,
+            "live": 0
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 0,
+        "waiting": 0,
+        "kept": 5,
+        "failed": 0,
+        "undone": 0,
+        "live": 0,
+        "line": "5 kept off by the veto"
+      }
+    },
+    {
+      "id": "planOutcome#70",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -5982,7 +6177,7 @@
       }
     },
     {
-      "id": "planOutcome#62",
+      "id": "planOutcome#71",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6004,7 +6199,7 @@
       }
     },
     {
-      "id": "planOutcome#63",
+      "id": "planOutcome#72",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6026,7 +6221,7 @@
       }
     },
     {
-      "id": "planOutcome#64",
+      "id": "planOutcome#73",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6069,7 +6264,7 @@
       }
     },
     {
-      "id": "planOutcome#65",
+      "id": "planOutcome#74",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6112,7 +6307,7 @@
       }
     },
     {
-      "id": "planOutcome#66",
+      "id": "planOutcome#75",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6155,7 +6350,7 @@
       }
     },
     {
-      "id": "planOutcome#67",
+      "id": "planOutcome#76",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6198,7 +6393,50 @@
       }
     },
     {
-      "id": "planOutcome#68",
+      "id": "planOutcome#77",
+      "fn": "planOutcome",
+      "input": {
+        "plan": {
+          "id": "3f9a2c1b-0000-4000-8000-000000000000",
+          "listId": "l",
+          "postUri": "at://did:plc:me/app.bsky.feed.post/1",
+          "createdAt": "2026-11-18T10:00:00.000Z",
+          "approvedAt": "2026-11-18T10:01:00.000Z",
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on",
+          "totals": {
+            "rows": 494,
+            "byBand": {
+              "UNKNOWN": 480,
+              "NOTABLE": 14
+            }
+          },
+          "counts": {
+            "added": 494,
+            "waiting": 0,
+            "kept": 0,
+            "failed": 0,
+            "undone": 0,
+            "live": 494
+          }
+        },
+        "locale": "en-FR"
+      },
+      "output": {
+        "added": 494,
+        "waiting": 0,
+        "kept": 0,
+        "failed": 0,
+        "undone": 0,
+        "live": 494,
+        "line": "494 added"
+      }
+    },
+    {
+      "id": "planOutcome#78",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6241,7 +6479,7 @@
       }
     },
     {
-      "id": "planOutcome#69",
+      "id": "planOutcome#79",
       "fn": "planOutcome",
       "input": {
         "plan": {
@@ -6284,7 +6522,7 @@
       }
     },
     {
-      "id": "planOutcome#70",
+      "id": "planOutcome#80",
       "fn": "planOutcome",
       "input": {
         "plan": {
