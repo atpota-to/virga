@@ -120,6 +120,12 @@ means porting the code, not reimagining it.
   inputs adversarial: empty, unicode and emoji, boundaries, malformed data,
   every branch the web code has. The web module's own `*.test.js` is the best
   list of interesting inputs; reuse them.
+- **Recorded-fetch parity** for code that talks to the network: in the
+  generator, wrap the web call in `withFakeFetch(responder, fn)`
+  (`cases/_helpers.js`); the fixture records every request the web code made
+  (URL, method, headers, body) and its result. The Swift test answers the
+  same requests from `MockTransport` and checks the port made the same
+  requests, in the same order, and reached the same result.
 - **Behaviour tests** for what can't be a fixture: models, stores, networking
   against `MockTransport` (request shape, pagination, errors, retries), and
   anything with I/O. Port the web module's own tests where they apply.

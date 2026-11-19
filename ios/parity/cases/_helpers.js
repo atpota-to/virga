@@ -115,3 +115,74 @@ export const FIXED_NOW = Date.UTC(2026, 2, 15, 12, 0, 0);
 
 /** Days in milliseconds. */
 export const DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * Runs `fn` with `globalThis.fetch` replaced by a fake that answers each
+ * request from `responder(request)` and records it. Returns
+ * `{ requests, result }` (or `$throws` instead of `result`), so a Swift test
+ * can stand the same answers up in MockTransport and check the port makes
+ * the same requests and reaches the same result.
+ *
+ * A request is `{ url, method, headers, body }`: header names lower-cased;
+ * body as `{ $json }`, `{ $text }`, `{ $bytes: base64 }` or null.
+ * `responder` returns `{ status = 200, json } | { status, text } | { status,
+ * bytes: Uint8Array, contentType }`, optionally with `headers`.
+ */
+export async function withFakeFetch(responder, fn) {
+  const original = globalThis.fetch;
+  const requests = [];
+  globalThis.fetch = async (input, init = {}) => {
+    const url = typeof input === 'string' ? input : input?.url || String(input);
+    const method = String(init.method || 'GET').toUpperCase();
+    const headers = Object.fromEntries(
+      [...new Headers(init.headers || {}).entries()].sort(([a], [b]) =>
+        a < b ? -1 : a > b ? 1 : 0,
+      ),
+    );
+    let body = init.body ?? null;
+    if (body instanceof Uint8Array || body instanceof ArrayBuffer) {
+      body = { $bytes: Buffer.from(body).toString('base64') };
+    } else if (typeof body === 'string') {
+      try {
+        body = { $json: JSON.parse(body) };
+      } catch {
+        body = { $text: body };
+      }
+    } else if (body !== null) {
+      body = { $other: Object.prototype.toString.call(body) };
+    }
+    const request = { url, method, headers, body };
+    requests.push(request);
+    const answer = (await responder(request)) || {};
+    const status = answer.status ?? 200;
+    let payload = '';
+    let contentType = 'text/plain';
+    if (answer.json !== undefined) {
+      payload = JSON.stringify(answer.json);
+      contentType = 'application/json';
+    } else if (answer.bytes) {
+      payload = answer.bytes;
+      contentType = answer.contentType || 'application/octet-stream';
+    } else if (answer.text !== undefined) {
+      payload = answer.text;
+    }
+    const nullBody = status === 204 || status === 304;
+    return new Response(nullBody ? null : payload, {
+      status,
+      headers: { 'content-type': contentType, ...(answer.headers || {}) },
+    });
+  };
+  try {
+    try {
+      const result = await fn();
+      return { requests: toJSON(requests), result: toJSON(result) ?? null };
+    } catch (error) {
+      return {
+        requests: toJSON(requests),
+        $throws: String(error?.message || error),
+      };
+    }
+  } finally {
+    globalThis.fetch = original;
+  }
+}
