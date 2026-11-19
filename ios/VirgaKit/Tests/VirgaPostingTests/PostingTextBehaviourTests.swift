@@ -34,13 +34,17 @@ import VirgaTestSupport
     let resolve = Mentions.createMentionResolver(
       fetch: { _ in
         let n = count.withLock { $0 += 1; return $0 }
-        if n == 1 { try await Task.sleep(for: .seconds(30)) }
+        if n == 1 { try await Task.sleep(for: .seconds(3600)) }
         return Self.ok("did:plc:second")
       },
       timeoutMs: 30)
     let started = Date()
     #expect(try await resolve("slow.test") == nil)
-    #expect(Date().timeIntervalSince(started) < 5, "the timeout ended the wait")
+    // The lookup would take an hour; the 30 ms timeout ending it is what's
+    // checked. The bound is generous because the other suites run at the
+    // same time and can hold every thread for a while (CI's simulator took
+    // 21 seconds to get to the timer).
+    #expect(Date().timeIntervalSince(started) < 120, "the timeout ended the wait")
     #expect(try await resolve("slow.test") == "did:plc:second", "a timeout isn't remembered")
     #expect(count.wrappedValue == 2)
   }
@@ -95,13 +99,15 @@ import VirgaTestSupport
 @Suite struct GatesBehaviour {
   @Test func aSlowPreferencesReadIsNilInTime() async {
     let agent = FakeGatesAgent(preferences: {
-      try await Task.sleep(for: .seconds(30))
+      try await Task.sleep(for: .seconds(3600))
       return ["preferences": []]
     })
     let started = Date()
     let gates = await Gates.readDefaultGates(agent, timeoutMs: 30)
     #expect(gates == nil)
-    #expect(Date().timeIntervalSince(started) < 5)
+    // An hour's read, ended by the 30 ms timeout; generous for a busy
+    // thread pool (CI's simulator took 11 seconds to get to the timer).
+    #expect(Date().timeIntervalSince(started) < 120)
   }
 
   @Test func readsTheAccountsDefaults() async {

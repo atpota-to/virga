@@ -132,14 +132,16 @@ struct JSRegex: @unchecked Sendable {
   /// The first match: its range in UTF-16 code units and its groups (nil
   /// for a group that took no part), the groups read from `text` itself.
   func firstMatch(in text: String) -> (range: Range<Int>, groups: [String?])? {
-    let subject = caseless ? text.asciiLowercased : text
-    let ns = subject as NSString
-    guard let match = regex.firstMatch(in: subject, range: NSRange(location: 0, length: ns.length)) else { return nil }
-    let original = text as NSString
+    // VirgaCore's JSRegexSubject: the regex sees the text's own UTF-16 code
+    // units, whatever bridging would do, and the groups are read back from
+    // those units.
+    let (subject, length) = JSRegexSubject.make(caseless ? text.asciiLowercased : text)
+    guard let match = regex.firstMatch(in: subject, range: NSRange(location: 0, length: length)) else { return nil }
+    let units = Array(text.utf16)
     var groups: [String?] = []
     for index in 1..<match.numberOfRanges {
       let r = match.range(at: index)
-      groups.append(r.location == NSNotFound ? nil : original.substring(with: r))
+      groups.append(r.location == NSNotFound ? nil : String(jsUnits: units[r.location..<(r.location + r.length)]))
     }
     let whole = match.range
     return (whole.location..<(whole.location + whole.length), groups)

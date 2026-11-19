@@ -107,6 +107,9 @@ jobs:
         run: ios/scripts/xcodebuild.sh package-test
       - name: App, unit and UI tests
         run: ios/scripts/xcodebuild.sh app-test
+      - name: Why it failed
+        if: failure()
+        run: ios/scripts/ci-failure-report.sh
       - name: Keep the results
         if: failure()
         uses: actions/upload-artifact@v4
