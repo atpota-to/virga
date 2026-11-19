@@ -1,0 +1,68 @@
+{
+  "domain": "posting-text",
+  "target": "VirgaPosting",
+  "wave": 1,
+  "summary": "Rich text: facets, mentions, hashtags, inline links, URL matching, tags, thread splitting, post links, embeds, gates, compose intents and the posting events.",
+  "files": {
+    "src/posting/events.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/composeIntent.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/embeds.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/facets.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/gates.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/hashtags.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/inlineLinks.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/linkShortening.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/mentions.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/postLink.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/richText.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/tags.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/threadBatch.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/threadSplit.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/urlMatching.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

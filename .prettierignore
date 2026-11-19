@@ -1,0 +1,6 @@
+# Written by ios/parity tooling (JSON.stringify), compared byte for byte.
+ios/parity/fixtures/
+ios/parity/modules/
+# Swift, Xcode and build output.
+ios/VirgaKit/.build/
+ios/*.xcodeproj/

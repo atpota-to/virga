@@ -1,0 +1,49 @@
+{
+  "domain": "core",
+  "target": "VirgaCore",
+  "wave": 1,
+  "summary": "Shared ground: lexicon models, identifiers, time, locale and formatting, the sky, preferences, routing paths and the app constants.",
+  "files": {
+    "src/config.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/AppConfig.swift"
+      ],
+      "synced": "9488998b16d8"
+    },
+    "src/lib/locale.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/preferences.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/router.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/sky.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/time.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/graphemes.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Graphemes.swift"
+      ],
+      "synced": "744898cac218"
+    },
+    "src/posting/lib/tid.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/TID.swift"
+      ],
+      "synced": "db9b091f6326"
+    }
+  }
+}

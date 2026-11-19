@@ -1,0 +1,28 @@
+{
+  "domain": "publish",
+  "target": "VirgaPosting",
+  "wave": 2,
+  "summary": "Publishing records, link cards and Bluesky drafts.",
+  "files": {
+    "src/posting/drafts/draftMedia.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/drafts/drafts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/linkCard.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/publish.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/publishRecord.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

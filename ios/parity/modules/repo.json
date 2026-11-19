@@ -1,0 +1,16 @@
+{
+  "domain": "repo",
+  "target": "VirgaRepo",
+  "wave": 1,
+  "summary": "The repo as one CAR download, DAG-CBOR, CIDs, and the CID of a record.",
+  "files": {
+    "src/lib/carRepo.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/recordCid.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

@@ -7,3 +7,13 @@ dist/
 .env.local
 .vercel
 worker-data/
+
+# The iOS app (ios/)
+.worktrees/
+ios/VirgaKit/.build/
+ios/VirgaKit/.swiftpm/
+ios/*.xcodeproj/
+ios/build/
+ios/DerivedData/
+xcuserdata/
+ios/Config/Local.xcconfig

@@ -1,0 +1,184 @@
+{
+  "domain": "ui-posting",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "The composer and the posting pages as SwiftUI screens.",
+  "files": {
+    "src/posting/PostingPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/PostingSettingsSection.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/Composer.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/ComposerContext.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/ComposerDialogs.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/EmbedCards.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/LanguagePicker.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/MediaGrid.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/PostAsPicker.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/PostBlock.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/PostEditor.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/PublishButton.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/ReplyContext.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/TagsField.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/LibraryDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/LibraryPanel.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/TemplateEditor.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/TemplateQuestions.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/DraftsPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/HubPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/LibraryPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/PostedPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/ScheduledPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/TemplatesPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/TimersPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/WeeklySchedulePage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/hubParts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/scheduleParts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/AdviserBusy.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/AdviserSettings.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/AdviserSheet.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/AltTextDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/ComposerDefaults.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/GatesEditor.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/LifespanDefaults.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/LifespanEditor.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/NeedsBackend.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/PostPreview.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/PostingHeader.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/QueueSettings.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/SettingsParts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/StyleDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/TimerDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/WhenPicker.jsx": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

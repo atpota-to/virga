@@ -1,0 +1,28 @@
+{
+  "domain": "library",
+  "target": "VirgaPosting",
+  "wave": 3,
+  "summary": "The library: posts, saved posts, links, feeds and lists to quote or attach.",
+  "files": {
+    "src/posting/library/libraryUi.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/model.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/sources.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/store.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/useLibrary.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

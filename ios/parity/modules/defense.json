@@ -1,0 +1,72 @@
+{
+  "domain": "defense",
+  "target": "VirgaDefense",
+  "wave": 2,
+  "summary": "Defense: harvest, scan, score and canary, radar layout, lists, veto, plan, history and the moderator's commands.",
+  "files": {
+    "src/defense/bandWords.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/command.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/defenseService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/dmMessage.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/harvest.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/historyModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/limit.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/pace.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/pageModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/plan.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/radar.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/scan.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/scanStore.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/score.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/useDefense.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/veto.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

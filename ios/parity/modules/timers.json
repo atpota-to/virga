@@ -1,0 +1,20 @@
+{
+  "domain": "timers",
+  "target": "VirgaPosting",
+  "wave": 2,
+  "summary": "Post timers: rules, normalizing, describing and the server calls.",
+  "files": {
+    "src/posting/timers/selfDestruct.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/timers/timerService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/lifespanModel.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

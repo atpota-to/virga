@@ -1,0 +1,92 @@
+{
+  "domain": "session",
+  "target": "VirgaSession",
+  "wave": 1,
+  "summary": "Accounts and sessions, scopes and health, sign-in a step at a time, and agreeing to the terms.",
+  "files": {
+    "src/accounts/accountCopy.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/pendingWork.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/usePendingReauth.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/acceptance.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/documents.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/markdown.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/termsService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/useTermsAcceptance.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/version.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/oauthClient.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/sessionHint.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/accounts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/browserDriver.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/scopes.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/sessionController.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/sessionHealth.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/useAtprotoSession.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/flow.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/hosts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/identity.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/suggest.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

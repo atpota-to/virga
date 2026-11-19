@@ -1,0 +1,80 @@
+{
+  "domain": "insights",
+  "target": "VirgaInsights",
+  "wave": 2,
+  "summary": "Routes, dashboards, reports, tools, sharing a chart, settings sections and the command palette.",
+  "files": {
+    "src/dashboards/catalog.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/layouts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/routes.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/routes.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/annotations.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/models.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/registry.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/useAnnotations.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/settings/radioKeys.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/settings/sections.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/share/chartImage.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/share/shareSpec.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/commands.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/routes.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/shortcuts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/interactionModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/keep.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/registry.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

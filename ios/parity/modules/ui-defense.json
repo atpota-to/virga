@@ -1,0 +1,32 @@
+{
+  "domain": "ui-defense",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "Defense's screens and the radar in SwiftUI.",
+  "files": {
+    "src/defense/AddToList.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/DefenseHistory.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/DefenseLists.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/DefensePage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/ModeratorCard.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/Radar.jsx": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "domain": "archive",
+  "target": "VirgaArchive",
+  "wave": 2,
+  "summary": "The archive: store, first build and syncs, analytics, periods, chart formatting and exports.",
+  "files": {
+    "src/archive/ArchiveContext.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/archive/exports.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/archive/postChanges.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/archive/useAnalyticsArchive.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/format.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/analytics.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/analyticsExport.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/analyticsStore.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/analyticsSync.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/followerLog.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/periods.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/syncProgress.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

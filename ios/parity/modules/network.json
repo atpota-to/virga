@@ -1,0 +1,36 @@
+{
+  "domain": "network",
+  "target": "VirgaNetwork",
+  "wave": 1,
+  "summary": "HTTP, XRPC, the public AppView, PDS and PLC resolution, Constellation, blobs and Virga's server API.",
+  "files": {
+    "src/lib/activity.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/atproto.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/lib/constellation.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/asyncPool.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/blobs.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/backendClient.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/pds.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

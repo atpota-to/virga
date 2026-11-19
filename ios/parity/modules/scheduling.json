@@ -1,0 +1,48 @@
+{
+  "domain": "scheduling",
+  "target": "VirgaPosting",
+  "wave": 3,
+  "summary": "Scheduled posts and the queue: serializing, the service, the calendar and reordering, and the posting pages' models.",
+  "files": {
+    "src/posting/pages/draftActions.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/hubModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/postedModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/scheduleModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/queueCalendar.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/queueReorder.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/queueSuggestions.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/scheduleSerialize.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/scheduleService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/scheduledPostError.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

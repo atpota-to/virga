@@ -1,0 +1,32 @@
+{
+  "domain": "templates",
+  "target": "VirgaPosting",
+  "wave": 3,
+  "summary": "Post templates: records, filling, the service and usage.",
+  "files": {
+    "src/posting/library/templateEditorModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/templates/editorDrafts.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/templates/postTemplates.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/templates/templateService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/templates/templateUsage.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/templates/useTemplates.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

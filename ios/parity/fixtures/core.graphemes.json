@@ -1,0 +1,712 @@
+{
+  "name": "core.graphemes",
+  "sources": [
+    "src/posting/lib/graphemes.js"
+  ],
+  "cases": [
+    {
+      "id": "countGraphemes#1",
+      "fn": "countGraphemes",
+      "input": {
+        "text": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "countGraphemes#2",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "hello"
+      },
+      "output": 5
+    },
+    {
+      "id": "countGraphemes#3",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "héllo wörld"
+      },
+      "output": 11
+    },
+    {
+      "id": "countGraphemes#4",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "é"
+      },
+      "output": 1
+    },
+    {
+      "id": "countGraphemes#5",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "👍"
+      },
+      "output": 1
+    },
+    {
+      "id": "countGraphemes#6",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "👍🏽"
+      },
+      "output": 1
+    },
+    {
+      "id": "countGraphemes#7",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦"
+      },
+      "output": 1
+    },
+    {
+      "id": "countGraphemes#8",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "🏳️‍🌈"
+      },
+      "output": 1
+    },
+    {
+      "id": "countGraphemes#9",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "🇬🇧🇫🇷"
+      },
+      "output": 2
+    },
+    {
+      "id": "countGraphemes#10",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "नमस्ते"
+      },
+      "output": 3
+    },
+    {
+      "id": "countGraphemes#11",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "한국어"
+      },
+      "output": 3
+    },
+    {
+      "id": "countGraphemes#12",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "a‍b"
+      },
+      "output": 2
+    },
+    {
+      "id": "countGraphemes#13",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "tab\tand\nnewline"
+      },
+      "output": 15
+    },
+    {
+      "id": "countGraphemes#14",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢"
+      },
+      "output": 7
+    },
+    {
+      "id": "countGraphemes#15",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "mixed 👩🏾‍💻 text with café and 🇯🇵"
+      },
+      "output": 28
+    },
+    {
+      "id": "countGraphemes#16",
+      "fn": "countGraphemes",
+      "input": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": 301
+    },
+    {
+      "id": "truncateGraphemes#1",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#2",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "",
+        "max": 1
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#3",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "",
+        "max": 3
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#4",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "",
+        "max": 300
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#5",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "hello",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#6",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "hello",
+        "max": 1
+      },
+      "output": "h"
+    },
+    {
+      "id": "truncateGraphemes#7",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "hello",
+        "max": 3
+      },
+      "output": "hel"
+    },
+    {
+      "id": "truncateGraphemes#8",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "hello",
+        "max": 300
+      },
+      "output": "hello"
+    },
+    {
+      "id": "truncateGraphemes#9",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "héllo wörld",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#10",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "héllo wörld",
+        "max": 1
+      },
+      "output": "h"
+    },
+    {
+      "id": "truncateGraphemes#11",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "héllo wörld",
+        "max": 3
+      },
+      "output": "hél"
+    },
+    {
+      "id": "truncateGraphemes#12",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "héllo wörld",
+        "max": 300
+      },
+      "output": "héllo wörld"
+    },
+    {
+      "id": "truncateGraphemes#13",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "é",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#14",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "é",
+        "max": 1
+      },
+      "output": "é"
+    },
+    {
+      "id": "truncateGraphemes#15",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "é",
+        "max": 3
+      },
+      "output": "é"
+    },
+    {
+      "id": "truncateGraphemes#16",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "é",
+        "max": 300
+      },
+      "output": "é"
+    },
+    {
+      "id": "truncateGraphemes#17",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#18",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍",
+        "max": 1
+      },
+      "output": "👍"
+    },
+    {
+      "id": "truncateGraphemes#19",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍",
+        "max": 3
+      },
+      "output": "👍"
+    },
+    {
+      "id": "truncateGraphemes#20",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍",
+        "max": 300
+      },
+      "output": "👍"
+    },
+    {
+      "id": "truncateGraphemes#21",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍🏽",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#22",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍🏽",
+        "max": 1
+      },
+      "output": "👍🏽"
+    },
+    {
+      "id": "truncateGraphemes#23",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍🏽",
+        "max": 3
+      },
+      "output": "👍🏽"
+    },
+    {
+      "id": "truncateGraphemes#24",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👍🏽",
+        "max": 300
+      },
+      "output": "👍🏽"
+    },
+    {
+      "id": "truncateGraphemes#25",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#26",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦",
+        "max": 1
+      },
+      "output": "👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "truncateGraphemes#27",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦",
+        "max": 3
+      },
+      "output": "👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "truncateGraphemes#28",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦",
+        "max": 300
+      },
+      "output": "👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "truncateGraphemes#29",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🏳️‍🌈",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#30",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🏳️‍🌈",
+        "max": 1
+      },
+      "output": "🏳️‍🌈"
+    },
+    {
+      "id": "truncateGraphemes#31",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🏳️‍🌈",
+        "max": 3
+      },
+      "output": "🏳️‍🌈"
+    },
+    {
+      "id": "truncateGraphemes#32",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🏳️‍🌈",
+        "max": 300
+      },
+      "output": "🏳️‍🌈"
+    },
+    {
+      "id": "truncateGraphemes#33",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🇬🇧🇫🇷",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#34",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🇬🇧🇫🇷",
+        "max": 1
+      },
+      "output": "🇬🇧"
+    },
+    {
+      "id": "truncateGraphemes#35",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🇬🇧🇫🇷",
+        "max": 3
+      },
+      "output": "🇬🇧🇫🇷"
+    },
+    {
+      "id": "truncateGraphemes#36",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "🇬🇧🇫🇷",
+        "max": 300
+      },
+      "output": "🇬🇧🇫🇷"
+    },
+    {
+      "id": "truncateGraphemes#37",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "नमस्ते",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#38",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "नमस्ते",
+        "max": 1
+      },
+      "output": "न"
+    },
+    {
+      "id": "truncateGraphemes#39",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "नमस्ते",
+        "max": 3
+      },
+      "output": "नमस्ते"
+    },
+    {
+      "id": "truncateGraphemes#40",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "नमस्ते",
+        "max": 300
+      },
+      "output": "नमस्ते"
+    },
+    {
+      "id": "truncateGraphemes#41",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "한국어",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#42",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "한국어",
+        "max": 1
+      },
+      "output": "한"
+    },
+    {
+      "id": "truncateGraphemes#43",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "한국어",
+        "max": 3
+      },
+      "output": "한국어"
+    },
+    {
+      "id": "truncateGraphemes#44",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "한국어",
+        "max": 300
+      },
+      "output": "한국어"
+    },
+    {
+      "id": "truncateGraphemes#45",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "a‍b",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#46",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "a‍b",
+        "max": 1
+      },
+      "output": "a‍"
+    },
+    {
+      "id": "truncateGraphemes#47",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "a‍b",
+        "max": 3
+      },
+      "output": "a‍b"
+    },
+    {
+      "id": "truncateGraphemes#48",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "a‍b",
+        "max": 300
+      },
+      "output": "a‍b"
+    },
+    {
+      "id": "truncateGraphemes#49",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "tab\tand\nnewline",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#50",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "tab\tand\nnewline",
+        "max": 1
+      },
+      "output": "t"
+    },
+    {
+      "id": "truncateGraphemes#51",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "tab\tand\nnewline",
+        "max": 3
+      },
+      "output": "tab"
+    },
+    {
+      "id": "truncateGraphemes#52",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "tab\tand\nnewline",
+        "max": 300
+      },
+      "output": "tab\tand\nnewline"
+    },
+    {
+      "id": "truncateGraphemes#53",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#54",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "max": 1
+      },
+      "output": "𝔘"
+    },
+    {
+      "id": "truncateGraphemes#55",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "max": 3
+      },
+      "output": "𝔘𝔫𝔦"
+    },
+    {
+      "id": "truncateGraphemes#56",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "max": 300
+      },
+      "output": "𝔘𝔫𝔦𝔠𝔬𝔡𝔢"
+    },
+    {
+      "id": "truncateGraphemes#57",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "mixed 👩🏾‍💻 text with café and 🇯🇵",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#58",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "mixed 👩🏾‍💻 text with café and 🇯🇵",
+        "max": 1
+      },
+      "output": "m"
+    },
+    {
+      "id": "truncateGraphemes#59",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "mixed 👩🏾‍💻 text with café and 🇯🇵",
+        "max": 3
+      },
+      "output": "mix"
+    },
+    {
+      "id": "truncateGraphemes#60",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "mixed 👩🏾‍💻 text with café and 🇯🇵",
+        "max": 300
+      },
+      "output": "mixed 👩🏾‍💻 text with café and 🇯🇵"
+    },
+    {
+      "id": "truncateGraphemes#61",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "max": 0
+      },
+      "output": ""
+    },
+    {
+      "id": "truncateGraphemes#62",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "max": 1
+      },
+      "output": "x"
+    },
+    {
+      "id": "truncateGraphemes#63",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "max": 3
+      },
+      "output": "xxx"
+    },
+    {
+      "id": "truncateGraphemes#64",
+      "fn": "truncateGraphemes",
+      "input": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "max": 300
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  ]
+}
