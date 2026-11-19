@@ -14,7 +14,7 @@ import VirgaTestSupport
     for c in try cases("posting-text.threadBatch", "buildThreadWrites") {
       let now: Double
       switch c["now"] {
-      case .string(let text): now = VirgaRepo.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
+      case .string(let text): now = VirgaCore.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
       case .number(let ms): now = ms
       default: now = .nan
       }

@@ -15,6 +15,7 @@
 //
 // See ios/PORTING.md for the conventions every file here follows.
 
+import VirgaCore
 import Foundation
 
 /// The module's namespace, for version and identity.

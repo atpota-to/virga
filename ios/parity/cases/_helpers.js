@@ -204,11 +204,6 @@ export async function withTimeZone(tz, fn) {
   }
 }
 
-/** Zones worth recording local-time cases in: no DST, both hemispheres' DST, a half-hour offset. */
-export const ZONES = [
-  'UTC',
-  'America/New_York',
-  'Europe/London',
-  'Australia/Sydney',
-  'Asia/Kolkata',
-];
+// One list of zones for every generator, and the synchronous form, from
+// _zones.js.
+export { ZONES, inZone } from './_zones.js';

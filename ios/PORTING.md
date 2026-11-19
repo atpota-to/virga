@@ -132,7 +132,8 @@ means porting the code, not reimagining it.
   list of interesting inputs; reuse them.
 - **Local time.** Code that buckets or formats in local time takes a
   `TimeZone` in Swift; its generator records cases in several zones with
-  `withTimeZone(tz, fn)` over `ZONES` (`cases/_helpers.js`), across DST
+  `inZone(tz, fn)` (synchronous) or `withTimeZone(tz, fn)` (async) over
+  `ZONES` (`cases/_zones.js`, re-exported by `_helpers.js`), across DST
   changes, and passes the zone in the case input.
 - **Recorded-fetch parity** for code that talks to the network: in the
   generator, wrap the web call in `withFakeFetch(responder, fn)`
