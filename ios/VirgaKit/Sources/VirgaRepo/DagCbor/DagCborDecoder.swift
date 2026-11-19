@@ -68,10 +68,18 @@ private struct Reader {
     end = buffer.endIndex
   }
 
-  /// A container being filled.
-  enum Frame {
-    case array(values: [DagCborValue], remaining: Int)
-    case map(members: [String: DagCborValue], key: String, keyStart: Int, keyLength: Int, remaining: Int)
+  /// A container being filled, in place on the stack (an enum's payload
+  /// can't be appended to without copying it, which made a large array or
+  /// map take time quadratic in its length).
+  struct Frame {
+    var isMap: Bool
+    var values: [DagCborValue] = []
+    var members: [String: DagCborValue] = [:]
+    /// The key whose value comes next, and where it lies in the input.
+    var key = ""
+    var keyStart = 0
+    var keyLength = 0
+    var remaining: Int
   }
 
   /// Refuses a container that would open past `DagCbor.maxDepth`.
@@ -224,9 +232,9 @@ private struct Reader {
           // can't hold before making room for it.
           try requireBytes(arg)
           try checkDepth(stack.count)
-          var values: [DagCborValue] = []
-          values.reserveCapacity(arg)
-          stack.append(.array(values: values, remaining: arg))
+          var frame = Frame(isMap: false, remaining: arg)
+          frame.values.reserveCapacity(arg)
+          stack.append(frame)
           continue outer
         }
         value = .array([])
@@ -234,7 +242,7 @@ private struct Reader {
         if arg > 0 {
           try checkDepth(stack.count)
           let first = try decodeStringKey()
-          stack.append(.map(members: [:], key: first, keyStart: keyStart, keyLength: keyLength, remaining: arg))
+          stack.append(Frame(isMap: true, key: first, keyStart: keyStart, keyLength: keyLength, remaining: arg))
           continue outer
         }
         value = .map([:])
@@ -258,28 +266,32 @@ private struct Reader {
       }
 
       // Put the value in its container, and close every container it fills.
-      while let top = stack.popLast() {
-        switch top {
-        case .array(var values, let remaining):
-          values.append(value)
-          if remaining > 1 {
-            stack.append(.array(values: values, remaining: remaining - 1))
-            continue outer
-          }
-          value = .array(values)
-        case .map(var members, let key, let previousStart, let previousLength, let remaining):
-          members[key] = value
-          if remaining > 1 {
+      while !stack.isEmpty {
+        let top = stack.count - 1
+        if stack[top].isMap {
+          let key = stack[top].key
+          stack[top].members[key] = value
+        } else {
+          stack[top].values.append(value)
+        }
+        stack[top].remaining -= 1
+        if stack[top].remaining > 0 {
+          if stack[top].isMap {
+            // The next key, which must sort after this one.
+            let previousStart = stack[top].keyStart
+            let previousLength = stack[top].keyLength
             let next = try decodeStringKey()
             guard keyFollows(previousStart: previousStart, previousLength: previousLength) else {
               throw RepoError.type("map keys are not in canonical order or contain duplicates")
             }
-            stack.append(
-              .map(members: members, key: next, keyStart: keyStart, keyLength: keyLength, remaining: remaining - 1))
-            continue outer
+            stack[top].key = next
+            stack[top].keyStart = keyStart
+            stack[top].keyLength = keyLength
           }
-          value = .map(members)
+          continue outer
         }
+        let frame = stack.removeLast()
+        value = frame.isMap ? .map(frame.members) : .array(frame.values)
       }
       return value
     }

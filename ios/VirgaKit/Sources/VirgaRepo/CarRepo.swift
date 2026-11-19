@@ -325,7 +325,6 @@ public enum CarRepo {
             onProgress?(progress())
             await Task.yield()
             try Task.checkCancellation()
-        try Task.checkCancellation()
           }
           let node = try DagCbor.decode(bytes[nodeRange]).jsonValue
           let left = try JS.get(node, "l")

@@ -66,7 +66,18 @@ private func layOut(_ c: ParityCase) -> [UInt8] {
         out["progress"] = json(log.all)
         return out
       }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
+    }
+  }
+
+  @Test func readRepoCarRecordsWithAProtoMember() async throws {
+    // The decoder keeps a "__proto__" member as the record's own; these
+    // cases hold the parse as JSON.stringify wrote it, which keeps it too.
+    for c in try Parity.cases("repo.carRepo", fn: "readRepoCar.json") {
+      let expected = try JSONValue.parse(c.output.stringValue ?? "")
+      let contents = try await CarRepo.readRepoCar(c.base64("car"))
+      #expect(exactDiff(json(contents), expected, strictNulls: true) == nil, "\(c)")
+      #expect(contents.entries.first?.record.jsonString().contains("\"__proto__\"") == true, "\(c)")
     }
   }
 
@@ -84,19 +95,19 @@ private func layOut(_ c: ParityCase) -> [UInt8] {
         "last": contents.entries.last.map(json) ?? .null,
         "progress": json(log.all),
       ]
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func atmosphereRowFromEntry() throws {
     for c in try Parity.cases("repo.carRepo", fn: "atmosphereRowFromEntry") {
       let actual = outcome { try CarRepo.atmosphereRowFromEntry(json: c["entry"], timeZone: utc) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
 
       // The typed form agrees wherever the entry has the typed shape.
       if let entry = try? c["entry"].decode(RepoCarEntry.self) {
         let typed = outcome { json(try CarRepo.atmosphereRowFromEntry(entry, timeZone: utc)) }
-        #expect(Parity.diff(typed, c.output) == nil, "typed \(c)")
+        #expect(exactDiff(typed, c.output) == nil, "typed \(c)")
       }
     }
   }
@@ -117,7 +128,7 @@ private func layOut(_ c: ParityCase) -> [UInt8] {
       }
       actual["requests"] = .array(
         transport.requested.wrappedValue.map { ["url": .string($0), "method": "GET", "headers": [:], "body": nil] })
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 }
@@ -127,7 +138,7 @@ private func layOut(_ c: ParityCase) -> [UInt8] {
     for c in try Parity.cases("repo.carRepo", fn: "atmosphereRowFromEntry.zoned") {
       let zone = try #require(TimeZone(identifier: c["zone"].stringValue ?? ""))
       let actual = outcome { try CarRepo.atmosphereRowFromEntry(json: c["entry"], timeZone: zone) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 }

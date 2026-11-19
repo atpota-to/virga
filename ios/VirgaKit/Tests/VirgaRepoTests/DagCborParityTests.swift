@@ -11,7 +11,7 @@ import VirgaTestSupport
   @Test func encode() throws {
     for c in try Parity.cases("repo.cbor", fn: "encode") {
       let actual = outcome { .string(Hex.encode(try DagCbor.encode(c["value"]))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
@@ -27,7 +27,7 @@ import VirgaTestSupport
   @Test func decode() throws {
     for c in try Parity.cases("repo.cbor", fn: "decode") {
       let actual = outcome { try DagCbor.decode(c.bytes("hex")).jsonValue }
-      #expect(Parity.diff(actual, c.output, strictNulls: true) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output, strictNulls: true) == nil, "\(c)")
     }
   }
 }
@@ -57,6 +57,24 @@ import VirgaTestSupport
     // Maps count too.
     let maps = [UInt8](Array(repeating: [0xa1, 0x61, 0x61], count: 200).joined()) + [0xf6]
     #expect(throws: RepoError.self) { try DagCbor.decode(maps) }
+  }
+
+  @Test func largeContainersDecodeInLinearTime() throws {
+    // Containers are filled in place: copying one per element made a
+    // 40,000-element array take 16 seconds (a release build) where the web
+    // takes milliseconds. Here 200,000 elements and 100,000 keys, which
+    // took minutes that way, must take seconds even in a debug build.
+    let array = try DagCbor.encode(JSONValue.array((0..<200_000).map { .number(Double($0 % 1000)) }))
+    var members: [String: JSONValue] = [:]
+    for i in 0..<100_000 { members["k\(i)"] = .number(Double(i)) }
+    let map = try DagCbor.encode(JSONValue.object(members))
+    let start = Date()
+    let decodedArray = try DagCbor.decode(array)
+    let decodedMap = try DagCbor.decode(map)
+    let elapsed = Date().timeIntervalSince(start)
+    #expect(decodedArray == DagCborValue(json: .array((0..<200_000).map { .number(Double($0 % 1000)) })))
+    #expect(decodedMap["k99999"] == .number(99_999))
+    #expect(elapsed < 20, "decoding took \(elapsed) s")
   }
 
   @Test func decodeFirstLeavesTheRest() throws {

@@ -88,21 +88,41 @@ indirect enum ShapeInput: Encodable {
   @Test func computeRecordCid() throws {
     for c in try Parity.cases("repo.recordCid", fn: "computeRecordCid") {
       let actual = outcome { .string(try RecordCid.computeRecordCid(c["record"])) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
+    }
+  }
+
+  @Test func computeRecordCidOfParsedJSON() throws {
+    // Records as JSON text: a "__proto__" member is a real member, which
+    // the web's toJsonShape turns into the object's prototype.
+    for c in try Parity.cases("repo.recordCid", fn: "computeRecordCid.json") {
+      let record = try JSONValue.parse(c["json"].stringValue ?? "")
+      let actual = outcome { .string(try RecordCid.computeRecordCid(record)) }
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
+    }
+  }
+
+  @Test func toJsonShapeOfParsedJSON() throws {
+    for c in try Parity.cases("repo.recordCid", fn: "toJsonShape.json") {
+      let value = try JSONValue.parse(c["json"].stringValue ?? "")
+      #expect(exactDiff(RecordCid.toJsonShape(value), c.output, strictNulls: true) == nil, "\(c)")
+      // A decoded value and a Swift value take the same shape.
+      #expect(exactDiff(RecordCid.toJsonShape(DagCborValue(json: value)), c.output, strictNulls: true) == nil, "\(c)")
+      #expect(exactDiff(try RecordCid.toJsonShape(value as JSONValue?), c.output, strictNulls: true) == nil, "\(c)")
     }
   }
 
   @Test func computeRecordCidFromSwiftValues() throws {
     for c in try Parity.cases("repo.recordCid", fn: "computeRecordCid.instances") {
       let actual = outcome { .string(try RecordCid.computeRecordCid(ShapeInput(tagged: c["value"]))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func toJsonShape() throws {
     for c in try Parity.cases("repo.recordCid", fn: "toJsonShape") {
       let actual = outcome { try RecordCid.toJsonShape(ShapeInput(tagged: c["value"])) }
-      #expect(Parity.diff(actual, c.output, strictNulls: true) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output, strictNulls: true) == nil, "\(c)")
     }
   }
 
@@ -179,11 +199,37 @@ indirect enum ShapeInput: Encodable {
     #expect(RecordCid.toJsonShape(DagCborValue(json: value)) == value)
   }
 
+  @Test func nonFiniteNumbersAreRefusedByTheEncoder() throws {
+    // The web's toJsonShape passes NaN and ±Infinity through; its encoder
+    // refuses them.
+    struct Odd: Encodable {
+      var ratio: Double
+      var list: [Double]
+    }
+    for bad in [Double.nan, .infinity, -.infinity] {
+      let shape = try RecordCid.toJsonShape(Odd(ratio: bad, list: [1, bad]))
+      #expect(shape["ratio"]?.doubleValue.map { $0.isNaN ? bad.isNaN : $0 == bad } == true, "\(bad)")
+      #expect(shape["list"]?[1]?.doubleValue.map { $0.isNaN ? bad.isNaN : $0 == bad } == true, "\(bad)")
+      #expect(outcome { .string(try RecordCid.computeRecordCid(Odd(ratio: bad, list: []))) }
+        == ["$throws": "NaN and Infinity values not supported"])
+    }
+    #expect(try RecordCid.toJsonShape(Odd(ratio: 0.5, list: [])) == ["ratio": 0.5, "list": []])
+  }
+
   @Test func datesKeepWholeMilliseconds() throws {
     for ms in [0.0, 1, 999, 1_773_576_000_123, -1, 8.64e15] {
       let date = Date(timeIntervalSince1970: ms / 1000)
       let shape = try RecordCid.toJsonShape(["at": date])
       #expect(shape["at"]?.stringValue == JSDate.toISOString(ms), "\(ms)")
+    }
+    // A fraction of a millisecond is cut toward zero, as `new Date(ms)`
+    // cuts it: before 1970 that is up, not down.
+    for (seconds, iso) in [
+      (-0.0005, "1970-01-01T00:00:00.000Z"), (-0.0015, "1969-12-31T23:59:59.999Z"),
+      (0.0015, "1970-01-01T00:00:00.001Z"), (1_773_576_000.1237, "2026-03-15T12:00:00.123Z"),
+    ] {
+      let shape = try RecordCid.toJsonShape(["at": Date(timeIntervalSince1970: seconds)])
+      #expect(shape["at"]?.stringValue == iso, "\(seconds)")
     }
     // Past the range a JavaScript date holds: null, as JSON.stringify writes it.
     #expect(try RecordCid.toJsonShape(["at": Date(timeIntervalSince1970: 9e12)])["at"] == .null)

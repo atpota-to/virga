@@ -481,10 +481,292 @@ const SHAPES = [
   },
 ];
 
+// Encoder boundaries: argument widths for integers, string and array
+// lengths and map sizes, the encoder's long-string path (1,024 UTF-16 units
+// and up), its sort for more than 32 keys, and keys whose UTF-16 order is
+// not their UTF-8 order.
+const lengthOf = (n, unit = 'x') => unit.repeat(n);
+const BOUNDARY_RECORDS = [
+  {
+    $id: 'integer argument widths',
+    record: {
+      $type: 'x.y',
+      values: [
+        22,
+        23,
+        24,
+        25,
+        254,
+        255,
+        256,
+        257,
+        65_534,
+        65_535,
+        65_536,
+        65_537,
+        2 ** 32 - 2,
+        2 ** 32 - 1,
+        2 ** 32,
+        2 ** 32 + 1,
+        2 ** 52,
+        2 ** 53 - 2,
+      ],
+    },
+  },
+  {
+    $id: 'negative integer argument widths',
+    record: {
+      $type: 'x.y',
+      values: [
+        -23,
+        -24,
+        -25,
+        -26,
+        -255,
+        -256,
+        -257,
+        -258,
+        -65_535,
+        -65_536,
+        -65_537,
+        -(2 ** 32) + 1,
+        -(2 ** 32),
+        -(2 ** 32) - 1,
+        -(2 ** 53) + 2,
+      ],
+    },
+  },
+  {
+    $id: 'floats of every size',
+    record: {
+      $type: 'x.y',
+      values: [
+        -0.5,
+        1.5,
+        1e300,
+        -1e300,
+        5e-324,
+        -5e-324,
+        2 ** 52 + 0.5,
+        1e-7,
+        0.1,
+        2 ** 53 - 1.5,
+        123456.789,
+      ],
+    },
+  },
+  { $id: 'negative zero in an array', record: [-0, 0, -0.0] },
+  ...[23, 24, 255, 256, 1023, 1024, 1025, 65_535, 65_536].map((n) => ({
+    $id: `ascii string of ${n}`,
+    record: { $type: 'x.y', text: lengthOf(n) },
+  })),
+  ...[11, 12, 127, 128, 511, 512, 513, 1023, 1024].map((n) => ({
+    $id: `two-byte string of ${n} units`,
+    record: { $type: 'x.y', text: lengthOf(n, 'é') },
+  })),
+  ...[341, 342, 1024].map((n) => ({
+    $id: `three-byte string of ${n} units`,
+    record: { $type: 'x.y', text: lengthOf(n, '€') },
+  })),
+  {
+    $id: 'surrogate pairs past the long-string mark',
+    record: { $type: 'x.y', text: lengthOf(600, '😀') },
+  },
+  {
+    $id: 'mixed text past the long-string mark',
+    record: { $type: 'x.y', text: `${lengthOf(1000)}é😀€${lengthOf(30)}` },
+  },
+  ...[23, 24, 255, 256].map((n) => ({
+    $id: `array of ${n}`,
+    record: { $type: 'x.y', a: Array.from({ length: n }, (_, i) => i % 3) },
+  })),
+  ...[23, 24, 32, 33, 255, 256].map((n) => ({
+    $id: `map of ${n} keys`,
+    record: Object.fromEntries(
+      Array.from({ length: n }, (_, i) => [`k${(i * 7919) % 1000}`, i]),
+    ),
+  })),
+  {
+    $id: 'more than 32 keys, some not ASCII',
+    record: Object.fromEntries(
+      Array.from({ length: 40 }, (_, i) => [
+        ['é', '日', '😀', 'a', 'Z', '\u{10000}', '｡', '\u007f'][i % 8] +
+          String(i),
+        i,
+      ]),
+    ),
+  },
+  {
+    $id: 'keys whose UTF-16 order is not their UTF-8 order',
+    record: {
+      '\u{10000}a': 1,
+      '｡é': 2,
+      '￿': 3,
+      '\u{10000}': 4,
+      '': 5,
+    },
+  },
+  {
+    $id: 'keys of equal UTF-8 length, different UTF-16 length',
+    record: { '😀': 1, éé: 2, aaaa: 3, '€a': 4, 'a€': 5 },
+  },
+  {
+    $id: 'a key that is a number',
+    record: { 10: 'ten', 9: 'nine', a: 'a', '-1': 'm', 1.5: 'f' },
+  },
+  { $id: 'empty key', record: { '': 1, a: 2 } },
+  {
+    $id: 'nested deeply',
+    record: JSON.parse(`${'{"a":'.repeat(100)}1${'}'.repeat(100)}`),
+  },
+  // Links and bytes.
+  { $id: 'bytes empty', record: { sig: { $bytes: '' } } },
+  { $id: 'bytes one byte', record: { sig: { $bytes: 'AQ' } } },
+  { $id: 'bytes one byte padded', record: { sig: { $bytes: 'AQ==' } } },
+  { $id: 'bytes two bytes padded', record: { sig: { $bytes: 'AQI=' } } },
+  { $id: 'bytes only padding', record: { sig: { $bytes: '=' } } },
+  { $id: 'bytes wrong padding', record: { sig: { $bytes: 'AQ=' } } },
+  { $id: 'bytes non-canonical bits', record: { sig: { $bytes: 'AR' } } },
+  { $id: 'bytes url alphabet', record: { sig: { $bytes: '-_8' } } },
+  { $id: 'bytes with a newline', record: { sig: { $bytes: 'AQID\n' } } },
+  { $id: 'bytes one char', record: { sig: { $bytes: 'A' } } },
+  {
+    $id: 'bytes 256 long',
+    record: {
+      sig: {
+        $bytes: Buffer.from(Array.from({ length: 256 }, (_, i) => i))
+          .toString('base64')
+          .replace(/=+$/, ''),
+      },
+    },
+  },
+  { $id: 'link uppercase', record: { ref: { $link: CID_POST.toUpperCase() } } },
+  { $id: 'link padded', record: { ref: { $link: ` ${CID_POST}` } } },
+  { $id: 'link short', record: { ref: { $link: CID_POST.slice(0, 58) } } },
+  {
+    $id: 'link CIDv0',
+    record: {
+      ref: { $link: 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' },
+    },
+  },
+  { $id: 'link null', record: { ref: { $link: null } } },
+  { $id: 'bytes null', record: { sig: { $bytes: null } } },
+  { $id: 'link an object', record: { ref: { $link: { $link: CID_POST } } } },
+  // Objects with their own `constructor`, which the encoder doesn't take
+  // for plain objects.
+  {
+    $id: 'constructor and toString',
+    record: { constructor: 1, toString: 'x' },
+  },
+  { $id: 'constructor and valueOf', record: { constructor: 1, valueOf: 'x' } },
+  { $id: 'constructor null', record: { constructor: null } },
+  { $id: 'constructor an object', record: { constructor: {} } },
+  {
+    $id: 'constructor and a link',
+    record: { constructor: 1, $link: CID_POST, other: 2 },
+  },
+  { $id: 'constructor and bytes', record: { constructor: 1, $bytes: 'AQID' } },
+  {
+    $id: 'constructor, a link and bytes',
+    record: { constructor: 1, $bytes: 'AQID', $link: CID_POST },
+  },
+  { $id: 'constructor and a bad link', record: { constructor: 1, $link: 7 } },
+  {
+    $id: 'constructor and a null link',
+    record: { constructor: 1, $link: null },
+  },
+  { $id: 'constructor and bad bytes', record: { constructor: 1, $bytes: 7 } },
+  {
+    $id: 'constructor and invalid bytes',
+    record: { constructor: 1, $bytes: '@@' },
+  },
+  {
+    $id: 'first refusal in key order',
+    record: { b: { constructor: 1 }, a: { $link: 'bad' } },
+  },
+  {
+    $id: 'first refusal in canonical key order',
+    record: { aa: { $link: 'bad' }, b: { constructor: 1 } },
+  },
+];
+
+// Records as JSON text, parsed by JSON.parse as a record from the network
+// or storage is, so a member named "__proto__" is a real member (the
+// fixtures' own JSON can't carry one any other way). toJsonShape rebuilds
+// each object with `out[key] = …`, which makes it the prototype instead.
+const LINK = CID_POST;
+const PROTO_RECORDS = [
+  '{"a":1}',
+  '{"__proto__":5,"a":1}',
+  '{"__proto__":"x","a":1}',
+  '{"__proto__":true}',
+  '{"__proto__":{},"a":1}',
+  '{"__proto__":{"b":2},"a":1}',
+  '{"__proto__":null,"a":1}',
+  '{"__proto__":null}',
+  `{"__proto__":null,"$link":"${LINK}"}`,
+  '{"__proto__":null,"$bytes":"AQID"}',
+  '{"__proto__":null,"$link":5}',
+  '{"__proto__":null,"toString":1}',
+  `{"__proto__":{"$link":"${LINK}"},"constructor":1}`,
+  `{"__proto__":{"$link":"${LINK}"}}`,
+  `{"__proto__":{"$link":"${LINK}"},"$link":"${LINK}"}`,
+  '{"__proto__":{"$bytes":"AQID"},"constructor":1}',
+  '{"__proto__":{"constructor":1}}',
+  '{"__proto__":{"constructor":null}}',
+  '{"__proto__":{"constructor":1,"toString":1}}',
+  '{"__proto__":{"constructor":1,"$link":"x"}}',
+  '{"__proto__":{"constructor":1,"$bytes":"@@"}}',
+  '{"__proto__":{"constructor":1,"$bytes":5}}',
+  '{"__proto__":{"valueOf":1}}',
+  '{"__proto__":{"__proto__":null},"a":1}',
+  '{"__proto__":{"__proto__":null,"constructor":1}}',
+  '{"__proto__":{"__proto__":[7,8]}}',
+  '{"__proto__":{"0":1,"length":2},"constructor":1}',
+  '{"__proto__":[1,2],"a":1}',
+  '{"__proto__":[],"x":1}',
+  '{"__proto__":[[]],"x":1}',
+  '{"__proto__":[1,2],"0":"own0"}',
+  '{"__proto__":[1,2],"5":"five"}',
+  '{"__proto__":[1,2],"length":3}',
+  '{"__proto__":[1,2],"length":"2"}',
+  '{"__proto__":[1,2],"length":-4}',
+  '{"__proto__":[1,2],"length":2.9}',
+  '{"__proto__":[1,2],"length":1000}',
+  '{"__proto__":[1,2],"length":4294967296}',
+  '{"__proto__":[1,2],"length":1e300}',
+  '{"__proto__":[1,2],"length":{"toString":1}}',
+  '{"__proto__":[1,2],"length":[3]}',
+  '{"__proto__":[1,[2,3],null,{"a":1}]}',
+  '{"__proto__":[{"toString":1}]}',
+  '{"__proto__":[{"__proto__":null}]}',
+  '{"__proto__":[{"__proto__":[4,5]}]}',
+  '{"__proto__":[1e21,-0,0.5,true,"s"]}',
+  '{"__proto__":[1,2],"join":1}',
+  '{"__proto__":[1,2],"toString":1}',
+  '{"__proto__":[1,2],"constructor":1}',
+  '{"__proto__":[1,2],"$link":5}',
+  `{"__proto__":[1,2],"$link":"${LINK}"}`,
+  '{"x":{"__proto__":null}}',
+  '[{"__proto__":null}]',
+  '{"a":{"__proto__":{"constructor":1}},"b":{"$link":"bad"}}',
+  '{"b":{"__proto__":{"constructor":1}},"a":{"$link":"bad"}}',
+  `{"$type":"app.bsky.feed.post","text":"hi","createdAt":"${AT}","__proto__":{"text":"shadowed"}}`,
+  `{"$type":"app.bsky.feed.post","text":"hi","createdAt":"${AT}","embed":{"__proto__":[1]}}`,
+].map((json) => ({ $id: json, json }));
+
 export default async function cases() {
   return [
-    ...(await each('computeRecordCid', RECORDS, ({ record }) =>
-      computeRecordCid(record),
+    ...(await each(
+      'computeRecordCid',
+      [...RECORDS, ...BOUNDARY_RECORDS],
+      ({ record }) => computeRecordCid(record),
+    )),
+    ...(await each('computeRecordCid.json', PROTO_RECORDS, ({ json }) =>
+      computeRecordCid(JSON.parse(json)),
+    )),
+    ...(await each('toJsonShape.json', PROTO_RECORDS, ({ json }) =>
+      toJsonShape(JSON.parse(json)),
     )),
     ...(await each(
       'computeRecordCid.instances',

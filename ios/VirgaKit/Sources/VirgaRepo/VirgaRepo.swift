@@ -9,8 +9,9 @@
 //
 // Support/ holds the JavaScript semantics the ports lean on: V8's
 // Date.parse (JSDate), the property reads and conversions carRepo.js makes
-// on decoded blocks (JSSemantics), and the two ways it turns bytes into
-// text (UTF8Text).
+// on decoded blocks (JSSemantics), the two ways it turns bytes into text
+// (UTF8Text), and the objects recordCid.js's toJsonShape builds, prototypes
+// and all, as its encoder reads them (JSObjects).
 //
 // See ios/PORTING.md for the conventions every file here follows.
 

@@ -66,3 +66,32 @@ func outcome(_ body: () async throws -> JSONValue) async -> JSONValue {
 func json<T: Encodable>(_ value: T) -> JSONValue {
   (try? JSONValue(encoding: value)) ?? .null
 }
+
+/// `Parity.diff` with numbers compared exactly. The shared diff allows a
+/// relative 1e-9 between numbers, which for an epoch-millisecond time
+/// (~1.8e12) is almost two seconds and for a 2^53-scale integer is millions;
+/// everything this target computes (times, byte counts, integers in records,
+/// offsets) is exact in both languages, so it is held to the exact value.
+func exactDiff(_ actual: JSONValue, _ expected: JSONValue, strictNulls: Bool = false) -> String? {
+  if let loose = Parity.diff(actual, expected, strictNulls: strictNulls) { return loose }
+  return numbersDiffer(actual, expected, path: "$")
+}
+
+private func numbersDiffer(_ actual: JSONValue, _ expected: JSONValue, path: String) -> String? {
+  switch (actual, expected) {
+  case (.number(let a), .number(let b)):
+    return a == b ? nil : "\(path): \(JSNumber.format(a)) ≠ expected \(JSNumber.format(b)) (exactly)"
+  case (.object(let a), .object(let b)):
+    for key in Set(a.keys).intersection(b.keys).sorted() {
+      if let difference = numbersDiffer(a[key]!, b[key]!, path: "\(path).\(key)") { return difference }
+    }
+    return nil
+  case (.array(let a), .array(let b)):
+    for (index, pair) in zip(a, b).enumerated() {
+      if let difference = numbersDiffer(pair.0, pair.1, path: "\(path)[\(index)]") { return difference }
+    }
+    return nil
+  default:
+    return nil
+  }
+}

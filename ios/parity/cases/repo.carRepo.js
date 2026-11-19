@@ -624,6 +624,84 @@ async function readCases() {
       );
     }
   }
+
+  // Which root is read when there are two, and a commit under a raw CID
+  // (the reader doesn't check codecs).
+  {
+    const repo = await buildMstRepo(DID, repoRecords().slice(0, 3));
+    const other = await dagBlock({ not: 'a commit' });
+    add(
+      'two roots, the commit first',
+      await carOf([repo.commit.cid, other.cid], [...repo.blocks, other]),
+    );
+    add(
+      'two roots, the commit second',
+      await carOf([other.cid, repo.commit.cid], [...repo.blocks, other]),
+    );
+    const rawCommit = await rawBlock(repo.commit.bytes);
+    add(
+      'commit under a raw cid',
+      await carOf([rawCommit.cid], [rawCommit, ...repo.blocks.slice(1)]),
+    );
+  }
+
+  // Records the decoder refuses, and records it reads as they are.
+  {
+    // { b: 1, a: 2 }: keys out of canonical order.
+    const unordered = await rawBlock(
+      Uint8Array.from([0xa2, 0x61, 0x62, 0x01, 0x61, 0x61, 0x02]),
+      0x71,
+    );
+    const floats = await dagBlock({ half: 0.5, negZero: -0, big: 2 ** 53 - 1 });
+    for (const [id, blk] of [
+      ['record keys out of order', unordered],
+      ['record of floats', floats],
+    ]) {
+      add(
+        id,
+        await nodeCar({
+          records: [],
+          extra: [blk],
+          node: () => node([full('x.test/r', blk.link)]),
+        }),
+      );
+    }
+  }
+  return cases;
+}
+
+/**
+ * Repos whose records hold a member named "__proto__". The decoder keeps
+ * it as the record's own member; the fixtures' toJSON can't (assigning it
+ * sets a prototype), so these cases record the parse as JSON.stringify
+ * writes it.
+ */
+async function protoCases() {
+  const bytes = (text) => Uint8Array.from(Buffer.from(text, 'hex'));
+  const cases = [];
+  for (const [id, hex] of [
+    // {"__proto__": {"x": 1}}
+    ['record with a __proto__ map', 'a1695f5f70726f746f5f5fa1617801'],
+    // {"__proto__": null, "createdAt": "2026-01-01"}
+    [
+      'record with a null __proto__',
+      'a2695f5f70726f746f5f5ff6696372656174656441746a323032362d30312d3031',
+    ],
+    // {"a": {"__proto__": [1, 2]}}
+    ['record with a nested __proto__', 'a16161a1695f5f70726f746f5f5f820102'],
+  ]) {
+    const blk = await rawBlock(bytes(hex), 0x71);
+    cases.push({
+      $id: id,
+      car: toB64(
+        await nodeCar({
+          records: [],
+          extra: [blk],
+          node: () => node([full('x.test/proto', blk.link)]),
+        }),
+      ),
+    });
+  }
   return cases;
 }
 
@@ -1288,6 +1366,9 @@ export default async function cases() {
 
   return [
     ...(await each('readRepoCar', readCasesList, read)),
+    ...(await each('readRepoCar.json', await protoCases(), async ({ car }) =>
+      JSON.stringify(await readRepoCar(fromB64(car))),
+    )),
     ...(await each(
       'readRepoCar.progress',
       [

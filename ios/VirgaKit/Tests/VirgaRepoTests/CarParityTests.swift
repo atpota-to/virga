@@ -25,7 +25,7 @@ import VirgaTestSupport
         }
         return ["roots": .array(reader.roots.map { .string($0.string) }), "blocks": .array(blocks)]
       }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
@@ -39,7 +39,7 @@ import VirgaTestSupport
         )
       }
       let car = CarWriter.writeCar(roots: roots, blocks: blocks)
-      #expect(Parity.diff(.string(Data(car).base64EncodedString()), c.output) == nil, "\(c)")
+      #expect(exactDiff(.string(Data(car).base64EncodedString()), c.output) == nil, "\(c)")
     }
   }
 }

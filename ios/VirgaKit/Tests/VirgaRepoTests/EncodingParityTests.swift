@@ -27,7 +27,7 @@ private func cidJSON(_ cid: CID) -> JSONValue {
         let n = Int(num)
         return ["hex": .string(Hex.encode(try Varint.encode(n))), "length": .number(Double(Varint.encodingLength(n)))]
       }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
@@ -37,7 +37,7 @@ private func cidJSON(_ cid: CID) -> JSONValue {
         let (value, next) = try Varint.decode(c.bytes("hex"), offset: c["offset"].intValue ?? 0, length: c["length"].intValue)
         return ["value": .number(Double(value)), "nextOffset": .number(Double(next))]
       }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
@@ -53,14 +53,14 @@ private func cidJSON(_ cid: CID) -> JSONValue {
 @Suite struct MultibaseParity {
   @Test func toBase32() throws {
     for c in try Parity.cases("repo.encoding", fn: "toBase32") {
-      #expect(Parity.diff(.string(Multibase.toBase32(c.bytes("hex"))), c.output) == nil, "\(c)")
+      #expect(exactDiff(.string(Multibase.toBase32(c.bytes("hex"))), c.output) == nil, "\(c)")
     }
   }
 
   @Test func fromBase32() throws {
     for c in try Parity.cases("repo.encoding", fn: "fromBase32") {
       let actual = outcome { .string(Hex.encode(try Multibase.fromBase32(c["text"].stringValue ?? ""))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
@@ -70,21 +70,21 @@ private func cidJSON(_ cid: CID) -> JSONValue {
       let actual: JSONValue = [
         "unpadded": .string(Multibase.toBase64(bytes)), "padded": .string(Multibase.toBase64Pad(bytes)),
       ]
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func fromBase64() throws {
     for c in try Parity.cases("repo.encoding", fn: "fromBase64") {
       let actual = outcome { .string(Hex.encode(try Multibase.fromBase64(c["text"].stringValue ?? ""))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func fromBase64Pad() throws {
     for c in try Parity.cases("repo.encoding", fn: "fromBase64Pad") {
       let actual = outcome { .string(Hex.encode(try Multibase.fromBase64Pad(c["text"].stringValue ?? ""))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 }
@@ -93,42 +93,42 @@ private func cidJSON(_ cid: CID) -> JSONValue {
   @Test func fromString() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.fromString") {
       let actual = outcome { cidJSON(try CID.fromString(c["text"].stringValue ?? "")) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func decode() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.decode") {
       let actual = outcome { cidJSON(try CID.decode(c.bytes("hex"))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func fromBinary() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.fromBinary") {
       let actual = outcome { cidJSON(try CID.fromBinary(c.bytes("hex"))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func create() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.create") {
       let cid = CID.create(codec: UInt8(c["codec"].intValue ?? 0), data: c.bytes("hex"))
-      #expect(Parity.diff(cidJSON(cid), c.output) == nil, "\(c)")
+      #expect(exactDiff(cidJSON(cid), c.output) == nil, "\(c)")
     }
   }
 
   @Test func fromDigest() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.fromDigest") {
       let actual = outcome { cidJSON(try CID.fromDigest(codec: UInt8(c["codec"].intValue ?? 0), digest: c.bytes("hex"))) }
-      #expect(Parity.diff(actual, c.output) == nil, "\(c)")
+      #expect(exactDiff(actual, c.output) == nil, "\(c)")
     }
   }
 
   @Test func toBinary() throws {
     for c in try Parity.cases("repo.encoding", fn: "CID.toBinary") {
       let cid = try CID.fromString(c["string"].stringValue ?? "")
-      #expect(Parity.diff(.string(Hex.encode(cid.binary)), c.output) == nil, "\(c)")
+      #expect(exactDiff(.string(Hex.encode(cid.binary)), c.output) == nil, "\(c)")
     }
   }
 

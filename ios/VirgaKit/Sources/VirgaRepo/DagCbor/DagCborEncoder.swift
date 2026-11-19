@@ -33,6 +33,16 @@ extension DagCbor {
     return writer.out
   }
 
+  /// `encode` for what recordCid.js's `toJsonShape` built: each object read
+  /// as the web's encoder reads it, through its prototype (see
+  /// Support/JSObjects.swift). Without a "__proto__" member anywhere this
+  /// writes what `encode(_ JSONValue)` writes.
+  static func encode(_ value: JSShaped) throws -> [UInt8] {
+    var writer = Writer()
+    try writer.write(value)
+    return writer.out
+  }
+
   /// `fromBytes` for a `$bytes` string: padded base64 when it ends in '=',
   /// unpadded otherwise.
   public static func fromBytesString(_ text: String) throws -> [UInt8] {
@@ -177,6 +187,56 @@ private struct Writer {
         out.append(contentsOf: entry.utf8)
         try write(members[entry.key]!)
       }
+    }
+  }
+
+  /// writeValue for a shaped value. A plain object (`val.constructor ===
+  /// Object`, read through the prototype) is written from its own members;
+  /// any other object only as a link or bytes (`'$link' in val`,
+  /// `'$bytes' in val`, also through the prototype), or refused with
+  /// `unsupported type: ${val}`.
+  mutating func write(_ value: JSShaped) throws {
+    switch value {
+    case .primitive(let primitive):
+      try write(primitive)
+    case .array(let values):
+      writeTypeAndArgument(4, UInt64(values.count))
+      for element in values { try write(element) }
+    case .object(let object):
+      if case .objectConstructor = JSObjects.get(object, "constructor") {
+        if object.members.count == 1, let (key, member) = object.members.first, key == "$link" || key == "$bytes" {
+          guard case .primitive(.string(let text)) = member else {
+            throw RepoError.type(key == "$link" ? "unexpected cid-link value" : "unexpected bytes value")
+          }
+          if key == "$link" {
+            writeCid(try CID.fromString(text).bytes)
+          } else {
+            writeBytes(try DagCbor.fromBytesString(text))
+          }
+          return
+        }
+        let keys = DagCbor.orderedKeys(object.members.keys)
+        writeTypeAndArgument(5, UInt64(keys.count))
+        for entry in keys {
+          writeTypeAndArgument(3, UInt64(entry.utf8.count))
+          out.append(contentsOf: entry.utf8)
+          try write(object.members[entry.key]!)
+        }
+        return
+      }
+      let link = JSObjects.get(object, "$link")
+      if link != .undefined {
+        guard case .data(.primitive(.string(let text))) = link else { throw RepoError.type("unexpected cid-link value") }
+        writeCid(try CID.fromString(text).bytes)
+        return
+      }
+      let bytes = JSObjects.get(object, "$bytes")
+      if bytes != .undefined {
+        guard case .data(.primitive(.string(let text))) = bytes else { throw RepoError.type("unexpected bytes value") }
+        writeBytes(try DagCbor.fromBytesString(text))
+        return
+      }
+      throw RepoError.type(try JSObjects.concat("unsupported type: ", JSObjects.toString(value)))
     }
   }
 
