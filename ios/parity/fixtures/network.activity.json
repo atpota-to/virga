@@ -174,6 +174,741 @@
       "output": null
     },
     {
+      "id": "feedItemTimeInZone#1",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-08T02:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#2",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-11-01T01:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#3",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-04T02:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#4",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-05T01:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#5",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#6",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#7",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "UTC",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#8",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-08T07:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#9",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-11-01T05:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#10",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-04T06:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#11",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-05T05:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#12",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T15:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#13",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#14",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/New_York",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#15",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-08T02:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#16",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-11-01T01:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#17",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-04T01:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#18",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-05T00:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#19",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#20",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#21",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Europe/London",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#22",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-07T21:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#23",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-31T20:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#24",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-03T20:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#25",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-04T20:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#26",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T04:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#27",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#28",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#29",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-07T15:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#30",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-31T14:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#31",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-03T15:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#32",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-04T14:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#33",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2025-12-31T23:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#34",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#35",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#36",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-07T12:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#37",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-31T11:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#38",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-03T12:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#39",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-04T12:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#40",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2025-12-31T20:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#41",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#42",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#43",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-03-08T02:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-03-08T05:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#44",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-11-01T01:30:00"
+            }
+          }
+        }
+      },
+      "output": "2026-11-01T04:30:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#45",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-10-04T02:15:00"
+            }
+          }
+        }
+      },
+      "output": "2026-10-04T05:15:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#46",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-04-05T01:45:00"
+            }
+          }
+        }
+      },
+      "output": "2026-04-05T04:45:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#47",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T13:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#48",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "feedItemTimeInZone#49",
+      "fn": "feedItemTimeInZone",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "item": {
+          "post": {
+            "record": {
+              "createdAt": "2026-01-01T10:00:00Z"
+            }
+          }
+        }
+      },
+      "output": "2026-01-01T10:00:00.000Z"
+    },
+    {
       "id": "mixed",
       "fn": "checkActivity",
       "input": {
@@ -204,7 +939,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apost1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -221,7 +957,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Arepost1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -238,7 +975,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aquiet1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -255,7 +993,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Anotfound1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 400,
@@ -272,7 +1011,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Adeactivated1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 400,
@@ -289,7 +1029,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Atakendown1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 400,
@@ -306,7 +1047,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3ANOTFOUND1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 404,
@@ -323,7 +1065,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Ablocked1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 400,
@@ -340,7 +1083,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aweird400&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 400,
@@ -357,7 +1101,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Afive1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 500,
@@ -374,7 +1119,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Abadjson1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -391,7 +1137,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aoffline1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "$error": "fetch failed"
@@ -402,7 +1149,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Anumbers1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 404,
@@ -419,7 +1167,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aodd1&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -572,7 +1321,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apost2&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -589,7 +1339,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aquiet2&limit=1&filter=posts_with_replies",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": null
             },
             "response": {
               "status": 200,
@@ -628,6 +1379,142 @@
             {
               "done": 2,
               "total": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "code-units",
+      "fn": "checkActivity",
+      "input": {
+        "dids": [
+          "did:plc:postcafé",
+          "did:plc:postcafé",
+          "did:plc:postcafé",
+          "did:plc:combining1",
+          "did:plc:feedobject1"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apostcaf%C3%A9&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Apostcafe%CC%81&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":[{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"}}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Acombining1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\",\"message\":\"Profile not found́\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Afeedobject1&limit=1&filter=posts_with_replies",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"feed\":{\"0\":{\"post\":{\"record\":{\"createdAt\":\"2026-03-01T10:00:00.000Z\"},\"indexedAt\":\"2026-03-01T10:00:05.000Z\"}}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "results": [
+            {
+              "did": "did:plc:postcafé",
+              "lastActiveAt": "2026-03-01T10:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:postcafé",
+              "lastActiveAt": "2026-03-01T10:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:feedobject1",
+              "lastActiveAt": "2026-03-01T10:00:00.000Z",
+              "gone": false
+            },
+            {
+              "did": "did:plc:combining1",
+              "lastActiveAt": null,
+              "gone": true
+            }
+          ],
+          "progress": [
+            {
+              "done": 0,
+              "total": 4
+            },
+            {
+              "done": 1,
+              "total": 4
+            },
+            {
+              "done": 2,
+              "total": 4
+            },
+            {
+              "done": 3,
+              "total": 4
+            },
+            {
+              "done": 4,
+              "total": 4
             }
           ]
         }

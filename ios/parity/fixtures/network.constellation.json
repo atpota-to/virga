@@ -357,6 +357,29 @@
       ]
     },
     {
+      "id": "codeUnits",
+      "fn": "flattenSources",
+      "input": {
+        "text": "{\"links\":{\"café\":{\".́subject\":{\"records\":2}},\"café\":{\".x\":{\"records\":1}}}}"
+      },
+      "output": [
+        {
+          "collection": "café",
+          "path": ".́subject",
+          "source": "café:́subject",
+          "count": 2,
+          "distinctDids": null
+        },
+        {
+          "collection": "café",
+          "path": ".x",
+          "source": "café:x",
+          "count": 1,
+          "distinctDids": null
+        }
+      ]
+    },
+    {
       "id": "arrayRaw",
       "fn": "flattenSources",
       "input": {
@@ -448,7 +471,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -539,7 +563,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -666,7 +691,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -685,7 +711,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -745,7 +772,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -797,7 +825,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -817,7 +846,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -871,7 +901,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -891,7 +922,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -945,7 +977,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -965,7 +998,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1019,7 +1053,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -1039,7 +1074,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1093,7 +1129,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -1113,7 +1150,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1167,7 +1205,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -1187,7 +1226,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1241,7 +1281,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -1261,7 +1302,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1315,7 +1357,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -1335,7 +1378,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1392,7 +1436,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1411,7 +1456,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 502,
@@ -1430,7 +1476,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 504,
@@ -1449,7 +1496,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1494,7 +1542,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1513,7 +1562,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1532,7 +1582,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1551,7 +1602,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1570,7 +1622,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 503,
@@ -1618,7 +1671,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1631,7 +1685,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1644,7 +1699,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1685,7 +1741,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1698,7 +1755,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1711,7 +1769,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1724,7 +1783,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1737,7 +1797,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1777,7 +1838,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 400,
@@ -1816,7 +1878,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 500,
@@ -1861,7 +1924,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1880,7 +1944,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1939,7 +2004,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1989,7 +2055,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2054,7 +2121,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2115,7 +2183,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2181,7 +2250,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 429,
@@ -2201,7 +2271,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2278,7 +2349,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2337,7 +2409,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,

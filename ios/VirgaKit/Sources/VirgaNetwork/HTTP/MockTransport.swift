@@ -34,13 +34,13 @@ public final class MockTransport: HTTPTransport, @unchecked Sendable {
 
     public func matches(_ request: HTTPRequest) -> Bool {
       switch self {
-      case .url(let url): return request.url == url
-      case .urlPrefix(let prefix): return request.url.hasPrefix(prefix)
-      case .path(let path): return (try? WebURL(request.url))?.pathname == path
+      case .url(let url): return request.url.jsEquals(url)
+      case .urlPrefix(let prefix): return request.url.jsStartsWith(prefix)
+      case .path(let path): return (try? WebURL(request.url))?.pathname.jsEquals(path) ?? false
       case .regex(let pattern):
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
-        let text = request.url as NSString
-        return regex.firstMatch(in: request.url, range: NSRange(location: 0, length: text.length)) != nil
+        let subject = JSRegexSubject.make(request.url)
+        return regex.firstMatch(in: subject.subject, range: NSRange(location: 0, length: subject.length)) != nil
       case .predicate(_, let accepts): return accepts(request)
       case .any: return true
       }

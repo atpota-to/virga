@@ -14,6 +14,10 @@
 // - waits: every setTimeout delay, in order. setTimeout runs at once while
 //   the case runs, so a retry with a ten-second back-off records 10000
 //   without taking ten seconds, and Date.now() reads `now`.
+// - request.timeoutMs: the deadline the request's signal carries, from the
+//   AbortSignal.timeout(ms) it was made with (the shortest, where
+//   AbortSignal.any combined several), or null for none. The Swift port must
+//   attach the same one (HTTPRequest.timeoutMs).
 
 import { FIXED_NOW, toJSON, withFakeFetch } from './_helpers.js';
 
@@ -37,8 +41,42 @@ function describe(answer) {
   return { status, headers, body };
 }
 
+// Deadlines of the AbortSignals made while a case runs.
+const deadlines = new WeakMap();
+
+function deadlineOf(signal) {
+  return signal && deadlines.has(signal) ? deadlines.get(signal) : null;
+}
+
+/** Runs `fn` with AbortSignal.timeout and .any noting each signal's deadline. */
+async function noteDeadlines(fn) {
+  const realTimeout = AbortSignal.timeout;
+  const realAny = AbortSignal.any;
+  AbortSignal.timeout = function timeout(ms) {
+    const signal = realTimeout.call(this, ms);
+    deadlines.set(signal, Number(ms));
+    return signal;
+  };
+  if (typeof realAny === 'function') {
+    AbortSignal.any = function any(signals) {
+      const list = [...signals];
+      const signal = realAny.call(this, list);
+      const known = list.map(deadlineOf).filter((ms) => ms !== null);
+      if (known.length) deadlines.set(signal, Math.min(...known));
+      return signal;
+    };
+  }
+  try {
+    return await fn();
+  } finally {
+    AbortSignal.timeout = realTimeout;
+    AbortSignal.any = realAny;
+  }
+}
+
 export async function recordFetch(responder, fn, { now = FIXED_NOW } = {}) {
   const responses = [];
+  const timeouts = [];
   const waits = [];
   const realSetTimeout = globalThis.setTimeout;
   const realNow = Date.now;
@@ -47,24 +85,43 @@ export async function recordFetch(responder, fn, { now = FIXED_NOW } = {}) {
     return realSetTimeout(callback, 0, ...args);
   };
   Date.now = () => now;
+  // The deadline of the request being made: withFakeFetch calls the
+  // responder synchronously, inside the fetch that set this.
+  let sending = null;
   try {
-    const out = await withFakeFetch((request) => {
-      const index = responses.length;
-      responses.push(null);
-      let answer;
-      try {
-        answer = responder(request, index);
-      } catch (error) {
-        responses[index] = { $error: String(error?.message || error) };
-        throw error;
-      }
-      responses[index] = describe(answer || {});
-      return answer;
-    }, fn);
+    const out = await withFakeFetch(
+      (request) => {
+        const index = responses.length;
+        responses.push(null);
+        timeouts.push(sending);
+        let answer;
+        try {
+          answer = responder(request, index);
+        } catch (error) {
+          responses[index] = { $error: String(error?.message || error) };
+          throw error;
+        }
+        responses[index] = describe(answer || {});
+        return answer;
+      },
+      () =>
+        noteDeadlines(async () => {
+          const fake = globalThis.fetch;
+          globalThis.fetch = (input, init) => {
+            sending = deadlineOf(init?.signal);
+            return fake(input, init);
+          };
+          try {
+            return await fn();
+          } finally {
+            globalThis.fetch = fake;
+          }
+        }),
+    );
     const { requests, ...rest } = out;
     return {
       exchanges: requests.map((request, i) => ({
-        request,
+        request: { ...request, timeoutMs: timeouts[i] },
         response: responses[i],
       })),
       waits,

@@ -154,6 +154,15 @@
       "id": "backendAddress#13",
       "fn": "backendAddress",
       "input": {
+        "backendUrl": "https://other.example/؀/",
+        "path": "/api/x"
+      },
+      "output": "https://other.example/%D8%80/api/x"
+    },
+    {
+      "id": "backendAddress#14",
+      "fn": "backendAddress",
+      "input": {
         "backendUrl": "https://exa mple.com",
         "path": "/api/x"
       },
@@ -1092,6 +1101,104 @@
       }
     },
     {
+      "id": "nonce-code-units",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=caf%C3%A9",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "café",
+          "intent": "add"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "nonce-not-string",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=5",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": 5
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "path-code-units",
+      "fn": "readBackendReturn",
+      "input": {
+        "returnPath": "/café",
+        "location": {
+          "pathname": "/café",
+          "search": "",
+          "hash": "#error=x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "path-own",
+      "fn": "readBackendReturn",
+      "input": {
+        "returnPath": "/café",
+        "location": {
+          "pathname": "/café/",
+          "search": "",
+          "hash": "#error=x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "x",
+          "code": "x",
+          "params": {
+            "error": "x"
+          }
+        }
+      }
+    },
+    {
       "id": "strippedReturnAddress#1",
       "fn": "strippedReturnAddress",
       "input": {
@@ -1401,7 +1508,8 @@
                 "$json": {
                   "moves": []
                 }
-              }
+              },
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1466,7 +1574,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1528,7 +1637,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1582,7 +1692,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1643,7 +1754,8 @@
                 "$json": {
                   "text": "é 😀"
                 }
-              }
+              },
+              "timeoutMs": 30000
             },
             "response": {
               "status": 403,
@@ -1700,7 +1812,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1754,7 +1867,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 401,
@@ -1814,7 +1928,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 401,
@@ -1869,7 +1984,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "$error": "fetch failed"
@@ -1912,7 +2028,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -1954,7 +2071,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 404,
@@ -2010,7 +2128,8 @@
               },
               "body": {
                 "$json": null
-              }
+              },
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -2124,7 +2243,8 @@
               "headers": {
                 "authorization": "Bearer vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -2197,7 +2317,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 30000
             },
             "response": {
               "status": 200,
@@ -2214,6 +2335,111 @@
         "result": {
           "body": {
             "accepted": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "no-deadline",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "options": {
+          "timeoutMs": 0
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "own-deadline",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "options": {
+          "method": "POST",
+          "body": {},
+          "timeoutMs": 60000
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true
           },
           "unauthorized": []
         }
@@ -2248,7 +2474,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 8000
             },
             "response": {
               "status": 200,
@@ -2304,7 +2531,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -2355,7 +2583,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 8000
             },
             "response": {
               "status": 401,
@@ -2400,7 +2629,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 502,
@@ -2439,7 +2669,8 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 8000
             },
             "response": {
               "$error": "fetch failed"
@@ -2496,7 +2727,104 @@
               "headers": {
                 "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true
+          }
+        }
+      }
+    },
+    {
+      "id": "no-deadline",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "timeoutMs": 0,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session?lite=1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true
+          }
+        }
+      }
+    },
+    {
+      "id": "own-deadline",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": false,
+        "timeoutMs": 1234,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 1234
             },
             "response": {
               "status": 200,
@@ -2544,7 +2872,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -2589,7 +2918,8 @@
                 "$json": {
                   "keepGrant": true
                 }
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -2638,7 +2968,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2660,7 +2991,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -2705,7 +3037,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2727,7 +3060,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2773,7 +3107,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2795,7 +3130,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "$error": "fetch failed"
@@ -2834,7 +3170,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2874,7 +3211,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -2917,7 +3255,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 401,
@@ -2954,7 +3293,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "$error": "fetch failed"
@@ -3024,7 +3364,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 503,
@@ -3046,7 +3387,8 @@
               },
               "body": {
                 "$json": {}
-              }
+              },
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3102,7 +3444,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3153,7 +3496,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3204,7 +3548,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3254,7 +3599,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 400,
@@ -3304,7 +3650,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3355,7 +3702,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 200,
@@ -3403,7 +3751,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 500,
@@ -3457,7 +3806,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "status": 400,
@@ -3502,7 +3852,8 @@
               "headers": {
                 "accept": "application/json"
               },
-              "body": null
+              "body": null,
+              "timeoutMs": 20000
             },
             "response": {
               "$error": "fetch failed"

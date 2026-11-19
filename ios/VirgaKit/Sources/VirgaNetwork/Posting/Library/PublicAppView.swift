@@ -80,11 +80,11 @@ public enum PublicAppView {
   /// `failed`, so a caller can tell posts that are gone from posts that
   /// weren't read.
   public static func getPosts(_ uris: [String?]?, transport: any HTTPTransport = HTTP.transport) async -> GetPostsResult {
+    // `[...new Set(uris.filter(…))]`: by code unit.
     var unique: [String] = []
     var seen = Set<String>()
     for uri in uris ?? [] {
-      guard let uri, !uri.isEmpty, !seen.contains(uri) else { continue }
-      seen.insert(uri)
+      guard let uri, !uri.isEmpty, seen.insert(uri).inserted else { continue }
       unique.append(uri)
     }
     let parts = chunk(unique)

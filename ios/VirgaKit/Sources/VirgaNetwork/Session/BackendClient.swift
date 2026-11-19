@@ -112,12 +112,11 @@ public enum BackendClient {
   /// `backendUrl` (or `origin`, the page's, when it is empty). Appended, not
   /// resolved, so a `backendUrl` with a path prefix keeps it.
   public static func backendAddress(_ backendUrl: String?, _ path: String, origin: String? = nil) throws -> WebURL {
-    var base = (backendUrl?.isEmpty == false ? backendUrl : nil) ?? origin ?? ""
-    while base.hasSuffix("/") { base.removeLast() }
+    let base = ((backendUrl?.isEmpty == false ? backendUrl : nil) ?? origin ?? "").jsRemovingTrailingSlashes()
     if base.isEmpty {
       throw BackendError(name: "TypeError", message: "Virga’s server has no address here (pass backendUrl)")
     }
-    return try WebURL("\(base)\(path.hasPrefix("/") ? "" : "/")\(path)")
+    return try WebURL("\(base)\(path.jsStartsWith("/") ? "" : "/")\(path)")
   }
 
   // MARK: The pending sign-in
@@ -345,12 +344,12 @@ public enum BackendClient {
   /// nonce in the address is the one this sign-in sent; an error return
   /// carries no token, so it is shown even without the nonce.
   public static func readBackendReturn(_ location: ReturnLocation, _ pending: JSONValue?, _ returnPath: String) -> BackendReturn? {
-    guard location.pathname == returnPath || location.pathname == "\(returnPath)/" else { return nil }
+    guard location.pathname.jsEquals(returnPath) || location.pathname.jsEquals("\(returnPath)/") else { return nil }
     let query = JSURI.parseSearchParams(location.search)
     var hash = location.hash
     if hash.unicodeScalars.first == "#" { hash.unicodeScalars.removeFirst() }
     let fragment = JSURI.parseSearchParams(hash)
-    func get(_ pairs: [(String, String)], _ name: String) -> String? { pairs.first { $0.0 == name }?.1 }
+    func get(_ pairs: [(String, String)], _ name: String) -> String? { pairs.first { $0.0.jsEquals(name) }?.1 }
     func truthy(_ text: String?) -> String? { text?.isEmpty == false ? text : nil }
 
     if let code = truthy(get(query, "error")) ?? truthy(get(fragment, "error")) {
@@ -362,8 +361,9 @@ public enum BackendClient {
     let did = get(fragment, "did")
     if truthy(token) == nil && truthy(did) == nil { return nil }
     let nonce = get(query, "n")
-    let pendingNonce = pending?["nonce"]
-    if pending.truthy.isPresent == false || truthy(nonce) == nil || pendingNonce != .string(nonce ?? "") {
+    // `pending.nonce !== nonce`: the same string, code unit for code unit.
+    let nonceMatches = pending?["nonce"] == .string(nonce ?? "")
+    if pending.truthy.isPresent == false || truthy(nonce) == nil || !nonceMatches {
       let error = ReturnError("unexpected_return", "This sign-in wasn’t started from this tab, so it was ignored.")
       return .error(error, orphanToken: isToken(token ?? "") ? token : nil)
     }
@@ -442,7 +442,7 @@ public enum BackendClient {
     do {
       let url = try backendAddress(backendUrl, BackendPaths.session, origin: origin).href + (lite ? "?lite=1" : "")
       let response = try await transport.send(
-        HTTPRequest(method: "GET", url: url, headers: ["Authorization": "Bearer \(token)"], timeoutMs: timeoutMs))
+        HTTPRequest(method: "GET", url: url, headers: ["Authorization": "Bearer \(token)"], timeoutMs: backendDeadline(timeoutMs)))
       return SessionRead(ok: response.ok, status: response.status, data: response.jsonOrNull())
     } catch {
       // Unreachable or timed out: nothing is known.
@@ -451,7 +451,8 @@ public enum BackendClient {
   }
 
   /// `checkBackendSession(...)`: the side-effect-free check, one row read on
-  /// the server, no refresh. Never throws.
+  /// the server, no refresh. Never throws. A `timeoutMs` of 0 is no deadline,
+  /// as the web's `withDeadline` reads it.
   public static func checkBackendSession(
     backendUrl: String?,
     token: String,

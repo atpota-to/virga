@@ -8,10 +8,12 @@
 // requests (in the same order, unless the code runs them side by side), waited
 // the same waits, and reached the same result (or threw the same message).
 //
-// Requests are compared as the fixture records them: URL exactly, method,
-// headers by lower-cased name, and the body as JSON where it is JSON
-// (JSONValue keeps an object's members unordered, so a JSON body is compared
-// by value, not byte for byte), as text, or as bytes.
+// Requests are compared as the fixture records them: URL exactly (code unit
+// for code unit), method, headers by lower-cased name, the body as JSON
+// where it is JSON (JSONValue keeps an object's members unordered, so a JSON
+// body is compared by value, not byte for byte), as text, or as bytes, and
+// the deadline (`timeoutMs`, the AbortSignal.timeout the web attached, or
+// null for none) where the fixture recorded one.
 
 import Foundation
 import VirgaCore
@@ -82,16 +84,20 @@ public struct RecordedFetch: Sendable {
       "method": .string(request.method),
       "headers": .object(request.headers.canonical.mapValues(JSONValue.string)),
       "body": body,
+      "timeoutMs": request.timeoutMs.map(JSONValue.number) ?? .null,
     ]
   }
 
   /// Where `request` differs from the recorded one, or nil.
   public static func difference(_ request: HTTPRequest, _ recorded: JSONValue) -> String? {
-    if request.url != recorded["url"]?.stringValue {
+    if !Optional(request.url).jsEquals(recorded["url"]?.stringValue) {
       return "url \(request.url) ≠ recorded \(recorded["url"]?.stringValue ?? "nil")"
     }
-    if request.method != recorded["method"]?.stringValue {
+    if !Optional(request.method).jsEquals(recorded["method"]?.stringValue) {
       return "method \(request.method) ≠ recorded \(recorded["method"]?.stringValue ?? "nil")"
+    }
+    if let deadline = recorded["timeoutMs"], deadline.doubleValue != request.timeoutMs {
+      return "deadline \(request.timeoutMs.map { "\($0) ms" } ?? "none") ≠ recorded \(deadline.doubleValue.map { "\($0) ms" } ?? "none")"
     }
     let headers: JSONValue = .object(request.headers.canonical.mapValues(JSONValue.string))
     if let d = Parity.diff(headers, recorded["headers"] ?? [:], path: "headers", strictNulls: true) { return d }
@@ -108,7 +114,7 @@ public struct RecordedFetch: Sendable {
       }
       if let text = body["$text"]?.stringValue {
         let actual = String(decoding: data, as: UTF8.self)
-        return actual == text ? nil : "body \(actual) ≠ recorded \(text)"
+        return actual.jsEquals(text) ? nil : "body \(actual) ≠ recorded \(text)"
       }
       if let base64 = body["$bytes"]?.stringValue, let bytes = Data(base64Encoded: base64) {
         if bytes == data { return nil }

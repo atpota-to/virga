@@ -80,7 +80,8 @@ import VirgaTestSupport
         let dids = c["dids"].arrayValue.map { $0.map(\.stringValue) }
         let out = await Atproto.resolveProfiles(
           dids, appview: c["appview"].stringValue ?? AppConfig.appview, transport: transport, clock: recorder.clock)
-        return .of(out)
+        // `Object.entries(out)`: every DID, by code unit, in the object's order.
+        return .array(out.entries.map { [.string($0.did), .of($0.profile)] })
       }
     }
   }
@@ -168,8 +169,20 @@ import VirgaTestSupport
 @Suite struct ActivityParity {
   @Test func feedItemTime() throws {
     for c in try Parity.cases("network.activity", fn: "feedItemTime") {
-      let actual = Activity.feedItemTime(c.input["item"]).map(JSONValue.string) ?? .null
+      let actual = Activity.feedItemTime(c.input["item"], timeZone: TimeZone(identifier: "UTC")!).map(JSONValue.string) ?? .null
       #expect(Parity.diff(actual, c.output) == nil, "\(c) \(c["item"])")
+    }
+  }
+
+  /// A time without a zone is read in the zone given, as the web reads it
+  /// in the browser's.
+  @Test func feedItemTimeInZone() throws {
+    let cases = try Parity.cases("network.activity", fn: "feedItemTimeInZone")
+    #expect(cases.count >= 40)
+    for c in cases {
+      let zone = try #require(TimeZone(identifier: c["zone"].stringValue ?? ""))
+      let actual = Activity.feedItemTime(c.input["item"], timeZone: zone).map(JSONValue.string) ?? .null
+      #expect(Parity.diff(actual, c.output) == nil, "\(c) \(c["zone"]) \(c["item"])")
     }
   }
 
@@ -185,7 +198,7 @@ import VirgaTestSupport
       let results = await Activity.checkActivity(
         dids,
         onProgress: { p in progress.withLock { $0.append(["done": .number(Double(p.done)), "total": .number(Double(p.total))]) } },
-        transport: transport)
+        transport: transport, timeZone: TimeZone(identifier: "UTC")!)
       func byDid(_ value: JSONValue) -> JSONValue {
         .array((value.arrayValue ?? []).sorted { ($0["did"]?.stringValue ?? "") < ($1["did"]?.stringValue ?? "") })
       }

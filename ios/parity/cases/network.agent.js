@@ -444,6 +444,30 @@ const CASES = [
     backendUrl: 'https://other.example/prefix/',
     answers: [json({ success: true, data: { preferences: [] } })],
   },
+  // `if (opts?.encoding)`: an empty encoding is none, and the input's own
+  // type is sent.
+  {
+    $id: 'empty-encoding',
+    nsid: 'com.atproto.repo.createRecord',
+    input: {
+      json: {
+        repo: DID,
+        collection: 'app.bsky.feed.post',
+        record: {
+          $type: 'app.bsky.feed.post',
+          text: 'hi',
+          createdAt: '2026-11-12T00:00:00.000Z',
+        },
+      },
+    },
+    opts: { encoding: '' },
+    answers: [
+      json({
+        success: true,
+        data: { uri: `at://${DID}/app.bsky.feed.post/3k`, cid: CID },
+      }),
+    ],
+  },
 ];
 
 // The handler called as the Agent calls it, for what the Agent never sends
@@ -528,6 +552,40 @@ const HANDLER_CASES = [
     init: {},
     answers: [],
   },
+  // `Object.entries` of a string: its code units, by index.
+  {
+    $id: 'ratelimit-string',
+    url: '/xrpc/app.bsky.actor.getPreferences',
+    init: {},
+    answers: [json({ success: false, ratelimit: 'ab' }, 429)],
+  },
+  // withDeadline: a falsy timeoutMs is no deadline at all.
+  {
+    $id: 'no-deadline',
+    url: '/xrpc/app.bsky.actor.getPreferences',
+    init: {},
+    options: { timeoutMs: 0 },
+    answers: [json({ success: true, data: { preferences: [] } })],
+  },
+  {
+    $id: 'own-deadline',
+    url: '/xrpc/app.bsky.actor.getPreferences',
+    init: {},
+    options: { timeoutMs: 5000 },
+    answers: [json({ success: true, data: { preferences: [] } })],
+  },
+  // An upload with the caller's own signal gets no fallback deadline.
+  {
+    $id: 'upload-own-signal',
+    url: '/xrpc/com.atproto.repo.uploadBlob',
+    init: {
+      method: 'POST',
+      headers: { 'content-type': 'image/png' },
+      body: new Uint8Array([9]),
+    },
+    withSignal: true,
+    answers: [json({ success: true, data: { blob: BLOB } })],
+  },
 ];
 
 export default async function cases() {
@@ -555,7 +613,7 @@ export default async function cases() {
         },
         $init: init,
       })),
-      ({ url, $init, answers }) =>
+      ({ url, $init, answers, options, withSignal }) =>
         recordFetch(inTurn(...answers), async () => {
           const heard = { unauthorized: [], authorized: [] };
           const handler = createBackendFetchHandler({
@@ -565,8 +623,14 @@ export default async function cases() {
             onUnauthorized: (who, code) =>
               heard.unauthorized.push({ did: who, code }),
             onAuthorized: (who) => heard.authorized.push(who),
+            ...options,
           });
-          const res = await handler(url, $init);
+          const res = await handler(
+            url,
+            withSignal
+              ? { ...$init, signal: new AbortController().signal }
+              : $init,
+          );
           return {
             status: res.status,
             headers: Object.fromEntries(res.headers),

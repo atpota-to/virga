@@ -79,7 +79,8 @@ func errorShape(_ error: any Error) -> JSONValue {
         pathname: c["location"]["pathname"]?.stringValue ?? "", search: c["location"]["search"]?.stringValue ?? "",
         hash: c["location"]["hash"]?.stringValue ?? "")
       let pending = c.input["pending"].nonNull
-      let actual = BackendClient.readBackendReturn(location, pending, "/oauth/return")?.json ?? .null
+      let returnPath = c["returnPath"].stringValue ?? "/oauth/return"
+      let actual = BackendClient.readBackendReturn(location, pending, returnPath)?.json ?? .null
       let d = Parity.diff(actual, c.output, strictNulls: true)
       #expect(d == nil, "\(c): \(d ?? "")")
     }
@@ -113,7 +114,8 @@ func errorShape(_ error: any Error) -> JSONValue {
         let unauthorized = { JSONValue.array(heard.unauthorized) }
         do {
           let body = try await backend.request(
-            c["path"].stringValue ?? "", method: options?["method"]?.stringValue ?? "GET", query: query, body: options?["body"])
+            c["path"].stringValue ?? "", method: options?["method"]?.stringValue ?? "GET", query: query, body: options?["body"],
+            timeoutMs: options?["timeoutMs"]?.doubleValue ?? VirgaBackend.defaultTimeoutMs)
           return ["body": body, "unauthorized": unauthorized()]
         } catch {
           return ["error": errorShape(error), "unauthorized": unauthorized()]
@@ -126,10 +128,12 @@ func errorShape(_ error: any Error) -> JSONValue {
     for c in try Parity.cases("network.backendClient", fn: "sessionCheck") {
       await expectReplay(c) { transport, _ in
         let backendUrl: String? = c.input["backendUrl"].map { $0.stringValue } ?? Fixed.server
+        let lite = c["lite"].boolValue == true
+        let timeoutMs = c["timeoutMs"].doubleValue ?? (lite ? BackendClient.liteTimeoutMs : BackendClient.sessionTimeoutMs)
         let read =
-          c["lite"].boolValue == true
-          ? await BackendClient.checkBackendSession(backendUrl: backendUrl, token: Fixed.token, transport: transport)
-          : await BackendClient.fetchBackendSession(backendUrl: backendUrl, token: Fixed.token, transport: transport)
+          lite
+          ? await BackendClient.checkBackendSession(backendUrl: backendUrl, token: Fixed.token, transport: transport, timeoutMs: timeoutMs)
+          : await BackendClient.fetchBackendSession(backendUrl: backendUrl, token: Fixed.token, transport: transport, timeoutMs: timeoutMs)
         return read.json
       }
     }
@@ -264,7 +268,7 @@ func errorShape(_ error: any Error) -> JSONValue {
         let heard = Heard()
         let handler = BackendFetchHandler(
           backendUrl: Fixed.server, token: { Fixed.token }, did: Fixed.did, transport: transport, onUnauthorized: heard.onUnauthorized,
-          onAuthorized: heard.onAuthorized)
+          onAuthorized: heard.onAuthorized, timeoutMs: c["options"]["timeoutMs"]?.doubleValue ?? BackendClient.proxyTimeoutMs)
         let initValue = c["init"]
         var headers = HTTPHeaders()
         for (name, value) in (initValue["headers"]?.objectValue ?? [:]).sorted(by: { $0.key < $1.key }) {
@@ -274,7 +278,9 @@ func errorShape(_ error: any Error) -> JSONValue {
         if let text = initValue["body"]?.stringValue { body = Data(text.utf8) }
         if let base64 = initValue["body"]?["$bytes"]?.stringValue { body = Data(base64Encoded: base64) }
         let response = try await handler.handle(
-          XRPCHandlerRequest(path: c["url"].stringValue ?? "", method: initValue["method"]?.stringValue ?? "GET", headers: headers, body: body))
+          XRPCHandlerRequest(
+            path: c["url"].stringValue ?? "", method: initValue["method"]?.stringValue ?? "GET", headers: headers, body: body,
+            hasSignal: c["withSignal"].boolValue ?? false))
         return [
           "status": .number(Double(response.status)),
           "headers": .object(response.headers.canonical.mapValues(JSONValue.string)),

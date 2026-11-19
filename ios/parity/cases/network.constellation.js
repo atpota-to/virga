@@ -89,6 +89,14 @@ const SOURCES = {
   },
   emptyLinks: { links: {} },
   linksFalsy: { links: 0, 'x.coll': { '.p': { records: 1 } } },
+  // Keys by code unit: two spellings of "café" are two collections, and a
+  // path's leading dot is one code unit even with a mark after it.
+  codeUnits: {
+    links: {
+      'caf\u00e9': { '.\u0301subject': { records: 2 } },
+      'cafe\u0301': { '.x': { records: 1 } },
+    },
+  },
   arrayRaw: [{ '.a': { records: 2 } }, 'x'],
   stringRaw: 'abc',
   numberRaw: 5,

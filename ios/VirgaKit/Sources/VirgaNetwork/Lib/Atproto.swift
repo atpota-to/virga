@@ -45,6 +45,61 @@ public struct ResolvedProfile: Codable, Sendable, Hashable {
   public var avatar: String
 }
 
+/// What resolveProfiles answers: `{ did: { handle, displayName, avatar } }`,
+/// as the web's object holds it. A DID is matched by its code units (two
+/// spellings of "é" are two DIDs, as they are two keys of a JavaScript
+/// object), a DID answered twice keeps its first place and takes its last
+/// profile, and `entries` lists them as `Object.entries` does: array-index
+/// keys first, in ascending order, then the rest in the order they arrived.
+public struct ResolvedProfiles: Sendable, Hashable, Encodable {
+  public struct Entry: Sendable, Hashable {
+    public var did: String
+    public var profile: ResolvedProfile
+  }
+
+  private var order: [JSKey] = []
+  private var values: [JSKey: ResolvedProfile] = [:]
+
+  public init() {}
+
+  /// `out[did] = profile`.
+  public mutating func set(_ did: String, _ profile: ResolvedProfile) {
+    let key = JSKey(did)
+    if values[key] == nil { order.append(key) }
+    values[key] = profile
+  }
+
+  /// `out[did]`.
+  public subscript(did: String) -> ResolvedProfile? { values[JSKey(did)] }
+
+  public var count: Int { order.count }
+  public var isEmpty: Bool { order.isEmpty }
+
+  /// `Object.entries(out)`.
+  public var entries: [Entry] {
+    let indexes = order.filter { OrderedJSON.isArrayIndex($0.value) }.sorted { UInt64($0.value)! < UInt64($1.value)! }
+    let rest = order.filter { !OrderedJSON.isArrayIndex($0.value) }
+    return (indexes + rest).map { Entry(did: $0.value, profile: values[$0]!) }
+  }
+
+  /// `Object.keys(out)`.
+  public var dids: [String] { entries.map(\.did) }
+
+  /// The object, for a fixture (keys that are only canonically equivalent
+  /// collapse in a JSONValue; compare `dids` for those).
+  public func encode(to encoder: any Encoder) throws {
+    var container = encoder.container(keyedBy: DidKey.self)
+    for entry in entries { try container.encode(entry.profile, forKey: DidKey(stringValue: entry.did)) }
+  }
+
+  struct DidKey: CodingKey {
+    var stringValue: String
+    var intValue: Int? { nil }
+    init(stringValue: String) { self.stringValue = stringValue }
+    init?(intValue: Int) { nil }
+  }
+}
+
 public enum Atproto {
   public static let requestTimeoutMs: Double = 15_000
   public static let didDocTtlMs: Double = 10 * 60_000
@@ -105,9 +160,8 @@ public enum Atproto {
       pds = first["serviceEndpoint"].truthy
     }
     guard let pds else { throw ShapeError(message: "No PDS endpoint for \(did ?? "undefined")") }
-    guard case .string(var endpoint) = pds else { throw ShapeError(message: "pds.replace is not a function") }
-    if endpoint.hasSuffix("/") { endpoint.removeLast() }
-    return endpoint
+    guard case .string(let endpoint) = pds else { throw ShapeError(message: "pds.replace is not a function") }
+    return endpoint.jsRemovingOneTrailingSlash()
   }
 
   /// `didWebDocumentUrl(did)`: where a did:web keeps its document
@@ -118,12 +172,12 @@ public enum Atproto {
   public static func didWebDocumentUrl(_ did: String?) -> String? {
     let text = did ?? ""
     let prefix = "did:web:"
-    guard text.hasPrefix(prefix) else { return nil }
-    let body = String(jsUnits: Array(text.utf16.dropFirst(prefix.utf16.count)))
+    guard text.jsStartsWith(prefix) else { return nil }
+    let body = text.jsDropping(first: prefix.utf16.count)
     guard !body.isEmpty, !body.utf16.contains(where: { $0 == 0x3A || $0 == 0x2F || $0 == 0x3F || $0 == 0x23 }) else {
       return nil
     }
-    let host = body.replacingOccurrences(of: "%3A", with: ":", options: .caseInsensitive)
+    let host = body.jsReplacingASCIICaseInsensitive("%3A", with: ":")
     guard isWebHost(host) else { return nil }
     return "https://\(host)/.well-known/did.json"
   }
@@ -153,7 +207,7 @@ public enum Atproto {
   ) async throws -> JSONValue {
     guard let did, !did.isEmpty else { throw ShapeError(message: "getDidDocument: missing did") }
     let url: String?
-    if did.hasPrefix("did:web:") {
+    if did.jsStartsWith("did:web:") {
       url = didWebDocumentUrl(did)
     } else {
       url = "\(AppConfig.plcDirectory)/\(JSURI.encodeURIComponent(did))"
@@ -186,7 +240,8 @@ public enum Atproto {
   }
 
   /// `resolveProfiles(dids, { appview })`: `{ did: { handle, displayName,
-  /// avatar } }` for many accounts, 25 to a request. A request that fails
+  /// avatar } }` for many accounts (ResolvedProfiles, in the web object's
+  /// order), 25 to a request. A request that fails
   /// is asked once more after 400 ms, and then its accounts are left out
   /// (a deactivated account and one that couldn't be reached look the
   /// same, and neither should be invented).
@@ -195,15 +250,15 @@ public enum Atproto {
     appview: String = AppConfig.appview,
     transport: any HTTPTransport = HTTP.transport,
     clock: NetworkClock = HTTP.clock
-  ) async -> [String: ResolvedProfile] {
+  ) async -> ResolvedProfiles {
+    // `Array.from(new Set(dids.filter(Boolean)))`: by code unit.
     var unique: [String] = []
-    var seen = Set<String>()
+    var seen = Set<JSKey>()
     for did in dids ?? [] {
-      guard let did, !did.isEmpty, !seen.contains(did) else { continue }
-      seen.insert(did)
+      guard let did, !did.isEmpty, seen.insert(JSKey(did)).inserted else { continue }
       unique.append(did)
     }
-    var out: [String: ResolvedProfile] = [:]
+    var out = ResolvedProfiles()
     var start = 0
     while start < unique.count {
       let part = unique[start..<min(start + 25, unique.count)]
@@ -223,7 +278,7 @@ public enum Atproto {
           guard let value = profile[name], value.isTruthy else { return "" }
           return value.stringValue ?? value.jsString
         }
-        out[did.jsString] = ResolvedProfile(handle: field("handle"), displayName: field("displayName"), avatar: field("avatar"))
+        out.set(did.jsString, ResolvedProfile(handle: field("handle"), displayName: field("displayName"), avatar: field("avatar")))
       }
     }
     return out
@@ -259,7 +314,7 @@ public enum Atproto {
   /// for a did:web (which keeps no history) or when the directory can't be
   /// read.
   public static func getPlcHistory(_ did: String?, transport: any HTTPTransport = HTTP.transport) async -> [PlcHistoryEntry]? {
-    guard let did, did.hasPrefix("did:plc:") else { return nil }
+    guard let did, did.jsStartsWith("did:plc:") else { return nil }
     guard
       let response = try? await fetchWithTimeout(
         HTTPRequest(url: "\(AppConfig.plcDirectory)/\(did)/log/audit"), ms: 15_000, transport: transport),
@@ -280,10 +335,7 @@ public enum Atproto {
       } else {
         akas = []
       }
-      let handles = akas.map { aka -> String in
-        let text = aka.jsString
-        return text.hasPrefix("at://") ? String(text.dropFirst(5)) : text
-      }.filter { !$0.isEmpty }
+      let handles = akas.map { $0.jsString.jsRemovingPrefix("at://") }.filter { !$0.isEmpty }
       let endpoint = op["services"]?["atproto_pds"]?["endpoint"].truthy
       let pds = endpoint ?? op["service"].truthy ?? .null
       out.append(

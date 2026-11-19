@@ -77,7 +77,8 @@ public struct VirgaBackend: Sendable {
   }
 
   /// `requester.request(path, { method, query, body, timeoutMs })`. `body`
-  /// nil sends none (`undefined`); `.null` sends `null`.
+  /// nil sends none (`undefined`); `.null` sends `null`. A `timeoutMs` of 0
+  /// is no deadline, as the web's `withDeadline` reads it.
   @discardableResult
   public func request(
     _ path: String,
@@ -96,7 +97,7 @@ public struct VirgaBackend: Sendable {
     if body.isPresent { headers.set("Content-Type", "application/json") }
     let request = HTTPRequest(
       method: method, url: url.href, headers: headers,
-      body: body.map { Data(JSONStringify.stringify($0).utf8) }, timeoutMs: timeoutMs)
+      body: body.map { Data(JSONStringify.stringify($0).utf8) }, timeoutMs: backendDeadline(timeoutMs))
     let response: HTTPResponse
     do {
       response = try await transport.send(request)

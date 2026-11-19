@@ -238,7 +238,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=did%3Aplc%3Aa&limit=50&filter=posts_with_replies&includePins=false",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -289,7 +290,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fa%2Fb%2Fc&uris=at%3A%2F%2Fd%2Fe%2Ff%3Fx%26y",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -332,7 +334,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.unspecced.getConfig?",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -392,7 +395,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=%C3%A9+%F0%9F%98%80+a%2Bb%26c%3Dd&n=2.5&flag=true&nested=1%2C2&nested=x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -441,7 +445,8 @@
               "url": "https://api.example/xrpc/app.bsky.actor.getProfile?actor=x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -490,7 +495,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 400,
@@ -540,7 +546,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 500,
@@ -588,7 +595,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 502,
@@ -634,7 +642,8 @@
               "url": "https://public.api.bsky.app/xrpc/x.y.z?",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 400,
@@ -674,7 +683,8 @@
               "url": "https://public.api.bsky.app/xrpc/x.y.z?",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -712,7 +722,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -816,7 +827,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F000&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F004&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F005&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F006&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F007&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F008&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F009&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F010&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F011&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F012&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F013&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F014&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F015&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F016&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F017&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F018&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F019&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F020&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F021&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F022&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F023&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F024",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -833,7 +845,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F025&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F026&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F027&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F028&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F029&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F030&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F031&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F032&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F033&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F034&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F035&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F036&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F037&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F038&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F039&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F040&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F041&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F042&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F043&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F044&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F045&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F046&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F047&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F048&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F049",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -850,7 +863,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F050&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F051&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F052&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F053&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F054&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F055&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F056&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F057&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F058&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F059",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1133,7 +1147,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F000&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F002&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F003&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F004&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F005&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F006&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F007&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F008&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F009&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F010&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F011&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F012&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F013&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F014&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F015&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F016&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F017&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F018&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F019&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F020&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F021&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F022&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F023&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F024",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 500,
@@ -1150,7 +1165,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F025&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F026&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F027&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F028&uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F029",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1208,7 +1224,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F001",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1225,6 +1242,53 @@
         "result": {
           "views": [
             "odd"
+          ],
+          "failed": 0,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "code-units",
+      "fn": "getPosts",
+      "input": {
+        "uris": [
+          "at://did:plc:café/app.bsky.feed.post/1",
+          "at://did:plc:café/app.bsky.feed.post/1"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts?uris=at%3A%2F%2Fdid%3Aplc%3Acaf%C3%A9%2Fapp.bsky.feed.post%2F1&uris=at%3A%2F%2Fdid%3Aplc%3Acafe%CC%81%2Fapp.bsky.feed.post%2F1",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"posts\":[{\"uri\":\"at://did:plc:café/app.bsky.feed.post/1\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"},{\"uri\":\"at://did:plc:café/app.bsky.feed.post/1\",\"cid\":\"bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "views": [
+            {
+              "uri": "at://did:plc:café/app.bsky.feed.post/1",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            },
+            {
+              "uri": "at://did:plc:café/app.bsky.feed.post/1",
+              "cid": "bafyreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+            }
           ],
           "failed": 0,
           "error": null
@@ -1284,7 +1348,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mira.example.com",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1322,7 +1387,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%40mira.example.com",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1360,7 +1426,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%40mira",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1398,7 +1465,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mira",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1436,7 +1504,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=%CE%BF%CE%B4%CE%BF%CF%83.example",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1511,7 +1580,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1549,7 +1619,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1588,7 +1659,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=gone.example",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 400,
@@ -1621,7 +1693,8 @@
               "url": "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=x.example",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"

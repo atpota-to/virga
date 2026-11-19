@@ -175,7 +175,7 @@ public enum Constellation {
         let distinct: JSONValue? = infoValue["distinct_dids"]
         let distinctCamel: JSONValue? = infoValue["distinctDids"]
         let distinctDids: JSONValue = distinct.nonNull ?? distinctCamel.nonNull ?? .null
-        let sourcePath = path.hasPrefix(".") ? String(path.dropFirst()) : path
+        let sourcePath = path.jsRemovingPrefix(".")
         out.append(
           BacklinkSource(collection: collection, path: path, source: "\(collection):\(sourcePath)", count: count, distinctDids: distinctDids))
       }

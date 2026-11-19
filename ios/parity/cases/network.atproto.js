@@ -147,6 +147,13 @@ export default async function cases() {
           answers: [json({ id: 'did:web:localhost%3A2583' })],
         },
         { $id: 'web-unusable', did: 'did:web:example.com:path', answers: [] },
+        // startsWith counts code units: a combining mark after the prefix
+        // still makes it a did:web (and an unusable one).
+        {
+          $id: 'web-combining',
+          did: 'did:web:\u0301example.com',
+          answers: [],
+        },
         { $id: 'missing', did: '', answers: [] },
         {
           $id: 'not-found',
@@ -267,6 +274,20 @@ export default async function cases() {
           ],
         },
         { $id: 'error', did: DID, answers: [{ status: 500, text: 'boom' }] },
+        {
+          $id: 'slash-after-prepend',
+          did: DID,
+          answers: [
+            json({
+              service: [
+                {
+                  id: '#atproto_pds',
+                  serviceEndpoint: 'https://pds.example/\u0600/',
+                },
+              ],
+            }),
+          ],
+        },
       ],
       ({ did, answers }) => recorded(inTurn(...answers), () => resolvePds(did)),
     )),
@@ -370,6 +391,37 @@ export default async function cases() {
             json({ profiles: [{ did: 'did:plc:29', handle: 'last.example' }] }),
           ],
         },
+        {
+          $id: 'code-units',
+          dids: [
+            'did:plc:caf\u00e9',
+            'did:plc:cafe\u0301',
+            'did:plc:caf\u00e9',
+          ],
+          answers: [
+            json({
+              profiles: [
+                { did: 'did:plc:cafe\u0301', handle: 'decomposed.example' },
+                { did: 'did:plc:caf\u00e9', handle: 'composed.example' },
+              ],
+            }),
+          ],
+        },
+        {
+          $id: 'object-order',
+          dids: ['did:plc:a', 'did:plc:b', '7'],
+          answers: [
+            json({
+              profiles: [
+                { did: 'did:plc:b', handle: 'b.example' },
+                { did: 'did:plc:a', handle: 'a.example' },
+                { did: '7', handle: 'seven.example' },
+                { did: 'did:plc:b', handle: 'again.example' },
+                { did: 12, handle: 'number.example' },
+              ],
+            }),
+          ],
+        },
         { $id: 'empty', dids: [], answers: [] },
         { $id: 'nothing', dids: null, answers: [] },
         { $id: 'profiles-missing', dids: ['did:plc:a'], answers: [json({})] },
@@ -380,9 +432,13 @@ export default async function cases() {
           answers: [json({ profiles: [] })],
         },
       ],
+      // As entries: an object's keys that are only canonically equivalent
+      // (two spellings of "é") stay two, and their order shows.
       ({ dids, appview, answers }) =>
-        recorded(inTurn(...answers), () =>
-          resolveProfiles(dids, appview ? { appview } : undefined),
+        recorded(inTurn(...answers), async () =>
+          Object.entries(
+            await resolveProfiles(dids, appview ? { appview } : undefined),
+          ),
         ),
     )),
 
@@ -460,6 +516,21 @@ export default async function cases() {
         { $id: 'offline', did: DID, answers: ['offline'] },
         { $id: 'web', did: 'did:web:example.com', answers: [] },
         { $id: 'unencoded', did: 'did:plc:a b', answers: [json([])] },
+        {
+          $id: 'combining',
+          did: 'did:plc:\u0301abc',
+          answers: [
+            json([
+              {
+                createdAt: '2024-01-01T00:00:00.000Z',
+                operation: {
+                  type: 'plc_operation',
+                  alsoKnownAs: ['at://\u0301mira.example', 'at:/\u0301/x'],
+                },
+              },
+            ]),
+          ],
+        },
         { $id: 'empty', did: '', answers: [] },
       ],
       ({ did, answers }) =>

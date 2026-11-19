@@ -147,6 +147,14 @@ export default async function cases() {
           failFirst: true,
         },
         { $id: 'odd-posts', uris: [uri(1)], odd: true },
+        // A Set keeps two spellings of "é" apart.
+        {
+          $id: 'code-units',
+          uris: [
+            'at://did:plc:caf\u00e9/app.bsky.feed.post/1',
+            'at://did:plc:cafe\u0301/app.bsky.feed.post/1',
+          ],
+        },
         { $id: 'none', uris: [] },
         { $id: 'missing', uris: null },
       ],

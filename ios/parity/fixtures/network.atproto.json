@@ -395,7 +395,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -455,7 +456,8 @@
               "url": "https://plc.directory/did%3Aplc%3Aa%2Fb%20c",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -497,7 +499,8 @@
               "url": "https://example.com/.well-known/did.json",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -539,7 +542,8 @@
               "url": "https://localhost:2583/.well-known/did.json",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -573,6 +577,25 @@
         "result": {
           "error": {
             "message": "Unsupported did:web identifier did:web:example.com:path",
+            "status": null,
+            "url": null
+          }
+        }
+      }
+    },
+    {
+      "id": "web-combining",
+      "fn": "getDidDocument",
+      "input": {
+        "did": "did:web:́example.com",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "Unsupported did:web identifier did:web:́example.com",
             "status": null,
             "url": null
           }
@@ -619,7 +642,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 404,
@@ -661,7 +685,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 410,
@@ -700,7 +725,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -757,7 +783,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -862,7 +889,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -873,7 +901,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -960,7 +989,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1003,7 +1033,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1041,7 +1072,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1087,7 +1119,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1125,7 +1158,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1169,7 +1203,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1213,7 +1248,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1256,7 +1292,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1301,7 +1338,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1340,7 +1378,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1376,7 +1415,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1419,7 +1459,8 @@
               "url": "https://example.com/.well-known/did.json",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1455,7 +1496,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 500,
@@ -1470,6 +1512,50 @@
         ],
         "waits": [],
         "$throws": "HTTP 500  for https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x :: boom"
+      }
+    },
+    {
+      "id": "slash-after-prepend",
+      "fn": "resolvePds",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "serviceEndpoint": "https://pds.example/؀/"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"service\":[{\"id\":\"#atproto_pds\",\"serviceEndpoint\":\"https://pds.example/؀/\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": "https://pds.example/؀"
       }
     },
     {
@@ -1495,7 +1581,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1538,7 +1625,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1580,7 +1668,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=a%20b%2F%C3%A9%3F",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1623,7 +1712,8 @@
               "url": "https://api.example/xrpc/app.bsky.actor.getProfile?actor=x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1665,7 +1755,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=gone.example.com",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 400,
@@ -1698,7 +1789,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -1757,7 +1849,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa&actors=did%3Aplc%3Ab&actors=did%3Aplc%3Ac",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1771,23 +1864,32 @@
           }
         ],
         "waits": [],
-        "result": {
-          "did:plc:a": {
-            "handle": "a.example",
-            "displayName": "A",
-            "avatar": "https://cdn/a"
-          },
-          "did:plc:b": {
-            "handle": "b.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:c": {
-            "handle": "",
-            "displayName": "",
-            "avatar": ""
-          }
-        }
+        "result": [
+          [
+            "did:plc:a",
+            {
+              "handle": "a.example",
+              "displayName": "A",
+              "avatar": "https://cdn/a"
+            }
+          ],
+          [
+            "did:plc:b",
+            {
+              "handle": "b.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:c",
+            {
+              "handle": "",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
       }
     },
     {
@@ -1860,7 +1962,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A000&actors=did%3Aplc%3A001&actors=did%3Aplc%3A002&actors=did%3Aplc%3A003&actors=did%3Aplc%3A004&actors=did%3Aplc%3A005&actors=did%3Aplc%3A006&actors=did%3Aplc%3A007&actors=did%3Aplc%3A008&actors=did%3Aplc%3A009&actors=did%3Aplc%3A010&actors=did%3Aplc%3A011&actors=did%3Aplc%3A012&actors=did%3Aplc%3A013&actors=did%3Aplc%3A014&actors=did%3Aplc%3A015&actors=did%3Aplc%3A016&actors=did%3Aplc%3A017&actors=did%3Aplc%3A018&actors=did%3Aplc%3A019&actors=did%3Aplc%3A020&actors=did%3Aplc%3A021&actors=did%3Aplc%3A022&actors=did%3Aplc%3A023&actors=did%3Aplc%3A024",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1877,7 +1980,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A025&actors=did%3Aplc%3A026&actors=did%3Aplc%3A027&actors=did%3Aplc%3A028&actors=did%3Aplc%3A029&actors=did%3Aplc%3A030&actors=did%3Aplc%3A031&actors=did%3Aplc%3A032&actors=did%3Aplc%3A033&actors=did%3Aplc%3A034&actors=did%3Aplc%3A035&actors=did%3Aplc%3A036&actors=did%3Aplc%3A037&actors=did%3Aplc%3A038&actors=did%3Aplc%3A039&actors=did%3Aplc%3A040&actors=did%3Aplc%3A041&actors=did%3Aplc%3A042&actors=did%3Aplc%3A043&actors=did%3Aplc%3A044&actors=did%3Aplc%3A045&actors=did%3Aplc%3A046&actors=did%3Aplc%3A047&actors=did%3Aplc%3A048&actors=did%3Aplc%3A049",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1894,7 +1998,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A050&actors=did%3Aplc%3A051&actors=did%3Aplc%3A052",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -1908,273 +2013,432 @@
           }
         ],
         "waits": [],
-        "result": {
-          "did:plc:000": {
-            "handle": "000.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:001": {
-            "handle": "001.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:002": {
-            "handle": "002.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:003": {
-            "handle": "003.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:004": {
-            "handle": "004.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:005": {
-            "handle": "005.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:006": {
-            "handle": "006.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:007": {
-            "handle": "007.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:008": {
-            "handle": "008.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:009": {
-            "handle": "009.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:010": {
-            "handle": "010.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:011": {
-            "handle": "011.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:012": {
-            "handle": "012.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:013": {
-            "handle": "013.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:014": {
-            "handle": "014.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:015": {
-            "handle": "015.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:016": {
-            "handle": "016.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:017": {
-            "handle": "017.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:018": {
-            "handle": "018.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:019": {
-            "handle": "019.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:020": {
-            "handle": "020.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:021": {
-            "handle": "021.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:022": {
-            "handle": "022.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:023": {
-            "handle": "023.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:024": {
-            "handle": "024.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:025": {
-            "handle": "025.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:026": {
-            "handle": "026.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:027": {
-            "handle": "027.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:028": {
-            "handle": "028.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:029": {
-            "handle": "029.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:030": {
-            "handle": "030.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:031": {
-            "handle": "031.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:032": {
-            "handle": "032.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:033": {
-            "handle": "033.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:034": {
-            "handle": "034.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:035": {
-            "handle": "035.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:036": {
-            "handle": "036.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:037": {
-            "handle": "037.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:038": {
-            "handle": "038.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:039": {
-            "handle": "039.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:040": {
-            "handle": "040.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:041": {
-            "handle": "041.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:042": {
-            "handle": "042.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:043": {
-            "handle": "043.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:044": {
-            "handle": "044.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:045": {
-            "handle": "045.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:046": {
-            "handle": "046.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:047": {
-            "handle": "047.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:048": {
-            "handle": "048.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:049": {
-            "handle": "049.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:050": {
-            "handle": "050.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:051": {
-            "handle": "051.example",
-            "displayName": "",
-            "avatar": ""
-          },
-          "did:plc:052": {
-            "handle": "052.example",
-            "displayName": "",
-            "avatar": ""
-          }
-        }
+        "result": [
+          [
+            "did:plc:000",
+            {
+              "handle": "000.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:001",
+            {
+              "handle": "001.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:002",
+            {
+              "handle": "002.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:003",
+            {
+              "handle": "003.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:004",
+            {
+              "handle": "004.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:005",
+            {
+              "handle": "005.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:006",
+            {
+              "handle": "006.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:007",
+            {
+              "handle": "007.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:008",
+            {
+              "handle": "008.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:009",
+            {
+              "handle": "009.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:010",
+            {
+              "handle": "010.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:011",
+            {
+              "handle": "011.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:012",
+            {
+              "handle": "012.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:013",
+            {
+              "handle": "013.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:014",
+            {
+              "handle": "014.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:015",
+            {
+              "handle": "015.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:016",
+            {
+              "handle": "016.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:017",
+            {
+              "handle": "017.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:018",
+            {
+              "handle": "018.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:019",
+            {
+              "handle": "019.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:020",
+            {
+              "handle": "020.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:021",
+            {
+              "handle": "021.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:022",
+            {
+              "handle": "022.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:023",
+            {
+              "handle": "023.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:024",
+            {
+              "handle": "024.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:025",
+            {
+              "handle": "025.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:026",
+            {
+              "handle": "026.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:027",
+            {
+              "handle": "027.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:028",
+            {
+              "handle": "028.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:029",
+            {
+              "handle": "029.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:030",
+            {
+              "handle": "030.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:031",
+            {
+              "handle": "031.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:032",
+            {
+              "handle": "032.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:033",
+            {
+              "handle": "033.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:034",
+            {
+              "handle": "034.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:035",
+            {
+              "handle": "035.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:036",
+            {
+              "handle": "036.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:037",
+            {
+              "handle": "037.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:038",
+            {
+              "handle": "038.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:039",
+            {
+              "handle": "039.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:040",
+            {
+              "handle": "040.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:041",
+            {
+              "handle": "041.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:042",
+            {
+              "handle": "042.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:043",
+            {
+              "handle": "043.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:044",
+            {
+              "handle": "044.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:045",
+            {
+              "handle": "045.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:046",
+            {
+              "handle": "046.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:047",
+            {
+              "handle": "047.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:048",
+            {
+              "handle": "048.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:049",
+            {
+              "handle": "049.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:050",
+            {
+              "handle": "050.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:051",
+            {
+              "handle": "051.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:052",
+            {
+              "handle": "052.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
       }
     },
     {
@@ -2206,7 +2470,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -2217,7 +2482,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2233,13 +2499,16 @@
         "waits": [
           400
         ],
-        "result": {
-          "did:plc:a": {
-            "handle": "a.example",
-            "displayName": "",
-            "avatar": ""
-          }
-        }
+        "result": [
+          [
+            "did:plc:a",
+            {
+              "handle": "a.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
       }
     },
     {
@@ -2307,7 +2576,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A0&actors=did%3Aplc%3A1&actors=did%3Aplc%3A2&actors=did%3Aplc%3A3&actors=did%3Aplc%3A4&actors=did%3Aplc%3A5&actors=did%3Aplc%3A6&actors=did%3Aplc%3A7&actors=did%3Aplc%3A8&actors=did%3Aplc%3A9&actors=did%3Aplc%3A10&actors=did%3Aplc%3A11&actors=did%3Aplc%3A12&actors=did%3Aplc%3A13&actors=did%3Aplc%3A14&actors=did%3Aplc%3A15&actors=did%3Aplc%3A16&actors=did%3Aplc%3A17&actors=did%3Aplc%3A18&actors=did%3Aplc%3A19&actors=did%3Aplc%3A20&actors=did%3Aplc%3A21&actors=did%3Aplc%3A22&actors=did%3Aplc%3A23&actors=did%3Aplc%3A24",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 500,
@@ -2324,7 +2594,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A0&actors=did%3Aplc%3A1&actors=did%3Aplc%3A2&actors=did%3Aplc%3A3&actors=did%3Aplc%3A4&actors=did%3Aplc%3A5&actors=did%3Aplc%3A6&actors=did%3Aplc%3A7&actors=did%3Aplc%3A8&actors=did%3Aplc%3A9&actors=did%3Aplc%3A10&actors=did%3Aplc%3A11&actors=did%3Aplc%3A12&actors=did%3Aplc%3A13&actors=did%3Aplc%3A14&actors=did%3Aplc%3A15&actors=did%3Aplc%3A16&actors=did%3Aplc%3A17&actors=did%3Aplc%3A18&actors=did%3Aplc%3A19&actors=did%3Aplc%3A20&actors=did%3Aplc%3A21&actors=did%3Aplc%3A22&actors=did%3Aplc%3A23&actors=did%3Aplc%3A24",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 502,
@@ -2341,7 +2612,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3A25&actors=did%3Aplc%3A26&actors=did%3Aplc%3A27&actors=did%3Aplc%3A28&actors=did%3Aplc%3A29",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2357,13 +2629,182 @@
         "waits": [
           400
         ],
-        "result": {
-          "did:plc:29": {
-            "handle": "last.example",
-            "displayName": "",
-            "avatar": ""
+        "result": [
+          [
+            "did:plc:29",
+            {
+              "handle": "last.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "code-units",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:café",
+          "did:plc:café",
+          "did:plc:café"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "profiles": [
+                {
+                  "did": "did:plc:café",
+                  "handle": "decomposed.example"
+                },
+                {
+                  "did": "did:plc:café",
+                  "handle": "composed.example"
+                }
+              ]
+            }
           }
-        }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Acaf%C3%A9&actors=did%3Aplc%3Acafe%CC%81",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:café\",\"handle\":\"decomposed.example\"},{\"did\":\"did:plc:café\",\"handle\":\"composed.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          [
+            "did:plc:café",
+            {
+              "handle": "decomposed.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:café",
+            {
+              "handle": "composed.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "object-order",
+      "fn": "resolveProfiles",
+      "input": {
+        "dids": [
+          "did:plc:a",
+          "did:plc:b",
+          "7"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "profiles": [
+                {
+                  "did": "did:plc:b",
+                  "handle": "b.example"
+                },
+                {
+                  "did": "did:plc:a",
+                  "handle": "a.example"
+                },
+                {
+                  "did": "7",
+                  "handle": "seven.example"
+                },
+                {
+                  "did": "did:plc:b",
+                  "handle": "again.example"
+                },
+                {
+                  "did": 12,
+                  "handle": "number.example"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa&actors=did%3Aplc%3Ab&actors=7",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"profiles\":[{\"did\":\"did:plc:b\",\"handle\":\"b.example\"},{\"did\":\"did:plc:a\",\"handle\":\"a.example\"},{\"did\":\"7\",\"handle\":\"seven.example\"},{\"did\":\"did:plc:b\",\"handle\":\"again.example\"},{\"did\":12,\"handle\":\"number.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          [
+            "7",
+            {
+              "handle": "seven.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "12",
+            {
+              "handle": "number.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:b",
+            {
+              "handle": "again.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ],
+          [
+            "did:plc:a",
+            {
+              "handle": "a.example",
+              "displayName": "",
+              "avatar": ""
+            }
+          ]
+        ]
       }
     },
     {
@@ -2376,7 +2817,7 @@
       "output": {
         "exchanges": [],
         "waits": [],
-        "result": {}
+        "result": []
       }
     },
     {
@@ -2389,7 +2830,7 @@
       "output": {
         "exchanges": [],
         "waits": [],
-        "result": {}
+        "result": []
       }
     },
     {
@@ -2413,7 +2854,8 @@
               "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2427,7 +2869,7 @@
           }
         ],
         "waits": [],
-        "result": {}
+        "result": []
       }
     },
     {
@@ -2454,7 +2896,8 @@
               "url": "https://api.example/xrpc/app.bsky.actor.getProfiles?actors=did%3Aplc%3Aa",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2468,7 +2911,7 @@
           }
         ],
         "waits": [],
-        "result": {}
+        "result": []
       }
     },
     {
@@ -2541,7 +2984,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2633,7 +3077,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2671,7 +3116,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2709,7 +3155,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 404,
@@ -2745,7 +3192,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2778,7 +3226,8 @@
               "url": "https://plc.directory/did:plc:virgaharnessmira2zq4x/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -2821,7 +3270,8 @@
               "url": "https://plc.directory/did:plc:a b/log/audit",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -2836,6 +3286,65 @@
         ],
         "waits": [],
         "result": []
+      }
+    },
+    {
+      "id": "combining",
+      "fn": "getPlcHistory",
+      "input": {
+        "did": "did:plc:́abc",
+        "answers": [
+          {
+            "status": 200,
+            "json": [
+              {
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "operation": {
+                  "type": "plc_operation",
+                  "alsoKnownAs": [
+                    "at://́mira.example",
+                    "at:/́/x"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did:plc:́abc/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[{\"createdAt\":\"2024-01-01T00:00:00.000Z\",\"operation\":{\"type\":\"plc_operation\",\"alsoKnownAs\":[\"at://́mira.example\",\"at:/́/x\"]}}]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "at": "2024-01-01T00:00:00.000Z",
+            "handles": [
+              "́mira.example",
+              "at:/́/x"
+            ],
+            "pds": null,
+            "nullified": false,
+            "type": "plc_operation"
+          }
+        ]
       }
     },
     {
@@ -2885,7 +3394,8 @@
                 "$json": {
                   "a": 1
                 }
-              }
+              },
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,

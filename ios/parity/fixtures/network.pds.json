@@ -481,6 +481,44 @@
       "output": null
     },
     {
+      "id": "pdsFromDidDocument#25",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:web:café.example",
+          "service": [
+            {
+              "id": "did:web:café.example#atproto_pds",
+              "serviceEndpoint": "https://pds.example"
+            }
+          ]
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pdsFromDidDocument#26",
+      "fn": "pdsFromDidDocument",
+      "input": {
+        "doc": {
+          "id": "did:plc:virgaharnessmira2zq4x",
+          "service": [
+            {
+              "id": "#bsky_notif",
+              "type": "BskyNotificationService",
+              "serviceEndpoint": "https://notify.example"
+            },
+            {
+              "id": "#atproto_pds",
+              "type": "AtprotoPersonalDataServer",
+              "serviceEndpoint": "https://pds.example/؀//"
+            }
+          ]
+        }
+      },
+      "output": "https://pds.example/؀"
+    },
+    {
       "id": "resolves",
       "fn": "resolver",
       "input": {
@@ -518,7 +556,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -581,7 +620,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -651,7 +691,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "$error": "fetch failed"
@@ -662,7 +703,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -712,7 +754,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -797,6 +840,60 @@
       }
     },
     {
+      "id": "remember-code-units",
+      "fn": "resolver",
+      "input": {
+        "steps": [
+          [
+            "remember",
+            "did:plc:virgaharnessmira2zq4x",
+            "https://́pds.example/؀/"
+          ],
+          [
+            "resolve",
+            "did:plc:virgaharnessmira2zq4x"
+          ],
+          [
+            "remember",
+            "did:plc:café",
+            "https://a.example"
+          ],
+          [
+            "remember",
+            "did:plc:café",
+            "https://b.example"
+          ],
+          [
+            "resolve",
+            "did:plc:café"
+          ],
+          [
+            "resolve",
+            "did:plc:café"
+          ]
+        ],
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": [
+          null,
+          {
+            "value": "https://́pds.example/؀"
+          },
+          null,
+          null,
+          {
+            "value": "https://a.example"
+          },
+          {
+            "value": "https://b.example"
+          }
+        ]
+      }
+    },
+    {
       "id": "remember-ignored",
       "fn": "resolver",
       "input": {
@@ -844,7 +941,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -931,7 +1029,8 @@
               "url": "https://plc.directory/did%3Aplc%3Avirgaharnessmira2zq4x",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,
@@ -988,7 +1087,8 @@
               "url": "https://example.com/.well-known/did.json",
               "method": "GET",
               "headers": {},
-              "body": null
+              "body": null,
+              "timeoutMs": 15000
             },
             "response": {
               "status": 200,

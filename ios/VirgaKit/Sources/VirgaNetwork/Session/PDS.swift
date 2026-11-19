@@ -17,25 +17,27 @@ public enum PDS {
     pdsFromDidDocument(doc, didValue: doc?["id"])
   }
 
-  /// `pdsFromDidDocument(doc, did)`.
+  /// `pdsFromDidDocument(doc, did)`. A nil `did` is the web's `null` (only
+  /// the short id matches); for its `undefined`, which falls back to
+  /// `doc.id`, call `pdsFromDidDocument(doc)`.
   public static func pdsFromDidDocument(_ doc: JSONValue?, did: String?) -> String? {
     pdsFromDidDocument(doc, didValue: did.map(JSONValue.string))
   }
 
   static func pdsFromDidDocument(_ doc: JSONValue?, didValue did: JSONValue?) -> String? {
     let services = doc?["service"]?.arrayValue ?? []
+    // `s?.id === …`: a string with the same code units.
     let isPds: (JSONValue) -> Bool = { service in
-      if service["id"] == .string("#atproto_pds") { return true }
+      guard let id = service["id"]?.stringValue else { return false }
+      if id.jsEquals("#atproto_pds") { return true }
       guard let did, did.isTruthy else { return false }
-      return service["id"] == .string("\(did.jsString)#atproto_pds")
+      return id.jsEquals("\(did.jsString)#atproto_pds")
     }
     guard let service = services.first(where: isPds), let endpoint = service["serviceEndpoint"]?.stringValue else {
       return nil
     }
     guard let url = try? WebURL(endpoint), url.protocol == "https:" || url.protocol == "http:" else { return nil }
-    var trimmed = endpoint
-    while trimmed.hasSuffix("/") { trimmed.removeLast() }
-    return trimmed
+    var t = endpoint; while t.hasSuffix("/") { t.removeLast() }; return t
   }
 
   /// `createPdsResolver({ getDidDocument })`.
@@ -95,10 +97,9 @@ public actor PDSResolver {
   /// `remember(did, pdsUrl)`: a PDS learned another way (the server's
   /// session answer), so no lookup is needed. Only an http(s) address.
   public func remember(_ did: String?, _ pdsUrl: String?) async {
-    guard let did, !did.isEmpty, let pdsUrl, pdsUrl.hasPrefix("https://") || pdsUrl.hasPrefix("http://") else { return }
-    var trimmed = pdsUrl
-    while trimmed.hasSuffix("/") { trimmed.removeLast() }
-    await cache.set(did, trimmed)
+    // `/^https?:\/\//`, by code unit.
+    guard let did, !did.isEmpty, let pdsUrl, pdsUrl.jsStartsWith("https://") || pdsUrl.jsStartsWith("http://") else { return }
+    await cache.set(did, pdsUrl.jsRemovingTrailingSlashes())
   }
 
   public func forget(_ did: String?) async {

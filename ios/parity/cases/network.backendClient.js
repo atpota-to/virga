@@ -146,6 +146,9 @@ export default async function cases() {
         { backendUrl: '', path: '/api/oauth/session' },
         { backendUrl: '/', origin: 'https://virga.test', path: '/api/x' },
         { backendUrl: 'not a url', path: '/api/x' },
+        // Trailing slashes are code units, even after a sign that joins the
+        // next character into one grapheme.
+        { backendUrl: 'https://other.example/\u0600/', path: '/api/x' },
         { backendUrl: 'https://exa mple.com', path: '/api/x' },
       ],
       ({ backendUrl, path, origin }) =>
@@ -357,9 +360,32 @@ export default async function cases() {
           location: at('?n=n+1', `#session=${TOKEN}&did=${DID}`),
           pending: { nonce: 'n 1', intent: 'add' },
         },
+        // The nonce must be the same code units, not just the same text.
+        {
+          $id: 'nonce-code-units',
+          location: at('?n=caf%C3%A9', `#session=${TOKEN}&did=${DID}`),
+          pending: { nonce: 'cafe\u0301', intent: 'add' },
+        },
+        {
+          $id: 'nonce-not-string',
+          location: at('?n=5', `#session=${TOKEN}&did=${DID}`),
+          pending: { nonce: 5 },
+        },
+        {
+          $id: 'path-code-units',
+          returnPath: '/caf\u00e9',
+          location: { pathname: '/cafe\u0301', search: '', hash: '#error=x' },
+          pending,
+        },
+        {
+          $id: 'path-own',
+          returnPath: '/caf\u00e9',
+          location: { pathname: '/caf\u00e9/', search: '', hash: '#error=x' },
+          pending,
+        },
       ],
-      ({ location, pending: p }) =>
-        returnShape(readBackendReturn(location, p, '/oauth/return')),
+      ({ location, pending: p, returnPath = '/oauth/return' }) =>
+        returnShape(readBackendReturn(location, p, returnPath)),
     )),
 
     ...(await each(
@@ -521,6 +547,19 @@ export default async function cases() {
           backendUrl: 'https://other.example/v/',
           answers: [json({ accepted: true })],
         },
+        // withDeadline: a falsy timeoutMs is no deadline at all.
+        {
+          $id: 'no-deadline',
+          path: '/api/x',
+          options: { timeoutMs: 0 },
+          answers: [json({ success: true })],
+        },
+        {
+          $id: 'own-deadline',
+          path: '/api/x',
+          options: { method: 'POST', body: {}, timeoutMs: 60_000 },
+          answers: [json({ success: true })],
+        },
       ].map((c) => ({ ...c, queryKeys: Object.keys(c.options?.query || {}) })),
       async ({ answers, token, backendUrl, path, options }) => {
         const out = await recordFetch(inTurn(...answers), () =>
@@ -581,13 +620,26 @@ export default async function cases() {
           backendUrl: 'https://other.example/prefix/',
           answers: [json({ success: true })],
         },
+        {
+          $id: 'no-deadline',
+          lite: true,
+          timeoutMs: 0,
+          answers: [json({ success: true })],
+        },
+        {
+          $id: 'own-deadline',
+          lite: false,
+          timeoutMs: 1234,
+          answers: [json({ success: true })],
+        },
       ],
-      ({ lite, answers, backendUrl = SERVER }) =>
+      ({ lite, answers, backendUrl = SERVER, timeoutMs }) =>
         recordFetch(inTurn(...answers), () =>
           withOrigin(undefined, () =>
             (lite ? checkBackendSession : fetchBackendSession)({
               backendUrl,
               token: TOKEN,
+              ...(timeoutMs === undefined ? {} : { timeoutMs }),
             }),
           ),
         ),

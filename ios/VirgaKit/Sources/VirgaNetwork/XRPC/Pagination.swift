@@ -73,8 +73,9 @@ public enum Pagination {
   ) async throws -> Outcome<Item> {
     var items: [Item] = []
     var cursor = start.flatMap { $0.isEmpty ? nil : $0 }
-    var seen = Set<String>()
-    if let cursor { seen.insert(cursor) }
+    // Cursors compared as the web's loops compare them: by code unit.
+    var seen = Set<JSKey>()
+    if let cursor { seen.insert(JSKey(cursor)) }
     var pages = 0
     while maxPages.map({ pages < $0 }) ?? true {
       if Task.isCancelled { return Outcome(items: items, pages: pages, stop: .cancelled, cursor: cursor) }
@@ -90,11 +91,11 @@ public enum Pagination {
       }
       switch repeatedCursor {
       case .follow: break
-      case .stopOnPrevious where next == cursor, .stopOnAny where seen.contains(next):
+      case .stopOnPrevious where cursor.jsEquals(next), .stopOnAny where seen.contains(JSKey(next)):
         return Outcome(items: items, pages: pages, stop: .repeatedCursor, cursor: next)
       default: break
       }
-      seen.insert(next)
+      seen.insert(JSKey(next))
       cursor = next
     }
     return Outcome(items: items, pages: pages, stop: .pageLimit, cursor: cursor)

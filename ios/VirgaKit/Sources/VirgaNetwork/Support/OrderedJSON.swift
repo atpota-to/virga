@@ -66,7 +66,7 @@ public indirect enum OrderedJSON: Sendable, Hashable {
   /// A member of an object.
   public subscript(key: String) -> OrderedJSON? {
     guard case .object(let members) = self else { return nil }
-    return members.first { $0.key == key }?.value
+    return members.first { $0.key.jsEquals(key) }?.value
   }
 
   /// `Object.entries(value)`: an object's members, an array's elements under
@@ -147,8 +147,10 @@ public indirect enum OrderedJSON: Sendable, Hashable {
         return .array(out)
       case 0x7B:  // {
         i += 1
+        // Keys as a JavaScript object holds them: by code unit, so two
+        // spellings of "é" are two members.
         var order: [String] = []
-        var children: [String: OrderedJSON] = [:]
+        var children: [JSKey: OrderedJSON] = [:]
         skipWhitespace()
         if i < units.count, units[i] == 0x7D {
           i += 1
@@ -161,8 +163,8 @@ public indirect enum OrderedJSON: Sendable, Hashable {
           i += 1  // :
           let child = readValue()
           // A repeated key keeps its first place and its last value.
-          if children[key] == nil { order.append(key) }
-          children[key] = child
+          if children[JSKey(key)] == nil { order.append(key) }
+          children[JSKey(key)] = child
           skipWhitespace()
           if i < units.count, units[i] == 0x2C {
             i += 1
@@ -171,7 +173,7 @@ public indirect enum OrderedJSON: Sendable, Hashable {
           i += 1  // }
           break
         }
-        return .object(OrderedJSON.entriesOrder(order).map { Member(key: $0, value: children[$0]!) })
+        return .object(OrderedJSON.entriesOrder(order).map { Member(key: $0, value: children[JSKey($0)]!) })
       case 0x22:
         return .scalar(.string(readString()))
       case 0x74:

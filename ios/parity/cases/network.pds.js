@@ -96,6 +96,21 @@ export default async function cases() {
         },
         { doc: null },
         { doc: 'did doc' },
+        // Ids compare by code unit: "é" and "e" + U+0301 are two DIDs.
+        {
+          doc: {
+            id: 'did:web:caf\u00e9.example',
+            service: [
+              {
+                id: 'did:web:cafe\u0301.example#atproto_pds',
+                serviceEndpoint: 'https://pds.example',
+              },
+            ],
+          },
+        },
+        // Slashes trimmed by code unit, past a sign that joins the next
+        // character into one grapheme.
+        { doc: doc('https://pds.example/\u0600//') },
       ],
       ({ doc: d, did }) =>
         did === undefined ? pdsFromDidDocument(d) : pdsFromDidDocument(d, did),
@@ -138,6 +153,18 @@ export default async function cases() {
             ['resolve', DID],
             ['remember', DID, 'ftp://nope'],
             ['resolve', DID],
+          ],
+          answers: [],
+        },
+        {
+          $id: 'remember-code-units',
+          steps: [
+            ['remember', DID, 'https://\u0301pds.example/\u0600/'],
+            ['resolve', DID],
+            ['remember', 'did:plc:caf\u00e9', 'https://a.example'],
+            ['remember', 'did:plc:cafe\u0301', 'https://b.example'],
+            ['resolve', 'did:plc:caf\u00e9'],
+            ['resolve', 'did:plc:cafe\u0301'],
           ],
           answers: [],
         },

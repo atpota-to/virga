@@ -3,9 +3,10 @@
 // resolver). Callers asking for the same key at the same time share one
 // read; a read that fails is dropped, so the next caller asks again rather
 // than inheriting the failure; an entry older than its time to live is read
-// again.
+// again. Keys are compared by code unit, as a JavaScript Map compares them.
 
 import Foundation
+import VirgaCore
 
 public actor PromiseCache<Value: Sendable> {
   struct Entry {
@@ -14,7 +15,7 @@ public actor PromiseCache<Value: Sendable> {
     let at: Double
   }
 
-  private var entries: [String: Entry] = [:]
+  private var entries: [JSKey: Entry] = [:]
   private var counter: UInt64 = 0
 
   public init() {}
@@ -27,6 +28,7 @@ public actor PromiseCache<Value: Sendable> {
     now: Double,
     read: @escaping @Sendable () async throws -> Value
   ) async throws -> Value {
+    let key = JSKey(key)
     if let held = entries[key], ttl.map({ now - held.at < $0 }) ?? true {
       return try await held.task.value
     }
@@ -45,16 +47,16 @@ public actor PromiseCache<Value: Sendable> {
   /// Holds a value learned another way, so no read is needed.
   public func set(_ key: String, _ value: Value, now: Double = 0) {
     counter += 1
-    entries[key] = Entry(id: counter, task: Task { value }, at: now)
+    entries[JSKey(key)] = Entry(id: counter, task: Task { value }, at: now)
   }
 
   public func remove(_ key: String) {
-    entries[key] = nil
+    entries[JSKey(key)] = nil
   }
 
   public func removeAll() {
     entries = [:]
   }
 
-  public func contains(_ key: String) -> Bool { entries[key] != nil }
+  public func contains(_ key: String) -> Bool { entries[JSKey(key)] != nil }
 }

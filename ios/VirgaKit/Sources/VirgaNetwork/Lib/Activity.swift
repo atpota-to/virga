@@ -41,13 +41,25 @@ public enum Activity {
 
   /// `feedItemTime(item)`: a repost by when it was reposted, a post by when
   /// it was written (or else indexed), as an ISO string; nil when there is
-  /// no readable time.
-  public static func feedItemTime(_ item: JSONValue?) -> String? {
+  /// no readable time. A time written without a zone is read in `timeZone`
+  /// (`Date.parse` reads it in the browser's local time).
+  public static func feedItemTime(_ item: JSONValue?, timeZone: TimeZone = AppLocale.activeTimeZone()) -> String? {
     guard let item, item.isTruthy else { return nil }
     let candidates = [item["reason"]?["indexedAt"], item["post"]?["record"]?["createdAt"], item["post"]?["indexedAt"]]
     let at = candidates.lazy.compactMap { $0 }.first { $0.isTruthy }
-    let ms = JSDate.parse(at.map(\.jsString) ?? "", timeZone: AppLocale.activeTimeZone())
+    let ms = JSDate.parse(at.map(\.jsString) ?? "", timeZone: timeZone)
     return ms.isFinite ? JSDate.toISOString(ms) : nil
+  }
+
+  /// `value?.[0]`: an array's first element, an object's member "0", a
+  /// string's first code unit; nothing for anything else.
+  static func firstElement(_ value: JSONValue?) -> JSONValue? {
+    switch value {
+    case .array(let items)?: return items.first
+    case .object?: return value?["0"]
+    case .string(let text)?: return text.isEmpty ? nil : .string(String(jsUnits: text.utf16.prefix(1)))
+    default: return nil
+    }
   }
 
   struct HTTPStatusError: Error, LocalizedError {
@@ -58,7 +70,7 @@ public enum Activity {
   /// `lastActive(did)`: one account's newest feed item. A 400 or 404 says
   /// why: a missing, deactivated or taken-down actor is gone; anything else
   /// (blocked, a bad DID) is just unknown.
-  static func lastActive(_ did: String, transport: any HTTPTransport) async throws -> ActivityResult {
+  static func lastActive(_ did: String, transport: any HTTPTransport, timeZone: TimeZone) async throws -> ActivityResult {
     let params = JSURI.searchParams([("actor", did), ("limit", "1"), ("filter", "posts_with_replies")])
     let response = try await transport.send(HTTPRequest(url: "\(AppConfig.appview)/xrpc/app.bsky.feed.getAuthorFeed?\(params)"))
     if response.status == 400 || response.status == 404 {
@@ -71,13 +83,14 @@ public enum Activity {
     }
     if !response.ok { throw HTTPStatusError(status: response.status) }
     let body = try response.json()
-    return ActivityResult(did: did, lastActiveAt: feedItemTime(body["feed"]?[0]), gone: false)
+    return ActivityResult(did: did, lastActiveAt: feedItemTime(firstElement(body["feed"]), timeZone: timeZone), gone: false)
   }
 
-  /// `/not ?found|deactivated|suspended|takendown/i`.
+  /// `/not ?found|deactivated|suspended|takendown/i`, over code units (no
+  /// `u` flag, so only A–Z fold).
   static func isGoneReason(_ text: String) -> Bool {
-    let lowered = String(String.UnicodeScalarView(text.unicodeScalars.map { ("A"..."Z").contains($0) ? Unicode.Scalar($0.value + 32)! : $0 }))
-    return ["notfound", "not found", "deactivated", "suspended", "takendown"].contains { lowered.contains($0) }
+    let lowered = text.asciiLowercased
+    return ["notfound", "not found", "deactivated", "suspended", "takendown"].contains { lowered.jsIncludes($0) }
   }
 
   /// `checkActivity(dids, { onProgress })`: when each account was last
@@ -91,13 +104,14 @@ public enum Activity {
   public static func checkActivity(
     _ dids: [String?]?,
     onProgress: (@Sendable (ActivityProgress) -> Void)? = nil,
-    transport: any HTTPTransport = HTTP.transport
+    transport: any HTTPTransport = HTTP.transport,
+    timeZone: TimeZone = AppLocale.activeTimeZone()
   ) async -> [ActivityResult] {
+    // `Array.from(new Set(dids)).filter(Boolean)`: by code unit.
     var list: [String] = []
-    var seen = Set<String>()
+    var seen = Set<JSKey>()
     for did in dids ?? [] {
-      guard let did, !did.isEmpty, !seen.contains(did) else { continue }
-      seen.insert(did)
+      guard let did, !did.isEmpty, seen.insert(JSKey(did)).inserted else { continue }
       list.append(did)
     }
     let total = list.count
@@ -116,14 +130,16 @@ public enum Activity {
               return s.next
             }
             guard let index else { return }
-            if let result = try? await lastActive(items[index], transport: transport) {
+            if let result = try? await lastActive(items[index], transport: transport, timeZone: timeZone) {
               collected.withLock { $0.append((index, result)) }
             }
-            let done = state.withLock { s -> Int in
+            // Counted and reported under the lock, so the reports climb one
+            // at a time as the web's do (its workers share one thread), and
+            // never go back when two reads finish together.
+            state.withLock { s in
               s.done += 1
-              return s.done
+              onProgress?(ActivityProgress(done: s.done, total: total))
             }
-            onProgress?(ActivityProgress(done: done, total: total))
           }
         }
       }

@@ -233,7 +233,8 @@ public struct XRPCAgent: Sendable {
     var requestHeaders = HTTPHeaders()
     for (name, value) in options.headers { requestHeaders.set(name, value) }
     if kind == .procedure {
-      if let encoding = options.encoding {
+      // `if (opts?.encoding)`: an empty encoding is none.
+      if let encoding = options.encoding, !encoding.isEmpty {
         requestHeaders.set("content-type", encoding)
       } else if !requestHeaders.has("content-type"), let input {
         switch input {
@@ -244,9 +245,9 @@ public struct XRPCAgent: Sendable {
       }
     }
 
-    // encodeMethodCallBody: no content type, no body.
+    // encodeMethodCallBody: no content type (or an empty one), no body.
     var body: Data?
-    if let contentType = requestHeaders.get("content-type") {
+    if let contentType = requestHeaders.get("content-type"), !contentType.isEmpty {
       guard let input else {
         throw XRPCError(
           statusCode: XRPCResponseType.invalidRequest.rawValue,
@@ -257,9 +258,9 @@ public struct XRPCAgent: Sendable {
       case .bytes(let data): body = data
       case .text(let text), .json(.string(let text)): body = Data(text.utf8)
       case .json(let value):
-        if contentType.hasPrefix("text/") {
+        if contentType.jsStartsWith("text/") {
           body = Data(value.jsString.utf8)
-        } else if contentType.hasPrefix("application/json") {
+        } else if contentType.jsStartsWith("application/json") {
           body = Data(JSONStringify.stringify(value).utf8)
         } else {
           let type: String
@@ -304,7 +305,8 @@ public struct XRPCAgent: Sendable {
     let headers = response.headers.canonical
     let contentType = response.headers.get("content-type")
     let body: XRPCResponse.Body
-    if let contentType, contentType.contains("application/json") {
+    // httpResponseBodyParse: `mimeType.includes(...)`, `startsWith(...)`.
+    if let contentType, contentType.jsIncludes("application/json") {
       do {
         body = .json(try JSONValue.parse(response.body))
       } catch {
@@ -313,7 +315,7 @@ public struct XRPCAgent: Sendable {
           message: "Failed to parse response body: SyntaxError: \(jsMessage(error))"
         )
       }
-    } else if let contentType, contentType.hasPrefix("text/") {
+    } else if let contentType, contentType.jsStartsWith("text/") {
       body = .text(response.text())
     } else {
       body = .bytes(response.body)

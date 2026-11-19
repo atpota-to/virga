@@ -69,13 +69,14 @@ public struct BackendFetchHandler: XRPCFetchHandler {
 
   public func handle(_ request: XRPCHandlerRequest) async throws -> HTTPResponse {
     let u = try WebURL(request.path, base: "https://xrpc.invalid")
-    var nsid = u.pathname
-    if nsid.hasPrefix("/xrpc/") { nsid.removeFirst(6) }
-    let upload = nsid == "com.atproto.repo.uploadBlob"
+    let nsid = u.pathname.jsRemovingPrefix("/xrpc/")
+    let upload = nsid.jsEquals("com.atproto.repo.uploadBlob")
+    // `withDeadline(signal, ms)`: a call's own signal with no fallback, and
+    // no deadline at all for a falsy `timeoutMs`.
     let deadline: Double? =
-      upload ? (request.hasSignal ? nil : BackendClient.uploadFallbackTimeoutMs) : timeoutMs
+      upload ? (request.hasSignal ? nil : BackendClient.uploadFallbackTimeoutMs) : backendDeadline(timeoutMs)
 
-    if BackendClient.binaryOutput.contains(nsid) {
+    if BackendClient.binaryOutput.contains(where: { $0.jsEquals(nsid) }) {
       throw BackendError(
         name: "TypeError",
         message: "\(nsid) answers in bytes and can't go through Virga’s server; read it from the PDS directly.")
@@ -86,9 +87,8 @@ public struct BackendFetchHandler: XRPCFetchHandler {
     }
 
     if upload {
-      let contentType = request.headers.get("content-type") ?? ""
-      let mime = String(contentType.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: false).first ?? "")
-        .jsTrimmed()
+      // `(type || '').split(';')[0].trim()`, by code unit.
+      let mime = (request.headers.get("content-type") ?? "").jsBefore(firstUnit: 0x3B).jsTrimmed()
       // The server stores whatever type it is told; octet-stream would put
       // an untyped blob in the repo, which no post can use.
       if mime.isEmpty || mime == "application/octet-stream" {
@@ -143,11 +143,14 @@ public struct BackendFetchHandler: XRPCFetchHandler {
     var headers = HTTPHeaders()
     // `Object.entries(env?.ratelimit || {})`: an object's members, an
     // array's elements by index.
-    switch env?["ratelimit"] {
-    case .object(let members):
+    switch env?["ratelimit"].truthy {
+    case .object(let members)?:
       for (name, value) in members.sorted(by: { $0.key < $1.key }) where !value.isNull { headers.set(name, value.jsString) }
-    case .array(let items):
+    case .array(let items)?:
       for (index, value) in items.enumerated() where !value.isNull { headers.set(String(index), value.jsString) }
+    case .string(let text)?:
+      // A string's entries are its code units.
+      for (index, unit) in text.utf16.enumerated() { headers.set(String(index), String(jsUnits: [unit])) }
     default:
       break
     }

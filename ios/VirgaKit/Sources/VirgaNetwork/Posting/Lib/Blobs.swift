@@ -75,7 +75,9 @@ public enum Blobs {
   ) async throws -> BlobRef {
     guard let type = encoding, !type.isEmpty, type != "application/octet-stream" else { throw BlobUploadError.needsType }
     if Task.isCancelled { throw BlobUploadError.cancelled }
-    let deadline = timeoutMs ?? blobUploadTimeoutMs(Double(data.count))
+    // `setTimeout(…, timeoutMs ?? blobUploadTimeoutMs(bytes.length))`: a
+    // delay that isn't a usable number (NaN, Infinity, negative) fires at once.
+    let deadline = jsTimerDelay(timeoutMs ?? blobUploadTimeoutMs(Double(data.count)))
     let response: XRPCResponse
     do {
       response = try await withDeadline(ms: deadline) {
@@ -91,9 +93,12 @@ public enum Blobs {
     let blob = response.data["blob"]
     guard let cid = blobCid(blob) else { throw BlobUploadError.notReturned }
     let mimeType = blob?["mimeType"].truthy.map { $0.stringValue ?? $0.jsString } ?? type
+    // `Number.isFinite(blob.size) ? blob.size : bytes.length`. BlobRef holds
+    // an Int: a fraction is truncated, and a size past Int's range (which
+    // would trap) counts as unusable.
     let size: Int
-    if case .number(let n)? = blob?["size"], n.isFinite {
-      size = Int(n)
+    if case .number(let n)? = blob?["size"], n.isFinite, let whole = Int(exactly: n.rounded(.towardZero)) {
+      size = whole
     } else {
       size = data.count
     }
