@@ -129,6 +129,24 @@ func uncancellableSleep(seconds: Double) async {
     #expect(Date().timeIntervalSince(started) < 120, "returned at the deadline, not when the read ended")
   }
 
+  /// A wait setTimeout can't make (infinite, not a number, negative, past
+  /// 2^31 - 1 ms) runs at once, as in a browser and in Node, rather than
+  /// trapping in Duration.
+  @Test func aTimeoutOutsideTheTimersRangeEndsAtOnce() async {
+    for timeoutMs in [Double.infinity, -.infinity, .nan, -5, 1e300] {
+      let agent = FakeGatesAgent(preferences: {
+        try await Task.sleep(for: .seconds(600))
+        return ["preferences": []]
+      })
+      let started = Date()
+      #expect(await Gates.readDefaultGates(agent, timeoutMs: timeoutMs) == nil, "\(timeoutMs)")
+      #expect(Date().timeIntervalSince(started) < 120, "\(timeoutMs)")
+    }
+    #expect(PromiseRace.timerDelay(250) == .milliseconds(250))
+    #expect(PromiseRace.timerDelay(2_147_483_647) == .milliseconds(2_147_483_647))
+    #expect(PromiseRace.timerDelay(2_147_483_648) == .zero)
+  }
+
   @Test func aFastReadWinsTheRace() async {
     let agent = FakeGatesAgent(preferences: { ["preferences": []] })
     #expect(await Gates.readDefaultGates(agent, timeoutMs: 60_000) == Gates.everyoneGates)
@@ -215,6 +233,37 @@ func uncancellableSleep(seconds: Double) async {
     #expect(
       ComposeIntent.parseComposeIntent("?text=\u{0661}%41%zz").text == "\u{0661}A%zz",
       "the composer is prefilled with what the browser reads")
+  }
+}
+
+@Suite struct CodeUnitKeys {
+  /// The web's Map of what submits learned: a handle written with the
+  /// Kelvin sign is another key, not the same one as "K".
+  @Test func theValidationCacheKeysByCodeUnit() {
+    let cache = MentionValidationCache()
+    cache.set("Kate.test", .init(did: "did:plc:k", timestamp: 1))
+    #expect(cache.get("Kate.test")?.did == "did:plc:k")
+    #expect(cache.get("\u{212A}ate.test") == nil)
+    cache.set("\u{212A}ate.test", .init(did: nil, timestamp: 2))
+    #expect(cache.get("Kate.test")?.did == "did:plc:k")
+  }
+
+  /// URLSearchParams names are compared as JavaScript compares them.
+  @Test func searchParamNamesCompareByCodeUnit() {
+    var params = URLSearchParams("caf%C3%A9=1&cafe%CC%81=2&%E2%84%AA=3")
+    #expect(params.get("caf\u{E9}") == "1")
+    #expect(params.get("cafe\u{301}") == "2")
+    #expect(params.get("K") == nil)
+    #expect(params.getAll("caf\u{E9}") == ["1"])
+    #expect(params.has("\u{212A}"))
+    params.set("caf\u{E9}", "9")
+    params.delete("cafe\u{301}")
+    #expect(params.description == "caf%C3%A9=9&%E2%84%AA=3")
+  }
+
+  /// `?` is dropped as one code unit, even with a combining mark after it.
+  @Test func theLeadingQuestionMarkIsOneCodeUnit() {
+    #expect(URLSearchParams("?\u{301}a=1").pairs.map(\.name) == ["\u{301}a"])
   }
 }
 
