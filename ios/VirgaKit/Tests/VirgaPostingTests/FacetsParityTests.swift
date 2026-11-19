@@ -187,6 +187,14 @@ func runDetection(_ input: JSONValue, now: Double, cache: MentionValidationCache
     }
   }
 
+  @Test func rangesOutsideTheTextArePassedOver() {
+    let facets = [Facet(byteStart: 0, byteEnd: 2, feature: .tag(tag: "x"))]
+    let out = InlineLinks.applyInlineLinks(
+      "#x", [InlineLinkSpan(start: 0, end: 40, labelStart: 1, labelEnd: 39, uri: "https://a.com")],
+      facets: facets, postEmbeds: [], externalLinks: [])
+    #expect(out.facets == facets)
+  }
+
   func detect(_ c: ParityCase) async -> ComposerFacetDetection {
     let options =
       c["preview"].boolValue == true

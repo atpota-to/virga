@@ -169,9 +169,11 @@ public enum Mentions {
     return mentions
   }
 
-  /// A mention facet for an account picked from the typeahead.
-  public static func createMentionFacet(did: String, start: Int, end: Int, byteMap: [Int]) -> Facet {
-    Facet(byteStart: byteMap[start], byteEnd: byteMap[end], feature: .mention(did: did))
+  /// A mention facet for an account picked from the typeahead, or nil when
+  /// `start` or `end` is outside the map (the web writes undefined offsets).
+  public static func createMentionFacet(did: String, start: Int, end: Int, byteMap: [Int]) -> Facet? {
+    guard byteMap.indices.contains(start), byteMap.indices.contains(end) else { return nil }
+    return Facet(byteStart: byteMap[start], byteEnd: byteMap[end], feature: .mention(did: did))
   }
 
   /// Handle syntax: two or more dot-separated segments of 1-63 ASCII letters,

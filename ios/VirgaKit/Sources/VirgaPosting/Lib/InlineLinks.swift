@@ -245,7 +245,8 @@ public enum InlineLinks {
 
   /// Folds inline links into a facet-detection result for the same `text`.
   /// Anything detected inside a link's range is dropped, and each link gets
-  /// a facet over its label.
+  /// a facet over its label. A range that isn't in `text` is passed over
+  /// (the web would write a facet without offsets).
   public static func applyInlineLinks(
     _ text: String,
     _ ranges: [InlineLinkSpan],
@@ -253,8 +254,11 @@ public enum InlineLinks {
     postEmbeds: [PostEmbedCandidate],
     externalLinks: [ExternalLinkCandidate]
   ) -> InlineLinkFacets {
-    if ranges.isEmpty { return InlineLinkFacets(facets: facets, postEmbeds: postEmbeds, externalLinks: externalLinks) }
     let byteMap = RichText.createByteMap(text)
+    let ranges = ranges.filter { range in
+      [range.start, range.end, range.labelStart, range.labelEnd].allSatisfy(byteMap.indices.contains)
+    }
+    if ranges.isEmpty { return InlineLinkFacets(facets: facets, postEmbeds: postEmbeds, externalLinks: externalLinks) }
     let byteRanges = ranges.map { (start: byteMap[$0.start], end: byteMap[$0.end]) }
     func clearOf(_ start: Int, _ end: Int) -> Bool {
       !byteRanges.contains { overlaps(start, end, $0.start, $0.end) }

@@ -83,6 +83,7 @@ import VirgaTestSupport
         byteMap: RichText.createByteMap(c.string("text") ?? ""))
       check(json(facet), c)
     }
+    #expect(Mentions.createMentionFacet(did: "did:plc:x", start: 0, end: 99, byteMap: [0, 1]) == nil)
   }
 
   /// The resolver over a fake fetch, step by step, as the generator asks it.

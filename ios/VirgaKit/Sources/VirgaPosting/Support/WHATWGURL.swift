@@ -7,8 +7,8 @@
 // Held to Node's URL (Ada) by ios/parity/cases/posting-text.url.js:
 // - path segments are encoded with the path set that leaves `^` and `|`
 //   alone, and an opaque path keeps its spaces, as Node 22 does;
-// - hosts go through UTS #46 (IDNA.swift), without the bidi rule, which
-//   Node doesn't apply either.
+// - hosts go through UTS #46 as Node's parser (Ada) applies it, over Ada's
+//   own per-character data (IDNA.swift, IDNATable.swift).
 //
 // State overrides (the setters) aren't ported; only parsing and the getters.
 
