@@ -1,0 +1,4054 @@
+{
+  "name": "posting-text.linkShortening",
+  "sources": [
+    "src/posting/lib/linkShortening.js"
+  ],
+  "cases": [
+    {
+      "id": "toShortUrl#1",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": "example.org/profile/test..."
+    },
+    {
+      "id": "toShortUrl#2",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.org/branding"
+      },
+      "output": "example.org/branding"
+    },
+    {
+      "id": "toShortUrl#3",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.org/"
+      },
+      "output": "example.org"
+    },
+    {
+      "id": "toShortUrl#4",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.org"
+      },
+      "output": "example.org"
+    },
+    {
+      "id": "toShortUrl#5",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/a?ref=sample&utm=x"
+      },
+      "output": "example.com/a?ref=sample..."
+    },
+    {
+      "id": "toShortUrl#6",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/#a-very-long-fragment"
+      },
+      "output": "example.com#a-very-long-..."
+    },
+    {
+      "id": "toShortUrl#7",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "example.org/profile/testing.dame.is/very/long/path"
+      },
+      "output": "example.org/profile/testing.dame.is/very/long/path"
+    },
+    {
+      "id": "toShortUrl#8",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3mtw6wbql5z2p"
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.post/3mtw6wbql5z2p"
+    },
+    {
+      "id": "toShortUrl#9",
+      "fn": "toShortUrl",
+      "input": {
+        "url": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "toShortUrl#10",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/123456789012345"
+      },
+      "output": "example.com/123456789012..."
+    },
+    {
+      "id": "toShortUrl#11",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/1234567890123456"
+      },
+      "output": "example.com/123456789012..."
+    },
+    {
+      "id": "toShortUrl#12",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/12345678901234"
+      },
+      "output": "example.com/12345678901234"
+    },
+    {
+      "id": "toShortUrl#13",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com:8080/a/b/c"
+      },
+      "output": "example.com:8080/a/b/c"
+    },
+    {
+      "id": "toShortUrl#14",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com:443/a"
+      },
+      "output": "example.com/a"
+    },
+    {
+      "id": "toShortUrl#15",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://user:pass@example.com/path/to/thing"
+      },
+      "output": "example.com/path/to/thing"
+    },
+    {
+      "id": "toShortUrl#16",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "HTTPS://EXAMPLE.COM/PATH/TO/A/PLACE"
+      },
+      "output": "example.com/PATH/TO/A/PL..."
+    },
+    {
+      "id": "toShortUrl#17",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://bücher.de/straße/und/mehr"
+      },
+      "output": "xn--bcher-kva.de/stra%C3%9Fe/..."
+    },
+    {
+      "id": "toShortUrl#18",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/café/naïve/über"
+      },
+      "output": "example.com/caf%C3%A9/na..."
+    },
+    {
+      "id": "toShortUrl#19",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/a b c d e f g h"
+      },
+      "output": "example.com/a%20b%20c%20..."
+    },
+    {
+      "id": "toShortUrl#20",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/?"
+      },
+      "output": "example.com"
+    },
+    {
+      "id": "toShortUrl#21",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/#"
+      },
+      "output": "example.com"
+    },
+    {
+      "id": "toShortUrl#22",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://example.com/?q=1#f"
+      },
+      "output": "example.com?q=1#f"
+    },
+    {
+      "id": "toShortUrl#23",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "http://example.com/x"
+      },
+      "output": "example.com/x"
+    },
+    {
+      "id": "toShortUrl#24",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "ftp://example.com/a/long/path/here"
+      },
+      "output": "ftp://example.com/a/long/path/here"
+    },
+    {
+      "id": "toShortUrl#25",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "mailto:someone@example.com"
+      },
+      "output": "mailto:someone@example.com"
+    },
+    {
+      "id": "toShortUrl#26",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://[::1]:8080/path/to/the/thing"
+      },
+      "output": "[::1]:8080/path/to/the/..."
+    },
+    {
+      "id": "toShortUrl#27",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://192.168.0.1/long/path/somewhere"
+      },
+      "output": "192.168.0.1/long/path/so..."
+    },
+    {
+      "id": "toShortUrl#28",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://en.wikipedia.org/wiki/Bee_(disambiguation)"
+      },
+      "output": "en.wikipedia.org/wiki/Bee_(di..."
+    },
+    {
+      "id": "toShortUrl#29",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "http:example.com/a/long/path/to/it"
+      },
+      "output": "example.com/a/long/path/..."
+    },
+    {
+      "id": "toShortUrl#30",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "not a url"
+      },
+      "output": "not a url"
+    },
+    {
+      "id": "toShortUrl#31",
+      "fn": "toShortUrl",
+      "input": {
+        "url": "https://"
+      },
+      "output": "https://"
+    },
+    {
+      "id": "findShortenableLinks#1",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "Bluesky lets you create and share lists of accounts that can then be used to mute/unmute people more easily and at scale... what if you could do the same with muted words?\n\nIntroducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": [
+        {
+          "charStart": 205,
+          "charEnd": 289,
+          "matchText": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#2",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": [
+        {
+          "charStart": 230,
+          "charEnd": 314,
+          "matchText": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#3",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "🦋"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#4",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "👨‍👩‍👧‍👦"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#5",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#6",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "the domain \"https://example.org/profile/testing/and/more\" is taken"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#7",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "the domain “https://example.org/profile/testing/and/more” is taken"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#8",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "\"see https://example.com/another/quite/long/path\""
+      },
+      "output": [
+        {
+          "charStart": 5,
+          "charEnd": 48,
+          "matchText": "https://example.com/another/quite/long/path"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#9",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "“see https://example.com/another/quite/long/path”"
+      },
+      "output": [
+        {
+          "charStart": 5,
+          "charEnd": 48,
+          "matchText": "https://example.com/another/quite/long/path"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#10",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "a note at a lamp on a porch at night"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#11",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#12",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path too"
+      },
+      "output": [
+        {
+          "charStart": 4,
+          "charEnd": 88,
+          "matchText": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+        },
+        {
+          "charStart": 93,
+          "charEnd": 136,
+          "matchText": "https://example.com/another/quite/long/path"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#13",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/A/LONG/PATH/HERE"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#14",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "mail me@https://example.com/a/long/path/here"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#15",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "x@https://a.example/long/path/here/and/more"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#16",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "see https://v1.2.3/long/path/goes/here"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#17",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "see https://notes.txt/long/path/goes/here"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#18",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "https://example.com/short"
+      },
+      "output": [
+        {
+          "charStart": 0,
+          "charEnd": 25,
+          "matchText": "https://example.com/short"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#19",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "🦋 https://example.com/a/long/path/to/somewhere 🦋"
+      },
+      "output": [
+        {
+          "charStart": 3,
+          "charEnd": 47,
+          "matchText": "https://example.com/a/long/path/to/somewhere"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#20",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "https://example.com/a/long/path/to/somewhere, https://example.com/b/long/path/to/elsewhere."
+      },
+      "output": [
+        {
+          "charStart": 0,
+          "charEnd": 44,
+          "matchText": "https://example.com/a/long/path/to/somewhere"
+        },
+        {
+          "charStart": 46,
+          "charEnd": 90,
+          "matchText": "https://example.com/b/long/path/to/elsewhere"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#21",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "https://bücher.de/straße/und/noch/viel/mehr"
+      },
+      "output": [
+        {
+          "charStart": 0,
+          "charEnd": 43,
+          "matchText": "https://bücher.de/straße/und/noch/viel/mehr"
+        }
+      ]
+    },
+    {
+      "id": "findShortenableLinks#22",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": "no protocol://here"
+      },
+      "output": []
+    },
+    {
+      "id": "findShortenableLinks#23",
+      "fn": "findShortenableLinks",
+      "input": {
+        "text": null
+      },
+      "output": []
+    },
+    {
+      "id": "shortenPostText#1",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "Bluesky lets you create and share lists of accounts that can then be used to mute/unmute people more easily and at scale... what if you could do the same with muted words?\n\nIntroducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": "Bluesky lets you create and share lists of accounts that can then be used to mute/unmute people more easily and at scale... what if you could do the same with muted words?\n\nIntroducing ~Muted Word Lists~\n\nexample.org/profile/test..."
+    },
+    {
+      "id": "shortenPostText#2",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\nexample.org/profile/test..."
+    },
+    {
+      "id": "shortenPostText#3",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "🦋"
+      },
+      "output": "🦋"
+    },
+    {
+      "id": "shortenPostText#4",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "👨‍👩‍👧‍👦"
+      },
+      "output": "👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "shortenPostText#5",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": "example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+    },
+    {
+      "id": "shortenPostText#6",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "the domain \"https://example.org/profile/testing/and/more\" is taken"
+      },
+      "output": "the domain \"https://example.org/profile/testing/and/more\" is taken"
+    },
+    {
+      "id": "shortenPostText#7",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "the domain “https://example.org/profile/testing/and/more” is taken"
+      },
+      "output": "the domain “https://example.org/profile/testing/and/more” is taken"
+    },
+    {
+      "id": "shortenPostText#8",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "\"see https://example.com/another/quite/long/path\""
+      },
+      "output": "\"see example.com/another/quit...\""
+    },
+    {
+      "id": "shortenPostText#9",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "“see https://example.com/another/quite/long/path”"
+      },
+      "output": "“see example.com/another/quit...”"
+    },
+    {
+      "id": "shortenPostText#10",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "a note at a lamp on a porch at night"
+      },
+      "output": "a note at a lamp on a porch at night"
+    },
+    {
+      "id": "shortenPostText#11",
+      "fn": "shortenPostText",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "shortenPostText#12",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path too"
+      },
+      "output": "see example.org/profile/test... and example.com/another/quit... too"
+    },
+    {
+      "id": "shortenPostText#13",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/A/LONG/PATH/HERE"
+      },
+      "output": "HTTPS://EXAMPLE.COM/A/LONG/PATH/HERE"
+    },
+    {
+      "id": "shortenPostText#14",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "mail me@https://example.com/a/long/path/here"
+      },
+      "output": "mail me@https://example.com/a/long/path/here"
+    },
+    {
+      "id": "shortenPostText#15",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "x@https://a.example/long/path/here/and/more"
+      },
+      "output": "x@https://a.example/long/path/here/and/more"
+    },
+    {
+      "id": "shortenPostText#16",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "see https://v1.2.3/long/path/goes/here"
+      },
+      "output": "see https://v1.2.3/long/path/goes/here"
+    },
+    {
+      "id": "shortenPostText#17",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "see https://notes.txt/long/path/goes/here"
+      },
+      "output": "see https://notes.txt/long/path/goes/here"
+    },
+    {
+      "id": "shortenPostText#18",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "https://example.com/short"
+      },
+      "output": "example.com/short"
+    },
+    {
+      "id": "shortenPostText#19",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "🦋 https://example.com/a/long/path/to/somewhere 🦋"
+      },
+      "output": "🦋 example.com/a/long/path/... 🦋"
+    },
+    {
+      "id": "shortenPostText#20",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "https://example.com/a/long/path/to/somewhere, https://example.com/b/long/path/to/elsewhere."
+      },
+      "output": "example.com/a/long/path/..., example.com/b/long/path/...."
+    },
+    {
+      "id": "shortenPostText#21",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "https://bücher.de/straße/und/noch/viel/mehr"
+      },
+      "output": "xn--bcher-kva.de/stra%C3%9Fe/..."
+    },
+    {
+      "id": "shortenPostText#22",
+      "fn": "shortenPostText",
+      "input": {
+        "text": "no protocol://here"
+      },
+      "output": "no protocol://here"
+    },
+    {
+      "id": "shortenPostText#23",
+      "fn": "shortenPostText",
+      "input": {
+        "text": null
+      },
+      "output": ""
+    },
+    {
+      "id": "countPostGraphemes#1",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "Bluesky lets you create and share lists of accounts that can then be used to mute/unmute people more easily and at scale... what if you could do the same with muted words?\n\nIntroducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": 232
+    },
+    {
+      "id": "countPostGraphemes#2",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": 257
+    },
+    {
+      "id": "countPostGraphemes#3",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "🦋"
+      },
+      "output": 1
+    },
+    {
+      "id": "countPostGraphemes#4",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦"
+      },
+      "output": 1
+    },
+    {
+      "id": "countPostGraphemes#5",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+      },
+      "output": 76
+    },
+    {
+      "id": "countPostGraphemes#6",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "the domain \"https://example.org/profile/testing/and/more\" is taken"
+      },
+      "output": 66
+    },
+    {
+      "id": "countPostGraphemes#7",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "the domain “https://example.org/profile/testing/and/more” is taken"
+      },
+      "output": 66
+    },
+    {
+      "id": "countPostGraphemes#8",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "\"see https://example.com/another/quite/long/path\""
+      },
+      "output": 33
+    },
+    {
+      "id": "countPostGraphemes#9",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "“see https://example.com/another/quite/long/path”"
+      },
+      "output": 33
+    },
+    {
+      "id": "countPostGraphemes#10",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "a note at a lamp on a porch at night"
+      },
+      "output": 36
+    },
+    {
+      "id": "countPostGraphemes#11",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "countPostGraphemes#12",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path too"
+      },
+      "output": 67
+    },
+    {
+      "id": "countPostGraphemes#13",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/A/LONG/PATH/HERE"
+      },
+      "output": 36
+    },
+    {
+      "id": "countPostGraphemes#14",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "mail me@https://example.com/a/long/path/here"
+      },
+      "output": 44
+    },
+    {
+      "id": "countPostGraphemes#15",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "x@https://a.example/long/path/here/and/more"
+      },
+      "output": 43
+    },
+    {
+      "id": "countPostGraphemes#16",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "see https://v1.2.3/long/path/goes/here"
+      },
+      "output": 38
+    },
+    {
+      "id": "countPostGraphemes#17",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "see https://notes.txt/long/path/goes/here"
+      },
+      "output": 41
+    },
+    {
+      "id": "countPostGraphemes#18",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "https://example.com/short"
+      },
+      "output": 17
+    },
+    {
+      "id": "countPostGraphemes#19",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "🦋 https://example.com/a/long/path/to/somewhere 🦋"
+      },
+      "output": 31
+    },
+    {
+      "id": "countPostGraphemes#20",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "https://example.com/a/long/path/to/somewhere, https://example.com/b/long/path/to/elsewhere."
+      },
+      "output": 57
+    },
+    {
+      "id": "countPostGraphemes#21",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "https://bücher.de/straße/und/noch/viel/mehr"
+      },
+      "output": 32
+    },
+    {
+      "id": "countPostGraphemes#22",
+      "fn": "countPostGraphemes",
+      "input": {
+        "text": "no protocol://here"
+      },
+      "output": 18
+    },
+    {
+      "id": "one link",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "Introducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 116
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "Introducing ~Muted Word Lists~\n\nexample.org/profile/test...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 59
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "multibyte with mention, links and tag",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see example.org/profile/test... and example.com/another/quit... #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 49
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 54,
+              "byteEnd": 81
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 82,
+              "byteEnd": 90
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "out of order",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see example.org/profile/test... and example.com/another/quit... #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 49
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 54,
+              "byteEnd": 81
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 82,
+              "byteEnd": 90
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": []
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "null facets",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": null
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "empty text",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "",
+        "facets": []
+      },
+      "output": {
+        "text": "",
+        "facets": []
+      }
+    },
+    {
+      "id": "null text",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": null,
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bare domain",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "overlapping",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "past the end",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing end",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "fractional",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "string offsets",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "negative start",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "end before start",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "null facet",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "no features",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty uri",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra keys survive, index keys do not",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88,
+              "$type": "x"
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see example.org/profile/test...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 31
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuts a character in half",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "café https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "café example.com/a/long/path/...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 33
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "leading BOM",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "﻿see https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 51
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see example.com/a/long/path/...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 34
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "zero-length facets",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see example.org/profile/test...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 31
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "link text a writer chose",
+      "fn": "shortenLinkFacets",
+      "input": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "one link",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "Introducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 116
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "Introducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 116
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "multibyte with mention, links and tag",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "out of order",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": []
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "null facets",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": null
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "empty text",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "",
+        "facets": []
+      },
+      "output": {
+        "text": "",
+        "facets": []
+      }
+    },
+    {
+      "id": "null text",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": null,
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bare domain",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "overlapping",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "past the end",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing end",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "fractional",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "string offsets",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "negative start",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "end before start",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "null facet",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "no features",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty uri",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra keys survive, index keys do not",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88,
+              "$type": "x"
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88,
+              "$type": "x"
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuts a character in half",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "café https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "café https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "leading BOM",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "﻿see https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 51
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "﻿see https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 51
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "zero-length facets",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "link text a writer chose",
+      "fn": "expandLinkFacets",
+      "input": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "one link",
+      "fn": "roundTrip",
+      "input": {
+        "text": "Introducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 116
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "Introducing ~Muted Word Lists~\n\nhttps://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 32,
+              "byteEnd": 116
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "multibyte with mention, links and tag",
+      "fn": "roundTrip",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "out of order",
+      "fn": "roundTrip",
+      "input": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "🦋 hey @dame.is see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p and https://example.com/another/quite/long/path #birding",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:abc"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 106
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/quite/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 111,
+              "byteEnd": 154
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "birding"
+              }
+            ],
+            "index": {
+              "byteStart": 155,
+              "byteEnd": 163
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "roundTrip",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": []
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "null facets",
+      "fn": "roundTrip",
+      "input": {
+        "text": "a note at a lamp",
+        "facets": null
+      },
+      "output": {
+        "text": "a note at a lamp",
+        "facets": []
+      }
+    },
+    {
+      "id": "empty text",
+      "fn": "roundTrip",
+      "input": {
+        "text": "",
+        "facets": []
+      },
+      "output": {
+        "text": "",
+        "facets": []
+      }
+    },
+    {
+      "id": "null text",
+      "fn": "roundTrip",
+      "input": {
+        "text": null,
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bare domain",
+      "fn": "roundTrip",
+      "input": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "go to example.org/profile/testing.dame.is/and/more",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "example.org/profile/testing.dame.is/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "overlapping",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 8,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "past the end",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 9999
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing end",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "fractional",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4.5,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "string offsets",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": "4",
+              "byteEnd": "88"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "negative start",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": -1,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "end before start",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "null facet",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "no features",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty uri",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": ""
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra keys survive, index keys do not",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88,
+              "$type": "x"
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            },
+            "extra": {
+              "a": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cuts a character in half",
+      "fn": "roundTrip",
+      "input": {
+        "text": "café https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "café https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 3,
+              "byteEnd": 4
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 50
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "leading BOM",
+      "fn": "roundTrip",
+      "input": {
+        "text": "﻿see https://example.com/a/long/path/to/somewhere",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 51
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see example.com/a/long/path/...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 7,
+              "byteEnd": 34
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "zero-length facets",
+      "fn": "roundTrip",
+      "input": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "see https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/testing.dame.is/net.example.graph.wordlist/3mtw6wbql5z2p"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 88
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "link text a writer chose",
+      "fn": "roundTrip",
+      "input": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      },
+      "output": {
+        "text": "read the field notes",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/notes/very/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 9,
+              "byteEnd": 20
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

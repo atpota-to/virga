@@ -5,12 +5,31 @@
   "summary": "The repo as one CAR download, DAG-CBOR, CIDs, and the CID of a record.",
   "files": {
     "src/lib/carRepo.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaRepo/CarRepo.swift"
+      ],
+      "fixtures": [
+        "repo.carRepo",
+        "repo.car",
+        "repo.cbor",
+        "repo.encoding",
+        "repo.sha256"
+      ],
+      "synced": "3da8acf3a8d9"
     },
     "src/posting/lib/recordCid.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaRepo/RecordCid.swift"
+      ],
+      "fixtures": [
+        "repo.recordCid",
+        "repo.cbor",
+        "repo.encoding",
+        "repo.sha256"
+      ],
+      "synced": "7d0e64e74991"
     }
   }
 }

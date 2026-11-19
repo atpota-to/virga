@@ -1,0 +1,676 @@
+{
+  "name": "posting-text.events",
+  "sources": [
+    "src/posting/events.js"
+  ],
+  "cases": [
+    {
+      "id": "POSTING_EVENTS",
+      "fn": "POSTING_EVENTS",
+      "input": {},
+      "output": {
+        "settings": "virga:posting-settings",
+        "templates": "virga:templates-changed",
+        "drafts": "virga:drafts-changed",
+        "scheduled": "virga:scheduled-changed",
+        "timers": "virga:timers-changed",
+        "posts": "virga:posts-changed"
+      }
+    },
+    {
+      "id": "names",
+      "fn": "names",
+      "input": {},
+      "output": {
+        "POSTING_SETTINGS_EVENT": "virga:posting-settings",
+        "TEMPLATES_CHANGED_EVENT": "virga:templates-changed",
+        "DRAFTS_CHANGED_EVENT": "virga:drafts-changed",
+        "SCHEDULED_CHANGED_EVENT": "virga:scheduled-changed",
+        "TIMERS_CHANGED_EVENT": "virga:timers-changed",
+        "POSTS_CHANGED_EVENT": "virga:posts-changed"
+      }
+    },
+    {
+      "id": "a listener hears, then stops",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "a",
+            "name": "virga:drafts-changed"
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "id": "d1",
+              "action": "created"
+            }
+          },
+          {
+            "op": "off",
+            "id": "a"
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:plc:alice"
+            }
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          true,
+          null,
+          true
+        ],
+        "heard": {
+          "a": [
+            {
+              "did": "did:plc:alice",
+              "id": "d1",
+              "action": "created"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "one account only",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "alice",
+            "name": "virga:templates-changed",
+            "did": "did:plc:alice"
+          },
+          {
+            "op": "on",
+            "id": "all",
+            "name": "virga:templates-changed"
+          },
+          {
+            "op": "on",
+            "id": "empty",
+            "name": "virga:templates-changed",
+            "did": ""
+          },
+          {
+            "op": "emit",
+            "name": "virga:templates-changed",
+            "detail": {
+              "did": "did:plc:bob",
+              "templates": []
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:templates-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "templates": [
+                {
+                  "id": "t"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          "function",
+          "function",
+          true,
+          true
+        ],
+        "heard": {
+          "alice": [
+            {
+              "did": "did:plc:alice",
+              "templates": [
+                {
+                  "id": "t"
+                }
+              ]
+            }
+          ],
+          "all": [
+            {
+              "did": "did:plc:bob",
+              "templates": []
+            },
+            {
+              "did": "did:plc:alice",
+              "templates": [
+                {
+                  "id": "t"
+                }
+              ]
+            }
+          ],
+          "empty": [
+            {
+              "did": "did:plc:bob",
+              "templates": []
+            },
+            {
+              "did": "did:plc:alice",
+              "templates": [
+                {
+                  "id": "t"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "names are checked",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "emit",
+            "name": "virga:nope",
+            "detail": {
+              "did": "did:plc:alice"
+            }
+          },
+          {
+            "op": "on",
+            "id": "x",
+            "name": "virga:nope"
+          },
+          {
+            "op": "emit",
+            "name": "virga:nope",
+            "detail": {}
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          {
+            "$throws": "Not a posting event: virga:nope",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "Not a posting event: virga:nope",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "Not a posting event: virga:nope",
+            "type": "TypeError"
+          }
+        ],
+        "heard": {
+          "x": []
+        }
+      }
+    },
+    {
+      "id": "a detail needs a DID",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "a",
+            "name": "virga:drafts-changed"
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {}
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": null
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": ""
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": 42
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": "did:plc:x"
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          }
+        ],
+        "heard": {
+          "a": []
+        }
+      }
+    },
+    {
+      "id": "no window to dispatch on",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:plc:alice"
+            },
+            "noTarget": true
+          },
+          {
+            "op": "on",
+            "id": "a",
+            "name": "virga:drafts-changed",
+            "noTarget": true
+          },
+          {
+            "op": "off",
+            "id": "a"
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {},
+            "noTarget": true
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          false,
+          "function",
+          null,
+          {
+            "$throws": "virga:drafts-changed needs detail.did",
+            "type": "TypeError"
+          }
+        ],
+        "heard": {
+          "a": []
+        }
+      }
+    },
+    {
+      "id": "posts-changed rows",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "a",
+            "name": "virga:posts-changed"
+          },
+          {
+            "op": "emitPosts",
+            "did": "did:plc:alice",
+            "added": [
+              {
+                "uri": "at://a/app.bsky.feed.post/1",
+                "cid": "c1"
+              },
+              {
+                "cid": "no-uri"
+              },
+              {
+                "uri": "at://a/app.bsky.feed.post/2",
+                "cid": "",
+                "record": {
+                  "text": "x"
+                }
+              },
+              {
+                "uri": "",
+                "cid": "c"
+              },
+              {
+                "uri": 5
+              },
+              null,
+              {
+                "uri": "at://a/app.bsky.feed.post/3",
+                "record": null,
+                "extra": true
+              }
+            ],
+            "removed": [
+              "at://a/app.bsky.feed.post/9",
+              "",
+              null,
+              7,
+              "at://a/app.bsky.feed.post/8"
+            ]
+          },
+          {
+            "op": "emitPosts",
+            "did": "did:plc:alice"
+          },
+          {
+            "op": "emitPosts",
+            "did": "did:plc:alice",
+            "added": null,
+            "removed": null
+          },
+          {
+            "op": "emitPosts",
+            "did": ""
+          },
+          {
+            "op": "emitPosts",
+            "did": null
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          true,
+          true,
+          true,
+          {
+            "$throws": "virga:posts-changed needs detail.did",
+            "type": "TypeError"
+          },
+          {
+            "$throws": "virga:posts-changed needs detail.did",
+            "type": "TypeError"
+          }
+        ],
+        "heard": {
+          "a": [
+            {
+              "did": "did:plc:alice",
+              "added": [
+                {
+                  "uri": "at://a/app.bsky.feed.post/1",
+                  "cid": "c1",
+                  "record": null
+                },
+                {
+                  "uri": "at://a/app.bsky.feed.post/2",
+                  "cid": null,
+                  "record": {
+                    "text": "x"
+                  }
+                },
+                {
+                  "uri": "at://a/app.bsky.feed.post/3",
+                  "cid": null,
+                  "record": null
+                }
+              ],
+              "removed": [
+                "at://a/app.bsky.feed.post/9",
+                "at://a/app.bsky.feed.post/8"
+              ]
+            },
+            {
+              "did": "did:plc:alice",
+              "added": [],
+              "removed": []
+            },
+            {
+              "did": "did:plc:alice",
+              "added": [],
+              "removed": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "every name reaches its own listeners",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "virga:posting-settings",
+            "name": "virga:posting-settings"
+          },
+          {
+            "op": "on",
+            "id": "virga:templates-changed",
+            "name": "virga:templates-changed"
+          },
+          {
+            "op": "on",
+            "id": "virga:drafts-changed",
+            "name": "virga:drafts-changed"
+          },
+          {
+            "op": "on",
+            "id": "virga:scheduled-changed",
+            "name": "virga:scheduled-changed"
+          },
+          {
+            "op": "on",
+            "id": "virga:timers-changed",
+            "name": "virga:timers-changed"
+          },
+          {
+            "op": "on",
+            "id": "virga:posts-changed",
+            "name": "virga:posts-changed"
+          },
+          {
+            "op": "emit",
+            "name": "virga:posting-settings",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:posting-settings"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:templates-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:templates-changed"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:drafts-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:drafts-changed"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:scheduled-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:scheduled-changed"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:timers-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:timers-changed"
+            }
+          },
+          {
+            "op": "emit",
+            "name": "virga:posts-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "name": "virga:posts-changed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          "function",
+          "function",
+          "function",
+          "function",
+          "function",
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "heard": {
+          "virga:posting-settings": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:posting-settings"
+            }
+          ],
+          "virga:templates-changed": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:templates-changed"
+            }
+          ],
+          "virga:drafts-changed": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:drafts-changed"
+            }
+          ],
+          "virga:scheduled-changed": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:scheduled-changed"
+            }
+          ],
+          "virga:timers-changed": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:timers-changed"
+            }
+          ],
+          "virga:posts-changed": [
+            {
+              "did": "did:plc:alice",
+              "name": "virga:posts-changed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "two listeners, in order, one stopped",
+      "fn": "script",
+      "input": {
+        "steps": [
+          {
+            "op": "on",
+            "id": "first",
+            "name": "virga:timers-changed"
+          },
+          {
+            "op": "on",
+            "id": "second",
+            "name": "virga:timers-changed",
+            "did": "did:plc:alice"
+          },
+          {
+            "op": "emit",
+            "name": "virga:timers-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "n": 1
+            }
+          },
+          {
+            "op": "off",
+            "id": "first"
+          },
+          {
+            "op": "off",
+            "id": "first"
+          },
+          {
+            "op": "emit",
+            "name": "virga:timers-changed",
+            "detail": {
+              "did": "did:plc:alice",
+              "n": 2
+            }
+          }
+        ]
+      },
+      "output": {
+        "results": [
+          "function",
+          "function",
+          true,
+          null,
+          null,
+          true
+        ],
+        "heard": {
+          "first": [
+            {
+              "did": "did:plc:alice",
+              "n": 1
+            }
+          ],
+          "second": [
+            {
+              "did": "did:plc:alice",
+              "n": 1
+            },
+            {
+              "did": "did:plc:alice",
+              "n": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

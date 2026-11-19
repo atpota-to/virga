@@ -1,0 +1,5006 @@
+{
+  "name": "posting-text.gates",
+  "sources": [
+    "src/posting/lib/gates.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "MAX_REPLY_RULES": 5,
+        "EVERYONE_GATES": {
+          "reply": null,
+          "quotes": true
+        },
+        "DEFAULT_GATES_TIMEOUT_MS": 7000
+      }
+    },
+    {
+      "id": "gatesToRules#1",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "threadgateAllow": null,
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#2",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": {
+        "threadgateAllow": [],
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#3",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": {
+        "threadgateAllow": [],
+        "postgateEmbeddingRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gatesToRules#4",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": {
+        "threadgateAllow": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateEmbeddingRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gatesToRules#5",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": {
+        "threadgateAllow": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ],
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#6",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": {
+        "threadgateAllow": [
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/3m"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          }
+        ],
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#7",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": {
+        "threadgateAllow": null,
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#8",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "quotes": false
+        }
+      },
+      "output": {
+        "threadgateAllow": null,
+        "postgateEmbeddingRules": [
+          {
+            "$type": "app.bsky.feed.postgate#disableRule"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gatesToRules#9",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {}
+      },
+      "output": {
+        "threadgateAllow": null,
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#10",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": null
+      },
+      "output": {
+        "threadgateAllow": null,
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesToRules#11",
+      "fn": "gatesToRules",
+      "input": {
+        "gates": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": {
+        "threadgateAllow": [
+          {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+          },
+          {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          }
+        ],
+        "postgateEmbeddingRules": null
+      }
+    },
+    {
+      "id": "gatesFromRules#1",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllowRules": [],
+          "embeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [],
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#2",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "allow": [
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "mention"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#3",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#futureRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#4",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "threadgateAllowRules": [
+            {
+              "$type": "app.bsky.feed.threadgate#followerRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "follower"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#5",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#followingRule"
+            }
+          ],
+          "allow": []
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "following"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#6",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            },
+            null
+          ],
+          "postgateEmbeddingRules": [
+            {
+              "$type": "other"
+            },
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          },
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          },
+          {
+            "type": "mention"
+          }
+        ],
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#7",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "postgateEmbeddingRules": [],
+          "embeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#8",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "postgateEmbeddingRules": null,
+          "embeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#9",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "postgateEmbeddingRules": "disable"
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#10",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": "all"
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#11",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {}
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#12",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": null
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#13",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": "rules"
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#14",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": [
+          {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+          }
+        ]
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#15",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#16",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [],
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": [],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#17",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [],
+          "postgateEmbeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [],
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#18",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#followingRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#followerRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "postgateEmbeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "mention"
+          },
+          {
+            "type": "following"
+          },
+          {
+            "type": "follower"
+          },
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          }
+        ],
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#19",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#mentionRule"
+            }
+          ],
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "mention"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#20",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#followerRule"
+            }
+          ],
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          },
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3m"
+          },
+          {
+            "type": "follower"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#21",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#22",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "postgateEmbeddingRules": [
+            {
+              "$type": "app.bsky.feed.postgate#disableRule"
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": false
+      }
+    },
+    {
+      "id": "gatesFromRules#23",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#24",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": null,
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesFromRules#25",
+      "fn": "gatesFromRules",
+      "input": {
+        "rules": {
+          "threadgateAllow": [
+            {
+              "$type": "app.bsky.feed.threadgate#followerRule"
+            },
+            {
+              "$type": "app.bsky.feed.threadgate#listRule",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "postgateEmbeddingRules": null
+        }
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "follower"
+          },
+          {
+            "type": "list",
+            "list": "at://did:plc:me/app.bsky.graph.list/3l"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "gatesEqual#1",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#2",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#3",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#4",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#5",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#6",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#7",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#8",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#9",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#10",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#11",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": null,
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#12",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#13",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#14",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#15",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#16",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#17",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#18",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#19",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#20",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#21",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#22",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#23",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#24",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#25",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#26",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#27",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#28",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#29",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#30",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#31",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#32",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#33",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#34",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#35",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#36",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#37",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#38",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#39",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#40",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#41",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#42",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#43",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#44",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#45",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#46",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#47",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#48",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#49",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#50",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#51",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#52",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#53",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#54",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#55",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#56",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#57",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#58",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#59",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#60",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#61",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#62",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#63",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#64",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#65",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#66",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#67",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#68",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#69",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#70",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#71",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#72",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#73",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#74",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#75",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#76",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": null
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#77",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": "everyone",
+          "quotes": "no"
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#78",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#79",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#80",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#81",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#82",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#83",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#84",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#85",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#86",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#87",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#88",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "quotes": false
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#89",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#90",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#91",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#92",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#93",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#94",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#95",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#96",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#97",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#98",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": null
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#99",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {},
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#100",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#101",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#102",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#103",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#104",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#105",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#106",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#107",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#108",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {}
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#109",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": null
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#110",
+      "fn": "gatesEqual",
+      "input": {
+        "a": null,
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#111",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#112",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#113",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#114",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "following"
+            },
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#115",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "nope"
+            },
+            {
+              "type": "list",
+              "list": "x"
+            }
+          ]
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#116",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list"
+            },
+            {
+              "type": "list",
+              "list": 5
+            },
+            null,
+            "mention",
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#117",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": "everyone",
+          "quotes": "no"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#118",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "quotes": false
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#119",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {}
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#120",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": null
+      },
+      "output": false
+    },
+    {
+      "id": "gatesEqual#121",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#122",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "mention"
+            },
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": true
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "follower"
+            },
+            {
+              "type": "mention"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "gatesEqual#123",
+      "fn": "gatesEqual",
+      "input": {
+        "a": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            }
+          ]
+        },
+        "b": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3m"
+            }
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "defaultGatesFromPreferences#1",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": []
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#2",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#savedFeedsPrefV2"
+          },
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref"
+          }
+        ]
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#3",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": []
+          }
+        ]
+      },
+      "output": {
+        "reply": [],
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#4",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": [
+              {
+                "$type": "app.bsky.feed.threadgate#followingRule"
+              }
+            ],
+            "postgateEmbeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "following"
+          }
+        ],
+        "quotes": false
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#5",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": null,
+            "postgateEmbeddingRules": null
+          }
+        ]
+      },
+      "output": {
+        "reply": [],
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#6",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "postgateEmbeddingRules": []
+          }
+        ]
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#7",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              }
+            ]
+          },
+          {
+            "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+            "threadgateAllowRules": []
+          }
+        ]
+      },
+      "output": {
+        "reply": [
+          {
+            "type": "mention"
+          }
+        ],
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#8",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": null
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#9",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": "prefs"
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "defaultGatesFromPreferences#10",
+      "fn": "defaultGatesFromPreferences",
+      "input": {
+        "preferences": [
+          null,
+          5
+        ]
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "reads the preferences",
+      "fn": "readDefaultGates",
+      "input": {
+        "answer": {
+          "preferences": [
+            {
+              "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+              "threadgateAllowRules": []
+            }
+          ]
+        }
+      },
+      "output": {
+        "reply": [],
+        "quotes": true
+      }
+    },
+    {
+      "id": "none set",
+      "fn": "readDefaultGates",
+      "input": {
+        "answer": {
+          "preferences": []
+        }
+      },
+      "output": {
+        "reply": null,
+        "quotes": true
+      }
+    },
+    {
+      "id": "not an array",
+      "fn": "readDefaultGates",
+      "input": {
+        "answer": {
+          "preferences": {}
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "no data",
+      "fn": "readDefaultGates",
+      "input": {
+        "answer": null
+      },
+      "output": null
+    },
+    {
+      "id": "a failed read",
+      "fn": "readDefaultGates",
+      "input": {
+        "fails": true
+      },
+      "output": null
+    },
+    {
+      "id": "too slow",
+      "fn": "readDefaultGates",
+      "input": {
+        "never": true,
+        "timeoutMs": 20
+      },
+      "output": null
+    },
+    {
+      "id": "writes both gates",
+      "fn": "updatePostGates",
+      "input": {
+        "change": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": {
+        "result": {
+          "reply": [],
+          "quotes": false
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "allow": [],
+              "hiddenReplies": []
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "detachedEmbeddingUris": [],
+              "embeddingRules": [
+                {
+                  "$type": "app.bsky.feed.postgate#disableRule"
+                }
+              ]
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "keeps hidden replies and detached quotes",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2025-01-01T00:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": [
+              "at://h"
+            ]
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2025-01-01T00:00:00.000Z",
+            "embeddingRules": [],
+            "detachedEmbeddingUris": [
+              "at://d"
+            ]
+          }
+        },
+        "change": {
+          "reply": [
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": {
+        "result": {
+          "reply": [
+            {
+              "type": "follower"
+            }
+          ],
+          "quotes": false
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2025-01-01T00:00:00.000Z",
+              "allow": [
+                {
+                  "$type": "app.bsky.feed.threadgate#followerRule"
+                }
+              ],
+              "hiddenReplies": [
+                "at://h"
+              ]
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2025-01-01T00:00:00.000Z",
+              "detachedEmbeddingUris": [
+                "at://d"
+              ],
+              "embeddingRules": [
+                {
+                  "$type": "app.bsky.feed.postgate#disableRule"
+                }
+              ]
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2025-01-01T00:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#followerRule"
+              }
+            ],
+            "hiddenReplies": [
+              "at://h"
+            ]
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2025-01-01T00:00:00.000Z",
+            "detachedEmbeddingUris": [
+              "at://d"
+            ],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "opens a post by deleting its gates",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": [],
+            "hiddenReplies": []
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ],
+            "detachedEmbeddingUris": []
+          }
+        },
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "reply": null,
+          "quotes": true
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "delete",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "delete",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          }
+        ],
+        "store": {}
+      }
+    },
+    {
+      "id": "unless they still hold something",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": [],
+            "hiddenReplies": [
+              "at://h"
+            ]
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ],
+            "detachedEmbeddingUris": [
+              "at://d"
+            ]
+          }
+        },
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "reply": null,
+          "quotes": true
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "hiddenReplies": [
+                "at://h"
+              ]
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "detachedEmbeddingUris": [
+                "at://d"
+              ],
+              "embeddingRules": []
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "hiddenReplies": [
+              "at://h"
+            ]
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "detachedEmbeddingUris": [
+              "at://d"
+            ],
+            "embeddingRules": []
+          }
+        }
+      }
+    },
+    {
+      "id": "nothing to do",
+      "fn": "updatePostGates",
+      "input": {
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "reply": null,
+          "quotes": true
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [],
+        "store": {}
+      }
+    },
+    {
+      "id": "a gate that could not be read",
+      "fn": "updatePostGates",
+      "input": {
+        "failGet": {
+          "app.bsky.feed.threadgate": "boom"
+        },
+        "change": {
+          "reply": [],
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "$throws": "boom"
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [],
+        "store": {}
+      }
+    },
+    {
+      "id": "the postgate could not be read",
+      "fn": "updatePostGates",
+      "input": {
+        "failGet": {
+          "app.bsky.feed.postgate": "RecordNotFound in a message"
+        },
+        "change": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": {
+        "result": {
+          "reply": [],
+          "quotes": false
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "allow": [],
+              "hiddenReplies": []
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "detachedEmbeddingUris": [],
+              "embeddingRules": [
+                {
+                  "$type": "app.bsky.feed.postgate#disableRule"
+                }
+              ]
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "a put that fails",
+      "fn": "updatePostGates",
+      "input": {
+        "failPut": {
+          "app.bsky.feed.postgate": "nope"
+        },
+        "change": {
+          "reply": [
+            {
+              "type": "mention"
+            }
+          ],
+          "quotes": false
+        }
+      },
+      "output": {
+        "result": {
+          "$throws": "nope"
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "allow": [
+                {
+                  "$type": "app.bsky.feed.threadgate#mentionRule"
+                }
+              ],
+              "hiddenReplies": []
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "detachedEmbeddingUris": [],
+              "embeddingRules": [
+                {
+                  "$type": "app.bsky.feed.postgate#disableRule"
+                }
+              ]
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      }
+    },
+    {
+      "id": "a delete that fails",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": []
+          }
+        },
+        "failDelete": {
+          "app.bsky.feed.threadgate": "denied"
+        },
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "$throws": "denied"
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "delete",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": []
+          }
+        }
+      }
+    },
+    {
+      "id": "a delete of what is already gone",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": []
+          }
+        },
+        "failDelete": {
+          "app.bsky.feed.threadgate": "Could not locate record"
+        },
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "reply": null,
+          "quotes": true
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "delete",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "allow": []
+          }
+        }
+      }
+    },
+    {
+      "id": "not a post URI",
+      "fn": "updatePostGates",
+      "input": {
+        "uri": "at://did:plc:me/app.bsky.feed.like/3x",
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "$throws": "Not a post URI: at://did:plc:me/app.bsky.feed.like/3x"
+        },
+        "reads": [],
+        "writes": [],
+        "store": {}
+      }
+    },
+    {
+      "id": "no URI",
+      "fn": "updatePostGates",
+      "input": {
+        "uri": "",
+        "change": {
+          "reply": null,
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "$throws": "Not a post URI: "
+        },
+        "reads": [],
+        "writes": [],
+        "store": {}
+      }
+    },
+    {
+      "id": "lists and repeats",
+      "fn": "updatePostGates",
+      "input": {
+        "change": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "mention"
+            },
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "bogus"
+            }
+          ],
+          "quotes": true
+        }
+      },
+      "output": {
+        "result": {
+          "reply": [
+            {
+              "type": "list",
+              "list": "at://did:plc:me/app.bsky.graph.list/3l"
+            },
+            {
+              "type": "mention"
+            }
+          ],
+          "quotes": true
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "allow": [
+                {
+                  "$type": "app.bsky.feed.threadgate#listRule",
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l"
+                },
+                {
+                  "$type": "app.bsky.feed.threadgate#mentionRule"
+                }
+              ],
+              "hiddenReplies": []
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "allow": [
+              {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:me/app.bsky.graph.list/3l"
+              },
+              {
+                "$type": "app.bsky.feed.threadgate#mentionRule"
+              }
+            ],
+            "hiddenReplies": []
+          }
+        }
+      }
+    },
+    {
+      "id": "malformed stored lists",
+      "fn": "updatePostGates",
+      "input": {
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "hiddenReplies": "x",
+            "createdAt": ""
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "detachedEmbeddingUris": {
+              "a": 1
+            }
+          }
+        },
+        "change": {
+          "reply": [],
+          "quotes": false
+        }
+      },
+      "output": {
+        "result": {
+          "reply": [],
+          "quotes": false
+        },
+        "reads": [
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p"
+          },
+          {
+            "op": "get",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p"
+          }
+        ],
+        "writes": [
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.threadgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.threadgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "allow": [],
+              "hiddenReplies": []
+            }
+          },
+          {
+            "op": "put",
+            "repo": "did:plc:me",
+            "collection": "app.bsky.feed.postgate",
+            "rkey": "3p",
+            "record": {
+              "$type": "app.bsky.feed.postgate",
+              "post": "at://did:plc:me/app.bsky.feed.post/3p",
+              "createdAt": "2026-11-12T00:00:00.000Z",
+              "detachedEmbeddingUris": [],
+              "embeddingRules": [
+                {
+                  "$type": "app.bsky.feed.postgate#disableRule"
+                }
+              ]
+            }
+          }
+        ],
+        "store": {
+          "app.bsky.feed.threadgate": {
+            "$type": "app.bsky.feed.threadgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "allow": [],
+            "hiddenReplies": []
+          },
+          "app.bsky.feed.postgate": {
+            "$type": "app.bsky.feed.postgate",
+            "post": "at://did:plc:me/app.bsky.feed.post/3p",
+            "createdAt": "2026-11-12T00:00:00.000Z",
+            "detachedEmbeddingUris": [],
+            "embeddingRules": [
+              {
+                "$type": "app.bsky.feed.postgate#disableRule"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

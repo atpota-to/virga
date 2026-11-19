@@ -1,0 +1,2346 @@
+{
+  "name": "posting-text.threadBatch",
+  "sources": [
+    "src/posting/lib/threadBatch.js"
+  ],
+  "cases": [
+    {
+      "id": "three posts",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "one",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "two",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "three",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600002",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "three",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreifmrrmzmd6kbzstuhyc6iy4l4mnbltylss6ipljnxc5tovyu26uhu"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreifmrrmzmd6kbzstuhyc6iy4l4mnbltylss6ipljnxc5tovyu26uhu",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600002",
+            "cid": "bafyreigiubx72hbhhjftkb4xfrx5nynujm2e5i567xzwn2eur2h3vcenfa",
+            "rkey": "tid1794495600002",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "three",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreid3mo4ybrcutjbfe5yvtwihy24qz6cy7cwnsk2w6yrdu47yixhx2e"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreifmrrmzmd6kbzstuhyc6iy4l4mnbltylss6ipljnxc5tovyu26uhu"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "collection given",
+      "fn": "buildThreadWrites",
+      "input": {
+        "collection": "app.bsky.feed.post",
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "root post",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "second",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "third",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "root post",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "second",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600002",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "third",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreidka5yve7aiktibx2jvgwhstjwkdfnm3zunft5wdjhlhgfxpkomia"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "root post",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreidka5yve7aiktibx2jvgwhstjwkdfnm3zunft5wdjhlhgfxpkomia",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "second",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600002",
+            "cid": "bafyreigqtqeb4pjb2h7onlfoytowch2fgked4bfpn3vuqbcuabj64fqcju",
+            "rkey": "tid1794495600002",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "third",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreify4lsptddvxvmvuecakbi5e7bq6t7gfudh5qn5gx7im6spzn4as4"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreidka5yve7aiktibx2jvgwhstjwkdfnm3zunft5wdjhlhgfxpkomia"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "reply into a thread",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "reply one",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "reply two",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "replyTo": {
+          "root": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "parent": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+            "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          }
+        },
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreicpixanmnz3r6d34bcjgvsdaq5l4cty4u5eqydsyepsipk7mkyqyq"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreicpixanmnz3r6d34bcjgvsdaq5l4cty4u5eqydsyepsipk7mkyqyq",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreibsgks6ptovoadfk2pp3q4kgszj3zhhgdxsv3tcepuqentsrxqsey",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreicpixanmnz3r6d34bcjgvsdaq5l4cty4u5eqydsyepsipk7mkyqyq"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "own createdAt kept while it increases",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-01-01T00:00:05.000Z"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "c",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2025-01-01T00:00:00.000Z"
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1767225600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1767225605000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:05.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1767225605001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:05.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225605000",
+                  "cid": "bafyreihw2bgmtqivpmisvthkcnt5xznyulf3u4jlxfwplmqjicwes3jcge"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+            "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu",
+            "rkey": "tid1767225600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225605000",
+            "cid": "bafyreihw2bgmtqivpmisvthkcnt5xznyulf3u4jlxfwplmqjicwes3jcge",
+            "rkey": "tid1767225605000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:05.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225605001",
+            "cid": "bafyreih3bdulc3qq6kerfh5kujgppgb5ktbs5ev5n7janm3amn7m73durq",
+            "rkey": "tid1767225605001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:05.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225605000",
+                  "cid": "bafyreihw2bgmtqivpmisvthkcnt5xznyulf3u4jlxfwplmqjicwes3jcge"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "equal createdAt steps a millisecond",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-01-01T00:00:00.000Z"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-01-01T00:00:00.000Z"
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1767225600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1767225600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+            "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu",
+            "rkey": "tid1767225600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600001",
+            "cid": "bafyreihzxavhwq27b5rv6xpnzuevkqs24pfctjvrgc4re2db5r76ecodr4",
+            "rkey": "tid1767225600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-01-01T00:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1767225600000",
+                  "cid": "bafyreihlcxq2gvpqndw764x3unglaevql3fp5jmmil6ivqibylhe5udeiu"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "first record earlier than now keeps its own",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2020-05-05T05:05:05.005Z"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1588655105005",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2020-05-05T05:05:05.005Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1588655105006",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2020-05-05T05:05:05.006Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105005",
+                  "cid": "bafyreidcoqau677vakuzdxhx3bvs66xanjbkljahippp5nzqm5j7tm3wmi"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105005",
+                  "cid": "bafyreidcoqau677vakuzdxhx3bvs66xanjbkljahippp5nzqm5j7tm3wmi"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105005",
+            "cid": "bafyreidcoqau677vakuzdxhx3bvs66xanjbkljahippp5nzqm5j7tm3wmi",
+            "rkey": "tid1588655105005",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2020-05-05T05:05:05.005Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105006",
+            "cid": "bafyreicmwsat35ffbfhaqb7ezi6bf7nwdibcrgzjk4bmr2g7u4ysk7ttge",
+            "rkey": "tid1588655105006",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2020-05-05T05:05:05.006Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105005",
+                  "cid": "bafyreidcoqau677vakuzdxhx3bvs66xanjbkljahippp5nzqm5j7tm3wmi"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1588655105005",
+                  "cid": "bafyreidcoqau677vakuzdxhx3bvs66xanjbkljahippp5nzqm5j7tm3wmi"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "zone-less and legacy dates",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-03-01T10:00:00"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "March 1, 2026 10:00:01"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "c",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "2026-03-01"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "d",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": "not a date"
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1772359200000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1772359201000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1772359201001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201000",
+                  "cid": "bafyreicjaieypkf4giyljjt4ankbwin2smr2ntjuuhx4uijjrnn54un4ca"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1772359201002",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "d",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201001",
+                  "cid": "bafyreih2mg3rl3n453dqqwiny37ifhbpst7docgzps7kfqmpjbw4a6eodi"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+            "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva",
+            "rkey": "tid1772359200000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201000",
+            "cid": "bafyreicjaieypkf4giyljjt4ankbwin2smr2ntjuuhx4uijjrnn54un4ca",
+            "rkey": "tid1772359201000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201001",
+            "cid": "bafyreih2mg3rl3n453dqqwiny37ifhbpst7docgzps7kfqmpjbw4a6eodi",
+            "rkey": "tid1772359201001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201000",
+                  "cid": "bafyreicjaieypkf4giyljjt4ankbwin2smr2ntjuuhx4uijjrnn54un4ca"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201002",
+            "cid": "bafyreigdcj7gqfnu74loq7h62quk6gdyskakbnhupyc3aujtnnj3nklltq",
+            "rkey": "tid1772359201002",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "d",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-03-01T10:00:01.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359200000",
+                  "cid": "bafyreih2yx4di522wei7vnh2xi7jkqzdhnh6vzyqwa5fw6wkf4dglcqzva"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1772359201001",
+                  "cid": "bafyreih2mg3rl3n453dqqwiny37ifhbpst7docgzps7kfqmpjbw4a6eodi"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "non-string createdAt",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": null
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": 0
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "c",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": 1773576000000
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "d",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "createdAt": true
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600002",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600003",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "d",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.003Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600002",
+                  "cid": "bafyreiaaz6h72imx6lvrs4v27suxu5pds7wignr67wb7ylaxw7fqeaciyu"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600002",
+            "cid": "bafyreiaaz6h72imx6lvrs4v27suxu5pds7wignr67wb7ylaxw7fqeaciyu",
+            "rkey": "tid1794495600002",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "c",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.002Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+                  "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600003",
+            "cid": "bafyreifcddpshvhg75jj6bwlpkz5jdlmsfzos253obzh3zrakamfkpzlbm",
+            "rkey": "tid1794495600003",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "d",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.003Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600002",
+                  "cid": "bafyreiaaz6h72imx6lvrs4v27suxu5pds7wignr67wb7ylaxw7fqeaciyu"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "a carried reply is replaced",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "reply": {
+              "root": "x",
+              "parent": "y"
+            }
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "reply": 7
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "rich records",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "🦋 see https://example.com",
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#link",
+                    "uri": "https://example.com"
+                  }
+                ],
+                "index": {
+                  "byteStart": 9,
+                  "byteEnd": 28
+                }
+              }
+            ],
+            "langs": [
+              "en"
+            ],
+            "embed": {
+              "$type": "app.bsky.embed.images",
+              "images": [
+                {
+                  "alt": "",
+                  "image": {
+                    "$type": "blob",
+                    "ref": {
+                      "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                    },
+                    "mimeType": "image/jpeg",
+                    "size": 1234
+                  },
+                  "aspectRatio": {
+                    "width": 4,
+                    "height": 3
+                  }
+                }
+              ]
+            },
+            "labels": {
+              "$type": "com.atproto.label.defs#selfLabels",
+              "values": [
+                {
+                  "val": "nudity"
+                }
+              ]
+            },
+            "tags": [
+              "a",
+              "b"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "second",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "replyTo": {
+          "root": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "parent": {
+            "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+            "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          }
+        },
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "🦋 see https://example.com",
+              "facets": [
+                {
+                  "$type": "app.bsky.richtext.facet",
+                  "features": [
+                    {
+                      "$type": "app.bsky.richtext.facet#link",
+                      "uri": "https://example.com"
+                    }
+                  ],
+                  "index": {
+                    "byteStart": 9,
+                    "byteEnd": 28
+                  }
+                }
+              ],
+              "langs": [
+                "en"
+              ],
+              "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                  {
+                    "alt": "",
+                    "image": {
+                      "$type": "blob",
+                      "ref": {
+                        "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                      },
+                      "mimeType": "image/jpeg",
+                      "size": 1234
+                    },
+                    "aspectRatio": {
+                      "width": 4,
+                      "height": 3
+                    }
+                  }
+                ]
+              },
+              "labels": {
+                "$type": "com.atproto.label.defs#selfLabels",
+                "values": [
+                  {
+                    "val": "nudity"
+                  }
+                ]
+              },
+              "tags": [
+                "a",
+                "b"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "second",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreib2fmb3udmjdvmtbahzlvepyh74ovrs6dzlfxpog7q3hp6abzobay"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreib2fmb3udmjdvmtbahzlvepyh74ovrs6dzlfxpog7q3hp6abzobay",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "🦋 see https://example.com",
+              "facets": [
+                {
+                  "$type": "app.bsky.richtext.facet",
+                  "features": [
+                    {
+                      "$type": "app.bsky.richtext.facet#link",
+                      "uri": "https://example.com"
+                    }
+                  ],
+                  "index": {
+                    "byteStart": 9,
+                    "byteEnd": 28
+                  }
+                }
+              ],
+              "langs": [
+                "en"
+              ],
+              "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                  {
+                    "alt": "",
+                    "image": {
+                      "$type": "blob",
+                      "ref": {
+                        "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                      },
+                      "mimeType": "image/jpeg",
+                      "size": 1234
+                    },
+                    "aspectRatio": {
+                      "width": 4,
+                      "height": 3
+                    }
+                  }
+                ]
+              },
+              "labels": {
+                "$type": "com.atproto.label.defs#selfLabels",
+                "values": [
+                  {
+                    "val": "nudity"
+                  }
+                ]
+              },
+              "tags": [
+                "a",
+                "b"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreiatagfmhwei5sd3zjtutxqhnjytp3zcrrfu52dvxcqmvm5sapthwi",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "second",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreib2fmb3udmjdvmtbahzlvepyh74ovrs6dzlfxpog7q3hp6abzobay"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "one record",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "only",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "only",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreieqc5c37tctr7yxqpbjokvl4afhyjjbfhlg44ndprl6lvccj4b6oi",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "only",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "no records",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [],
+        "created": []
+      }
+    },
+    {
+      "id": "fractional now is cut",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000.75
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "now as a date string",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": "2026-11-12T15:00:00.000Z"
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreibb3tc5hliwesjip46qggppl2gedecnvmmfqu5a2n3cliac2ujw6a",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreiaempbhzq6as4co6cmlh3x2jsb3nyhgatnzbkpkxruhy56vco37ny"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid now",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": "nope"
+      },
+      "output": {
+        "$throws": "Invalid time value"
+      }
+    },
+    {
+      "id": "now past the end of time",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 8640000000000001
+      },
+      "output": {
+        "$throws": "Invalid time value"
+      }
+    },
+    {
+      "id": "last instant",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 8639999999999999
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid8639999999999999",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "+275760-09-12T23:59:59.999Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid8640000000000000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "+275760-09-13T00:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8639999999999999",
+                  "cid": "bafyreib3ktgormqh7xmac6lmtr24idotqhdt4e6imxw62l6qsytfucmxaq"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8639999999999999",
+                  "cid": "bafyreib3ktgormqh7xmac6lmtr24idotqhdt4e6imxw62l6qsytfucmxaq"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8639999999999999",
+            "cid": "bafyreib3ktgormqh7xmac6lmtr24idotqhdt4e6imxw62l6qsytfucmxaq",
+            "rkey": "tid8639999999999999",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "+275760-09-12T23:59:59.999Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8640000000000000",
+            "cid": "bafyreiejf5o6qcwod45iwj34dfx2qh5cv452i5jj7wluhwub4xlg5ey4d4",
+            "rkey": "tid8640000000000000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "+275760-09-13T00:00:00.000Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8639999999999999",
+                  "cid": "bafyreib3ktgormqh7xmac6lmtr24idotqhdt4e6imxw62l6qsytfucmxaq"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid8639999999999999",
+                  "cid": "bafyreib3ktgormqh7xmac6lmtr24idotqhdt4e6imxw62l6qsytfucmxaq"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "record without $type",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "text": "bare"
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "text": "bare",
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreihkrizunqjarzl3zu5skdtzk3oy62cvopsqzqz76oiidh23jrvnke"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreihkrizunqjarzl3zu5skdtzk3oy62cvopsqzqz76oiidh23jrvnke"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreihkrizunqjarzl3zu5skdtzk3oy62cvopsqzqz76oiidh23jrvnke",
+            "rkey": "tid1794495600000",
+            "record": {
+              "text": "bare",
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreiaquq2c4k6llprc3ytds5a6jxqe3fo47jd7dqxshl5mmsawmkwjbu",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreihkrizunqjarzl3zu5skdtzk3oy62cvopsqzqz76oiidh23jrvnke"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreihkrizunqjarzl3zu5skdtzk3oy62cvopsqzqz76oiidh23jrvnke"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "record with a float",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "a",
+            "facets": [],
+            "langs": [
+              "en"
+            ],
+            "ratio": 1.5
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "ratio": 1.5,
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreigygqkdglugqp6muow3z7xmjr3rmia7pa3lcy2amx3iiio6e4w23m",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "a",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "ratio": 1.5,
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "null and non-object records",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          null,
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "b",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreialti4fz3xk7xryijk7c7iq3nsg2zhpcnd7oihxusyjjecxhj2iqu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreialti4fz3xk7xryijk7c7iq3nsg2zhpcnd7oihxusyjjecxhj2iqu"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreialti4fz3xk7xryijk7c7iq3nsg2zhpcnd7oihxusyjjecxhj2iqu",
+            "rkey": "tid1794495600000",
+            "record": {
+              "createdAt": "2026-11-12T15:00:00.000Z"
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreie2gxmmstjny532un325pbhyrrt2psmhfmmkgo2ve2i5zozei63lq",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "b",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreialti4fz3xk7xryijk7c7iq3nsg2zhpcnd7oihxusyjjecxhj2iqu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreialti4fz3xk7xryijk7c7iq3nsg2zhpcnd7oihxusyjjecxhj2iqu"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
