@@ -823,6 +823,290 @@
       "output": "a b%2Fc"
     },
     {
+      "id": "URLSearchParams.toString#1",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "q",
+            "the heron"
+          ]
+        ]
+      },
+      "output": "q=the+heron"
+    },
+    {
+      "id": "URLSearchParams.toString#2",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "actor",
+            "did:plc:abc"
+          ],
+          [
+            "limit",
+            "50"
+          ],
+          [
+            "cursor",
+            "3k/x+y=z&w"
+          ]
+        ]
+      },
+      "output": "actor=did%3Aplc%3Aabc&limit=50&cursor=3k%2Fx%2By%3Dz%26w"
+    },
+    {
+      "id": "URLSearchParams.toString#3",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "text",
+            "naïve 👍🏽 café ~*-._!'()"
+          ],
+          [
+            "url",
+            "https://ex.com/a?b=c#d"
+          ]
+        ]
+      },
+      "output": "text=na%C3%AFve+%F0%9F%91%8D%F0%9F%8F%BD+caf%C3%A9+%7E*-._%21%27%28%29&url=https%3A%2F%2Fex.com%2Fa%3Fb%3Dc%23d"
+    },
+    {
+      "id": "URLSearchParams.toString#4",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "uris",
+            "at://a/b/c"
+          ],
+          [
+            "uris",
+            "at://d/e/f"
+          ]
+        ]
+      },
+      "output": "uris=at%3A%2F%2Fa%2Fb%2Fc&uris=at%3A%2F%2Fd%2Fe%2Ff"
+    },
+    {
+      "id": "URLSearchParams.toString#5",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "",
+            ""
+          ],
+          [
+            "empty",
+            ""
+          ]
+        ]
+      },
+      "output": "=&empty="
+    },
+    {
+      "id": "URLSearchParams.toString#6",
+      "fn": "URLSearchParams.toString",
+      "input": {
+        "pairs": [
+          [
+            "tab",
+            "\t\n\r"
+          ],
+          [
+            "percent",
+            "100%"
+          ]
+        ]
+      },
+      "output": "tab=%09%0A%0D&percent=100%25"
+    },
+    {
+      "id": "URLSearchParams.parse#1",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "?text=hello+world&url=https%3A%2F%2Fex.com&tags=a,b"
+      },
+      "output": [
+        [
+          "text",
+          "hello world"
+        ],
+        [
+          "url",
+          "https://ex.com"
+        ],
+        [
+          "tags",
+          "a,b"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#2",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "text=caf%C3%A9%20%F0%9F%91%8D"
+      },
+      "output": [
+        [
+          "text",
+          "café 👍"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#3",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "?a=1&a=2&b"
+      },
+      "output": [
+        [
+          "a",
+          "1"
+        ],
+        [
+          "a",
+          "2"
+        ],
+        [
+          "b",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#4",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "&&a=1&&"
+      },
+      "output": [
+        [
+          "a",
+          "1"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#5",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "?=x&y="
+      },
+      "output": [
+        [
+          "",
+          "x"
+        ],
+        [
+          "y",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#6",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "bad=%zz%2&half=%C3&lone=%&x=%2"
+      },
+      "output": [
+        [
+          "bad",
+          "%zz%2"
+        ],
+        [
+          "half",
+          "�"
+        ],
+        [
+          "lone",
+          "%"
+        ],
+        [
+          "x",
+          "%2"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#7",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "eq=a=b=c"
+      },
+      "output": [
+        [
+          "eq",
+          "a=b=c"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#8",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "plus=%2B+"
+      },
+      "output": [
+        [
+          "plus",
+          "+ "
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#9",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "?"
+      },
+      "output": []
+    },
+    {
+      "id": "URLSearchParams.parse#10",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": ""
+      },
+      "output": []
+    },
+    {
+      "id": "URLSearchParams.parse#11",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "??a=1"
+      },
+      "output": [
+        [
+          "?a",
+          "1"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#12",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "emoji=👍&x=%E2%9C"
+      },
+      "output": [
+        [
+          "emoji",
+          "👍"
+        ],
+        [
+          "x",
+          "�"
+        ]
+      ]
+    },
+    {
       "id": "Number#1",
       "fn": "Number",
       "input": {

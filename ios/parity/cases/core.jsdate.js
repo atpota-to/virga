@@ -110,6 +110,12 @@ const STRINGS = [
   'Invalid Date',
 ];
 
+// Before standard time, a zone's offset is its local mean time, which
+// each platform's zone data keeps differently far back; those years are
+// checked in UTC only.
+const SINCE_1900 = Date.UTC(1900, 0, 1);
+const modern = (year) => year >= 1900 || (year >= 0 && year <= 99);
+
 const LOCAL_PARTS = [
   [2026, 2, 15, 12, 0],
   [2026, 0, 1],
@@ -163,7 +169,11 @@ export default async function cases() {
   out.push(
     ...(await each(
       'local',
-      ZONES.flatMap((zone) => LOCAL_PARTS.map((parts) => ({ zone, parts }))),
+      ZONES.flatMap((zone) =>
+        LOCAL_PARTS.filter((parts) => zone === 'UTC' || modern(parts[0])).map(
+          (parts) => ({ zone, parts }),
+        ),
+      ),
       ({ zone, parts }) => inZone(zone, () => new Date(...parts).getTime()),
     )),
   );
@@ -177,7 +187,11 @@ export default async function cases() {
   out.push(
     ...(await each(
       'fields',
-      ZONES.flatMap((zone) => TIMES.map((time) => ({ zone, time }))),
+      ZONES.flatMap((zone) =>
+        TIMES.filter((time) => zone === 'UTC' || time >= SINCE_1900).map(
+          (time) => ({ zone, time }),
+        ),
+      ),
       ({ zone, time }) =>
         inZone(zone, () => {
           const d = new Date(time);

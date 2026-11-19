@@ -171,6 +171,56 @@ export default async function cases() {
   );
   out.push(
     ...(await each(
+      'URLSearchParams.toString',
+      [
+        [['q', 'the heron']],
+        [
+          ['actor', 'did:plc:abc'],
+          ['limit', '50'],
+          ['cursor', '3k/x+y=z&w'],
+        ],
+        [
+          ['text', "naïve 👍🏽 café ~*-._!'()"],
+          ['url', 'https://ex.com/a?b=c#d'],
+        ],
+        [
+          ['uris', 'at://a/b/c'],
+          ['uris', 'at://d/e/f'],
+        ],
+        [
+          ['', ''],
+          ['empty', ''],
+        ],
+        [
+          ['tab', '\t\n\r'],
+          ['percent', '100%'],
+        ],
+      ].map((pairs) => ({ pairs })),
+      ({ pairs }) => new URLSearchParams(pairs).toString(),
+    )),
+  );
+  out.push(
+    ...(await each(
+      'URLSearchParams.parse',
+      [
+        '?text=hello+world&url=https%3A%2F%2Fex.com&tags=a,b',
+        'text=caf%C3%A9%20%F0%9F%91%8D',
+        '?a=1&a=2&b',
+        '&&a=1&&',
+        '?=x&y=',
+        'bad=%zz%2&half=%C3&lone=%&x=%2',
+        'eq=a=b=c',
+        'plus=%2B+',
+        '?',
+        '',
+        '??a=1',
+        'emoji=👍&x=%E2%9C',
+      ].map((query) => ({ query })),
+      ({ query }) => [...new URLSearchParams(query)],
+    )),
+  );
+  out.push(
+    ...(await each(
       'Number',
       NUMBERS.map((value) => ({ value })),
       ({ value }) => {

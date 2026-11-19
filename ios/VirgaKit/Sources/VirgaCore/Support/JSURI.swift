@@ -1,8 +1,10 @@
-// JavaScript's URI functions: `encodeURIComponent`, `encodeURI` and
-// `decodeURIComponent`, as the spec defines them (Encode and Decode in
-// ECMA-262 §19.2.6). Foundation's percent-encoding uses other character
-// sets and other failure rules, so ports that build or read URLs the way the
-// web does use these. ios/parity/cases/core.jsuri.js holds them to Node.
+// JavaScript's URI functions: `encodeURIComponent`, `encodeURI`,
+// `decodeURIComponent` and `decodeURI`, as the spec defines them (Encode and
+// Decode in ECMA-262 §19.2.6), and URLSearchParams' serializing and parsing
+// (WHATWG URL's application/x-www-form-urlencoded). Foundation's
+// percent-encoding uses other character sets and other failure rules, so
+// ports that build or read URLs the way the web does use these.
+// ios/parity/cases/core.jsuri.js holds them to Node.
 
 import Foundation
 
@@ -82,7 +84,7 @@ public enum JSURI {
     out.reserveCapacity(units.count)
     var k = 0
     func byte(at index: Int) throws -> UInt8 {
-      guard index + 2 < units.count + 0, units[index] == 0x25,
+      guard index + 2 < units.count, units[index] == 0x25,
         let high = hexValue(units[index + 1]), let low = hexValue(units[index + 2])
       else { throw JSURIError() }
       return high << 4 | low
@@ -142,5 +144,86 @@ public enum JSURI {
       return nil
     }
     return Unicode.Scalar(value)
+  }
+}
+
+// MARK: - URLSearchParams
+
+extension JSURI {
+  /// `new URLSearchParams(pairs).toString()`: each name and value
+  /// form-encoded (a space is `+`; letters, digits and `*-._` stay; every
+  /// other byte of the UTF-8 is %XX), `name=value` joined by `&`, in order.
+  public static func searchParams(_ pairs: [(String, String)]) -> String {
+    pairs.map { "\(formEncode($0.0))=\(formEncode($0.1))" }.joined(separator: "&")
+  }
+
+  /// `searchParams` for a dictionary, in key order (a JavaScript object's
+  /// insertion order isn't Swift's; pass pairs where order matters).
+  public static func searchParams(_ dictionary: [String: String]) -> String {
+    searchParams(dictionary.sorted { $0.key < $1.key }.map { ($0.key, $0.value) })
+  }
+
+  /// The application/x-www-form-urlencoded byte serializer.
+  public static func formEncode(_ string: String) -> String {
+    var out: [UInt8] = []
+    for byte in string.utf8 {
+      if byte == 0x20 {
+        out.append(0x2B)
+      } else if isAlphaNumeric(byte) || byte == 0x2A || byte == 0x2D || byte == 0x2E || byte == 0x5F {
+        out.append(byte)
+      } else {
+        out.append(0x25)
+        out.append(hexDigits[Int(byte >> 4)])
+        out.append(hexDigits[Int(byte & 0x0F)])
+      }
+    }
+    return String(decoding: out, as: UTF8.self)
+  }
+
+  /// `new URLSearchParams(query)`'s pairs, in order: a leading `?` dropped,
+  /// split on `&`, each at its first `=`, `+` read as a space and %XX
+  /// decoded leniently (a `%` without two hex digits stays, and bytes that
+  /// aren't UTF-8 become U+FFFD), as browsers parse a query.
+  public static func parseSearchParams(_ query: String) -> [(String, String)] {
+    var text = Substring(query)
+    if text.hasPrefix("?") { text = text.dropFirst() }
+    var out: [(String, String)] = []
+    for sequence in text.split(separator: "&", omittingEmptySubsequences: true) {
+      let name: Substring
+      let value: Substring
+      if let eq = sequence.firstIndex(of: "=") {
+        name = sequence[..<eq]
+        value = sequence[sequence.index(after: eq)...]
+      } else {
+        name = sequence
+        value = ""
+      }
+      out.append((formDecode(name), formDecode(value)))
+    }
+    return out
+  }
+
+  /// `new URLSearchParams(query).get(name)`: the first value for `name`.
+  public static func searchParam(_ query: String, _ name: String) -> String? {
+    parseSearchParams(query).first { $0.0 == name }?.1
+  }
+
+  static func formDecode(_ text: Substring) -> String {
+    let bytes = Array(text.utf8).map { $0 == 0x2B ? 0x20 : $0 }
+    var out: [UInt8] = []
+    out.reserveCapacity(bytes.count)
+    var i = 0
+    while i < bytes.count {
+      if bytes[i] == 0x25, i + 2 < bytes.count,
+        let high = hexValue(UInt16(bytes[i + 1])), let low = hexValue(UInt16(bytes[i + 2]))
+      {
+        out.append(high << 4 | low)
+        i += 3
+      } else {
+        out.append(bytes[i])
+        i += 1
+      }
+    }
+    return String(decoding: out, as: UTF8.self)
   }
 }

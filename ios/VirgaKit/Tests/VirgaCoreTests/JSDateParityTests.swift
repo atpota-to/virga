@@ -92,6 +92,22 @@ func zone(_ c: ParityCase) -> TimeZone {
     }
   }
 
+  @Test func searchParams() throws {
+    for c in try Parity.cases("core.jsuri", fn: "URLSearchParams.toString") {
+      let pairs = (c["pairs"].arrayValue ?? []).map { ($0[0]?.stringValue ?? "", $0[1]?.stringValue ?? "") }
+      let d = Parity.diff(.string(JSURI.searchParams(pairs)), c.output)
+      #expect(d == nil, "\(c) \(c["pairs"]): \(d ?? "")")
+    }
+    for c in try Parity.cases("core.jsuri", fn: "URLSearchParams.parse") {
+      let pairs = JSURI.parseSearchParams(c["query"].stringValue ?? "")
+      let d = Parity.diff(.array(pairs.map { [.string($0.0), .string($0.1)] }), c.output)
+      #expect(d == nil, "\(c) \(c["query"]): \(d ?? "")")
+    }
+    #expect(JSURI.searchParam("?text=hi+there&text=again", "text") == "hi there")
+    #expect(JSURI.searchParam("?a=1", "b") == nil)
+    #expect(JSURI.searchParams(["b": "2", "a": "1"]) == "a=1&b=2")
+  }
+
   @Test func encodeURIComponent() throws { try check("encodeURIComponent", JSURI.encodeURIComponent) }
   @Test func encodeURI() throws { try check("encodeURI", JSURI.encodeURI) }
   @Test func decodeURIComponent() throws { try check("decodeURIComponent", JSURI.decodeURIComponent) }

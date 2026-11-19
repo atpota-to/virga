@@ -88,6 +88,7 @@ const DATES = [
   ['null', () => null],
   ['epoch', () => 0],
   ['out-of-range', () => 1e16],
+  // Local mean time, which platforms keep differently that far back: UTC only.
   ['year-999', () => at(999, 6, 1)],
 ];
 
@@ -98,7 +99,9 @@ export default async function cases() {
       'formatDateShort',
       ZONES.flatMap((zone) =>
         ['en-US', 'en-GB', 'en-IN'].flatMap((locale) =>
-          DATES.map(([$id, make]) => ({
+          DATES.filter(
+            ([$id]) => zone === 'UTC' || !$id.startsWith('year-'),
+          ).map(([$id, make]) => ({
             $id: `${zone} ${locale} ${$id}`,
             zone,
             locale,
