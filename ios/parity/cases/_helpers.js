@@ -186,3 +186,29 @@ export async function withFakeFetch(responder, fn) {
     globalThis.fetch = original;
   }
 }
+
+/**
+ * Runs `fn` with the process in time zone `tz` (Node honours a change to
+ * process.env.TZ at once, for Date and Intl alike), then puts UTC back. For
+ * code that works in local time, like the analytics' buckets: record cases
+ * in a few zones, across a DST change, and the Swift port takes the zone as
+ * a parameter. Synchronous or async.
+ */
+export async function withTimeZone(tz, fn) {
+  const previous = process.env.TZ;
+  process.env.TZ = tz;
+  try {
+    return await fn();
+  } finally {
+    process.env.TZ = previous;
+  }
+}
+
+/** Zones worth recording local-time cases in: no DST, both hemispheres' DST, a half-hour offset. */
+export const ZONES = [
+  'UTC',
+  'America/New_York',
+  'Europe/London',
+  'Australia/Sydney',
+  'Asia/Kolkata',
+];

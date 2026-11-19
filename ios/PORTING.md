@@ -120,6 +120,10 @@ means porting the code, not reimagining it.
   inputs adversarial: empty, unicode and emoji, boundaries, malformed data,
   every branch the web code has. The web module's own `*.test.js` is the best
   list of interesting inputs; reuse them.
+- **Local time.** Code that buckets or formats in local time takes a
+  `TimeZone` in Swift; its generator records cases in several zones with
+  `withTimeZone(tz, fn)` over `ZONES` (`cases/_helpers.js`), across DST
+  changes, and passes the zone in the case input.
 - **Recorded-fetch parity** for code that talks to the network: in the
   generator, wrap the web call in `withFakeFetch(responder, fn)`
   (`cases/_helpers.js`); the fixture records every request the web code made
