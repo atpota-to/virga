@@ -365,6 +365,25 @@ extension ParityCase {
     }
   }
 
+  /// A pin without an offset is read in the zone the function is given,
+  /// as the web reads it in the browser's one zone, whatever the active
+  /// zone is.
+  @Test func aPinWithoutAnOffsetIsReadInTheGivenZone() throws {
+    for c in try TimerFixtures.cases(Self.f, "scheduledRowTimerProblem (local pins)") {
+      let problem = SelfDestruct.scheduledRowTimerProblem(
+        c.loose("row"), c.loose("whenISO"), now: c.ms("clock"), locale: "en-US", timeZone: c.zone)
+      check(json(problem), c)
+    }
+    for c in try TimerFixtures.cases(Self.f, "scheduledRowDeadlineStatus (local pins)") {
+      check(json(SelfDestruct.scheduledRowDeadlineStatus(c.loose("row"), c.loose("whenISO"), timeZone: c.zone)), c)
+    }
+    for c in try TimerFixtures.cases(Self.f, "scheduledTimerToSend (local pins)") {
+      let sent = SelfDestruct.scheduledTimerToSend(
+        c.loose("timer"), publishAt: c.ms("publishAt"), now: c.ms("now"), locale: "en-US", timeZone: c.zone)
+      check(json(sent), c, strictNulls: true)
+    }
+  }
+
   // MARK: Stored rules and drafts
 
   @Test func storedRulesAndDrafts() throws {

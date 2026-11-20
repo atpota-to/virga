@@ -235,16 +235,19 @@ extension SelfDestruct {
 
   /// What a scheduled post carries: the rule fitted as the composer shows it
   /// (`fit`), checked and measured against publishAt (the scheduled time,
-  /// since a scheduled post's window runs from when it goes out). `now`,
-  /// `locale` and `timeZone` are only for the words of a refusal (its "today
-  /// at" is said from the clock, as on the web).
+  /// since a scheduled post's window runs from when it goes out). `now` and
+  /// `locale` are only for the words of a refusal (its "today at" is said
+  /// from the clock, as on the web); a pin without an offset is read in
+  /// `timeZone`, the zone the refusal says it in.
   public static func scheduledTimerToSend(
     _ rule: some TimerRuleInput, fit: TimerFit = TimerFit(), publishAt: Double, now: Double,
     locale: String? = nil, timeZone: TimeZone? = nil
   ) -> ScheduledTimerSend {
-    let timer = fitTimerToPost(rule, fit)
-    let problem = scheduledTimerProblem(timer, publishAt, now: now, locale: locale, timeZone: timeZone)
-    return ScheduledTimerSend(problem: problem, spec: problem.isEmpty ? toWireSpec(timer, publishAt) : nil)
+    TimerJS.inZone(timeZone) {
+      let timer = fitTimerToPost(rule, fit)
+      let problem = scheduledTimerProblem(timer, publishAt, now: now, locale: locale)
+      return ScheduledTimerSend(problem: problem, spec: problem.isEmpty ? toWireSpec(timer, publishAt) : nil)
+    }
   }
 
   /// A scheduled row's `payload.selfDestruct` as an armed timer, or nil
@@ -260,14 +263,16 @@ extension SelfDestruct {
   /// Why moving a scheduled row to `whenISO` would break its pinned delete
   /// time, or ''. Catches reorders the server would refuse. `whenISO` is
   /// read as `new Date(whenISO)` reads it (nil is `undefined`, an invalid
-  /// time; `.null` is the epoch); `now`, `locale` and `timeZone` are for
-  /// the words.
+  /// time; `.null` is the epoch); `now` and `locale` are for the words.
+  /// Date-times without an offset (the move and the pin) are read in
+  /// `timeZone`.
   public static func scheduledRowTimerProblem(
     _ row: JSONValue?, _ whenISO: JSONValue?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
-    guard let spec = pinnedRowSpec(row) else { return "" }
-    return scheduledTimerProblem(
-      spec, TimerJS.dateMs(whenISO, timeZone: timeZone), now: now, locale: locale, timeZone: timeZone)
+    TimerJS.inZone(timeZone) {
+      guard let spec = pinnedRowSpec(row) else { return "" }
+      return scheduledTimerProblem(spec, TimerJS.dateMs(whenISO), now: now, locale: locale)
+    }
   }
 
   public static func scheduledRowTimerProblem(
@@ -281,8 +286,10 @@ extension SelfDestruct {
   public static func scheduledRowDeadlineStatus(_ row: JSONValue?, _ whenISO: JSONValue?, timeZone: TimeZone? = nil)
     -> String
   {
-    guard let spec = pinnedRowSpec(row) else { return "none" }
-    return pinnedDeadlineStatus(spec, TimerJS.dateMs(whenISO, timeZone: timeZone))
+    TimerJS.inZone(timeZone) {
+      guard let spec = pinnedRowSpec(row) else { return "none" }
+      return pinnedDeadlineStatus(spec, TimerJS.dateMs(whenISO))
+    }
   }
 
   public static func scheduledRowDeadlineStatus(_ row: JSONValue?, _ whenISO: String?, timeZone: TimeZone? = nil)

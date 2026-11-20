@@ -11,11 +11,30 @@ import Foundation
 import VirgaCore
 
 enum TimerJS {
+  /// The zone a date-time without an offset is read in while a function
+  /// that was given a `timeZone` runs: the web has one local zone, so a
+  /// rule's pin (read by normalizeTimer, however deep) and the sentence
+  /// about it must read the same wall clock. Unbound, the active zone.
+  static let localZone = TaskLocal<TimeZone?>(wrappedValue: nil)
+
+  /// `explicit`, else the zone a caller bound, else the active one.
+  static func zone(_ explicit: TimeZone? = nil) -> TimeZone {
+    explicit ?? localZone.get() ?? AppLocale.activeTimeZone()
+  }
+
+  /// Runs `body` with `zone` as the local zone (the one already in force
+  /// when nil).
+  static func inZone<T>(_ zone: TimeZone?, _ body: () throws -> T) rethrows -> T {
+    guard let zone else { return try body() }
+    return try localZone.withValue(zone, operation: body)
+  }
+
   /// `new Date(value).getTime()`: a number is clipped, a string parsed (a
-  /// date-time without an offset in `timeZone`), null is the epoch, a
-  /// boolean 0 or 1, an array its joined text, an object and undefined NaN.
+  /// date-time without an offset in `timeZone`, else the local zone), null
+  /// is the epoch, a boolean 0 or 1, an array its joined text, an object
+  /// and undefined NaN.
   static func dateMs(_ value: JSONValue?, timeZone: TimeZone? = nil) -> Double {
-    let zone = timeZone ?? AppLocale.activeTimeZone()
+    let zone = zone(timeZone)
     switch value {
     case .none: return .nan
     case .null: return 0

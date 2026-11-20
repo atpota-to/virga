@@ -26557,6 +26557,2006 @@
         }
       },
       "output": "This post’s lifespan is set to act on it Apr 8 at 11:00 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-08-27T23:30 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM"
+    },
+    {
+      "id": "UTC 2026-08-28T09:00:00 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM"
+    },
+    {
+      "id": "UTC 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM"
+    },
+    {
+      "id": "UTC Aug 29 2026 07:15 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM"
+    },
+    {
+      "id": "America/New_York 2026-08-27T23:30 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM"
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00:00 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM"
+    },
+    {
+      "id": "America/New_York 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM"
+    },
+    {
+      "id": "America/New_York Aug 29 2026 07:15 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T23:30 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00:00 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM"
+    },
+    {
+      "id": "Asia/Kolkata Aug 29 2026 07:15 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T23:30 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Aug 27 at 11:30 PM"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00:00 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 9:00 AM"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM"
+    },
+    {
+      "id": "Pacific/Chatham Aug 29 2026 07:15 after the pin",
+      "fn": "describeWhen (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 7:15 AM"
+    },
+    {
+      "id": "UTC 2026-08-27T23:30 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself today at 11:30 PM, unless it has 3 likes by then. If it does, it gets another 12 hours, up to 1 time."
+    },
+    {
+      "id": "UTC 2026-08-28T09:00:00 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself tomorrow at 9:00 AM, unless it has 3 likes by then. If it does, it gets another 21 hours, up to 1 time."
+    },
+    {
+      "id": "UTC 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 6:30 PM, unless it has 3 likes by then. If it does, it gets another 3 days, up to 1 time."
+    },
+    {
+      "id": "UTC Aug 29 2026 07:15 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Saturday at 7:15 AM, unless it has 3 likes by then. If it does, it gets another 43 hours, up to 1 time."
+    },
+    {
+      "id": "America/New_York 2026-08-27T23:30 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself today at 11:30 PM, unless it has 3 likes by then. If it does, it gets another 16 hours, up to 1 time."
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00:00 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself tomorrow at 9:00 AM, unless it has 3 likes by then. If it does, it gets another 25 hours, up to 1 time."
+    },
+    {
+      "id": "America/New_York 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 6:30 PM, unless it has 3 likes by then. If it does, it gets another 3 days, up to 1 time."
+    },
+    {
+      "id": "America/New_York Aug 29 2026 07:15 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Saturday at 7:15 AM, unless it has 3 likes by then. If it does, it gets another 47 hours, up to 1 time."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T23:30 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself today at 11:30 PM, unless it has 3 likes by then. If it does, it gets another 6 hours, up to 1 time."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00:00 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself tomorrow at 9:00 AM, unless it has 3 likes by then. If it does, it gets another 16 hours, up to 1 time."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 6:30 PM, unless it has 3 likes by then. If it does, it gets another 3 days, up to 1 time."
+    },
+    {
+      "id": "Asia/Kolkata Aug 29 2026 07:15 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Saturday at 7:15 AM, unless it has 3 likes by then. If it does, it gets another 38 hours, up to 1 time."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T23:30 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Aug 27 at 11:30 PM, unless it has 3 likes by then. If it does, it gets another 5 minutes, up to 1 time."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00:00 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself today at 9:00 AM, unless it has 3 likes by then. If it does, it gets another 8 hours, up to 1 time."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-30T18:30:00.000 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 6:30 PM, unless it has 3 likes by then. If it does, it gets another 3 days, up to 1 time."
+    },
+    {
+      "id": "Pacific/Chatham Aug 29 2026 07:15 after the pin",
+      "fn": "describeTimer (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Deletes itself tomorrow at 7:15 AM, unless it has 3 likes by then. If it does, it gets another 31 hours, up to 1 time."
+    },
+    {
+      "id": "UTC 2026-08-27T23:30 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM · unless 3 likes"
+    },
+    {
+      "id": "UTC 2026-08-28T09:00:00 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM · unless 3 likes"
+    },
+    {
+      "id": "UTC 2026-08-30T18:30:00.000 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM · unless 3 likes"
+    },
+    {
+      "id": "UTC Aug 29 2026 07:15 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM · unless 3 likes"
+    },
+    {
+      "id": "America/New_York 2026-08-27T23:30 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM · unless 3 likes"
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00:00 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM · unless 3 likes"
+    },
+    {
+      "id": "America/New_York 2026-08-30T18:30:00.000 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM · unless 3 likes"
+    },
+    {
+      "id": "America/New_York Aug 29 2026 07:15 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM · unless 3 likes"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T23:30 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 11:30 PM · unless 3 likes"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00:00 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 9:00 AM · unless 3 likes"
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-30T18:30:00.000 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM · unless 3 likes"
+    },
+    {
+      "id": "Asia/Kolkata Aug 29 2026 07:15 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Saturday at 7:15 AM · unless 3 likes"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T23:30 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Aug 27 at 11:30 PM · unless 3 likes"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00:00 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "today at 9:00 AM · unless 3 likes"
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-30T18:30:00.000 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "Sunday at 6:30 PM · unless 3 likes"
+    },
+    {
+      "id": "Pacific/Chatham Aug 29 2026 07:15 after the pin",
+      "fn": "timerChipLabel (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "tomorrow at 7:15 AM · unless 3 likes"
+    },
+    {
+      "id": "UTC 2026-08-27T23:30 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-08-27T23:30 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-08-28T09:00:00 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC 2026-08-28T09:00:00 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-08-30T18:30:00.000 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC 2026-08-30T18:30:00.000 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Sunday at 6:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC Aug 29 2026 07:15 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC Aug 29 2026 07:15 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Saturday at 7:15 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-08-27T23:30 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-08-27T23:30 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00:00 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00:00 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-08-30T18:30:00.000 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York 2026-08-30T18:30:00.000 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Sunday at 6:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York Aug 29 2026 07:15 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York Aug 29 2026 07:15 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Saturday at 7:15 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T23:30 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T23:30 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 11:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00:00 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00:00 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-30T18:30:00.000 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-30T18:30:00.000 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Sunday at 6:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata Aug 29 2026 07:15 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata Aug 29 2026 07:15 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Saturday at 7:15 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T23:30 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Aug 27 at 11:30 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T23:30 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-27T23:30",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Aug 27 at 11:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00:00 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00:00 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T09:00:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it today at 9:00 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-30T18:30:00.000 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-30T18:30:00.000 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T18:30:00.000",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Sunday at 6:30 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham Aug 29 2026 07:15 after the pin",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1787904000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham Aug 29 2026 07:15 a month before",
+      "fn": "scheduledTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "now": 1787832000000,
+        "clock": 1787832000000,
+        "publishAt": 1785153600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "Aug 29 2026 07:15",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 3
+              }
+            ],
+            "onSpare": "extend"
+          }
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 7:15 AM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
     }
   ]
 }

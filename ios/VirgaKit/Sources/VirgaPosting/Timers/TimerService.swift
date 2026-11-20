@@ -465,15 +465,18 @@ public enum TimerService {
   /// Effects are always present: the server reads absent effects as delete,
   /// so a rule that only limits replies would otherwise take the post down.
   /// `postedAt` (ISO) is when the post went up; the window runs from there,
-  /// or from `now` when it can't be read.
+  /// or from `now` when it can't be read. Date-times without an offset
+  /// (`postedAt`, the rule's pin) are read in `timeZone`.
   public static func timerBody(
     uri: String, cid: String? = nil, extraUris: [String]? = [], snippet: JSONValue? = nil, postedAt: String? = nil,
     rule: some TimerRuleInput, fit: TimerFit = TimerFit(), now: Double, timeZone: TimeZone? = nil
   ) -> TimerCreateBody? {
-    let startedAt = postedAt.map { VirgaCore.JSDate.parse($0, timeZone: timeZone ?? AppLocale.activeTimeZone()) } ?? .nan
+    let zone = TimerJS.zone(timeZone)
+    let startedAt = postedAt.map { VirgaCore.JSDate.parse($0, timeZone: zone) } ?? .nan
     guard
-      let spec = SelfDestruct.toWireSpec(
-        SelfDestruct.fitTimerToPost(rule, fit), startedAt.isFinite ? startedAt : now)
+      let spec = TimerJS.inZone(zone, {
+        SelfDestruct.toWireSpec(SelfDestruct.fitTimerToPost(rule, fit), startedAt.isFinite ? startedAt : now)
+      })
     else { return nil }
     return TimerCreateBody(
       postUri: uri,
@@ -588,7 +591,8 @@ public enum TimerService {
     }
     guard let req, let uri else { return CreateTimerOutcome(status: "failed", error: needsBackend(), adjusted: nil) }
 
-    let fitted = SelfDestruct.fitTimerToPost(rule, fit)
+    let zone = TimerJS.zone(timeZone)
+    let fitted = TimerJS.inZone(zone) { SelfDestruct.fitTimerToPost(rule, fit) }
     if !fitted.enabled { return CreateTimerOutcome(status: "none", adjusted: nil) }
     if preflight {
       let problem = SelfDestruct.immediateTimerProblem(fitted, now)
@@ -596,7 +600,6 @@ public enum TimerService {
         return CreateTimerOutcome(status: "failed", error: codedError("TIMER_PROBLEM", problem), adjusted: nil)
       }
     }
-    let zone = timeZone ?? AppLocale.activeTimeZone()
     let startedAt = postedAt.map { VirgaCore.JSDate.parse($0, timeZone: zone) } ?? .nan
     let adjusted = SelfDestruct.settleForPublish(fitted, startedAt.isFinite ? startedAt : now).adjusted
     guard

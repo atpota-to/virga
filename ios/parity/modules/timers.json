@@ -17,7 +17,8 @@
       "fixtures": [
         "timers.selfDestruct",
         "timers.selfDestructRules",
-        "timers.selfDestructWords"
+        "timers.selfDestructWords",
+        "timers.fuzz"
       ],
       "synced": "e974adb593e5"
     },
@@ -28,7 +29,8 @@
         "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerService.swift"
       ],
       "fixtures": [
-        "timers.timerService"
+        "timers.timerService",
+        "timers.fuzz"
       ],
       "synced": "047760f94b49"
     },
@@ -38,7 +40,8 @@
         "ios/VirgaKit/Sources/VirgaPosting/UI/LifespanModel.swift"
       ],
       "fixtures": [
-        "timers.lifespanModel"
+        "timers.lifespanModel",
+        "timers.fuzz"
       ],
       "synced": "9dade44d8c67"
     }

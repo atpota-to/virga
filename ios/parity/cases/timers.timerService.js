@@ -972,7 +972,12 @@ export default async function cases() {
         ...c.args,
         now: c.args.now ?? NOW,
       })),
-      { $id: 'a rule that is off', uri: POST, rule: { enabled: false }, now: NOW },
+      {
+        $id: 'a rule that is off',
+        uri: POST,
+        rule: { enabled: false },
+        now: NOW,
+      },
       {
         $id: 'no fit',
         uri: POST,
@@ -1001,6 +1006,30 @@ export default async function cases() {
       postedAt: '2026-09-01T12:00:00',
       now: NOW,
     })),
+    ({ zone, uri, rule, postedAt, now }) =>
+      inZone(zone, () => TS.timerBody({ uri, rule, postedAt, now })),
+  );
+  // A rule whose pin has no offset: read in the same zone as `postedAt`.
+  await add(
+    'timerBody (local pins)',
+    ['UTC', 'America/New_York', 'Asia/Kolkata', 'Pacific/Chatham'].flatMap(
+      (zone) =>
+        ['2026-09-01T23:00', '2026-09-01T12:04:00'].map((deleteAt) => ({
+          $id: `${zone} ${deleteAt}`,
+          zone,
+          uri: POST,
+          rule: {
+            ...RULE,
+            deleteAt,
+            conditions: {
+              clauses: [{ metric: 'likes', value: 2 }],
+              onSpare: 'extend',
+            },
+          },
+          postedAt: '2026-09-01T12:00:00',
+          now: NOW,
+        })),
+    ),
     ({ zone, uri, rule, postedAt, now }) =>
       inZone(zone, () => TS.timerBody({ uri, rule, postedAt, now })),
   );

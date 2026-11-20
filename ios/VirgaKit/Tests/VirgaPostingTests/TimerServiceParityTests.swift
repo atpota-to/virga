@@ -143,6 +143,10 @@ func outcomeJSON(
     for c in try TimerFixtures.cases(Self.f, "timerBody (zones)") {
       check(body(c.input, timeZone: c.zone)?.json ?? .null, c, strictNulls: true)
     }
+    // The rule's own pin is read in the zone `postedAt` is.
+    for c in try TimerFixtures.cases(Self.f, "timerBody (local pins)") {
+      check(body(c.input, timeZone: c.zone)?.json ?? .null, c, strictNulls: true)
+    }
   }
 
   // MARK: The flows

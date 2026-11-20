@@ -628,5 +628,69 @@ export default async function cases() {
       ),
   );
 
+  // ---- a pin without an offset, read in the zone it is said in -----------------
+  // A rule straight from a date-time picker (or a stored record) can pin a
+  // wall-clock time with no offset; the web reads it in the browser's zone,
+  // the same zone it says the time in.
+
+  const LOCAL_PINS = [
+    '2026-08-27T23:30',
+    '2026-08-28T09:00:00',
+    '2026-08-30T18:30:00.000',
+    'Aug 29 2026 07:15',
+  ];
+  const localPins = [];
+  for (const zone of [
+    'UTC',
+    'America/New_York',
+    'Asia/Kolkata',
+    'Pacific/Chatham',
+  ])
+    for (const deleteAt of LOCAL_PINS)
+      for (const [pn, publishAt] of [
+        ['after the pin', NOW + 20 * H * 1000],
+        ['a month before', NOW - 31 * 24 * H * 1000],
+      ])
+        localPins.push({
+          $id: `${zone} ${deleteAt} ${pn}`,
+          zone,
+          locale: 'en-US',
+          now: NOW,
+          clock: NOW,
+          publishAt,
+          timer: {
+            enabled: true,
+            deleteAt,
+            conditions: {
+              clauses: [{ metric: 'likes', value: 3 }],
+              onSpare: 'extend',
+            },
+          },
+        });
+  const once = localPins.filter((c) => c.$id.endsWith('after the pin'));
+  await add('describeWhen (local pins)', once, ({ zone, locale, now, timer }) =>
+    inFormats(locale, zone, () => SD.describeWhen(timer, now)),
+  );
+  await add(
+    'describeTimer (local pins)',
+    once,
+    ({ zone, locale, now, timer }) =>
+      inFormats(locale, zone, () => SD.describeTimer(timer, now)),
+  );
+  await add(
+    'timerChipLabel (local pins)',
+    once,
+    ({ zone, locale, now, timer }) =>
+      inFormats(locale, zone, () => SD.timerChipLabel(timer, now)),
+  );
+  await add(
+    'scheduledTimerProblem (local pins)',
+    localPins,
+    ({ zone, locale, clock, publishAt, timer }) =>
+      inFormats(locale, zone, () =>
+        atClock(clock, () => SD.scheduledTimerProblem(timer, publishAt)),
+      ),
+  );
+
   return out;
 }

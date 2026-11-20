@@ -4,7 +4,9 @@
 // word for word (curly quotes included). Numbers and times are written in
 // the active locale and zone (AppLocale) unless `locale` and `timeZone` are
 // passed, as the web writes them with `activeLocale()` and the browser's
-// local time.
+// local time. A function given a `timeZone` also reads every date-time
+// without an offset in it (a rule's pin included), as the web reads both in
+// its one local zone.
 
 import Foundation
 import VirgaCore
@@ -148,9 +150,15 @@ extension SelfDestruct {
   public static func scheduledTimerProblem(
     _ timer: some TimerRuleInput, _ publishAt: Double, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
+    TimerJS.inZone(timeZone) { scheduledTimerProblemHere(timer, publishAt, now: now, locale: locale) }
+  }
+
+  static func scheduledTimerProblemHere(
+    _ timer: some TimerRuleInput, _ publishAt: Double, now: Double, locale: String?
+  ) -> String {
     let t = normalizeTimer(timer)
     let status = pinnedDeadlineStatus(t, publishAt)
-    let when = t.deleteAt.map { describeDeleteAt($0, now: now, locale: locale, timeZone: timeZone) } ?? ""
+    let when = t.deleteAt.map { describeDeleteAt($0, now: now, locale: locale) } ?? ""
     let verb = effectsDelete(t.effects) ? "delete it" : "act on it"
     if status == "tooSoon" || status == "passed" {
       return
@@ -217,11 +225,11 @@ extension SelfDestruct {
 
   /// e.g. 'today at 11:30 PM', 'tomorrow at 9:00 AM', 'Friday at 6:00 PM',
   /// '12 Sept at 6:00 PM'. Days are counted between local midnights in
-  /// `timeZone`.
+  /// `timeZone` (the local zone by default).
   public static func describeDeleteAt(
     _ iso: String?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
-    let zone = timeZone ?? AppLocale.activeTimeZone()
+    let zone = TimerJS.zone(timeZone)
     let tag = locale ?? AppLocale.activeLocale()
     let at = TimerJS.dateMs(iso.map(JSONValue.string), timeZone: zone)
     guard at.isFinite else { return "" }
@@ -245,9 +253,11 @@ extension SelfDestruct {
   public static func describeWhen(
     _ timer: some TimerRuleInput, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
-    let t = normalizeTimer(timer)
-    if let deleteAt = t.deleteAt { return describeDeleteAt(deleteAt, now: now, locale: locale, timeZone: timeZone) }
-    return formatLifespan(t.lifespanSeconds)
+    TimerJS.inZone(timeZone) {
+      let t = normalizeTimer(timer)
+      if let deleteAt = t.deleteAt { return describeDeleteAt(deleteAt, now: now, locale: locale) }
+      return formatLifespan(t.lifespanSeconds)
+    }
   }
 
   /// How a length is counted, for describeTimer: the post isn't out yet,
@@ -266,10 +276,14 @@ extension SelfDestruct {
     _ timer: some TimerRuleInput, now: Double, from: String = "goesUp", locale: String? = nil,
     timeZone: TimeZone? = nil
   ) -> String {
+    TimerJS.inZone(timeZone) { describeTimerHere(timer, now: now, from: from, locale: locale) }
+  }
+
+  static func describeTimerHere(_ timer: some TimerRuleInput, now: Double, from: String, locale: String?) -> String {
     let t = normalizeTimer(timer)
     let c = t.conditions
     let at =
-      t.deleteAt.map { describeDeleteAt($0, now: now, locale: locale, timeZone: timeZone) }
+      t.deleteAt.map { describeDeleteAt($0, now: now, locale: locale) }
       ?? "\(formatLifespan(t.lifespanSeconds)) \(countedFrom[from] ?? countedFrom["goesUp"]!)"
     let does = describeEffects(t.effects)
     if c.clauses.isEmpty { return "\(does) \(at)." }
@@ -294,8 +308,12 @@ extension SelfDestruct {
   public static func timerChipLabel(
     _ timer: some TimerRuleInput, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
+    TimerJS.inZone(timeZone) { timerChipLabelHere(timer, now: now, locale: locale) }
+  }
+
+  static func timerChipLabelHere(_ timer: some TimerRuleInput, now: Double, locale: String?) -> String {
     let t = normalizeTimer(timer)
-    let when = describeWhen(t, now: now, locale: locale, timeZone: timeZone)
+    let when = describeWhen(t, now: now, locale: locale)
     // Only name the action when it isn't delete.
     let does =
       effectsDelete(t.effects) ? when : "\(PostingJS.toLowerCase(describeEffects(t.effects))) · \(when)"

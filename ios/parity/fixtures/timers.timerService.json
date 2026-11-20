@@ -3764,6 +3764,394 @@
       }
     },
     {
+      "id": "UTC 2026-09-01T23:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "UTC",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T23:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T12:00:00.000Z",
+        "lifespanSeconds": 39600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ],
+        "deleteAt": "2026-09-01T23:00:00.000Z"
+      }
+    },
+    {
+      "id": "UTC 2026-09-01T12:04:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "UTC",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T12:04:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T12:00:00.000Z",
+        "lifespanSeconds": 300,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "America/New_York 2026-09-01T23:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T23:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T16:00:00.000Z",
+        "lifespanSeconds": 39600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ],
+        "deleteAt": "2026-09-02T03:00:00.000Z"
+      }
+    },
+    {
+      "id": "America/New_York 2026-09-01T12:04:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T12:04:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T16:00:00.000Z",
+        "lifespanSeconds": 300,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-01T23:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T23:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T06:30:00.000Z",
+        "lifespanSeconds": 39600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ],
+        "deleteAt": "2026-09-01T17:30:00.000Z"
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-01T12:04:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T12:04:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-09-01T06:30:00.000Z",
+        "lifespanSeconds": 300,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-01T23:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T23:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-08-31T23:15:00.000Z",
+        "lifespanSeconds": 39600,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ],
+        "deleteAt": "2026-09-01T10:15:00.000Z"
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-01T12:04:00",
+      "fn": "timerBody (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "uri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-09-01T12:04:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "postedAt": "2026-09-01T12:00:00",
+        "now": 1788264000000
+      },
+      "output": {
+        "postUri": "at://did:plc:writer/app.bsky.feed.post/3kpost",
+        "extraUris": [],
+        "postedAt": "2026-08-31T23:15:00.000Z",
+        "lifespanSeconds": 300,
+        "conditions": {
+          "logic": "any",
+          "clauses": [
+            {
+              "metric": "likes",
+              "op": "gte",
+              "value": 2
+            }
+          ],
+          "sense": "unless",
+          "onSpare": "extend",
+          "maxExtensions": 1
+        },
+        "effects": [
+          {
+            "action": "delete"
+          }
+        ]
+      }
+    },
+    {
       "id": "armed",
       "fn": "createTimer",
       "input": {

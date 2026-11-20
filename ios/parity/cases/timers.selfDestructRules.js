@@ -433,6 +433,68 @@ export default async function cases() {
     SD.scheduledRowDeadlineStatus(r, whenISO),
   );
 
+  // A pin (and a move) without an offset: the web reads both in the
+  // browser's zone, the one it says the pin in.
+  const localPinInputs = [];
+  for (const zone of [
+    'UTC',
+    'America/New_York',
+    'Asia/Kolkata',
+    'Pacific/Chatham',
+  ])
+    for (const deleteAt of ['2026-09-03T22:00', '2026-09-03T18:03:00'])
+      for (const whenISO of [
+        '2026-09-03T18:00:00',
+        '2026-09-03T21:56',
+        '2026-09-03T21:58:00.000Z',
+        '2026-08-01T18:00:00',
+      ])
+        localPinInputs.push({
+          $id: `${zone} ${deleteAt} @ ${whenISO}`,
+          zone,
+          row: row(deleteAt),
+          whenISO,
+          clock: ROW_CLOCK,
+        });
+  await add(
+    'scheduledRowTimerProblem (local pins)',
+    localPinInputs,
+    ({ zone, row: r, whenISO, clock }) =>
+      inZone(zone, () =>
+        atClock(clock, () => SD.scheduledRowTimerProblem(r, whenISO)),
+      ),
+  );
+  await add(
+    'scheduledRowDeadlineStatus (local pins)',
+    localPinInputs,
+    ({ zone, row: r, whenISO }) =>
+      inZone(zone, () => SD.scheduledRowDeadlineStatus(r, whenISO)),
+  );
+  const localSends = [];
+  for (const zone of [
+    'UTC',
+    'America/New_York',
+    'Asia/Kolkata',
+    'Pacific/Chatham',
+  ])
+    for (const deleteAt of ['2026-08-28T09:00', '2026-08-27T13:00:00'])
+      for (const [mn, publishAt] of [MOMENTS[0], MOMENTS[1], MOMENTS[3]])
+        localSends.push({
+          $id: `${zone} ${deleteAt} @ ${mn}`,
+          zone,
+          timer: { ...ON, deleteAt },
+          publishAt,
+          now: NOW,
+        });
+  await add(
+    'scheduledTimerToSend (local pins)',
+    localSends,
+    ({ zone, timer, publishAt, now }) =>
+      inZone(zone, () =>
+        atClock(now, () => SD.scheduledTimerToSend(timer, {}, publishAt)),
+      ),
+  );
+
   // ---- stored rules and drafts ----------------------------------------------------
 
   await add('unreadableRuleParts', rulesInput(), ({ timer }) =>

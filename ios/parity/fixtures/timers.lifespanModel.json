@@ -29894,6 +29894,894 @@
       }
     },
     {
+      "id": "UTC 2026-11-13T09:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T09:00:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 21 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "UTC 2026-11-13T09:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T09:00:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 21 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "UTC 2026-11-12T12:03:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T12:03:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "That time is less than 5 minutes after it goes out, so it acts 5 minutes after instead.",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "UTC 2026-11-12T12:03:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T12:03:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "This post’s lifespan is set to delete it today at 12:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "America/New_York 2026-11-13T09:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T14:00:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 26 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "America/New_York 2026-11-13T09:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T14:00:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 26 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "America/New_York 2026-11-12T12:03:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T17:03:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "America/New_York 2026-11-12T12:03:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T17:03:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "This post’s lifespan is set to delete it today at 12:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-11-13T09:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T03:30:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 16 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-11-13T09:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-13T03:30:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself tomorrow at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 16 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-11-12T12:03:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T06:33:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "The delete time you picked for this post has already passed. Pick a new time or a length in its lifespan, then post again.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-11-12T12:03:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T06:33:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "This post’s lifespan is set to delete it today at 12:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-11-13T09:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T19:15:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 7 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-11-13T09:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-13T09:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-12T19:15:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself today at 9:00 AM, unless it has 2 likes by then. If it does, it gets another 7 hours, up to 1 time.",
+        "fitNote": "",
+        "pin": "",
+        "pinBlocks": false,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-11-12T12:03:00 @ undefined",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-11T22:18:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself Nov 12 at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "The delete time you picked for this post has already passed. Pick a new time or a length in its lifespan, then post again.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-11-12T12:03:00 @ 2026-11-13T06:00:00",
+      "fn": "editorNotes (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "rule": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-11-12T12:03:00",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 2
+              }
+            ],
+            "onSpare": "extend"
+          }
+        },
+        "publishAt": "2026-11-13T06:00:00",
+        "now": 1794484800000
+      },
+      "output": {
+        "fitted": {
+          "enabled": true,
+          "deleteAt": "2026-11-11T22:18:00.000Z",
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [
+              {
+                "metric": "likes",
+                "op": "gte",
+                "value": 2
+              }
+            ],
+            "sense": "unless",
+            "onSpare": "extend",
+            "maxExtensions": 1
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ]
+        },
+        "summary": "Deletes itself Nov 12 at 12:03 PM, unless it has 2 likes by then. If it does, it gets another 5 minutes, up to 1 time.",
+        "fitNote": "",
+        "pin": "This post’s lifespan is set to delete it Nov 12 at 12:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "pinBlocks": true,
+        "room": "",
+        "thread": "",
+        "unavailable": ""
+      }
+    },
+    {
       "id": "curateLists#1",
       "fn": "curateLists",
       "input": {

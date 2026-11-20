@@ -100,6 +100,17 @@ import VirgaTestSupport
     }
   }
 
+  /// A rule whose pin has no offset is read in the zone the notes are said
+  /// in, whatever the active zone is.
+  @Test func aRulesPinWithoutAnOffsetIsReadInTheGivenZone() throws {
+    for c in try TimerFixtures.cases(Self.f, "editorNotes (local pins)") {
+      let notes = LifespanModel.editorNotes(
+        c.loose("rule"), publishAt: c.string("publishAt"), now: c.ms("now"), locale: c.string("locale"),
+        timeZone: c.zone)
+      check(json(notes), c, strictNulls: true)
+    }
+  }
+
   @Test func listsAndAPostThatIsOut() throws {
     for c in try TimerFixtures.cases(Self.f, "curateLists") {
       check(json(LifespanModel.curateLists(c.loose("lists"))), c, strictNulls: true)

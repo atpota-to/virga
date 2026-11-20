@@ -89,12 +89,9 @@ public enum LifespanModel {
 
   /// A pinned time (ISO), keeping the length behind it for when the pin is
   /// taken off. A time without an offset is read in `timeZone` (the active
-  /// zone, the web's local time, by default).
+  /// zone, the web's local time, by default), as is the rule's own.
   public static func withPin(_ rule: some TimerRuleInput, _ iso: JSONValue?, timeZone: TimeZone? = nil) -> TimerRule {
-    // `deleteAt: iso || null`, read here rather than by normalizeTimer so
-    // the zone can be given; the ISO it gives reads the same in any zone.
-    let pin = TimerJS.truthy(iso).flatMap { SelfDestruct.parseDeleteAt($0, timeZone: timeZone) }
-    return patchRule(rule, ["deleteAt": pin.map(JSONValue.string) ?? .null])
+    TimerJS.inZone(timeZone) { patchRule(rule, ["deleteAt": TimerJS.truthy(iso) ?? .null]) }
   }
 
   public static func withPin(_ rule: some TimerRuleInput, _ iso: String?, timeZone: TimeZone? = nil) -> TimerRule {
@@ -217,7 +214,8 @@ public enum LifespanModel {
   /// `publishAt` is the scheduled time (an ISO string), else the post goes
   /// out now. `countFrom` is for a post already out: 'now' or 'wentUp',
   /// where its length is counted from (timerStart's `from`); 'goesUp' for a
-  /// post still to go up.
+  /// post still to go up. Times are said, and date-times without an offset
+  /// (`publishAt`, the rule's pin) read, in `timeZone`.
   public static func editorNotes(
     _ rule: some TimerRuleInput,
     fit: LifespanEditorFit = LifespanEditorFit(),
@@ -229,17 +227,27 @@ public enum LifespanModel {
     locale: String? = nil,
     timeZone: TimeZone? = nil
   ) -> LifespanEditorNotes {
+    TimerJS.inZone(timeZone) {
+      editorNotesHere(
+        rule, fit: fit, publishAt: publishAt, limits: limits, holds: holds, countFrom: countFrom, now: now,
+        locale: locale)
+    }
+  }
+
+  static func editorNotesHere(
+    _ rule: some TimerRuleInput, fit: LifespanEditorFit, publishAt: String?, limits: JSONValue?, holds: JSONValue?,
+    countFrom: String, now: Double, locale: String?
+  ) -> LifespanEditorNotes {
     let t = SelfDestruct.normalizeTimer(rule)
     let timerFit = SelfDestruct.composerTimerFit(editingExisting: fit.editingExisting, reply: fit.reply)
     let fitted = SelfDestruct.fitTimerToPost(t, timerFit)
-    let zone = timeZone ?? AppLocale.activeTimeZone()
-    let at: Double = publishAt.flatMap { $0.isEmpty ? nil : VirgaCore.JSDate.parse($0, timeZone: zone) } ?? .nan
+    let at: Double = publishAt.flatMap { $0.isEmpty ? nil : VirgaCore.JSDate.parse($0, timeZone: TimerJS.zone()) } ?? .nan
     var pin = ""
     var pinBlocks = false
     if fitted.enabled && fitted.deleteAt != nil {
       pin =
         at.isFinite
-        ? SelfDestruct.scheduledTimerProblem(fitted, at, now: now, locale: locale, timeZone: zone)
+        ? SelfDestruct.scheduledTimerProblem(fitted, at, now: now, locale: locale)
         : SelfDestruct.immediateTimerProblem(fitted, now)
       pinBlocks = !pin.isEmpty
       if pin.isEmpty && SelfDestruct.pinnedDeadlineStatus(fitted, at.isFinite ? at : now) == "tooSoon" {
@@ -252,7 +260,7 @@ public enum LifespanModel {
     return LifespanEditorNotes(
       fitted: fitted,
       summary: fitted.enabled
-        ? SelfDestruct.describeTimer(fitted, now: now, from: countFrom, locale: locale, timeZone: zone) : "",
+        ? SelfDestruct.describeTimer(fitted, now: now, from: countFrom, locale: locale) : "",
       fitNote: t.enabled ? SelfDestruct.describeFitChange(t, timerFit) : "",
       pin: pin,
       pinBlocks: pinBlocks,
@@ -314,9 +322,9 @@ public enum LifespanModel {
     timeZone: TimeZone? = nil
   ) -> TimerStartPoint {
     let fromNow = TimerStartPoint(startedAt: now, from: "now", passed: "")
-    let t = SelfDestruct.normalizeTimer(rule)
+    let t = SelfDestruct.normalizeTimer(rule, timeZone: timeZone)
     if start != "posted" || !t.enabled || t.deleteAt != nil { return fromNow }
-    let at = VirgaCore.JSDate.parse(postedAt ?? "", timeZone: timeZone ?? AppLocale.activeTimeZone())
+    let at = VirgaCore.JSDate.parse(postedAt ?? "", timeZone: TimerJS.zone(timeZone))
     if !at.isFinite || at > now { return fromNow }
     let length = Double(t.lifespanSeconds) * 1000
     if now - at >= length { return TimerStartPoint(startedAt: now, from: "now", passed: "elapsed") }

@@ -482,7 +482,7 @@ public enum SelfDestruct {
   /// silently fall back to the duration (often 24h), and scheduled posts
   /// measure from publish time. settleForPublish and scheduledTimerProblem
   /// judge it at publish. A date-time without an offset is read in
-  /// `timeZone` (the active zone, the web's local time, by default).
+  /// `timeZone` (the local zone, the web's local time, by default).
   public static func parseDeleteAt(_ value: JSONValue?, timeZone: TimeZone? = nil) -> String? {
     guard let value, value.isTruthy else { return nil }
     let at = TimerJS.dateMs(value, timeZone: timeZone)
@@ -511,13 +511,15 @@ public enum SelfDestruct {
   }
 
   /// The whole timer, normalized. `enabled` is client-only and never sent;
-  /// a disabled timer is simply not sent.
-  public static func normalizeTimer(_ raw: some TimerRuleInput) -> TimerRule {
+  /// a disabled timer is simply not sent. A pin without an offset is read
+  /// in `timeZone`: by default the zone of the function this runs under
+  /// (one given a `timeZone` reads every rule in it), else the active one.
+  public static func normalizeTimer(_ raw: some TimerRuleInput, timeZone: TimeZone? = nil) -> TimerRule {
     let src = TimerJS.members(raw.timerRuleJSON)
     return TimerRule(
       enabled: src["enabled"]?.isTruthy ?? false,
       // Kept as picked, stale or not (see parseDeleteAt).
-      deleteAt: parseDeleteAt(src["deleteAt"]),
+      deleteAt: parseDeleteAt(src["deleteAt"], timeZone: timeZone),
       // Independent of deleteAt; a pin never overwrites it.
       lifespanSeconds: normalizeLifespan(src["lifespanSeconds"]),
       conditions: normalizeConditions(src["conditions"]),

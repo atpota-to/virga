@@ -476,6 +476,41 @@ export default async function cases() {
         atClock(now, () => LM.editorNotes(rule, { publishAt, now })),
       ),
   );
+  // A rule handed over with a pin that has no offset (as a date-time
+  // picker writes one): read in the zone the notes are said in.
+  const localPins = [];
+  for (const zone of [
+    'UTC',
+    'America/New_York',
+    'Asia/Kolkata',
+    'Pacific/Chatham',
+  ])
+    for (const deleteAt of ['2026-11-13T09:00', '2026-11-12T12:03:00'])
+      for (const publishAt of [undefined, '2026-11-13T06:00:00'])
+        localPins.push({
+          $id: `${zone} ${deleteAt} @ ${publishAt}`,
+          zone,
+          locale: 'en-US',
+          rule: {
+            enabled: true,
+            lifespanSeconds: 3600,
+            deleteAt,
+            conditions: {
+              clauses: [{ metric: 'likes', value: 2 }],
+              onSpare: 'extend',
+            },
+          },
+          publishAt,
+          now: NOW,
+        });
+  await add(
+    'editorNotes (local pins)',
+    localPins,
+    ({ zone, locale, rule, publishAt, now }) =>
+      inFormats(locale, zone, () =>
+        atClock(now, () => LM.editorNotes(rule, { publishAt, now })),
+      ),
+  );
 
   // ---- lists, and a post that's out -----------------------------------------------
 

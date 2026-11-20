@@ -52261,6 +52261,1962 @@
       "output": "none"
     },
     {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 10:00 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it today at 6:03 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 10:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 10:00 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 6:03 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowTimerProblem (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "This post’s lifespan is set to delete it Sep 3 at 6:03 PM, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "UTC 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "UTC 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "UTC",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "America/New_York 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "America/New_York 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Asia/Kolkata 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "ok"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T22:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T22:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooSoon"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T21:56",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:56",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-09-03T21:58:00.000Z",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-09-03T21:58:00.000Z",
+        "clock": 1788436800000
+      },
+      "output": "passed"
+    },
+    {
+      "id": "Pacific/Chatham 2026-09-03T18:03:00 @ 2026-08-01T18:00:00",
+      "fn": "scheduledRowDeadlineStatus (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "row": {
+          "id": "r",
+          "payload": {
+            "selfDestruct": {
+              "lifespanSeconds": 3600,
+              "deleteAt": "2026-09-03T18:03:00",
+              "conditions": {},
+              "effects": []
+            }
+          }
+        },
+        "whenISO": "2026-08-01T18:00:00",
+        "clock": 1788436800000
+      },
+      "output": "tooLate"
+    },
+    {
+      "id": "UTC 2026-08-28T09:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 75600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T09:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "UTC 2026-08-28T09:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 79200,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T09:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "UTC 2026-08-28T09:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "UTC 2026-08-27T13:00:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 3600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T13:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "UTC 2026-08-27T13:00:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 7200,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T13:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "UTC 2026-08-27T13:00:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "UTC",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 90000,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T13:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 93600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T13:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-28T09:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-27T13:00:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 18000,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T17:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-27T13:00:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 21600,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T17:00:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "America/New_York 2026-08-27T13:00:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "America/New_York",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 55800,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T03:30:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 59400,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-28T03:30:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-28T09:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it tomorrow at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T13:00:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T13:00:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Asia/Kolkata 2026-08-27T13:00:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 29700,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T20:15:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "",
+        "spec": {
+          "lifespanSeconds": 33300,
+          "conditions": {
+            "logic": "any",
+            "clauses": [],
+            "sense": "unless",
+            "onSpare": "keep",
+            "maxExtensions": 0
+          },
+          "effects": [
+            {
+              "action": "delete"
+            }
+          ],
+          "deleteAt": "2026-08-27T20:15:00.000Z"
+        }
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-28T09:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-28T09:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it today at 9:00 AM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T13:00:00 @ now",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787832000000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it Aug 27 at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T13:00:00 @ an hour ago",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1787828400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it Aug 27 at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
+      "id": "Pacific/Chatham 2026-08-27T13:00:00 @ in a month",
+      "fn": "scheduledTimerToSend (local pins)",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 3600,
+          "deleteAt": "2026-08-27T13:00:00"
+        },
+        "publishAt": 1790510400000,
+        "now": 1787832000000
+      },
+      "output": {
+        "problem": "This post’s lifespan is set to delete it Aug 27 at 1:00 PM, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead.",
+        "spec": null
+      }
+    },
+    {
       "id": "undefined",
       "fn": "unreadableRuleParts",
       "input": {},

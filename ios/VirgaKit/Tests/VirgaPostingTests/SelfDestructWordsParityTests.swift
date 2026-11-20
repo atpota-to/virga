@@ -94,4 +94,27 @@ import VirgaTestSupport
       check(json(said), c)
     }
   }
+
+  /// A pin without an offset is read in the zone the sentence is said in,
+  /// as the web reads it in the browser's one zone, whatever the active
+  /// zone is.
+  @Test func aPinWithoutAnOffsetIsReadInTheZoneItIsSaidIn() throws {
+    for c in try TimerFixtures.cases(Self.f, "describeWhen (local pins)") {
+      let said = SelfDestruct.describeWhen(c.loose("timer"), now: c.ms("now"), locale: locale(c), timeZone: c.zone)
+      check(json(said), c)
+    }
+    for c in try TimerFixtures.cases(Self.f, "describeTimer (local pins)") {
+      let said = SelfDestruct.describeTimer(c.loose("timer"), now: c.ms("now"), locale: locale(c), timeZone: c.zone)
+      check(json(said), c)
+    }
+    for c in try TimerFixtures.cases(Self.f, "timerChipLabel (local pins)") {
+      let said = SelfDestruct.timerChipLabel(c.loose("timer"), now: c.ms("now"), locale: locale(c), timeZone: c.zone)
+      check(json(said), c)
+    }
+    for c in try TimerFixtures.cases(Self.f, "scheduledTimerProblem (local pins)") {
+      let said = SelfDestruct.scheduledTimerProblem(
+        c.loose("timer"), c.ms("publishAt"), now: c.ms("clock"), locale: locale(c), timeZone: c.zone)
+      check(json(said), c)
+    }
+  }
 }
