@@ -107,21 +107,26 @@ public enum Embeds {
     return refs.isEmpty ? nil : refs
   }
 
-  /// `value[index]` as JavaScript reads it: an array's element, or a
-  /// string's code unit as a one-unit string; nil (undefined) otherwise.
+  /// `value[index]` as JavaScript reads it: an array's element, a string's
+  /// code unit as a one-unit string, or an object's member named by the
+  /// index; nil (undefined) otherwise.
   static func element(_ value: JSONValue?, _ index: Int) -> JSONValue? {
     switch value {
     case .array(let items)? where items.indices.contains(index): return .some(items[index])
     case .string(let text)? where index >= 0 && index < text.jsLength: return .some(.string(text.jsCharAt(index)))
+    case .object(let members)?: return members[String(index)]
     default: return .none
     }
   }
 
-  /// A JavaScript `length > 0` on an array or a string.
+  /// `value?.length > 0` as JavaScript reads it: an array's or a string's
+  /// length, or an object's `length` member compared as a number (so
+  /// `{ length: 2, 0: blob }` has one); nothing else has a length.
   static func hasLength(_ value: JSONValue?) -> Bool {
     switch value {
     case .array(let a)?: return !a.isEmpty
     case .string(let s)?: return !s.isEmpty
+    case .object(let members)?: return members["length"].jsNumber > 0
     default: return false
     }
   }

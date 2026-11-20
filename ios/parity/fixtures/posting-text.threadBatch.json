@@ -1410,6 +1410,151 @@
       }
     },
     {
+      "id": "reply refs with their $type",
+      "fn": "buildThreadWrites",
+      "input": {
+        "records": [
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "reply one",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          },
+          {
+            "$type": "app.bsky.feed.post",
+            "text": "reply two",
+            "facets": [],
+            "langs": [
+              "en"
+            ]
+          }
+        ],
+        "replyTo": {
+          "root": {
+            "$type": "com.atproto.repo.strongRef",
+            "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+            "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          },
+          "parent": {
+            "$type": "com.atproto.repo.strongRef",
+            "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+            "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          }
+        },
+        "now": 1794495600000
+      },
+      "output": {
+        "writes": [
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600000",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "$type": "com.atproto.repo.applyWrites#create",
+            "collection": "app.bsky.feed.post",
+            "rkey": "tid1794495600001",
+            "value": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreibvnjo4rfbbb6txlt43gxwshbeolbijkmgkvi6b3edndyva7nmyru"
+                }
+              }
+            }
+          }
+        ],
+        "created": [
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+            "cid": "bafyreibvnjo4rfbbb6txlt43gxwshbeolbijkmgkvi6b3edndyva7nmyru",
+            "rkey": "tid1794495600000",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply one",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.000Z",
+              "reply": {
+                "root": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3bbb",
+                  "cid": "bafyreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                }
+              }
+            }
+          },
+          {
+            "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600001",
+            "cid": "bafyreic6z3xck2xwt7nwsvglu57ggturvqlohok3o434cbfutwaf6wo3ku",
+            "rkey": "tid1794495600001",
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "reply two",
+              "facets": [],
+              "langs": [
+                "en"
+              ],
+              "createdAt": "2026-11-12T15:00:00.001Z",
+              "reply": {
+                "root": {
+                  "$type": "com.atproto.repo.strongRef",
+                  "uri": "at://did:plc:other/app.bsky.feed.post/3aaa",
+                  "cid": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+                },
+                "parent": {
+                  "uri": "at://did:plc:testwriter/app.bsky.feed.post/tid1794495600000",
+                  "cid": "bafyreibvnjo4rfbbb6txlt43gxwshbeolbijkmgkvi6b3edndyva7nmyru"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
       "id": "rich records",
       "fn": "buildThreadWrites",
       "input": {

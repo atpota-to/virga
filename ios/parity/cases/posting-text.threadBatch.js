@@ -102,6 +102,17 @@ const INPUTS = [
     ],
     now: NOW,
   },
+  // The caller's refs go into the record as given, so a ref written with
+  // its lexicon $type keeps it, and the CID covers it.
+  {
+    $id: 'reply refs with their $type',
+    records: [base('reply one'), base('reply two')],
+    replyTo: {
+      root: { $type: 'com.atproto.repo.strongRef', ...replyTo.root },
+      parent: { $type: 'com.atproto.repo.strongRef', ...replyTo.parent },
+    },
+    now: NOW,
+  },
   {
     $id: 'rich records',
     records: [

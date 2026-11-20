@@ -194,7 +194,13 @@ public enum ThreadBatch {
     }
   }
 
+  /// A reply ref as the record carries it. The web puts the caller's own
+  /// `replyTo.root` and `replyTo.parent` objects in the record, so a ref
+  /// given with a `$type` keeps it (and the CID covers it); the refs made
+  /// here have none.
   static func refJSON(_ ref: StrongRef) -> JSONValue {
-    ["uri": .string(ref.uri), "cid": .string(ref.cid)]
+    var fields: [String: JSONValue] = ["uri": .string(ref.uri), "cid": .string(ref.cid)]
+    if let type = ref.lexiconType { fields["$type"] = .string(type) }
+    return .object(fields)
   }
 }

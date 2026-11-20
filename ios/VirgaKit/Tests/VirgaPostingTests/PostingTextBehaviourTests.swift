@@ -9,7 +9,9 @@ import VirgaCore
 import VirgaTestSupport
 @testable import VirgaPosting
 
-@Suite struct MentionResolverBehaviour {
+// Serialized: two of these set the shared resolver's fetch, which a test
+// running beside them would read.
+@Suite(.serialized) struct MentionResolverBehaviour {
   static func ok(_ did: String) -> MentionFetchResponse {
     MentionFetchResponse(status: 200, body: Data(#"{"did":"\#(did)"}"#.utf8))
   }
