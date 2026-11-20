@@ -167,6 +167,20 @@ const INPUTS = [
   'https://xn--a-0hc.com',
   'https://xn--zca.de',
   'https://xn--bcher-kva.xn--p1ai',
+  // Punycode that decodes to plain ASCII stands, written as it came (Ada
+  // refuses only an empty decoding), even a decoding that starts xn-- again.
+  'https://xn--a-.com',
+  'https://XN--ABC-.COM/x',
+  'https://xn----.com',
+  'https://xn---.com',
+  'https://xn--xn--.com',
+  'https://xn--xn--a-.com',
+  'https://xn--xn--a.com',
+  'https://xn--a_b-.com',
+  'https://xn--ab--',
+  'https://a.xn--a-',
+  'https://bücher.xn--a-.de',
+  'https://bücher.XN--BCHER-KVA.de',
   'https://日本.jp',
   'https://例え.テスト',
   'https://한국.kr',
@@ -309,6 +323,9 @@ const QUERIES = [
   'name=%EF%BB%BFbom',
   'caf%C3%A9=na%C3%AFve',
   'x=\u{1F98B}&y=é',
+  // The leading ? is one code unit, even with a combining mark after it.
+  '?\u0301a=1',
+  '\u0301?a=1',
 ];
 
 const COMPONENTS = [

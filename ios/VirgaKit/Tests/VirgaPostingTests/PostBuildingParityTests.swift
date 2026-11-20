@@ -10,15 +10,31 @@ import VirgaTestSupport
 @testable import VirgaPosting
 
 @Suite struct ThreadBatchParity {
+  /// The zone a case ran in (the runner's UTC unless it says).
+  static func zone(_ c: ParityCase) -> TimeZone {
+    c.string("tz").flatMap(TimeZone.init(identifier:)) ?? TimeZone(identifier: "UTC")!
+  }
+
+  /// The web's `new Date(now).getTime()` of a fixture's `now`.
+  static func nowMs(_ c: ParityCase) -> Double {
+    switch c["now"] {
+    case .string(let text): return VirgaCore.JSDate.parse(text, timeZone: zone(c))
+    case .number(let ms): return ms
+    default: return .nan
+    }
+  }
+
   @Test func buildThreadWrites() throws {
     for c in try cases("posting-text.threadBatch", "buildThreadWrites") {
-      let now: Double
-      switch c["now"] {
-      case .string(let text): now = VirgaCore.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
-      case .number(let ms): now = ms
-      default: now = .nan
-      }
       let replyTo = (try? c.input["replyTo"]?.decode(ThreadReplyTo.self)) ?? nil
+      // The fixture's own minter, or the shared clock's where the web used
+      // it (only where it throws, so the output holds no clock).
+      let mint: (Double) throws -> String
+      if c["defaultMinter"].boolValue == true {
+        mint = { try ThreadBatch.nextTid($0) }
+      } else {
+        mint = { "tid" + JSNumber.format($0) }
+      }
       let actual = outcome {
         json(
           try ThreadBatch.buildThreadWrites(
@@ -26,10 +42,33 @@ import VirgaTestSupport
             collection: c.string("collection") ?? "app.bsky.feed.post",
             records: c["records"].arrayValue ?? [],
             replyTo: replyTo,
-            nowMs: now,
-            timeZone: TimeZone(identifier: "UTC")!,
-            mintTid: { "tid" + JSNumber.format($0) }))
+            nowMs: Self.nowMs(c),
+            timeZone: Self.zone(c),
+            mintTid: mint))
       }
+      check(actual, c, strictNulls: true)
+    }
+  }
+
+  /// The minter is asked for each key before the time is written, so an
+  /// invalid time reaches it before "Invalid time value".
+  @Test func mintTidCalls() throws {
+    for c in try cases("posting-text.threadBatch", "mintTidCalls") {
+      var calls: [JSONValue] = []
+      var actual: JSONValue
+      do {
+        let batch = try ThreadBatch.buildThreadWrites(
+          did: "did:plc:testwriter", records: c["records"].arrayValue ?? [], nowMs: Self.nowMs(c),
+          timeZone: TimeZone(identifier: "UTC")!,
+          mintTid: { ms in
+            calls.append(.string(JSNumber.format(ms)))
+            return "tid" + JSNumber.format(ms)
+          })
+        actual = ["created": .number(Double(batch.created.count))]
+      } catch {
+        actual = ["$throws": .string(message(of: error))]
+      }
+      actual["calls"] = .array(calls)
       check(actual, c, strictNulls: true)
     }
   }

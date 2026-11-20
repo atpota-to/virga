@@ -87,10 +87,11 @@ public enum PostLink {
   )
   static let waypoint = JSRegex(
     #"^[hH][tT][tT][pP][sS]?://(?:[wW][wW][wW]\.)?[aA][tT][uU][rR][iI]\.[tT][oO]/([^/?#]+)/([^/?#]+)/([^/?#]+)"#)
-  static let atUri = JSRegex(#"^at://([^/?#]+)/([^/?#]+)/([^/?#]+)/?\z"#)
+  // AT_URI (`^at:\/\/([^/?#]+)\/([^/?#]+)\/([^/?#]+)\/?$`) is VirgaCore's
+  // `AtUri(_:)`, which reads exactly that.
 
   static func decodeSegment(_ segment: String) -> String {
-    (try? URIComponent.decodeURIComponent(segment)) ?? segment
+    (try? JSURI.decodeURIComponent(segment)) ?? segment
   }
 
   static func result(_ kind: String, _ actor: String, _ rkey: String, _ url: String) -> RecordLink {
@@ -103,9 +104,8 @@ public enum PostLink {
       out.did = cleanActor
       out.uri = "at://\(cleanActor)/\(collection)/\(out.rkey)"
     } else {
-      var handle = cleanActor
-      if handle.utf16.first == 0x40 { handle = String(handle.unicodeScalars.dropFirst()) }
-      out.handle = PostingJS.toLowerCase(handle)
+      // `.replace(/^@/, '').toLowerCase()`.
+      out.handle = Handle.normalize(cleanActor)
     }
     return out
   }
@@ -123,9 +123,9 @@ public enum PostLink {
     let url = input.jsTrimmed()
     if url.isEmpty { return nil }
 
-    if let m = groups(atUri, url) {
-      guard let kind = kindForCollection(m[1]) else { return nil }
-      return result(kind, m[0], m[2], url)
+    if let m = AtUri(url) {
+      guard let kind = kindForCollection(m.collection) else { return nil }
+      return result(kind, m.authority, m.rkey, url)
     }
     if let m = groups(bskyProfileRecord, url) {
       return result(segmentKind[m[1].lowercased()]!, m[0], m[2], url)
@@ -158,15 +158,15 @@ public enum PostLink {
 
   /// The record a `uri` names, if it is an embeddable kind.
   public static func parseRecordUri(_ uri: String?) -> RecordURIParts? {
-    guard let uri, let m = groups(atUri, uri), let kind = kindForCollection(m[1]) else { return nil }
-    return RecordURIParts(kind: kind, did: m[0], collection: m[1], rkey: m[2])
+    guard let uri, let m = AtUri(uri), let kind = kindForCollection(m.collection) else { return nil }
+    return RecordURIParts(kind: kind, did: m.authority, collection: m.collection, rkey: m.rkey)
   }
 
   /// The bsky.app page for a record URI, or nil for a kind bsky.app has no
   /// page for. `actor` (a handle) reads better than the DID when known.
   public static func bskyUrlFor(_ uri: String?, _ actor: String? = nil) -> String? {
     guard let parsed = parseRecordUri(uri) else { return nil }
-    let who = URIComponent.encodeURIComponent((actor?.isEmpty == false ? actor : nil) ?? parsed.did)
+    let who = JSURI.encodeURIComponent((actor?.isEmpty == false ? actor : nil) ?? parsed.did)
     if parsed.kind == "starterpack" {
       return "https://bsky.app/starter-pack/\(who)/\(parsed.rkey)"
     }

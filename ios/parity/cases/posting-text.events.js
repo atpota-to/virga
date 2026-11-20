@@ -179,6 +179,46 @@ const SCRIPTS = [
     ],
   },
   {
+    // A DID filter is `detail.did !== did`: the Kelvin sign is not a K, and
+    // a precomposed é is not e and a combining accent.
+    $id: 'a DID filter compares code units',
+    steps: [
+      {
+        op: 'on',
+        id: 'kelvin',
+        name: POSTING_EVENTS.drafts,
+        did: 'did:web:\u212A.test',
+      },
+      { op: 'on', id: 'k', name: POSTING_EVENTS.drafts, did: 'did:web:K.test' },
+      {
+        op: 'on',
+        id: 'composed',
+        name: POSTING_EVENTS.drafts,
+        did: 'did:web:caf\u00E9.test',
+      },
+      {
+        op: 'emit',
+        name: POSTING_EVENTS.drafts,
+        detail: { did: 'did:web:K.test' },
+      },
+      {
+        op: 'emit',
+        name: POSTING_EVENTS.drafts,
+        detail: { did: 'did:web:\u212A.test' },
+      },
+      {
+        op: 'emit',
+        name: POSTING_EVENTS.drafts,
+        detail: { did: 'did:web:cafe\u0301.test' },
+      },
+      {
+        op: 'emit',
+        name: 'virga:drafts-changed\u0301',
+        detail: { did: 'did:web:K.test' },
+      },
+    ],
+  },
+  {
     $id: 'two listeners, in order, one stopped',
     steps: [
       { op: 'on', id: 'first', name: POSTING_EVENTS.timers },

@@ -233,20 +233,59 @@
       "swift": []
     },
     "src/styles/app.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "989bc46fd9c1"
     },
     "src/styles/base.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "25a6fa774758"
     },
     "src/styles/controls.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "68853fcaa0a5"
     },
     "src/styles/theme.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Cascade.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Blocks.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.theme",
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4). Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
+      "synced": "6fa7f1283fe1"
     },
     "src/tools/tools.css": {
       "status": "pending",

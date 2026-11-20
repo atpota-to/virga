@@ -48,11 +48,22 @@ public struct MentionFetchResponse: Sendable {
   public var ok: Bool { (200..<300).contains(status) }
 }
 
-/// `fetch(url)` for the resolver: throws for a network failure.
+/// `fetch(url)` for the resolver: throws for a network failure. The web hands
+/// its fetch an `AbortSignal.timeout`; here the lookup's task is cancelled at
+/// the timeout, so a fetch must stop when cancelled (URLSession's async calls
+/// do) for the timeout to end the wait, as the web's fetch must honour its
+/// signal.
 public typealias MentionFetch = @Sendable (_ url: String) async throws -> MentionFetchResponse
 
 /// `(handle) => Promise<did | null>`, as facet detection takes it.
 public typealias ResolveMention = @Sendable (_ handle: String) async throws -> String?
+
+/// The `RangeError` a resolver whose `timeoutMs` isn't a wait throws on
+/// every lookup, as `AbortSignal.timeout` throws it (Node's message).
+public struct MentionTimeoutError: Error, LocalizedError, Hashable, Sendable {
+  public let message: String
+  public var errorDescription: String? { message }
+}
 
 public enum Mentions {
   static func isHandleChar(_ unit: UInt16?) -> Bool {
@@ -179,19 +190,10 @@ public enum Mentions {
   /// Handle syntax: two or more dot-separated segments of 1-63 ASCII letters,
   /// digits and hyphens, none starting or ending with a hyphen, the last not
   /// starting with a digit, at most 253 in all.
+  /// (VirgaCore's `Handle.isValidHandle` is this function, ported there for
+  /// the targets below this one.)
   public static func isValidHandle(_ handle: String?) -> Bool {
-    guard let handle, !handle.isEmpty, handle.jsLength <= 253 else { return false }
-    let segments = Array(handle.utf16).split(separator: 0x2E, omittingEmptySubsequences: false)
-    guard segments.count >= 2, segments.allSatisfy(isHandleSegment) else { return false }
-    let first = segments[segments.count - 1].first!
-    return !(0x30...0x39).contains(first)
-  }
-
-  /// `^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$`.
-  static func isHandleSegment(_ units: ArraySlice<UInt16>) -> Bool {
-    guard (1...63).contains(units.count) else { return false }
-    guard isAlphaNumeric(units.first), isAlphaNumeric(units.last) else { return false }
-    return units.allSatisfy { isAlphaNumeric($0) || $0 == 0x2D }
+    Handle.isValidHandle(handle)
   }
 
   // MARK: Debounce
@@ -203,14 +205,16 @@ public enum Mentions {
   ) -> @Sendable (Value) -> Void {
     let pending = Locked<Task<Void, Never>?>(nil)
     return { value in
-      let task = Task {
-        try? await Task.sleep(for: delay)
-        if Task.isCancelled { return }
-        fn(value)
-      }
+      // The old call is cancelled and the new one scheduled in one step, so
+      // two calls from different threads can't leave the earlier one
+      // standing (the web's clearTimeout and setTimeout run as one).
       pending.withLock { current in
         current?.cancel()
-        current = task
+        current = Task {
+          try? await Task.sleep(for: delay)
+          if Task.isCancelled { return }
+          fn(value)
+        }
       }
     }
   }
@@ -227,7 +231,9 @@ public enum Mentions {
   /// `com.atproto.identity.resolveHandle`. A handle the AppView says doesn't
   /// exist (400) resolves to nil and is remembered for `ttlMs`, as is a DID; a
   /// network failure resolves to nil and isn't remembered. Concurrent asks
-  /// for one handle share a request.
+  /// for one handle share a request. A `timeoutMs` that isn't a wait (not
+  /// finite, or negative) makes every lookup throw `MentionTimeoutError`, as
+  /// the web's `AbortSignal.timeout` does.
   public static func createMentionResolver(
     fetch: MentionFetch? = nil,
     appview: String = AppConfig.appview,
@@ -236,7 +242,7 @@ public enum Mentions {
     now: @escaping @Sendable () -> Double = { Date().timeIntervalSince1970 * 1000 }
   ) -> ResolveMention {
     let resolver = MentionResolver(fetch: fetch, appview: appview, ttlMs: ttlMs, timeoutMs: timeoutMs, now: now)
-    return { handle in await resolver.resolve(handle) }
+    return { handle in try await resolver.resolve(handle) }
   }
 
   /// The shared resolver posting uses when the caller doesn't supply one.
@@ -261,20 +267,21 @@ actor MentionResolver {
     self.now = now
   }
 
-  func resolve(_ rawHandle: String?) async -> String? {
-    var handle = rawHandle ?? ""
-    if handle.hasPrefix("@") { handle.removeFirst() }
-    handle = PostingJS.toLowerCase(handle)
+  func resolve(_ rawHandle: String?) async throws -> String? {
+    // `.replace(/^@/, '').toLowerCase()`.
+    let handle = Handle.normalize(rawHandle ?? "")
     guard Mentions.isValidHandle(handle) else { return nil }
 
     if let held = answers[handle], now() - held.at < ttlMs { return held.did }
     if let running = inFlight[handle] { return await running.value }
 
-    let url = "\(appview)/xrpc/com.atproto.identity.resolveHandle?handle=\(URIComponent.encodeURIComponent(handle))"
+    // `AbortSignal.timeout(timeoutMs)` refuses a time it can't wait for
+    // before the request starts, so the lookup fails without asking.
+    let timeout = try Self.abortTimeout(timeoutMs)
+    let url = "\(appview)/xrpc/com.atproto.identity.resolveHandle?handle=\(JSURI.encodeURIComponent(handle))"
     let fetch = self.fetch ?? Mentions.defaultFetch.wrappedValue
-    let timeout = timeoutMs
     let ask = Task<String?, Never> {
-      let outcome = await Self.fetchWithTimeout(fetch, url, timeoutMs: timeout)
+      let outcome = await Self.fetchWithTimeout(fetch, url, timeout: timeout)
       self.settle(handle, outcome)
       switch outcome {
       case .did(let did): return did
@@ -300,7 +307,41 @@ actor MentionResolver {
     inFlight[handle] = nil
   }
 
-  static func fetchWithTimeout(_ fetch: MentionFetch?, _ url: String, timeoutMs: Double) async -> Outcome {
+  /// The wait `AbortSignal.timeout(ms)` takes, or its RangeError (Node's
+  /// message) for a time that isn't one: not a number, infinite or
+  /// negative. A fraction is cut down to whole milliseconds, as a browser's
+  /// `unsigned long long` argument is; the largest is 2^53 - 1.
+  static func abortTimeout(_ ms: Double) throws -> Duration {
+    let prefix = #"The value of "delay" is out of range. "#
+    guard ms.isFinite, ms >= 0 || ms.rounded(.towardZero) == ms else {
+      throw MentionTimeoutError(message: prefix + "It must be an integer. Received \(JSNumber.format(ms))")
+    }
+    guard ms >= 0, ms <= 9_007_199_254_740_991 else {
+      throw MentionTimeoutError(
+        message: prefix + "It must be >= 0 && <= 4294967295. Received \(nodeNumber(ms))")
+    }
+    return .milliseconds(Int64(ms.rounded(.towardZero)))
+  }
+
+  /// A number as Node's range errors show it: an integer past 2^32 through
+  /// Node's `addNumericalSeparator`, which puts an underscore before every
+  /// third character from the end of `String(n)`, exponent and all
+  /// (`5_000_000_000`, and `1e+_300` for 1e300).
+  static func nodeNumber(_ value: Double) -> String {
+    let text = JSNumber.format(value)
+    guard abs(value) > 4_294_967_296, value.rounded(.towardZero) == value else { return text }
+    let chars = Array(text)
+    let start = chars.first == "-" ? 1 : 0
+    var i = chars.count
+    var separated = ""
+    while i >= start + 4 {
+      separated = "_" + String(chars[(i - 3)..<i]) + separated
+      i -= 3
+    }
+    return String(chars[0..<i]) + separated
+  }
+
+  static func fetchWithTimeout(_ fetch: MentionFetch?, _ url: String, timeout: Duration) async -> Outcome {
     guard let fetch else { return .failed }
     return await withTaskGroup(of: Outcome?.self) { group in
       group.addTask {
@@ -308,7 +349,8 @@ actor MentionResolver {
           let response = try await fetch(url)
           if response.ok {
             let body = try? JSONValue.parse(response.body)
-            if let did = body?["did"]?.stringValue, did.hasPrefix("did:") { return .did(did) }
+            // `did.startsWith('did:')`, by code unit.
+            if let did = body?["did"]?.stringValue, PostingJS.hasPrefix(did, "did:") { return .did(did) }
             return .did(nil)
           }
           // 400 is the AppView's "Unable to resolve handle": a definite no.
@@ -318,7 +360,7 @@ actor MentionResolver {
         }
       }
       group.addTask {
-        try? await Task.sleep(for: .milliseconds(max(0, timeoutMs)))
+        try? await Task.sleep(for: timeout)
         return nil
       }
       let first = await group.next() ?? nil

@@ -4831,6 +4831,18 @@
               "did": "did:web:ok.test",
               "handle": "x"
             }
+          },
+          "mark.test": {
+            "status": 200,
+            "body": {
+              "did": "did:́web:mark.test"
+            }
+          },
+          "upper.test": {
+            "status": 200,
+            "body": {
+              "did": "DID:plc:upper"
+            }
           }
         },
         "steps": [
@@ -4841,7 +4853,9 @@
               "num.test",
               "empty.test",
               "text.test",
-              "ok.test"
+              "ok.test",
+              "mark.test",
+              "upper.test"
             ]
           },
           {
@@ -4860,14 +4874,18 @@
             null,
             null,
             null,
-            "did:web:ok.test"
+            "did:web:ok.test",
+            "did:́web:mark.test",
+            null
           ],
           "requests": [
             "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=empty.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mark.test",
             "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=nope.test",
             "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=num.test",
             "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=ok.test",
-            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=text.test"
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=text.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=upper.test"
           ]
         },
         {
@@ -4913,6 +4931,380 @@
           ]
         }
       ]
+    },
+    {
+      "id": "resolverTimeout#1",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "Infinity",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received Infinity"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received Infinity"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#2",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "Infinity",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#3",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-Infinity",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -Infinity"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -Infinity"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#4",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-Infinity",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#5",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "NaN",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received NaN"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received NaN"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#6",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "NaN",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#7",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#8",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#9",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1.5",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1.5"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1.5"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#10",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1.5",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#11",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-5000000000",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -5_000_000_000"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -5_000_000_000"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#12",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-5000000000",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#13",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-4294967297",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -4_294_967_297"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -4_294_967_297"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#14",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-4294967297",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#15",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "9007199254740992",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 9_007_199_254_740_992"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 9_007_199_254_740_992"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#16",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "9007199254740992",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#17",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "1e300",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 1e+_300"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 1e+_300"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#18",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "1e300",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#19",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e21",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1e_+21"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1e_+21"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#20",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e21",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#21",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e-7",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1e-7"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1e-7"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#22",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e-7",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
     }
   ]
 }

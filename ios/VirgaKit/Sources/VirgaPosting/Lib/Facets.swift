@@ -77,16 +77,17 @@ public final class MentionValidationCache: Sendable {
     public var timestamp: Double
   }
 
-  private let entries = Locked<[String: Entry]>([:])
+  // Keyed by code unit, as the web's Map is.
+  private let entries = Locked<[JSKey: Entry]>([:])
 
   public init() {}
 
   public func get(_ handle: String) -> Entry? {
-    entries.withLock { $0[handle] }
+    entries.withLock { $0[JSKey(handle)] }
   }
 
   public func set(_ handle: String, _ entry: Entry) {
-    entries.withLock { $0[handle] = entry }
+    entries.withLock { $0[JSKey(handle)] = entry }
   }
 
   public func removeAll() {
@@ -101,9 +102,10 @@ public struct DetectFacetsOptions: Sendable {
   /// True while typing: mentions get cached, `validated:` or `placeholder:`
   /// DIDs instead of a lookup.
   public var skipMentionResolution: Bool
-  /// Handles known to resolve.
+  /// Handles known to resolve. Membership is by code unit, as the web's
+  /// Set has it.
   public var validatedHandles: Set<String>
-  /// Handles known not to (no facet).
+  /// Handles known not to (no facet), matched the same way.
   public var invalidatedHandles: Set<String>
   /// Where submits record what they learned (the web's module Map).
   public var validationCache: MentionValidationCache
@@ -229,13 +231,14 @@ public enum Facets {
 
       if options.skipMentionResolution {
         let cached = cachedDid(handle)
-        let known =
-          cached.map { $0.did != nil }
-          ?? (options.validatedHandles.contains(handle) && !options.invalidatedHandles.contains(handle))
+        // `Set.has`, by code unit (Swift's `contains` would take a
+        // canonically equivalent handle, the Kelvin sign for a K, as the same).
+        let invalidated = options.invalidatedHandles.jsIncludes(handle)
+        let known = cached.map { $0.did != nil } ?? (options.validatedHandles.jsIncludes(handle) && !invalidated)
         if known {
           let did = cached.map { $0.did! } ?? "validated:\(handle)"
           facets.append(Facet(byteStart: byteStart, byteEnd: byteEnd, feature: .mention(did: did)))
-        } else if cached == nil, !options.invalidatedHandles.contains(handle) {
+        } else if cached == nil, !invalidated {
           // A stand-in for the preview. A known-bad handle gets none.
           facets.append(Facet(byteStart: byteStart, byteEnd: byteEnd, feature: .mention(did: "placeholder:\(handle)")))
         }
@@ -248,7 +251,7 @@ public enum Facets {
       // In parallel, one request per distinct handle; a failure drops that
       // mention's facet, never the post.
       var handles: [String] = []
-      for mention in pendingMentions where !handles.contains(mention.handle) { handles.append(mention.handle) }
+      for mention in pendingMentions where !handles.jsIncludes(mention.handle) { handles.append(mention.handle) }
       let resolve = options.resolveMention
       let dids = await withTaskGroup(of: (String, String?).self) { group in
         for handle in handles {
@@ -264,12 +267,12 @@ public enum Facets {
             return (handle, did)
           }
         }
-        var out: [String: String?] = [:]
-        for await (handle, did) in group { out[handle] = did }
+        var out: [JSKey: String?] = [:]
+        for await (handle, did) in group { out[JSKey(handle)] = did }
         return out
       }
       for mention in pendingMentions {
-        if let did = dids[mention.handle] ?? nil {
+        if let did = dids[JSKey(mention.handle)] ?? nil {
           facets.append(Facet(byteStart: mention.byteStart, byteEnd: mention.byteEnd, feature: .mention(did: did)))
         }
       }

@@ -153,6 +153,34 @@ const POSTS = [
   },
   { $id: 'null post', post: null, blobs: {} },
   { $id: 'no blobs given', post: { card } },
+  // `blobs.images[i]` of a string is its i-th character.
+  {
+    $id: 'image blobs as a string',
+    post: { images: [{ alt: 'a' }, { alt: 'b' }, { alt: 'c' }] },
+    blobs: { images: 'x\u{1F98B}' },
+  },
+  // `blobs.images?.length > 0` and `blobs.images[i]` read an object with a
+  // length as they read an array.
+  {
+    $id: 'image blobs as an object with a length',
+    post: { images: [{ alt: 'a' }, { alt: 'b' }, { alt: 'c' }] },
+    blobs: { images: { length: 2, 0: blob('1'), 2: blob('3') } },
+  },
+  {
+    $id: 'image blobs as an object with a string length',
+    post: { images: [{ alt: 'a' }] },
+    blobs: { images: { length: '1', 0: blob('1') } },
+  },
+  {
+    $id: 'image blobs as an object without a length',
+    post: { images: [{ alt: 'a' }], card },
+    blobs: { images: { 0: blob('1') } },
+  },
+  {
+    $id: 'image blobs as an object with a zero length',
+    post: { images: [{ alt: 'a' }], card },
+    blobs: { images: { length: 0, 0: blob('1') } },
+  },
 ];
 
 const GALLERIES = [

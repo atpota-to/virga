@@ -162,18 +162,19 @@ public enum Gates {
 
   static func replyRulesToLexicon(_ reply: [JSONValue]) -> [JSONValue] {
     var out: [JSONValue] = []
-    var seen = Set<String>()
+    // A JavaScript Set: two list URIs are the same only in the same code units.
+    var seen = Set<JSKey>()
     for rule in reply {
       guard let type = rule["type"]?.stringValue, let lexicon = ruleTypes[type] else { continue }
       if type == "list" {
         guard let list = rule["list"]?.stringValue, PostingJS.hasPrefix(list, "at://") else { continue }
-        let key = "list:\(list)"
+        let key = JSKey("list:\(list)")
         if seen.contains(key) { continue }
         seen.insert(key)
         out.append(["$type": .string(lexicon), "list": .string(list)])
       } else {
-        if seen.contains(type) { continue }
-        seen.insert(type)
+        if seen.contains(JSKey(type)) { continue }
+        seen.insert(JSKey(type))
         out.append(["$type": .string(lexicon)])
       }
     }
@@ -266,27 +267,20 @@ public enum Gates {
   }
 
   /// The write account's Bluesky default gates, read with its own agent, or
-  /// nil when they couldn't be read in time. Never throws.
+  /// nil when they couldn't be read in time. Never throws. As the web's
+  /// `Promise.race`, the answer is nil at the deadline even when the read
+  /// doesn't stop for cancellation.
   public static func readDefaultGates(_ agent: GatesAgent, timeoutMs: Double = defaultGatesTimeoutMs) async
     -> PostGates?
   {
-    await withTaskGroup(of: PostGates?.self) { group in
-      group.addTask {
-        do {
-          let data = try await agent.getPreferences()
-          guard let preferences = data["preferences"], preferences.arrayValue != nil else { return nil }
-          return defaultGatesFromPreferences(preferences)
-        } catch {
-          return nil
-        }
-      }
-      group.addTask {
-        try? await Task.sleep(for: .milliseconds(max(0, timeoutMs)))
+    await PromiseRace.race(timeoutMs: timeoutMs, fallback: nil) {
+      do {
+        let data = try await agent.getPreferences()
+        guard let preferences = data["preferences"], preferences.arrayValue != nil else { return nil }
+        return defaultGatesFromPreferences(preferences)
+      } catch {
         return nil
       }
-      let first = await group.next()
-      group.cancelAll()
-      return first ?? nil
     }
   }
 

@@ -167,6 +167,15 @@ const PREVIEW = [
   'trailing https://example.com/path)',
   'see https://example.com/x.\nnext',
   '\u{1F98B}'.repeat(3) + ' https://e.co/' + 'é'.repeat(5),
+  // The early exit's \b\w+\.\w{2,}\b is ASCII: these have no word.word.
+  '日本.com',
+  'é.co',
+  'go to a.b now',
+  'x.y1',
+  'snake_case.py2',
+  'naïve.fr',
+  'Ⅻ.com',
+  'ab.c\u0301d',
   null,
 ];
 
@@ -184,6 +193,14 @@ const VALIDATED = [
     invalidated: ['b.test'],
   },
   { text: '@A.Test', validated: ['a.test'] },
+  // A Set compares code units: the Kelvin sign is not the K in the text.
+  { text: '@Kate.test', validated: ['\u212Aate.test'] },
+  {
+    text: '@Kate.test',
+    validated: ['Kate.test'],
+    invalidated: ['\u212Aate.test'],
+  },
+  { text: '@Kate.test @kate.test', validated: ['kate.test'] },
 ];
 
 const SUBMIT = [

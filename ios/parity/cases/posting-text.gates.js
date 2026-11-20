@@ -69,6 +69,16 @@ const GATES = [
   {},
   null,
   { reply: [{ type: 'follower' }, { type: 'list', list: LIST }], quotes: true },
+  // Two lists whose URIs differ only in how the é is written: two rules, as
+  // a JavaScript Set compares code units.
+  {
+    reply: [
+      { type: 'list', list: 'at://did:plc:me/app.bsky.graph.list/caf\u00E9' },
+      { type: 'list', list: 'at://did:plc:me/app.bsky.graph.list/cafe\u0301' },
+      { type: 'list', list: 'at://did:plc:me/app.bsky.graph.list/caf\u00E9' },
+    ],
+    quotes: true,
+  },
 ];
 
 const RULES = [

@@ -224,11 +224,22 @@ const SCENARIOS = [
       'empty.test': { status: 200, body: {} },
       'text.test': { status: 200 },
       'ok.test': { status: 200, body: { did: 'did:web:ok.test', handle: 'x' } },
+      // startsWith('did:') by code unit: the accent is after the colon.
+      'mark.test': { status: 200, body: { did: 'did:\u0301web:mark.test' } },
+      'upper.test': { status: 200, body: { did: 'DID:plc:upper' } },
     },
     steps: [
       {
         at: 0,
-        ask: ['nope.test', 'num.test', 'empty.test', 'text.test', 'ok.test'],
+        ask: [
+          'nope.test',
+          'num.test',
+          'empty.test',
+          'text.test',
+          'ok.test',
+          'mark.test',
+          'upper.test',
+        ],
       },
       { at: 5, ask: ['nope.test', 'text.test'] },
     ],
@@ -239,6 +250,25 @@ const SCENARIOS = [
     table: { 'x-y.test': { status: 200, body: { did: 'did:plc:xy' } } },
     steps: [{ at: 0, ask: ['X-Y.test'] }],
   },
+];
+
+// A timeout AbortSignal.timeout refuses (written as text: JSON has no
+// Infinity or NaN). Browsers and Node agree these throw; they differ on a
+// fraction and on 2^32 to 2^53, which are left out. Past 2^32 Node writes
+// the number with underscores, after every third character from the end,
+// exponent and all.
+const TIMEOUTS = [
+  'Infinity',
+  '-Infinity',
+  'NaN',
+  '-1',
+  '-1.5',
+  '-5000000000',
+  '-4294967297',
+  '9007199254740992',
+  '1e300',
+  '-1e21',
+  '-1e-7',
 ];
 
 export default async function cases() {
@@ -290,6 +320,33 @@ export default async function cases() {
   out.push(
     ...(await each('createMentionResolver', SCENARIOS, (scenario) =>
       resolverScenario(scenario),
+    )),
+  );
+  out.push(
+    ...(await each(
+      'resolverTimeout',
+      TIMEOUTS.flatMap((timeoutMs) =>
+        ['a.test', 'not a handle'].map((handle) => ({ timeoutMs, handle })),
+      ),
+      async ({ timeoutMs, handle }) => {
+        const requests = [];
+        const resolve = createMentionResolver({
+          timeoutMs: Number(timeoutMs),
+          fetch: async (url) => {
+            requests.push(url);
+            return answer(200, { did: 'did:plc:a' });
+          },
+        });
+        const outcomes = [];
+        for (let i = 0; i < 2; i++) {
+          try {
+            outcomes.push(await resolve(handle));
+          } catch (error) {
+            outcomes.push({ $throws: error.message });
+          }
+        }
+        return { outcomes, requests };
+      },
     )),
   );
   return out;

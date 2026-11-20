@@ -128,7 +128,7 @@ public enum LinkShortening {
     let bytes = Array(text.utf8)
     let ordered = PostingJS.stableSorted(safeFacets) { facet in
       let start = facet["index"]?["byteStart"]
-      return start == nil || start == .null ? 0 : PostingJS.toNumber(start)
+      return start == nil || start == .null ? 0 : start.jsNumber
     }
 
     struct Replacement {

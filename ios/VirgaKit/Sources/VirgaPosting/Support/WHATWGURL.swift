@@ -11,6 +11,18 @@
 //   own per-character data (IDNA.swift, IDNATable.swift).
 //
 // State overrides (the setters) aren't ported; only parsing and the getters.
+//
+// Where Node 22's Ada leaves the URL Standard, this follows the Standard, as
+// browsers do (the web app runs in one). A differential fuzz found two such
+// places, both outside what the posting code acts on (it only uses http(s)
+// URLs it parsed, and a base that is an origin):
+// - a relative input holding a `#` against a base with an opaque path
+//   (`new URL('x#y', 'mailto:a')`): Ada resolves it, the Standard fails it;
+// - a non-special URL whose path ends in `..` right after its root
+//   (`foo:/..`, `foo://h/.%2E`): Ada drops the root, the Standard keeps it
+//   (`foo:/`, `foo://h/`).
+// The URL fixtures leave both out; URLStandardBehaviour pins the Standard's
+// answers.
 
 import Foundation
 

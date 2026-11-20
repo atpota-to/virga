@@ -17,6 +17,14 @@ import VirgaTestSupport
     }
   }
 
+  /// Unpaired surrogates, which only a list of code units can carry.
+  @Test func createByteMapUnits() throws {
+    for c in try cases(Self.f, "createByteMapUnits") {
+      let units = (c["units"].arrayValue ?? []).compactMap { $0.intValue.map(UInt16.init) }
+      check(json(RichText.createByteMap(units: units)), c)
+    }
+  }
+
   @Test func byteToCharIndex() throws {
     for c in try cases(Self.f, "byteToCharIndex") {
       let map = RichText.createByteMap(c.string("text") ?? "")
@@ -125,6 +133,25 @@ import VirgaTestSupport
         ])
       }
       check(.array(steps), c)
+    }
+  }
+
+  /// A timeout `AbortSignal.timeout` refuses: every lookup of a handle
+  /// throws its RangeError, nothing is asked, and a non-handle is still nil.
+  @Test func resolverTimeout() async throws {
+    for c in try cases(Self.f, "resolverTimeout") {
+      let requests = Locked<[String]>([])
+      let resolve = Mentions.createMentionResolver(
+        fetch: { url in
+          requests.withLock { $0.append(url) }
+          return MentionFetchResponse(status: 200, body: Data(#"{"did":"did:plc:a"}"#.utf8))
+        },
+        timeoutMs: JSNumber.toNumber(c.string("timeoutMs") ?? ""))
+      var outcomes: [JSONValue] = []
+      for _ in 0..<2 {
+        outcomes.append(await outcome { json(try await resolve(c.string("handle") ?? "")) })
+      }
+      check(["outcomes": .array(outcomes), "requests": json(requests.wrappedValue)], c)
     }
   }
 }

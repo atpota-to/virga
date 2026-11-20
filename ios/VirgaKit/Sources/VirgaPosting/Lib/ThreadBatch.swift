@@ -74,6 +74,16 @@ public struct InvalidTimeValueError: Error, LocalizedError, Hashable, Sendable {
   public var errorDescription: String? { message }
 }
 
+/// The `RangeError` the web's `nextTid` throws for a time that isn't a
+/// number (`BigInt(Math.floor(ms))`), with V8's message.
+public struct TIDTimeError: Error, LocalizedError, Hashable, Sendable {
+  public let message: String
+  public init(ms: Double) {
+    message = "The number \(JSNumber.format(ms.rounded(.down))) cannot be converted to a BigInt because it is not an integer"
+  }
+  public var errorDescription: String? { message }
+}
+
 public enum ThreadBatch {
   /// The writes for a thread.
   ///
@@ -85,10 +95,15 @@ public enum ThreadBatch {
   ///     otherwise each gets `nowMs` plus a millisecond per post.
   ///   - replyTo: when the thread's first post replies to an existing post.
   ///   - nowMs: the time in epoch milliseconds (the web's `now`, a Date, a
-  ///     number or a date string, read as `new Date(now).getTime()`).
+  ///     number or a date string, read as `new Date(now).getTime()`; read a
+  ///     string with VirgaCore's `JSDate.parse`).
   ///   - timeZone: the zone a zone-less `createdAt` is read in (the web reads
   ///     it in the browser's).
   ///   - mintTid: a TID for a time in milliseconds (the web's `nextTid`).
+  ///     It is called before the time is checked, as the web calls it, so
+  ///     an invalid time reaches it (the default refuses one with
+  ///     `nextTid`'s RangeError; a minter that returns lets the "Invalid
+  ///     time value" of `toISOString` follow).
   public static func buildThreadWrites(
     did: String,
     collection: String = "app.bsky.feed.post",
@@ -96,7 +111,7 @@ public enum ThreadBatch {
     replyTo: ThreadReplyTo? = nil,
     nowMs: Double,
     timeZone: TimeZone,
-    mintTid: (Double) -> String = { TIDClock.shared.next(ms: $0) }
+    mintTid: (Double) throws -> String = ThreadBatch.nextTid
   ) throws -> ThreadWrites {
     var writes: [ApplyWritesCreate] = []
     var created: [CreatedPost] = []
@@ -118,10 +133,10 @@ public enum ThreadBatch {
       lastMs = ms
       first = false
 
+      let rkey = try mintTid(ms)
       guard ms.isFinite, let createdAt = VirgaCore.JSDate.toISOString(ms) else { throw InvalidTimeValueError() }
-      let rkey = mintTid(ms)
       let uri = "at://\(did)/\(collection)/\(rkey)"
-      var fields = base.objectValue ?? [:]
+      var fields = spread(base)
       fields["createdAt"] = .string(createdAt)
       fields["reply"] = nil
       if let parentRef, let rootRef {
@@ -148,14 +163,44 @@ public enum ThreadBatch {
     replyTo: ThreadReplyTo? = nil,
     now: Date = Date(),
     timeZone: TimeZone,
-    mintTid: (Double) -> String = { TIDClock.shared.next(ms: $0) }
+    mintTid: (Double) throws -> String = ThreadBatch.nextTid
   ) throws -> ThreadWrites {
     try buildThreadWrites(
       did: did, collection: collection, records: records, replyTo: replyTo,
       nowMs: (now.timeIntervalSince1970 * 1000).rounded(.down), timeZone: timeZone, mintTid: mintTid)
   }
 
+  /// The web's `nextTid(ms)`: a TID from the shared clock
+  /// (`TIDClock.shared`), refusing a time that isn't a number before the
+  /// clock moves, as `BigInt(Math.floor(ms))` does.
+  public static func nextTid(_ ms: Double) throws -> String {
+    guard ms.isFinite else { throw TIDTimeError(ms: ms) }
+    return TIDClock.shared.next(ms: ms)
+  }
+
+  /// `{ ...base }`: an object's own fields; an array's elements and a
+  /// string's code units under their indexes; nothing for anything else.
+  static func spread(_ base: JSONValue) -> [String: JSONValue] {
+    switch base {
+    case .object(let fields):
+      return fields
+    case .array(let items):
+      return Dictionary(uniqueKeysWithValues: items.enumerated().map { (String($0.offset), $0.element) })
+    case .string(let text):
+      return Dictionary(
+        uniqueKeysWithValues: text.utf16.enumerated().map { (String($0.offset), .string(String(jsUnits: [$0.element]))) })
+    default:
+      return [:]
+    }
+  }
+
+  /// A reply ref as the record carries it. The web puts the caller's own
+  /// `replyTo.root` and `replyTo.parent` objects in the record, so a ref
+  /// given with a `$type` keeps it (and the CID covers it); the refs made
+  /// here have none.
   static func refJSON(_ ref: StrongRef) -> JSONValue {
-    ["uri": .string(ref.uri), "cid": .string(ref.cid)]
+    var fields: [String: JSONValue] = ["uri": .string(ref.uri), "cid": .string(ref.cid)]
+    if let type = ref.lexiconType { fields["$type"] = .string(type) }
+    return .object(fields)
   }
 }

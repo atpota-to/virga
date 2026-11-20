@@ -3167,6 +3167,164 @@
       "id": "preview#96",
       "fn": "preview",
       "input": {
+        "text": "日本.com"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "日本.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#97",
+      "fn": "preview",
+      "input": {
+        "text": "é.co"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "é.co",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#98",
+      "fn": "preview",
+      "input": {
+        "text": "go to a.b now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go to a.b now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#99",
+      "fn": "preview",
+      "input": {
+        "text": "x.y1"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "x.y1",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#100",
+      "fn": "preview",
+      "input": {
+        "text": "snake_case.py2"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "snake_case.py2",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#101",
+      "fn": "preview",
+      "input": {
+        "text": "naïve.fr"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://ve.fr"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 9
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://ve.fr",
+              "charStart": 3,
+              "charEnd": 8,
+              "byteStart": 4,
+              "byteEnd": 9
+            }
+          ],
+          "displayText": "naïve.fr",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#102",
+      "fn": "preview",
+      "input": {
+        "text": "Ⅻ.com"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "Ⅻ.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#103",
+      "fn": "preview",
+      "input": {
+        "text": "ab.ćd"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "ab.ćd",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#104",
+      "fn": "preview",
+      "input": {
         "text": null
       },
       "output": {
@@ -3181,7 +3339,7 @@
       }
     },
     {
-      "id": "preview#97",
+      "id": "preview#105",
       "fn": "preview",
       "input": {
         "text": "hi @dryocampa.test ok",
@@ -3215,7 +3373,7 @@
       }
     },
     {
-      "id": "preview#98",
+      "id": "preview#106",
       "fn": "preview",
       "input": {
         "text": "@citheronia.test",
@@ -3235,7 +3393,7 @@
       }
     },
     {
-      "id": "preview#99",
+      "id": "preview#107",
       "fn": "preview",
       "input": {
         "text": "@eacles.test",
@@ -3258,7 +3416,7 @@
       }
     },
     {
-      "id": "preview#100",
+      "id": "preview#108",
       "fn": "preview",
       "input": {
         "text": "@a.test @b.test @c.test",
@@ -3309,7 +3467,7 @@
       }
     },
     {
-      "id": "preview#101",
+      "id": "preview#109",
       "fn": "preview",
       "input": {
         "text": "@A.Test",
@@ -3337,6 +3495,124 @@
           "postEmbeds": [],
           "externalLinks": [],
           "displayText": "@A.Test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#110",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test",
+        "validated": [
+          "Kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#111",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test",
+        "validated": [
+          "Kate.test"
+        ],
+        "invalidated": [
+          "Kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#112",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test @kate.test",
+        "validated": [
+          "kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 11,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test @kate.test",
           "markdownLinks": []
         },
         "calls": []

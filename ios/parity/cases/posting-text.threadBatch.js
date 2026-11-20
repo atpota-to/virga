@@ -10,7 +10,7 @@
 // carrying a reply to replace, invalid clocks and the encoder's refusals.
 
 import { buildThreadWrites } from '../../../src/posting/lib/threadBatch.js';
-import { each } from './_helpers.js';
+import { each, withTimeZone, ZONES } from './_helpers.js';
 
 export const sources = ['src/posting/lib/threadBatch.js'];
 
@@ -102,6 +102,17 @@ const INPUTS = [
     ],
     now: NOW,
   },
+  // The caller's refs go into the record as given, so a ref written with
+  // its lexicon $type keeps it, and the CID covers it.
+  {
+    $id: 'reply refs with their $type',
+    records: [base('reply one'), base('reply two')],
+    replyTo: {
+      root: { $type: 'com.atproto.repo.strongRef', ...replyTo.root },
+      parent: { $type: 'com.atproto.repo.strongRef', ...replyTo.parent },
+    },
+    now: NOW,
+  },
   {
     $id: 'rich records',
     records: [
@@ -173,20 +184,128 @@ const INPUTS = [
     now: NOW,
   },
   { $id: 'null and non-object records', records: [null, base('b')], now: NOW },
+  // `{ ...base }` spreads what it is given: a string's code units and an
+  // array's elements under their indexes, nothing of a number or a boolean.
+  {
+    $id: 'spreads of strings, arrays and scalars',
+    records: ['ab\u{1F98B}', ['x', { y: 1 }], 7, true, false, ''],
+    now: NOW,
+  },
+  // The shared clock's nextTid refuses a time that isn't a number before
+  // toISOString is reached, and before the clock moves, so these throw
+  // the same whatever ran before.
+  {
+    $id: 'invalid now, the default minter',
+    records: [base('a')],
+    now: 'nope',
+    defaultMinter: true,
+  },
+  {
+    $id: 'now past the end of time, the default minter',
+    records: [base('a')],
+    now: 8.64e15 + 1,
+    defaultMinter: true,
+  },
+  {
+    $id: 'no records, the default minter',
+    records: [],
+    now: 'nope',
+    defaultMinter: true,
+  },
 ];
 
+// The minter is asked for each post's key before its time is written, so
+// an invalid time reaches it first.
+const MINTED = [
+  { $id: 'invalid now', records: [base('a'), base('b')], now: 'nope' },
+  {
+    $id: 'the end of time',
+    records: [base('a'), base('b'), base('c')],
+    now: 8.64e15 - 1,
+  },
+  {
+    $id: 'own times',
+    records: [
+      base('a', { createdAt: '2026-01-01T00:00:00.000Z' }),
+      base('b', { createdAt: '2025-01-01T00:00:00.000Z' }),
+    ],
+    now: NOW,
+  },
+];
+
+// A zone-less createdAt (and a zone-less `now`) is read in the browser's
+// zone, so these run in each zone, across clock changes: New York's and
+// London's gaps and repeats, Lord Howe's half hour, Chatham's 45 minutes.
+const LOCAL_TIMES = [
+  '2026-03-08T02:30:00',
+  '2026-03-29T01:30:00',
+  '2026-10-04T02:15:00',
+  '2026-11-01T01:30:00',
+  '2026-10-25T01:30:00',
+  '2026-04-05T01:45:00',
+  'March 8, 2026 02:30:00',
+  '2026-09-27 02:50',
+  '2026-03-01',
+];
+const ZONED = ZONES.flatMap((tz) => [
+  ...LOCAL_TIMES.map((createdAt) => ({
+    $id: `zone-less createdAt ${createdAt} in ${tz}`,
+    tz,
+    records: [base('a', { createdAt }), base('b')],
+    now: Date.UTC(2020, 0, 1),
+  })),
+  {
+    $id: `a zone-less now in ${tz}`,
+    tz,
+    records: [base('a'), base('b')],
+    now: '2026-03-08T02:30:00',
+  },
+]);
+
 export default async function cases() {
-  return each(
+  const out = await each(
     'buildThreadWrites',
     INPUTS,
-    ({ records, collection, replyTo, now }) =>
+    ({ records, collection, replyTo, now, defaultMinter }) =>
       buildThreadWrites({
         did: DID,
         ...(collection ? { collection } : {}),
         records,
         replyTo: replyTo ?? null,
         now,
-        mintTid: (ms) => `tid${ms}`,
+        ...(defaultMinter ? {} : { mintTid: (ms) => `tid${ms}` }),
       }),
   );
+  out.push(
+    ...(await each('buildThreadWrites', ZONED, ({ tz, records, now }) =>
+      withTimeZone(tz, () =>
+        buildThreadWrites({
+          did: DID,
+          records,
+          now,
+          mintTid: (ms) => `tid${ms}`,
+        }),
+      ),
+    )),
+  );
+  out.push(
+    ...(await each('mintTidCalls', MINTED, async ({ records, now }) => {
+      const calls = [];
+      try {
+        const { created } = await buildThreadWrites({
+          did: DID,
+          records,
+          now,
+          mintTid: (ms) => {
+            calls.push(String(ms));
+            return `tid${ms}`;
+          },
+        });
+        return { calls, created: created.length };
+      } catch (error) {
+        return { calls, $throws: error.message };
+      }
+    })),
+  );
+  return out;
 }

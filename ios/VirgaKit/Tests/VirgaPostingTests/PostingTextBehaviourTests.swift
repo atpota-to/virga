@@ -37,16 +37,14 @@ import VirgaTestSupport
     let resolve = Mentions.createMentionResolver(
       fetch: { _ in
         let n = count.withLock { $0 += 1; return $0 }
-        if n == 1 { try await Task.sleep(for: .seconds(3600)) }
+        if n == 1 { try await Task.sleep(for: .seconds(600)) }
         return Self.ok("did:plc:second")
       },
       timeoutMs: 30)
     let started = Date()
     #expect(try await resolve("slow.test") == nil)
-    // The lookup would take an hour; the 30 ms timeout ending it is what's
-    // checked. The bound is generous because the other suites run at the
-    // same time and can hold every thread for a while (CI's simulator took
-    // 21 seconds to get to the timer).
+    // Far under the fetch's ten minutes, with room for a loaded machine (the
+    // parity suites run alongside and can hold the threads for seconds).
     #expect(Date().timeIntervalSince(started) < 120, "the timeout ended the wait")
     #expect(try await resolve("slow.test") == "did:plc:second", "a timeout isn't remembered")
     #expect(count.wrappedValue == 2)
@@ -99,17 +97,74 @@ import VirgaTestSupport
   }
 }
 
+/// Sleeps on a dispatch timer, which no task cancellation reaches: a request
+/// that doesn't stop when it is cancelled.
+func uncancellableSleep(seconds: Double) async {
+  await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+    DispatchQueue.global().asyncAfter(deadline: .now() + seconds) { continuation.resume() }
+  }
+}
+
 @Suite struct GatesBehaviour {
   @Test func aSlowPreferencesReadIsNilInTime() async {
     let agent = FakeGatesAgent(preferences: {
-      try await Task.sleep(for: .seconds(3600))
+      try await Task.sleep(for: .seconds(600))
       return ["preferences": []]
     })
     let started = Date()
     let gates = await Gates.readDefaultGates(agent, timeoutMs: 30)
     #expect(gates == nil)
-    // An hour's read, ended by the 30 ms timeout; generous for a busy
-    // thread pool (CI's simulator took 11 seconds to get to the timer).
+    #expect(Date().timeIntervalSince(started) < 120)
+  }
+
+  /// The web races the read against a timer (`Promise.race`), so the answer
+  /// is null at the deadline even when the read carries on. A task group
+  /// would wait for a read that ignores cancellation.
+  @Test func aReadThatIgnoresCancellationStillTimesOut() async {
+    let agent = FakeGatesAgent(preferences: {
+      await uncancellableSleep(seconds: 300)
+      return ["preferences": []]
+    })
+    let started = Date()
+    let gates = await Gates.readDefaultGates(agent, timeoutMs: 50)
+    #expect(gates == nil)
+    // Far under the read's five minutes, with room for a loaded machine.
+    #expect(Date().timeIntervalSince(started) < 120, "returned at the deadline, not when the read ended")
+  }
+
+  /// A wait setTimeout can't make (infinite, not a number, negative, past
+  /// 2^31 - 1 ms) runs at once, as in a browser and in Node, rather than
+  /// trapping in Duration.
+  @Test func aTimeoutOutsideTheTimersRangeEndsAtOnce() async {
+    for timeoutMs in [Double.infinity, -.infinity, .nan, -5, 1e300] {
+      let agent = FakeGatesAgent(preferences: {
+        try await Task.sleep(for: .seconds(600))
+        return ["preferences": []]
+      })
+      let started = Date()
+      #expect(await Gates.readDefaultGates(agent, timeoutMs: timeoutMs) == nil, "\(timeoutMs)")
+      #expect(Date().timeIntervalSince(started) < 120, "\(timeoutMs)")
+    }
+    #expect(PromiseRace.timerDelay(250) == .milliseconds(250))
+    #expect(PromiseRace.timerDelay(2_147_483_647) == .milliseconds(2_147_483_647))
+    #expect(PromiseRace.timerDelay(2_147_483_648) == .zero)
+  }
+
+  @Test func aFastReadWinsTheRace() async {
+    let agent = FakeGatesAgent(preferences: { ["preferences": []] })
+    #expect(await Gates.readDefaultGates(agent, timeoutMs: 60_000) == Gates.everyoneGates)
+  }
+
+  @Test func aCancelledCallerGetsNil() async {
+    let agent = FakeGatesAgent(preferences: {
+      await uncancellableSleep(seconds: 300)
+      return ["preferences": []]
+    })
+    let task = Task { await Gates.readDefaultGates(agent, timeoutMs: 600_000) }
+    try? await Task.sleep(for: .milliseconds(20))
+    task.cancel()
+    let started = Date()
+    #expect(await task.value == nil)
     #expect(Date().timeIntervalSince(started) < 120)
   }
 
@@ -167,6 +222,51 @@ import VirgaTestSupport
     #expect(throws: PostingEventError(message: "virga:drafts-changed needs detail.did")) {
       try PostingEvents.emitPostingEvent(PostingEvents.drafts, [:])
     }
+  }
+}
+
+@Suite struct URLSearchParamsBehaviour {
+  /// The URL Standard's parser, as browsers run it. Node's differs here (it
+  /// keeps the low byte of each code unit once one escape is malformed), so
+  /// this can't be a fixture: see ios/parity/cases/posting-text.composeIntent.js.
+  @Test func aMalformedEscapeLeavesTheRestDecoded() {
+    let params = URLSearchParams("?tags=\u{0661}%41%zz\u{0345}&text=a+b%20c")
+    #expect(params.get("tags") == "\u{0661}A%zz\u{0345}")
+    #expect(params.get("text") == "a b c")
+    #expect(
+      ComposeIntent.parseComposeIntent("?text=\u{0661}%41%zz").text == "\u{0661}A%zz",
+      "the composer is prefilled with what the browser reads")
+  }
+}
+
+@Suite struct CodeUnitKeys {
+  /// The web's Map of what submits learned: a handle written with the
+  /// Kelvin sign is another key, not the same one as "K".
+  @Test func theValidationCacheKeysByCodeUnit() {
+    let cache = MentionValidationCache()
+    cache.set("Kate.test", .init(did: "did:plc:k", timestamp: 1))
+    #expect(cache.get("Kate.test")?.did == "did:plc:k")
+    #expect(cache.get("\u{212A}ate.test") == nil)
+    cache.set("\u{212A}ate.test", .init(did: nil, timestamp: 2))
+    #expect(cache.get("Kate.test")?.did == "did:plc:k")
+  }
+
+  /// URLSearchParams names are compared as JavaScript compares them.
+  @Test func searchParamNamesCompareByCodeUnit() {
+    var params = URLSearchParams("caf%C3%A9=1&cafe%CC%81=2&%E2%84%AA=3")
+    #expect(params.get("caf\u{E9}") == "1")
+    #expect(params.get("cafe\u{301}") == "2")
+    #expect(params.get("K") == nil)
+    #expect(params.getAll("caf\u{E9}") == ["1"])
+    #expect(params.has("\u{212A}"))
+    params.set("caf\u{E9}", "9")
+    params.delete("cafe\u{301}")
+    #expect(params.description == "caf%C3%A9=9&%E2%84%AA=3")
+  }
+
+  /// `?` is dropped as one code unit, even with a combining mark after it.
+  @Test func theLeadingQuestionMarkIsOneCodeUnit() {
+    #expect(URLSearchParams("?\u{301}a=1").pairs.map(\.name) == ["\u{301}a"])
   }
 }
 

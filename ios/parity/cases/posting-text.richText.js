@@ -59,6 +59,24 @@ export default async function cases() {
       ({ text }) => createByteMap(text),
     )),
   );
+  // Unpaired surrogates (half an emoji, from slicing), which a Swift String
+  // can't hold: given as code units.
+  out.push(
+    ...(await each(
+      'createByteMapUnits',
+      [
+        [0x61, 0xd83d, 0x62],
+        [0x61, 0xde00, 0x62],
+        [0xd83d],
+        [0xde00],
+        [0xde00, 0xd83d],
+        [0xd83d, 0xd83d, 0xde00],
+        [0xd83d, 0xde00, 0xde00],
+        [0x61, 0xd83d],
+      ].map((units) => ({ units })),
+      ({ units }) => createByteMap(String.fromCharCode(...units)),
+    )),
+  );
   const mapped = ['aé日\u{1F600}b', '', '\u{1F469}\u200D\u{1F52C}x', 'abc'];
   out.push(
     ...(await each(

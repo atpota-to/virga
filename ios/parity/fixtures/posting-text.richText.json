@@ -563,6 +563,130 @@
       ]
     },
     {
+      "id": "createByteMapUnits#1",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          97,
+          55357,
+          98
+        ]
+      },
+      "output": [
+        0,
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "createByteMapUnits#2",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          97,
+          56832,
+          98
+        ]
+      },
+      "output": [
+        0,
+        1,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "createByteMapUnits#3",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          55357
+        ]
+      },
+      "output": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "createByteMapUnits#4",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          56832
+        ]
+      },
+      "output": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "createByteMapUnits#5",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          56832,
+          55357
+        ]
+      },
+      "output": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "createByteMapUnits#6",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          55357,
+          55357,
+          56832
+        ]
+      },
+      "output": [
+        0,
+        3,
+        7,
+        7
+      ]
+    },
+    {
+      "id": "createByteMapUnits#7",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          55357,
+          56832,
+          56832
+        ]
+      },
+      "output": [
+        0,
+        4,
+        4,
+        7
+      ]
+    },
+    {
+      "id": "createByteMapUnits#8",
+      "fn": "createByteMapUnits",
+      "input": {
+        "units": [
+          97,
+          55357
+        ]
+      },
+      "output": [
+        0,
+        1,
+        4
+      ]
+    },
+    {
       "id": "byteToCharIndex#1",
       "fn": "byteToCharIndex",
       "input": {
