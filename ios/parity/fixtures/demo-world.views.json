@@ -4845,6 +4845,1016 @@
       }
     },
     {
+      "id": "liveCounts-zoned#1",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08T01:30:00",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#2",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08T02:30:00",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#3",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08T03:30:00",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 16,
+        "reposts": 2,
+        "replies": 3,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#4",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 60,
+        "reposts": 12,
+        "replies": 17,
+        "quotes": 4
+      }
+    },
+    {
+      "id": "liveCounts-zoned#5",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08T01:30:00Z",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#6",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-03-08T01:30:00.000+05:30",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 60,
+        "reposts": 12,
+        "replies": 20,
+        "quotes": 4
+      }
+    },
+    {
+      "id": "liveCounts-zoned#7",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "March 8, 2026 01:30",
+        "now": 1772943600000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#8",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08T01:30:00",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#9",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08T02:30:00",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#10",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08T03:30:00",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#11",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 60,
+        "reposts": 12,
+        "replies": 20,
+        "quotes": 4
+      }
+    },
+    {
+      "id": "liveCounts-zoned#12",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08T01:30:00Z",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 60,
+        "reposts": 12,
+        "replies": 20,
+        "quotes": 4
+      }
+    },
+    {
+      "id": "liveCounts-zoned#13",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-03-08T01:30:00.000+05:30",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 60,
+        "reposts": 12,
+        "replies": 20,
+        "quotes": 4
+      }
+    },
+    {
+      "id": "liveCounts-zoned#14",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "March 8, 2026 01:30",
+        "now": 1772961600000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#15",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08T01:30:00",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#16",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08T02:30:00",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#17",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08T03:30:00",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 16,
+        "reposts": 2,
+        "replies": 3,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#18",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#19",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08T01:30:00Z",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#20",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-03-08T01:30:00.000+05:30",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#21",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "March 8, 2026 01:30",
+        "now": 1772923800000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#22",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08T01:30:00",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#23",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08T02:30:00",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#24",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08T03:30:00",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 16,
+        "reposts": 2,
+        "replies": 3,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#25",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#26",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08T01:30:00Z",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#27",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-03-08T01:30:00.000+05:30",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#28",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "March 8, 2026 01:30",
+        "now": 1772894100000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#29",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08T01:30:00",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#30",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08T02:30:00",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#31",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08T03:30:00",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 16,
+        "reposts": 2,
+        "replies": 3,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#32",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#33",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08T01:30:00Z",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#34",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-03-08T01:30:00.000+05:30",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#35",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "March 8, 2026 01:30",
+        "now": 1772904000000
+      },
+      "output": {
+        "likes": 56,
+        "reposts": 8,
+        "replies": 11,
+        "quotes": 2
+      }
+    },
+    {
+      "id": "liveCounts-zoned#36",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-11-01T01:30:00",
+        "now": 1793503200000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#37",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "UTC",
+        "at": "2026-11-01T02:00:00",
+        "now": 1793503200000
+      },
+      "output": {
+        "likes": 26,
+        "reposts": 4,
+        "replies": 5,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#38",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-11-01T01:30:00",
+        "now": 1793517600000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#39",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "at": "2026-11-01T02:00:00",
+        "now": 1793517600000
+      },
+      "output": {
+        "likes": 6,
+        "reposts": 1,
+        "replies": 1,
+        "quotes": 0
+      }
+    },
+    {
+      "id": "liveCounts-zoned#40",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-11-01T01:30:00",
+        "now": 1793483400000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#41",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "at": "2026-11-01T02:00:00",
+        "now": 1793483400000
+      },
+      "output": {
+        "likes": 26,
+        "reposts": 4,
+        "replies": 5,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#42",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-11-01T01:30:00",
+        "now": 1793453700000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#43",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "at": "2026-11-01T02:00:00",
+        "now": 1793453700000
+      },
+      "output": {
+        "likes": 26,
+        "reposts": 4,
+        "replies": 5,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#44",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-11-01T01:30:00",
+        "now": 1793463600000
+      },
+      "output": {
+        "likes": 36,
+        "reposts": 5,
+        "replies": 7,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "liveCounts-zoned#45",
+      "fn": "liveCounts-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "at": "2026-11-01T02:00:00",
+        "now": 1793463600000
+      },
+      "output": {
+        "likes": 26,
+        "reposts": 4,
+        "replies": 5,
+        "quotes": 1
+      }
+    },
+    {
+      "id": "postView-zoned#1",
+      "fn": "postView-zoned",
+      "input": {
+        "zone": "UTC",
+        "write": {
+          "collection": "app.bsky.feed.post",
+          "rkey": "3zzzzzzzzzzz2",
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "now": 1794700000000
+        }
+      },
+      "output": {
+        "post": {
+          "$type": "app.bsky.feed.defs#postView",
+          "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+          "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+          "author": {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "likeCount": 20,
+          "repostCount": 3,
+          "replyCount": 4,
+          "quoteCount": 1,
+          "indexedAt": "2026-11-14T23:46:40.000Z",
+          "labels": [],
+          "viewer": {}
+        },
+        "feed": {
+          "post": {
+            "$type": "app.bsky.feed.defs#postView",
+            "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+            "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+            "author": {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Field Lab",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+            },
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "Local time",
+              "createdAt": "2026-11-15T01:46:40"
+            },
+            "likeCount": 20,
+            "repostCount": 3,
+            "replyCount": 4,
+            "quoteCount": 1,
+            "indexedAt": "2026-11-14T23:46:40.000Z",
+            "labels": [],
+            "viewer": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "postView-zoned#2",
+      "fn": "postView-zoned",
+      "input": {
+        "zone": "America/New_York",
+        "write": {
+          "collection": "app.bsky.feed.post",
+          "rkey": "3zzzzzzzzzzz2",
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "now": 1794700000000
+        }
+      },
+      "output": {
+        "post": {
+          "$type": "app.bsky.feed.defs#postView",
+          "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+          "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+          "author": {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "likeCount": 0,
+          "repostCount": 0,
+          "replyCount": 0,
+          "quoteCount": 0,
+          "indexedAt": "2026-11-14T23:46:40.000Z",
+          "labels": [],
+          "viewer": {}
+        },
+        "feed": {
+          "post": {
+            "$type": "app.bsky.feed.defs#postView",
+            "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+            "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+            "author": {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Field Lab",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+            },
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "Local time",
+              "createdAt": "2026-11-15T01:46:40"
+            },
+            "likeCount": 0,
+            "repostCount": 0,
+            "replyCount": 0,
+            "quoteCount": 0,
+            "indexedAt": "2026-11-14T23:46:40.000Z",
+            "labels": [],
+            "viewer": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "postView-zoned#3",
+      "fn": "postView-zoned",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "write": {
+          "collection": "app.bsky.feed.post",
+          "rkey": "3zzzzzzzzzzz2",
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "now": 1794700000000
+        }
+      },
+      "output": {
+        "post": {
+          "$type": "app.bsky.feed.defs#postView",
+          "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+          "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+          "author": {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "likeCount": 60,
+          "repostCount": 12,
+          "replyCount": 20,
+          "quoteCount": 4,
+          "indexedAt": "2026-11-14T23:46:40.000Z",
+          "labels": [],
+          "viewer": {}
+        },
+        "feed": {
+          "post": {
+            "$type": "app.bsky.feed.defs#postView",
+            "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+            "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+            "author": {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Field Lab",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+            },
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "Local time",
+              "createdAt": "2026-11-15T01:46:40"
+            },
+            "likeCount": 60,
+            "repostCount": 12,
+            "replyCount": 20,
+            "quoteCount": 4,
+            "indexedAt": "2026-11-14T23:46:40.000Z",
+            "labels": [],
+            "viewer": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "postView-zoned#4",
+      "fn": "postView-zoned",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "write": {
+          "collection": "app.bsky.feed.post",
+          "rkey": "3zzzzzzzzzzz2",
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "now": 1794700000000
+        }
+      },
+      "output": {
+        "post": {
+          "$type": "app.bsky.feed.defs#postView",
+          "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+          "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+          "author": {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "likeCount": 60,
+          "repostCount": 12,
+          "replyCount": 20,
+          "quoteCount": 4,
+          "indexedAt": "2026-11-14T23:46:40.000Z",
+          "labels": [],
+          "viewer": {}
+        },
+        "feed": {
+          "post": {
+            "$type": "app.bsky.feed.defs#postView",
+            "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+            "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+            "author": {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Field Lab",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+            },
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "Local time",
+              "createdAt": "2026-11-15T01:46:40"
+            },
+            "likeCount": 60,
+            "repostCount": 12,
+            "replyCount": 20,
+            "quoteCount": 4,
+            "indexedAt": "2026-11-14T23:46:40.000Z",
+            "labels": [],
+            "viewer": {}
+          }
+        }
+      }
+    },
+    {
+      "id": "postView-zoned#5",
+      "fn": "postView-zoned",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "write": {
+          "collection": "app.bsky.feed.post",
+          "rkey": "3zzzzzzzzzzz2",
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "now": 1794700000000
+        }
+      },
+      "output": {
+        "post": {
+          "$type": "app.bsky.feed.defs#postView",
+          "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+          "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+          "author": {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "handle": "lab.example.org",
+            "displayName": "Field Lab",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          "record": {
+            "$type": "app.bsky.feed.post",
+            "text": "Local time",
+            "createdAt": "2026-11-15T01:46:40"
+          },
+          "likeCount": 60,
+          "repostCount": 12,
+          "replyCount": 20,
+          "quoteCount": 4,
+          "indexedAt": "2026-11-14T23:46:40.000Z",
+          "labels": [],
+          "viewer": {}
+        },
+        "feed": {
+          "post": {
+            "$type": "app.bsky.feed.defs#postView",
+            "uri": "at://did:plc:virgaharnesslab7k2pq/app.bsky.feed.post/3zzzzzzzzzzz2",
+            "cid": "bafyreiatbpoboe65sujgdrz2c46bwtdwmb7rcbawe5dg53iodxqsvg7kua",
+            "author": {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Field Lab",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E"
+            },
+            "record": {
+              "$type": "app.bsky.feed.post",
+              "text": "Local time",
+              "createdAt": "2026-11-15T01:46:40"
+            },
+            "likeCount": 60,
+            "repostCount": 12,
+            "replyCount": 20,
+            "quoteCount": 4,
+            "indexedAt": "2026-11-14T23:46:40.000Z",
+            "labels": [],
+            "viewer": {}
+          }
+        }
+      }
+    },
+    {
       "id": "card#1",
       "fn": "card",
       "input": {

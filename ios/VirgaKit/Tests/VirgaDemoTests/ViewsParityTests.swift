@@ -84,6 +84,44 @@ import VirgaTestSupport
     }
   }
 
+  /// A written time without an offset is read in the browser's zone on the
+  /// web; here in the zone given, across New York's spring gap and autumn
+  /// overlap.
+  @Test func liveCountsInEveryZone() throws {
+    let cases = try Parity.cases(Self.fixture, fn: "liveCounts-zoned")
+    #expect(cases.count == 45)
+    for c in cases {
+      let zone = try #require(TimeZone(identifier: c["zone"].stringValue ?? ""))
+      let post = WorldPost(fixture: nil, rkey: "x", at: c["at"].stringValue ?? "", text: "", writtenAt: 1)
+      let counts = Views.liveCounts(post, now: c["now"].doubleValue ?? .nan, timeZone: zone)
+      Self.check(try DemoFixtures.json(counts), c)
+    }
+  }
+
+  /// The views of a post written without an offset, through DemoWorld in
+  /// each zone: its counts move with the zone, as in a browser there.
+  @Test func aWrittenPostsViewInEveryZone() throws {
+    let cases = try Parity.cases(Self.fixture, fn: "postView-zoned")
+    #expect(cases.count == 5)
+    for c in cases {
+      let zone = try #require(TimeZone(identifier: c["zone"].stringValue ?? ""))
+      let write = c["write"]
+      let demo = DemoWorld(now: DemoFixtures.now, accounts: [World.lab], timeZone: zone)
+      try demo.writeRecord(
+        did: World.lab.did, collection: write["collection"]?.stringValue, rkey: write["rkey"]?.stringValue,
+        record: write["record"], now: write["now"]?.doubleValue ?? .nan)
+      let lab = try #require(demo.world(World.lab.did))
+      let views = demo.views
+      #expect(views.timeZone == zone && views.with(worlds: demo.worlds).timeZone == zone)
+      let uri = "at://\(World.lab.did)/app.bsky.feed.post/\(write["rkey"]?.stringValue ?? "")"
+      let actual: JSONValue = [
+        "post": try views.postView(uri, now: Self.viewNow) ?? .null,
+        "feed": try views.authorFeed(lab, now: Self.viewNow).first ?? .null,
+      ]
+      Self.check(actual, c)
+    }
+  }
+
   @Test func people() throws {
     for c in try Parity.cases(Self.fixture, fn: "card") {
       Self.check(Self.views.card(c["did"].stringValue ?? ""), c)

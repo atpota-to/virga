@@ -15,7 +15,7 @@ import {
   tidTime,
 } from '../../../harness/views.js';
 import { LAB, ME, buildWorld } from '../../../harness/world.js';
-import { each, grid, value } from './_helpers.js';
+import { each, grid, inZone, value } from './_helpers.js';
 import { part, sha256 } from './_canonical.js';
 import { NOW, atTime, thrown } from './_demoWorld.js';
 
@@ -277,6 +277,27 @@ export function miraWrites(mira) {
     },
   ];
 }
+
+/**
+ * A post written with a time that has no offset, which `Date.parse` reads
+ * in the browser's zone: its live counts (and so every view of it) depend
+ * on the zone. An hour before VIEW_NOW, read as UTC.
+ */
+export const ZONED_WRITE = {
+  collection: POST,
+  rkey: '3zzzzzzzzzzz2',
+  record: { $type: POST, text: 'Local time', createdAt: '2026-11-15T01:46:40' },
+  now: NOW,
+};
+
+/** The zones the zoned cases are asked in: behind, ahead by a half and by 13¾ hours. */
+const VIEW_ZONES = [
+  'UTC',
+  'America/New_York',
+  'Asia/Kolkata',
+  'Pacific/Chatham',
+  'Australia/Lord_Howe',
+];
 
 /**
  * Uploads the blobs and writes the posts, and answers what it did, for the
@@ -591,6 +612,65 @@ export default async function cases() {
         },
       ],
       ({ post, now }) => liveCounts(post, now),
+    )),
+    ...(await each(
+      'liveCounts-zoned',
+      [
+        // Around New York's spring gap (2am to 3am on 8 March) and its
+        // autumn overlap (1am twice on 1 November), asked 170 minutes after
+        // the base time as each zone reads it.
+        ...grid({
+          zone: VIEW_ZONES,
+          base: ['2026-03-08T01:30:00'],
+          at: [
+            '2026-03-08T01:30:00',
+            '2026-03-08T02:30:00',
+            '2026-03-08T03:30:00',
+            '2026-03-08',
+            '2026-03-08T01:30:00Z',
+            '2026-03-08T01:30:00.000+05:30',
+            'March 8, 2026 01:30',
+          ],
+        }),
+        ...grid({
+          zone: VIEW_ZONES,
+          base: ['2026-11-01T00:30:00'],
+          at: ['2026-11-01T01:30:00', '2026-11-01T02:00:00'],
+        }),
+      ].map(({ base, ...row }) => ({
+        ...row,
+        now: inZone(row.zone, () => Date.parse(base)) + 170 * 60_000,
+      })),
+      ({ zone, at, now }) =>
+        inZone(zone, () =>
+          liveCounts(
+            {
+              rkey: 'x',
+              at,
+              text: '',
+              writtenAt: 1,
+              likes: 0,
+              reposts: 0,
+              replies: 0,
+              quotes: 0,
+            },
+            now,
+          ),
+        ),
+    )),
+    ...(await each(
+      'postView-zoned',
+      VIEW_ZONES.map((zone) => ({ zone, write: ZONED_WRITE })),
+      async ({ zone, write }) => {
+        const zoned = buildWorld({ now: NOW, account: LAB });
+        await atTime(write.now, () => writeRecord(zoned, write));
+        const zonedViews = createViews([zoned]);
+        const uri = `at://${LAB.did}/${POST}/${write.rkey}`;
+        return inZone(zone, () => ({
+          post: zonedViews.postView(uri, { now: VIEW_NOW }),
+          feed: zonedViews.authorFeed(zoned, { now: VIEW_NOW })[0],
+        }));
+      },
     )),
     ...(await each(
       'card',

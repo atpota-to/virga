@@ -30,24 +30,30 @@ public final class DemoWorld: Sendable {
 
   /// The moment the worlds are dated back from, in epoch milliseconds.
   public let now: Double
+  /// The zone a written post's time without an offset is read in (the
+  /// web's browser zone); UTC unless given.
+  public let timeZone: TimeZone
   private let state: Locked<[AccountWorld]>
   private let index: ViewsIndex
   private let cars = Locked<[JSKey: (revision: Int, car: [UInt8])]>([:])
 
   /// The harness's worlds: one per account, Mira and Field Lab by default
   /// (`?accounts=1` is `[World.me]`), each built at `now`.
-  public convenience init(now: Double, accounts: [WorldAccount] = [World.me, World.lab]) {
-    self.init(worlds: accounts.map { World.buildWorld(now: now, account: $0) })
+  public convenience init(
+    now: Double, accounts: [WorldAccount] = [World.me, World.lab], timeZone: TimeZone = .gmt
+  ) {
+    self.init(worlds: accounts.map { World.buildWorld(now: now, account: $0) }, timeZone: timeZone)
   }
 
   /// `now` as a Date, cut to the millisecond as `Date.now()` is.
-  public convenience init(now: Date, accounts: [WorldAccount] = [World.me, World.lab]) {
-    self.init(now: (now.timeIntervalSince1970 * 1000).rounded(.down), accounts: accounts)
+  public convenience init(now: Date, accounts: [WorldAccount] = [World.me, World.lab], timeZone: TimeZone = .gmt) {
+    self.init(now: (now.timeIntervalSince1970 * 1000).rounded(.down), accounts: accounts, timeZone: timeZone)
   }
 
   /// Worlds built (and perhaps changed) elsewhere.
-  public init(worlds: [AccountWorld]) {
+  public init(worlds: [AccountWorld], timeZone: TimeZone = .gmt) {
     now = worlds.first?.now ?? .nan
+    self.timeZone = timeZone
     state = Locked(worlds)
     index = ViewsIndex(worlds)
   }
@@ -61,7 +67,7 @@ public final class DemoWorld: Sendable {
   }
 
   /// The AppView over the worlds as they are now.
-  public var views: DemoViews { DemoViews(index: index, worlds: worlds) }
+  public var views: DemoViews { DemoViews(index: index, worlds: worlds, timeZone: timeZone) }
 
   /// Defense's crowd over the worlds as they are now (the views' own).
   public var crowd: DemoCrowd { views.crowd }

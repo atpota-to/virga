@@ -90,7 +90,8 @@ public enum Views {
   /// few minutes, now and then a reply or a repost, so timers with
   /// conditions and the Posted page have something to read. A fixture
   /// post's own counts otherwise. NaN where the post's time can't be read,
-  /// as on the web (JSON carries it as null).
+  /// as on the web (JSON carries it as null). A time without an offset is
+  /// read in `timeZone`, as `Date.parse` reads it in the browser's zone.
   public static func liveCounts(_ post: WorldPost, now: Double, timeZone: TimeZone = .gmt) -> LiveCounts {
     guard let written = post.writtenAt, written != 0, !written.isNaN else {
       return LiveCounts(
@@ -133,8 +134,13 @@ public enum Views {
   }
 
   /// The views over these worlds (`createViews`).
-  public static func createViews(_ worlds: [AccountWorld]) -> DemoViews {
-    DemoViews(index: ViewsIndex(worlds), worlds: worlds)
+  ///
+  /// - Parameter timeZone: the zone a written post's time is read in when
+  ///   it carries no offset (`Date.parse` reads such a time in the
+  ///   browser's zone); the app writes its times with `Z`, so the zone only
+  ///   matters for a record written without one.
+  public static func createViews(_ worlds: [AccountWorld], timeZone: TimeZone = .gmt) -> DemoViews {
+    DemoViews(index: ViewsIndex(worlds), worlds: worlds, timeZone: timeZone)
   }
 
   /// `text.split(/\s+/)`: cut at every run of JavaScript whitespace, empty
@@ -241,14 +247,18 @@ public struct DemoViews: Sendable {
   let index: ViewsIndex
   /// The worlds as they are now (`worlds`).
   public var worlds: [AccountWorld]
+  /// The local zone of the web's browser: where a written post's time
+  /// without an offset is read (its live counts).
+  public let timeZone: TimeZone
 
-  init(index: ViewsIndex, worlds: [AccountWorld]) {
+  init(index: ViewsIndex, worlds: [AccountWorld], timeZone: TimeZone = .gmt) {
     self.index = index
     self.worlds = worlds
+    self.timeZone = timeZone
   }
 
   public func with(worlds: [AccountWorld]) -> DemoViews {
-    DemoViews(index: index, worlds: worlds)
+    DemoViews(index: index, worlds: worlds, timeZone: timeZone)
   }
 
   /// Who engages with the accounts' posts, for Defense's scans.
@@ -322,7 +332,7 @@ public struct DemoViews: Sendable {
 
   func ownView(_ world: AccountWorld, _ p: WorldPost, now: Double, depth: Int = 0) throws -> JSONValue {
     let record = World.postRecord(p)
-    let counts = Views.liveCounts(p, now: now)
+    let counts = Views.liveCounts(p, now: now, timeZone: timeZone)
     var view: [String: JSONValue] = [
       "$type": "app.bsky.feed.defs#postView",
       "uri": .string("at://\(world.me.did)/app.bsky.feed.post/\(p.rkey)"),
