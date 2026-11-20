@@ -719,6 +719,107 @@ export default async function cases() {
           params: { repo: DID },
           answers: [json({ error: 'Moved' }, 302)],
         },
+        // The SDK refuses an object with a `__proto__` member anywhere in a
+        // JSON answer, a success or a failure.
+        {
+          $id: 'proto-key',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.sync.getCheckout',
+          params: { did: DID },
+          answers: [
+            {
+              status: 200,
+              text: '{"a":[{"b":{"__proto__":{"x":1}}}]}',
+              headers: { 'content-type': 'application/json' },
+            },
+          ],
+        },
+        {
+          $id: 'proto-key-error',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [
+            {
+              status: 400,
+              text: '{"error":"E","__proto__":{"message":"m"}}',
+              headers: { 'content-type': 'application/json' },
+            },
+          ],
+        },
+        // A JSON answer that isn't JSON: InvalidResponse, with V8's words.
+        {
+          $id: 'json-not-json',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [
+            {
+              status: 502,
+              text: '<html><head><title>502 Bad Gateway</title></head></html>',
+              headers: { 'content-type': 'application/json' },
+            },
+          ],
+        },
+        // The JSON answer is found by `includes`: case and position count.
+        {
+          $id: 'json-type-variants',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [
+            {
+              status: 404,
+              text: '{"error":"NotFound","message":"m"}',
+              headers: { 'content-type': 'Application/JSON' },
+            },
+          ],
+        },
+        {
+          $id: 'json-type-suffix',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [
+            {
+              status: 404,
+              text: '{"error":"NotFound","message":"m"}',
+              headers: { 'content-type': 'xapplication/jsonx; charset=utf-8' },
+            },
+          ],
+        },
+        // isErrorResponseBody: `error` or `message` that isn't a string
+        // (null included) leaves both out.
+        {
+          $id: 'error-null-message',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [json({ error: 'E', message: null }, 400)],
+        },
+        {
+          $id: 'error-array-body',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [json([{ error: 'E' }], 500)],
+        },
+        {
+          $id: 'error-bom-body',
+          service: 'https://pds.example',
+          nsid: 'com.atproto.repo.describeRepo',
+          params: { repo: DID },
+          answers: [
+            {
+              status: 429,
+              text: '\ufeff{"error":"RateLimitExceeded"}',
+              headers: {
+                'content-type': 'application/json; charset=utf-8',
+                'ratelimit-remaining': '0',
+              },
+            },
+          ],
+        },
       ].map(({ answers, ...c }) => ({
         ...c,
         kind: kindOf(probe, c.nsid),

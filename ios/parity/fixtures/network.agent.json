@@ -3598,6 +3598,508 @@
           }
         }
       }
+    },
+    {
+      "id": "proto-key",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.sync.getCheckout",
+        "params": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "did",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"a\":[{\"b\":{\"__proto__\":{\"x\":1}}}]}",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.sync.getCheckout?did=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"a\":[{\"b\":{\"__proto__\":{\"x\":1}}}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: TypeError: Invalid key: __proto__",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "proto-key-error",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "text": "{\"error\":\"E\",\"__proto__\":{\"message\":\"m\"}}",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"E\",\"__proto__\":{\"message\":\"m\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: TypeError: Invalid key: __proto__",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "json-not-json",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 502,
+            "text": "<html><head><title>502 Bad Gateway</title></head></html>",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "<html><head><title>502 Bad Gateway</title></head></html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 2,
+            "error": "InvalidResponse",
+            "message": "Failed to parse response body: SyntaxError: Unexpected token '<', \"<html><hea\"... is not valid JSON",
+            "headers": null
+          }
+        }
+      }
+    },
+    {
+      "id": "json-type-variants",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 404,
+            "text": "{\"error\":\"NotFound\",\"message\":\"m\"}",
+            "headers": {
+              "content-type": "Application/JSON"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "Application/JSON"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"m\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "XRPCNotSupported",
+            "message": "XRPCNotSupported",
+            "headers": {
+              "content-type": "Application/JSON"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "json-type-suffix",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 404,
+            "text": "{\"error\":\"NotFound\",\"message\":\"m\"}",
+            "headers": {
+              "content-type": "xapplication/jsonx; charset=utf-8"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "xapplication/jsonx; charset=utf-8"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\",\"message\":\"m\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 404,
+            "error": "NotFound",
+            "message": "m",
+            "headers": {
+              "content-type": "xapplication/jsonx; charset=utf-8"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-null-message",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "E",
+              "message": null
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"E\",\"message\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 400,
+            "error": "InvalidRequest",
+            "message": "InvalidRequest",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-array-body",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 500,
+            "json": [
+              {
+                "error": "E"
+              }
+            ]
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[{\"error\":\"E\"}]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 500,
+            "error": "InternalServerError",
+            "message": "InternalServerError",
+            "headers": {
+              "content-type": "application/json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "error-bom-body",
+      "fn": "serviceAgent",
+      "input": {
+        "service": "https://pds.example",
+        "nsid": "com.atproto.repo.describeRepo",
+        "params": {
+          "repo": "did:plc:virgaharnessmira2zq4x"
+        },
+        "kind": "query",
+        "typedParams": [
+          [
+            "repo",
+            "string",
+            "did:plc:virgaharnessmira2zq4x"
+          ]
+        ],
+        "answers": [
+          {
+            "status": 429,
+            "text": "﻿{\"error\":\"RateLimitExceeded\"}",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "ratelimit-remaining": "0"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://pds.example/xrpc/com.atproto.repo.describeRepo?repo=did%3Aplc%3Avirgaharnessmira2zq4x",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json; charset=utf-8",
+                "ratelimit-remaining": "0"
+              },
+              "body": {
+                "$text": "﻿{\"error\":\"RateLimitExceeded\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 429,
+            "error": "RateLimitExceeded",
+            "message": "RateLimitExceeded",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "ratelimit-remaining": "0"
+            }
+          }
+        }
+      }
     }
   ]
 }

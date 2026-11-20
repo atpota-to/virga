@@ -179,14 +179,53 @@ export default async function cases() {
           encoding: 'image/png',
           answers: ['offline'],
         },
+        // The legacy form names its CID in `cid` and has no size: the size
+        // is the bytes'.
+        {
+          $id: 'legacy-blob',
+          bytes: [1, 2, 3],
+          encoding: 'image/gif',
+          answers: [
+            json({
+              success: true,
+              data: { blob: { cid: CID, mimeType: 'image/gif' } },
+            }),
+          ],
+        },
+        // An empty type in the answer: the one sent.
+        {
+          $id: 'empty-mime',
+          bytes: [1, 2],
+          encoding: 'image/webp',
+          answers: [
+            json({
+              success: true,
+              data: {
+                blob: {
+                  $type: 'blob',
+                  ref: { $link: CID },
+                  mimeType: '',
+                  size: 2,
+                },
+              },
+            }),
+          ],
+        },
+        // The caller's own deadline instead of the size's.
+        {
+          $id: 'own-timeout',
+          bytes: [1],
+          encoding: 'image/png',
+          timeoutMs: 1234,
+          answers: [json({ success: true, data: { blob: BLOB } })],
+        },
       ],
-      ({ bytes, encoding, answers }) =>
+      ({ bytes, encoding, timeoutMs, answers }) =>
         recordFetch(inTurn(...answers), () =>
-          uploadBlob(
-            target(),
-            new Uint8Array(bytes),
-            encoding === undefined ? {} : { encoding },
-          ),
+          uploadBlob(target(), new Uint8Array(bytes), {
+            ...(encoding === undefined ? {} : { encoding }),
+            ...(timeoutMs === undefined ? {} : { timeoutMs }),
+          }),
         ),
     )),
   ];

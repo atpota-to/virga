@@ -172,7 +172,8 @@ public struct HTTPResponse: Sendable, Hashable {
   public var ok: Bool { (200...299).contains(status) }
 
   /// `await res.json()`: UTF-8 (a byte-order mark dropped), then JSON.parse.
-  public func json() throws -> JSONValue { try JSONValue.parse(body) }
+  /// Throws JSONSyntaxError, with V8's words, for a body that isn't JSON.
+  public func json() throws -> JSONValue { try JSONSyntaxError.parse(body) }
 
   /// `await res.json().catch(() => null)`.
   public func jsonOrNull() -> JSONValue? { try? json() }

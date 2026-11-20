@@ -593,3 +593,30 @@ import VirgaTestSupport
     }
   }
 }
+
+/// JSON.parse's SyntaxError, in V8's words (network.jsonSyntax).
+@Suite struct JSONSyntaxParity {
+  @Test func v8() throws {
+    let cases = try Parity.cases("network.jsonSyntax", fn: "v8")
+    #expect(cases.count > 700)
+    for c in cases {
+      let text = c["text"].stringValue ?? ""
+      let actual = JSONSyntaxError.v8(text).map { JSONValue.string($0.message) } ?? .null
+      let d = Parity.diff(actual, c.output)
+      #expect(d == nil, "\(c) \(text.debugDescription): \(d ?? "")")
+      // What VirgaCore's parser accepts, V8 accepts.
+      #expect((try? JSONValue.parse(text)) == nil || c.output == .null, "\(c) \(text.debugDescription)")
+    }
+  }
+
+  /// A body that isn't JSON fails `res.json()` and the SDK with V8's words.
+  @Test func responsesSayWhatV8Says() throws {
+    let html = HTTPResponse(status: 200, body: Data("<!DOCTYPE html><html><head>".utf8))
+    #expect(throws: JSONSyntaxError(message: "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON")) { try html.json() }
+    #expect(html.jsonOrNull() == nil)
+    let bom = HTTPResponse(status: 200, body: Data("\u{FEFF}{".utf8))
+    #expect(throws: JSONSyntaxError(message: "Expected property name or '}' in JSON at position 1 (line 1 column 2)")) { try bom.json() }
+    let empty = HTTPResponse(status: 200, body: Data())
+    #expect(throws: JSONSyntaxError(message: "Unexpected end of JSON input")) { try empty.json() }
+  }
+}

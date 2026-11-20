@@ -678,6 +678,204 @@
         ],
         "$throws": "fetch failed"
       }
+    },
+    {
+      "id": "legacy-blob",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1,
+          2,
+          3
+        ],
+        "encoding": "image/gif",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "cid": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm",
+                  "mimeType": "image/gif"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fgif",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQID"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"cid\":\"bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm\",\"mimeType\":\"image/gif\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/gif",
+          "size": 3
+        }
+      }
+    },
+    {
+      "id": "empty-mime",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1,
+          2
+        ],
+        "encoding": "image/webp",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "",
+                  "size": 2
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fwebp",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQI="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm\"},\"mimeType\":\"\",\"size\":2}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          30001
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/webp",
+          "size": 2
+        }
+      }
+    },
+    {
+      "id": "own-timeout",
+      "fn": "uploadBlob",
+      "input": {
+        "bytes": [
+          1
+        ],
+        "encoding": "image/png",
+        "timeoutMs": 1234,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": {
+                "blob": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 3
+                }
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/upload-blob?encoding=image%2Fpng",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/octet-stream"
+              },
+              "body": {
+                "$bytes": "AQ=="
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm\"},\"mimeType\":\"image/jpeg\",\"size\":3}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1234
+        ],
+        "result": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreihlfz7eeyynraq3zqhozs4q3l3wabewbjevjb5jgophbtcjj7eijm"
+          },
+          "mimeType": "image/jpeg",
+          "size": 3
+        }
+      }
     }
   ]
 }

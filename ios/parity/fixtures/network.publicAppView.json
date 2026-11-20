@@ -667,6 +667,104 @@
       }
     },
     {
+      "id": "ok-not-json",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPostThread",
+        "params": {
+          "uri": "at://x"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!DOCTYPE html><html lang=\"en\">"
+          }
+        ],
+        "keys": [
+          "uri"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!DOCTYPE html><html lang=\"en\">"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+            "status": null,
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ok-cut-short",
+      "fn": "publicXrpc",
+      "input": {
+        "nsid": "app.bsky.feed.getPostThread",
+        "params": {
+          "uri": "at://x"
+        },
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"thread\":{\"post\":"
+          }
+        ],
+        "keys": [
+          "uri"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at%3A%2F%2Fx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{\"thread\":{\"post\":"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "message": "Unexpected end of JSON input",
+            "status": null,
+            "error": null
+          }
+        }
+      }
+    },
+    {
       "id": "offline",
       "fn": "publicXrpc",
       "input": {

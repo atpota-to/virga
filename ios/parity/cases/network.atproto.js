@@ -329,6 +329,19 @@ export default async function cases() {
           ],
         },
         { $id: 'offline', actor: 'x', answers: ['offline'] },
+        // A 200 that isn't JSON: res.json()'s SyntaxError, in V8's words.
+        {
+          $id: 'ok-not-json',
+          actor: 'x',
+          answers: [{ status: 200, text: 'oops' }],
+        },
+        {
+          $id: 'ok-trailing',
+          actor: 'x',
+          answers: [
+            { status: 200, text: '{"did":"did:plc:x"}\n<!-- cached -->' },
+          ],
+        },
       ],
       ({ actor, appview, answers }) =>
         recorded(inTurn(...answers), () =>

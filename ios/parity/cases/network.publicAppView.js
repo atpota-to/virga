@@ -109,6 +109,19 @@ export default async function cases() {
           nsid: 'x.y.z',
           answers: [json({ error: 0, message: 5 }, 400)],
         },
+        // A 200 that isn't JSON: res.json()'s SyntaxError, in V8's words.
+        {
+          $id: 'ok-not-json',
+          nsid: 'app.bsky.feed.getPostThread',
+          params: { uri: 'at://x' },
+          answers: [{ status: 200, text: '<!DOCTYPE html><html lang="en">' }],
+        },
+        {
+          $id: 'ok-cut-short',
+          nsid: 'app.bsky.feed.getPostThread',
+          params: { uri: 'at://x' },
+          answers: [{ status: 200, text: '{"thread":{"post":' }],
+        },
         { $id: 'offline', nsid: 'x.y.z', answers: ['offline'] },
       ].map((c) => ({ ...c, keys: Object.keys(c.params || {}) })),
       ({ nsid, params, appview, answers }) =>

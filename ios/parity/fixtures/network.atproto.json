@@ -1802,6 +1802,80 @@
       }
     },
     {
+      "id": "ok-not-json",
+      "fn": "getProfile",
+      "input": {
+        "actor": "x",
+        "answers": [
+          {
+            "status": 200,
+            "text": "oops"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "oops"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Unexpected token 'o', \"oops\" is not valid JSON"
+      }
+    },
+    {
+      "id": "ok-trailing",
+      "fn": "getProfile",
+      "input": {
+        "actor": "x",
+        "answers": [
+          {
+            "status": 200,
+            "text": "{\"did\":\"did:plc:x\"}\n<!-- cached -->"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=x",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:x\"}\n<!-- cached -->"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Unexpected non-whitespace character after JSON at position 20 (line 2 column 1)"
+      }
+    },
+    {
       "id": "one-chunk",
       "fn": "resolveProfiles",
       "input": {

@@ -110,11 +110,12 @@ import VirgaTestSupport
       await expectReplay(c, checkWaits: false) { transport, _ in
         let agent = XRPCAgent(
           did: Fixed.did, fetchHandler: BackendFetchHandler(backendUrl: Fixed.server, token: Fixed.token, did: Fixed.did, transport: transport))
-        return .of(try await Blobs.uploadBlob(agent: agent, data: bytes, encoding: c["encoding"].stringValue))
+        return .of(
+          try await Blobs.uploadBlob(agent: agent, data: bytes, encoding: c["encoding"].stringValue, timeoutMs: c["timeoutMs"].doubleValue))
       }
       let waits = RecordedFetch(c.output).waits
       if !waits.isEmpty {
-        #expect(waits == [Blobs.blobUploadTimeoutMs(Double(bytes.count))], "\(c)")
+        #expect(waits == [c["timeoutMs"].doubleValue ?? Blobs.blobUploadTimeoutMs(Double(bytes.count))], "\(c)")
       }
     }
   }

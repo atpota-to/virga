@@ -299,6 +299,24 @@ public struct XRPCAgent: Sendable {
     }
   }
 
+  /// Whether any object in `value` has a member named `__proto__` (walked
+  /// without recursion: an answer can nest deeply).
+  static func hasProtoKey(_ value: JSONValue) -> Bool {
+    var stack = [value]
+    while let next = stack.popLast() {
+      switch next {
+      case .object(let members):
+        if members.keys.contains(where: { $0.jsEquals("__proto__") }) { return true }
+        stack.append(contentsOf: members.values)
+      case .array(let items):
+        stack.append(contentsOf: items)
+      default:
+        break
+      }
+    }
+    return false
+  }
+
   /// The SDK's reading of an answer: the body by content type, then an
   /// XRPCError for a status that isn't success.
   static func read(_ response: HTTPResponse) throws -> XRPCResponse {
@@ -307,14 +325,24 @@ public struct XRPCAgent: Sendable {
     let body: XRPCResponse.Body
     // httpResponseBodyParse: `mimeType.includes(...)`, `startsWith(...)`.
     if let contentType, contentType.jsIncludes("application/json") {
+      let parsed: JSONValue
       do {
-        body = .json(try JSONValue.parse(response.body))
+        parsed = try JSONSyntaxError.parse(response.body)
       } catch {
         throw XRPCError(
           statusCode: XRPCResponseType.invalidResponse.rawValue,
           message: "Failed to parse response body: SyntaxError: \(jsMessage(error))"
         )
       }
+      // jsonStringToLex refuses an object with a `__proto__` member
+      // anywhere in the answer, whatever its status.
+      if hasProtoKey(parsed) {
+        throw XRPCError(
+          statusCode: XRPCResponseType.invalidResponse.rawValue,
+          message: "Failed to parse response body: TypeError: Invalid key: __proto__"
+        )
+      }
+      body = .json(parsed)
     } else if let contentType, contentType.jsStartsWith("text/") {
       body = .text(response.text())
     } else {
