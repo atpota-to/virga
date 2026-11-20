@@ -80,7 +80,10 @@ extension SelfDestruct {
   }
 
   /// describeAllow for a loose list: a known key is its phrase, an object
-  /// with a `list` is "people in" its name, anything else is skipped.
+  /// with a `list` is "people in" its name, anything else is skipped. A
+  /// value that isn't a list says 'nobody' (the web iterates a string's
+  /// characters, which comes to the same, and throws on an object or a
+  /// non-zero number).
   public static func describeAllow(_ entries: JSONValue?) -> String {
     var parts: [String] = []
     for entry in entries?.arrayValue ?? [] {
@@ -229,9 +232,18 @@ extension SelfDestruct {
   public static func describeDeleteAt(
     _ iso: String?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
+    describeDeleteAt(iso.map(JSONValue.string), now: now, locale: locale, timeZone: timeZone)
+  }
+
+  /// describeDeleteAt for a loose value, read as `new Date(value)` reads
+  /// it: nil (`undefined`) says nothing, null and 0 are the epoch, a number
+  /// a time, an array its text.
+  public static func describeDeleteAt(
+    _ iso: JSONValue?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
+  ) -> String {
     let zone = TimerJS.zone(timeZone)
     let tag = locale ?? AppLocale.activeLocale()
-    let at = TimerJS.dateMs(iso.map(JSONValue.string), timeZone: zone)
+    let at = TimerJS.dateMs(iso, timeZone: zone)
     guard at.isFinite else { return "" }
     func midnight(_ ms: Double) -> Double {
       guard let f = VirgaCore.JSDate.fields(ms, timeZone: zone) else { return .nan }

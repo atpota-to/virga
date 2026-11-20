@@ -49,7 +49,7 @@ import VirgaTestSupport
 
   @Test func aPinnedTime() throws {
     for c in try TimerFixtures.cases(Self.f, "describeDeleteAt") {
-      let said = SelfDestruct.describeDeleteAt(c.string("iso"), now: c.ms("now"), locale: locale(c), timeZone: c.zone)
+      let said = SelfDestruct.describeDeleteAt(c.loose("iso"), now: c.ms("now"), locale: locale(c), timeZone: c.zone)
       check(json(said), c)
     }
   }

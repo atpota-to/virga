@@ -416,6 +416,24 @@ export default async function cases() {
         now: NaN,
         iso: '2026-08-28T09:00:00Z',
       },
+      // Not a string: read as `new Date(value)` reads it.
+      ...[
+        ['null', null],
+        ['undefined', undefined],
+        ['zero', 0],
+        ['a number', NOW + 3 * H * 1000],
+        ['true', true],
+        ['an array', ['2026-08-28T09:00:00Z']],
+        ['an object', { at: 1 }],
+      ].flatMap(([name, iso]) =>
+        ['UTC', 'Pacific/Chatham'].map((zone) => ({
+          $id: `${name} in ${zone}`,
+          zone,
+          locale: 'en-GB',
+          now: NOW,
+          iso,
+        })),
+      ),
     ],
     ({ zone, locale, now, iso }) =>
       inFormats(locale, zone, () => SD.describeDeleteAt(iso, now)),

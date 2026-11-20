@@ -9203,6 +9203,166 @@
       "output": "Aug 28 at 9:00 AM"
     },
     {
+      "id": "null in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": null
+      },
+      "output": "1 Jan at 0:00"
+    },
+    {
+      "id": "null in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": null
+      },
+      "output": "1 Jan at 12:45"
+    },
+    {
+      "id": "undefined in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000
+      },
+      "output": ""
+    },
+    {
+      "id": "undefined in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000
+      },
+      "output": ""
+    },
+    {
+      "id": "zero in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": 0
+      },
+      "output": "1 Jan at 0:00"
+    },
+    {
+      "id": "zero in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": 0
+      },
+      "output": "1 Jan at 12:45"
+    },
+    {
+      "id": "a number in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": 1787842800000
+      },
+      "output": "today at 15:00"
+    },
+    {
+      "id": "a number in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": 1787842800000
+      },
+      "output": "today at 3:45"
+    },
+    {
+      "id": "true in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": true
+      },
+      "output": "1 Jan at 0:00"
+    },
+    {
+      "id": "true in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": true
+      },
+      "output": "1 Jan at 12:45"
+    },
+    {
+      "id": "an array in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": [
+          "2026-08-28T09:00:00Z"
+        ]
+      },
+      "output": "tomorrow at 9:00"
+    },
+    {
+      "id": "an array in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": [
+          "2026-08-28T09:00:00Z"
+        ]
+      },
+      "output": "today at 21:45"
+    },
+    {
+      "id": "an object in UTC",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": {
+          "at": 1
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "an object in Pacific/Chatham",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "now": 1787832000000,
+        "iso": {
+          "at": 1
+        }
+      },
+      "output": ""
+    },
+    {
       "id": "undefined",
       "fn": "describeWhen",
       "input": {
