@@ -17,28 +17,64 @@
       "swift": []
     },
     "src/legal/acceptance.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Acceptance.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "fe97981d988c"
     },
     "src/legal/documents.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Documents.swift"
+      ],
+      "fixtures": [
+        "session.legal",
+        "session.markdown"
+      ],
+      "note": "All of it. The web imports the two Markdown files at build time; the app bundles the same files (ios/project.yml) and readDocument(key) loads them through LegalDocuments.loader (Bundle.main by default); readDocument(key, source:) reads given text.",
+      "synced": "c664020730c8"
     },
     "src/legal/markdown.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Markdown.swift"
+      ],
+      "fixtures": [
+        "session.markdown"
+      ],
+      "synced": "652610693c7a"
     },
     "src/legal/termsService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/TermsService.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "cbd281c2703f"
     },
     "src/legal/useTermsAcceptance.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/TermsAcceptanceModel.swift"
+      ],
+      "note": "As TermsAcceptanceModel (@MainActor @Observable): update(did:mode:) stands for the hook's props, storageChanged(key:) for the window's storage event (the host calls it if it watches the store), stop() for the unmount. The page-load Set of reported agreements is a static for the app's run. Behaviour tests in TermsAcceptanceModelTests.",
+      "synced": "df3dac0ae0f8"
     },
     "src/legal/version.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Version.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "0084abb10869"
     },
     "src/lib/oauthClient.js": {
       "status": "pending",

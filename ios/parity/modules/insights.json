@@ -104,7 +104,7 @@
       "fixtures": [
         "insights-early.commands"
       ],
-      "note": "All of it. TERMS_PATH and PRIVACY_PATH (src/legal/version.js, VirgaSession's) are private copies in Commands.swift until that module is merged. Null where the app's tables always have a value reads as missing: a period with key null (the web writes `period:null`, arg null, and current true when no period is in use) or a Defense page with title null (the web's keywords start \"null\", here \"undefined\", as for a missing one).",
+      "note": "All of it. TERMS_PATH and PRIVACY_PATH are VirgaSession's LegalVersion.termsPath and privacyPath. Null where the app's tables always have a value reads as missing: a period with key null (the web writes `period:null`, arg null, and current true when no period is in use) or a Defense page with title null (the web's keywords start \"null\", here \"undefined\", as for a missing one).",
       "synced": "0d6f37bbb1a8"
     },
     "src/shell/routes.js": {
