@@ -157,6 +157,41 @@ private func attributes(_ c: ParityCase) throws -> RootAttributes {
     }
   }
 
+  /// Every colour the stylesheets (and the made-up sheets) write, read from
+  /// its text as the browser reads it; what isn't a literal reads as nil.
+  @Test func colourLiteralsInEverySyntax() throws {
+    let table = try ValueTable()
+    var declarations: [(css: String, value: JSONValue, where: String)] = []
+    for c in try Parity.cases("ui.theme", fn: "block") {
+      for d in c.output["declarations"]?.arrayValue ?? [] {
+        guard let css = d["css"]?.stringValue, let i = d["value"]?.intValue else { continue }
+        declarations.append((css, table.values[i], "\(c)"))
+      }
+    }
+    for c in try Parity.cases("ui.theme", fn: "cascade") {
+      for block in c["blocks"].arrayValue ?? [] {
+        for d in block["declarations"]?.arrayValue ?? [] {
+          guard let css = d["css"]?.stringValue, let value = d["value"] else { continue }
+          declarations.append((css, value, "\(c)"))
+        }
+      }
+    }
+    for c in try Parity.cases("ui.themeKit", fn: "kit") where c["kind"].stringValue == "color" {
+      guard let css = c.output["css"]?.stringValue, let value = c.output["value"] else { continue }
+      declarations.append((css, value, "\(c)"))
+    }
+    #expect(declarations.count > 700)
+    var mismatches = Mismatches()
+    for d in declarations {
+      let read = try ThemeColor(css: d.css).map { try JSONValue(encoding: $0) }
+      mismatches.check(read, d.value["color"], "\(d.where) \(d.css)")
+    }
+    #expect(mismatches.list.isEmpty, "\(mismatches.report)")
+    for text in ["#ggg", "#12345", "rgb(1 2)", "rgb(1, 2 3)", "rgb(1 2 3 4)", "hsl(1 2% 3% / )", "rgb(nan 0 0)", "red", "var(--ink)"] {
+      #expect(ThemeColor(css: text) == nil, "\(text)")
+    }
+  }
+
   @Test func madeUpSheets() throws {
     for c in try Parity.cases("ui.theme", fn: "cascade") {
       let blocks = try c["blocks"].decode([ThemeBlock].self)

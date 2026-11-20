@@ -31157,7 +31157,7 @@
       "id": "colours in every syntax",
       "fn": "cascade",
       "input": {
-        "css": ":root { --bg: #fff; --surface: #ffffff80; --surface-2: #0f1b; --surface-3: rgb(15, 27, 51); --hover: rgba(15, 27, 51, 0.5); --scrim: rgb(100% 50% 0% / 25%); --tint: hsl(220 60% 50%); --line: hsla(30, 100%, 50%, 0.3); --line-2: hsl(0.5turn 40% 40%); --line-soft: transparent; --ink: white; --ink-2: BLACK; --muted: rgb(300 -20 128); }",
+        "css": ":root { --bg: #fff; --surface: #ffffff80; --surface-2: #0f1b; --surface-3: rgb(15, 27, 51); --hover: rgba(15, 27, 51, 0.5); --scrim: rgb(100% 50% 0% / 25%); --tint: hsl(220 60% 50%); --line: hsla(30, 100%, 50%, 0.3); --line-2: hsl(0.5turn 40% 40%); --line-soft: transparent; --ink: white; --ink-2: BLACK; --muted: rgb(300 -20 128); --faint: hsl(1.2rad 50% 50%); --rule: hsla(200grad, 30%, 60%, 40%); --ok: rgba(10, 20, 30, 50%); --warn: #FFF0; --danger: hsl(-30 120% 50%); --chart-1: rgb(12.5 300 -1 / 2); --chart-2: HSL(90DEG 100% 25% / 0.5); --chart-3: rgb(10% 20.5% 30% / .25); --chart-4: #1D5EE0CC; }",
         "blocks": [
           {
             "file": "made-up.css",
@@ -31334,6 +31334,123 @@
                     "alpha": 1
                   }
                 }
+              },
+              {
+                "name": "--faint",
+                "css": "hsl(1.2rad 50% 50%)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.6770422048691768,
+                    "green": 0.75,
+                    "blue": 0.25,
+                    "alpha": 1
+                  }
+                }
+              },
+              {
+                "name": "--rule",
+                "css": "hsla(200grad, 30%, 60%, 40%)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.48,
+                    "green": 0.72,
+                    "blue": 0.72,
+                    "alpha": 0.4
+                  }
+                }
+              },
+              {
+                "name": "--ok",
+                "css": "rgba(10, 20, 30, 50%)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.0392156862745098,
+                    "green": 0.0784313725490196,
+                    "blue": 0.11764705882352941,
+                    "alpha": 0.5
+                  }
+                }
+              },
+              {
+                "name": "--warn",
+                "css": "#FFF0",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 1,
+                    "green": 1,
+                    "blue": 1,
+                    "alpha": 0
+                  }
+                }
+              },
+              {
+                "name": "--danger",
+                "css": "hsl(-30 120% 50%)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 1,
+                    "green": 0,
+                    "blue": 0.5,
+                    "alpha": 1
+                  }
+                }
+              },
+              {
+                "name": "--chart-1",
+                "css": "rgb(12.5 300 -1 / 2)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.049019607843137254,
+                    "green": 1,
+                    "blue": 0,
+                    "alpha": 1
+                  }
+                }
+              },
+              {
+                "name": "--chart-2",
+                "css": "HSL(90DEG 100% 25% / 0.5)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.25,
+                    "green": 0.5,
+                    "blue": 0,
+                    "alpha": 0.5
+                  }
+                }
+              },
+              {
+                "name": "--chart-3",
+                "css": "rgb(10% 20.5% 30% / .25)",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.1,
+                    "green": 0.205,
+                    "blue": 0.3,
+                    "alpha": 0.25
+                  }
+                }
+              },
+              {
+                "name": "--chart-4",
+                "css": "#1D5EE0CC",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.11372549019607843,
+                    "green": 0.3686274509803922,
+                    "blue": 0.8784313725490196,
+                    "alpha": 0.8
+                  }
+                }
               }
             ]
           }
@@ -31450,6 +31567,78 @@
             "green": 0,
             "blue": 0.5019607843137255,
             "alpha": 1
+          }
+        },
+        "--faint": {
+          "color": {
+            "red": 0.6770422048691768,
+            "green": 0.75,
+            "blue": 0.25,
+            "alpha": 1
+          }
+        },
+        "--rule": {
+          "color": {
+            "red": 0.48,
+            "green": 0.72,
+            "blue": 0.72,
+            "alpha": 0.4
+          }
+        },
+        "--ok": {
+          "color": {
+            "red": 0.0392156862745098,
+            "green": 0.0784313725490196,
+            "blue": 0.11764705882352941,
+            "alpha": 0.5
+          }
+        },
+        "--warn": {
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 0
+          }
+        },
+        "--danger": {
+          "color": {
+            "red": 1,
+            "green": 0,
+            "blue": 0.5,
+            "alpha": 1
+          }
+        },
+        "--chart-1": {
+          "color": {
+            "red": 0.049019607843137254,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          }
+        },
+        "--chart-2": {
+          "color": {
+            "red": 0.25,
+            "green": 0.5,
+            "blue": 0,
+            "alpha": 0.5
+          }
+        },
+        "--chart-3": {
+          "color": {
+            "red": 0.1,
+            "green": 0.205,
+            "blue": 0.3,
+            "alpha": 0.25
+          }
+        },
+        "--chart-4": {
+          "color": {
+            "red": 0.11372549019607843,
+            "green": 0.3686274509803922,
+            "blue": 0.8784313725490196,
+            "alpha": 0.8
           }
         }
       }

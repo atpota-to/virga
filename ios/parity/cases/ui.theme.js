@@ -382,7 +382,10 @@ const SHEETS = [
     $id: 'colours in every syntax',
     css: `:root { --bg: #fff; --surface: #ffffff80; --surface-2: #0f1b; --surface-3: rgb(15, 27, 51); --hover: rgba(15, 27, 51, 0.5);
         --scrim: rgb(100% 50% 0% / 25%); --tint: hsl(220 60% 50%); --line: hsla(30, 100%, 50%, 0.3); --line-2: hsl(0.5turn 40% 40%);
-        --line-soft: transparent; --ink: white; --ink-2: BLACK; --muted: rgb(300 -20 128); }`,
+        --line-soft: transparent; --ink: white; --ink-2: BLACK; --muted: rgb(300 -20 128);
+        --faint: hsl(1.2rad 50% 50%); --rule: hsla(200grad, 30%, 60%, 40%); --ok: rgba(10, 20, 30, 50%);
+        --warn: #FFF0; --danger: hsl(-30 120% 50%); --chart-1: rgb(12.5 300 -1 / 2); --chart-2: HSL(90DEG 100% 25% / 0.5);
+        --chart-3: rgb(10% 20.5% 30% / .25); --chart-4: #1D5EE0CC; }`,
   },
 ];
 

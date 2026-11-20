@@ -128,6 +128,134 @@ public struct ThemeColor: Codable, Hashable, Sendable, CustomStringConvertible {
   }
 }
 
+// MARK: - Reading a colour
+
+extension ThemeColor {
+  /// A colour literal as the stylesheets may write one, read as a browser
+  /// computes it: `#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`; `rgb()` and
+  /// `rgba()` with spaces and a slash or with commas, channels as numbers
+  /// (0-255) or percentages, alpha as a number or a percentage; `hsl()` and
+  /// `hsla()` with a hue in degrees (bare, deg, grad, rad or turn); and
+  /// `transparent`, `black` and `white`. Out-of-range channels are clamped.
+  /// Nil for anything else (var(), color-mix(), a system colour), which
+  /// only the cascade can work out.
+  public init?(css text: String) {
+    let s = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    let lower = s.lowercased()
+    switch lower {
+    case "transparent": self = .transparent; return
+    case "black": self = ThemeColor(red: 0, green: 0, blue: 0); return
+    case "white": self = ThemeColor(red: 1, green: 1, blue: 1); return
+    default: break
+    }
+    if lower.hasPrefix("#") {
+      let digits = Array(lower.utf8.dropFirst())
+      guard [3, 4, 6, 8].contains(digits.count) else { return nil }
+      var values: [Double] = []
+      for d in digits {
+        switch d {
+        case 0x30...0x39: values.append(Double(d - 0x30))
+        case 0x61...0x66: values.append(Double(d - 0x61 + 10))
+        default: return nil
+        }
+      }
+      let full = digits.count <= 4 ? values.flatMap { [$0, $0] } : values
+      func byte(_ k: Int) -> Double { full[k] * 16 + full[k + 1] }
+      self = ThemeColor(
+        red: byte(0) / 255, green: byte(2) / 255, blue: byte(4) / 255,
+        alpha: full.count == 8 ? byte(6) / 255 : 1)
+      return
+    }
+    guard let open = lower.firstIndex(of: "("), lower.hasSuffix(")") else { return nil }
+    let name = String(lower[..<open])
+    let inside = String(lower[lower.index(after: open)..<lower.index(before: lower.endIndex)])
+    guard let (parts, alphaToken) = ThemeColor.arguments(inside) else { return nil }
+    let alpha: Double
+    if let alphaToken {
+      guard let a = ThemeColor.number(alphaToken) ?? ThemeColor.percent(alphaToken).map({ $0 / 100 }) else { return nil }
+      alpha = a
+    } else {
+      alpha = 1
+    }
+    func unit(_ x: Double) -> Double { Swift.min(1, Swift.max(0, x)) }
+    switch name {
+    case "rgb", "rgba":
+      var channels: [Double] = []
+      for p in parts {
+        if let n = ThemeColor.number(p) {
+          channels.append(n)
+        } else if let pct = ThemeColor.percent(p) {
+          channels.append(pct / 100 * 255)
+        } else {
+          return nil
+        }
+      }
+      self = .rgb(channels[0], channels[1], channels[2], alpha)
+    case "hsl", "hsla":
+      var hue: Double
+      if let n = ThemeColor.number(parts[0]) {
+        hue = n
+      } else {
+        let units: [(String, Double)] = [("deg", 1), ("grad", 0.9), ("rad", 180 / Double.pi), ("turn", 360)]
+        guard let (suffix, per) = units.first(where: { parts[0].hasSuffix($0.0) }),
+          let n = ThemeColor.number(String(parts[0].dropLast(suffix.count)))
+        else { return nil }
+        hue = n * per
+      }
+      func pct(_ p: String) -> Double? {
+        (ThemeColor.percent(p) ?? ThemeColor.number(p)).map { Swift.min(100, Swift.max(0, $0)) }
+      }
+      guard let saturation = pct(parts[1]), let lightness = pct(parts[2]) else { return nil }
+      hue = hue.truncatingRemainder(dividingBy: 360)
+      if hue < 0 { hue += 360 }
+      let sat = saturation / 100
+      let light = lightness / 100
+      func f(_ n: Double) -> Double {
+        let k = (n + hue / 30).truncatingRemainder(dividingBy: 12)
+        let a = sat * Swift.min(light, 1 - light)
+        return light - a * Swift.max(-1, Swift.min(k - 3, 9 - k, 1))
+      }
+      self = ThemeColor(red: unit(f(0)), green: unit(f(8)), blue: unit(f(4)), alpha: unit(alpha))
+    default:
+      return nil
+    }
+  }
+
+  /// The three channel arguments and the alpha, in either syntax.
+  private static func arguments(_ inside: String) -> ([String], String?)? {
+    let trimmed = { (s: Substring) in s.trimmingCharacters(in: .whitespacesAndNewlines) }
+    if inside.contains(",") {
+      var parts = inside.split(separator: ",", omittingEmptySubsequences: false).map(trimmed)
+      guard parts.count == 3 || parts.count == 4, parts.allSatisfy({ !$0.isEmpty && !$0.contains(" ") }) else {
+        return nil
+      }
+      let alpha = parts.count == 4 ? parts.removeLast() : nil
+      return (parts, alpha)
+    }
+    let words = inside.replacingOccurrences(of: "/", with: " / ")
+      .split(whereSeparator: { $0 == " " || $0 == "\n" || $0 == "\t" }).map(String.init)
+    if let slash = words.firstIndex(of: "/") {
+      guard slash == 3, words.count == 5 else { return nil }
+      return (Array(words[0..<3]), words[4])
+    }
+    return words.count == 3 ? (words, nil) : nil
+  }
+
+  /// A CSS number (`12`, `-0.5`, `.5`, `1e3`), finite.
+  private static func number(_ s: String) -> Double? {
+    guard !s.isEmpty, s.utf8.allSatisfy({ ($0 >= 0x30 && $0 <= 0x39) || $0 == 0x2E || $0 == 0x2B || $0 == 0x2D || $0 == 0x65 }),
+      s.utf8.contains(where: { $0 >= 0x30 && $0 <= 0x39 }),
+      let n = Double(s), n.isFinite
+    else { return nil }
+    return n
+  }
+
+  /// A CSS percentage's number (`50%` → 50).
+  private static func percent(_ s: String) -> Double? {
+    s.hasSuffix("%") ? number(String(s.dropLast())) : nil
+  }
+}
+
 // MARK: - Length
 
 /// The units the stylesheets write lengths in.
