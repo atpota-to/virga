@@ -39,8 +39,12 @@ window's width change (it is cheap; cache by `(attrs, width)` if you like).
   attrs, viewportWidth:)` gives the tokens inside an element that shows that
   accent in the page's own theme and contrast.
 - **An element that declares tokens again** (a field in trouble declares its
-  focus ring in the danger colour): `theme.declaring([(.focusRing,
+  focus ring in the danger colour; the shell declares `--figure-size` from
+  the page's column, shell.css): `theme.declaring([(.focusRing,
   ThemeKit.invalidFocusRing), (.focus, ThemeKit.invalidFocus)])`.
+- **A colour another stylesheet writes as a literal** (charts.css's tooltip
+  ground, say): `ThemeColor(css: "#0f1b33")` reads hex, rgb(), rgba(),
+  hsl(), hsla() and the named colours the sheets use, as a browser does.
 - **The colour scheme**: `theme.colorScheme` is `.dark` at night (and only
   then); set `.preferredColorScheme` from it so system controls and the
   keyboard match.
@@ -285,7 +289,7 @@ should the app (an iPad held upright gets the phone's shell). The breakpoints:
 | 760 and narrower | body text 15. |
 | 640 and narrower | the composer (and the adviser beside it) fill the screen, as a full-height sheet with the main button under the thumb. |
 | 560 and narrower | figures two to a row; a section's heading keeps one thing beside its title and puts a small Segmented under it; a list's filters stack; the page's controls go under its words; a row's ⋯ moves to its top corner. |
-| 429 and narrower | the current tab is a tinted disc, its name read out but not shown (in high contrast, from 374 down, with an ink ring). |
+| 429 and narrower | the current tab is a tinted disc, its name read out but not shown. In high contrast, from 374 down, it has a 2-point ink ring (`ThemeKit.highContrastCurrentTabRing`). theme.css's comment means the ring for every disc, but its query says 374 while shell.css starts the disc at 429; that is reported to the web side, and the app follows the stylesheet until it is settled. |
 
 In SwiftUI: from 900 a `NavigationSplitView` with Virga's own sidebar (words
 on the sky, no list styling); below it a `NavigationStack` with the app bar in
