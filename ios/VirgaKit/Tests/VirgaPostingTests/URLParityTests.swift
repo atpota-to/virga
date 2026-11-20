@@ -112,3 +112,33 @@ import VirgaTestSupport
     }
   }
 }
+
+/// Where Node's URL parser (Ada 2.9.2) leaves the URL Standard, the port
+/// follows the Standard, as browsers do, so these can't be Node fixtures.
+/// Neither reaches the posting code, which acts only on http(s) URLs.
+@Suite struct URLStandardBehaviour {
+  /// A path that ends in `..` straight after a non-special URL's root keeps
+  /// the root (the Standard's path state appends an empty segment at the end
+  /// of the input). Ada gives "foo:" and "foo://h".
+  @Test func aDoubleDotAtTheRootKeepsTheRoot() throws {
+    #expect(try WHATWGURL("foo:/..").href == "foo:/")
+    #expect(try WHATWGURL("foo:/.%2E").href == "foo:/")
+    #expect(try WHATWGURL("foo://h/..").href == "foo://h/")
+    #expect(try WHATWGURL("foo://h/.%2e?q#f").href == "foo://h/?q#f")
+    #expect(try WHATWGURL("C:/.%2E", base: "https://example.com/a").href == "c:/")
+    #expect(try WHATWGURL("a+b:////.a/./").href == "a+b:////.a/")
+    // Special URLs agree with Node.
+    #expect(try WHATWGURL("https://h/.%2e").href == "https://h/")
+    #expect(try WHATWGURL("foo:/a/..").href == "foo:/")
+  }
+
+  /// Against a base with an opaque path only a lone fragment resolves; Ada
+  /// also resolves any input that holds a `#` somewhere.
+  @Test func anOpaqueBaseTakesOnlyAFragment() throws {
+    #expect(try WHATWGURL("#y", base: "mailto:a").href == "mailto:a#y")
+    for input in ["x#y", "/p#f", "//h/p#f", "x?q"] {
+      #expect(throws: WHATWGURLError.self, "\(input)") { try WHATWGURL(input, base: "mailto:a") }
+    }
+    #expect(throws: WHATWGURLError.self) { try WHATWGURL("/intent/compose", base: "data:text/plain,hi") }
+  }
+}

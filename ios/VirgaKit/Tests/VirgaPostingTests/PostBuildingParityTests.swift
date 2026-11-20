@@ -10,10 +10,15 @@ import VirgaTestSupport
 @testable import VirgaPosting
 
 @Suite struct ThreadBatchParity {
+  /// The zone a case ran in (the runner's UTC unless it says).
+  static func zone(_ c: ParityCase) -> TimeZone {
+    c.string("tz").flatMap(TimeZone.init(identifier:)) ?? TimeZone(identifier: "UTC")!
+  }
+
   /// The web's `new Date(now).getTime()` of a fixture's `now`.
   static func nowMs(_ c: ParityCase) -> Double {
     switch c["now"] {
-    case .string(let text): return VirgaCore.JSDate.parse(text, timeZone: TimeZone(identifier: "UTC")!)
+    case .string(let text): return VirgaCore.JSDate.parse(text, timeZone: zone(c))
     case .number(let ms): return ms
     default: return .nan
     }
@@ -38,7 +43,7 @@ import VirgaTestSupport
             records: c["records"].arrayValue ?? [],
             replyTo: replyTo,
             nowMs: Self.nowMs(c),
-            timeZone: TimeZone(identifier: "UTC")!,
+            timeZone: Self.zone(c),
             mintTid: mint))
       }
       check(actual, c, strictNulls: true)
