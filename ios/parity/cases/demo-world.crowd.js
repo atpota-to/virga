@@ -5,6 +5,7 @@
 // ios/VirgaKit/Tests/VirgaDemoTests/CrowdParityTests.swift.
 
 import { castFollows, createCrowd } from '../../../harness/crowd.js';
+import { removeRecord, writeRecord } from '../../../harness/repo.js';
 import { LAB, ME, buildWorld } from '../../../harness/world.js';
 import { each, value } from './_helpers.js';
 import { part } from './_canonical.js';
@@ -15,7 +16,88 @@ export const sources = ['harness/crowd.js'];
 const crowdDid = (i) =>
   `did:plc:virgaharnesscrowd${String(i).padStart(5, '0')}`;
 
+const FOLLOW = 'app.bsky.graph.follow';
+
+/**
+ * The crowd's caches across writes. A crowd keeps whom an account follows
+ * as it first saw them and each post's engagers once worked out, while the
+ * count of vouches reads the live follows; a crowd made after the writes
+ * sees them all. Mira follows two more people (one of the cast, one
+ * nobody knows), stops following another, and deletes a busy post.
+ */
+async function afterWrites() {
+  const mira = buildWorld({ now: NOW });
+  const lab = buildWorld({ now: NOW, account: LAB });
+  const crowd = createCrowd([mira, lab]);
+  const unfollowed = mira.cast[2].did;
+  const followed = mira.cast[0].did;
+  const nobody = 'did:plc:harnessnewfriend';
+  const targets = [unfollowed, nobody, followed, mira.cast[5].did];
+  const cards = targets.map((did) => {
+    const p = mira.cast.find((c) => c.did === did);
+    return p
+      ? { did, handle: p.handle, displayName: p.displayName, avatar: p.avatar }
+      : { did, handle: 'handle.invalid', displayName: '' };
+  });
+  const busy = mira.posts.find((p) => p.likes > 40 && !p.replyTo);
+  const quiet = mira.posts.find((p) => p.likes > 5 && p.rkey !== busy.rkey);
+  const uriOf = (p) => `at://${ME.did}/app.bsky.feed.post/${p.rkey}`;
+  const engagers = (c, p) =>
+    Object.fromEntries(
+      Object.entries(c.engagersOf(uriOf(p))).map(([kind, list]) => [
+        kind,
+        part(list),
+      ]),
+    );
+  const ask = (c, { quietToo = false } = {}) => ({
+    profileAs: targets.map((did, i) => c.profileAs(mira, did, cards[i])),
+    relationship: targets.map((did) => c.relationship(mira, did)),
+    knownCount: targets.map((did) => c.knownCount(mira, did)),
+    labKnownCount: targets.map((did) => c.knownCount(lab, did)),
+    busy: engagers(c, busy),
+    ...(quietToo ? { quiet: engagers(c, quiet) } : {}),
+  });
+  const writes = [
+    {
+      op: 'write',
+      collection: FOLLOW,
+      rkey: '3zzzzzzzzzzz2',
+      record: { subject: unfollowed, createdAt: '2026-11-14T10:00:00.000Z' },
+    },
+    {
+      op: 'write',
+      collection: FOLLOW,
+      rkey: '3zzzzzzzzzzy2',
+      record: { subject: nobody, createdAt: '2026-11-14T10:00:00.000Z' },
+    },
+    {
+      op: 'remove',
+      collection: FOLLOW,
+      rkey: mira.follows
+        .find((r) => r.value.subject === followed)
+        .uri.split('/')
+        .pop(),
+    },
+    { op: 'remove', collection: 'app.bsky.feed.post', rkey: busy.rkey },
+    { op: 'remove', collection: 'app.bsky.feed.post', rkey: quiet.rkey },
+  ];
+  const before = ask(crowd);
+  for (const w of writes) {
+    if (w.op === 'write') await writeRecord(mira, w);
+    else removeRecord(mira, w.collection, w.rkey);
+  }
+  return {
+    input: { targets, cards, busy: busy.rkey, quiet: quiet.rkey, writes },
+    output: {
+      before,
+      after: ask(crowd, { quietToo: true }),
+      fresh: ask(createCrowd([mira, lab]), { quietToo: true }),
+    },
+  };
+}
+
 export default async function cases() {
+  const scenario = await afterWrites();
   const mira = buildWorld({ now: NOW });
   const lab = buildWorld({ now: NOW, account: LAB });
   const crowd = createCrowd([mira, lab]);
@@ -68,6 +150,12 @@ export default async function cases() {
   const runaway = [...mira.posts].sort((a, b) => b.likes - a.likes)[0];
 
   return [
+    {
+      id: 'after-writes',
+      fn: 'afterWrites',
+      input: scenario.input,
+      output: scenario.output,
+    },
     ...(await each(
       'castFollows',
       [

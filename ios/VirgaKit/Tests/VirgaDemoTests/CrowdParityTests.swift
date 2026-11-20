@@ -116,4 +116,50 @@ import VirgaTestSupport
     #expect(crowd.with(worlds: changed).engagersOf(uri) == before)
     #expect(Crowd.createCrowd(changed).engagersOf(uri) == CrowdEngagers())
   }
+
+  /// The web crowd's caches across writes, through DemoWorld: whom Mira
+  /// follows as the crowd first saw it (so no `following` for a new follow,
+  /// and one kept for a dropped one), vouches read from her live follows,
+  /// a deleted post's engagers kept once worked out, and a crowd made after
+  /// the writes seeing all of it.
+  @Test func theCachesAcrossWrites() throws {
+    let c = try #require(try Parity.cases(Self.fixture, fn: "afterWrites").first)
+    let demo = DemoWorld(now: DemoFixtures.now)
+    let targets = (c["targets"].arrayValue ?? []).compactMap(\.stringValue)
+    let cards = c["cards"].arrayValue ?? []
+    #expect(targets.count == 4 && cards.count == 4)
+    func engagers(_ crowd: DemoCrowd, _ rkey: String) -> JSONValue {
+      .object(Self.engagers(crowd.engagersOf("at://\(World.me.did)/app.bsky.feed.post/\(rkey)")).mapValues(CanonicalJSON.part))
+    }
+    func ask(_ crowd: DemoCrowd, quietToo: Bool) throws -> JSONValue {
+      let mira = try #require(demo.world(World.me.did))
+      let lab = try #require(demo.world(World.lab.did))
+      var out: [String: JSONValue] = [
+        "profileAs": .array(targets.indices.map { crowd.profileAs(mira, targets[$0], card: cards[$0]) ?? .null }),
+        "relationship": .array(targets.map { crowd.relationship(mira, $0) }),
+        "knownCount": .array(targets.map { .number(Double(crowd.knownCount(mira, $0))) }),
+        "labKnownCount": .array(targets.map { .number(Double(crowd.knownCount(lab, $0))) }),
+        "busy": engagers(crowd, c["busy"].stringValue ?? ""),
+      ]
+      if quietToo { out["quiet"] = engagers(crowd, c["quiet"].stringValue ?? "") }
+      return .object(out)
+    }
+    let before = try ask(demo.crowd, quietToo: false)
+    for w in c["writes"].arrayValue ?? [] {
+      let collection = w["collection"]?.stringValue ?? ""
+      let rkey = w["rkey"]?.stringValue ?? ""
+      if w["op"] == "write" {
+        try demo.writeRecord(
+          did: World.me.did, collection: collection, rkey: rkey, record: w["record"], now: DemoFixtures.now)
+      } else {
+        #expect(try demo.removeRecord(did: World.me.did, collection: collection, rkey: rkey))
+      }
+    }
+    let actual: JSONValue = [
+      "before": before,
+      "after": try ask(demo.crowd, quietToo: true),
+      "fresh": try ask(Crowd.createCrowd(demo.worlds), quietToo: true),
+    ]
+    Self.check(actual, c)
+  }
 }

@@ -5,6 +5,976 @@
   ],
   "cases": [
     {
+      "id": "after-writes",
+      "fn": "afterWrites",
+      "input": {
+        "targets": [
+          "did:plc:virgaharnesscast0002",
+          "did:plc:harnessnewfriend",
+          "did:plc:virgaharnesscast0000",
+          "did:plc:virgaharnesscast0005"
+        ],
+        "cards": [
+          {
+            "did": "did:plc:virgaharnesscast0002",
+            "handle": "cyrus.example.com",
+            "displayName": "Cyrus van der Berg",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          {
+            "did": "did:plc:harnessnewfriend",
+            "handle": "handle.invalid",
+            "displayName": ""
+          },
+          {
+            "did": "did:plc:virgaharnesscast0000",
+            "handle": "ana.example.com",
+            "displayName": "Ana Nakamura",
+            "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"
+          },
+          {
+            "did": "did:plc:virgaharnesscast0005",
+            "handle": "fio.example.com",
+            "displayName": "Fio Okonkwo",
+            "avatar": ""
+          }
+        ],
+        "busy": "3n27wdjp5x225",
+        "quiet": "3n2bcg6lscs27",
+        "writes": [
+          {
+            "op": "write",
+            "collection": "app.bsky.graph.follow",
+            "rkey": "3zzzzzzzzzzz2",
+            "record": {
+              "subject": "did:plc:virgaharnesscast0002",
+              "createdAt": "2026-11-14T10:00:00.000Z"
+            }
+          },
+          {
+            "op": "write",
+            "collection": "app.bsky.graph.follow",
+            "rkey": "3zzzzzzzzzzy2",
+            "record": {
+              "subject": "did:plc:harnessnewfriend",
+              "createdAt": "2026-11-14T10:00:00.000Z"
+            }
+          },
+          {
+            "op": "remove",
+            "collection": "app.bsky.graph.follow",
+            "rkey": "3mzyqiesnj222"
+          },
+          {
+            "op": "remove",
+            "collection": "app.bsky.feed.post",
+            "rkey": "3n27wdjp5x225"
+          },
+          {
+            "op": "remove",
+            "collection": "app.bsky.feed.post",
+            "rkey": "3n2bcg6lscs27"
+          }
+        ]
+      },
+      "output": {
+        "before": {
+          "profileAs": [
+            {
+              "did": "did:plc:virgaharnesscast0002",
+              "handle": "cyrus.example.com",
+              "displayName": "Cyrus van der Berg",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 575,
+              "followsCount": 95,
+              "postsCount": 635,
+              "createdAt": "2022-08-21T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0003",
+                      "handle": "dee.example.com",
+                      "displayName": "Dee Oyelaran",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0007",
+                      "handle": "hana.example.com",
+                      "displayName": "Hana Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0010",
+                      "handle": "kofi.example.com",
+                      "displayName": "Kofi Yilmaz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0018",
+                      "handle": "sami.example.com",
+                      "displayName": "Sami Tanaka",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0021",
+                      "handle": "viktor.example.com",
+                      "displayName": "Viktor Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:harnessnewfriend",
+              "handle": "handle.invalid",
+              "displayName": "",
+              "followersCount": 1999,
+              "followsCount": 319,
+              "postsCount": 2859,
+              "createdAt": "2023-09-01T11:46:40.000Z",
+              "viewer": {}
+            },
+            {
+              "did": "did:plc:virgaharnesscast0000",
+              "handle": "ana.example.com",
+              "displayName": "Ana Nakamura",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 1413,
+              "followsCount": 333,
+              "postsCount": 3873,
+              "createdAt": "2022-07-14T11:46:40.000Z",
+              "viewer": {
+                "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5vrjc9",
+                "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0001",
+                      "handle": "bo.example.com",
+                      "displayName": "Bo Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0009",
+                      "handle": "jun.example.com",
+                      "displayName": "Jun Quispe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0012",
+                      "handle": "maren.example.com",
+                      "displayName": "Maren Rahman",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0016",
+                      "handle": "quentin.example.com",
+                      "displayName": "Quentin Featherstonehaugh-Barrington",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EQ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0027",
+                      "handle": "bettina.example.com",
+                      "displayName": "Bettina Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:virgaharnesscast0005",
+              "handle": "fio.example.com",
+              "displayName": "Fio Okonkwo",
+              "avatar": "",
+              "followersCount": 1470,
+              "followsCount": 190,
+              "postsCount": 730,
+              "createdAt": "2022-05-18T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9",
+                "knownFollowers": {
+                  "count": 12,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0006",
+                      "handle": "gideon.example.com",
+                      "displayName": "Gideon Pereira",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EG%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0015",
+                      "handle": "priya.example.com",
+                      "displayName": "Priya Sokolova",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(48%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(48%2060%25%2024%25)%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0019",
+                      "handle": "tove.example.com",
+                      "displayName": "Tove de la Cruz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0024",
+                      "handle": "yusuf.example.com",
+                      "displayName": "Yusuf Vasquez",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(338%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(338%2060%25%2024%25)%22%3EY%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0028",
+                      "handle": "caetano.example.com",
+                      "displayName": "Caetano Haddad",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "relationship": [
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0002",
+              "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:harnessnewfriend"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0000",
+              "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5vrjc9",
+              "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0005",
+              "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9"
+            }
+          ],
+          "knownCount": [
+            11,
+            0,
+            11,
+            12
+          ],
+          "labKnownCount": [
+            3,
+            0,
+            3,
+            3
+          ],
+          "busy": {
+            "like": {
+              "count": 43,
+              "sha256": "7b319aa110219f7f14ff5ed5a6aab7f14685739ce4021e87266d72180db860bf",
+              "items": [
+                "did:plc:virgaharnessfan01502",
+                "did:plc:virgaharnesscrowd00737",
+                "did:plc:virgaharnesscrowd00711",
+                "did:plc:virgaharnesscrowd00283",
+                "did:plc:virgaharnesscrowd00543",
+                "did:plc:virgaharnesscrowd01039",
+                "did:plc:virgaharnesscrowd00251",
+                "did:plc:virgaharnesscrowd01024",
+                "did:plc:virgaharnesscrowd00194",
+                "did:plc:virgaharnessfan01304",
+                "did:plc:virgaharnesscrowd01053",
+                "did:plc:virgaharnesscrowd00576",
+                "did:plc:virgaharnesscrowd00733",
+                "did:plc:virgaharnesscrowd00923",
+                "did:plc:virgaharnesscrowd00037",
+                "did:plc:virgaharnesscrowd00432",
+                "did:plc:virgaharnesscrowd00332",
+                "did:plc:virgaharnesscast0057",
+                "did:plc:virgaharnesscrowd00533",
+                "did:plc:virgaharnesscrowd00086",
+                "did:plc:virgaharnesscrowd01184",
+                "did:plc:virgaharnesscrowd00166",
+                "did:plc:virgaharnesscrowd00408",
+                "did:plc:virgaharnesscrowd00525",
+                "did:plc:virgaharnesscrowd01144",
+                "did:plc:virgaharnesscrowd00047",
+                "did:plc:virgaharnesscrowd00162",
+                "did:plc:virgaharnesscrowd00854",
+                "did:plc:virgaharnesscrowd01001",
+                "did:plc:virgaharnessfan00264",
+                "did:plc:virgaharnesscrowd00247",
+                "did:plc:virgaharnesscrowd00087",
+                "did:plc:virgaharnesscrowd00781",
+                "did:plc:virgaharnesscrowd00410",
+                "did:plc:virgaharnesscrowd00498",
+                "did:plc:virgaharnesscrowd00308",
+                "did:plc:virgaharnesscrowd00759",
+                "did:plc:virgaharnesscrowd01059",
+                "did:plc:virgaharnesscrowd00331",
+                "did:plc:virgaharnesscrowd00381",
+                "did:plc:virgaharnesscrowd01139",
+                "did:plc:virgaharnesscrowd01186",
+                "did:plc:virgaharnesscrowd00904"
+              ]
+            },
+            "repost": {
+              "count": 5,
+              "sha256": "54bcda672188ddbc8ac80725a0f12b59fe9d1556e0c93047f2e34993c7de3c17",
+              "items": [
+                "did:plc:virgaharnesscrowd01142",
+                "did:plc:virgaharnesscrowd00564",
+                "did:plc:virgaharnesscast0053",
+                "did:plc:virgaharnessfan04517",
+                "did:plc:virgaharnesscrowd00493"
+              ]
+            },
+            "reply": {
+              "count": 2,
+              "sha256": "c7a5a614b01e59e8ce83e45a67007e969694c69af87891173f9f6be8fbc008bc",
+              "items": [
+                "did:plc:virgaharnesscrowd00941",
+                "did:plc:virgaharnesscrowd00046"
+              ]
+            },
+            "threadReply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "quote": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            }
+          }
+        },
+        "after": {
+          "profileAs": [
+            {
+              "did": "did:plc:virgaharnesscast0002",
+              "handle": "cyrus.example.com",
+              "displayName": "Cyrus van der Berg",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 575,
+              "followsCount": 95,
+              "postsCount": 635,
+              "createdAt": "2022-08-21T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0003",
+                      "handle": "dee.example.com",
+                      "displayName": "Dee Oyelaran",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0007",
+                      "handle": "hana.example.com",
+                      "displayName": "Hana Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0010",
+                      "handle": "kofi.example.com",
+                      "displayName": "Kofi Yilmaz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0018",
+                      "handle": "sami.example.com",
+                      "displayName": "Sami Tanaka",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0021",
+                      "handle": "viktor.example.com",
+                      "displayName": "Viktor Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:harnessnewfriend",
+              "handle": "handle.invalid",
+              "displayName": "",
+              "followersCount": 1999,
+              "followsCount": 319,
+              "postsCount": 2859,
+              "createdAt": "2023-09-01T11:46:40.000Z",
+              "viewer": {
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0003",
+                      "handle": "dee.example.com",
+                      "displayName": "Dee Oyelaran",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0007",
+                      "handle": "hana.example.com",
+                      "displayName": "Hana Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0010",
+                      "handle": "kofi.example.com",
+                      "displayName": "Kofi Yilmaz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0018",
+                      "handle": "sami.example.com",
+                      "displayName": "Sami Tanaka",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0021",
+                      "handle": "viktor.example.com",
+                      "displayName": "Viktor Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:virgaharnesscast0000",
+              "handle": "ana.example.com",
+              "displayName": "Ana Nakamura",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 1413,
+              "followsCount": 333,
+              "postsCount": 3873,
+              "createdAt": "2022-07-14T11:46:40.000Z",
+              "viewer": {
+                "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5vrjc9",
+                "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0001",
+                      "handle": "bo.example.com",
+                      "displayName": "Bo Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0009",
+                      "handle": "jun.example.com",
+                      "displayName": "Jun Quispe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0012",
+                      "handle": "maren.example.com",
+                      "displayName": "Maren Rahman",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0016",
+                      "handle": "quentin.example.com",
+                      "displayName": "Quentin Featherstonehaugh-Barrington",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EQ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0027",
+                      "handle": "bettina.example.com",
+                      "displayName": "Bettina Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:virgaharnesscast0005",
+              "handle": "fio.example.com",
+              "displayName": "Fio Okonkwo",
+              "avatar": "",
+              "followersCount": 1470,
+              "followsCount": 190,
+              "postsCount": 730,
+              "createdAt": "2022-05-18T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9",
+                "knownFollowers": {
+                  "count": 12,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0006",
+                      "handle": "gideon.example.com",
+                      "displayName": "Gideon Pereira",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EG%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0015",
+                      "handle": "priya.example.com",
+                      "displayName": "Priya Sokolova",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(48%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(48%2060%25%2024%25)%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0019",
+                      "handle": "tove.example.com",
+                      "displayName": "Tove de la Cruz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0024",
+                      "handle": "yusuf.example.com",
+                      "displayName": "Yusuf Vasquez",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(338%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(338%2060%25%2024%25)%22%3EY%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0028",
+                      "handle": "caetano.example.com",
+                      "displayName": "Caetano Haddad",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "relationship": [
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0002",
+              "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:harnessnewfriend"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0000",
+              "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5vrjc9",
+              "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0005",
+              "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9"
+            }
+          ],
+          "knownCount": [
+            11,
+            11,
+            11,
+            12
+          ],
+          "labKnownCount": [
+            3,
+            0,
+            3,
+            3
+          ],
+          "busy": {
+            "like": {
+              "count": 43,
+              "sha256": "7b319aa110219f7f14ff5ed5a6aab7f14685739ce4021e87266d72180db860bf",
+              "items": [
+                "did:plc:virgaharnessfan01502",
+                "did:plc:virgaharnesscrowd00737",
+                "did:plc:virgaharnesscrowd00711",
+                "did:plc:virgaharnesscrowd00283",
+                "did:plc:virgaharnesscrowd00543",
+                "did:plc:virgaharnesscrowd01039",
+                "did:plc:virgaharnesscrowd00251",
+                "did:plc:virgaharnesscrowd01024",
+                "did:plc:virgaharnesscrowd00194",
+                "did:plc:virgaharnessfan01304",
+                "did:plc:virgaharnesscrowd01053",
+                "did:plc:virgaharnesscrowd00576",
+                "did:plc:virgaharnesscrowd00733",
+                "did:plc:virgaharnesscrowd00923",
+                "did:plc:virgaharnesscrowd00037",
+                "did:plc:virgaharnesscrowd00432",
+                "did:plc:virgaharnesscrowd00332",
+                "did:plc:virgaharnesscast0057",
+                "did:plc:virgaharnesscrowd00533",
+                "did:plc:virgaharnesscrowd00086",
+                "did:plc:virgaharnesscrowd01184",
+                "did:plc:virgaharnesscrowd00166",
+                "did:plc:virgaharnesscrowd00408",
+                "did:plc:virgaharnesscrowd00525",
+                "did:plc:virgaharnesscrowd01144",
+                "did:plc:virgaharnesscrowd00047",
+                "did:plc:virgaharnesscrowd00162",
+                "did:plc:virgaharnesscrowd00854",
+                "did:plc:virgaharnesscrowd01001",
+                "did:plc:virgaharnessfan00264",
+                "did:plc:virgaharnesscrowd00247",
+                "did:plc:virgaharnesscrowd00087",
+                "did:plc:virgaharnesscrowd00781",
+                "did:plc:virgaharnesscrowd00410",
+                "did:plc:virgaharnesscrowd00498",
+                "did:plc:virgaharnesscrowd00308",
+                "did:plc:virgaharnesscrowd00759",
+                "did:plc:virgaharnesscrowd01059",
+                "did:plc:virgaharnesscrowd00331",
+                "did:plc:virgaharnesscrowd00381",
+                "did:plc:virgaharnesscrowd01139",
+                "did:plc:virgaharnesscrowd01186",
+                "did:plc:virgaharnesscrowd00904"
+              ]
+            },
+            "repost": {
+              "count": 5,
+              "sha256": "54bcda672188ddbc8ac80725a0f12b59fe9d1556e0c93047f2e34993c7de3c17",
+              "items": [
+                "did:plc:virgaharnesscrowd01142",
+                "did:plc:virgaharnesscrowd00564",
+                "did:plc:virgaharnesscast0053",
+                "did:plc:virgaharnessfan04517",
+                "did:plc:virgaharnesscrowd00493"
+              ]
+            },
+            "reply": {
+              "count": 2,
+              "sha256": "c7a5a614b01e59e8ce83e45a67007e969694c69af87891173f9f6be8fbc008bc",
+              "items": [
+                "did:plc:virgaharnesscrowd00941",
+                "did:plc:virgaharnesscrowd00046"
+              ]
+            },
+            "threadReply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "quote": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            }
+          },
+          "quiet": {
+            "like": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "repost": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "reply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "threadReply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "quote": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            }
+          }
+        },
+        "fresh": {
+          "profileAs": [
+            {
+              "did": "did:plc:virgaharnesscast0002",
+              "handle": "cyrus.example.com",
+              "displayName": "Cyrus van der Berg",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 575,
+              "followsCount": 95,
+              "postsCount": 635,
+              "createdAt": "2022-08-21T11:46:40.000Z",
+              "viewer": {
+                "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5bsbyb",
+                "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0003",
+                      "handle": "dee.example.com",
+                      "displayName": "Dee Oyelaran",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0007",
+                      "handle": "hana.example.com",
+                      "displayName": "Hana Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0010",
+                      "handle": "kofi.example.com",
+                      "displayName": "Kofi Yilmaz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0018",
+                      "handle": "sami.example.com",
+                      "displayName": "Sami Tanaka",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0021",
+                      "handle": "viktor.example.com",
+                      "displayName": "Viktor Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:harnessnewfriend",
+              "handle": "handle.invalid",
+              "displayName": "",
+              "followersCount": 1999,
+              "followsCount": 319,
+              "postsCount": 2859,
+              "createdAt": "2023-09-01T11:46:40.000Z",
+              "viewer": {
+                "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/7ibmj7",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0003",
+                      "handle": "dee.example.com",
+                      "displayName": "Dee Oyelaran",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(268%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(268%2060%25%2024%25)%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0007",
+                      "handle": "hana.example.com",
+                      "displayName": "Hana Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0010",
+                      "handle": "kofi.example.com",
+                      "displayName": "Kofi Yilmaz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EK%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0018",
+                      "handle": "sami.example.com",
+                      "displayName": "Sami Tanaka",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(96%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(96%2060%25%2024%25)%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0021",
+                      "handle": "viktor.example.com",
+                      "displayName": "Viktor Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:virgaharnesscast0000",
+              "handle": "ana.example.com",
+              "displayName": "Ana Nakamura",
+              "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(212%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(212%2060%25%2024%25)%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E",
+              "followersCount": 1413,
+              "followsCount": 333,
+              "postsCount": 3873,
+              "createdAt": "2022-07-14T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4",
+                "knownFollowers": {
+                  "count": 11,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0001",
+                      "handle": "bo.example.com",
+                      "displayName": "Bo Underhill",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(28%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(28%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0009",
+                      "handle": "jun.example.com",
+                      "displayName": "Jun Quispe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0012",
+                      "handle": "maren.example.com",
+                      "displayName": "Maren Rahman",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0016",
+                      "handle": "quentin.example.com",
+                      "displayName": "Quentin Featherstonehaugh-Barrington",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EQ%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0027",
+                      "handle": "bettina.example.com",
+                      "displayName": "Bettina Whitcombe",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(12%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(12%2060%25%2024%25)%22%3EB%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "did": "did:plc:virgaharnesscast0005",
+              "handle": "fio.example.com",
+              "displayName": "Fio Okonkwo",
+              "avatar": "",
+              "followersCount": 1470,
+              "followsCount": 190,
+              "postsCount": 730,
+              "createdAt": "2022-05-18T11:46:40.000Z",
+              "viewer": {
+                "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9",
+                "knownFollowers": {
+                  "count": 13,
+                  "followers": [
+                    {
+                      "did": "did:plc:virgaharnesscast0002",
+                      "handle": "cyrus.example.com",
+                      "displayName": "Cyrus van der Berg",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(146%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(146%2060%25%2024%25)%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0006",
+                      "handle": "gideon.example.com",
+                      "displayName": "Gideon Pereira",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(188%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(188%2060%25%2024%25)%22%3EG%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0015",
+                      "handle": "priya.example.com",
+                      "displayName": "Priya Sokolova",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(48%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(48%2060%25%2024%25)%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0019",
+                      "handle": "tove.example.com",
+                      "displayName": "Tove de la Cruz",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(300%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(300%2060%25%2024%25)%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    },
+                    {
+                      "did": "did:plc:virgaharnesscast0024",
+                      "handle": "yusuf.example.com",
+                      "displayName": "Yusuf Vasquez",
+                      "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22hsl(338%2070%25%2078%25)%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22hsl(338%2060%25%2024%25)%22%3EY%3C%2Ftext%3E%3C%2Fsvg%3E"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "relationship": [
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0002",
+              "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/5bsbyb",
+              "followedBy": "at://did:plc:virgaharnesscast0002/app.bsky.graph.follow/bcu8li"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:harnessnewfriend",
+              "following": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.follow/7ibmj7"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0000",
+              "followedBy": "at://did:plc:virgaharnesscast0000/app.bsky.graph.follow/eovrx4"
+            },
+            {
+              "$type": "app.bsky.graph.defs#relationship",
+              "did": "did:plc:virgaharnesscast0005",
+              "followedBy": "at://did:plc:virgaharnesscast0005/app.bsky.graph.follow/8xi0s9"
+            }
+          ],
+          "knownCount": [
+            11,
+            11,
+            11,
+            13
+          ],
+          "labKnownCount": [
+            3,
+            0,
+            3,
+            3
+          ],
+          "busy": {
+            "like": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "repost": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "reply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "threadReply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "quote": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            }
+          },
+          "quiet": {
+            "like": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "repost": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "reply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "threadReply": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            },
+            "quote": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "items": []
+            }
+          }
+        }
+      }
+    },
+    {
       "id": "castFollows#1",
       "fn": "castFollows",
       "input": {
