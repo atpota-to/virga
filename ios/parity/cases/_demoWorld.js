@@ -2,6 +2,7 @@
 // as a fixture holds it (ios/parity/cases/_canonical.js says how). Swift:
 // ios/VirgaKit/Tests/VirgaDemoTests/DemoWorldSupport.swift.
 
+import { vi } from 'vitest';
 import {
   LAB,
   ME,
@@ -68,5 +69,29 @@ export function worldDigest(world) {
     parts,
     postRecords: part(world.posts.map((p) => postRecord(p))),
     repoRecords: part(repoRecords(world)),
+  };
+}
+
+/**
+ * Runs `fn` with the clock stopped at `ms`, for harness code that reads it
+ * (`new Date()`, `Date.now()`): the Swift port takes the same moment as
+ * `now`.
+ */
+export async function atTime(ms, fn) {
+  vi.useFakeTimers({ now: ms, toFake: ['Date'] });
+  try {
+    return await fn();
+  } finally {
+    vi.useRealTimers();
+  }
+}
+
+/** A thrown error as a fixture holds it: message, and name, status and error when it has them. */
+export function thrown(error) {
+  return {
+    $throws: String(error?.message || error),
+    name: error?.name,
+    status: error?.status,
+    error: error?.error,
   };
 }

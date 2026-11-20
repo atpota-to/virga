@@ -334,10 +334,11 @@ public struct WorldWritten: Codable, Hashable, Sendable {
 /// Uploaded bytes, kept as one of the account's blobs.
 public struct WorldBlob: Codable, Hashable, Sendable {
   public var bytes: [UInt8]
-  public var mimeType: String
+  /// nil when the upload named none (the web keeps `undefined`).
+  public var mimeType: String?
   public var size: Int
 
-  public init(bytes: [UInt8], mimeType: String, size: Int) {
+  public init(bytes: [UInt8], mimeType: String?, size: Int) {
     self.bytes = bytes
     self.mimeType = mimeType
     self.size = size
