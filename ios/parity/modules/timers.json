@@ -12,7 +12,8 @@
         "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Rules.swift",
         "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Words.swift",
         "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Slots.swift",
-        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerJS.swift"
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerJS.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerJS+Sort.swift"
       ],
       "fixtures": [
         "timers.selfDestruct",

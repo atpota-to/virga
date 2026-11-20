@@ -1,11 +1,12 @@
 // Ports src/posting/timers/selfDestruct.js
 //
 // The pieces of JavaScript's semantics the timer ports lean on: what
-// `new Date(value).getTime()` makes of a loose value, `raw && typeof raw ===
-// 'object'`, `x.toLocaleString(locale)` on a loose value, and
-// `Array.prototype.sort` exactly as V8 runs it, for comparators that aren't
-// a consistent order (compareTimers calls two unreadable times equal to
-// everything). Internal.
+// `new Date(value).getTime()` makes of a loose value (and the one local
+// zone it reads a date-time without an offset in), `raw && typeof raw ===
+// 'object'`, `x.toLocaleString(locale)` on a loose value, and (in
+// TimerJS+Sort.swift) `Array.prototype.sort` exactly as V8 runs it, for
+// comparators that aren't a consistent order (compareTimers calls two
+// unreadable times equal to everything). Internal.
 
 import Foundation
 import VirgaCore
@@ -92,65 +93,6 @@ enum TimerJS {
   static func joinPiece(_ value: JSONValue?) -> String {
     guard let value, !value.isNull else { return "" }
     return value.jsString
-  }
-
-  /// `[...items].sort(compare)` as V8 sorts it (TimSort). Under 64
-  /// elements, a run is counted from the start and the rest binary-inserted,
-  /// comparison for comparison as V8 makes them, so even an inconsistent
-  /// comparator gives V8's order. A comparator's NaN is 0. Longer arrays,
-  /// which V8 merges, are sorted stably (the same order for any consistent
-  /// comparator).
-  static func v8Sorted<T>(_ items: [T], by compare: (T, T) -> Double) -> [T] {
-    var a = items
-    let n = a.count
-    if n < 2 { return a }
-    func cmp(_ x: T, _ y: T) -> Double {
-      let v = compare(x, y)
-      return v.isNaN ? 0 : v
-    }
-    guard n < 64 else {
-      return a.enumerated()
-        .sorted { x, y in
-          let c = cmp(x.element, y.element)
-          if c < 0 { return true }
-          if c > 0 { return false }
-          return x.offset < y.offset
-        }
-        .map(\.element)
-    }
-    // CountAndMakeRun(0, n).
-    var run = 2
-    let descending = cmp(a[1], a[0]) < 0
-    var previous = a[1]
-    var index = 2
-    while index < n {
-      let current = a[index]
-      let order = cmp(current, previous)
-      if descending ? order >= 0 : order < 0 { break }
-      previous = current
-      run += 1
-      index += 1
-    }
-    if descending { a[0..<run].reverse() }
-    // BinaryInsertionSort(0, run, n).
-    var start = run
-    while start < n {
-      var left = 0
-      var right = start
-      let pivot = a[start]
-      while left < right {
-        let mid = left + ((right - left) >> 1)
-        if cmp(pivot, a[mid]) < 0 { right = mid } else { left = mid + 1 }
-      }
-      var p = start
-      while p > left {
-        a[p] = a[p - 1]
-        p -= 1
-      }
-      a[left] = pivot
-      start += 1
-    }
-    return a
   }
 
   /// Whether two values would `JSON.stringify` the same: compared by their

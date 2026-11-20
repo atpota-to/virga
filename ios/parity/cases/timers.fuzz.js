@@ -1177,5 +1177,104 @@ export default async function cases() {
     (a) => TS.timerPostUrl(a.row),
   );
 
+  // ---- sorting more than V8 sorts by insertion -------------------------------------
+  // V8 binary-inserts under 64 elements and merges runs above (galloping
+  // when one run keeps winning). With a comparator that isn't a consistent
+  // order, as compareTimers isn't once a time can't be read, the order it
+  // leaves depends on every comparison made; these hold the port's sort to
+  // it. Values are numbers or null; the comparator calls null equal to
+  // everything ('unreadable'), or is no order at all ('arbitrary').
+
+  const COMPARATORS = {
+    unreadable: (x, y) => (x.v === null || y.v === null ? 0 : x.v - y.v),
+    arbitrary: (x, y) =>
+      x.v === null || y.v === null ? 0 : (x.v % 7) - (y.v % 5) + 0.5,
+  };
+  const SIZES = [2, 63, 64, 65, 100, 127, 128, 129, 200, 300, 513];
+  const values = (size, shape) => {
+    switch (shape) {
+      case 'runs': {
+        // Long ascending and descending runs, so merges gallop.
+        const out = [];
+        while (out.length < size) {
+          const run = 1 + R.int(40);
+          const start = R.int(1000);
+          const up = R.chance(0.6);
+          for (let i = 0; i < run && out.length < size; i += 1)
+            out.push(R.chance(0.05) ? null : up ? start + i : start - i);
+        }
+        return out;
+      }
+      case 'few':
+        return times(size, () => (R.chance(0.1) ? null : R.int(4)));
+      case 'sorted':
+        return times(size, (i) => (R.chance(0.03) ? null : i));
+      default:
+        return times(size, () => (R.chance(0.15) ? null : R.int(500)));
+    }
+  };
+  const sortCases = [];
+  for (const size of SIZES)
+    for (const shape of ['random', 'runs', 'few', 'sorted'])
+      for (const comparator of Object.keys(COMPARATORS))
+        sortCases.push({
+          $id: `${size} ${shape} ${comparator}`,
+          comparator,
+          values: values(size, shape),
+        });
+  out.push(
+    ...(await each(
+      'Array.prototype.sort',
+      sortCases,
+      ({ comparator, values: v }) =>
+        v
+          .map((x, i) => ({ i, v: x }))
+          .sort(COMPARATORS[comparator])
+          .map((x) => x.i),
+    )),
+  );
+
+  const manyRows = (size, shape) => {
+    const times_ = values(size, shape);
+    return times_.map((t, i) => ({
+      id: `r${i}`,
+      status: R.pick([
+        'armed',
+        'armed',
+        'checking',
+        'deleted',
+        'acted',
+        'failed',
+      ]),
+      ...(t === null
+        ? { checkAt: R.pick(['soon', 'never']) }
+        : R.chance(0.3)
+          ? { resolvedAt: isoAt(t * 60), checkAt: isoAt(t * 30) }
+          : { checkAt: isoAt(t * 60) }),
+    }));
+  };
+  await add(
+    'groupTimers (many)',
+    [64, 129, 250].flatMap((size) =>
+      ['random', 'runs'].map((shape) => ({
+        rows: manyRows(size, shape),
+        history: R.chance(0.5),
+      })),
+    ),
+    (a) => SD.groupTimers(a.rows, { history: a.history }),
+  );
+  await add(
+    'waitingTimerRows (many)',
+    [64, 150].map((size) => ({
+      rows: values(size, 'runs').map((t, i) => ({
+        id: `s${i}`,
+        status: R.pick(['pending', 'publishing', 'done']),
+        scheduledFor: t === null ? 'never' : isoAt(t * 60),
+        payload: { selfDestruct: { lifespanSeconds: 3600 } },
+      })),
+    })),
+    (a) => SD.waitingTimerRows(a.rows),
+  );
+
   return out;
 }

@@ -225,6 +225,35 @@ import VirgaTestSupport
     }
   }
 
+  /// V8's sort over more elements than it binary-inserts, with comparators
+  /// that aren't a consistent order: the same comparisons, the same order.
+  @Test func sortingAsV8Does() throws {
+    typealias Item = (i: Int, v: Double?)
+    let comparators: [String: (Item, Item) -> Double] = [
+      "unreadable": { x, y in
+        guard let a = x.v, let b = y.v else { return 0 }
+        return a - b
+      },
+      "arbitrary": { x, y in
+        guard let a = x.v, let b = y.v else { return 0 }
+        return a.truncatingRemainder(dividingBy: 7) - b.truncatingRemainder(dividingBy: 5) + 0.5
+      },
+    ]
+    try each("Array.prototype.sort") { c in
+      let items: [Item] = (c["values"].arrayValue ?? []).enumerated().map { ($0.offset, $0.element.doubleValue) }
+      let compare = try #require(comparators[c.string("comparator") ?? ""])
+      let sorted = TimerJS.v8Sorted(items, by: compare).map { JSONValue.number(Double($0.i)) }
+      check(.array(sorted), c)
+    }
+    try each("groupTimers (many)") { c in
+      let groups = SelfDestruct.groupTimers(c["rows"].arrayValue, history: c["history"].isTruthy, timeZone: utcZone)
+      check(json(groups), c, strictNulls: true)
+    }
+    try each("waitingTimerRows (many)") { c in
+      check(json(SelfDestruct.waitingTimerRows(c["rows"].arrayValue, timeZone: utcZone)), c, strictNulls: true)
+    }
+  }
+
   @Test func theServiceHelpers() throws {
     try each("timerSnippet") { c in
       check(json(TimerService.timerSnippet(c.loose("text"))), c)
