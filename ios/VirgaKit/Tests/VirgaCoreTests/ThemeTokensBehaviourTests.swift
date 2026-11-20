@@ -319,7 +319,9 @@ private extension ResolvedTheme {
     #expect(page(.day, width: 390).textFigure == 40 && page(.day, width: 1920).textFigure == 60)
     #expect(deskPage.measure == .value(54, .ch))
     #expect(deskPage.points(.measure, in: ThemeLengthContext(viewportWidth: desk, chWidth: 8)) == 432)
-    #expect(deskPage.shellMax == 272 + 1040 + 51.2 * 2)
+    // Typed first: Xcode's type checker gives up on the mixed literals inline.
+    let shellMax: Double = 272 + 1040 + 51.2 * 2
+    #expect(deskPage.shellMax == shellMax)
   }
 
   @Test func theKitGoesThroughTheTheme() throws {
