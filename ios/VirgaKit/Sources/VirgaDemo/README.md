@@ -26,7 +26,7 @@ of the web file's SHA-256 when its Swift side was last brought in line, as
 | `harness/views.js` | `Harness/Views.swift`, `Harness/Views+Models.swift` | ported | `demo-world.views` | `d8991ff0bc80` |
 | `harness/buildCar.js` | `Harness/BuildCar.swift` | ported | `demo-world.buildCar` | `e1280e68941c` |
 | `harness/png.js` | `Harness/PNG.swift` | ported | `demo-world.png` | `57fe7a7d593c` |
-| `harness/harness.js` | `DemoWorld.swift` | partial: the worlds `createHarness` builds and holds (`worlds`, `worldOf`). The address flags, the fake server, the agents and `window.__harness` come with the fake network | — | — |
+| `harness/harness.js` | `Harness/Harness.swift`, `DemoWorld.swift` | partial: `READ_ONLY_SCOPE`, `withDefense`, the address flags' `scope` (`Harness.grantedScope(scope:defense:)`), and the worlds `createHarness` builds and holds (`worlds`, `worldOf`, each world's `scope` and `pdsUrl`, `grantOf`, `regrant`). The other flags (`readFlags`'s accounts, mode, limits, AI, terms, cron, latency, now), the fake server, the agents, `install` and `window.__harness` come with the fake network | `demo-world.harness` | `c4768f342f72` |
 | `harness/fakeNetwork.js` | `DemoWorld.swift` (`repoCar`) | partial: only the repo CAR cache. The routes (public AppView, PDS, PLC directory, Constellation, the card and video services) wait for VirgaNetwork's `HTTPTransport` and `MockTransport` | — | — |
 | `harness/fakeXrpc.js` | — | pending: the signed-in agent; needs VirgaNetwork's XRPC client and VirgaSession | — | — |
 | `harness/fakeServer.js` | — | pending: Virga's server; needs VirgaNetwork's `VirgaBackend` | — | — |
@@ -62,6 +62,19 @@ header.
   CAR keys are prefix-compressed by UTF-16 code unit.
 - **No clock.** Where the web reads `Date.now()` or `new Date()` (a written
   post's time, a live count, a list's date), the Swift function takes `now`.
+- **No device zone.** A written post's time without an offset is read in
+  the browser's zone on the web (`Date.parse`); here in `DemoWorld`'s (and
+  `DemoViews`') `timeZone`, UTC unless given. The views fixture holds it in
+  five zones, across a spring gap and an autumn overlap.
+- **The caches are the web's.** The crowd keeps whom an account follows as
+  it first saw it and each post's engagers once worked out, and reads the
+  live follows for vouches, as the web's crowd does; `demo-world.crowd`'s
+  `afterWrites` scenario holds that across writes. One difference in
+  shape: the web makes a crowd per consumer (the fake network, each
+  agent, the fake server each call `createViews`), so their first sights
+  of a world can differ; a `DemoWorld` has one crowd, shared by every
+  reader. Whoever builds the fake network on it decides whether that
+  matters.
 
 ## Parity
 
@@ -81,6 +94,7 @@ functions are held whole.
 | `demo-world.repo` | `cases/demo-world.repo.js` | `RepoParityTests.swift` |
 | `demo-world.views` | `cases/demo-world.views.js` | `ViewsParityTests.swift` |
 | `demo-world.buildCar` | `cases/demo-world.buildCar.js` | `BuildCarParityTests.swift` |
+| `demo-world.harness` | `cases/demo-world.harness.js` | `HarnessParityTests.swift` |
 | `demo-world.png` | `cases/demo-world.png.js` | `PNGParityTests.swift` |
 
 `DemoWorldTests.swift` covers what isn't a fixture: writes seen by every

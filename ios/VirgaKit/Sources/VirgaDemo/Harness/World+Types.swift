@@ -389,7 +389,9 @@ public struct AccountWorld: Codable, Hashable, Sendable {
   /// Bumped on every write, so a cached CAR knows it is stale.
   public var revision: Int
   /// What Virga's server reports the session was granted, and the account's
-  /// PDS: harness/harness.js sets these on each world it makes.
+  /// PDS: harness/harness.js sets these on each world it makes (DemoWorld's
+  /// `init(now:accounts:scope:timeZone:)` does too); nil in a world
+  /// `World.buildWorld` gives alone.
   public var scope: String?
   public var pdsUrl: String?
 }

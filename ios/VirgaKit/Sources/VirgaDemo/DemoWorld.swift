@@ -8,7 +8,9 @@
 // the two apps can be compared screen for screen.
 //
 // It holds what harness/harness.js's createHarness holds of the worlds
-// (`worlds`, `worldOf`) and the repo CAR cache harness/fakeNetwork.js keeps;
+// (`worlds`, `worldOf`, each world's granted scope and PDS, `grantOf`,
+// `regrant`; the scope helpers are in Harness/Harness.swift) and the repo
+// CAR cache harness/fakeNetwork.js keeps;
 // the fake network itself (the AppView, PDS, Constellation and Virga's
 // server behind MockTransport) is built on this once VirgaNetwork is in.
 //
@@ -30,6 +32,9 @@ public final class DemoWorld: Sendable {
 
   /// The moment the worlds are dated back from, in epoch milliseconds.
   public let now: Double
+  /// The scope the sessions were granted (the flags' `scope`): what
+  /// `grantOf` answers for an account without one of its own.
+  public let scope: String
   /// The zone a written post's time without an offset is read in (the
   /// web's browser zone); UTC unless given.
   public let timeZone: TimeZone
@@ -37,22 +42,38 @@ public final class DemoWorld: Sendable {
   private let index: ViewsIndex
   private let cars = Locked<[JSKey: (revision: Int, car: [UInt8])]>([:])
 
-  /// The harness's worlds: one per account, Mira and Field Lab by default
-  /// (`?accounts=1` is `[World.me]`), each built at `now`.
+  /// The harness's worlds, as createHarness builds them: one per account,
+  /// Mira and Field Lab by default (`?accounts=1` is `[World.me]`), each
+  /// built at `now`, with the session's granted `scope` (the flags' scope:
+  /// `Harness.grantedScope(scope:defense:)`) and the harness's PDS.
   public convenience init(
-    now: Double, accounts: [WorldAccount] = [World.me, World.lab], timeZone: TimeZone = .gmt
+    now: Double, accounts: [WorldAccount] = [World.me, World.lab], scope: String = Harness.defaultScope,
+    timeZone: TimeZone = .gmt
   ) {
-    self.init(worlds: accounts.map { World.buildWorld(now: now, account: $0) }, timeZone: timeZone)
+    let worlds = accounts.map { account in
+      var world = World.buildWorld(now: now, account: account)
+      // What Virga's server reports about the session (/api/oauth/session).
+      world.scope = scope
+      world.pdsUrl = World.pds
+      return world
+    }
+    self.init(worlds: worlds, scope: scope, timeZone: timeZone)
   }
 
   /// `now` as a Date, cut to the millisecond as `Date.now()` is.
-  public convenience init(now: Date, accounts: [WorldAccount] = [World.me, World.lab], timeZone: TimeZone = .gmt) {
-    self.init(now: (now.timeIntervalSince1970 * 1000).rounded(.down), accounts: accounts, timeZone: timeZone)
+  public convenience init(
+    now: Date, accounts: [WorldAccount] = [World.me, World.lab], scope: String = Harness.defaultScope,
+    timeZone: TimeZone = .gmt
+  ) {
+    self.init(
+      now: (now.timeIntervalSince1970 * 1000).rounded(.down), accounts: accounts, scope: scope, timeZone: timeZone)
   }
 
-  /// Worlds built (and perhaps changed) elsewhere.
-  public init(worlds: [AccountWorld], timeZone: TimeZone = .gmt) {
+  /// Worlds built (and perhaps changed) elsewhere, kept as they are; `scope`
+  /// is what `grantOf` answers for a world without one.
+  public init(worlds: [AccountWorld], scope: String = Harness.defaultScope, timeZone: TimeZone = .gmt) {
     now = worlds.first?.now ?? .nan
+    self.scope = scope
     self.timeZone = timeZone
     state = Locked(worlds)
     index = ViewsIndex(worlds)
@@ -71,6 +92,24 @@ public final class DemoWorld: Sendable {
 
   /// Defense's crowd over the worlds as they are now (the views' own).
   public var crowd: DemoCrowd { views.crowd }
+
+  /// What the account's session was granted now (`grantOf`): its world's
+  /// scope, or the harness's for an account it doesn't have.
+  public func grantOf(_ did: String) -> String {
+    world(did)?.scope ?? scope
+  }
+
+  /// Signs the account in again with or without Defense's permission, as
+  /// Turn on Defense (and Turn off) does (`regrant`): its world's scope
+  /// changes at once. Answers the new scope.
+  @discardableResult
+  public func regrant(_ did: String, defense: Harness.DefenseLevel) throws -> String {
+    try update(did) { world in
+      let granted = Harness.withDefense(world.scope, defense)
+      world.scope = granted
+      return granted
+    }
+  }
 
   /// Changes one account's world under the lock: the way every write goes
   /// in, through HarnessRepo.
