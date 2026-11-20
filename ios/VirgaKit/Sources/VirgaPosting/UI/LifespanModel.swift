@@ -88,13 +88,17 @@ public enum LifespanModel {
   }
 
   /// A pinned time (ISO), keeping the length behind it for when the pin is
-  /// taken off.
-  public static func withPin(_ rule: some TimerRuleInput, _ iso: JSONValue?) -> TimerRule {
-    patchRule(rule, ["deleteAt": TimerJS.truthy(iso) ?? .null])
+  /// taken off. A time without an offset is read in `timeZone` (the active
+  /// zone, the web's local time, by default).
+  public static func withPin(_ rule: some TimerRuleInput, _ iso: JSONValue?, timeZone: TimeZone? = nil) -> TimerRule {
+    // `deleteAt: iso || null`, read here rather than by normalizeTimer so
+    // the zone can be given; the ISO it gives reads the same in any zone.
+    let pin = TimerJS.truthy(iso).flatMap { SelfDestruct.parseDeleteAt($0, timeZone: timeZone) }
+    return patchRule(rule, ["deleteAt": pin.map(JSONValue.string) ?? .null])
   }
 
-  public static func withPin(_ rule: some TimerRuleInput, _ iso: String?) -> TimerRule {
-    withPin(rule, iso.map(JSONValue.string))
+  public static func withPin(_ rule: some TimerRuleInput, _ iso: String?, timeZone: TimeZone? = nil) -> TimerRule {
+    withPin(rule, iso.map(JSONValue.string), timeZone: timeZone)
   }
 
   /// The effects after pressing one. Picking a gate while the rule only
