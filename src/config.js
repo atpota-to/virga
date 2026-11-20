@@ -117,6 +117,12 @@ export const PERMISSION_GROUPS = [
     tokens: [appview('app.bsky.notification.listNotifications')],
   },
   {
+    key: 'views',
+    title: 'Read your posts’ view counts, as you.',
+    text: 'Bluesky gives a post’s view count only to its author, on a signed-in read of the post. Virga reads them for your own posts and keeps them in this browser. Like Bluesky’s app, it reads them only if your Bluesky preferences say you’re 18 or over, and not at all if you turn them off in Settings.',
+    tokens: [appview('app.bsky.feed.getPosts')],
+  },
+  {
     key: 'follow',
     title: 'Follow and unfollow, when you press the button.',
     text: 'Create and delete follow records, for the Follow buttons, Follow cleanup and the Follow-back queue.',
@@ -160,7 +166,7 @@ export const PERMISSION_GROUPS = [
   {
     key: 'compose',
     title: 'Read what a new post needs.',
-    text: 'Your default reply settings, your saved posts (for the embed library) and post search.',
+    text: 'Your default reply settings, your saved posts (for the embed library) and post search. The same read of your preferences says whether Bluesky has you down as 18 or over, which view counts follow.',
     tokens: [
       appview('app.bsky.actor.getPreferences'),
       appview('app.bsky.bookmark.getBookmarks'),
@@ -210,10 +216,18 @@ export const OAUTH_SCOPE = [
   appview('app.bsky.actor.getPreferences'),
   appview('app.bsky.bookmark.getBookmarks'),
   appview('app.bsky.feed.searchPosts'),
+  appview('app.bsky.feed.getPosts'),
   'rpc:com.atproto.repo.uploadBlob?aud=*',
   'rpc:app.bsky.video.getUploadLimits?aud=*',
   'rpc:app.bsky.video.getJobStatus?aud=*',
 ].join(' ');
+
+/**
+ * The read that carries a post's view count, which the AppView gives only to
+ * the post's author (lib/views.js). In every sign-in since 2026-11-20; a
+ * session from before lacks it, and the Views report asks for a fresh one.
+ */
+export const VIEWS_TOKENS = [appview('app.bsky.feed.getPosts')];
 
 /**
  * What Defense adds to a sign-in: the signed-in `getProfiles`, the one read

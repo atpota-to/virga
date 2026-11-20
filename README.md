@@ -2,8 +2,8 @@
 
 Analytics for a Bluesky account and the rest of its atproto repo, and a place to write,
 schedule and look after its posts. Anyone can sign in with their handle and see their own
-numbers: followers, blocks, posts, engagement, the people behind it, and what every app has
-written to their repo. Several accounts can be signed in at once.
+numbers: followers, blocks, posts, engagement, how often their posts were seen, the people
+behind it, and what every app has written to their repo. Several accounts can be signed in at once.
 
 The numbers are worked out in the browser. The app reads from the signed-in account's PDS,
 Bluesky's public API and Constellation, and keeps what it gathers in that browser's
@@ -89,6 +89,20 @@ with no console errors and no page that scrolls sideways. Not looked at: a real 
 Bluesky's AppView and Constellation, a real sign-in asking for the extra permission, the
 radar in high contrast and forced colours, or a phone's touch on the radar.
 
+Added on 2026-11-20: view counts, which Bluesky started showing a post's author the day
+before ([docs/VIEWS.md](docs/VIEWS.md) has what they are, read from Bluesky's own code, and
+what's left open). Checked by their own tests (reading a count, keeping the last one through
+a read without one, which posts are due and when the walk back stops, the canary, views
+gained between readings, the Views model, the exports, the permission and the template), and
+in the harness, whose AppView now gives the author counts: a build that reads them, the
+Views report, a Views dashboard, Best time by views, Settings, at 1440 by day and 390 at
+night, and the report with no birthday given, without the permission and with no count, at
+1180, with no console errors and no page that scrolls sideways. Not looked at: a real
+account's counts, a real sign-in granting the new permission, a second sync's views gained
+in the harness (its counts barely move between two syncs a minute apart; the arithmetic is
+tested), the dusk and dawn skies, high contrast and forced colours on the new pages, and
+any browser but Chromium.
+
 What has not: a real sign-in of either kind with the posting permissions, a real post, a
 real long session against a deployed server and Supabase project, the crons firing on
 Vercel, the adviser against the real AI gateway, an account actually made at one of the
@@ -148,7 +162,7 @@ them are the bar along the bottom, and Settings is behind the account.
 (Overview, Growth, Content); make more, rename, duplicate, reorder or delete them.
 Customize turns a dashboard's cards into things to arrange: drag a card by its handle (or
 move it with the arrow buttons), pick a size (a quarter, a third, half, two thirds or the
-whole row), remove it, or add any of 36 cards from the report library beside the grid,
+whole row), remove it, or add any of 43 cards from the report library beside the grid,
 by its plus or by dragging it to where it should go.
 Every card answers for the period picked in the header (7 days to all time, or a range of
 dates you pick), and links to its full report. A card's settings, the gear in Customize,
@@ -168,6 +182,7 @@ note on how they're counted, an export, Add to dashboard, and Post this chart:
 | Posts | Posts per day, week or month, share of replies, quotes and media | `app.bsky.feed.getAuthorFeed` on the public API |
 | Content | What your posts are made of and what each kind typically earns: by format (text, images, video, link card, GIF, quote), length, place in a thread, tag and linked site, and how much of your media has alt text | Each post's own record: its facets, embed, tags and languages |
 | Engagement | Likes, reposts, replies and quotes received, the rate per post, top posts; and the same given | Post counts from the public API; likes and reposts given from the repo |
+| Views | How often your posts were seen: by the day each was made, gained between syncs, the typical post (or "under 100"), engagement per 100 views, by format, the most seen, and the most engaging for their views | `app.bsky.feed.getPosts`, signed in: Bluesky gives a post's view count only to its author, leaves out counts under 100, and has none from before it started counting. Read only if Bluesky has you down as 18 or over, as its app shows them, and not at all if they're off in Settings ([docs/VIEWS.md](docs/VIEWS.md)) |
 | People | Who engages with the account and who it engages with, with Follow buttons | Notifications, signed in; the repo; follow records |
 | Atmosphere | Every record in every collection, by day and by collection | The whole repo in one download, `com.atproto.sync.getRepo` |
 
@@ -178,7 +193,7 @@ note on how they're counted, an export, Add to dashboard, and Post this chart:
 | Follow cleanup | Accounts you follow that went quiet, are gone, don't follow back or never interact; bulk Unfollow with Undo, and Keep to stop suggesting someone | Follow records (the permission the sign-in already asks for). Last activity is one public author-feed read per account, on request |
 | Unfollow tracker | Who left and who arrived between two syncs | Read only. An unfollow takes its record with it, so each sync compares the follower list with the last one and keeps the differences |
 | Follow-back queue | Followers who engage with you that you don't follow yet | Follow records |
-| Best time to post | What a typical post (the median) earns by weekday and hour, in your time zone | Read only |
+| Best time to post | What a typical post (the median) earns by weekday and hour, in your time zone, or how often it is seen, where there are view counts | Read only |
 | Lists you're on | Every list that includes you, moderation lists and their subscribers flagged | Read only |
 | Archive search and export | Search every post by its words, its tags (`#bees`) and the sites it links to, filter by kind and window, export CSV or JSON | Read only |
 | Interaction lookup | Your whole history with one account, each way: who follows whom and since when, likes, reposts, replies, quotes and mentions by kind and by month, and every event as a dated list with links, filters and a CSV export | Read only. Them to you comes from notifications, which reach back a year at most; you to them from the repo and your posts |
@@ -263,7 +278,7 @@ change and the 31st falls on the last day of a shorter month. A failed occurrenc
 listed to retry while the series carries on. Each occurrence is its own post; a reply
 can't repeat.
 
-**Settings**: the accounts, the archive (sync, rebuild, export, ask the browser to keep
+**Settings**: the accounts, the archive (sync, rebuild, export, view counts on or off, ask the browser to keep
 it, delete it), the dashboards, posting (languages, default reply settings, the default
 action, numbering a split thread, alt text, the weekly schedule, a default timer, the adviser), appearance (the sky,
 the accent, contrast, density, the sidebar, how numbers, dates and the week are written, the
@@ -427,7 +442,8 @@ The app asks for these and no others (`src/config.js`, where each is explained i
 | `repo:net.anisota.feed.template` | Templates, kept in your repo |
 | `blob:image/*`, `blob:video/*`, `rpc:com.atproto.repo.uploadBlob?aud=*`, `rpc:app.bsky.video.getUploadLimits?aud=*`, `rpc:app.bsky.video.getJobStatus?aud=*` | Images and video. Video goes through Bluesky's video service, which needs a short-lived pass from the PDS |
 | `rpc:app.bsky.draft.*` (get, create, update, delete) | Bluesky's private drafts |
-| `rpc:app.bsky.actor.getPreferences`, `rpc:app.bsky.bookmark.getBookmarks`, `rpc:app.bsky.feed.searchPosts` | Your default reply settings, saved posts for the library, and post search |
+| `rpc:app.bsky.actor.getPreferences`, `rpc:app.bsky.bookmark.getBookmarks`, `rpc:app.bsky.feed.searchPosts` | Your default reply settings, saved posts for the library, and post search. The preferences also say whether Bluesky has you down as 18 or over, which view counts follow |
+| `rpc:app.bsky.feed.getPosts` | Your own posts' view counts, which Bluesky gives only to a post's author on a signed-in read |
 | `rpc:app.bsky.actor.getProfiles`, **only once Defense is turned on** | How many of the people you follow follow each account a scan finds, which only a signed-in read of their profiles carries |
 | `repo:app.bsky.graph.list` (create) and `repo:app.bsky.graph.listitem` (create, delete), **only once Defense makes lists** | Making a block or mute list in your repo, and adding and taking off the people you approved. Never a block or a mute itself, and never anyone you follow |
 
@@ -447,7 +463,8 @@ fallback this app uses.
 ## Where the data is kept
 
 In IndexedDB, in a database per account (`virga-analytics:<did>`), so two accounts on one
-browser never share rows. Signing out leaves the archive in place for next time; Settings
+browser never share rows. Since 2026-11-20 it holds the account's view counts too (the
+`views` store, docs/VIEWS.md), which Settings › Data and sync can delete on their own. Signing out leaves the archive in place for next time; Settings
 › Data and sync deletes it. The unfollow log and the last-activity checks live there too.
 
 A post's row keeps its whole text, its counts, and what it is made of: its length, tags,
@@ -716,6 +733,7 @@ on agreements read it, and Vercel's edge is what makes it trustworthy there.
 | `supabase/migrations/` | The server's database: the `virga` schema and its Storage bucket |
 | `src/archive/` | The archive hook (IndexedDB and the sync) and the context that shares it |
 | `src/reports/models.js` | Every number, as pure functions of the archive and a period, cached per sync |
+| `src/lib/views.js` | What a view count is and isn't, the age rule, which posts a sync reads, the readings kept and views gained between them (docs/VIEWS.md) |
 | `src/reports/annotations.js` | Chart notes and follower milestones, and where they land on a chart |
 | `src/lib/periods.js`, `src/lib/locale.js` | What a period means (presets and custom ranges) and the words for it; how numbers, dates, the clock and the week are written |
 | `src/lib/sky.js`, `src/lib/preferences.jsx` | Which sky a setting, a clock and a device come to; the preferences, and what they stamp on the page |
@@ -740,7 +758,10 @@ on agreements read it, and Vercel's edge is what makes it trustworthy there.
   per walk, and says so when it stops short.
 - **How a post grew.** A post's counts are as of the sync that last fetched it, so there
   is no curve of its first hours. A browser only syncs while it is open; doing it on
-  Virga's server would mean the archive leaving the browser, which it doesn't today.
+  Virga's server would mean the archive leaving the browser, which it doesn't today. View
+  counts have the same limit: views gained is spread between readings.
+- **Post timers on views.** docs/VIEWS.md says why: no count means "under 100" or "the
+  lookup timed out", and a timer keeps a post when it can't tell.
 - **Dashboards and notes on other devices.** They are kept in this browser only.
 
 ## Where things came from

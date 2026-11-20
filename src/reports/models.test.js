@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BEST_TIME_MIN_POSTS, bestTimeModel, contentModel, contentReady, contentStandout, formatOf, hourColumns, hourRange, median } from './models.js';
+import { BEST_TIME_MIN_POSTS, RATE_MIN_VIEWS, bestTimeModel, contentModel, contentReady, contentStandout, formatOf, hourColumns, hourRange, median, viewsModel } from './models.js';
 
 const DID = 'did:plc:me';
 const NOW = new Date(2026, 10, 12, 12).getTime();
@@ -161,3 +161,112 @@ describe('what posts are made of', () => {
   });
 });
 
+
+describe('views', () => {
+  const ALL = { key: 'all', days: null };
+  const DAY = 86_400_000;
+  /** A post `daysAgo` days back with `views` (null: no count), and its view row. */
+  const seen = (daysAgo, views, extra = {}) => {
+    const p = post(daysAgo, 12, extra.likes ?? 0, extra);
+    const row = { uri: p.uri, at: p.at, count: views, countedAt: views == null ? null : NOW - 3600_000, checkedAt: NOW - 3600_000, points: views == null ? [] : [[NOW - 3600_000, views]] };
+    return { p, row };
+  };
+  const archiveFrom = (items, meta = { views: { status: 'ok', since: NOW - 40 * DAY, syncedAt: NOW - 3600_000 } }) => ({
+    ...archiveOf(items.map((i) => i.p)),
+    views: items.map((i) => i.row),
+    meta,
+  });
+
+  it('counts only the posts Bluesky counts: from the oldest one with a count', () => {
+    const a = archiveFrom([seen(5, 400), seen(10, null), seen(20, 1000), seen(300, null)]);
+    const m = viewsModel(a, ALL, NOW);
+    expect(m.epoch).toBe(Date.parse(a.posts[2].at));
+    expect(m.total).toBe(1400);
+    expect(m.countable).toBe(3);
+    expect(m.withCount).toBe(2);
+    // All time starts at the oldest count, not the account's first post.
+    expect(m.posts).toBe(3);
+    expect(m.series.reduce((s, b) => s + b.v, 0)).toBe(1400);
+  });
+
+  it('has nothing to count before any post has a count', () => {
+    const m = viewsModel(archiveFrom([seen(5, null), seen(6, null)]), ALL, NOW);
+    expect(m.epoch).toBeNull();
+    expect(m.total).toBe(0);
+    expect(m.countable).toBe(0);
+    expect(m.typical).toEqual({ value: null, under: false, posts: 0 });
+  });
+
+  it('calls the typical post under 100 when the middle one has no count', () => {
+    const m = viewsModel(archiveFrom([seen(30, 5000), seen(10, null), seen(9, null), seen(8, 200)]), ALL, NOW);
+    expect(m.typical.under).toBe(true);
+    const m2 = viewsModel(archiveFrom([seen(30, 5000), seen(10, 300), seen(9, 500)]), ALL, NOW);
+    expect(m2.typical).toMatchObject({ value: 500, under: false });
+  });
+
+  it('leaves posts still collecting out of the typical post, and counts them in the total', () => {
+    const m = viewsModel(archiveFrom([seen(30, 300), seen(20, 300), seen(10, 300), seen(1, 9000)]), ALL, NOW);
+    expect(m.typical.value).toBe(300);
+    expect(m.total).toBe(9900);
+  });
+
+  it('works out engagement per 100 views over own posts with a count', () => {
+    const items = [
+      seen(10, 1000, { likes: 30 }),
+      seen(11, 1000, { likes: 10 }),
+      seen(12, null, { likes: 5 }),
+      seen(13, 500, { likes: 400, replyTo: 'did:plc:someone' }),
+    ];
+    const m = viewsModel(archiveFrom(items), ALL, NOW);
+    expect(m.rate).toBeCloseTo(2, 6);
+    expect(m.rateSeries.filter((b) => b.v != null).length).toBeGreaterThan(0);
+  });
+
+  it('ranks the most seen, and the most engaging for their reach above a floor', () => {
+    const items = [seen(10, 5000, { likes: 50 }), seen(11, RATE_MIN_VIEWS, { likes: 60 }), seen(12, RATE_MIN_VIEWS - 1, { likes: 200 })];
+    const m = viewsModel(archiveFrom(items), ALL, NOW);
+    expect(m.top.map((p) => p.views)).toEqual([5000, RATE_MIN_VIEWS, RATE_MIN_VIEWS - 1]);
+    expect(m.engaging.map((p) => p.views)).toEqual([RATE_MIN_VIEWS, 5000]);
+    expect(m.engaging[0].rate).toBeCloseTo(20, 6);
+  });
+
+  it('compares with the window before only when Bluesky was counting through it', () => {
+    const d30 = { key: '30d', days: 30 };
+    const young = archiveFrom([seen(5, 400), seen(40, 1000)]);
+    expect(viewsModel(young, d30, NOW).compare).toBeNull();
+    const old = archiveFrom([seen(5, 400), seen(40, 1000), seen(70, 100)]);
+    expect(viewsModel(old, d30, NOW).compare).toMatchObject({ current: 400, previous: 1000 });
+  });
+
+  it('adds up views gained between readings', () => {
+    const one = seen(10, 1000);
+    one.row.points = [
+      [NOW - 3 * DAY, 400],
+      [NOW - DAY, 1000],
+    ];
+    // Posted before Virga was reading counts: its first reading is a start.
+    const before = archiveFrom([one], { views: { status: 'ok', since: NOW - 5 * DAY } });
+    expect(Math.round(viewsModel(before, { key: '7d', days: 7 }, NOW).gainedTotal)).toBe(600);
+    // Posted after: the rise from nothing to its first reading is counted too,
+    // spread from when it was posted (so only the part inside the window).
+    const after = archiveFrom([one], { views: { status: 'ok', since: NOW - 40 * DAY } });
+    const m = viewsModel(after, { key: 'all', days: null }, NOW);
+    expect(Math.round(m.gainedTotal)).toBe(1000);
+    expect(m.gainedReady).toBe(true);
+  });
+
+  it('has nothing gained to show after one reading of older posts, rather than none gained', () => {
+    const one = seen(10, 1000);
+    const m = viewsModel(archiveFrom([one], { views: { status: 'ok', since: NOW - 3600_000 } }), { key: '7d', days: 7 }, NOW);
+    expect(m.gainedReady).toBe(false);
+    expect(viewsModel(archiveFrom([one], { views: { status: 'ok' } }), { key: '7d', days: 7 }, NOW).gainedReady).toBe(false);
+  });
+
+  it('gives each format its typical post once it has enough of them', () => {
+    const items = [seen(10, 800, { media: 'image' }), seen(11, 600, { media: 'image' }), seen(12, 700, { media: 'image' }), seen(13, 100)];
+    const m = viewsModel(archiveFrom(items), ALL, NOW);
+    const image = m.formats.find((f) => f.key === 'image');
+    expect(image).toMatchObject({ posts: 3, typical: 700, under: false });
+    expect(m.formats.find((f) => f.key === 'text')).toMatchObject({ posts: 1, typical: null });
+  });
+});

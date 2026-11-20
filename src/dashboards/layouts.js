@@ -28,7 +28,12 @@ export const SIZES = Object.freeze({
   xl: { cols: 12, label: 'Full', name: 'The full row' },
 });
 
-/** The dashboards a new account starts with. Types are WIDGETS keys. */
+/**
+ * The dashboards a new account starts with, and New dashboard offers to
+ * start from. Types are WIDGETS keys. A template with `starter: false` is
+ * offered but not started with: Views shows nothing for an account Bluesky
+ * has down as under 18, or with view counts turned off.
+ */
 export const TEMPLATES = Object.freeze({
   overview: {
     name: 'Overview',
@@ -72,6 +77,22 @@ export const TEMPLATES = Object.freeze({
       ['engagement-rate', 'm'],
       ['best-time', 'm'],
       ['top-posts', 'xl'],
+    ],
+  },
+  views: {
+    name: 'Views',
+    starter: false,
+    widgets: [
+      ['stat-views', 'xs'],
+      ['stat-view-rate', 'xs'],
+      ['stat-engagement', 'xs'],
+      ['stat-posts', 'xs'],
+      ['views-by-date', 'l'],
+      ['views-formats', 's'],
+      ['views-gained', 'm'],
+      ['view-rate', 'm'],
+      ['most-seen', 'm'],
+      ['top-posts', 'm'],
     ],
   },
 });
@@ -126,7 +147,9 @@ export function dashboardFromTemplate(key, { id = null, name = null } = {}) {
 export function defaultLayout() {
   return {
     version: LAYOUT_VERSION,
-    dashboards: Object.keys(TEMPLATES).map((key) => dashboardFromTemplate(key)),
+    dashboards: Object.keys(TEMPLATES)
+      .filter((key) => TEMPLATES[key].starter !== false)
+      .map((key) => dashboardFromTemplate(key)),
   };
 }
 

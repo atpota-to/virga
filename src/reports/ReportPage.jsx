@@ -63,9 +63,12 @@ import {
   peopleModel,
   postsModel,
   relationSets,
+  viewsModel,
 } from './models.js';
 import ChartNotes from './ChartNotes.jsx';
 import ContentReport from './ContentReport.jsx';
+import ViewsReport, { typicalText as typicalViewsText } from './ViewsReport.jsx';
+import { useViewsFor, useViewsStatus } from './useViews.js';
 import PostRow, { postText } from './PostRow.jsx';
 import { Card, HowCounted, ModeToggle, SyncEmpty, fig, unitOptions } from './parts.jsx';
 import { REPORTS, REPORT_BY_KEY } from './registry.js';
@@ -83,6 +86,7 @@ const REPORT_WIDGET = {
   posts: 'posting-cadence',
   content: 'content-formats',
   engagement: 'engagement-over-time',
+  views: 'views-by-date',
   people: 'top-engagers',
   atmosphere: 'repo-collections',
 };
@@ -231,6 +235,7 @@ export default function ReportPage({ reportKey }) {
         {reportKey === 'content' && <ContentReport {...props} />}
         {reportKey === 'engagement' && direction !== 'given' && <EngagementReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
         {reportKey === 'engagement' && direction === 'given' && <GivenReport {...props} kind={kind === 'mention' ? 'all' : kind} />}
+        {reportKey === 'views' && <ViewsReport {...props} />}
         {reportKey === 'people' && <PeopleReport {...props} kind={kind} relation={archive.meta.following ? relation : 'all'} />}
         {reportKey === 'atmosphere' && <AtmosphereReport {...props} />}
       </div>
@@ -384,6 +389,7 @@ export function ReportsIndex() {
   const [period] = usePeriod();
   const nowMs = archive.nowMs;
   const built = Boolean(archive.meta.posts);
+  const viewsStatus = useViewsStatus(archive);
   const headline = useMemo(() => {
     if (!built) return {};
     const f = followersModel(archive, period, nowMs);
@@ -398,10 +404,11 @@ export function ReportsIndex() {
       posts: [fmtFigure(p.count), `posts in ${periodPhrase(period)}`],
       content: contentReady(archive) ? contentHeadline(contentModel(archive, period, nowMs)) : ['—', 'read at the next sync'],
       engagement: [fmtFigure(e.total), `received in ${periodPhrase(period)}`],
+      views: viewsHeadline(viewsStatus, viewsStatus === 'ready' ? viewsModel(archive, period, nowMs) : null, period),
       people: [fmtFigure(pe.inbound.length), `people engaged with you in ${periodPhrase(period)}`],
       atmosphere: a ? [fmtFigure(a.allTime), `records in ${a.collections ? `${a.collections} collections` : 'your repo'}`] : ['—', 'read at the next sync'],
     };
-  }, [archive, period, nowMs, built]);
+  }, [archive, period, nowMs, built, viewsStatus]);
   return (
     <>
       <PageHeader title="Reports" sub="Every number Virga works out, one page each." actions={<PeriodPicker />} />
@@ -445,8 +452,19 @@ function contentHeadline(m) {
   return [m.typical == null ? '—' : fmtRate(m.typical), 'a typical post earns'];
 }
 
+/** The Reports index's line for Views: the views on the window's posts, or why there are none. */
+function viewsHeadline(status, m, period) {
+  if (status === 'off') return ['—', 'turned off on this browser'];
+  if (status === 'minor' || status === 'undeclared') return ['—', 'Bluesky shows them to adults only'];
+  if (status === 'scope') return ['—', 'sign in again to read them'];
+  if (!m) return ['—', status === 'none' ? 'no post over 100 yet' : 'read at the next sync'];
+  return period.days
+    ? [fmtFigure(m.total), `on posts in ${periodPhrase(period)}`]
+    : [typicalViewsText(m.typical), 'a typical post is seen'];
+}
+
 function exportReport(archive, key, period, nowMs) {
-  if (key === 'posts' || key === 'engagement' || key === 'content') return exportPosts(archive);
+  if (key === 'posts' || key === 'engagement' || key === 'content' || key === 'views') return exportPosts(archive);
   if (key === 'followers') {
     return exportRows(archive, 'followers', [
       ['did', 'handle', 'display_name', 'followed_at'],
@@ -778,6 +796,7 @@ function EngagementReport({ archive, period, nowMs, kind, actions }) {
   const m = engagementModel(archive, period, nowMs, { kind, unit: unitPick, rateUnit: rateUnitPick });
   const marks = useChartMarks(archive, m.series, m.unit);
   const rateMarks = useChartMarks(archive, m.rate, m.rateUnit);
+  const viewsFor = useViewsFor(archive);
   if (!archive.posts.length) return <SyncEmpty archive={archive}>The post archive is empty. Run a sync to build it.</SyncEmpty>;
   const head = kind === 'all' ? 'Engagement' : ENGAGEMENT_KINDS.find((k) => k.key === kind)?.label;
   const lower = (head || '').toLowerCase();
@@ -836,7 +855,7 @@ function EngagementReport({ archive, period, nowMs, kind, actions }) {
         {m.top.length ? (
           <ol className="widget-rows report-rows">
             {m.top.slice(0, 10).map((p, i) => (
-              <PostRow key={p.uri} post={p} did={archive.did} kind={kind} rank={i + 1} />
+              <PostRow key={p.uri} post={p} did={archive.did} kind={kind} rank={i + 1} views={viewsFor(p)} />
             ))}
           </ol>
         ) : (

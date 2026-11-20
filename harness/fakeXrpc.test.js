@@ -387,3 +387,40 @@ describe('the signed-in reads posting needs', () => {
     ).resolves.toBeTruthy();
   });
 });
+
+describe('view counts', () => {
+  const mira = buildWorld({ now: Date.now() });
+  const lab = buildWorld({ now: Date.now(), account: LAB });
+  const worlds = [mira, lab];
+  const recent = mira.posts.filter((p) => Date.now() - Date.parse(p.at) < 100 * 86_400_000);
+  const uris = (world, posts) => posts.slice(0, 25).map((p) => `at://${world.me.did}/app.bsky.feed.post/${p.rkey}`);
+
+  it('gives the author a count, never under 100, and nobody else one', async () => {
+    const own = await createFakeAgent(mira, { worlds }).app.bsky.feed.getPosts({ uris: uris(mira, recent) });
+    const counts = own.data.posts.map((p) => p.viewCount).filter((n) => n !== undefined);
+    expect(counts.length).toBeGreaterThan(0);
+    expect(counts.every((n) => Number.isInteger(n) && n >= 100)).toBe(true);
+    const theirs = await createFakeAgent(lab, { worlds }).app.bsky.feed.getPosts({ uris: uris(mira, recent) });
+    expect(theirs.data.posts.some((p) => 'viewCount' in p)).toBe(false);
+  });
+
+  it('has no count for a post from before it counted', async () => {
+    const old = mira.posts.filter((p) => Date.now() - Date.parse(p.at) > 400 * 86_400_000);
+    const res = await createFakeAgent(mira, { worlds }).app.bsky.feed.getPosts({ uris: uris(mira, old) });
+    expect(res.data.posts.length).toBeGreaterThan(0);
+    expect(res.data.posts.some((p) => 'viewCount' in p)).toBe(false);
+  });
+
+  it('leaves the counts off the first answer for a batch when flaky', async () => {
+    const agent = createFakeAgent(mira, { worlds, viewCounts: 'flaky' });
+    const first = await agent.app.bsky.feed.getPosts({ uris: uris(mira, recent) });
+    const again = await agent.app.bsky.feed.getPosts({ uris: uris(mira, recent) });
+    expect(first.data.posts.some((p) => 'viewCount' in p)).toBe(false);
+    expect(again.data.posts.some((p) => 'viewCount' in p)).toBe(true);
+  });
+
+  it('refuses a session that wasn’t granted the read', async () => {
+    const agent = createFakeAgent(mira, { worlds, scope: READ_ONLY_SCOPE });
+    await expect(agent.app.bsky.feed.getPosts({ uris: uris(mira, recent) })).rejects.toSatisfy(isMissingScopeError);
+  });
+});

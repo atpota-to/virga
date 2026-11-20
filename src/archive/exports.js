@@ -3,6 +3,7 @@
 // what the screen is showing.
 
 import { archiveJson, exportFilename, postsCsv } from '../lib/analyticsExport.js';
+import { readPreferences } from '../lib/preferences.jsx';
 
 /** The handle for a file name, or the DID with its colons made safe. */
 function fileStem(archive) {
@@ -17,7 +18,9 @@ export function exportArchive(archive) {
 
 export function exportPosts(archive, posts = archive.posts) {
   const now = Date.now();
-  const csv = postsCsv(posts, { did: archive.did, handle: archive.handle });
+  // The views column stays blank while view counts are off on this browser.
+  const views = readPreferences().viewCounts === 'off' ? null : new Map((archive.views || []).map((r) => [r.uri, r]));
+  const csv = postsCsv(posts, { did: archive.did, handle: archive.handle, views });
   downloadText(csv, exportFilename(fileStem(archive), 'posts', 'csv', now), 'text/csv;charset=utf-8');
 }
 

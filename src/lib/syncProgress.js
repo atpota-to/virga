@@ -33,12 +33,16 @@ export const SYNC_STEPS = Object.freeze({
   blocks: Object.freeze({ label: 'Blocks', doing: 'Reading direct and list blocks' }),
   repo: Object.freeze({ label: 'Repo', doing: 'Downloading the repo' }),
   posts: Object.freeze({ label: 'Posts', doing: 'Archiving posts' }),
+  views: Object.freeze({ label: 'Views', doing: 'Reading view counts' }),
   inbound: Object.freeze({ label: 'Notifications', doing: 'Reading notifications' }),
   outbound: Object.freeze({ label: 'Likes', doing: 'Reading likes & reposts' }),
 });
 
-/** The steps every sync plans for. `outbound` joins only when the repo fails. */
-export const SYNC_PLAN = Object.freeze(['followers', 'following', 'blocks', 'repo', 'posts', 'inbound']);
+/**
+ * The steps every sync plans for. `outbound` joins only when the repo fails;
+ * `views` leaves when view counts are turned off on this browser.
+ */
+export const SYNC_PLAN = Object.freeze(['followers', 'following', 'blocks', 'repo', 'posts', 'views', 'inbound']);
 
 function clamp01(v) {
   return Math.min(CEILING, Math.max(0, v));

@@ -6,7 +6,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { Agent } from '@atproto/api';
-import { DEFENSE_SCOPE, DEFENSE_TOKENS, LISTS_SCOPE, OAUTH_SCOPE, POSTING_TOKENS } from '../config.js';
+import { DEFENSE_SCOPE, DEFENSE_TOKENS, LISTS_SCOPE, OAUTH_SCOPE, POSTING_TOKENS, VIEWS_TOKENS } from '../config.js';
 import { SESSION_HINT_KEY } from '../lib/sessionHint.js';
 import { SESSION_NOTICE_EVENT } from '../accounts/accountCopy.js';
 import {
@@ -656,6 +656,13 @@ describe('signing in', () => {
 });
 
 describe('capabilitiesFrom', () => {
+  it('names the view-count read as missing for a sign-in from before it was asked for', () => {
+    const before = OAUTH_SCOPE.split(' ').filter((t) => !VIEWS_TOKENS.includes(t)).join(' ');
+    expect(capabilitiesFrom({ mode: 'browser', scope: before }, 'ready').missing).toEqual(VIEWS_TOKENS);
+    expect(capabilitiesFrom({ mode: 'browser', scope: OAUTH_SCOPE }, 'ready').missing).toEqual([]);
+    expect(OAUTH_SCOPE.split(' ')).toEqual(expect.arrayContaining(VIEWS_TOKENS));
+  });
+
   const old = 'atproto repo:app.bsky.graph.follow?action=create&action=delete';
 
   it('lets a long session schedule and use the adviser, a browser one neither', () => {

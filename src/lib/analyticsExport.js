@@ -18,7 +18,7 @@ export const EXPORT_FORMAT = 'virga-analytics-export';
 export const EXPORT_VERSION = 1;
 
 /** The archive stores, in the order the JSON lists them. */
-const STORE_KEYS = ['posts', 'followers', 'following', 'blocks', 'inbound', 'outbound', 'atmosphere'];
+const STORE_KEYS = ['posts', 'followers', 'following', 'blocks', 'inbound', 'outbound', 'atmosphere', 'views'];
 
 /**
  * What each store is, and where it stops being the whole truth. Written into
@@ -43,6 +43,11 @@ const NOTES = Object.freeze({
     'Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.',
   atmosphere: 'Every record in every collection of your repo: its URI, collection and date. Record contents are not included.',
   actors: 'Profile cards for accounts the People lists have shown.',
+  views:
+    'View counts for your own posts, read from Bluesky signed in as you, which is the only way Bluesky gives them out. ' +
+    'Bluesky leaves out any count under 100 and calls the number approximate; it counts views in Bluesky’s own apps. ' +
+    'count is the highest count read (null: never over 100, or not counted), countedAt and checkedAt when it was last read with a count and at all (ms), ' +
+    'points the readings kept as [ms, count]. Posts from before Bluesky started counting never have one.',
 });
 
 /**
@@ -105,6 +110,9 @@ const CSV_COLUMNS = [
   ['tags', (p) => (p.tags || []).join(' ')],
   ['links', (p) => (p.links || []).join(' ')],
   ['langs', (p) => (p.langs || []).join(' ')],
+  // Blank where there is no count: under 100, not counted, or view counts
+  // off on this browser. Never zero.
+  ['views', (p, ctx) => ctx.views?.get(p.uri)?.count ?? ''],
 ];
 
 /**
@@ -118,8 +126,8 @@ const CSV_COLUMNS = [
  * strangers' input; here every cell is the owner's own words, and the guard
  * would alter every reply that opens with a mention.
  */
-export function postsCsv(posts, { did = null, handle = null } = {}) {
-  const ctx = { did, handle };
+export function postsCsv(posts, { did = null, handle = null, views = null } = {}) {
+  const ctx = { did, handle, views };
   const rows = [...(posts || [])].filter(Boolean).sort(newestFirst);
   const lines = [CSV_COLUMNS.map(([name]) => name).join(',')];
   for (const p of rows) lines.push(CSV_COLUMNS.map(([, pick]) => csvCell(pick(p, ctx))).join(','));

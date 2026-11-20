@@ -32,6 +32,8 @@ import './settings.css';
 import { LOCALE_CHOICES, activeLocale, localeSample, regionWeekStart, systemLocale } from '../lib/locale.js';
 
 import { SECTIONS } from './sections.js';
+import { useViewsStatus } from '../reports/useViews.js';
+import { viewsNotice } from '../reports/ViewsReport.jsx';
 
 export { SECTIONS };
 
@@ -157,6 +159,15 @@ function counted(n, one, many) {
  * ago". The followers are the ones a signed-in read can list, which can be
  * fewer than the count on the profile. Before the first build, only when.
  */
+/** The View counts section's line: what's kept and when it was read, or why there's nothing. */
+function viewsLine(archive, status) {
+  const meta = archive.meta.views;
+  if (status !== 'ready') return viewsNotice(status);
+  const counted = archive.views.filter((r) => r.countedAt != null).length;
+  const posts = `${counted.toLocaleString(activeLocale())} ${counted === 1 ? 'post has a count' : 'posts have a count'}`;
+  return meta?.syncedAt ? `${posts}, last read ${relativeTime(meta.syncedAt)}` : posts;
+}
+
 function archiveLine(archive, counts) {
   const when = syncWhen(archive);
   if (!archive.meta.posts) return when;
@@ -178,9 +189,12 @@ function DataSection() {
   const toast = useToast();
   const counts = useArchiveCounts(archive);
   const { estimate, persisted, setPersisted } = useStorageEstimate();
-  const [confirm, setConfirm] = useState(null); // 'rebuild' | 'delete'
+  const [confirm, setConfirm] = useState(null); // 'rebuild' | 'delete' | 'views'
   const pm = archive.meta.posts;
   const built = Boolean(pm);
+  const { viewCounts, setPref } = usePreferences();
+  const viewsOn = viewCounts !== 'off';
+  const viewsStatus = useViewsStatus(archive);
 
   return (
     <>
@@ -219,6 +233,30 @@ function DataSection() {
               </Row>
             )}
           </>
+        )}
+      </Section>
+
+      <Section title="View counts" sub={viewsLine(archive, viewsStatus)}>
+        <Row
+          label="Read and show view counts"
+          hint="Bluesky gives a post’s view count only to its author. Virga reads them signed in as you, for your own posts, and keeps them in this browser. Off, it reads and shows none, for every account on this browser."
+        >
+          <button
+            type="button"
+            role="switch"
+            className="switch"
+            aria-checked={viewsOn}
+            aria-label="Read and show view counts"
+            onClick={() => setPref('viewCounts', viewsOn ? 'off' : 'on')}
+          />
+        </Row>
+        {archive.views.length > 0 && (
+          <Row label="Forget them" hint="Deletes the view counts and readings kept here for this account. If they’re on, the next sync reads them again, from then on.">
+            <Button onClick={() => setConfirm('views')} disabled={Boolean(archive.sync)}>
+              <Trash2 size={15} aria-hidden="true" />
+              Delete view counts…
+            </Button>
+          </Row>
         )}
       </Section>
 
@@ -307,6 +345,32 @@ function DataSection() {
         <p>
           Clears the post archive and reads every post again. It’s the only way deleted posts leave, and old posts’ counts fully refresh. It
           takes as long as the first build.
+        </p>
+      </Dialog>
+      <Dialog
+        open={confirm === 'views'}
+        onClose={() => setConfirm(null)}
+        title="Delete this browser’s view counts?"
+        tone="danger"
+        actions={
+          <>
+            <Button onClick={() => setConfirm(null)}>Keep them</Button>
+            <Button
+              variant="danger"
+              onClick={async () => {
+                setConfirm(null);
+                await archive.deleteViews();
+                toast?.('The view counts are deleted from this browser.');
+              }}
+            >
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <p>
+          Every view count and reading Virga keeps for this account in this browser goes. Bluesky still has the counts; what goes is the
+          record of how they rose, which Virga can’t read again.
         </p>
       </Dialog>
       <Dialog
@@ -767,7 +831,8 @@ function AboutSection() {
             <strong>Bluesky’s public API</strong>: your posts and their counts, profiles, lists, and when accounts were last active.
           </li>
           <li>
-            <strong>Bluesky, signed in as you</strong>: your follower list and your notifications, and what you post.
+            <strong>Bluesky, signed in as you</strong>: your follower list and your notifications, your posts’ view counts (which
+            Bluesky gives only to a post’s author), and what you post.
           </li>
           <li>
             <strong>Virga’s server ({backendHost()})</strong>, for an account with a long session: the sign-in, and the signed-in requests,

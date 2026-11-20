@@ -59,6 +59,7 @@ describe('the scope a sign-in asks for', () => {
       `rpc:app.bsky.actor.getPreferences?aud=${appview}`,
       `rpc:app.bsky.bookmark.getBookmarks?aud=${appview}`,
       `rpc:app.bsky.feed.searchPosts?aud=${appview}`,
+      `rpc:app.bsky.feed.getPosts?aud=${appview}`,
       'rpc:com.atproto.repo.uploadBlob?aud=*',
       'rpc:app.bsky.video.getUploadLimits?aud=*',
       'rpc:app.bsky.video.getJobStatus?aud=*',

@@ -25,6 +25,7 @@ import { kindsLine } from '../../tools/interactionModel.js';
 import { CONTENT_WIDGETS } from './content.jsx';
 import { HEIGHT, Stat, rowsFor, rowsShown } from './parts.jsx';
 import { POSTING_WIDGETS } from './posting.jsx';
+import { VIEWS_WIDGETS } from './views.jsx';
 import {
   WEEKDAYS,
   WEEKDAYS_LONG,
@@ -44,6 +45,7 @@ import {
   postsModel,
 } from '../../reports/models.js';
 import { periodPhrase } from '../../shell/bits.jsx';
+import { VIEWS_FLOOR } from '../../lib/views.js';
 import { activeLocale } from '../../lib/locale.js';
 import { periodBefore, periodWindowWord } from '../../lib/periods.js';
 
@@ -346,15 +348,29 @@ export function bestTimeWindow(period) {
   return period.days && period.days < 90 ? { key: '1y', days: 365, label: 'Year' } : period;
 }
 
+/** A slot's middle value as words: "12" earned, or "1,234" views ("under 100"). */
+export function bestTimeValue(m, avg, under = false) {
+  if (avg == null) return '—';
+  if (m.metric === 'views') return under ? `under ${VIEWS_FLOOR}` : Math.round(avg).toLocaleString(activeLocale());
+  return fmtRate(avg);
+}
+
 export function bestTimeSentence(m) {
-  if (!m.best.length) return 'Not enough posts yet to say when yours do best.';
+  const views = m.metric === 'views';
+  if (!m.best.length) return views ? 'Not enough posts with a view count yet to say when yours are seen most.' : 'Not enough posts yet to say when yours do best.';
   const top = m.best[0];
-  return `Your posts do best on ${WEEKDAYS_LONG[top.day]}s, ${hourRange(top.col, m.block)}: a typical post there earns ${fmtRate(top.avg)}${m.overall != null ? `, against ${fmtRate(m.overall)} overall` : ''}.`;
+  const overall = m.overall != null || m.overallUnder ? `, against ${bestTimeValue(m, m.overallUnder ? 0 : m.overall, m.overallUnder)} overall` : '';
+  if (views) {
+    return `Your posts are seen most on ${WEEKDAYS_LONG[top.day]}s, ${hourRange(top.col, m.block)}: a typical post there has ${bestTimeValue(m, top.avg)} views${overall}.`;
+  }
+  return `Your posts do best on ${WEEKDAYS_LONG[top.day]}s, ${hourRange(top.col, m.block)}: a typical post there earns ${fmtRate(top.avg)}${overall}.`;
 }
 
 /** The heatmap's rows, in the order the reader's week runs. */
 export function bestTimeRows(m) {
   const best = m.best[0];
+  const verb = m.metric === 'views' ? 'has' : 'earns';
+  const noun = m.metric === 'views' ? ' views' : '';
   return weekdayOrder().map((day) => {
     const r = m.rows[day];
     return {
@@ -364,7 +380,7 @@ export function bestTimeRows(m) {
         best: best && best.day === day && best.col === col,
         title: c.avg == null
           ? `${WEEKDAYS[day]} ${hourRange(col, m.block)}: ${c.posts ? `only ${c.posts} post${c.posts === 1 ? '' : 's'}` : 'no posts'}`
-          : `${WEEKDAYS[day]} ${hourRange(col, m.block)}: a typical post earns ${fmtRate(c.avg)} (${c.posts} posts)`,
+          : `${WEEKDAYS[day]} ${hourRange(col, m.block)}: a typical post ${verb} ${bestTimeValue(m, c.avg, c.under)}${noun} (${c.posts} posts)`,
       })),
     };
   });
@@ -609,6 +625,7 @@ export const WIDGET_HEADS = {
 export const WIDGET_COMPONENTS = {
   ...CONTENT_WIDGETS,
   ...POSTING_WIDGETS,
+  ...VIEWS_WIDGETS,
   'stat-followers': StatFollowers,
   'stat-new-followers': StatNewFollowers,
   'stat-unfollows': StatUnfollows,

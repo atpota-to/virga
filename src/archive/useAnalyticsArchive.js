@@ -21,6 +21,7 @@ import {
   sweepInbound,
   sweepOutbound,
   sweepPosts,
+  sweepViews,
 } from '../lib/analyticsSync.js';
 import { checkActivity as readActivity } from '../lib/activity.js';
 import { followerChanges, mergeFollowerLog } from '../lib/followerLog.js';
@@ -39,6 +40,9 @@ import { formatDateShort } from '../lib/time.js';
 import { onPostingEvent, POSTS_CHANGED_EVENT } from '../posting/events.js';
 import { applyPostChanges, isOwnPostUri, postRowsFor } from './postChanges.js';
 import { activeLocale } from '../lib/locale.js';
+import { readPreferences } from '../lib/preferences.jsx';
+import { ageGate, applyReading, viewsDue } from '../lib/views.js';
+import { isMissingScopeError } from '../session/scopes.js';
 
 const DAY_MS = 86_400_000;
 
@@ -54,7 +58,12 @@ const EVENT_DEPTH_DAYS = 365;
 const FOLLOW = 'app.bsky.graph.follow';
 
 /** Every object store in an account's database, for "Delete this archive". */
-const ARCHIVE_STORES = ['posts', 'followers', 'following', 'blocks', 'inbound', 'outbound', 'atmosphere', 'actors', 'meta'];
+const ARCHIVE_STORES = ['posts', 'followers', 'following', 'blocks', 'inbound', 'outbound', 'atmosphere', 'actors', 'views', 'meta'];
+
+/** Whether this browser reads and shows view counts (Settings › Data and sync). */
+function viewCountsOn() {
+  return readPreferences().viewCounts !== 'off';
+}
 
 const EMPTY = {
   loaded: false,
@@ -67,6 +76,7 @@ const EMPTY = {
   inbound: [],
   outbound: [],
   atmosphere: [],
+  views: [],
   meta: {},
   rev: 0,
 };
@@ -86,7 +96,7 @@ export function useAnalyticsArchive(agent, did, handle) {
   const latestRef = useRef(EMPTY);
 
   async function reload(store) {
-    const [posts, followers, following, blocks, inbound, outbound, atmosphere, actorRows, pm, fm, gm, bm, im, om, rm, logm, lm] =
+    const [posts, followers, following, blocks, inbound, outbound, atmosphere, actorRows, pm, fm, gm, bm, im, om, rm, logm, lm, views, vm] =
       await Promise.all([
         store.all('posts'),
         store.all('followers'),
@@ -105,6 +115,8 @@ export function useAnalyticsArchive(agent, did, handle) {
         store.getMeta('repo'),
         store.getMeta('followerLog'),
         store.getMeta('lists'),
+        store.all('views'),
+        store.getMeta('views'),
       ]);
     setActors(new Map(actorRows.map((a) => [a.did, a])));
     setData((prev) => ({
@@ -121,6 +133,7 @@ export function useAnalyticsArchive(agent, did, handle) {
       inbound,
       outbound,
       atmosphere,
+      views,
       meta: {
         posts: pm,
         followers: fm,
@@ -131,6 +144,7 @@ export function useAnalyticsArchive(agent, did, handle) {
         repo: rm,
         followerLog: logm,
         lists: lm,
+        views: vm,
       },
       rev: prev.rev + 1,
     }));
@@ -171,7 +185,7 @@ export function useAnalyticsArchive(agent, did, handle) {
        `begin` closes the step before it and returns a reporter bound to the
        new one, so a late report from a finished step can never move the
        next step's segment. A share only ever moves forward. */
-    const plan = [...SYNC_PLAN];
+    const plan = viewCountsOn() ? [...SYNC_PLAN] : SYNC_PLAN.filter((step) => step !== 'views');
     const done = [];
     const failed = [];
     let current = null;
@@ -508,6 +522,17 @@ export function useAnalyticsArchive(agent, did, handle) {
       }
       if (ac.signal.aborted) return;
 
+      /* View counts, for the account's own posts, read as the account: the
+         only way the AppView gives them out. Left out when they are off on
+         this browser, and read only for an account Bluesky has down as 18 or
+         over, as Bluesky's own app does (lib/views.js). */
+      if (plan.includes('views')) {
+        report = begin('views', { fraction: null });
+        const problem = await readViews({ agent, store, startedAt, signal: ac.signal, report });
+        if (problem) fail('views', problem);
+      }
+      if (ac.signal.aborted) return;
+
       /* Inbound + outbound engagement events */
       const cutoffMs = startedAt - EVENT_DEPTH_DAYS * DAY_MS;
 
@@ -698,7 +723,14 @@ export function useAnalyticsArchive(agent, did, handle) {
     // when posts are still fresh.
     // The same goes for post rows from before they kept what a post is
     // made of: the Content report and the archive search read the new shape.
-    if (data.meta.blocks?.version !== 2 || !data.meta.following || !data.meta.lists || pm.shape !== POST_ROW_VERSION) {
+    // And view counts, which arrived after most archives were built.
+    if (
+      data.meta.blocks?.version !== 2 ||
+      !data.meta.following ||
+      !data.meta.lists ||
+      pm.shape !== POST_ROW_VERSION ||
+      (!data.meta.views && viewCountsOn())
+    ) {
       runSync('incremental');
       return;
     }
@@ -751,6 +783,18 @@ export function useAnalyticsArchive(agent, did, handle) {
   }
 
   /**
+   * Forget the view counts this browser keeps for the account, and when
+   * they were read. The next sync reads them again if they are still on.
+   */
+  async function deleteViews() {
+    const store = storeRef.current;
+    if (!store) return;
+    await store.clear('views');
+    await store.remove('meta', ['views']);
+    await reload(store);
+  }
+
+  /**
    * Empty this account's archive in this browser: every store, the sync
    * marks with them. The account itself, its repo and its followers are
    * untouched; the next build reads it all again.
@@ -778,11 +822,84 @@ export function useAnalyticsArchive(agent, did, handle) {
     wantActors,
     checkActivity,
     deleteArchive,
+    deleteViews,
     cancelSync: () => abortRef.current?.abort(),
     agent,
     did,
     handle,
   };
+}
+
+/**
+ * The views step: the age Bluesky has for the account, then the posts that
+ * are due (lib/views.js viewsDue), read 25 at a time, each batch written as it
+ * lands. Writes `meta.views`:
+ *
+ *   { status, since, syncedAt, read, counted, skipped, error }
+ *
+ * `status` is 'ok', 'scope' (the sign-in lacks the permission), 'minor' or
+ * 'undeclared' (Bluesky's app wouldn't show them either), or 'error'.
+ * `since` is when counts were first read for the account, which the
+ * views-gained chart counts new posts from. Returns the sentence to report
+ * when the step failed, or null.
+ */
+async function readViews({ agent, store, startedAt, signal, report }) {
+  const before = (await store.getMeta('views').catch(() => null)) || {};
+  const keep = (facts) => store.setMeta('views', { ...before, ...facts, syncedAt: startedAt });
+  let gate;
+  try {
+    const res = await agent.app.bsky.actor.getPreferences({});
+    gate = ageGate(res?.data?.preferences);
+  } catch (err) {
+    if (signal.aborted) return null;
+    if (isMissingScopeError(err)) {
+      await keep({ status: 'scope', error: null });
+      return null;
+    }
+    const message = err?.message || String(err);
+    await keep({ status: 'error', error: message });
+    return message;
+  }
+  if (gate !== 'adult') {
+    await keep({ status: gate, error: null });
+    return null;
+  }
+
+  const [posts, kept] = await Promise.all([store.all('posts'), store.all('views')]);
+  const rows = new Map(kept.map((r) => [r.uri, r]));
+  const due = viewsDue(posts, rows, startedAt);
+  const postAt = new Map(posts.map((p) => [p.uri, p.at]));
+  const known = new Set(kept.filter((r) => r.countedAt != null).map((r) => r.uri));
+  if (due.length) report(0, `${num(0)} of ${num(due.length)} posts`);
+  const res = await sweepViews(agent, due, {
+    known,
+    signal,
+    onBatch: async (readings) => {
+      const readAt = Date.now();
+      const changed = readings.map((r) => {
+        const row = applyReading(rows.get(r.uri), { uri: r.uri, at: postAt.get(r.uri), count: r.count, readAt });
+        rows.set(r.uri, row);
+        return row;
+      });
+      await store.putAll('views', changed);
+    },
+    onProgress: (p) =>
+      report(share(p.done, p.total), `${num(p.done)} of ${num(p.total)} posts · ${num(p.counted)} ${p.counted === 1 ? 'count' : 'counts'}`),
+  });
+  if (res.aborted) return null;
+  if (res.missingScope) {
+    await keep({ status: 'scope', error: null });
+    return null;
+  }
+  await keep({
+    status: res.error ? 'error' : 'ok',
+    since: before.since ?? (res.read > 0 ? startedAt : null),
+    read: res.read,
+    counted: res.counted,
+    skipped: res.skipped,
+    error: res.error,
+  });
+  return res.error;
 }
 
 /* The words beside the progress. Each says what was measured, in its own unit. */

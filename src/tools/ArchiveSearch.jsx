@@ -8,6 +8,7 @@ import Button from '../components/Button.jsx';
 import Menu from '../components/Menu.jsx';
 import Segmented from '../components/Segmented.jsx';
 import { useArchive } from '../archive/ArchiveContext.jsx';
+import { useViewsFor } from '../reports/useViews.js';
 import { exportArchive, exportPosts } from '../archive/exports.js';
 import { engagementOf } from '../lib/analytics.js';
 import { periodEnd, periodStart } from '../lib/periods.js';
@@ -45,6 +46,7 @@ export function matchesWords(post, words) {
 
 export default function ArchiveSearch({ tool }) {
   const archive = useArchive();
+  const viewsFor = useViewsFor(archive);
   const [period] = usePeriod();
   const [query, setQuery] = useState('');
   const [kind, setKind] = useState('all');
@@ -144,7 +146,7 @@ export default function ArchiveSearch({ tool }) {
           {shown.length ? (
             <ol className="widget-rows report-rows">
               {shown.map((p) => (
-                <PostRow key={p.uri} post={p} did={archive.did} />
+                <PostRow key={p.uri} post={p} did={archive.did} views={viewsFor(p)} />
               ))}
             </ol>
           ) : (

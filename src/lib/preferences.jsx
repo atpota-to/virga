@@ -48,6 +48,9 @@ export const DEFAULT_PREFERENCES = Object.freeze({
   sidebar: 'expanded', // 'expanded' | 'collapsed'
   locale: 'system', // 'system' (English, in the browser's region) | one of LOCALE_CHOICES
   weekStart: 'system', // 'system' (the locale's own) | 'monday' | 'sunday' | 'saturday'
+  // 'on' | 'off'. Off, no view count is read or shown on this browser
+  // (lib/views.js), for anyone who would rather not see them.
+  viewCounts: 'on',
 });
 
 const CHOICES = {
@@ -59,6 +62,7 @@ const CHOICES = {
   sidebar: ['expanded', 'collapsed'],
   locale: ['system', ...LOCALE_CHOICES],
   weekStart: ['system', ...Object.keys(WEEK_START_CHOICES)],
+  viewCounts: ['on', 'off'],
 };
 
 function storage() {

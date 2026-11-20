@@ -137,3 +137,12 @@ describe('dashboard layouts', () => {
     expect(copied.dashboards.find((d) => d.id === id).widgets[0].options).toEqual({ period: 'all', kind: 'repost', rows: 15 });
   });
 });
+
+describe('the Views template', () => {
+  it('is offered, every card in it exists, and new accounts don’t start with it', async () => {
+    const { WIDGETS } = await import('./catalog.js');
+    expect(L.TEMPLATES.views.widgets.every(([type, size]) => WIDGETS[type]?.sizes.includes(size))).toBe(true);
+    expect(L.defaultLayout().dashboards.map((d) => d.template)).toEqual(['overview', 'growth', 'content']);
+    expect(L.dashboardFromTemplate('views').widgets.map((w) => w.type)).toContain('views-by-date');
+  });
+});

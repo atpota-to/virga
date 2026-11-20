@@ -27,6 +27,7 @@ Virga shows analytics for an account on the AT Protocol (atproto), the open netw
 You sign in on your account’s host, on that host’s own page. Virga never sees your password. The host gives Virga a limited permission that you approve there. It lets Virga:
 
 - read your follower list and your notifications;
+- read your own posts’ view counts, which Bluesky gives only to a post’s author;
 - follow and unfollow accounts, when you press the button for it;
 - write, reply with and delete posts, and set who can reply to or quote them, when you ask it to;
 - upload the pictures and video in your posts;

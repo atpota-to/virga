@@ -55,7 +55,7 @@ describe('the scope', () => {
 
   it('is the app scope, token for token', () => {
     expect(SCOPE).toBe(OAUTH_SCOPE);
-    expect(list).toHaveLength(20);
+    expect(list).toHaveLength(21);
   });
 
   it('parses, token by token', () => {

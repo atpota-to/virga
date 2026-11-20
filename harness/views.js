@@ -75,6 +75,31 @@ export function liveCounts(post, now = Date.now()) {
   };
 }
 
+/**
+ * How far back the fake AppView counts views. Bluesky doesn't publish the day
+ * its own counting started; posts older than this have no count here.
+ */
+export const VIEWS_COUNTED_DAYS = 150;
+
+/**
+ * A post's view count as the fake AppView gives it to the post's author: a
+ * few dozen views for each interaction, give or take, and a little more for
+ * nothing, rising over the post's first day; left out under 100, and for a
+ * post from before the fake AppView counted (src/lib/views.js says what the
+ * real one does). Null for no count.
+ */
+export function viewCountFor(post, now = Date.now()) {
+  const atMs = Date.parse(post?.at || post?.indexedAt || '');
+  if (!Number.isFinite(atMs) || now - atMs > VIEWS_COUNTED_DAYS * DAY) return null;
+  const c = liveCounts(post, now);
+  const interactions = c.likes + 2 * c.reposts + 2 * c.replies + 3 * c.quotes;
+  const h = hashOf(`views:${post.rkey}`);
+  const hours = Math.max(0, (now - atMs) / 3_600_000);
+  const grown = 1 - Math.exp(-hours / 10);
+  const views = Math.round((interactions * (18 + (h % 40)) + (h % 260)) * grown);
+  return views >= 100 ? views : null;
+}
+
 function placeholderImage(seed) {
   const hue = hashOf(seed) % 360;
   const svg =

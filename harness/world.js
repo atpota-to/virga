@@ -604,6 +604,9 @@ function withPostingFixtures(world, fixtures) {
       ],
     },
     ...(fixtures.postInteraction ? [{ $type: 'app.bsky.actor.defs#postInteractionSettingsPref', ...fixtures.postInteraction }] : []),
+    // What the PDS works out from the birthday it holds, and the only part of
+    // it an app sees (harness.js ?age= changes it).
+    { $type: 'app.bsky.actor.defs#declaredAgePref', isOverAge13: true, isOverAge16: true, isOverAge18: true },
   ];
   world.drafts = fixtures.drafts.map((d, i) => {
     const when = at(now - d.daysAgo * DAY);

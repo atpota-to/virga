@@ -22,12 +22,13 @@ import {
   XrpcError,
   keyOf,
   listCollection,
+  parseAtUri,
   readRecord,
   removeRecord,
   storeBlob,
   writeRecord,
 } from './repo.js';
-import { createViews, pageOf } from './views.js';
+import { createViews, pageOf, viewCountFor } from './views.js';
 import { ME, tidAt } from './world.js';
 
 export { XrpcError };
@@ -223,8 +224,28 @@ function knownFollowersCounter(appview) {
   };
 }
 
-function methodsFor(world, { views, did, churn, appview = 'ok' }) {
+/**
+ * Whether the AppView gives view counts for this batch: `ok` always; `none`
+ * never, as for an account none of whose posts has reached 100; `failopen`
+ * never, as when its 100 ms lookup times out (the posts come back without
+ * them); `flaky` not the first time a batch is asked and always after, so
+ * the views sweep's canary sees the miss and asks again.
+ */
+function viewCountsCounter(mode) {
+  const asked = new Set();
+  return (uris) => {
+    if (mode === 'none' || mode === 'failopen') return false;
+    if (mode !== 'flaky') return true;
+    const key = [...uris].sort().join(' ');
+    if (asked.has(key)) return true;
+    asked.add(key);
+    return false;
+  };
+}
+
+function methodsFor(world, { views, did, churn, appview = 'ok', viewCounts = 'ok' }) {
   const counted = knownFollowersCounter(appview);
+  const viewsGiven = viewCountsCounter(viewCounts);
   const ownRepo = (repo) => {
     if (repo && repo !== did && repo !== world.me.handle) {
       throw new XrpcError(
@@ -470,6 +491,27 @@ function methodsFor(world, { views, did, churn, appview = 'ok' }) {
         .filter(Boolean);
       return { profiles };
     },
+    /* A signed-in read of posts: the only one that carries a view count,
+       and only on the reader's own posts (src/lib/views.js). */
+    'app.bsky.feed.getPosts'({ uris }) {
+      const list = (Array.isArray(uris) ? uris : [uris]).filter(Boolean);
+      if (list.length > 25) throw new XrpcError(400, 'InvalidRequest', 'uris must not have more than 25 elements');
+      const give = viewsGiven(list);
+      const now = Date.now();
+      const posts = [];
+      for (const uri of list) {
+        const view = views.postView(uri);
+        if (!view) continue;
+        const parsed = parseAtUri(uri);
+        if (give && parsed?.did === did) {
+          const post = world.posts.find((p) => p.rkey === parsed.rkey);
+          const n = post ? viewCountFor(post, now) : null;
+          if (n != null) view.viewCount = n;
+        }
+        posts.push(view);
+      }
+      return { posts };
+    },
     'app.bsky.actor.getPreferences'() {
       return { preferences: world.preferences };
     },
@@ -566,6 +608,7 @@ function methodsFor(world, { views, did, churn, appview = 'ok' }) {
  * @param {string|(() => string)} [options.scope] - the scope the session was granted (OAUTH_SCOPE by default),
  *   or a function that reads it now (a sign-in can change it, as turning Defense on does)
  * @param {'ok'|'failopen'|'flaky'} [options.appview] - whether getProfiles counts known followers
+ * @param {'ok'|'none'|'failopen'|'flaky'} [options.viewCounts] - whether getPosts gives the author view counts
  * @param {{ next(): number }} [options.sweepCounter] - counts follower sweeps (Mira's churn); localStorage by default
  */
 export function createFakeAgent(
@@ -576,6 +619,7 @@ export function createFakeAgent(
     worlds = [world],
     scope = OAUTH_SCOPE,
     appview = 'ok',
+    viewCounts = 'ok',
     sweepCounter,
   } = {},
 ) {
@@ -590,7 +634,7 @@ export function createFakeAgent(
           sweepCounter || localStorageCounter('virga-harness:follower-sweeps'),
         )
       : null;
-  const methods = methodsFor(world, { views, did, churn, appview });
+  const methods = methodsFor(world, { views, did, churn, appview, viewCounts });
 
   async function handle(nsid, input, opts, proxy) {
     if (opts?.signal?.aborted) throw abortError();

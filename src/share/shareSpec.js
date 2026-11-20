@@ -13,11 +13,13 @@
 // description.
 
 import { bucketLabel } from '../lib/analytics.js';
-import { fmtCount, fmtRate, unitNoun } from '../charts/format.js';
+import { fmtCount, fmtPercent, fmtRate, unitNoun } from '../charts/format.js';
 import { fmtInt } from '../lib/locale.js';
 import { periodPhrase } from '../lib/periods.js';
 import { followerMilestones, marksOnSeries, noteMark } from '../reports/annotations.js';
-import { atmosphereModel, contentModel, engagementModel, followersModel, givenModel, postsModel } from '../reports/models.js';
+import { atmosphereModel, contentModel, engagementModel, followersModel, givenModel, postsModel, viewsModel } from '../reports/models.js';
+import { readPreferences } from '../lib/preferences.jsx';
+import { VIEWS_FLOOR, viewsStatus } from '../lib/views.js';
 
 /** Alt text on Bluesky holds 2,000 characters; this leaves room to add to it. */
 export const ALT_TEXT_MAX = 1800;
@@ -117,11 +119,55 @@ const BUILDERS = {
       rows: m.byKind.map((k) => ({ label: k.label, value: k.value, display: fmtInt(k.value) })),
     };
   },
+  'views-by-date': (archive, period, nowMs, { notes }) => {
+    if (!viewsShown(archive)) return null;
+    const m = viewsModel(archive, period, nowMs);
+    return seriesSpec(
+      { title: 'Views by post date', figure: { value: fmtInt(m.total), label: `views on ${fmtInt(m.withCount)} posts, as Bluesky counts them` } },
+      { series: m.series, unit: m.unit, trend: m.trend, marks: marksFor(archive, m.series, m.unit, notes, false), noun: 'views' },
+    );
+  },
+  'views-gained': (archive, period, nowMs, { notes }) => {
+    if (!viewsShown(archive)) return null;
+    const m = viewsModel(archive, period, nowMs);
+    if (!m.gainedReady) return null;
+    return seriesSpec(
+      { title: 'Views gained', figure: { value: fmtInt(Math.round(m.gainedTotal)), label: 'views gained between readings' } },
+      { series: m.gained, unit: m.unit, trend: m.gainedTrend, marks: marksFor(archive, m.gained, m.unit, notes, false), noun: 'views gained' },
+    );
+  },
+  'view-rate': (archive, period, nowMs, { notes }) => {
+    if (!viewsShown(archive)) return null;
+    const m = viewsModel(archive, period, nowMs);
+    return seriesSpec(
+      { title: 'Engagement per view', figure: { value: fmtPercent(m.rate), label: 'likes, reposts, replies and quotes per 100 views' } },
+      { series: m.rateSeries, unit: m.rateUnit, trend: m.rateTrend, format: fmtPercent, marks: marksFor(archive, m.rateSeries, m.rateUnit, notes, false), noun: 'interactions per 100 views' },
+    );
+  },
+  'views-formats': (archive, period, nowMs) => {
+    if (!viewsShown(archive)) return null;
+    const m = viewsModel(archive, period, nowMs);
+    const rows = m.formats.filter((f) => f.posts > 0 && f.typical != null);
+    if (!rows.length) return null;
+    return {
+      kind: 'bars',
+      title: 'Views by format',
+      figure: { value: m.typical.under ? `Under ${VIEWS_FLOOR}` : m.typical.value == null ? '—' : fmtInt(Math.round(m.typical.value)), label: 'views on a typical post' },
+      measure: 'views on a typical post',
+      rows: rows.map((f) => ({ label: f.label, value: f.typical, display: fmtInt(Math.round(f.typical)) })),
+    };
+  },
   'content-formats': (archive, period, nowMs) => groupSpec(contentModel(archive, period, nowMs), 'formats', 'What a typical post earns, by format'),
   'content-length': (archive, period, nowMs) => groupSpec(contentModel(archive, period, nowMs), 'lengths', 'What a typical post earns, by length'),
   'top-tags': (archive, period, nowMs, { rows = 8 }) => usedSpec(contentModel(archive, period, nowMs), 'tags', 'tag', 'Tags', (t) => `#${t}`, rows),
   'top-links': (archive, period, nowMs, { rows = 8 }) => usedSpec(contentModel(archive, period, nowMs), 'links', 'host', 'Sites linked to', (h) => h, rows),
 };
+
+/** Whether this browser shows the account's view counts (lib/views.js viewsStatus). */
+function viewsShown(archive) {
+  const enabled = readPreferences().viewCounts !== 'off';
+  return viewsStatus(archive.meta?.views, archive.views, { enabled }) === 'ready';
+}
 
 function groupSpec(m, key, title) {
   if (!m.ready) return null;
@@ -155,6 +201,8 @@ const SAME_AS = {
   'stat-per-post': 'engagement-rate',
   'stat-given': 'engagement-given',
   'stat-posts': 'posting-cadence',
+  'stat-views': 'views-by-date',
+  'stat-view-rate': 'view-rate',
 };
 
 /** Whether a card type can be made into a picture. */

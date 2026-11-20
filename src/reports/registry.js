@@ -3,7 +3,7 @@
 // thing has one glyph everywhere: UsersRound is followers, UserPlus is new
 // ones gained.
 
-import { Ban, Cloud, Heart, MessagesSquare, PenLine, Shapes, UsersRound } from 'lucide-react';
+import { Ban, Cloud, Eye, Heart, MessagesSquare, PenLine, Shapes, UsersRound } from 'lucide-react';
 
 export const REPORTS = Object.freeze([
   { key: 'followers', label: 'Followers', icon: UsersRound, desc: 'Growth over time, new followers, and who is newest.' },
@@ -11,6 +11,7 @@ export const REPORTS = Object.freeze([
   { key: 'posts', label: 'Posts', icon: PenLine, desc: 'How often you post, and how much of it is replies and media.' },
   { key: 'content', label: 'Content', icon: Shapes, desc: 'What your posts are made of, and which kinds do best: format, length, tags and links.' },
   { key: 'engagement', label: 'Engagement', icon: Heart, desc: 'What your posts earn, the rate per post, and what you give.' },
+  { key: 'views', label: 'Views', icon: Eye, desc: 'How often your posts were seen, from the counts Bluesky shows only you.' },
   { key: 'people', label: 'People', icon: MessagesSquare, desc: 'Who engages with you, and who you engage with.' },
   { key: 'atmosphere', label: 'Atmosphere', icon: Cloud, desc: 'Every record every app has written to your repo.' },
 ]);

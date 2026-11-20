@@ -24,6 +24,7 @@ Virga keeps the following in the browser you use it in. None of it is sent to ou
 | What | Where | How to remove it |
 | --- | --- | --- |
 | Your archive: your posts, followers, follows, blocks, the lists you are on, who interacts with you (their DIDs, handles, names and pictures), and every record in your repository | IndexedDB, one database per account | Settings › Data and sync deletes it. So does Remove from this browser, if you tick the box to delete what the account keeps here |
+| Your own posts’ view counts, which Bluesky shows only to a post’s author, and when each was read. Virga reads them only if Bluesky’s preferences for your account say you are 18 or over, and not at all if you turn them off | IndexedDB, with the archive | Settings › Data and sync, which can turn them off and delete them on their own. Deleting the archive deletes them too |
 | Pictures and video attached to drafts | IndexedDB, per account | Deleting the draft, or Remove from this browser with the box ticked. Settings › Data and sync leaves them |
 | The accounts you have signed in with (DID, handle, name, picture, when each was last opened) and which one is open | localStorage | Remove from this browser |
 | A long session’s token, which lets this browser act as your account through our server | localStorage | Signing out |
@@ -54,7 +55,7 @@ The IP address of a request is also used in memory, for about two minutes, to li
 
 ## What passes through the server without being kept
 
-With a long session, your browser’s calls to your account’s host go through our server, because it holds the tokens: reading your followers, notifications, drafts, saved posts and preferences, searching posts, and writing posts, follows and uploads. The server passes each call on and returns the answer. It doesn’t store the contents. A browser session makes the same calls directly, and our server isn’t involved.
+With a long session, your browser’s calls to your account’s host go through our server, because it holds the tokens: reading your followers, notifications, drafts, saved posts and preferences and your posts’ view counts, searching posts, and writing posts, follows and uploads. The server passes each call on and returns the answer. It doesn’t store the contents. A browser session makes the same calls directly, and our server isn’t involved.
 
 ## What is sent to other services
 

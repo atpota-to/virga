@@ -122,6 +122,16 @@ export function fmtRate(v) {
 }
 
 /**
+ * A share already in percent (3.4 for 3.4%): one decimal while small,
+ * whole from ten. A dash where there is nothing to divide by.
+ */
+export function fmtPercent(v) {
+  if (v == null || !Number.isFinite(v)) return '—';
+  const n = v < 10 ? Math.round(v * 10) / 10 : Math.round(v);
+  return `${n.toLocaleString(activeLocale())}%`;
+}
+
+/**
  * An average of counts (a trend's value): one decimal while small, written
  * even when it is nought ("2.0"), so a column of them lines up; whole above ten.
  */

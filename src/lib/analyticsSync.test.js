@@ -13,6 +13,7 @@ import {
   sweepInbound,
   sweepOutbound,
   sweepPosts,
+  sweepViews,
 } from './analyticsSync.js';
 import { tidToTimestamp } from './atproto.js';
 
@@ -538,5 +539,89 @@ describe('sweepBlocks progress', () => {
     expect([...new Set(reports.map((p) => p.stage))]).toEqual(['direct', 'lists', 'check', 'subscribers']);
     expect(reports.find((p) => p.stage === 'check' && p.done === 1)).toMatchObject({ total: 1 });
     expect(reports.at(-1)).toEqual({ stage: 'subscribers', fetched: 3, done: 1, total: 1 });
+  });
+});
+
+describe('sweepViews', () => {
+  const uri = (n) => `at://did:plc:me/app.bsky.feed.post/post${n}`;
+  const agentFrom = (answer) => {
+    const getPosts = vi.fn(async ({ uris }) => ({ data: { posts: answer(uris, getPosts.mock.calls.length) } }));
+    return { agent: { app: { bsky: { feed: { getPosts } } } }, getPosts };
+  };
+
+  it('asks 25 posts a call through the agent and hands back each count', async () => {
+    const uris = Array.from({ length: 60 }, (_, i) => uri(i));
+    const { agent, getPosts } = agentFrom((batch) => batch.map((u, i) => ({ uri: u, ...(i % 2 ? { viewCount: 100 + i } : {}) })));
+    const readings = [];
+    const res = await sweepViews(agent, uris, { onBatch: (rows) => readings.push(...rows) });
+    expect(getPosts).toHaveBeenCalledTimes(3);
+    expect(getPosts.mock.calls.map(([q]) => q.uris.length).sort()).toEqual([10, 25, 25]);
+    expect(readings).toHaveLength(60);
+    expect(readings.find((r) => r.uri === uri(1))).toEqual({ uri: uri(1), count: 101 });
+    expect(readings.find((r) => r.uri === uri(0))).toEqual({ uri: uri(0), count: null });
+    expect(res).toMatchObject({ read: 60, counted: 29, skipped: 0, complete: true, missingScope: false, error: null });
+  });
+
+  it('marks a post the AppView no longer has as gone', async () => {
+    const { agent } = agentFrom((batch) => batch.slice(1).map((u) => ({ uri: u, viewCount: 300 })));
+    const readings = [];
+    await sweepViews(agent, [uri(1), uri(2)], { onBatch: (rows) => readings.push(...rows) });
+    expect(readings).toEqual([
+      { uri: uri(1), count: null, gone: true },
+      { uri: uri(2), count: 300 },
+    ]);
+  });
+
+  it('asks again when a batch comes back without the counts it had, and leaves it out if it does again', async () => {
+    const known = new Set([uri(1)]);
+    // First answer: counts missing (the AppView failing open); second: there.
+    const flaky = agentFrom((batch, call) => batch.map((u) => ({ uri: u, ...(call >= 2 ? { viewCount: 500 } : {}) })));
+    const readings = [];
+    let res = await sweepViews(flaky.agent, [uri(1), uri(2)], { known, onBatch: (rows) => readings.push(...rows) });
+    expect(flaky.getPosts).toHaveBeenCalledTimes(2);
+    expect(readings.map((r) => r.count)).toEqual([500, 500]);
+    expect(res.skipped).toBe(0);
+
+    const down = agentFrom((batch) => batch.map((u) => ({ uri: u })));
+    const none = [];
+    res = await sweepViews(down.agent, [uri(1), uri(2)], { known, onBatch: (rows) => none.push(...rows) });
+    expect(down.getPosts).toHaveBeenCalledTimes(2);
+    expect(none).toEqual([]);
+    expect(res).toMatchObject({ read: 0, skipped: 2, complete: true });
+  });
+
+  it('takes a batch with no counts at its word when nothing in it had one', async () => {
+    const { agent, getPosts } = agentFrom((batch) => batch.map((u) => ({ uri: u })));
+    const res = await sweepViews(agent, [uri(1)], { known: new Set([uri(9)]), onBatch: () => {} });
+    expect(getPosts).toHaveBeenCalledTimes(1);
+    expect(res).toMatchObject({ read: 1, counted: 0, skipped: 0 });
+  });
+
+  it('says a missing permission as such, and stops', async () => {
+    const getPosts = vi.fn(async () => {
+      throw new Error('Missing required scope "rpc:app.bsky.feed.getPosts?aud=did:web:api.bsky.app#bsky_appview"');
+    });
+    const res = await sweepViews({ app: { bsky: { feed: { getPosts } } } }, [uri(1)], {});
+    expect(res).toMatchObject({ complete: false, missingScope: true, read: 0 });
+    expect(res.error).toMatch(/Missing required scope/);
+  });
+
+  it('stops on a cancel without calling it an error', async () => {
+    const ac = new AbortController();
+    const { agent } = agentFrom((batch) => {
+      ac.abort();
+      return batch.map((u) => ({ uri: u, viewCount: 100 }));
+    });
+    const uris = Array.from({ length: 200 }, (_, i) => uri(i));
+    const res = await sweepViews(agent, uris, { signal: ac.signal, concurrency: 1, onBatch: () => {} });
+    expect(res).toMatchObject({ aborted: true, complete: false, error: null });
+    expect(res.read).toBeLessThan(200);
+  });
+
+  it('does nothing for no posts', async () => {
+    const { agent, getPosts } = agentFrom(() => []);
+    const res = await sweepViews(agent, [], {});
+    expect(getPosts).not.toHaveBeenCalled();
+    expect(res).toMatchObject({ read: 0, complete: true });
   });
 });

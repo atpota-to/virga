@@ -27,6 +27,16 @@
 //                    every answer (failopen: a scan can't count anyone) or
 //                    the first answer for each batch (flaky: the canary
 //                    catches it and the batch is asked again)
+//   ?views=none|failopen|flaky
+//                    the signed-in getPosts gives no view counts at all (none:
+//                    no post has reached 100), leaves them off every answer
+//                    (failopen: the AppView's lookup timing out), or off the
+//                    first answer for each batch (flaky: the views sweep's
+//                    canary catches it and asks again)
+//   ?age=minor|undeclared
+//                    Bluesky has the accounts down as under 18, or has no
+//                    birthday for them, so Virga doesn't read view counts. By
+//                    default they've said they're over 18
 //   ?limits=3,1,1    per-account limits on scheduled posts, plain timers and
 //                    conditional timers (the server's SCHEDULED_POSTS_LIMIT,
 //                    POST_TIMERS_LIMIT, CONDITIONAL_TIMERS_LIMIT); a blank or
@@ -112,6 +122,8 @@ export function readFlags(search) {
       params.get('defense') === 'lists' ? 'lists' : params.get('defense') === 'on' ? 'scan' : false,
     ),
     appview: ['failopen', 'flaky'].includes(params.get('appview')) ? params.get('appview') : 'ok',
+    viewCounts: ['none', 'failopen', 'flaky'].includes(params.get('views')) ? params.get('views') : 'ok',
+    age: ['minor', 'undeclared'].includes(params.get('age')) ? params.get('age') : 'adult',
     defenseWrites: params.get('defensewrites') !== 'off',
     moderator: ['off', 'linked'].includes(params.get('moderator')) ? params.get('moderator') : 'on',
     limits: readLimits(params.get('limits')),
@@ -134,6 +146,12 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
     // What Virga's server reports about the session (/api/oauth/session).
     world.scope = flags.scope;
     world.pdsUrl = PDS;
+    if (flags.age && flags.age !== 'adult') {
+      world.preferences = world.preferences.filter((p) => p.$type !== 'app.bsky.actor.defs#declaredAgePref');
+      if (flags.age === 'minor') {
+        world.preferences.push({ $type: 'app.bsky.actor.defs#declaredAgePref', isOverAge13: true, isOverAge16: true, isOverAge18: false });
+      }
+    }
     return world;
   });
   const server = createServer({
@@ -179,6 +197,7 @@ export function createHarness(flags, { now = flags.now ?? Date.now() } = {}) {
             // Read at each call: a sign-in that turns Defense on changes it.
             scope: () => world.scope,
             appview: flags.appview,
+            viewCounts: flags.viewCounts,
           }),
         );
       }

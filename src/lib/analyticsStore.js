@@ -19,8 +19,8 @@
 const DB_PREFIX = 'virga-analytics:';
 // The upgrade path is the STORES loop in onupgradeneeded: any store missing
 // from an older database is created, nothing existing is touched. Adding a
-// store means adding it below and raising this number.
-const DB_VERSION = 1;
+// store means adding it below and raising this number. 2 added `views`.
+const DB_VERSION = 2;
 
 /** The database holding one account's archive. */
 export function analyticsDbName(did) {
@@ -37,6 +37,7 @@ const STORES = {
   outbound: 'uri', // the account's like/repost events (replies/quotes derive from posts)
   atmosphere: 'uri', // { uri, collection, at }: every record on the repo, dated
   actors: 'did', // resolved profile cards for the People lists
+  views: 'uri', // { uri, at, count, countedAt, checkedAt, checks, points }: lib/views.js
   meta: 'key', // { key, ...facts }: sync stamps, coverage marks
 };
 

@@ -29,6 +29,7 @@ import {
 } from '../lib/analytics.js';
 import { localeStamp, uses12Hour, weekOrder } from '../lib/locale.js';
 import { periodEnd, periodStart } from '../lib/periods.js';
+import { VIEWS_SETTLE_MS, oldestCountedMs, typicalViews, viewGains } from '../lib/views.js';
 
 const DAY_MS = 86_400_000;
 
@@ -419,10 +420,18 @@ export function median(values) {
  *
  * Counts are as of the last sync, so the newest posts are still collecting;
  * posts younger than two days are left out for that reason.
+ *
+ * `metric: 'views'` reads view counts instead (lib/views.js), over the posts
+ * Bluesky counts (from the oldest with a count). A slot whose middle post has
+ * no count is `under` 100: drawn at the bottom of the scale and never one of
+ * the best, but not called zero.
  */
-export function bestTimeModel(archive, period, nowMs, { block = 2 } = {}) {
+export function bestTimeModel(archive, period, nowMs, { block = 2, metric = 'engagement' } = {}) {
   nowMs = periodEnd(period, nowMs);
-  return cached(archive, 'bestTime', period, { block }, () => {
+  return cached(archive, 'bestTime', period, { block, metric }, () => {
+    const views = metric === 'views';
+    const rows = views ? viewRows(archive) : null;
+    const epoch = views ? oldestCountedMs(rows) : null;
     const cols = Math.ceil(24 / block);
     const t0 = periodStart(period, nowMs) ?? -Infinity;
     const settled = nowMs - 2 * DAY_MS;
@@ -430,30 +439,51 @@ export function bestTimeModel(archive, period, nowMs, { block = 2 } = {}) {
     const all = [];
     for (const p of datedPosts(archive)) {
       if (p.atMs < t0 || p.atMs > settled || !isOwnVoicePost(p, archive.did)) continue;
+      if (views && (epoch == null || p.atMs < epoch)) continue;
       const d = new Date(p.atMs);
-      const e = engagementOf(p, 'all');
+      const e = views ? (rows.get(p.uri)?.count ?? null) : engagementOf(p, 'all');
       grid[(d.getDay() + 6) % 7][Math.floor(d.getHours() / block)].push(e);
       all.push(e);
     }
+    // The middle of a slot: a median of engagement, or of views with "under
+    // 100" where the middle post has no count.
+    const middle = (list) => {
+      if (list.length < BEST_TIME_MIN_POSTS) return { avg: null, under: false };
+      if (!views) return { avg: median(list), under: false };
+      const t = typicalViews(list);
+      return { avg: t.under ? 0 : t.value, under: t.under };
+    };
     const slots = [];
-    const rows = grid.map((cells, day) => ({
+    const rowsOut = grid.map((cells, day) => ({
       label: WEEKDAYS[day],
       cells: cells.map((list, col) => {
-        const avg = list.length >= BEST_TIME_MIN_POSTS ? median(list) : null;
-        if (avg != null) slots.push({ day, col, avg, posts: list.length });
-        return { posts: list.length, avg };
+        const { avg, under } = middle(list);
+        if (avg != null && !under) slots.push({ day, col, avg, posts: list.length });
+        return { posts: list.length, avg, under };
       }),
     }));
     slots.sort((a, b) => b.avg - a.avg || b.posts - a.posts);
     const byDay = grid.map((cells, day) => {
       const list = cells.flat();
-      return { day, posts: list.length, avg: list.length >= BEST_TIME_MIN_POSTS ? median(list) : null };
+      return { day, posts: list.length, ...middle(list) };
     });
     const byHour = Array.from({ length: cols }, (_, col) => {
       const list = grid.flatMap((cells) => cells[col]);
-      return { col, posts: list.length, avg: list.length >= BEST_TIME_MIN_POSTS ? median(list) : null };
+      return { col, posts: list.length, ...middle(list) };
     });
-    return { block, cols, rows, best: slots.slice(0, 3), byDay, byHour, posts: all.length, overall: median(all) };
+    const overall = all.length ? (views ? typicalViews(all) : { value: median(all), under: false }) : { value: null, under: false };
+    return {
+      metric: views ? 'views' : 'engagement',
+      block,
+      cols,
+      rows: rowsOut,
+      best: slots.slice(0, 3),
+      byDay,
+      byHour,
+      posts: all.length,
+      overall: overall.value,
+      overallUnder: overall.under,
+    };
   });
 }
 
@@ -657,6 +687,154 @@ export function contentStandout(groups, overall, against = null) {
   const baseline = base ? base.typical : overall;
   if (baseline == null || best.typical <= baseline) return null;
   return { best, base, baseline };
+}
+
+/* ------------------------------------------------------------------ */
+/* Views                                                                */
+/* ------------------------------------------------------------------ */
+
+/** The archive's view rows (lib/views.js), by post URI. */
+export function viewRows(archive) {
+  return cached(archive, 'viewRows', null, null, () => new Map((archive.views || []).map((r) => [r.uri, r])));
+}
+
+/** A post's view count, or null: never over 100, not counted, or not read yet. */
+export function viewsOf(archive, post) {
+  return viewRows(archive).get(post?.uri)?.count ?? null;
+}
+
+/**
+ * The fewest views a post needs before its engagement per view is ranked: under
+ * that, one like more or less swings the rate too far to say anything.
+ */
+export const RATE_MIN_VIEWS = 300;
+
+/**
+ * What the account's posts were seen, from the view counts Bluesky gives their
+ * author (lib/views.js has what those are, and aren't).
+ *
+ * Only posts Bluesky counts are counted: those made since the oldest post
+ * that has a count (`epoch`), which is as near as Virga can get to the day
+ * Bluesky started counting, a date it doesn't publish. All time starts there
+ * too. Of those, a post without a count is under 100 (or its count hasn't
+ * been read yet), never zero.
+ *
+ *   total, series    the views on the window's posts, by the day each was made,
+ *                    as of the last read: the newest are still collecting
+ *   gained           views gained between Virga's readings, spread over the
+ *                    time between them (viewGains), from `since`
+ *   typical          the median over the owner's own voice (posts and
+ *                    threads) older than two days, "under 100" when the
+ *                    middle post has no count
+ *   rate             engagement per 100 views (a percent), over own-voice
+ *                    posts with a count
+ *   top, engaging    the most seen; the most engaging for their reach, among
+ *                    posts with RATE_MIN_VIEWS or more
+ *   formats          the typical post and the rate, by what a post carries
+ */
+export function viewsModel(archive, period, nowMs, { unit: unitPick = null, rateUnit: ratePick = null } = {}) {
+  nowMs = periodEnd(period, nowMs);
+  return cached(archive, 'views', period, { unitPick, ratePick }, () => {
+    const did = archive.did;
+    const rows = viewRows(archive);
+    const count = (p) => rows.get(p.uri)?.count ?? null;
+    const views = (p) => count(p) ?? 0;
+    const epoch = oldestCountedMs(rows);
+    const dated = datedPosts(archive);
+    const { t0, spanDays, units, unit } = windowOf(period, nowMs, epoch ?? minOf(dated, (p) => p.atMs), unitPick);
+    const inWindow = dated.filter((p) => p.atMs >= t0 && p.atMs <= nowMs);
+    const countable = epoch == null ? [] : inWindow.filter((p) => p.atMs >= epoch);
+    const withCount = countable.filter((p) => count(p) != null);
+    const total = withCount.reduce((sum, p) => sum + views(p), 0);
+    const series = bucketSeries(countable, { unit, t0, t1: nowMs, pickTime: (p) => p.atMs, pickValue: views });
+
+    // Gained: from the readings themselves, not the posts' dates.
+    const since = archive.meta.views?.since ?? null;
+    const gained = viewGains(rows.values(), bucketSeries([], { unit, t0, t1: nowMs }), { t1: nowMs, sinceMs: since });
+    const gainedTotal = gained.reduce((sum, b) => sum + b.v, 0);
+    // Something to compare: a post read with a count twice, or one made after
+    // Virga started reading (its rise from nothing is its own). After a single
+    // reading of older posts there is nothing yet, which isn't zero.
+    const gainedReady =
+      since != null &&
+      [...rows.values()].some((r) => (r.points?.length || 0) >= 2 || ((r.points?.length || 0) >= 1 && Date.parse(r.at) >= since));
+
+    const own = countable.filter((p) => isOwnVoicePost(p, did));
+    const settled = own.filter((p) => p.atMs <= nowMs - VIEWS_SETTLE_MS);
+    const typical = typicalViews(settled.map(count));
+    const ownWithCount = own.filter((p) => count(p) != null);
+    const ratio = (list) => {
+      const v = list.reduce((sum, p) => sum + views(p), 0);
+      return v ? (list.reduce((sum, p) => sum + engagementOf(p, 'all'), 0) / v) * 100 : null;
+    };
+    const rateUnit = ratePick && units.includes(ratePick) ? ratePick : units.includes('week') ? 'week' : unit;
+    const rateEng = bucketSeries(ownWithCount, { unit: rateUnit, t0, t1: nowMs, pickTime: (p) => p.atMs, pickValue: (p) => engagementOf(p, 'all') });
+    const rateViews = bucketSeries(ownWithCount, { unit: rateUnit, t0, t1: nowMs, pickTime: (p) => p.atMs, pickValue: views });
+    const rateSeries = rateEng.map((b, i) => ({ t: b.t, v: rateViews[i].v ? (b.v / rateViews[i].v) * 100 : null, engagement: b.v, views: rateViews[i].v }));
+
+    // The window before, only when Bluesky was counting all through it: a
+    // window from before then would read as views out of nowhere.
+    const days = period.days || null;
+    const compare = days && epoch != null && epoch <= nowMs - 2 * days * DAY_MS ? comparePeriods(dated, { days, now: nowMs, pickTime: (p) => p.atMs, pickValue: views }) : null;
+
+    const withViews = (p) => ({ ...p, views: views(p) });
+    const top = [...withCount].sort((a, b) => views(b) - views(a) || b.atMs - a.atMs).slice(0, 20).map(withViews);
+    const engaging = ownWithCount
+      .filter((p) => views(p) >= RATE_MIN_VIEWS)
+      .map((p) => ({ ...withViews(p), rate: (engagementOf(p, 'all') / views(p)) * 100 }))
+      .sort((a, b) => b.rate - a.rate || b.views - a.views)
+      .slice(0, 20);
+    const formats = CONTENT_FORMATS.map((f) => {
+      const list = settled.filter((p) => formatOf(p) === f.key);
+      const t = list.length >= CONTENT_MIN_POSTS ? typicalViews(list.map(count)) : { value: null, under: false };
+      return { key: f.key, label: f.label, posts: list.length, typical: t.value, under: t.under, rate: ratio(list.filter((p) => count(p) != null)) };
+    });
+
+    return {
+      epoch,
+      since,
+      lastReadAt: archive.meta.views?.syncedAt ?? null,
+      unit,
+      units,
+      spanDays,
+      series,
+      trend: movingAverage(series, 7),
+      total,
+      posts: inWindow.length,
+      countable: countable.length,
+      withCount: withCount.length,
+      before: inWindow.length - countable.length,
+      gained,
+      gainedTrend: movingAverage(gained, 7),
+      gainedTotal,
+      gainedReady,
+      typical,
+      settledPosts: settled.length,
+      ownPosts: own.length,
+      rate: ratio(ownWithCount),
+      rateUnit,
+      rateSeries,
+      rateTrend: rollingRatio(rateSeries, 5),
+      compare,
+      top,
+      engaging,
+      formats,
+    };
+  });
+}
+
+/** The trend under engagement per view: a ratio of sums over a centred window, never an average of percents. */
+function rollingRatio(series, window = 5) {
+  const half = Math.floor(window / 2);
+  return series.map((p, i) => {
+    let engagement = 0;
+    let views = 0;
+    for (let j = Math.max(0, i - half); j <= Math.min(series.length - 1, i + half); j++) {
+      engagement += series[j].engagement || 0;
+      views += series[j].views || 0;
+    }
+    return { t: p.t, v: views ? (engagement / views) * 100 : null };
+  });
 }
 
 /* ------------------------------------------------------------------ */

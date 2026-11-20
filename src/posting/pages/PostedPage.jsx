@@ -8,6 +8,7 @@ import { Link } from '../../lib/router.jsx';
 import { useToast } from '../../shell/bits.jsx';
 import { formatDateShort } from '../../lib/time.js';
 import { useArchive, isBuilt } from '../../archive/ArchiveContext.jsx';
+import { useViewsFor } from '../../reports/useViews.js';
 import { useAtprotoSession } from '../../session/useAtprotoSession.jsx';
 import { isMissingScopeError } from '../../session/scopes.js';
 import { PostMeta } from '../../reports/PostRow.jsx';
@@ -60,6 +61,7 @@ function actionError(err, what) {
  */
 export default function PostedPage({ did }) {
   const archive = useArchive();
+  const viewsFor = useViewsFor(archive);
   const composer = useComposer();
   const toast = useToast();
   const { agentFor, capabilitiesFor, targetFor } = useAtprotoSession();
@@ -301,11 +303,11 @@ export default function PostedPage({ did }) {
                         </a>
                         {row.fresh && built ? (
                           <span className="meta num">
-                            <PostMeta post={meta} />
+                            <PostMeta post={meta} views={viewsFor(row)} />
                             <span>Not in the archive yet</span>
                           </span>
                         ) : (
-                          <PostMeta post={meta} className="num" />
+                          <PostMeta post={meta} className="num" views={viewsFor(row)} />
                         )}
                       </div>
                       <div className="row-actions">

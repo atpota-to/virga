@@ -14,10 +14,14 @@ import { PRIVACY_PATH, TERMS_EFFECTIVE_DATE, TERMS_PATH, TERMS_VERSION, formatLe
 // again, raise TERMS_VERSION (and TERMS_EFFECTIVE_DATE, and the dates in the
 // documents); if it is a typo or a clarification, leave the version alone.
 // Either way, put the new fingerprint here.
+//
+// 2026-11-20: both now say Virga reads the account's own view counts. Left at
+// version 1 because version 1 had not been put in front of anyone yet (Virga
+// isn't deployed); once it has, a change like this one should raise it.
 const FINGERPRINTS = {
   version: 1,
-  terms: '48b988264f584bdfb4da2433c2a52ca5cb5d2f716d5d91a2f553201297c92baa',
-  privacy: '5b4d572da63f2e6f36b469c00de2e0b01c11b895646a85b8b6c8bb34a42d8a99',
+  terms: '9f64ea6fa976739d09315252e8246cce37da4e6864e541a3a3c2646597a29da4',
+  privacy: '3bc5e828409127c7df7c4f1fcd6ee138d29c6b16bad6ccb5bed992a47f0be13e',
 };
 
 const fingerprint = (text) => createHash('sha256').update(text).digest('hex');

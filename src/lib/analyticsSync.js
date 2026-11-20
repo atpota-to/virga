@@ -25,6 +25,10 @@
 //               load the PDS proxy shouldn't carry. Carries engagement
 //               counts (likes/reposts/replies/quotes) the raw repo doesn't.
 //
+//   views       app.bsky.feed.getPosts through the OWNER'S AGENT, for the
+//               account's own posts: the AppView gives a post's view count
+//               only to its author, on a signed-in read (lib/views.js).
+//
 //   inbound     app.bsky.notification.listNotifications through the agent
 //               (owner-only data). Who liked/reposted/replied/quoted/
 //               mentioned, with a timestamp — the only per-actor inbound
@@ -53,6 +57,8 @@ import { APPVIEW } from '../config.js';
 import { rkeyFromAtUri, tidToTimestamp, resolveProfiles } from './atproto.js';
 import { compactPostFromFeedItem, inboundFromNotification, outboundFromRecord } from './analytics.js';
 import { backlinkRows, getBacklinks, getManyToMany } from './constellation.js';
+import { VIEWS_BATCH, viewCountOf } from './views.js';
+import { isMissingScopeError } from '../session/scopes.js';
 
 /** Page size everywhere — the API maximum for all four endpoints. */
 const PAGE = 100;
@@ -577,6 +583,92 @@ export async function sweepPosts({
   }
   // Cap reached — everything gathered is real, but the sweep isn't finished.
   return { fetched, complete: false, aborted: false, cursor, error: null };
+}
+
+/* ------------------------------------------------------------------ */
+/* View counts                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Read the view counts of the account's own posts, `uris`, through the
+ * OWNER'S AGENT: app.bsky.feed.getPosts, 25 a call, three calls at a time.
+ * Only a read signed in as the author carries `viewCount` (lib/views.js says
+ * what the AppView does with it), so the public host, which every other post
+ * read here uses, can't.
+ *
+ * Each batch's readings go to `onBatch` as `{ uri, count }`, `count` null
+ * where the post came back without one. A post the AppView didn't return at
+ * all (deleted since) comes back as `{ uri, count: null, gone: true }`.
+ *
+ * The canary. The AppView gives its count lookup 100 ms and, when that runs
+ * out, answers without any counts rather than failing. A batch where every
+ * post that had a count before (`known`) comes back without one is that, not
+ * a hundred posts falling under 100 at once: it is asked once more, and if it
+ * comes back the same it is left out (`skipped`) rather than recorded, so
+ * those posts are simply due again next sync.
+ *
+ * A session without the permission fails with "Missing required scope";
+ * that is said as `missingScope`, so the archive can ask for a fresh sign-in
+ * instead of reporting an error.
+ *
+ * @returns {Promise<{read:number, counted:number, skipped:number, complete:boolean,
+ *                    aborted:boolean, missingScope:boolean, error:string|null}>}
+ */
+export async function sweepViews(agent, uris, { known = new Set(), onBatch, onProgress, signal, concurrency = 3 } = {}) {
+  const batches = [];
+  for (let i = 0; i < (uris || []).length; i += VIEWS_BATCH) batches.push(uris.slice(i, i + VIEWS_BATCH));
+  const total = batches.reduce((n, b) => n + b.length, 0);
+  let read = 0;
+  let counted = 0;
+  let skipped = 0;
+  let error = null;
+  let missingScope = false;
+  let next = 0;
+
+  async function ask(batch) {
+    const res = await withRetry(() => agent.app.bsky.feed.getPosts({ uris: batch }), signal);
+    const found = new Map();
+    for (const view of res?.data?.posts || []) if (view?.uri) found.set(view.uri, view);
+    return found;
+  }
+
+  async function one(batch) {
+    let found = await ask(batch);
+    const canary = batch.filter((uri) => known.has(uri) && found.has(uri));
+    if (canary.length && canary.every((uri) => viewCountOf(found.get(uri)) == null)) {
+      if (aborted(signal)) return;
+      found = await ask(batch);
+      if (canary.every((uri) => viewCountOf(found.get(uri)) == null)) {
+        skipped += batch.length;
+        onProgress?.({ done: read + skipped, total, counted });
+        return;
+      }
+    }
+    const readings = batch.map((uri) =>
+      found.has(uri) ? { uri, count: viewCountOf(found.get(uri)) } : { uri, count: null, gone: true },
+    );
+    read += readings.length;
+    counted += readings.filter((r) => r.count != null).length;
+    await onBatch?.(readings);
+    onProgress?.({ done: read + skipped, total, counted });
+  }
+
+  async function worker() {
+    while (!error && !aborted(signal) && next < batches.length) {
+      const batch = batches[next++];
+      try {
+        await one(batch);
+      } catch (err) {
+        if (aborted(signal)) return;
+        missingScope = isMissingScopeError(err);
+        error = err?.message || String(err);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(concurrency, batches.length)) }, worker));
+  if (aborted(signal)) return { read, counted, skipped, complete: false, aborted: true, missingScope: false, error: null };
+  return { read, counted, skipped, complete: !error, aborted: false, missingScope, error };
 }
 
 /* ------------------------------------------------------------------ */

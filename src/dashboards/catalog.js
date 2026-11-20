@@ -9,6 +9,7 @@ import {
   Clock,
   Cloud,
   Database,
+  Eye,
   FileText,
   Hash,
   Heart,
@@ -29,6 +30,7 @@ import {
 export const CATEGORIES = Object.freeze([
   { key: 'followers', label: 'Followers' },
   { key: 'engagement', label: 'Engagement' },
+  { key: 'views', label: 'Views' },
   { key: 'posts', label: 'Posts' },
   { key: 'content', label: 'Content' },
   { key: 'people', label: 'People' },
@@ -66,6 +68,8 @@ export const WIDGETS = Object.freeze(
       def('stat-unfollows', 'Unfollows', 'Who left since the last sync', 'followers', UserMinus, STAT, 'xs', '/tools/unfollow-tracker', 'stat', T),
       def('stat-engagement', 'Engagement', 'Likes, reposts, replies and quotes received', 'engagement', Heart, STAT, 'xs', '/reports/engagement', 'stat', PK),
       def('stat-per-post', 'Engagement per post', 'Averaged over your posts and threads', 'engagement', Heart, STAT, 'xs', '/reports/engagement', 'stat', PK),
+      def('stat-views', 'Views', 'Views on the period’s posts, from the counts Bluesky shows only you', 'views', Eye, STAT, 'xs', '/reports/views', 'stat'),
+      def('stat-view-rate', 'Engagement per view', 'Likes, reposts, replies and quotes per 100 views', 'views', Eye, STAT, 'xs', '/reports/views', 'stat'),
       def('stat-given', 'Engagement given', 'Likes, reposts, replies and quotes you gave', 'engagement', Repeat2, STAT, 'xs', '/reports/engagement?direction=given', 'stat', PK),
       def('stat-posts', 'Posts', 'Posts and replies in the period', 'posts', PenLine, STAT, 'xs', '/reports/posts', 'stat'),
       def('stat-typical-post', 'A typical post', 'What the middle post of yours earns', 'content', Shapes, STAT, 'xs', '/reports/content', 'stat'),
@@ -81,6 +85,10 @@ export const WIDGETS = Object.freeze(
       def('engagement-rate', 'Engagement rate', 'Engagement per post, posts and threads only', 'engagement', Heart, CHART, 'm', '/reports/engagement', 'card', PK),
       def('engagement-by-type', 'Engagement by type', 'Likes, reposts, replies and quotes received', 'engagement', Heart, ['s', 'm', 'l'], 's', '/reports/engagement'),
       def('engagement-given', 'Engagement given', 'What you hand out, per day or week', 'engagement', Repeat2, CHART, 'm', '/reports/engagement?direction=given', 'card', PK),
+      def('views-by-date', 'Views by post date', 'How often each day’s or week’s posts were seen', 'views', Eye, CHART, 'm', '/reports/views'),
+      def('views-gained', 'Views gained', 'Views gained between Virga’s readings', 'views', Eye, CHART, 'm', '/reports/views'),
+      def('view-rate', 'Engagement per view', 'Per 100 views, by when each post was made', 'views', Eye, CHART, 'm', '/reports/views'),
+      def('views-formats', 'Views by format', 'A typical post’s views, by what it carries', 'views', Eye, ['s', 'm', 'l'], 'm', '/reports/views'),
       def('posting-cadence', 'Posting cadence', 'Posts per day or week, with the trend', 'posts', PenLine, CHART, 'm', '/reports/posts'),
       def('best-time', 'Best time to post', 'What a typical post earns, by weekday and hour', 'posts', Clock, ['m', 'l', 'xl'], 'm', '/tools/best-time'),
       def('content-formats', 'Formats', 'What a typical post earns, by what it carries', 'content', Shapes, ['s', 'm', 'l'], 'm', '/reports/content'),
@@ -90,6 +98,7 @@ export const WIDGETS = Object.freeze(
 
       // Lists
       def('top-posts', 'Top posts', 'Your posts, ranked by engagement', 'posts', PenLine, LIST, 'm', '/reports/engagement', 'card', PKR),
+      def('most-seen', 'Most seen', 'Your posts with the most views', 'views', Eye, LIST, 'm', '/reports/views', 'card', PR),
       def('top-tags', 'Tags', 'The tags you use, and what posts with them earn', 'content', Hash, LIST, 'm', '/reports/content', 'card', PR),
       def('top-links', 'Sites you link to', 'Where your links go, and what those posts earn', 'content', Link2, LIST, 'm', '/reports/content', 'card', PR),
       def('top-engagers', 'Top engagers', 'Who interacts with you the most', 'people', MessagesSquare, LIST, 'm', '/reports/people', 'card', PKR),

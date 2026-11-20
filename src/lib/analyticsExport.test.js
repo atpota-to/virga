@@ -76,7 +76,7 @@ describe('archiveJson', () => {
     expect(doc.version).toBe(EXPORT_VERSION);
     expect(doc.exportedAt).toBe('2026-10-29T12:00:00.000Z');
     expect(doc.did).toBe(DID);
-    expect(doc.counts).toEqual({ posts: 1, followers: 1, following: 0, blocks: 0, inbound: 1, outbound: 0, atmosphere: 1, actors: 1 });
+    expect(doc.counts).toEqual({ posts: 1, followers: 1, following: 0, blocks: 0, inbound: 1, outbound: 0, atmosphere: 1, views: 0, actors: 1 });
     expect(doc.posts).toEqual(archive.posts);
     expect(doc.atmosphere).toEqual(archive.atmosphere);
     expect(doc.actors).toEqual([{ did: OTHER, handle: 'x.test' }]);
@@ -128,7 +128,22 @@ describe('postsCsv', () => {
       'tags',
       'links',
       'langs',
+      'views',
     ]);
+  });
+
+  it('writes a post’s view count, and leaves it blank where there is none', () => {
+    const a = post({ uri: 'at://did:plc:me/app.bsky.feed.post/a', at: '2026-11-02T00:00:00Z' });
+    const b = post({ uri: 'at://did:plc:me/app.bsky.feed.post/b', at: '2026-11-01T00:00:00Z' });
+    const views = new Map([
+      [a.uri, { uri: a.uri, count: 1234 }],
+      [b.uri, { uri: b.uri, count: null }],
+    ]);
+    const rows = parseCsv(postsCsv([a, b], { views }).slice(1));
+    const at = rows[0].indexOf('views');
+    expect(rows.slice(1).map((r) => r[at])).toEqual(['1234', '']);
+    // Without view counts (off on this browser), the column is there and empty.
+    expect(parseCsv(postsCsv([a]).slice(1))[1][at]).toBe('');
   });
 
   it('round-trips commas, quotes and line breaks in post text', () => {
