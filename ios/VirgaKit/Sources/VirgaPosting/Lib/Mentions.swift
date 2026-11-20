@@ -323,19 +323,22 @@ actor MentionResolver {
     return .milliseconds(Int64(ms.rounded(.towardZero)))
   }
 
-  /// A number as Node's range errors show it: an integer past 2^32 with
-  /// underscores between thousands.
+  /// A number as Node's range errors show it: an integer past 2^32 through
+  /// Node's `addNumericalSeparator`, which puts an underscore before every
+  /// third character from the end of `String(n)`, exponent and all
+  /// (`5_000_000_000`, and `1e+_300` for 1e300).
   static func nodeNumber(_ value: Double) -> String {
     let text = JSNumber.format(value)
-    guard abs(value) > 4_294_967_296, value.rounded(.towardZero) == value, !text.contains("e") else { return text }
-    let negative = text.hasPrefix("-")
-    var digits = Array(negative ? text.dropFirst() : Substring(text))
-    var out: [Character] = []
-    while digits.count > 3 {
-      out.insert(contentsOf: ["_"] + digits.suffix(3), at: 0)
-      digits.removeLast(3)
+    guard abs(value) > 4_294_967_296, value.rounded(.towardZero) == value else { return text }
+    let chars = Array(text)
+    let start = chars.first == "-" ? 1 : 0
+    var i = chars.count
+    var separated = ""
+    while i >= start + 4 {
+      separated = "_" + String(chars[(i - 3)..<i]) + separated
+      i -= 3
     }
-    return (negative ? "-" : "") + String(digits + out)
+    return String(chars[0..<i]) + separated
   }
 
   static func fetchWithTimeout(_ fetch: MentionFetch?, _ url: String, timeout: Duration) async -> Outcome {

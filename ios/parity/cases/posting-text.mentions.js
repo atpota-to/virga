@@ -254,8 +254,22 @@ const SCENARIOS = [
 
 // A timeout AbortSignal.timeout refuses (written as text: JSON has no
 // Infinity or NaN). Browsers and Node agree these throw; they differ on a
-// fraction and on 2^32 to 2^53, which are left out.
-const TIMEOUTS = ['Infinity', '-Infinity', 'NaN', '-1', '-1.5', '-5000000000'];
+// fraction and on 2^32 to 2^53, which are left out. Past 2^32 Node writes
+// the number with underscores, after every third character from the end,
+// exponent and all.
+const TIMEOUTS = [
+  'Infinity',
+  '-Infinity',
+  'NaN',
+  '-1',
+  '-1.5',
+  '-5000000000',
+  '-4294967297',
+  '9007199254740992',
+  '1e300',
+  '-1e21',
+  '-1e-7',
+];
 
 export default async function cases() {
   const out = [];
