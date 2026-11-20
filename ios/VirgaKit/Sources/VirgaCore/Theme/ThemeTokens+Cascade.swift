@@ -542,6 +542,15 @@ public struct ResolvedTheme: Hashable, Sendable {
     resolve(length)?.points(in: context ?? lengthContext)
   }
 
+  /// The tokens of an element inside this page that declares some itself,
+  /// as `.input[aria-invalid='true']` declares --focus-ring and --focus
+  /// (ThemeKit.invalidFocusRing, ThemeKit.invalidFocus): its declarations
+  /// computed against its own values, the rest inherited from this one.
+  public func declaring(_ declarations: [(ThemeToken, ThemeValue)]) -> ResolvedTheme {
+    let own = declarations.map { ($0.0, ThemeDeclaration($0.0, "", $0.1)) }
+    return ResolvedTheme(viewportWidth: viewportWidth, values: ThemeCascade.computed(own, inherited: values))
+  }
+
   /// Light or dark: the page's color-scheme.
   public var colorScheme: Theme { keyword(.colorScheme) == "dark" ? .dark : .light }
 }
