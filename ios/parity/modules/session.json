@@ -96,8 +96,15 @@
       "synced": "0084abb10869"
     },
     "src/lib/oauthClient.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Lib/OAuthClient.swift"
+      ],
+      "fixtures": [
+        "session.oauth"
+      ],
+      "note": "signInErrorMessage and callbackErrorMessage, word for word. Not ported: getOauthClient, getOauthEvents, buildLoopbackClientId and buildClientMetadata, the browser's own OAuth client (@atproto/oauth-client-browser) and its metadata (which api/client-metadata.js serves for the web): the iOS app signs in only through Virga's server, through VirgaSession's SessionController and a WebAuthenticator (ASWebAuthenticationSession in VirgaUI).",
+      "synced": "cfada69b84e4"
     },
     "src/lib/sessionHint.js": {
       "status": "ported",
@@ -122,8 +129,12 @@
       "synced": "9142b9727b12"
     },
     "src/session/browserDriver.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/BrowserDriver.swift"
+      ],
+      "note": "Only the driver's interface, as BrowserSessionDriver (with BrowserOAuthSession and BrowserRestoreError), which SessionController takes so its browser branches are the web's; the app passes NoBrowserSessions. Not ported: createBrowserDriver and its helpers (classifyRestoreError, isRevokedCause, grantedScopeOf, isCallbackResult), which wrap @atproto/oauth-client-browser: there are no browser sessions on iOS, which signs in only through Virga's server.",
+      "synced": "17608a4bf954"
     },
     "src/session/scopes.js": {
       "status": "ported",
@@ -155,20 +166,48 @@
       "swift": []
     },
     "src/signin/flow.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Flow.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. The events are SignInFlowEvent cases (the web's { type } objects); a state the web hands back untouched is the same value here.",
+      "synced": "2e5a380e62c0"
     },
     "src/signin/hosts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Hosts.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. signUpAt takes the session's signIn and SignInOptions; cancelling the task is the web's aborted signal.",
+      "synced": "d7b7c2f473df"
     },
     "src/signin/identity.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Identity.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. createIdentityResolver is SignInIdentity.Resolver (transport, clock, DID-document cache, appview), the module's shared resolveSignInHost/resolveSignInIdentity its statics. Cancelling the task stands for the signal: the lookup throws CancellationError where the web throws an AbortError DOMException. A profile's handle or avatar that isn't a string is dropped (the web keeps any truthy value).",
+      "synced": "7b24ac6fc866"
     },
     "src/signin/suggest.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Suggest.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. searchAccounts' error is SuggestError (message HTTP <status>, status). A negative limit takes none (the web's slice(0, -n) takes all but the last n).",
+      "synced": "94b89e05a9a3"
     }
   }
 }

@@ -1,0 +1,453 @@
+{
+  "name": "session.oauth",
+  "sources": [
+    "src/lib/oauthClient.js"
+  ],
+  "cases": [
+    {
+      "id": "signInErrorMessage#1",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "HANDLE_NOT_FOUND"
+        }
+      },
+      "output": "Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID."
+    },
+    {
+      "id": "signInErrorMessage#2",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "AUTHORIZE_FAILED"
+        }
+      },
+      "output": "Found the account, but its host isn’t accepting sign-ins from here right now."
+    },
+    {
+      "id": "signInErrorMessage#3",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "VIRGA_CLIENT_UNAVAILABLE"
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now. Try again in a little while."
+    },
+    {
+      "id": "signInErrorMessage#4",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "status": 503
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now. Try again in a little while."
+    },
+    {
+      "id": "signInErrorMessage#5",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": null,
+          "status": 503
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now. Try again in a little while."
+    },
+    {
+      "id": "signInErrorMessage#6",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "OTHER",
+          "status": 503
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#7",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": 503,
+          "status": 503
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now. Try again in a little while."
+    },
+    {
+      "id": "signInErrorMessage#8",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "NETWORK_ERROR"
+        }
+      },
+      "output": "Couldn’t reach Virga’s server. Check your connection and try again."
+    },
+    {
+      "id": "signInErrorMessage#9",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "RATE_LIMITED"
+        }
+      },
+      "output": "Too many sign-ins were started from here in the last minute. Wait a minute and try again."
+    },
+    {
+      "id": "signInErrorMessage#10",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "REDIRECT_NOT_ALLOWED"
+        }
+      },
+      "output": "Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site."
+    },
+    {
+      "id": "signInErrorMessage#11",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "The redirect_uri is not allowed"
+        }
+      },
+      "output": "Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site."
+    },
+    {
+      "id": "signInErrorMessage#12",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "origin is not an allowed frontend"
+        }
+      },
+      "output": "Virga’s server doesn’t take sign-ins from this address. Long sessions work from Virga’s own site."
+    },
+    {
+      "id": "signInErrorMessage#13",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Failed to Resolve Identity: x"
+        }
+      },
+      "output": "Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID."
+    },
+    {
+      "id": "signInErrorMessage#14",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "invalid handle"
+        }
+      },
+      "output": "Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID."
+    },
+    {
+      "id": "signInErrorMessage#15",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Invalid DID"
+        }
+      },
+      "output": "Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID."
+    },
+    {
+      "id": "signInErrorMessage#16",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "handle must be lowercase"
+        }
+      },
+      "output": "Couldn’t find that account. Check the handle (it looks like you.bsky.social), or paste your DID."
+    },
+    {
+      "id": "signInErrorMessage#17",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Failed to resolve OAuth server metadata"
+        }
+      },
+      "output": "Found the account, but its host isn’t accepting sign-ins from here right now."
+    },
+    {
+      "id": "signInErrorMessage#18",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "not protected by issuer"
+        }
+      },
+      "output": "Found the account, but its host isn’t accepting sign-ins from here right now."
+    },
+    {
+      "id": "signInErrorMessage#19",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Authorization server does not support PAR"
+        }
+      },
+      "output": "Found the account, but its host isn’t accepting sign-ins from here right now."
+    },
+    {
+      "id": "signInErrorMessage#20",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "invalid_scope"
+        }
+      },
+      "output": "Found the account, but its host didn’t accept the permissions Virga asks for. It may be running older software."
+    },
+    {
+      "id": "signInErrorMessage#21",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Bad SCOPE"
+        }
+      },
+      "output": "Found the account, but its host didn’t accept the permissions Virga asks for. It may be running older software."
+    },
+    {
+      "id": "signInErrorMessage#22",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "name": "TypeError",
+          "message": "Failed to fetch"
+        }
+      },
+      "output": "Couldn’t reach the account’s host. Check your connection and try again."
+    },
+    {
+      "id": "signInErrorMessage#23",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "name": "TypeError",
+          "message": "NetworkError when attempting to fetch resource."
+        }
+      },
+      "output": "Couldn’t reach the account’s host. Check your connection and try again."
+    },
+    {
+      "id": "signInErrorMessage#24",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "name": "TypeError",
+          "message": "Load failed"
+        }
+      },
+      "output": "Couldn’t reach the account’s host. Check your connection and try again."
+    },
+    {
+      "id": "signInErrorMessage#25",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "name": "TypeError",
+          "message": "Cannot read properties of undefined"
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#26",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Failed to fetch"
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#27",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": ""
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#28",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "Sign-in couldn’t start (HTTP 500)",
+          "code": "INTERNAL",
+          "status": 500
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#29",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "handle_not_found"
+        }
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#30",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": {}
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "signInErrorMessage#31",
+      "fn": "signInErrorMessage",
+      "input": {
+        "error": null
+      },
+      "output": "Sign-in couldn’t start. Check the handle and try again."
+    },
+    {
+      "id": "callbackErrorMessage#1",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "access_denied"
+          }
+        }
+      },
+      "output": "Access wasn’t granted, so you’re not signed in."
+    },
+    {
+      "id": "callbackErrorMessage#2",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "unexpected_return"
+          }
+        }
+      },
+      "output": "That sign-in wasn’t started from this tab, so Virga ignored it. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#3",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "invalid_scope"
+          }
+        }
+      },
+      "output": "The account’s host didn’t accept the permissions Virga asks for, so you’re not signed in."
+    },
+    {
+      "id": "callbackErrorMessage#4",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "VIRGA_CLIENT_UNAVAILABLE"
+          }
+        }
+      },
+      "output": "Virga’s server isn’t taking sign-ins right now, so you’re not signed in. Try again in a little while."
+    },
+    {
+      "id": "callbackErrorMessage#5",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "nope"
+          }
+        }
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#6",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {
+            "error": "Access_Denied"
+          }
+        }
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#7",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "params": {}
+        }
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#8",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "access_denied"
+        }
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#9",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": {
+          "message": "x",
+          "code": "access_denied"
+        }
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "callbackErrorMessage#10",
+      "fn": "callbackErrorMessage",
+      "input": {
+        "error": null
+      },
+      "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    }
+  ]
+}
