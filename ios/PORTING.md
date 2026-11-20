@@ -127,6 +127,12 @@ means porting the code, not reimagining it.
   U+FEFF (Linux's keeps it): never take lengths or offsets from a bridged
   NSString; use `utf16` and VirgaCore's `JSRegexSubject`. CI builds with Xcode 26.6 (iOS 26.5 SDK); keep to
   Swift 6.2's language features.
+- Xcode's Swift 6.2 type checker gives up on expressions Swift 6.4 accepts
+  ("unable to type-check this expression in reasonable time"), most often
+  mixed integer and floating literals in arithmetic, or long `&&` chains,
+  inside `#expect`. Give literals a type in a `let` first
+  (`let expected: Double = 272 + 1040 + 51.2 * 2`) and write one `#expect`
+  per comparison.
 - iOS 17.4 is the floor: no iOS 18-only API without `if #available`.
 
 ## Tests
