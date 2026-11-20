@@ -227,7 +227,10 @@ public enum TimerService {
   /// The account a post URI belongs to (`at://<did>/…`), or nil.
   public static func timerDidForUri(_ uri: String?) -> String? {
     guard let uri, PostingJS.hasPrefix(uri, "at://") else { return nil }
-    let did = uri.jsSlice(5).components(separatedBy: "/")[0]
+    // `uri.slice(5).split('/')[0]`, by code unit.
+    let rest = uri.jsSlice(5)
+    let slash = rest.jsIndexOf("/")
+    let did = slash < 0 ? rest : rest.jsSlice(0, slash)
     return PostingJS.hasPrefix(did, "did:") ? did : nil
   }
 
@@ -486,7 +489,7 @@ public enum TimerService {
 
   static func sendCreate(_ req: any TimerRequester, _ body: TimerCreateBody) async throws -> JSONValue? {
     let res = try await req.request(TimerRequest(path: "\(base)/create", method: "POST", body: body.json))
-    return res?["data"] ?? nil
+    return res?["data"]
   }
 
   /// Tell the page (virga:timers-changed). A listener's mistake, or a
@@ -680,6 +683,6 @@ public enum TimerService {
     guard let req else { throw needsBackend() }
     let res = try await req.request(TimerRequest(path: "\(base)/cancel", method: "POST", body: ["id": id]))
     announce(req.did, ["change": "cancelled", "id": id], context)
-    return res?["data"] ?? nil
+    return res?["data"]
   }
 }

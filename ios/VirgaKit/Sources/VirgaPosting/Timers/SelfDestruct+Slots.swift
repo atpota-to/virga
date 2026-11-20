@@ -34,7 +34,7 @@ extension SelfDestruct {
 
   /// Counts in the evaluator's shape; absent (or unreadable) reads as zero.
   public static func readCounts(_ counts: JSONValue?) -> TimerCounts {
-    let src = counts.flatMap { $0.isTruthy ? $0 : nil }
+    let src = TimerJS.truthy(counts)
     func read(_ key: String) -> Double {
       let n = src?[key].jsNumber ?? .nan
       return n.isNaN || n == 0 ? 0 : n
@@ -91,8 +91,7 @@ extension SelfDestruct {
     func when(_ row: JSONValue?, _ live: Bool) -> Double {
       // `(live ? row?.checkAt : row?.resolvedAt) || row?.checkAt || 0`
       let first = live ? row?["checkAt"] : row?["resolvedAt"]
-      let picked: JSONValue =
-        first.flatMap { $0.isTruthy ? $0 : nil } ?? row?["checkAt"].flatMap { $0.isTruthy ? $0 : nil } ?? 0
+      let picked: JSONValue = TimerJS.truthy(first) ?? TimerJS.truthy(row?["checkAt"]) ?? 0
       return TimerJS.dateMs(picked, timeZone: timeZone)
     }
     let at = when(a, liveA)
@@ -216,7 +215,7 @@ extension SelfDestruct {
     guard let feature = payload?["feature"]?.stringValue, let bucket = timerSlotFeatureBucket[feature] else {
       return ""
     }
-    let limit = payload?["limit"].flatMap { $0.isNull ? nil : $0 } ?? 1
+    let limit = TimerJS.present(payload?["limit"]) ?? 1
     return timerSlotSentence(bucket, limit)
   }
 

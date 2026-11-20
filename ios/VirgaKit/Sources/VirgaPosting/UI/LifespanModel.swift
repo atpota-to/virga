@@ -90,7 +90,7 @@ public enum LifespanModel {
   /// A pinned time (ISO), keeping the length behind it for when the pin is
   /// taken off.
   public static func withPin(_ rule: some TimerRuleInput, _ iso: JSONValue?) -> TimerRule {
-    patchRule(rule, ["deleteAt": iso.flatMap { $0.isTruthy ? $0 : nil } ?? .null])
+    patchRule(rule, ["deleteAt": TimerJS.truthy(iso) ?? .null])
   }
 
   public static func withPin(_ rule: some TimerRuleInput, _ iso: String?) -> TimerRule {

@@ -33,6 +33,22 @@ enum TimerJS {
     raw?.objectValue ?? [:]
   }
 
+  /// The value when it is truthy, else nil: `a || b` reads as
+  /// `truthy(a) ?? b`. (Not `x.flatMap { $0.isTruthy ? $0 : nil }`:
+  /// JSONValue is ExpressibleByNilLiteral, so that `nil` is `.null` and
+  /// nothing is ever dropped.)
+  static func truthy(_ value: JSONValue?) -> JSONValue? {
+    guard let value, value.isTruthy else { return nil }
+    return value
+  }
+
+  /// The value unless it is null or absent: `a ?? b` reads as
+  /// `present(a) ?? b`.
+  static func present(_ value: JSONValue?) -> JSONValue? {
+    guard let value, !value.isNull else { return nil }
+    return value
+  }
+
   /// `raw && typeof raw === 'object'`.
   static func isObject(_ raw: JSONValue?) -> Bool {
     switch raw {

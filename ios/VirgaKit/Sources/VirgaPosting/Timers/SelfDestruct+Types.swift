@@ -305,30 +305,87 @@ public struct TimerFit: Codable, Hashable, Sendable {
 }
 
 /// settleForPublish's answer: the timer a just-published post gets, and
-/// 'floor' when a stale pin became the five-minute floor.
+/// 'floor' when a stale pin became the five-minute floor (null otherwise,
+/// a key the web's object holds).
 public struct SettledTimer: Codable, Hashable, Sendable {
   public var timer: TimerRule
   public var adjusted: String?
+
+  public init(timer: TimerRule, adjusted: String?) {
+    self.timer = timer
+    self.adjusted = adjusted
+  }
+
+  enum CodingKeys: String, CodingKey { case timer, adjusted }
+
+  public func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(timer, forKey: .timer)
+    try c.encode(adjusted, forKey: .adjusted)
+  }
 }
 
-/// immediateTimerToSend's answer.
+/// immediateTimerToSend's answer (`adjusted` and `spec` null when there is
+/// none, as the web's object holds them).
 public struct ImmediateTimerSend: Codable, Hashable, Sendable {
   public var timer: TimerRule
   public var adjusted: String?
   public var spec: TimerWireSpec?
+
+  public init(timer: TimerRule, adjusted: String?, spec: TimerWireSpec?) {
+    self.timer = timer
+    self.adjusted = adjusted
+    self.spec = spec
+  }
+
+  enum CodingKeys: String, CodingKey { case timer, adjusted, spec }
+
+  public func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(timer, forKey: .timer)
+    try c.encode(adjusted, forKey: .adjusted)
+    try c.encode(spec, forKey: .spec)
+  }
 }
 
-/// scheduledTimerToSend's answer: a refusal ('' for none) or the spec.
+/// scheduledTimerToSend's answer: a refusal ('' for none) or the spec
+/// (null with a refusal).
 public struct ScheduledTimerSend: Codable, Hashable, Sendable {
   public var problem: String
   public var spec: TimerWireSpec?
+
+  public init(problem: String, spec: TimerWireSpec?) {
+    self.problem = problem
+    self.spec = spec
+  }
+
+  enum CodingKeys: String, CodingKey { case problem, spec }
+
+  public func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(problem, forKey: .problem)
+    try c.encode(spec, forKey: .spec)
+  }
 }
 
 /// scheduledGateChange's answer: the timer's gates seen from the reply
-/// settings.
+/// settings (`limitReplies` null when replies aren't limited).
 public struct ScheduledGateChange: Codable, Hashable, Sendable {
   public var limitReplies: TimerEffect?
   public var disableQuotes: Bool
+
+  public init(limitReplies: TimerEffect?, disableQuotes: Bool) {
+    self.limitReplies = limitReplies
+    self.disableQuotes = disableQuotes
+  }
+
+  enum CodingKeys: String, CodingKey { case limitReplies, disableQuotes }
+
+  public func encode(to encoder: Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(limitReplies, forKey: .limitReplies)
+    try c.encode(disableQuotes, forKey: .disableQuotes)
+  }
 }
 
 /// readStoredTimer's answer: the rule, disarmed when any part couldn't be

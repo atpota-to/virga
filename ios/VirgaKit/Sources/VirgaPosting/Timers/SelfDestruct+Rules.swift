@@ -258,23 +258,37 @@ extension SelfDestruct {
   }
 
   /// Why moving a scheduled row to `whenISO` would break its pinned delete
-  /// time, or ''. Catches reorders the server would refuse.
+  /// time, or ''. Catches reorders the server would refuse. `whenISO` is
+  /// read as `new Date(whenISO)` reads it (nil is `undefined`, an invalid
+  /// time; `.null` is the epoch); `now`, `locale` and `timeZone` are for
+  /// the words.
   public static func scheduledRowTimerProblem(
-    _ row: JSONValue?, _ whenISO: String?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
+    _ row: JSONValue?, _ whenISO: JSONValue?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
   ) -> String {
     guard let spec = pinnedRowSpec(row) else { return "" }
     return scheduledTimerProblem(
-      spec, TimerJS.dateMs(whenISO.map(JSONValue.string), timeZone: timeZone), now: now, locale: locale,
-      timeZone: timeZone)
+      spec, TimerJS.dateMs(whenISO, timeZone: timeZone), now: now, locale: locale, timeZone: timeZone)
+  }
+
+  public static func scheduledRowTimerProblem(
+    _ row: JSONValue?, _ whenISO: String?, now: Double, locale: String? = nil, timeZone: TimeZone? = nil
+  ) -> String {
+    scheduledRowTimerProblem(row, whenISO.map(JSONValue.string), now: now, locale: locale, timeZone: timeZone)
   }
 
   /// Where a scheduled row's pinned delete time stands against `whenISO`
   /// (pinnedDeadlineStatus).
-  public static func scheduledRowDeadlineStatus(_ row: JSONValue?, _ whenISO: String?, timeZone: TimeZone? = nil)
+  public static func scheduledRowDeadlineStatus(_ row: JSONValue?, _ whenISO: JSONValue?, timeZone: TimeZone? = nil)
     -> String
   {
     guard let spec = pinnedRowSpec(row) else { return "none" }
-    return pinnedDeadlineStatus(spec, TimerJS.dateMs(whenISO.map(JSONValue.string), timeZone: timeZone))
+    return pinnedDeadlineStatus(spec, TimerJS.dateMs(whenISO, timeZone: timeZone))
+  }
+
+  public static func scheduledRowDeadlineStatus(_ row: JSONValue?, _ whenISO: String?, timeZone: TimeZone? = nil)
+    -> String
+  {
+    scheduledRowDeadlineStatus(row, whenISO.map(JSONValue.string), timeZone: timeZone)
   }
 
   /// The `fit` (see fitTimerToPost) for the post in the composer; every
