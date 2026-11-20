@@ -94,6 +94,10 @@ struct ConvertibleError: TimerErrorConvertible {
     #expect(SelfDestruct.timerSlotRefusal(quota.payload) == SelfDestruct.timerSlotSentence("plain"))
 
     #expect(TimerService.codedError("BAD_POST", "x").errorDescription == "x")
+
+    // Codes compare by code unit, as `===` does: a Kelvin sign is not a K.
+    #expect(TimerService.isArmOutcomeUnknown(TimerServiceError(code: "NETWORK_ERROR", message: "x")))
+    #expect(!TimerService.isArmOutcomeUnknown(TimerServiceError(code: "NETWOR\u{212A}_ERROR", message: "x")))
   }
 
   @Test func manyComposersShareOneProbe() async {

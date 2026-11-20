@@ -284,7 +284,7 @@ public enum TimerService {
   /// hide the feature for the session.
   public static func isTimersUnavailableError(_ err: Error?) -> Bool {
     guard let err else { return false }
-    return TimerServiceError(err).code == "UNAVAILABLE"
+    return TimerServiceError(err).code.jsEquals("UNAVAILABLE")
   }
 
   /// Whether a failure means this server has no timer endpoints at all: a
@@ -293,7 +293,7 @@ public enum TimerService {
   public static func isTimersUnsupported(_ err: Error?) -> Bool {
     guard let err else { return false }
     let e = TimerServiceError(err)
-    return e.status == 404 || e.status == 405 || e.code == "UNAVAILABLE"
+    return e.status == 404 || e.status == 405 || e.code.jsEquals("UNAVAILABLE")
   }
 
   /// Whether a failed arm may still have armed: the request timed out, the
@@ -304,11 +304,12 @@ public enum TimerService {
   public static func isArmOutcomeUnknown(_ err: Error?) -> Bool {
     guard let err, !isTimersUnsupported(err) else { return false }
     let e = TimerServiceError(err)
-    if e.code == "TIMEOUT" || e.code == "NETWORK_ERROR" { return true }
+    // By code unit: Swift's == would take a Kelvin sign for the K.
+    if e.code.jsEquals("TIMEOUT") || e.code.jsEquals("NETWORK_ERROR") { return true }
     if let status = e.status, status > 0 { return status == 408 || status == 502 || status == 504 }
     if let code = e.code, !code.isEmpty { return false }
     let name = e.name ?? ""
-    if name == "TimeoutError" || name == "AbortError" || name == "TypeError" { return true }
+    if name.jsEquals("TimeoutError") || name.jsEquals("AbortError") || name.jsEquals("TypeError") { return true }
     return lostAnswerMessage(e.message)
   }
 
