@@ -248,3 +248,13 @@ extension JSONValue {
     value.isFinite ? .number(value) : .null
   }
 }
+
+extension Optional where Wrapped == JSONValue {
+  /// The value when JavaScript reads it as true, else nil: `value || fallback`
+  /// is `value.jsTruthy ?? fallback`. (Not `flatMap { $0.isTruthy ? $0 : nil }`:
+  /// that `nil` is JSONValue's nil literal, `.null`, so nothing falls back.)
+  var jsTruthy: JSONValue? {
+    guard case .some(let value) = self, value.isTruthy else { return Optional<JSONValue>.none }
+    return value
+  }
+}
