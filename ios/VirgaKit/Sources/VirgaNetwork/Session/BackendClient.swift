@@ -254,6 +254,8 @@ public enum BackendClient {
       backendUrl: backendUrl, handle: handle, origin: origin, returnPath: returnPath, nonce: nonce, prompt: prompt,
       defense: defense)
     let calledOff = BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+    // A fetch whose signal is already aborted rejects without sending.
+    if Task.isCancelled { throw calledOff }
     let response: HTTPResponse
     do {
       response = try await transport.send(

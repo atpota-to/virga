@@ -66,9 +66,9 @@ public struct XRPCParams: Sendable, Hashable, ExpressibleByDictionaryLiteral {
 
   /// Sets `name` (replacing it where it is, appending it where it isn't).
   public subscript(name: String) -> XRPCParamValue? {
-    get { items.first { $0.name == name }?.value }
+    get { items.first { $0.name.jsEquals(name) }?.value }
     set {
-      if let index = items.firstIndex(where: { $0.name == name }) {
+      if let index = items.firstIndex(where: { $0.name.jsEquals(name) }) {
         items[index].value = newValue
       } else {
         items.append(Item(name: name, value: newValue))

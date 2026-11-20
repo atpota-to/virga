@@ -101,10 +101,12 @@ import VirgaTestSupport
         let initValue = c["init"]
         var headers = HTTPHeaders()
         for (name, value) in initValue["headers"]?.objectValue ?? [:] { headers.set(name, value.stringValue ?? "") }
+        // The caller's own deadline, where the case gave its signal one.
         let request = HTTPRequest(
           method: initValue["method"]?.stringValue ?? "GET", url: c["url"].stringValue ?? "", headers: headers,
-          body: initValue["body"]?.stringValue.map { Data($0.utf8) })
-        let response = try await Atproto.fetchWithTimeout(request, transport: transport)
+          body: initValue["body"]?.stringValue.map { Data($0.utf8) }, timeoutMs: c["signalMs"].doubleValue)
+        let response = try await Atproto.fetchWithTimeout(
+          request, ms: c["ms"].doubleValue ?? Atproto.requestTimeoutMs, transport: transport)
         return ["status": .number(Double(response.status)), "body": try response.json()]
       }
     }

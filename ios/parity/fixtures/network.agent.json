@@ -1679,6 +1679,108 @@
       }
     },
     {
+      "id": "status-not-modified",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 304
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 304,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": null
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 1,
+            "error": "Unknown",
+            "message": "Response constructor: Invalid response status code 304",
+            "headers": null
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
+      "id": "status-no-content",
+      "fn": "agentCall",
+      "input": {
+        "nsid": "app.bsky.actor.getPreferences",
+        "kind": "query",
+        "typedParams": [],
+        "answers": [
+          {
+            "status": 204
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/proxy",
+              "method": "GET",
+              "headers": {
+                "atproto-accept-labelers": "did:plc:ar7c4by46qjdydhdevvrndac;redact",
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json",
+                "x-xrpc-method": "app.bsky.actor.getPreferences"
+              },
+              "body": null,
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 204,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": null
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "status": 502,
+            "error": "BackendError",
+            "message": "The request failed",
+            "headers": {
+              "content-type": "application/json"
+            }
+          },
+          "unauthorized": [],
+          "authorized": []
+        }
+      }
+    },
+    {
       "id": "offline",
       "fn": "agentCall",
       "input": {

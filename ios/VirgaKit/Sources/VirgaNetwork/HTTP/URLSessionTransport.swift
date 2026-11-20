@@ -21,6 +21,8 @@ public struct URLSessionTransport: HTTPTransport {
   }
 
   public func send(_ request: HTTPRequest) async throws -> HTTPResponse {
+    // A fetch whose signal is already aborted rejects without sending.
+    try Task.checkCancellation()
     guard let parsed = try? WebURL(request.url), let url = URL(string: parsed.href) else {
       throw HTTPTransportError.invalidURL(request.url)
     }

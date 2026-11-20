@@ -111,14 +111,15 @@ public enum Atproto {
 
   /// `fetchWithTimeout(url, init, ms)`: the request with the 15 s ceiling
   /// (or `ms`) every request in the module carries, as well as the task's
-  /// own cancellation.
+  /// own cancellation. A deadline the request already has is kept beside it
+  /// (`AbortSignal.any([init.signal, timeout])`: whichever passes first).
   public static func fetchWithTimeout(
     _ request: HTTPRequest,
     ms: Double = requestTimeoutMs,
     transport: any HTTPTransport = HTTP.transport
   ) async throws -> HTTPResponse {
     var timed = request
-    timed.timeoutMs = ms
+    timed.timeoutMs = request.timeoutMs.map { min($0, ms) } ?? ms
     return try await transport.send(timed)
   }
 

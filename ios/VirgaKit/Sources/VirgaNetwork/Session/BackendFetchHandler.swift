@@ -83,7 +83,7 @@ public struct BackendFetchHandler: XRPCFetchHandler {
     }
 
     guard let bearer = token(), !bearer.isEmpty else {
-      return unwrap(HTTPResponse.json(BackendClient.noTokenEnvelope, status: 401), pick: nil, authorized: false)
+      return try unwrap(HTTPResponse.json(BackendClient.noTokenEnvelope, status: 401), pick: nil, authorized: false)
     }
 
     if upload {
@@ -101,7 +101,7 @@ public struct BackendFetchHandler: XRPCFetchHandler {
           method: "POST", url: address.href,
           headers: ["Authorization": "Bearer \(bearer)", "Content-Type": "application/octet-stream"],
           body: request.body, timeoutMs: deadline))
-      return unwrap(response, pick: { data in
+      return try unwrap(response, pick: { data in
         if let blob = data?["blob"], blob.isTruthy { return ["blob": blob] }
         return data
       }, authorized: true)
@@ -116,17 +116,20 @@ public struct BackendFetchHandler: XRPCFetchHandler {
     if let labelers = request.headers.get("atproto-accept-labelers"), !labelers.jsTrimmed().isEmpty {
       headers.set("Atproto-Accept-Labelers", labelers)
     }
-    let method = request.method.uppercased()
+    // `(init.method || 'GET').toUpperCase()`.
+    let method = request.method.isEmpty ? "GET" : request.method.uppercased()
     let url = try BackendClient.backendAddress(backendUrl, BackendClient.BackendPaths.proxy, origin: origin).href + u.search
     let response = try await transport.send(
       HTTPRequest(
         method: method, url: url, headers: headers,
         body: method == "GET" || method == "HEAD" ? nil : request.body, timeoutMs: deadline))
-    return unwrap(response, pick: nil, authorized: true)
+    return try unwrap(response, pick: nil, authorized: true)
   }
 
   /// `unwrapEnvelope`: the proxy's envelope as the XRPC answer the Agent reads.
-  func unwrap(_ response: HTTPResponse, pick: ((JSONValue?) -> JSONValue?)?, authorized: Bool) -> HTTPResponse {
+  /// Throws where the web's `new Response(body, { status })` does: for an
+  /// upstream status that can't carry a body (a 304) or isn't 200–599.
+  func unwrap(_ response: HTTPResponse, pick: ((JSONValue?) -> JSONValue?)?, authorized: Bool) throws -> HTTPResponse {
     let env = response.jsonOrNull()
     if response.ok, env?["success"]?.isTruthy == true {
       if authorized { onAuthorized?(did) }
@@ -155,6 +158,13 @@ public struct BackendFetchHandler: XRPCFetchHandler {
       break
     }
     let status = response.ok ? 502 : (response.status == 0 ? 502 : response.status)
+    // The Response constructor's checks, with Node's words.
+    if !(200...599).contains(status) {
+      throw BackendError(name: "RangeError", message: "init[\"status\"] must be in the range of 200 to 599, inclusive.")
+    }
+    if [204, 205, 304].contains(status) {
+      throw BackendError(name: "TypeError", message: "Response constructor: Invalid response status code \(status)")
+    }
     let code = env?["code"].truthy
     let error: JSONValue = code ?? .string(status == 401 ? "AuthenticationRequired" : "BackendError")
     let message: JSONValue =

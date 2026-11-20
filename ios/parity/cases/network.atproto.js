@@ -550,10 +550,38 @@ export default async function cases() {
           },
           answers: [json({ ok: true })],
         },
+        // Its own ceiling instead of 15 s.
+        {
+          $id: 'own-ceiling',
+          url: 'https://plc.example/did:plc:x/log/audit',
+          ms: 4000,
+          answers: [json([])],
+        },
+        // A caller's signal that has a deadline of its own: whichever is
+        // sooner holds (AbortSignal.any).
+        {
+          $id: 'caller-sooner',
+          url: 'https://constellation.example/a',
+          signalMs: 2000,
+          answers: [json({ ok: 1 })],
+        },
+        {
+          $id: 'caller-later',
+          url: 'https://constellation.example/b',
+          signalMs: 60_000,
+          ms: 5000,
+          answers: [json({ ok: 2 })],
+        },
       ],
-      ({ url, init, answers }) =>
+      ({ url, init, ms, signalMs, answers }) =>
         recorded(inTurn(...answers), async () => {
-          const res = await fetchWithTimeout(url, init);
+          const res = await fetchWithTimeout(
+            url,
+            signalMs === undefined
+              ? init
+              : { ...init, signal: AbortSignal.timeout(signalMs) },
+            ms,
+          );
           return { status: res.status, body: await res.json() };
         }),
     )),

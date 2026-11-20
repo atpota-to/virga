@@ -3416,6 +3416,138 @@
           }
         }
       }
+    },
+    {
+      "id": "own-ceiling",
+      "fn": "fetchWithTimeout",
+      "input": {
+        "url": "https://plc.example/did:plc:x/log/audit",
+        "ms": 4000,
+        "answers": [
+          {
+            "status": 200,
+            "json": []
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.example/did:plc:x/log/audit",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 4000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "[]"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "body": []
+        }
+      }
+    },
+    {
+      "id": "caller-sooner",
+      "fn": "fetchWithTimeout",
+      "input": {
+        "url": "https://constellation.example/a",
+        "signalMs": 2000,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "ok": 1
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.example/a",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 2000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"ok\":1}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "body": {
+            "ok": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "caller-later",
+      "fn": "fetchWithTimeout",
+      "input": {
+        "url": "https://constellation.example/b",
+        "signalMs": 60000,
+        "ms": 5000,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "ok": 2
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.example/b",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 5000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"ok\":2}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "status": 200,
+          "body": {
+            "ok": 2
+          }
+        }
+      }
     }
   ]
 }

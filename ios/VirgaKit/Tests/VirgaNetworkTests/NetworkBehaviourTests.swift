@@ -212,6 +212,120 @@ import VirgaTestSupport
   }
 }
 
+/// backendClient.test.js: a sign-in called off goes nowhere, and the
+/// requester tells a timeout from an unreachable server and lets a caller's
+/// own abort through.
+@Suite struct BackendBehaviour {
+  static let authUrl = "https://bsky.social/oauth/authorize?request_uri=z"
+
+  /// Cancels the task the request is made in, as an AbortController's
+  /// `abort()` called while the server is answering.
+  static func cancelCurrentTask() { withUnsafeCurrentTask { $0?.cancel() } }
+
+  static func signIn(_ transport: MockTransport, _ storage: InMemoryKeyValueStore, _ assigned: Locked<[String]>) async throws {
+    try await BackendClient.startBackendSignIn(
+      backendUrl: Fixed.server, handle: "mira.example.com", origin: "https://virga.example", returnPath: "/oauth/return",
+      transport: transport, clock: .instant(now: 1_773_576_000_000), sessionStorage: storage,
+      assign: { url in assigned.withLock { $0.append(url) } })
+  }
+
+  static func expectCalledOff(_ body: () async throws -> Void) async {
+    do {
+      try await body()
+      Issue.record("expected the sign-in to be called off")
+    } catch let error as BackendError {
+      #expect(error.name == "AbortError" && error.codeString == "CANCELLED" && error.message == "The sign-in was called off")
+    } catch {
+      Issue.record("not a BackendError: \(error)")
+    }
+  }
+
+  @Test func aSignInCalledOffGoesNowhere() async {
+    // While the server was answering: the address it sent isn't gone to.
+    let during = MockTransport()
+    during.on(.any) { _ in
+      BackendBehaviour.cancelCurrentTask()
+      return .json(["success": true, "authUrl": .string(BackendBehaviour.authUrl)])
+    }
+    let storage = InMemoryKeyValueStore()
+    let assigned = Locked<[String]>([])
+    await Task {
+      await Self.expectCalledOff { try await Self.signIn(during, storage, assigned) }
+    }.value
+    #expect(assigned.withLock { $0 }.isEmpty)
+    #expect(storage.getItem(BackendClient.signinPendingKey) == nil)
+
+    // While the request was in flight: the fetch itself is dropped.
+    let inFlight = MockTransport()
+    inFlight.on(.any) { _ in
+      BackendBehaviour.cancelCurrentTask()
+      throw CancellationError()
+    }
+    await Task {
+      await Self.expectCalledOff { try await Self.signIn(inFlight, storage, assigned) }
+    }.value
+    #expect(assigned.withLock { $0 }.isEmpty)
+
+    // Before it started: nothing is sent.
+    let before = MockTransport()
+    before.on(.any, respond: .json(["success": true, "authUrl": .string(BackendBehaviour.authUrl)]))
+    await Task {
+      Self.cancelCurrentTask()
+      await Self.expectCalledOff { try await Self.signIn(before, storage, assigned) }
+    }.value
+    #expect(before.requests.isEmpty)
+    #expect(assigned.withLock { $0 }.isEmpty)
+    #expect(storage.getItem(BackendClient.signinPendingKey) == nil)
+  }
+
+  @Test func aSignInGoesToTheAddressTheServerSent() async throws {
+    let transport = MockTransport()
+    transport.on(.any, respond: .json(["success": true, "authUrl": .string(Self.authUrl)]))
+    let storage = InMemoryKeyValueStore()
+    let assigned = Locked<[String]>([])
+    try await Self.signIn(transport, storage, assigned)
+    #expect(assigned.withLock { $0 } == [Self.authUrl])
+    #expect(transport.requests.first?.timeoutMs == BackendClient.sessionTimeoutMs)
+    #expect(BackendClient.readSigninPending(storage)?["mode"] == "backend")
+  }
+
+  static func requestError(_ transport: MockTransport) async -> any Error {
+    let backend = VirgaBackend(backendUrl: Fixed.server, token: { Fixed.token }, did: Fixed.did, transport: transport)
+    do {
+      try await backend.request("/api/x")
+      return CancellationError()
+    } catch {
+      return error
+    }
+  }
+
+  @Test func theRequesterTellsATimeoutFromAnUnreachableServer() async {
+    let slow = MockTransport()
+    slow.on(.any, respond: .timeout)
+    let timedOut = await Self.requestError(slow) as? BackendError
+    #expect(timedOut?.codeString == "TIMEOUT" && timedOut?.status == 0)
+    #expect(timedOut?.message == "Virga’s server didn’t answer in time.")
+    #expect(slow.requests.first?.timeoutMs == 30_000)
+
+    let offline = MockTransport()
+    offline.on(.any, respond: .networkError("Failed to fetch"))
+    let unreachable = await Self.requestError(offline) as? BackendError
+    #expect(unreachable?.codeString == "NETWORK_ERROR" && unreachable?.status == 0)
+    #expect(unreachable?.message == "Couldn’t reach Virga’s server.")
+    #expect(unreachable?.detail == nil && unreachable?.payload == nil)
+  }
+
+  @Test func theRequesterLetsTheCallersAbortThrough() async {
+    let aborting = MockTransport()
+    aborting.on(.any) { _ in
+      BackendBehaviour.cancelCurrentTask()
+      throw CancellationError()
+    }
+    let error = await Task { await Self.requestError(aborting) }.value
+    #expect(error is CancellationError)
+  }
+}
+
 @Suite struct CacheBehaviour {
   @Test func sharesARead() async throws {
     let cache = PromiseCache<Int>()

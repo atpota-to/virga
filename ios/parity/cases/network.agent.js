@@ -366,6 +366,19 @@ const CASES = [
     nsid: 'app.bsky.actor.getPreferences',
     answers: [json({ success: false }, 507)],
   },
+  // A 304 has no body, and `new Response(body, { status: 304 })` throws:
+  // the call fails with that TypeError, not with an XRPC answer.
+  {
+    $id: 'status-not-modified',
+    nsid: 'app.bsky.actor.getPreferences',
+    answers: [{ status: 304 }],
+  },
+  // A 204 is a success with no body: not a success envelope, so a 502.
+  {
+    $id: 'status-no-content',
+    nsid: 'app.bsky.actor.getPreferences',
+    answers: [{ status: 204 }],
+  },
   {
     $id: 'offline',
     nsid: 'app.bsky.actor.getPreferences',
