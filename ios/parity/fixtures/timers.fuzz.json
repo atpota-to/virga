@@ -21573,7 +21573,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Asia/Kolkata",
         "from": "bogus"
       },
@@ -21590,7 +21590,7 @@
           "effects": []
         },
         "now": 1787832000000.5,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Asia/Kolkata",
         "from": "now"
       },
@@ -21708,7 +21708,7 @@
           "effects": []
         },
         "now": 1787832000000.5,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "America/New_York",
         "from": "bogus"
       },
@@ -21749,7 +21749,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "from": "now"
       },
@@ -21775,11 +21775,11 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Asia/Kolkata",
         "from": "wentUp"
       },
-      "output": "Limits replies to your followers today at 17:32."
+      "output": "Limits replies to your followers today at 5:32 pm."
     },
     {
       "id": "#8",
@@ -21790,7 +21790,7 @@
           "deleteAt": null
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Pacific/Chatham",
         "from": "goesUp"
       },
@@ -21873,11 +21873,11 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "America/New_York",
         "from": "bogus"
       },
-      "output": "Deletes itself Dec 31 at 7:00 PM, but only if it has 3 quotes by then. Otherwise it stays up for good."
+      "output": "Deletes itself 31 Dec at 19:00, but only if it has 3 quotes by then. Otherwise it stays up for good."
     },
     {
       "id": "#11",
@@ -21959,11 +21959,11 @@
           }
         },
         "now": 1787832000000.5,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Pacific/Chatham",
         "from": "bogus"
       },
-      "output": "Deletes itself today at 1:45 am."
+      "output": "Deletes itself today at 1:45."
     },
     {
       "id": "#14",
@@ -21974,7 +21974,7 @@
           "conditions": null
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "America/New_York"
       },
       "output": "Deletes itself 24 hours after it goes up."
@@ -22010,7 +22010,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "America/New_York",
         "from": "now"
       },
@@ -22117,7 +22117,7 @@
           }
         },
         "now": 1787832000000.5,
-        "locale": "en-IN",
+        "locale": "en-FR",
         "zone": "Pacific/Chatham"
       },
       "output": "Deletes itself 10 minutes after it goes up, unless it has more than 4 quotes by then. If it does, it gets another 10 minutes, up to 10 times."
@@ -22145,7 +22145,7 @@
           ]
         },
         "now": 1787832000000.5,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Asia/Kolkata",
         "from": "now"
       },
@@ -22251,7 +22251,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "America/New_York",
         "from": "wentUp"
       },
@@ -22267,7 +22267,7 @@
           "deleteAt": true
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "UTC",
         "from": "bogus"
       },
@@ -22322,7 +22322,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Pacific/Chatham",
         "from": "now"
       },
@@ -22392,7 +22392,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "UTC",
         "from": "now"
       },
@@ -22412,7 +22412,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "America/New_York",
         "from": "bogus"
       },
@@ -22433,7 +22433,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "from": "bogus"
       },
@@ -22458,7 +22458,7 @@
           "effects": []
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Asia/Kolkata",
         "from": "wentUp"
       },
@@ -22507,7 +22507,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "Asia/Kolkata",
         "from": "now"
       },
@@ -22522,7 +22522,7 @@
           "lifespanSeconds": 4000.7
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "UTC"
       },
       "output": "Deletes itself 67 minutes after it goes up."
@@ -22583,7 +22583,7 @@
           "conditions": "likes"
         },
         "now": 1787832000000.5,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "America/New_York",
         "from": "now"
       },
@@ -22653,7 +22653,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Pacific/Chatham"
       },
       "output": "Limits replies to your followers today at 0:49, unless it has 2 replies of your own by then. If it does, nothing happens."
@@ -22674,10 +22674,10 @@
           }
         },
         "now": null,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Pacific/Chatham"
       },
-      "output": "Deletes itself 28 Aug at 12:46 am."
+      "output": "Deletes itself 28 Aug at 0:46."
     },
     {
       "id": "#35",
@@ -22685,7 +22685,7 @@
       "input": {
         "timer": 5,
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham",
         "from": "wentUp"
       },
@@ -22702,7 +22702,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham",
         "from": "wentUp"
       },
@@ -22797,7 +22797,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "UTC",
         "from": "bogus"
       },
@@ -22812,7 +22812,7 @@
           "lifespanSeconds": 2592000
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "UTC",
         "from": "goesUp"
       },
@@ -22868,7 +22868,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "UTC",
         "from": "goesUp"
       },
@@ -22910,11 +22910,11 @@
           ]
         },
         "now": null,
-        "locale": "en-IN",
+        "locale": "en-FR",
         "zone": "Asia/Kolkata",
         "from": "goesUp"
       },
-      "output": "Deletes itself 27 Aug at 6:30 pm, unless it has 5 likes or 1 repost by then. If it does, it stays up for good."
+      "output": "Deletes itself 27 Aug at 18:30, unless it has 5 likes or 1 repost by then. If it does, it stays up for good."
     },
     {
       "id": "#44",
@@ -23007,10 +23007,10 @@
           "effects": []
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Asia/Kolkata"
       },
-      "output": "Deletes itself today at 18:30."
+      "output": "Deletes itself today at 6:30 pm."
     },
     {
       "id": "#48",
@@ -23026,7 +23026,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Pacific/Chatham",
         "from": "wentUp"
       },
@@ -23040,7 +23040,7 @@
           "enabled": ""
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Asia/Kolkata"
       },
       "output": "24 hours"
@@ -23102,7 +23102,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "America/New_York"
       },
       "output": "24 hours"
@@ -23115,7 +23115,7 @@
           "enabled": true
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "America/New_York"
       },
       "output": "24 hours"
@@ -23292,7 +23292,7 @@
           }
         },
         "now": null,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "America/New_York"
       },
       "output": "31 Dec at 19:00"
@@ -23306,7 +23306,7 @@
           "lifespanSeconds": "3600"
         },
         "now": 1787832000000.5,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "UTC"
       },
       "output": "1 hour"
@@ -23383,7 +23383,7 @@
           }
         },
         "now": 1787832000000.5,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Pacific/Chatham"
       },
       "output": "5 minutes · only if more than 1000000 likes"
@@ -23403,7 +23403,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Pacific/Chatham"
       },
       "output": "24 hours"
@@ -23447,10 +23447,10 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Asia/Kolkata"
       },
-      "output": "25 Sept at 5:30 pm · unless more than 1 reply of your own"
+      "output": "25 Sept at 17:30 · unless more than 1 reply of your own"
     },
     {
       "id": "#14",
@@ -23523,7 +23523,7 @@
           }
         },
         "now": null,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "Asia/Kolkata"
       },
       "output": "5 minutes · unless 1 quote or 16 quotes from people with over 1,000,000 followers"
@@ -23570,7 +23570,7 @@
           "effects": []
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "America/New_York"
       },
       "output": "5 minutes"
@@ -23603,7 +23603,7 @@
           "effects": null
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata"
       },
       "output": "10 minutes"
@@ -23622,7 +23622,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "Asia/Kolkata"
       },
       "output": "24 hours"
@@ -23636,7 +23636,7 @@
           "effects": []
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham"
       },
       "output": "24 hours"
@@ -23651,7 +23651,7 @@
           "deleteAt": ""
         },
         "now": null,
-        "locale": "en-IN",
+        "locale": "en-FR",
         "zone": "UTC"
       },
       "output": "48 hours"
@@ -23711,7 +23711,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Asia/Kolkata"
       },
       "output": "turns off quotes · 30 days"
@@ -23728,9 +23728,9 @@
             "followersOver": 1234.5678
           }
         },
-        "locale": "en-DE"
+        "locale": "en-FR"
       },
-      "output": " from people you don't follow or with over 1.234,568 followers"
+      "output": " from people you don't follow or with over 1 234,568 followers"
     },
     {
       "id": "#2",
@@ -23740,7 +23740,7 @@
           "metric": "quotes",
           "from": {}
         },
-        "locale": "en-GB"
+        "locale": "en-IN"
       },
       "output": ""
     },
@@ -23766,7 +23766,7 @@
             "match": "all"
           }
         },
-        "locale": "en-GB"
+        "locale": "en-IN"
       },
       "output": ""
     },
@@ -23778,7 +23778,7 @@
           "metric": "quotes",
           "from": {}
         },
-        "locale": "en-US"
+        "locale": "en-GB"
       },
       "output": ""
     },
@@ -23793,9 +23793,9 @@
             "followersOver": 99999999.5
           }
         },
-        "locale": "en-DE"
+        "locale": "en-CH"
       },
-      "output": " from people with over 99.999.999,5 followers"
+      "output": " from people with over 99'999'999.5 followers"
     },
     {
       "id": "#7",
@@ -23808,7 +23808,7 @@
             "notFollowed": "yes"
           }
         },
-        "locale": "en-IN"
+        "locale": "en-DE"
       },
       "output": " from people you don't follow"
     },
@@ -23820,7 +23820,7 @@
           "metric": "quotes",
           "from": []
         },
-        "locale": "en-DE"
+        "locale": "en-CH"
       },
       "output": ""
     },
@@ -23849,9 +23849,9 @@
             "followersOver": 99999999.5
           }
         },
-        "locale": "en-IN"
+        "locale": "en-FR"
       },
-      "output": " from people with over 9,99,99,999.5 followers"
+      "output": " from people with over 99 999 999,5 followers"
     },
     {
       "id": "#11",
@@ -23863,7 +23863,7 @@
             "notFollowed": "yes"
           }
         },
-        "locale": "en-DE"
+        "locale": "en-CH"
       },
       "output": " from people you don't follow"
     },
@@ -23890,7 +23890,7 @@
             "followersOver": 1
           }
         },
-        "locale": "en-GB"
+        "locale": "en-IN"
       },
       "output": " from people with over 1 followers"
     },
@@ -23902,7 +23902,7 @@
           "metric": "quotes",
           "from": null
         },
-        "locale": "en-DE"
+        "locale": "en-CH"
       },
       "output": ""
     },
@@ -23927,7 +23927,7 @@
             "followersOver": 1
           }
         },
-        "locale": "en-DE"
+        "locale": "en-FR"
       },
       "output": " from people with over 1 followers"
     },
@@ -23950,9 +23950,9 @@
             "followersOver": 1000
           }
         },
-        "locale": "en-IN"
+        "locale": "en-DE"
       },
-      "output": " from people with over 1,000 followers"
+      "output": " from people with over 1.000 followers"
     },
     {
       "id": "#19",
@@ -23964,7 +23964,7 @@
             "notFollowed": null
           }
         },
-        "locale": "en-IN"
+        "locale": "en-FR"
       },
       "output": ""
     },
@@ -23976,7 +23976,7 @@
           "metric": "quotes",
           "from": {}
         },
-        "locale": "en-GB"
+        "locale": "en-IN"
       },
       "output": ""
     },
@@ -24014,7 +24014,7 @@
             "followersOver": 0
           }
         },
-        "locale": "en-GB"
+        "locale": "en-IN"
       },
       "output": ""
     },
@@ -24028,7 +24028,7 @@
             "notFollowed": ""
           }
         },
-        "locale": "en-DE"
+        "locale": "en-CH"
       },
       "output": ""
     },
@@ -24513,7 +24513,7 @@
           "effects": null
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24556,7 +24556,7 @@
           ]
         },
         "now": 1787832000000.5,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24595,7 +24595,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000.5,
         "clock": 1787832000000
@@ -24619,7 +24619,7 @@
           }
         },
         "now": null,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "UTC",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24636,7 +24636,7 @@
           }
         ],
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24653,7 +24653,7 @@
           "effects": []
         },
         "now": null,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24698,7 +24698,7 @@
           ]
         },
         "now": 1787832000000.5,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "Pacific/Chatham",
         "publishAt": 1787918400000,
         "clock": 1787832000000
@@ -24728,7 +24728,7 @@
           }
         },
         "now": 1787832000000.5,
-        "locale": "en-DE",
+        "locale": "en-FR",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24754,7 +24754,7 @@
           ]
         },
         "now": null,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "America/New_York",
         "publishAt": 1787918400000,
         "clock": 1787832000000
@@ -24771,7 +24771,7 @@
           "deleteAt": null
         },
         "now": 1787832000000.5,
-        "locale": "en-IN",
+        "locale": "en-FR",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24798,7 +24798,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "America/New_York",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24819,7 +24819,7 @@
           ]
         },
         "now": 1787832000000.5,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Asia/Kolkata",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -24854,7 +24854,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "America/New_York",
         "publishAt": 1790510400000,
         "clock": 1787832000000
@@ -24869,7 +24869,7 @@
           "enabled": true
         },
         "now": 1787832000000.5,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "UTC",
         "publishAt": 1787918400000,
         "clock": 1787832000000
@@ -24919,7 +24919,7 @@
       "input": {
         "timer": null,
         "now": null,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham",
         "publishAt": 1787918400000,
         "clock": 1787832000000
@@ -24954,12 +24954,12 @@
           ]
         },
         "now": null,
-        "locale": "en-IN",
+        "locale": "en-DE",
         "zone": "UTC",
         "publishAt": 1787832000000.5,
         "clock": 1787832000000
       },
-      "output": "This post’s lifespan is set to delete it today at 11:58 am, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+      "output": "This post’s lifespan is set to delete it today at 11:58, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
     },
     {
       "id": "#19",
@@ -25067,7 +25067,7 @@
           }
         },
         "now": 1787832000000.5,
-        "locale": "en-GB",
+        "locale": "en-IN",
         "zone": "UTC",
         "publishAt": 1787828400000,
         "clock": 1787832000000
@@ -25125,7 +25125,7 @@
           ]
         },
         "now": 1787832000000,
-        "locale": "en-US",
+        "locale": "en-GB",
         "zone": "Pacific/Chatham",
         "publishAt": 1787832000000,
         "clock": 1787832000000
@@ -25147,7 +25147,7 @@
           }
         },
         "now": 1787832000000,
-        "locale": "en-DE",
+        "locale": "en-CH",
         "zone": "Pacific/Chatham",
         "publishAt": 1787832000000,
         "clock": 1787832000000

@@ -154,7 +154,7 @@ public enum LifespanModel {
   }
 
   /// One metric's clause set, changed or (empty value) removed. `patch` is
-  /// `{ op?, value?, from? }`.
+  /// `{ op?, value?, from? }` (see SelfDestruct.withClause).
   public static func withMetric(_ rule: some TimerRuleInput, _ metric: String, _ patch: JSONValue) -> TimerRule {
     let t = SelfDestruct.normalizeTimer(rule)
     return patchRule(t, ["conditions": SelfDestruct.withClause(t.conditions, metric, patch).json])

@@ -27,7 +27,7 @@ import {
 
 export const sources = ['src/posting/timers/selfDestruct.js'];
 
-const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-CH', 'en-DE'];
+const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-CH', 'en-DE', 'en-FR'];
 
 /** Runs `fn` in `locale` and `zone`, then puts the defaults back. */
 function inFormats(locale, zone, fn) {

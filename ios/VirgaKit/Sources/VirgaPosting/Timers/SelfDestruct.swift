@@ -340,7 +340,8 @@ public enum SelfDestruct {
   /// whole conditions. The existing `from` actor filter is carried over
   /// unless the patch has a `from` key (null included); the number box and
   /// op toggle don't know about it and would otherwise widen the clause to
-  /// everyone. `patch` is `{ op?, value?, from? }`.
+  /// everyone. `patch` is `{ op?, value?, from? }`; one that isn't an
+  /// object reads as `{}` (the web's destructuring throws on null).
   public static func withClause(
     _ conditions: some TimerConditionsInput, _ metric: String, _ patch: JSONValue = [:]
   ) -> TimerConditions {

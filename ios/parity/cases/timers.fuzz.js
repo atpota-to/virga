@@ -380,7 +380,7 @@ const moment = () =>
     NaN,
   ]);
 
-const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-DE'];
+const LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-DE', 'en-FR', 'en-CH'];
 const ZONE_LIST = [
   'UTC',
   'America/New_York',

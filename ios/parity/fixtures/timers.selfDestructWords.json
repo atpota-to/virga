@@ -2427,6 +2427,261 @@
       "output": ""
     },
     {
+      "id": "en-FR #1",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "en-FR #2",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": null
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "en-FR #3",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {}
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "en-FR #4",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "notFollowed": true
+          }
+        }
+      },
+      "output": " from people you don't follow"
+    },
+    {
+      "id": "en-FR #5",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 10000
+          }
+        }
+      },
+      "output": " from people with over 10 000 followers"
+    },
+    {
+      "id": "en-FR #6",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "notFollowed": true,
+            "followersOver": 10000
+          }
+        }
+      },
+      "output": " from people you don't follow or with over 10 000 followers"
+    },
+    {
+      "id": "en-FR #7",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "notFollowed": true,
+            "followersOver": 10000,
+            "match": "all"
+          }
+        }
+      },
+      "output": " from people you don't follow and with over 10 000 followers"
+    },
+    {
+      "id": "en-FR #8",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 100000,
+            "match": "all"
+          }
+        }
+      },
+      "output": " from people with over 100 000 followers"
+    },
+    {
+      "id": "en-FR #9",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 1234567
+          }
+        }
+      },
+      "output": " from people with over 1 234 567 followers"
+    },
+    {
+      "id": "en-FR #10",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 1000
+          }
+        }
+      },
+      "output": " from people with over 1 000 followers"
+    },
+    {
+      "id": "en-FR #11",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 0,
+            "notFollowed": false
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "en-FR #12",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": 1234.5678
+          }
+        }
+      },
+      "output": " from people with over 1 234,568 followers"
+    },
+    {
+      "id": "en-FR #13",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": "5000",
+            "notFollowed": 1
+          }
+        }
+      },
+      "output": " from people you don't follow or with over 5000 followers"
+    },
+    {
+      "id": "en-FR #14",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": [
+              12,
+              34
+            ]
+          }
+        }
+      },
+      "output": " from people with over 12,34 followers"
+    },
+    {
+      "id": "en-FR #15",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "followersOver": true
+          }
+        }
+      },
+      "output": " from people with over true followers"
+    },
+    {
+      "id": "en-FR #16",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": {
+            "match": "all"
+          }
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "en-FR #17",
+      "fn": "describeFrom",
+      "input": {
+        "locale": "en-FR",
+        "clause": {
+          "metric": "quotes",
+          "value": 3,
+          "from": "friends"
+        }
+      },
+      "output": ""
+    },
+    {
       "id": "no clause",
       "fn": "describeFrom",
       "input": {
@@ -3470,6 +3725,40 @@
         }
       },
       "output": "10 quotes from people you don't follow or with over 10.000 followers, more than 2500 quotes from people with over 1.000.000 followers and 999999 likes"
+    },
+    {
+      "id": "filters, en-FR",
+      "fn": "describeClauses",
+      "input": {
+        "locale": "en-FR",
+        "conditions": {
+          "logic": "all",
+          "clauses": [
+            {
+              "metric": "quotes",
+              "value": 10,
+              "from": {
+                "notFollowed": true,
+                "followersOver": 10000
+              }
+            },
+            {
+              "metric": "quotes",
+              "value": 2500,
+              "op": "gt",
+              "from": {
+                "followersOver": 1000000,
+                "match": "all"
+              }
+            },
+            {
+              "metric": "likes",
+              "value": 999999
+            }
+          ]
+        }
+      },
+      "output": "10 quotes from people you don't follow or with over 10 000 followers, more than 2500 quotes from people with over 1 000 000 followers and 999999 likes"
     },
     {
       "id": "UTC en-US noon +0d 23:30",
@@ -8620,6 +8909,138 @@
       "output": "1 Oct at 9:00"
     },
     {
+      "id": "UTC en-FR noon +0d 23:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-27T23:30:00.000Z"
+      },
+      "output": "today at 23:30"
+    },
+    {
+      "id": "UTC en-FR noon +0d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-27T00:00:00.000Z"
+      },
+      "output": "today at 0:00"
+    },
+    {
+      "id": "UTC en-FR noon +0d 12:5",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-27T12:05:00.000Z"
+      },
+      "output": "today at 12:05"
+    },
+    {
+      "id": "UTC en-FR noon +1d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-28T00:00:00.000Z"
+      },
+      "output": "tomorrow at 0:00"
+    },
+    {
+      "id": "UTC en-FR noon +1d 9:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-28T09:30:00.000Z"
+      },
+      "output": "tomorrow at 9:30"
+    },
+    {
+      "id": "UTC en-FR noon +2d 18:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-29T18:30:00.000Z"
+      },
+      "output": "Saturday at 18:30"
+    },
+    {
+      "id": "UTC en-FR noon +6d 23:59",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-09-02T23:59:00.000Z"
+      },
+      "output": "Wednesday at 23:59"
+    },
+    {
+      "id": "UTC en-FR noon +7d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-09-03T00:00:00.000Z"
+      },
+      "output": "3 Sept at 0:00"
+    },
+    {
+      "id": "UTC en-FR noon +20d 18:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-09-16T18:30:00.000Z"
+      },
+      "output": "16 Sept at 18:30"
+    },
+    {
+      "id": "UTC en-FR noon +-1d 12:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-26T12:00:00.000Z"
+      },
+      "output": "26 Aug at 12:00"
+    },
+    {
+      "id": "UTC en-FR noon +-7d 12:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2026-08-20T12:00:00.000Z"
+      },
+      "output": "20 Aug at 12:00"
+    },
+    {
+      "id": "UTC en-FR noon +400d 9:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "iso": "2027-10-01T09:00:00.000Z"
+      },
+      "output": "1 Oct at 9:00"
+    },
+    {
       "id": "Asia/Kolkata en-GB noon +0d 23:30",
       "fn": "describeDeleteAt",
       "input": {
@@ -9142,6 +9563,138 @@
       "input": {
         "zone": "Asia/Kolkata",
         "locale": "en-DE",
+        "now": 1787812200000,
+        "iso": "2027-10-01T03:30:00.000Z"
+      },
+      "output": "1 Oct at 9:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +0d 23:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-27T18:00:00.000Z"
+      },
+      "output": "today at 23:30"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +0d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-26T18:30:00.000Z"
+      },
+      "output": "today at 0:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +0d 12:5",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-27T06:35:00.000Z"
+      },
+      "output": "today at 12:05"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +1d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-27T18:30:00.000Z"
+      },
+      "output": "tomorrow at 0:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +1d 9:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-28T04:00:00.000Z"
+      },
+      "output": "tomorrow at 9:30"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +2d 18:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-29T13:00:00.000Z"
+      },
+      "output": "Saturday at 18:30"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +6d 23:59",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-09-02T18:29:00.000Z"
+      },
+      "output": "Wednesday at 23:59"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +7d 0:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-09-02T18:30:00.000Z"
+      },
+      "output": "3 Sept at 0:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +20d 18:30",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-09-16T13:00:00.000Z"
+      },
+      "output": "16 Sept at 18:30"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +-1d 12:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-26T06:30:00.000Z"
+      },
+      "output": "26 Aug at 12:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +-7d 12:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
+        "now": 1787812200000,
+        "iso": "2026-08-20T06:30:00.000Z"
+      },
+      "output": "20 Aug at 12:00"
+    },
+    {
+      "id": "Asia/Kolkata en-FR noon +400d 9:0",
+      "fn": "describeDeleteAt",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-FR",
         "now": 1787812200000,
         "iso": "2027-10-01T03:30:00.000Z"
       },
@@ -11787,6 +12340,327 @@
       "input": {
         "zone": "UTC",
         "locale": "en-DE",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
+      "id": "pinned, UTC en-FR noon",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T08:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 8:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR noon",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T12:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Sunday at 12:00"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR noon",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-09-05T12:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "5 Sept at 12:00"
+    },
+    {
+      "id": "a length, UTC en-FR noon",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
+      "id": "pinned, UTC en-FR before spring forward",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-08T18:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 18:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR before spring forward",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-10T22:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Tuesday at 22:00"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR before spring forward",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-16T22:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "16 Mar at 22:00"
+    },
+    {
+      "id": "a length, UTC en-FR before spring forward",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
+      "id": "pinned, UTC en-FR new year’s eve",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-01T19:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 19:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR new year’s eve",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-03T23:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Sunday at 23:00"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR new year’s eve",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-09T23:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "9 Jan at 23:00"
+    },
+    {
+      "id": "a length, UTC en-FR new year’s eve",
+      "fn": "describeWhen",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
         "now": 1798758000000,
         "timer": {
           "enabled": true,
@@ -18969,6 +19843,327 @@
       "output": "Deletes itself 2 hours after it goes up."
     },
     {
+      "id": "pinned, UTC en-FR noon",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T08:00:00.000Z"
+        }
+      },
+      "output": "Deletes itself tomorrow at 8:00."
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR noon",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T12:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 12:00, unless it has 5 likes or 12000 quotes from people with over 100 000 followers by then. If it does, it gets another 3 days, up to 2 times."
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR noon",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-09-05T12:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "Limits replies to people you mentioned and people in Pals and turns off quotes 5 Sept at 12:00, but only if it has 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own by then. Otherwise nothing happens."
+    },
+    {
+      "id": "a length, UTC en-FR noon",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "Deletes itself 2 hours after it goes up."
+    },
+    {
+      "id": "pinned, UTC en-FR before spring forward",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-08T18:00:00.000Z"
+        }
+      },
+      "output": "Deletes itself tomorrow at 18:00."
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR before spring forward",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-10T22:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Deletes itself Tuesday at 22:00, unless it has 5 likes or 12000 quotes from people with over 100 000 followers by then. If it does, it gets another 3 days, up to 2 times."
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR before spring forward",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-16T22:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "Limits replies to people you mentioned and people in Pals and turns off quotes 16 Mar at 22:00, but only if it has 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own by then. Otherwise nothing happens."
+    },
+    {
+      "id": "a length, UTC en-FR before spring forward",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "Deletes itself 2 hours after it goes up."
+    },
+    {
+      "id": "pinned, UTC en-FR new year’s eve",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-01T19:00:00.000Z"
+        }
+      },
+      "output": "Deletes itself tomorrow at 19:00."
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR new year’s eve",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-03T23:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Deletes itself Sunday at 23:00, unless it has 5 likes or 12000 quotes from people with over 100 000 followers by then. If it does, it gets another 3 days, up to 2 times."
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR new year’s eve",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-09T23:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "Limits replies to people you mentioned and people in Pals and turns off quotes 9 Jan at 23:00, but only if it has 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own by then. Otherwise nothing happens."
+    },
+    {
+      "id": "a length, UTC en-FR new year’s eve",
+      "fn": "describeTimer",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "Deletes itself 2 hours after it goes up."
+    },
+    {
       "id": "pinned, America/New_York en-US noon",
       "fn": "describeTimer",
       "input": {
@@ -22804,6 +23999,327 @@
       "output": "2 hours"
     },
     {
+      "id": "pinned, UTC en-FR noon",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T08:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 8:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR noon",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-30T12:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Sunday at 12:00 · unless 5 likes or 12000 quotes from people with over 100 000 followers"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR noon",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-09-05T12:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "limits replies to people you mentioned and people in pals and turns off quotes · 5 Sept at 12:00 · only if 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own"
+    },
+    {
+      "id": "a length, UTC en-FR noon",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1787832000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
+      "id": "pinned, UTC en-FR before spring forward",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-08T18:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 18:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR before spring forward",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-10T22:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Tuesday at 22:00 · unless 5 likes or 12000 quotes from people with over 100 000 followers"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR before spring forward",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-16T22:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "limits replies to people you mentioned and people in pals and turns off quotes · 16 Mar at 22:00 · only if 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own"
+    },
+    {
+      "id": "a length, UTC en-FR before spring forward",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1772920800000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
+      "id": "pinned, UTC en-FR new year’s eve",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-01T19:00:00.000Z"
+        }
+      },
+      "output": "tomorrow at 19:00"
+    },
+    {
+      "id": "pinned, unless, extend, UTC en-FR new year’s eve",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-03T23:00:00.000Z",
+          "conditions": {
+            "clauses": [
+              {
+                "metric": "likes",
+                "value": 5
+              },
+              {
+                "metric": "quotes",
+                "value": 12000,
+                "from": {
+                  "followersOver": 100000
+                }
+              }
+            ],
+            "onSpare": "extend",
+            "maxExtensions": 2
+          }
+        }
+      },
+      "output": "Sunday at 23:00 · unless 5 likes or 12000 quotes from people with over 100 000 followers"
+    },
+    {
+      "id": "pinned, only if, gates, UTC en-FR new year’s eve",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2027-01-09T23:00:00.000Z",
+          "conditions": {
+            "sense": "onlyIf",
+            "logic": "all",
+            "clauses": [
+              {
+                "metric": "quotes",
+                "value": 1500,
+                "from": {
+                  "notFollowed": true,
+                  "followersOver": 1234567,
+                  "match": "all"
+                }
+              },
+              {
+                "metric": "selfReplies",
+                "value": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "action": "limitReplies",
+              "allow": [
+                "mention",
+                {
+                  "list": "at://did:plc:me/app.bsky.graph.list/3l",
+                  "name": "Pals"
+                }
+              ]
+            },
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "limits replies to people you mentioned and people in pals and turns off quotes · 9 Jan at 23:00 · only if 1500 quotes from people you don't follow and with over 1 000 000 followers and 1 reply of your own"
+    },
+    {
+      "id": "a length, UTC en-FR new year’s eve",
+      "fn": "timerChipLabel",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "now": 1798758000000,
+        "timer": {
+          "enabled": true,
+          "lifespanSeconds": 5400
+        }
+      },
+      "output": "2 hours"
+    },
+    {
       "id": "pinned, America/New_York en-US noon",
       "fn": "timerChipLabel",
       "input": {
@@ -25864,6 +27380,286 @@
       "input": {
         "zone": "UTC",
         "locale": "en-DE",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-04-09T00:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it 9 Apr at 0:00, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon before delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T13:00:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 13:00, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon before gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T13:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it tomorrow at 13:00, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon too soon delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T14:04:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 14:04, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon too soon gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T14:04:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it tomorrow at 14:04, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon ok delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T19:00:00.000Z"
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-FR noon ok gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-08-28T19:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-FR noon too late delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-09-28T14:00:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it 28 Sept at 14:00, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR noon too late gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1787832000000,
+        "publishAt": 1787925600000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-09-28T14:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it 28 Sept at 14:00, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward before delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-08T23:00:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it tomorrow at 23:00, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward before gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-08T23:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it tomorrow at 23:00, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward too soon delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-09T00:04:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it Monday at 0:04, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward too soon gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-09T00:04:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": "This post’s lifespan is set to act on it Monday at 0:04, which is less than 5 minutes after it would go out. Pick a later delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward ok delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-09T05:00:00.000Z"
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-FR before spring forward ok gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-03-09T05:00:00.000Z",
+          "effects": [
+            {
+              "action": "disableQuotes"
+            }
+          ]
+        }
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-FR before spring forward too late delete",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
+        "clock": 1772920800000,
+        "publishAt": 1773014400000,
+        "timer": {
+          "enabled": true,
+          "deleteAt": "2026-04-09T00:00:00.000Z"
+        }
+      },
+      "output": "This post’s lifespan is set to delete it 9 Apr at 0:00, more than 30 days after it would go out. Pick an earlier delete time in its lifespan, or give it a length instead."
+    },
+    {
+      "id": "UTC en-FR before spring forward too late gates",
+      "fn": "scheduledTimerProblem",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-FR",
         "clock": 1772920800000,
         "publishAt": 1773014400000,
         "timer": {
