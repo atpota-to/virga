@@ -328,7 +328,7 @@ extension SelfDestruct {
     let when = describeWhen(t, now: now, locale: locale)
     // Only name the action when it isn't delete.
     let does =
-      effectsDelete(t.effects) ? when : "\(PostingJS.toLowerCase(describeEffects(t.effects))) · \(when)"
+      effectsDelete(t.effects) ? when : "\(describeEffects(t.effects).jsLowercased()) · \(when)"
     if t.conditions.clauses.isEmpty { return does }
     let lead = t.conditions.sense == .onlyIf ? "only if" : "unless"
     return "\(does) · \(lead) \(describeClauses(t.conditions, locale: locale))"
