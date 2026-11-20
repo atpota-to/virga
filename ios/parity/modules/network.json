@@ -23,7 +23,8 @@
       "fixtures": [
         "network.atproto"
       ],
-      "synced": "3762f459257e"
+      "synced": "3762f459257e",
+      "note": "resolveProfiles keeps each profile's handle, displayName and avatar as a String (ResolvedProfile): a truthy non-string the AppView sent is stringified where the web passes it through. Reads report statusText as \"\" (URLSession doesn't expose the reason phrase), as browsers do over HTTP/2."
     },
     "src/lib/constellation.js": {
       "status": "ported",
@@ -54,7 +55,8 @@
       "fixtures": [
         "network.blobs"
       ],
-      "synced": "a3fe68a0a50f"
+      "synced": "a3fe68a0a50f",
+      "note": "uploadBlob returns VirgaCore's BlobRef: a non-string $link or mimeType in the PDS's answer is stringified and a fractional size truncated, where the web passes them through (an answer the SDK's lexicon check accepts never has them). Cancelling the task is the web's AbortSignal: BlobUploadError.cancelled keeps its name and message."
     },
     "src/session/backendClient.js": {
       "status": "partial",
