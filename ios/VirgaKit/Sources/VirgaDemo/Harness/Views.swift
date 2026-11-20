@@ -546,6 +546,7 @@ public struct DemoViews: Sendable {
         guard case .string(let parent)? = World.postRecord(p)["reply"]?["parent"]?["uri"],
           case .string(let asked) = uri, parent.jsEquals(asked)
         else { continue }
+        // Replies go at most `depth` (6) deep, so recursing is safe.
         if let reply = try threadView(
           uri: .string("at://\(world.me.did)/app.bsky.feed.post/\(p.rkey)"), depth: depth - 1, parentHeight: 0,
           now: now)
@@ -555,11 +556,29 @@ public struct DemoViews: Sendable {
       }
       node["replies"] = .array(replies.reversed())
     }
-    if let parentUri = post["record"]?["reply"]?["parent"]?["uri"], parentUri.isTruthy, parentHeight > 0 {
-      let parent = try threadView(uri: parentUri, depth: 0, parentHeight: parentHeight - 1, now: now)
-      node["parent"] = parent ?? ["$type": "app.bsky.feed.defs#notFoundPost", "uri": parentUri, "notFound": true]
+    // The parents, up to `parentHeight` (80) of them: the web recurses, one
+    // call per parent with depth 0 (so no replies); walked here in a loop,
+    // since 80 nested calls are too deep for a 512 KB thread.
+    var chain: [[String: JSONValue]] = [node]
+    var height = parentHeight
+    var current = post
+    while let parentUri = current["record"]?["reply"]?["parent"]?["uri"], parentUri.isTruthy, height > 0 {
+      height -= 1
+      guard let parent = try postView(uri: parentUri, now: now, depth: 0) else {
+        chain[chain.count - 1]["parent"] = [
+          "$type": "app.bsky.feed.defs#notFoundPost", "uri": parentUri, "notFound": true,
+        ]
+        break
+      }
+      chain.append(["$type": "app.bsky.feed.defs#threadViewPost", "post": parent, "replies": []])
+      current = parent
     }
-    return .object(node)
+    var assembled = chain.removeLast()
+    while var child = chain.popLast() {
+      child["parent"] = .object(assembled)
+      assembled = child
+    }
+    return .object(assembled)
   }
 
   /* ---- feeds and lists ---------------------------------------------- */

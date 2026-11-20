@@ -16,7 +16,7 @@ import {
 } from '../../../harness/views.js';
 import { LAB, ME, buildWorld } from '../../../harness/world.js';
 import { each, grid, value } from './_helpers.js';
-import { part } from './_canonical.js';
+import { part, sha256 } from './_canonical.js';
 import { NOW, atTime, thrown } from './_demoWorld.js';
 
 export const sources = ['harness/views.js'];
@@ -704,6 +704,50 @@ export default async function cases() {
             views.authorFeed(world === 'lab' ? lab : mira, { now: VIEW_NOW }),
           ),
         ),
+    )),
+    ...(await each(
+      'threadView-long-chain',
+      [
+        { $id: 'whole', posts: 90 },
+        { $id: 'capped', posts: 90, parentHeight: 30 },
+        { $id: 'short', posts: 5 },
+        { $id: 'cycle', posts: 1, cycle: true },
+      ],
+      async ({ posts, parentHeight, cycle }) => {
+        // Field Lab writes a thread of `posts` replies, each to the one
+        // before; the thread from the last climbs at most 80 parents.
+        const lab2 = buildWorld({ now: NOW, account: LAB });
+        const chainViews = createViews([lab2]);
+        const key = (i) =>
+          `3zzzzzzzzz${String(i)
+            .padStart(3, '0')
+            .replace(/\d/g, (d) => 'abcdefghij'[d])}`;
+        for (let i = 0; i < posts; i += 1) {
+          const record = {
+            $type: POST,
+            text: `Part ${i}`,
+            createdAt: new Date(NOW + i).toISOString(),
+          };
+          if (i > 0 || cycle)
+            record.reply = {
+              // A post that answers itself climbs to the cap.
+              parent: {
+                uri: `at://${LAB.did}/${POST}/${key(cycle ? i : i - 1)}`,
+              },
+            };
+          await atTime(NOW, () =>
+            writeRecord(lab2, { collection: POST, rkey: key(i), record }),
+          );
+        }
+        const thread = await ask(() =>
+          chainViews.threadView(`at://${LAB.did}/${POST}/${key(posts - 1)}`, {
+            parentHeight,
+          }),
+        );
+        let levels = 0;
+        for (let n = thread; n.parent; n = n.parent) levels += 1;
+        return { levels, sha256: sha256(thread) };
+      },
     )),
     ...(await each(
       'threadView',

@@ -138,6 +138,41 @@ import VirgaTestSupport
     }
   }
 
+  @Test func threadViewOfALongChain() throws {
+    for c in try Parity.cases(Self.fixture, fn: "threadView-long-chain") {
+      var lab = World.buildWorld(now: DemoFixtures.now, account: World.lab)
+      let letters = Array("abcdefghij")
+      func key(_ i: Int) -> String {
+        "3zzzzzzzzz" + String(String.zeroPadded(i, 3).map { letters[Int(String($0))!] })
+      }
+      let posts = c["posts"].intValue ?? 0
+      let cycle = c["cycle"].boolValue ?? false
+      for i in 0..<posts {
+        var record: JSONValue = [
+          "$type": "app.bsky.feed.post", "text": .string("Part \(i)"),
+          "createdAt": .string(World.iso(DemoFixtures.now + Double(i))),
+        ]
+        if i > 0 || cycle {
+          record["reply"] = ["parent": ["uri": .string("at://\(World.lab.did)/app.bsky.feed.post/\(key(cycle ? i : i - 1))")]]
+        }
+        try HarnessRepo.writeRecord(
+          &lab, collection: "app.bsky.feed.post", rkey: key(i), record: record, now: DemoFixtures.now)
+      }
+      let views = Views.createViews([lab])
+      let thread = try #require(
+        try views.threadView(
+          "at://\(World.lab.did)/app.bsky.feed.post/\(key(posts - 1))", parentHeight: c["parentHeight"].intValue ?? 80,
+          now: Self.viewNow))
+      var levels = 0
+      var node = thread
+      while let parent = node["parent"] {
+        levels += 1
+        node = parent
+      }
+      Self.check(["levels": .number(Double(levels)), "sha256": .string(CanonicalJSON.sha256(thread))], c)
+    }
+  }
+
   @Test func feedsAndLists() throws {
     for c in try Parity.cases(Self.fixture, fn: "generatorView") {
       Self.check(Self.views.generatorView(c.input["uri"]?.stringValue) ?? .null, c)

@@ -8490,6 +8490,52 @@
       }
     },
     {
+      "id": "whole",
+      "fn": "threadView-long-chain",
+      "input": {
+        "posts": 90
+      },
+      "output": {
+        "levels": 80,
+        "sha256": "320d7475ca124b99d381254bdeab9c135dd59ddcc5d64457784adcbdd8493303"
+      }
+    },
+    {
+      "id": "capped",
+      "fn": "threadView-long-chain",
+      "input": {
+        "posts": 90,
+        "parentHeight": 30
+      },
+      "output": {
+        "levels": 30,
+        "sha256": "35dd7350f6e70d40be18ef0b9df561ba65a69dcb267005c9ed6bbe2a78342ff4"
+      }
+    },
+    {
+      "id": "short",
+      "fn": "threadView-long-chain",
+      "input": {
+        "posts": 5
+      },
+      "output": {
+        "levels": 4,
+        "sha256": "81b0848470af9fe132aa2279a8cc315a828f7d059f67d39ac2cf46e16176cc85"
+      }
+    },
+    {
+      "id": "cycle",
+      "fn": "threadView-long-chain",
+      "input": {
+        "posts": 1,
+        "cycle": true
+      },
+      "output": {
+        "levels": 80,
+        "sha256": "9dd51c50a6ea32582bb14ebe6e0f594201e4873c2400ac7a2687ec876b3f0102"
+      }
+    },
+    {
       "id": "written-opener",
       "fn": "threadView",
       "input": {
