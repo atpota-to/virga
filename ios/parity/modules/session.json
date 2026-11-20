@@ -5,16 +5,35 @@
   "summary": "Accounts and sessions, scopes and health, sign-in a step at a time, and agreeing to the terms.",
   "files": {
     "src/accounts/accountCopy.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/AccountCopy.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionEvents.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. reauthModeFor and offersLongerSession take the account's mode. requestReauth and showSessionNotice dispatch on SessionEvents (the window's events: a @MainActor bus SessionNotices listens to). pendingWorkWarning also takes a PendingWorkEntry, where an account the check didn't cover reads as one it couldn't check, as undefined does on the web.",
+      "synced": "f83582ec6aa3"
     },
     "src/accounts/pendingWork.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/PendingWork.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. The posting services readPendingWork imports (listScheduled, listTimers, isActiveScheduledRow, isLiveTimer) sit above this target, so they come in as PendingWorkServices, which VirgaPosting supplies. readPendingWork's deadline is withDeadline over both lists (the web hands an 8 s AbortSignal to both). usePendingWork is PendingWorkModel (update(accounts:enabled:), entry(did) telling unasked from unreadable). Behaviour tests in AccountsModelTests.",
+      "synced": "1d537e12d271"
     },
     "src/accounts/usePendingReauth.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/PendingReauthModel.swift"
+      ],
+      "note": "As PendingReauthModel (@MainActor @Observable): beginPendingReauth, cancelPendingReauth, stop() for the unmount, and an injected sleep for the 2.5 s delay. On the web the sign-in navigates away; here it comes back, so the notice is taken down when it finishes. Behaviour tests in AccountsModelTests.",
+      "synced": "d19337ab4169"
     },
     "src/legal/acceptance.js": {
       "status": "ported",
@@ -81,28 +100,55 @@
       "swift": []
     },
     "src/lib/sessionHint.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Lib/SessionHint.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "synced": "c77c5309a1b5"
     },
     "src/session/accounts.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/Accounts.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SecretStore.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. The token is kept in a SecretStore (the Keychain on Apple platforms, KeychainSecretStore) under the web's key instead of beside the rest in the key-value store, so readBackendToken/writeBackendToken/removeBackendToken take the secret store and forgetAccount takes both. updateAccount takes a closure that changes the row (the web's merged fields), recordSignIn's scope is SignInScope (.unsaid = undefined, .cleared = null, .granted). localDataKeys gives the keep lists it finds in code-unit order (the web: the browser's storage order). lastOpenedLabel takes the zone (AppLocale.activeTimeZone() by default).",
+      "synced": "9142b9727b12"
     },
     "src/session/browserDriver.js": {
       "status": "pending",
       "swift": []
     },
     "src/session/scopes.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/Scopes.swift"
+      ],
+      "fixtures": [
+        "session.scopes"
+      ],
+      "synced": "12a957b53583"
     },
     "src/session/sessionController.js": {
       "status": "pending",
       "swift": []
     },
     "src/session/sessionHealth.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionHealth.swift"
+      ],
+      "fixtures": [
+        "session.health"
+      ],
+      "note": "All of it. createSessionChecker is SessionChecker, a @MainActor class (check/forget/peek); the probe and onResult run on the main actor, as the controller's do.",
+      "synced": "1d1f9e911cf5"
     },
     "src/session/useAtprotoSession.jsx": {
       "status": "pending",
