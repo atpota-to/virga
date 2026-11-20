@@ -1,0 +1,50 @@
+{
+  "domain": "timers",
+  "target": "VirgaPosting",
+  "wave": 2,
+  "summary": "Post timers: rules, normalizing, describing and the server calls.",
+  "files": {
+    "src/posting/timers/selfDestruct.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Rules.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Words.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/SelfDestruct+Slots.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerJS.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerJS+Sort.swift"
+      ],
+      "fixtures": [
+        "timers.selfDestruct",
+        "timers.selfDestructRules",
+        "timers.selfDestructWords",
+        "timers.fuzz"
+      ],
+      "synced": "e974adb593e5"
+    },
+    "src/posting/timers/timerService.js": {
+      "status": "partial",
+      "note": "server calls wired to VirgaBackend in wave 2 (composer chain). Everything else is ported and held to timers.timerService: the helpers, the create body, and every flow (createTimer and its confirmation, armAfterPublish, listTimers, loadTimerUsage, cancelTimer, the availability probe) through the TimerRequester seam; VirgaBackend (VirgaNetwork) has yet to conform to TimerRequester, and its request error to TimerErrorConvertible.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Timers/TimerService.swift"
+      ],
+      "fixtures": [
+        "timers.timerService",
+        "timers.fuzz"
+      ],
+      "synced": "047760f94b49"
+    },
+    "src/posting/ui/lifespanModel.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/UI/LifespanModel.swift"
+      ],
+      "fixtures": [
+        "timers.lifespanModel",
+        "timers.fuzz"
+      ],
+      "synced": "9dade44d8c67"
+    }
+  }
+}

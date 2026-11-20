@@ -1,0 +1,19 @@
+// Settings shared by every configuration. Copy Local.xcconfig.example to
+// Local.xcconfig (not committed) to set your own team and server.
+
+// Where Virga's server is: the web app's VITE_BACKEND_URL. The iOS app
+// always signs in through it (a long session), and it runs scheduling,
+// timers and the adviser. No trailing slash. `/` is escaped as `/$()/`
+// because xcconfig reads `//` as a comment.
+VIRGA_BACKEND_URL = https:/$()/virga.app
+// The host of that server, for the associated domain the sign-in returns to.
+VIRGA_HOST = virga.app
+
+// The web app's VITE_DEFENSE and VITE_DEFENSE_MODERATOR: "on" shows them.
+VIRGA_DEFENSE = off
+VIRGA_DEFENSE_MODERATOR = off
+
+VIRGA_BUNDLE_ID = app.virga.Virga
+VIRGA_TEAM_ID =
+
+#include? "Local.xcconfig"

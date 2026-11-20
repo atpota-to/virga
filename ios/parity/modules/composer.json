@@ -1,0 +1,96 @@
+{
+  "domain": "composer",
+  "target": "VirgaPosting",
+  "wave": 2,
+  "summary": "The composer's model and actions, autosave, posting settings, the queue's settings, repeats, images and video.",
+  "files": {
+    "src/lib/pendingCompose.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/setup.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/autosave.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/actions.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/defaults.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/editing.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/gatesModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/highlight.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/intent.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/languages.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/loaders.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/media.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/restore.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/submit.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/threadEdits.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/composerModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/images.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/lib/video.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/postingQueue.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/publishActions.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/schedule/repeat.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/settings.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

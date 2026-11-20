@@ -1,0 +1,1516 @@
+{
+  "name": "insights-early.catalog",
+  "sources": [
+    "src/dashboards/catalog.js"
+  ],
+  "cases": [
+    {
+      "id": "CATEGORIES",
+      "fn": "CATEGORIES",
+      "input": {},
+      "output": [
+        {
+          "key": "followers",
+          "label": "Followers"
+        },
+        {
+          "key": "engagement",
+          "label": "Engagement"
+        },
+        {
+          "key": "posts",
+          "label": "Posts"
+        },
+        {
+          "key": "content",
+          "label": "Content"
+        },
+        {
+          "key": "people",
+          "label": "People"
+        },
+        {
+          "key": "blocks",
+          "label": "Blocks"
+        },
+        {
+          "key": "repo",
+          "label": "Repo"
+        },
+        {
+          "key": "posting",
+          "label": "Posting"
+        }
+      ]
+    },
+    {
+      "id": "WIDGETS",
+      "fn": "WIDGETS",
+      "input": {},
+      "output": {
+        "stat-followers": {
+          "type": "stat-followers",
+          "name": "Followers",
+          "desc": "Everyone following you now",
+          "category": "followers",
+          "icon": "UsersRound",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/followers",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-new-followers": {
+          "type": "stat-new-followers",
+          "name": "New followers",
+          "desc": "Gained in the period, against the one before",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/followers",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-unfollows": {
+          "type": "stat-unfollows",
+          "name": "Unfollows",
+          "desc": "Who left since the last sync",
+          "category": "followers",
+          "icon": "UserMinus",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/tools/unfollow-tracker",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        "stat-engagement": {
+          "type": "stat-engagement",
+          "name": "Engagement",
+          "desc": "Likes, reposts, replies and quotes received",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "stat-per-post": {
+          "type": "stat-per-post",
+          "name": "Engagement per post",
+          "desc": "Averaged over your posts and threads",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "stat-given": {
+          "type": "stat-given",
+          "name": "Engagement given",
+          "desc": "Likes, reposts, replies and quotes you gave",
+          "category": "engagement",
+          "icon": "Repeat2",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement?direction=given",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "stat-posts": {
+          "type": "stat-posts",
+          "name": "Posts",
+          "desc": "Posts and replies in the period",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/posts",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-typical-post": {
+          "type": "stat-typical-post",
+          "name": "A typical post",
+          "desc": "What the middle post of yours earns",
+          "category": "content",
+          "icon": "Shapes",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/content",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-alt-text": {
+          "type": "stat-alt-text",
+          "name": "Media described",
+          "desc": "How many of your pictures and videos have alt text",
+          "category": "content",
+          "icon": "Image",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/content",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-blocks": {
+          "type": "stat-blocks",
+          "name": "Blocked by",
+          "desc": "Directly or through moderation lists",
+          "category": "blocks",
+          "icon": "Ban",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/blocks",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "stat-scheduled": {
+          "type": "stat-scheduled",
+          "name": "Scheduled",
+          "desc": "Posts waiting to go out, and when the next one does",
+          "category": "posting",
+          "icon": "CalendarClock",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/posting/scheduled",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        "stat-timers": {
+          "type": "stat-timers",
+          "name": "Timers",
+          "desc": "Post timers counting down",
+          "category": "posting",
+          "icon": "Timer",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/posting/timers",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        "follower-growth": {
+          "type": "follower-growth",
+          "name": "Follower growth",
+          "desc": "Followers over time, dated by each follow record",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "l",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "new-followers": {
+          "type": "new-followers",
+          "name": "New followers",
+          "desc": "Gains per day, week or month",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "engagement-over-time": {
+          "type": "engagement-over-time",
+          "name": "Engagement over time",
+          "desc": "What each day’s or week’s posts have earned",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "engagement-rate": {
+          "type": "engagement-rate",
+          "name": "Engagement rate",
+          "desc": "Engagement per post, posts and threads only",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "engagement-by-type": {
+          "type": "engagement-by-type",
+          "name": "Engagement by type",
+          "desc": "Likes, reposts, replies and quotes received",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "s",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "engagement-given": {
+          "type": "engagement-given",
+          "name": "Engagement given",
+          "desc": "What you hand out, per day or week",
+          "category": "engagement",
+          "icon": "Repeat2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement?direction=given",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        "posting-cadence": {
+          "type": "posting-cadence",
+          "name": "Posting cadence",
+          "desc": "Posts per day or week, with the trend",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/posts",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "best-time": {
+          "type": "best-time",
+          "name": "Best time to post",
+          "desc": "What a typical post earns, by weekday and hour",
+          "category": "posts",
+          "icon": "Clock",
+          "sizes": [
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/best-time",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "content-formats": {
+          "type": "content-formats",
+          "name": "Formats",
+          "desc": "What a typical post earns, by what it carries",
+          "category": "content",
+          "icon": "Shapes",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "content-length": {
+          "type": "content-length",
+          "name": "Post length",
+          "desc": "What a typical post earns, by how long it is",
+          "category": "content",
+          "icon": "Ruler",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "s",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "blocks-over-time": {
+          "type": "blocks-over-time",
+          "name": "Blocks over time",
+          "desc": "Block reach, direct and through lists",
+          "category": "blocks",
+          "icon": "Ban",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/blocks",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "repo-activity": {
+          "type": "repo-activity",
+          "name": "Repo activity",
+          "desc": "Records written per day or week, every app",
+          "category": "repo",
+          "icon": "Cloud",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/atmosphere",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        "top-posts": {
+          "type": "top-posts",
+          "name": "Top posts",
+          "desc": "Your posts, ranked by engagement",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        "top-tags": {
+          "type": "top-tags",
+          "name": "Tags",
+          "desc": "The tags you use, and what posts with them earn",
+          "category": "content",
+          "icon": "Hash",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        "top-links": {
+          "type": "top-links",
+          "name": "Sites you link to",
+          "desc": "Where your links go, and what those posts earn",
+          "category": "content",
+          "icon": "Link2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        "top-engagers": {
+          "type": "top-engagers",
+          "name": "Top engagers",
+          "desc": "Who interacts with you the most",
+          "category": "people",
+          "icon": "MessagesSquare",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/people",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        "you-engage-with": {
+          "type": "you-engage-with",
+          "name": "You engage with",
+          "desc": "The accounts you interact with the most",
+          "category": "people",
+          "icon": "Repeat2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/people",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        "follow-back": {
+          "type": "follow-back",
+          "name": "Follow-back queue",
+          "desc": "Followers who engage, that you don’t follow",
+          "category": "people",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/follow-back",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        "newest-followers": {
+          "type": "newest-followers",
+          "name": "Newest followers",
+          "desc": "The latest people to follow you",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        "unfollows": {
+          "type": "unfollows",
+          "name": "Unfollows between syncs",
+          "desc": "Who left, and when it was noticed",
+          "category": "followers",
+          "icon": "UserMinus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "s",
+          "href": "/tools/unfollow-tracker",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        "lists-on": {
+          "type": "lists-on",
+          "name": "Lists you’re on",
+          "desc": "Moderation and curation lists that include you",
+          "category": "blocks",
+          "icon": "Shield",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/lists",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        "repo-collections": {
+          "type": "repo-collections",
+          "name": "Records by collection",
+          "desc": "Every app that writes to your repo",
+          "category": "repo",
+          "icon": "Database",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/atmosphere",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        "posting-next": {
+          "type": "posting-next",
+          "name": "Going out next",
+          "desc": "Your scheduled and queued posts, soonest first",
+          "category": "posting",
+          "icon": "CalendarClock",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/posting/scheduled",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        "posting-drafts": {
+          "type": "posting-drafts",
+          "name": "Latest drafts",
+          "desc": "Drafts waiting on your Bluesky account",
+          "category": "posting",
+          "icon": "FileText",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/posting/drafts",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WIDGET_LIST",
+      "fn": "WIDGET_LIST",
+      "input": {},
+      "output": [
+        {
+          "type": "stat-followers",
+          "name": "Followers",
+          "desc": "Everyone following you now",
+          "category": "followers",
+          "icon": "UsersRound",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/followers",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-new-followers",
+          "name": "New followers",
+          "desc": "Gained in the period, against the one before",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/followers",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-unfollows",
+          "name": "Unfollows",
+          "desc": "Who left since the last sync",
+          "category": "followers",
+          "icon": "UserMinus",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/tools/unfollow-tracker",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        {
+          "type": "stat-engagement",
+          "name": "Engagement",
+          "desc": "Likes, reposts, replies and quotes received",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "stat-per-post",
+          "name": "Engagement per post",
+          "desc": "Averaged over your posts and threads",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "stat-given",
+          "name": "Engagement given",
+          "desc": "Likes, reposts, replies and quotes you gave",
+          "category": "engagement",
+          "icon": "Repeat2",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/engagement?direction=given",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "stat-posts",
+          "name": "Posts",
+          "desc": "Posts and replies in the period",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/posts",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-typical-post",
+          "name": "A typical post",
+          "desc": "What the middle post of yours earns",
+          "category": "content",
+          "icon": "Shapes",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/content",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-alt-text",
+          "name": "Media described",
+          "desc": "How many of your pictures and videos have alt text",
+          "category": "content",
+          "icon": "Image",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/content",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-blocks",
+          "name": "Blocked by",
+          "desc": "Directly or through moderation lists",
+          "category": "blocks",
+          "icon": "Ban",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/reports/blocks",
+          "kind": "stat",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "stat-scheduled",
+          "name": "Scheduled",
+          "desc": "Posts waiting to go out, and when the next one does",
+          "category": "posting",
+          "icon": "CalendarClock",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/posting/scheduled",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        {
+          "type": "stat-timers",
+          "name": "Timers",
+          "desc": "Post timers counting down",
+          "category": "posting",
+          "icon": "Timer",
+          "sizes": [
+            "xs",
+            "s"
+          ],
+          "defaultSize": "xs",
+          "href": "/posting/timers",
+          "kind": "stat",
+          "options": [
+            "title"
+          ]
+        },
+        {
+          "type": "follower-growth",
+          "name": "Follower growth",
+          "desc": "Followers over time, dated by each follow record",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "l",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "new-followers",
+          "name": "New followers",
+          "desc": "Gains per day, week or month",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "engagement-over-time",
+          "name": "Engagement over time",
+          "desc": "What each day’s or week’s posts have earned",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "engagement-rate",
+          "name": "Engagement rate",
+          "desc": "Engagement per post, posts and threads only",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "engagement-by-type",
+          "name": "Engagement by type",
+          "desc": "Likes, reposts, replies and quotes received",
+          "category": "engagement",
+          "icon": "Heart",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "s",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "engagement-given",
+          "name": "Engagement given",
+          "desc": "What you hand out, per day or week",
+          "category": "engagement",
+          "icon": "Repeat2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement?direction=given",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind"
+          ]
+        },
+        {
+          "type": "posting-cadence",
+          "name": "Posting cadence",
+          "desc": "Posts per day or week, with the trend",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/posts",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "best-time",
+          "name": "Best time to post",
+          "desc": "What a typical post earns, by weekday and hour",
+          "category": "posts",
+          "icon": "Clock",
+          "sizes": [
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/best-time",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "content-formats",
+          "name": "Formats",
+          "desc": "What a typical post earns, by what it carries",
+          "category": "content",
+          "icon": "Shapes",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "content-length",
+          "name": "Post length",
+          "desc": "What a typical post earns, by how long it is",
+          "category": "content",
+          "icon": "Ruler",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "defaultSize": "s",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "blocks-over-time",
+          "name": "Blocks over time",
+          "desc": "Block reach, direct and through lists",
+          "category": "blocks",
+          "icon": "Ban",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/blocks",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "repo-activity",
+          "name": "Repo activity",
+          "desc": "Records written per day or week, every app",
+          "category": "repo",
+          "icon": "Cloud",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/atmosphere",
+          "kind": "card",
+          "options": [
+            "title",
+            "period"
+          ]
+        },
+        {
+          "type": "top-posts",
+          "name": "Top posts",
+          "desc": "Your posts, ranked by engagement",
+          "category": "posts",
+          "icon": "PenLine",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/engagement",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        {
+          "type": "top-tags",
+          "name": "Tags",
+          "desc": "The tags you use, and what posts with them earn",
+          "category": "content",
+          "icon": "Hash",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        {
+          "type": "top-links",
+          "name": "Sites you link to",
+          "desc": "Where your links go, and what those posts earn",
+          "category": "content",
+          "icon": "Link2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/content",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        {
+          "type": "top-engagers",
+          "name": "Top engagers",
+          "desc": "Who interacts with you the most",
+          "category": "people",
+          "icon": "MessagesSquare",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/people",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        {
+          "type": "you-engage-with",
+          "name": "You engage with",
+          "desc": "The accounts you interact with the most",
+          "category": "people",
+          "icon": "Repeat2",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/people",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "kind",
+            "rows"
+          ]
+        },
+        {
+          "type": "follow-back",
+          "name": "Follow-back queue",
+          "desc": "Followers who engage, that you don’t follow",
+          "category": "people",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/follow-back",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        {
+          "type": "newest-followers",
+          "name": "Newest followers",
+          "desc": "The latest people to follow you",
+          "category": "followers",
+          "icon": "UserPlus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/followers",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        {
+          "type": "unfollows",
+          "name": "Unfollows between syncs",
+          "desc": "Who left, and when it was noticed",
+          "category": "followers",
+          "icon": "UserMinus",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "s",
+          "href": "/tools/unfollow-tracker",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        {
+          "type": "lists-on",
+          "name": "Lists you’re on",
+          "desc": "Moderation and curation lists that include you",
+          "category": "blocks",
+          "icon": "Shield",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/tools/lists",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        {
+          "type": "repo-collections",
+          "name": "Records by collection",
+          "desc": "Every app that writes to your repo",
+          "category": "repo",
+          "icon": "Database",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/reports/atmosphere",
+          "kind": "card",
+          "options": [
+            "title",
+            "period",
+            "rows"
+          ]
+        },
+        {
+          "type": "posting-next",
+          "name": "Going out next",
+          "desc": "Your scheduled and queued posts, soonest first",
+          "category": "posting",
+          "icon": "CalendarClock",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/posting/scheduled",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        },
+        {
+          "type": "posting-drafts",
+          "name": "Latest drafts",
+          "desc": "Drafts waiting on your Bluesky account",
+          "category": "posting",
+          "icon": "FileText",
+          "sizes": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "defaultSize": "m",
+          "href": "/posting/drafts",
+          "kind": "card",
+          "options": [
+            "title",
+            "rows"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "WIDGETS.keys",
+      "fn": "WIDGETS.keys",
+      "input": {},
+      "output": [
+        "stat-followers",
+        "stat-new-followers",
+        "stat-unfollows",
+        "stat-engagement",
+        "stat-per-post",
+        "stat-given",
+        "stat-posts",
+        "stat-typical-post",
+        "stat-alt-text",
+        "stat-blocks",
+        "stat-scheduled",
+        "stat-timers",
+        "follower-growth",
+        "new-followers",
+        "engagement-over-time",
+        "engagement-rate",
+        "engagement-by-type",
+        "engagement-given",
+        "posting-cadence",
+        "best-time",
+        "content-formats",
+        "content-length",
+        "blocks-over-time",
+        "repo-activity",
+        "top-posts",
+        "top-tags",
+        "top-links",
+        "top-engagers",
+        "you-engage-with",
+        "follow-back",
+        "newest-followers",
+        "unfollows",
+        "lists-on",
+        "repo-collections",
+        "posting-next",
+        "posting-drafts"
+      ]
+    }
+  ]
+}

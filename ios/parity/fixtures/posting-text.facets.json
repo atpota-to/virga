@@ -1,0 +1,4710 @@
+{
+  "name": "posting-text.facets",
+  "sources": [
+    "src/posting/lib/facets.js"
+  ],
+  "cases": [
+    {
+      "id": "preview#1",
+      "fn": "preview",
+      "input": {
+        "text": "#owl"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "owl"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 4
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "#owl",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#2",
+      "fn": "preview",
+      "input": {
+        "text": "#owls"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "owls"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 5
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "#owls",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#3",
+      "fn": "preview",
+      "input": {
+        "text": "wow #cool"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "cool"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 9
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "wow #cool",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#4",
+      "fn": "preview",
+      "input": {
+        "text": "#cool and #cats"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "cool"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 5
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "cats"
+                }
+              ],
+              "index": {
+                "byteStart": 10,
+                "byteEnd": 15
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "#cool and #cats",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#5",
+      "fn": "preview",
+      "input": {
+        "text": "a.co #owl"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a.co"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 4
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "owl"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 9
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://a.co",
+              "charStart": 0,
+              "charEnd": 4,
+              "byteStart": 0,
+              "byteEnd": 4
+            }
+          ],
+          "displayText": "a.co #owl",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#6",
+      "fn": "preview",
+      "input": {
+        "text": "@zizyphia.test"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:zizyphia.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 14
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@zizyphia.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#7",
+      "fn": "preview",
+      "input": {
+        "text": "this path is just thoughts"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "this path is just thoughts",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#8",
+      "fn": "preview",
+      "input": {
+        "text": "a calm walk"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "a calm walk",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#9",
+      "fn": "preview",
+      "input": {
+        "text": ""
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#10",
+      "fn": "preview",
+      "input": {
+        "text": "   "
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "   ",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#11",
+      "fn": "preview",
+      "input": {
+        "text": "no news"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "no news",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#12",
+      "fn": "preview",
+      "input": {
+        "text": "hi @zenaida.test ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:zenaida.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 16
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @zenaida.test ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#13",
+      "fn": "preview",
+      "input": {
+        "text": "@automeris.bsky.social hi"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:automeris.bsky.social"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 22
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@automeris.bsky.social hi",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#14",
+      "fn": "preview",
+      "input": {
+        "text": "@hemileuca.test's note"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:hemileuca.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 15
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@hemileuca.test's note",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#15",
+      "fn": "preview",
+      "input": {
+        "text": "@paratrea.test’s note"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:paratrea.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 14
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@paratrea.test’s note",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#16",
+      "fn": "preview",
+      "input": {
+        "text": "see \"@darapsa.test\" ok"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@darapsa.test\" ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#17",
+      "fn": "preview",
+      "input": {
+        "text": "see \"@amphion.test hi\" ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:amphion.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 18
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@amphion.test hi\" ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#18",
+      "fn": "preview",
+      "input": {
+        "text": "see \"@amphion.test.extra\" ok"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@amphion.test.extra\" ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#19",
+      "fn": "preview",
+      "input": {
+        "text": "see \" @amphion.test\" ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:amphion.test"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 19
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \" @amphion.test\" ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#20",
+      "fn": "preview",
+      "input": {
+        "text": "see \"@amphion.test/x\" ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:amphion.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 18
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@amphion.test/x\" ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#21",
+      "fn": "preview",
+      "input": {
+        "text": "see \"@amphion.test\" and \"@b.test\""
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@amphion.test\" and \"@b.test\"",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#22",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test🦋"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test🦋",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#23",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test👩‍🔬"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test👩‍🔬",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#24",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test…"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test…",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#25",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test..."
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test...",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#26",
+      "fn": "preview",
+      "input": {
+        "text": "thanks @sphingicampa.test."
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 7,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "thanks @sphingicampa.test.",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#27",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test, ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test, ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#28",
+      "fn": "preview",
+      "input": {
+        "text": "notes (@sphingicampa.test) ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 7,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "notes (@sphingicampa.test) ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#29",
+      "fn": "preview",
+      "input": {
+        "text": "hi @sphingicampa.test日本"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @sphingicampa.test日本",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#30",
+      "fn": "preview",
+      "input": {
+        "text": "“hi @sphingicampa.test”"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 24
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "“hi @sphingicampa.test”",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#31",
+      "fn": "preview",
+      "input": {
+        "text": "🦋@sphingicampa.test🦋"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 22
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "🦋@sphingicampa.test🦋",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#32",
+      "fn": "preview",
+      "input": {
+        "text": "日@sphingicampa.test本"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:sphingicampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "日@sphingicampa.test本",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#33",
+      "fn": "preview",
+      "input": {
+        "text": "a@b.com"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "a@b.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#34",
+      "fn": "preview",
+      "input": {
+        "text": "write to note9@citioica.test today"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "write to note9@citioica.test today",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#35",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/@eupackardia.test/repo now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/@eupackardia.test/repo"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 46
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/@eupackardia.test/repo",
+              "charStart": 4,
+              "charEnd": 46,
+              "byteStart": 4,
+              "byteEnd": 46
+            }
+          ],
+          "displayText": "see https://example.com/@eupackardia.test/repo now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#36",
+      "fn": "preview",
+      "input": {
+        "text": "@saturniid hi"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@saturniid hi",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#37",
+      "fn": "preview",
+      "input": {
+        "text": "see @saturniid.2b"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see @saturniid.2b",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#38",
+      "fn": "preview",
+      "input": {
+        "text": "@saturniid..test"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@saturniid..test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#39",
+      "fn": "preview",
+      "input": {
+        "text": "@saturniid.test- ok"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@saturniid.test- ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#40",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/a ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/a",
+              "charStart": 4,
+              "charEnd": 25,
+              "byteStart": 4,
+              "byteEnd": 25
+            }
+          ],
+          "displayText": "see https://example.com/a ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#41",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/a"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/a",
+              "charStart": 4,
+              "charEnd": 25,
+              "byteStart": 4,
+              "byteEnd": 25
+            }
+          ],
+          "displayText": "see https://example.com/a",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#42",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/a\nok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/a",
+              "charStart": 4,
+              "charEnd": 25,
+              "byteStart": 4,
+              "byteEnd": 25
+            }
+          ],
+          "displayText": "see https://example.com/a\nok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#43",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/a, ok"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see https://example.com/a, ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#44",
+      "fn": "preview",
+      "input": {
+        "text": "go example.com now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 14
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 3,
+              "charEnd": 14,
+              "byteStart": 3,
+              "byteEnd": 14
+            }
+          ],
+          "displayText": "go example.com now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#45",
+      "fn": "preview",
+      "input": {
+        "text": "Did you see https://example.com/page? Read https://example.com/b."
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/page"
+                }
+              ],
+              "index": {
+                "byteStart": 12,
+                "byteEnd": 36
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/b"
+                }
+              ],
+              "index": {
+                "byteStart": 43,
+                "byteEnd": 64
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/page",
+              "charStart": 12,
+              "charEnd": 36,
+              "byteStart": 12,
+              "byteEnd": 36
+            },
+            {
+              "url": "https://example.com/b",
+              "charStart": 43,
+              "charEnd": 64,
+              "byteStart": 43,
+              "byteEnd": 64
+            }
+          ],
+          "displayText": "Did you see https://example.com/page? Read https://example.com/b.",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#46",
+      "fn": "preview",
+      "input": {
+        "text": "See (https://example.com/page) or <https://example.com/x>"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/page"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 29
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ],
+              "index": {
+                "byteStart": 35,
+                "byteEnd": 56
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/page",
+              "charStart": 5,
+              "charEnd": 29,
+              "byteStart": 5,
+              "byteEnd": 29
+            },
+            {
+              "url": "https://example.com/x",
+              "charStart": 35,
+              "charEnd": 56,
+              "byteStart": 35,
+              "byteEnd": 56
+            }
+          ],
+          "displayText": "See (https://example.com/page) or <https://example.com/x>",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#47",
+      "fn": "preview",
+      "input": {
+        "text": "join https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 80
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test",
+              "charStart": 5,
+              "charEnd": 80,
+              "byteStart": 5,
+              "byteEnd": 80
+            }
+          ],
+          "displayText": "join https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#48",
+      "fn": "preview",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test/post/3k,y"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test/post/3k"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 41
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "post",
+              "handle": "a.test",
+              "postId": "3k",
+              "url": "https://bsky.app/profile/a.test/post/3k",
+              "charStart": 2,
+              "charEnd": 41,
+              "byteStart": 2,
+              "byteEnd": 41
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x https://bsky.app/profile/a.test/post/3k,y",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#49",
+      "fn": "preview",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test/feed/whats-hot"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test/feed/whats-hot"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 48
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "feed",
+              "handle": "a.test",
+              "feedId": "whats-hot",
+              "url": "https://bsky.app/profile/a.test/feed/whats-hot",
+              "charStart": 2,
+              "charEnd": 48,
+              "byteStart": 2,
+              "byteEnd": 48
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x https://bsky.app/profile/a.test/feed/whats-hot",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#50",
+      "fn": "preview",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 33
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://bsky.app/profile/a.test",
+              "charStart": 2,
+              "charEnd": 33,
+              "byteStart": 2,
+              "byteEnd": 33
+            }
+          ],
+          "displayText": "x https://bsky.app/profile/a.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#51",
+      "fn": "preview",
+      "input": {
+        "text": "x https://bsky.app/profile/a.test/lists/xyz"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test/lists/xyz"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 43
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "list",
+              "handle": "a.test",
+              "listId": "xyz",
+              "url": "https://bsky.app/profile/a.test/lists/xyz",
+              "charStart": 2,
+              "charEnd": 43,
+              "byteStart": 2,
+              "byteEnd": 43
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x https://bsky.app/profile/a.test/lists/xyz",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#52",
+      "fn": "preview",
+      "input": {
+        "text": "x https://bsky.app/starter-pack/a.test/3p,y"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/starter-pack/a.test/3p"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 41
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "starterpack",
+              "handle": "a.test",
+              "packId": "3p",
+              "url": "https://bsky.app/starter-pack/a.test/3p",
+              "charStart": 2,
+              "charEnd": 41,
+              "byteStart": 2,
+              "byteEnd": 41
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x https://bsky.app/starter-pack/a.test/3p,y",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#53",
+      "fn": "preview",
+      "input": {
+        "text": "x https://aturi.to/did:plc:abc/app.bsky.feed.post/3x "
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://aturi.to/did:plc:abc/app.bsky.feed.post/3x"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 52
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "post",
+              "handle": "did:plc:abc",
+              "postId": "3x",
+              "url": "https://aturi.to/did:plc:abc/app.bsky.feed.post/3x",
+              "charStart": 2,
+              "charEnd": 52,
+              "byteStart": 2,
+              "byteEnd": 52
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x https://aturi.to/did:plc:abc/app.bsky.feed.post/3x ",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#54",
+      "fn": "preview",
+      "input": {
+        "text": "x at://did:plc:abc/app.bsky.feed.post/3x "
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://app.bsky.feed.post/3x"
+                }
+              ],
+              "index": {
+                "byteStart": 19,
+                "byteEnd": 40
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://app.bsky.feed.post/3x",
+              "charStart": 19,
+              "charEnd": 40,
+              "byteStart": 19,
+              "byteEnd": 40
+            }
+          ],
+          "displayText": "x at://did:plc:abc/app.bsky.feed.post/3x ",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#55",
+      "fn": "preview",
+      "input": {
+        "text": "x bsky.app/profile/a.test/post/3k now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test/post/3k"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 33
+              }
+            }
+          ],
+          "postEmbeds": [
+            {
+              "type": "bluesky",
+              "linkType": "post",
+              "handle": "a.test",
+              "postId": "3k",
+              "url": "https://bsky.app/profile/a.test/post/3k",
+              "charStart": 2,
+              "charEnd": 33,
+              "byteStart": 2,
+              "byteEnd": 33
+            }
+          ],
+          "externalLinks": [],
+          "displayText": "x bsky.app/profile/a.test/post/3k now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#56",
+      "fn": "preview",
+      "input": {
+        "text": "v1.2.3 released"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "v1.2.3 released",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#57",
+      "fn": "preview",
+      "input": {
+        "text": "open notes.txt now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "open notes.txt now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#58",
+      "fn": "preview",
+      "input": {
+        "text": "ping 192.168.0.1 twice"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "ping 192.168.0.1 twice",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#59",
+      "fn": "preview",
+      "input": {
+        "text": "go \"example.com\" now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go \"example.com\" now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#60",
+      "fn": "preview",
+      "input": {
+        "text": "go aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 70
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com",
+              "charStart": 3,
+              "charEnd": 70,
+              "byteStart": 3,
+              "byteEnd": 70
+            }
+          ],
+          "displayText": "go aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#61",
+      "fn": "preview",
+      "input": {
+        "text": "go aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#62",
+      "fn": "preview",
+      "input": {
+        "text": "go sub.example.co.uk now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://sub.example.co.uk"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 20
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://sub.example.co.uk",
+              "charStart": 3,
+              "charEnd": 20,
+              "byteStart": 3,
+              "byteEnd": 20
+            }
+          ],
+          "displayText": "go sub.example.co.uk now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#63",
+      "fn": "preview",
+      "input": {
+        "text": "\"@agapema.test\""
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "\"@agapema.test\"",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#64",
+      "fn": "preview",
+      "input": {
+        "text": "go \"example.com\" now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go \"example.com\" now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#65",
+      "fn": "preview",
+      "input": {
+        "text": "go \"https://example.com/x\" now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go \"https://example.com/x\" now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#66",
+      "fn": "preview",
+      "input": {
+        "text": "\"hi @agapema.test see https://example.com/x\""
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:agapema.test"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 17
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ],
+              "index": {
+                "byteStart": 22,
+                "byteEnd": 43
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "\"hi @agapema.test see https://example.com/x\"",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#67",
+      "fn": "preview",
+      "input": {
+        "text": "“@syssphinx.test”"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "“@syssphinx.test”",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#68",
+      "fn": "preview",
+      "input": {
+        "text": "go “example.com” now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go “example.com” now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#69",
+      "fn": "preview",
+      "input": {
+        "text": "go “https://example.com/x” now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go “https://example.com/x” now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#70",
+      "fn": "preview",
+      "input": {
+        "text": "“hi @syssphinx.test see https://example.com/x”"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:syssphinx.test"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 21
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ],
+              "index": {
+                "byteStart": 26,
+                "byteEnd": 47
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "“hi @syssphinx.test see https://example.com/x”",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#71",
+      "fn": "preview",
+      "input": {
+        "text": "#one @two.test https://three.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "one"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 4
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:two.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 14
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://three.com"
+                }
+              ],
+              "index": {
+                "byteStart": 15,
+                "byteEnd": 32
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://three.com",
+              "charStart": 15,
+              "charEnd": 32,
+              "byteStart": 15,
+              "byteEnd": 32
+            }
+          ],
+          "displayText": "#one @two.test https://three.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#72",
+      "fn": "preview",
+      "input": {
+        "text": "café #note"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 11
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "café #note",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#73",
+      "fn": "preview",
+      "input": {
+        "text": "café @quill.test"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:quill.test"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 17
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "café @quill.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#74",
+      "fn": "preview",
+      "input": {
+        "text": "🦋 #note"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "🦋 #note",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#75",
+      "fn": "preview",
+      "input": {
+        "text": "🦋 @pyxi.test"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:pyxi.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 15
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "🦋 @pyxi.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#76",
+      "fn": "preview",
+      "input": {
+        "text": "🦋 #note @automeris.test https://example.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 10
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:automeris.test"
+                }
+              ],
+              "index": {
+                "byteStart": 11,
+                "byteEnd": 26
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 27,
+                "byteEnd": 46
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 25,
+              "charEnd": 44,
+              "byteStart": 27,
+              "byteEnd": 46
+            }
+          ],
+          "displayText": "🦋 #note @automeris.test https://example.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#77",
+      "fn": "preview",
+      "input": {
+        "text": "👩‍🔬 #note @automeris.test https://example.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 12,
+                "byteEnd": 17
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:automeris.test"
+                }
+              ],
+              "index": {
+                "byteStart": 18,
+                "byteEnd": 33
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 34,
+                "byteEnd": 53
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 28,
+              "charEnd": 47,
+              "byteStart": 34,
+              "byteEnd": 53
+            }
+          ],
+          "displayText": "👩‍🔬 #note @automeris.test https://example.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#78",
+      "fn": "preview",
+      "input": {
+        "text": "👍🏽 #note @automeris.test https://example.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 9,
+                "byteEnd": 14
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:automeris.test"
+                }
+              ],
+              "index": {
+                "byteStart": 15,
+                "byteEnd": 30
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 31,
+                "byteEnd": 50
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 27,
+              "charEnd": 46,
+              "byteStart": 31,
+              "byteEnd": 50
+            }
+          ],
+          "displayText": "👍🏽 #note @automeris.test https://example.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#79",
+      "fn": "preview",
+      "input": {
+        "text": "🏴󠁧󠁢󠁳󠁣󠁴󠁿 #note @automeris.test https://example.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "note"
+                }
+              ],
+              "index": {
+                "byteStart": 29,
+                "byteEnd": 34
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:automeris.test"
+                }
+              ],
+              "index": {
+                "byteStart": 35,
+                "byteEnd": 50
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 51,
+                "byteEnd": 70
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 37,
+              "charEnd": 56,
+              "byteStart": 51,
+              "byteEnd": 70
+            }
+          ],
+          "displayText": "🏴󠁧󠁢󠁳󠁣󠁴󠁿 #note @automeris.test https://example.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#80",
+      "fn": "preview",
+      "input": {
+        "text": "read https://example.com/page#section now"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/page#section"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 37
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/page#section",
+              "charStart": 5,
+              "charEnd": 37,
+              "byteStart": 5,
+              "byteEnd": 37
+            }
+          ],
+          "displayText": "read https://example.com/page#section now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#81",
+      "fn": "preview",
+      "input": {
+        "text": "a#tag"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "a#tag",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#82",
+      "fn": "preview",
+      "input": {
+        "text": "post\n#owls"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "owls"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "post\n#owls",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#83",
+      "fn": "preview",
+      "input": {
+        "text": "#café #123 #1st"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "café"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 6
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "1st"
+                }
+              ],
+              "index": {
+                "byteStart": 12,
+                "byteEnd": 16
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "#café #123 #1st",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#84",
+      "fn": "preview",
+      "input": {
+        "text": "#example.com"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 1,
+                "byteEnd": 12
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 1,
+              "charEnd": 12,
+              "byteStart": 1,
+              "byteEnd": 12
+            }
+          ],
+          "displayText": "#example.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#85",
+      "fn": "preview",
+      "input": {
+        "text": "#tag.com and #@x.test"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://tag.com"
+                }
+              ],
+              "index": {
+                "byteStart": 1,
+                "byteEnd": 8
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:x.test"
+                }
+              ],
+              "index": {
+                "byteStart": 14,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://tag.com",
+              "charStart": 1,
+              "charEnd": 8,
+              "byteStart": 1,
+              "byteEnd": 8
+            }
+          ],
+          "displayText": "#tag.com and #@x.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#86",
+      "fn": "preview",
+      "input": {
+        "text": "HTTPS://EXAMPLE.COM/PATH and http://example.org"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "http://example.org"
+                }
+              ],
+              "index": {
+                "byteStart": 29,
+                "byteEnd": 47
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "http://example.org",
+              "charStart": 29,
+              "charEnd": 47,
+              "byteStart": 29,
+              "byteEnd": 47
+            }
+          ],
+          "displayText": "HTTPS://EXAMPLE.COM/PATH and http://example.org",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#87",
+      "fn": "preview",
+      "input": {
+        "text": "Example.COM and WWW.EXAMPLE.ORG"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://Example.COM"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 11
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://WWW.EXAMPLE.ORG"
+                }
+              ],
+              "index": {
+                "byteStart": 16,
+                "byteEnd": 31
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://Example.COM",
+              "charStart": 0,
+              "charEnd": 11,
+              "byteStart": 0,
+              "byteEnd": 11
+            },
+            {
+              "url": "https://WWW.EXAMPLE.ORG",
+              "charStart": 16,
+              "charEnd": 31,
+              "byteStart": 16,
+              "byteEnd": 31
+            }
+          ],
+          "displayText": "Example.COM and WWW.EXAMPLE.ORG",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#88",
+      "fn": "preview",
+      "input": {
+        "text": "https://bücher.de/x and bücher.de"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bücher.de/x"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 20
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://cher.de"
+                }
+              ],
+              "index": {
+                "byteStart": 28,
+                "byteEnd": 35
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://bücher.de/x",
+              "charStart": 0,
+              "charEnd": 19,
+              "byteStart": 0,
+              "byteEnd": 20
+            },
+            {
+              "url": "https://cher.de",
+              "charStart": 26,
+              "charEnd": 33,
+              "byteStart": 28,
+              "byteEnd": 35
+            }
+          ],
+          "displayText": "https://bücher.de/x and bücher.de",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#89",
+      "fn": "preview",
+      "input": {
+        "text": "[label](https://example.com)"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 8,
+                "byteEnd": 27
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com",
+              "charStart": 8,
+              "charEnd": 27,
+              "byteStart": 8,
+              "byteEnd": 27
+            }
+          ],
+          "displayText": "[label](https://example.com)",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#90",
+      "fn": "preview",
+      "input": {
+        "text": "mail me@x.com or @y.test or z@"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:y.test"
+                }
+              ],
+              "index": {
+                "byteStart": 17,
+                "byteEnd": 24
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "mail me@x.com or @y.test or z@",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#91",
+      "fn": "preview",
+      "input": {
+        "text": "\"https://example.com/x\" and https://example.com/y"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/y"
+                }
+              ],
+              "index": {
+                "byteStart": 28,
+                "byteEnd": 49
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/y",
+              "charStart": 28,
+              "charEnd": 49,
+              "byteStart": 28,
+              "byteEnd": 49
+            }
+          ],
+          "displayText": "\"https://example.com/x\" and https://example.com/y",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#92",
+      "fn": "preview",
+      "input": {
+        "text": "x \"example.com/path\" y"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "x \"example.com/path\" y",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#93",
+      "fn": "preview",
+      "input": {
+        "text": "trailing https://example.com/path)"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/path"
+                }
+              ],
+              "index": {
+                "byteStart": 9,
+                "byteEnd": 33
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/path",
+              "charStart": 9,
+              "charEnd": 33,
+              "byteStart": 9,
+              "byteEnd": 33
+            }
+          ],
+          "displayText": "trailing https://example.com/path)",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#94",
+      "fn": "preview",
+      "input": {
+        "text": "see https://example.com/x.\nnext"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/x"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/x",
+              "charStart": 4,
+              "charEnd": 25,
+              "byteStart": 4,
+              "byteEnd": 25
+            }
+          ],
+          "displayText": "see https://example.com/x.\nnext",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#95",
+      "fn": "preview",
+      "input": {
+        "text": "🦋🦋🦋 https://e.co/ééééé"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://e.co/ééééé"
+                }
+              ],
+              "index": {
+                "byteStart": 13,
+                "byteEnd": 36
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://e.co/ééééé",
+              "charStart": 7,
+              "charEnd": 25,
+              "byteStart": 13,
+              "byteEnd": 36
+            }
+          ],
+          "displayText": "🦋🦋🦋 https://e.co/ééééé",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#96",
+      "fn": "preview",
+      "input": {
+        "text": "日本.com"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "日本.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#97",
+      "fn": "preview",
+      "input": {
+        "text": "é.co"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "é.co",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#98",
+      "fn": "preview",
+      "input": {
+        "text": "go to a.b now"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "go to a.b now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#99",
+      "fn": "preview",
+      "input": {
+        "text": "x.y1"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "x.y1",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#100",
+      "fn": "preview",
+      "input": {
+        "text": "snake_case.py2"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "snake_case.py2",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#101",
+      "fn": "preview",
+      "input": {
+        "text": "naïve.fr"
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://ve.fr"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 9
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://ve.fr",
+              "charStart": 3,
+              "charEnd": 8,
+              "byteStart": 4,
+              "byteEnd": 9
+            }
+          ],
+          "displayText": "naïve.fr",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#102",
+      "fn": "preview",
+      "input": {
+        "text": "Ⅻ.com"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "Ⅻ.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#103",
+      "fn": "preview",
+      "input": {
+        "text": "ab.ćd"
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "ab.ćd",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#104",
+      "fn": "preview",
+      "input": {
+        "text": null
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": null,
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#105",
+      "fn": "preview",
+      "input": {
+        "text": "hi @dryocampa.test ok",
+        "validated": [
+          "dryocampa.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:dryocampa.test"
+                }
+              ],
+              "index": {
+                "byteStart": 3,
+                "byteEnd": 18
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @dryocampa.test ok",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#106",
+      "fn": "preview",
+      "input": {
+        "text": "@citheronia.test",
+        "invalidated": [
+          "citheronia.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@citheronia.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#107",
+      "fn": "preview",
+      "input": {
+        "text": "@eacles.test",
+        "validated": [
+          "eacles.test"
+        ],
+        "invalidated": [
+          "eacles.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@eacles.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#108",
+      "fn": "preview",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "validated": [
+          "a.test",
+          "c.test"
+        ],
+        "invalidated": [
+          "b.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:a.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 7
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:c.test"
+                }
+              ],
+              "index": {
+                "byteStart": 16,
+                "byteEnd": 23
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@a.test @b.test @c.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#109",
+      "fn": "preview",
+      "input": {
+        "text": "@A.Test",
+        "validated": [
+          "a.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:A.Test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 7
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@A.Test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#110",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test",
+        "validated": [
+          "Kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#111",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test",
+        "validated": [
+          "Kate.test"
+        ],
+        "invalidated": [
+          "Kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "preview#112",
+      "fn": "preview",
+      "input": {
+        "text": "@Kate.test @kate.test",
+        "validated": [
+          "kate.test"
+        ]
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "placeholder:Kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "validated:kate.test"
+                }
+              ],
+              "index": {
+                "byteStart": 11,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@Kate.test @kate.test",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "submit#1",
+      "fn": "submit",
+      "input": {
+        "text": "@hyalophora.test and @callosamia.test",
+        "table": {
+          "hyalophora.test": "did:plc:hyalophora",
+          "callosamia.test": "did:plc:hyalophora"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:hyalophora"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 16
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:hyalophora"
+                }
+              ],
+              "index": {
+                "byteStart": 21,
+                "byteEnd": 37
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@hyalophora.test and @callosamia.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "callosamia.test",
+          "hyalophora.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#2",
+      "fn": "submit",
+      "input": {
+        "text": "@paonias.test and @paonias.test again",
+        "table": {
+          "paonias.test": "did:plc:paonias"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:paonias"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 13
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:paonias"
+                }
+              ],
+              "index": {
+                "byteStart": 18,
+                "byteEnd": 31
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@paonias.test and @paonias.test again",
+          "markdownLinks": []
+        },
+        "calls": [
+          "paonias.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#3",
+      "fn": "submit",
+      "input": {
+        "text": "@arctiaone.test @arctiatwo.test",
+        "table": {
+          "arctiaone.test": "did:plc:arctiaone",
+          "arctiatwo.test": "did:plc:arctiatwo"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:arctiaone"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 15
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:arctiatwo"
+                }
+              ],
+              "index": {
+                "byteStart": 16,
+                "byteEnd": 31
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@arctiaone.test @arctiatwo.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "arctiaone.test",
+          "arctiatwo.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#4",
+      "fn": "submit",
+      "input": {
+        "text": "hi @antheraea.test",
+        "table": {
+          "antheraea.test": null
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @antheraea.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "antheraea.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#5",
+      "fn": "submit",
+      "input": {
+        "text": "hi @actias.test and #luna",
+        "table": {
+          "actias.test": "$throw"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "luna"
+                }
+              ],
+              "index": {
+                "byteStart": 20,
+                "byteEnd": 25
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @actias.test and #luna",
+          "markdownLinks": []
+        },
+        "calls": [
+          "actias.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#6",
+      "fn": "submit",
+      "input": {
+        "text": "🦋@adelocephala.test🦋",
+        "table": {
+          "adelocephala.test": "did:plc:adelocephala"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:adelocephala"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 22
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "🦋@adelocephala.test🦋",
+          "markdownLinks": []
+        },
+        "calls": [
+          "adelocephala.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#7",
+      "fn": "submit",
+      "input": {
+        "text": "a@b.com",
+        "table": {
+          "b.com": "did:plc:x"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "a@b.com",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "submit#8",
+      "fn": "submit",
+      "input": {
+        "text": "write to note9@citioica.test today",
+        "table": {
+          "citioica.test": "did:plc:citioica"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "write to note9@citioica.test today",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "submit#9",
+      "fn": "submit",
+      "input": {
+        "text": "see https://example.com/@eupackardia.test/repo now",
+        "table": {
+          "eupackardia.test": "did:plc:x"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/@eupackardia.test/repo"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 46
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/@eupackardia.test/repo",
+              "charStart": 4,
+              "charEnd": 46,
+              "byteStart": 4,
+              "byteEnd": 46
+            }
+          ],
+          "displayText": "see https://example.com/@eupackardia.test/repo now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "submit#10",
+      "fn": "submit",
+      "input": {
+        "text": "join https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test now",
+        "table": {
+          "actiasluna.test": "did:plc:actiasluna"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 80
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test",
+              "charStart": 5,
+              "charEnd": 80,
+              "byteStart": 5,
+              "byteEnd": 80
+            }
+          ],
+          "displayText": "join https://example.com/subscribe?email=reader@example.org&ref=@actiasluna.test now",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "submit#11",
+      "fn": "submit",
+      "input": {
+        "text": "@optionsone.test #x",
+        "table": {
+          "optionsone.test": "did:plc:opts"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:opts"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 16
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "x"
+                }
+              ],
+              "index": {
+                "byteStart": 17,
+                "byteEnd": 19
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@optionsone.test #x",
+          "markdownLinks": []
+        },
+        "calls": [
+          "optionsone.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#12",
+      "fn": "submit",
+      "input": {
+        "text": "hi @optionstwo.test",
+        "table": {
+          "optionstwo.test": "$throw"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "hi @optionstwo.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "optionstwo.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#13",
+      "fn": "submit",
+      "input": {
+        "text": "@a.test @b.test @a.test @c.test",
+        "table": {
+          "a.test": "did:plc:a",
+          "b.test": "",
+          "c.test": "$throw"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 7
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ],
+              "index": {
+                "byteStart": 16,
+                "byteEnd": 23
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@a.test @b.test @a.test @c.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "a.test",
+          "b.test",
+          "c.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#14",
+      "fn": "submit",
+      "input": {
+        "text": "see \"@quoted.test\" and @plain.test",
+        "table": {
+          "quoted.test": "did:plc:q",
+          "plain.test": "did:plc:p"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:p"
+                }
+              ],
+              "index": {
+                "byteStart": 23,
+                "byteEnd": 34
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "see \"@quoted.test\" and @plain.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "plain.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#15",
+      "fn": "submit",
+      "input": {
+        "text": "@saturniid hi @x.test",
+        "table": {
+          "x.test": "did:plc:x"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:x"
+                }
+              ],
+              "index": {
+                "byteStart": 14,
+                "byteEnd": 21
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@saturniid hi @x.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "x.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#16",
+      "fn": "submit",
+      "input": {
+        "text": "@x.test",
+        "validated": [
+          "x.test"
+        ],
+        "invalidated": [
+          "x.test"
+        ],
+        "table": {
+          "x.test": "did:plc:x"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:x"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 7
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "@x.test",
+          "markdownLinks": []
+        },
+        "calls": [
+          "x.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#17",
+      "fn": "submit",
+      "input": {
+        "text": "#one @two.test https://three.com",
+        "table": {
+          "two.test": "did:plc:two"
+        }
+      },
+      "output": {
+        "result": {
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "one"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 4
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:two"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 14
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://three.com"
+                }
+              ],
+              "index": {
+                "byteStart": 15,
+                "byteEnd": 32
+              }
+            }
+          ],
+          "postEmbeds": [],
+          "externalLinks": [
+            {
+              "url": "https://three.com",
+              "charStart": 15,
+              "charEnd": 32,
+              "byteStart": 15,
+              "byteEnd": 32
+            }
+          ],
+          "displayText": "#one @two.test https://three.com",
+          "markdownLinks": []
+        },
+        "calls": [
+          "two.test"
+        ]
+      }
+    },
+    {
+      "id": "submit#18",
+      "fn": "submit",
+      "input": {
+        "text": "no facets here at all",
+        "table": {}
+      },
+      "output": {
+        "result": {
+          "facets": [],
+          "postEmbeds": [],
+          "externalLinks": [],
+          "displayText": "no facets here at all",
+          "markdownLinks": []
+        },
+        "calls": []
+      }
+    },
+    {
+      "id": "a submit caches the DID for five minutes, and not one millisecond longer",
+      "fn": "scenario",
+      "input": {
+        "steps": [
+          {
+            "at": 0,
+            "mode": "submit",
+            "text": "@smerinthus.test",
+            "table": {
+              "smerinthus.test": "did:plc:smerinthus"
+            }
+          },
+          {
+            "at": 1,
+            "mode": "preview",
+            "text": "@smerinthus.test"
+          },
+          {
+            "at": 299999,
+            "mode": "preview",
+            "text": "@smerinthus.test"
+          },
+          {
+            "at": 300000,
+            "mode": "preview",
+            "text": "@smerinthus.test"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:smerinthus"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 16
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@smerinthus.test",
+            "markdownLinks": []
+          },
+          "calls": [
+            "smerinthus.test"
+          ]
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:smerinthus"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 16
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@smerinthus.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:smerinthus"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 16
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@smerinthus.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "placeholder:smerinthus.test"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 16
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@smerinthus.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        }
+      ]
+    },
+    {
+      "id": "a cached failure outranks the caller's validated set until the TTL lapses",
+      "fn": "scenario",
+      "input": {
+        "steps": [
+          {
+            "at": 0,
+            "mode": "submit",
+            "text": "@sphinx.test",
+            "table": {
+              "sphinx.test": null
+            }
+          },
+          {
+            "at": 10,
+            "mode": "preview",
+            "text": "@sphinx.test",
+            "validated": [
+              "sphinx.test"
+            ]
+          },
+          {
+            "at": 10,
+            "mode": "preview",
+            "text": "@sphinx.test"
+          },
+          {
+            "at": 300000,
+            "mode": "preview",
+            "text": "@sphinx.test",
+            "validated": [
+              "sphinx.test"
+            ]
+          },
+          {
+            "at": 300000,
+            "mode": "preview",
+            "text": "@sphinx.test",
+            "validated": [
+              "sphinx.test"
+            ],
+            "invalidated": [
+              "sphinx.test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@sphinx.test",
+            "markdownLinks": []
+          },
+          "calls": [
+            "sphinx.test"
+          ]
+        },
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@sphinx.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@sphinx.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "validated:sphinx.test"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 12
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@sphinx.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@sphinx.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        }
+      ]
+    },
+    {
+      "id": "a resolution is reused in preview, ahead of validated",
+      "fn": "scenario",
+      "input": {
+        "steps": [
+          {
+            "at": 0,
+            "mode": "submit",
+            "text": "@samia.test",
+            "table": {
+              "samia.test": "did:plc:samia"
+            }
+          },
+          {
+            "at": 5,
+            "mode": "preview",
+            "text": "@samia.test",
+            "validated": [
+              "samia.test"
+            ]
+          },
+          {
+            "at": 5,
+            "mode": "preview",
+            "text": "@samia.test",
+            "invalidated": [
+              "samia.test"
+            ]
+          },
+          {
+            "at": 6,
+            "mode": "submit",
+            "text": "@samia.test @other.test",
+            "table": {
+              "samia.test": null,
+              "other.test": "$throw"
+            }
+          },
+          {
+            "at": 7,
+            "mode": "preview",
+            "text": "@samia.test @other.test"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:samia"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 11
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@samia.test",
+            "markdownLinks": []
+          },
+          "calls": [
+            "samia.test"
+          ]
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:samia"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 11
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@samia.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [
+              {
+                "$type": "app.bsky.richtext.facet",
+                "features": [
+                  {
+                    "$type": "app.bsky.richtext.facet#mention",
+                    "did": "did:plc:samia"
+                  }
+                ],
+                "index": {
+                  "byteStart": 0,
+                  "byteEnd": 11
+                }
+              }
+            ],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@samia.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        },
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@samia.test @other.test",
+            "markdownLinks": []
+          },
+          "calls": [
+            "other.test",
+            "samia.test"
+          ]
+        },
+        {
+          "result": {
+            "facets": [],
+            "postEmbeds": [],
+            "externalLinks": [],
+            "displayText": "@samia.test @other.test",
+            "markdownLinks": []
+          },
+          "calls": []
+        }
+      ]
+    }
+  ]
+}

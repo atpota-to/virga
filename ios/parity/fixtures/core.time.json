@@ -1,0 +1,4392 @@
+{
+  "name": "core.time",
+  "sources": [
+    "src/lib/time.js"
+  ],
+  "cases": [
+    {
+      "id": "UTC en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": 1738152000000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": 1738108800000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": 1767225540000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "UTC en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "UTC en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Jan 1, 1970"
+    },
+    {
+      "id": "UTC en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "UTC en-US year-999",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-US",
+        "date": -30628670400000
+      },
+      "output": "Jun 1, 999"
+    },
+    {
+      "id": "UTC en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": 1738152000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": 1738108800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": 1767225540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "UTC en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "UTC en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "UTC en-GB year-999",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-GB",
+        "date": -30628670400000
+      },
+      "output": "1 Jun 999"
+    },
+    {
+      "id": "UTC en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": 1738152000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": 1738108800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": 1767225540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "UTC en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "UTC en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "UTC en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "UTC en-IN year-999",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "UTC",
+        "locale": "en-IN",
+        "date": -30628670400000
+      },
+      "output": "1 Jun 999"
+    },
+    {
+      "id": "America/New_York en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": 1738170000000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/New_York en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": 1738126800000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/New_York en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": 1767243540000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "America/New_York en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/New_York en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/New_York en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 28, 2025"
+    },
+    {
+      "id": "America/New_York en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/New_York en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Dec 31, 1969"
+    },
+    {
+      "id": "America/New_York en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/New_York en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": 1738170000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": 1738126800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": 1767243540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "America/New_York en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "28 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "31 Dec 1969"
+    },
+    {
+      "id": "America/New_York en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/New_York en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": 1738170000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": 1738126800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": 1767243540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "America/New_York en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "28 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/New_York en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "31 Dec 1969"
+    },
+    {
+      "id": "America/New_York en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/New_York",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Europe/London en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": 1738152000000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": 1738108800000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": 1767225540000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "Europe/London en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Europe/London en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Jan 1, 1970"
+    },
+    {
+      "id": "Europe/London en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Europe/London en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": 1738152000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": 1738108800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": 1767225540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Europe/London en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Europe/London en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Europe/London en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": 1738152000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": 1738108800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": 1767225540000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Europe/London en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Europe/London en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Europe/London en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Europe/London",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Asia/Kolkata en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": 1738132200000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": 1738089000000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": 1767205740000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 30, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Jan 1, 1970"
+    },
+    {
+      "id": "Asia/Kolkata en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Asia/Kolkata en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": 1738132200000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": 1738089000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": 1767205740000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Asia/Kolkata en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Asia/Kolkata en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": 1738132200000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": 1738089000000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": 1767205740000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Asia/Kolkata en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Asia/Kolkata en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": 1738112400000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": 1738069200000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": 1767185940000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 30, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Jan 1, 1970"
+    },
+    {
+      "id": "Australia/Lord_Howe en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": 1738112400000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": 1738069200000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": 1767185940000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Australia/Lord_Howe en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": 1738112400000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": 1738069200000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": 1767185940000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Australia/Lord_Howe en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Pacific/Chatham en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": 1738102500000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": 1738059300000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": 1767176040000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 30, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 30, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Jan 1, 1970"
+    },
+    {
+      "id": "Pacific/Chatham en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Pacific/Chatham en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": 1738102500000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": 1738059300000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": 1767176040000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Pacific/Chatham en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Pacific/Chatham en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": 1738102500000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": 1738059300000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": 1767176040000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "30 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "Pacific/Chatham en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "1 Jan 1970"
+    },
+    {
+      "id": "Pacific/Chatham en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/Sao_Paulo en-US local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": 1738162800000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": 1738119600000
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": 1767236340000
+      },
+      "output": "Dec 31, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": "2025-01-29"
+      },
+      "output": "Jan 28, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "Jan 29, 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-US nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-US null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-US epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": 0
+      },
+      "output": "Dec 31, 1969"
+    },
+    {
+      "id": "America/Sao_Paulo en-US out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-US",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": 1738162800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": 1738119600000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": 1767236340000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": "2025-01-29"
+      },
+      "output": "28 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-GB null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-GB epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": 0
+      },
+      "output": "31 Dec 1969"
+    },
+    {
+      "id": "America/Sao_Paulo en-GB out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-GB",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN local-noon",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": 1738162800000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN local-midnight",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": 1738119600000
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN last-minute",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": 1767236340000
+      },
+      "output": "31 Dec 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN iso",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": "2025-01-29T12:00:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN iso-late-utc",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": "2025-01-29T23:30:00Z"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN date-only",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": "2025-01-29"
+      },
+      "output": "28 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN legacy",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": "Jan 29 2025 10:00"
+      },
+      "output": "29 Jan 2025"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN nope",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": "nope"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-IN null",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": null
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo en-IN epoch",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": 0
+      },
+      "output": "31 Dec 1969"
+    },
+    {
+      "id": "America/Sao_Paulo en-IN out-of-range",
+      "fn": "formatDateShort",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "locale": "en-IN",
+        "date": 10000000000000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "UTC just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794495570000,
+        "now": 1794495600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "UTC exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794495540000,
+        "now": 1794495600000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "UTC 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794495300000,
+        "now": 1794495600000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "UTC 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794492030000,
+        "now": 1794495600000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "UTC 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794474000000,
+        "now": 1794495600000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "UTC 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794351600000,
+        "now": 1794495600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "UTC 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794434400000,
+        "now": 1794495600000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "UTC 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794387600000,
+        "now": 1794495600000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "UTC 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1793955600000,
+        "now": 1794495600000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "UTC 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1793869200000,
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "UTC 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1793188800000,
+        "now": 1794495600000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "UTC 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1791979200000,
+        "now": 1794495600000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "UTC 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1791892800000,
+        "now": 1794495600000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "UTC months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1785758400000,
+        "now": 1794495600000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "UTC years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1549022400000,
+        "now": 1794495600000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "UTC future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794571200000,
+        "now": 1794495600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "UTC across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1772926200000,
+        "now": 1773016200000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "UTC across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1793489400000,
+        "now": 1793579400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "UTC across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1775345400000,
+        "now": 1775435400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "UTC new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1767222000000,
+        "now": 1767229200000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "UTC iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": "2026-11-12T14:00:00.000Z",
+        "now": 1794495600000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "UTC date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": "2026-11-01",
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "UTC not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": "not a date",
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": null,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "UTC boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": true,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794495600000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "UTC out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": -10000000000000000,
+        "now": 1794495600000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "UTC fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "UTC",
+        "date": 1794492000000.75,
+        "now": 1794495600000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "America/New_York just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794513570000,
+        "now": 1794513600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "America/New_York exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794513540000,
+        "now": 1794513600000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "America/New_York 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794513300000,
+        "now": 1794513600000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "America/New_York 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794510030000,
+        "now": 1794513600000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "America/New_York 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794492000000,
+        "now": 1794513600000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "America/New_York 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794369600000,
+        "now": 1794513600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/New_York 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794452400000,
+        "now": 1794513600000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "America/New_York 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794405600000,
+        "now": 1794513600000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "America/New_York 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1793973600000,
+        "now": 1794513600000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "America/New_York 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1793887200000,
+        "now": 1794513600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/New_York 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1793203200000,
+        "now": 1794513600000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "America/New_York 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1791993600000,
+        "now": 1794513600000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "America/New_York 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1791907200000,
+        "now": 1794513600000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "America/New_York months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1785772800000,
+        "now": 1794513600000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "America/New_York years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1549040400000,
+        "now": 1794513600000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "America/New_York future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794589200000,
+        "now": 1794513600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "America/New_York across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1772944200000,
+        "now": 1773030600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/New_York across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1793503800000,
+        "now": 1793597400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/New_York across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1775359800000,
+        "now": 1775449800000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/New_York new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1767240000000,
+        "now": 1767247200000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "America/New_York iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": "2026-11-12T19:00:00.000Z",
+        "now": 1794513600000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "America/New_York date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": "2026-11-01",
+        "now": 1794513600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/New_York not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": "not a date",
+        "now": 1794513600000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": null,
+        "now": 1794513600000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794513600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/New_York boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": true,
+        "now": 1794513600000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794513600000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/New_York out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": -10000000000000000,
+        "now": 1794513600000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/New_York fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/New_York",
+        "date": 1794510000000.75,
+        "now": 1794513600000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Europe/London just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794495570000,
+        "now": 1794495600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Europe/London exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794495540000,
+        "now": 1794495600000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "Europe/London 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794495300000,
+        "now": 1794495600000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "Europe/London 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794492030000,
+        "now": 1794495600000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Europe/London 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794474000000,
+        "now": 1794495600000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "Europe/London 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794351600000,
+        "now": 1794495600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Europe/London 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794434400000,
+        "now": 1794495600000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "Europe/London 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794387600000,
+        "now": 1794495600000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "Europe/London 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1793955600000,
+        "now": 1794495600000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "Europe/London 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1793869200000,
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Europe/London 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1793188800000,
+        "now": 1794495600000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "Europe/London 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1791975600000,
+        "now": 1794495600000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "Europe/London 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1791889200000,
+        "now": 1794495600000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "Europe/London months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1785754800000,
+        "now": 1794495600000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "Europe/London years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1549022400000,
+        "now": 1794495600000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "Europe/London future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794571200000,
+        "now": 1794495600000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Europe/London across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1772926200000,
+        "now": 1773016200000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Europe/London across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1793489400000,
+        "now": 1793579400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Europe/London across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1775341800000,
+        "now": 1775431800000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Europe/London new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1767222000000,
+        "now": 1767229200000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "Europe/London iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": "2026-11-12T14:00:00.000Z",
+        "now": 1794495600000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "Europe/London date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": "2026-11-01",
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Europe/London not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": "not a date",
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": null,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794495600000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Europe/London boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": true,
+        "now": 1794495600000
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794495600000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "Europe/London out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": -10000000000000000,
+        "now": 1794495600000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Europe/London fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Europe/London",
+        "date": 1794492000000.75,
+        "now": 1794495600000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Asia/Kolkata just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794475770000,
+        "now": 1794475800000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Asia/Kolkata exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794475740000,
+        "now": 1794475800000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "Asia/Kolkata 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794475500000,
+        "now": 1794475800000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "Asia/Kolkata 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794472230000,
+        "now": 1794475800000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Asia/Kolkata 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794454200000,
+        "now": 1794475800000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "Asia/Kolkata 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794331800000,
+        "now": 1794475800000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Asia/Kolkata 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794414600000,
+        "now": 1794475800000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "Asia/Kolkata 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794367800000,
+        "now": 1794475800000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "Asia/Kolkata 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1793935800000,
+        "now": 1794475800000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "Asia/Kolkata 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1793849400000,
+        "now": 1794475800000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Asia/Kolkata 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1793169000000,
+        "now": 1794475800000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "Asia/Kolkata 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1791959400000,
+        "now": 1794475800000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "Asia/Kolkata 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1791873000000,
+        "now": 1794475800000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "Asia/Kolkata months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1785738600000,
+        "now": 1794475800000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "Asia/Kolkata years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1549002600000,
+        "now": 1794475800000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "Asia/Kolkata future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794551400000,
+        "now": 1794475800000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Asia/Kolkata across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1772906400000,
+        "now": 1772996400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Asia/Kolkata across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1793469600000,
+        "now": 1793559600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Asia/Kolkata across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1775325600000,
+        "now": 1775415600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Asia/Kolkata new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1767202200000,
+        "now": 1767209400000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "Asia/Kolkata iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": "2026-11-12T08:30:00.000Z",
+        "now": 1794475800000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "Asia/Kolkata date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": "2026-11-01",
+        "now": 1794475800000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Asia/Kolkata not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": "not a date",
+        "now": 1794475800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": null,
+        "now": 1794475800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794475800000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Asia/Kolkata boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": true,
+        "now": 1794475800000
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794475800000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "Asia/Kolkata out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": -10000000000000000,
+        "now": 1794475800000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Asia/Kolkata fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "date": 1794472200000.75,
+        "now": 1794475800000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Australia/Lord_Howe just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794455970000,
+        "now": 1794456000000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Australia/Lord_Howe exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794455940000,
+        "now": 1794456000000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794455700000,
+        "now": 1794456000000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794452430000,
+        "now": 1794456000000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794434400000,
+        "now": 1794456000000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794312000000,
+        "now": 1794456000000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794394800000,
+        "now": 1794456000000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794348000000,
+        "now": 1794456000000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1793916000000,
+        "now": 1794456000000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1793829600000,
+        "now": 1794456000000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1793149200000,
+        "now": 1794456000000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1791939600000,
+        "now": 1794456000000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1791853200000,
+        "now": 1794456000000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "Australia/Lord_Howe months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1785720600000,
+        "now": 1794456000000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "Australia/Lord_Howe years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1548982800000,
+        "now": 1794456000000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "Australia/Lord_Howe future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794531600000,
+        "now": 1794456000000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Australia/Lord_Howe across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1772886600000,
+        "now": 1772976600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1793449800000,
+        "now": 1793539800000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1775305800000,
+        "now": 1775397600000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Australia/Lord_Howe new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1767182400000,
+        "now": 1767189600000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "Australia/Lord_Howe iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": "2026-11-12T03:00:00.000Z",
+        "now": 1794456000000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "Australia/Lord_Howe date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": "2026-11-01",
+        "now": 1794456000000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": "not a date",
+        "now": 1794456000000
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": null,
+        "now": 1794456000000
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794456000000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Australia/Lord_Howe boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": true,
+        "now": 1794456000000
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794456000000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "Australia/Lord_Howe out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": -10000000000000000,
+        "now": 1794456000000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Australia/Lord_Howe fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "date": 1794452400000.75,
+        "now": 1794456000000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Pacific/Chatham just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794446070000,
+        "now": 1794446100000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Pacific/Chatham exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794446040000,
+        "now": 1794446100000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "Pacific/Chatham 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794445800000,
+        "now": 1794446100000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "Pacific/Chatham 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794442530000,
+        "now": 1794446100000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "Pacific/Chatham 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794424500000,
+        "now": 1794446100000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "Pacific/Chatham 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794302100000,
+        "now": 1794446100000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Pacific/Chatham 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794384900000,
+        "now": 1794446100000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "Pacific/Chatham 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794338100000,
+        "now": 1794446100000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "Pacific/Chatham 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1793906100000,
+        "now": 1794446100000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "Pacific/Chatham 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1793819700000,
+        "now": 1794446100000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Pacific/Chatham 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1793139300000,
+        "now": 1794446100000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "Pacific/Chatham 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1791929700000,
+        "now": 1794446100000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "Pacific/Chatham 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1791843300000,
+        "now": 1794446100000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "Pacific/Chatham months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1785712500000,
+        "now": 1794446100000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "Pacific/Chatham years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1548972900000,
+        "now": 1794446100000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "Pacific/Chatham future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794521700000,
+        "now": 1794446100000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "Pacific/Chatham across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1772876700000,
+        "now": 1772966700000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Pacific/Chatham across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1793439900000,
+        "now": 1793529900000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Pacific/Chatham across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1775295900000,
+        "now": 1775389500000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "Pacific/Chatham new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1767172500000,
+        "now": 1767179700000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "Pacific/Chatham iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": "2026-11-12T00:15:00.000Z",
+        "now": 1794446100000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "Pacific/Chatham date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": "2026-11-01",
+        "now": 1794446100000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Pacific/Chatham not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": "not a date",
+        "now": 1794446100000
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": null,
+        "now": 1794446100000
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794446100000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "Pacific/Chatham boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": true,
+        "now": 1794446100000
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794446100000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "Pacific/Chatham out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": -10000000000000000,
+        "now": 1794446100000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "Pacific/Chatham fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "date": 1794442500000.75,
+        "now": 1794446100000.25
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "America/Sao_Paulo just-now",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794506370000,
+        "now": 1794506400000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "America/Sao_Paulo exactly-a-minute",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794506340000,
+        "now": 1794506400000
+      },
+      "output": "1m ago"
+    },
+    {
+      "id": "America/Sao_Paulo 5m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794506100000,
+        "now": 1794506400000
+      },
+      "output": "5m ago"
+    },
+    {
+      "id": "America/Sao_Paulo 59m",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794502830000,
+        "now": 1794506400000
+      },
+      "output": "59m ago"
+    },
+    {
+      "id": "America/Sao_Paulo 6h",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794484800000,
+        "now": 1794506400000
+      },
+      "output": "6h ago"
+    },
+    {
+      "id": "America/Sao_Paulo 2d-calendar",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794362400000,
+        "now": 1794506400000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/Sao_Paulo 17h-last-night",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794445200000,
+        "now": 1794506400000
+      },
+      "output": "17h ago"
+    },
+    {
+      "id": "America/Sao_Paulo 1d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794398400000,
+        "now": 1794506400000
+      },
+      "output": "1d ago"
+    },
+    {
+      "id": "America/Sao_Paulo 6d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1793966400000,
+        "now": 1794506400000
+      },
+      "output": "6d ago"
+    },
+    {
+      "id": "America/Sao_Paulo 1w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1793880000000,
+        "now": 1794506400000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/Sao_Paulo 2w",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1793199600000,
+        "now": 1794506400000
+      },
+      "output": "2w ago"
+    },
+    {
+      "id": "America/Sao_Paulo 29d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1791990000000,
+        "now": 1794506400000
+      },
+      "output": "4w ago"
+    },
+    {
+      "id": "America/Sao_Paulo 30d",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1791903600000,
+        "now": 1794506400000
+      },
+      "output": "13 Oct 2026"
+    },
+    {
+      "id": "America/Sao_Paulo months",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1785769200000,
+        "now": 1794506400000
+      },
+      "output": "3 Aug 2026"
+    },
+    {
+      "id": "America/Sao_Paulo years",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1549029600000,
+        "now": 1794506400000
+      },
+      "output": "1 Feb 2019"
+    },
+    {
+      "id": "America/Sao_Paulo future",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794582000000,
+        "now": 1794506400000
+      },
+      "output": "just now"
+    },
+    {
+      "id": "America/Sao_Paulo across-spring-forward",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1772937000000,
+        "now": 1773027000000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/Sao_Paulo across-fall-back",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1793500200000,
+        "now": 1793590200000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/Sao_Paulo across-southern-change",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1775356200000,
+        "now": 1775446200000
+      },
+      "output": "2d ago"
+    },
+    {
+      "id": "America/Sao_Paulo new-year",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1767232800000,
+        "now": 1767240000000
+      },
+      "output": "2h ago"
+    },
+    {
+      "id": "America/Sao_Paulo iso-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": "2026-11-12T17:00:00.000Z",
+        "now": 1794506400000
+      },
+      "output": "1h ago"
+    },
+    {
+      "id": "America/Sao_Paulo date-only-string",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": "2026-11-01",
+        "now": 1794506400000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/Sao_Paulo not-a-date",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": "not a date",
+        "now": 1794506400000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo null",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": null,
+        "now": 1794506400000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo array",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": [
+          "2026-11-01"
+        ],
+        "now": 1794506400000
+      },
+      "output": "1w ago"
+    },
+    {
+      "id": "America/Sao_Paulo boolean",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": true,
+        "now": 1794506400000
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo now-unreadable",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794506400000,
+        "now": "never"
+      },
+      "output": ""
+    },
+    {
+      "id": "America/Sao_Paulo out-of-range",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": -10000000000000000,
+        "now": 1794506400000
+      },
+      "output": "Invalid Date"
+    },
+    {
+      "id": "America/Sao_Paulo fraction-ms",
+      "fn": "relativeTime",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "date": 1794502800000.75,
+        "now": 1794506400000.25
+      },
+      "output": "59m ago"
+    }
+  ]
+}

@@ -139,6 +139,16 @@ Open the dev server at `127.0.0.1`, not `localhost`. A local sign-in comes back 
 `127.0.0.1` (the OAuth spec doesn't allow `localhost` there), and the session belongs to
 the address it was started from.
 
+## The iOS app
+
+`ios/` is a native SwiftUI version of the app for iPhone and iPad, ported from
+`src/` and kept in step with it by tests: fixtures written by the web code that
+the Swift code must reproduce, a map of every web file to its Swift
+counterpart, and a drift report on every pull request.
+[ios/README.md](ios/README.md) says how to build it;
+[ios/parity/README.md](ios/parity/README.md) says what to do when a change here
+makes `npm test` ask for `npm run parity:write`.
+
 ## What it shows
 
 Virga is a workspace with six parts. On a desk they are the sidebar; on a phone five of

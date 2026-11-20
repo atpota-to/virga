@@ -1,0 +1,3794 @@
+{
+  "name": "posting-text.inlineLinks",
+  "sources": [
+    "src/posting/lib/inlineLinks.js"
+  ],
+  "cases": [
+    {
+      "id": "linkDestination#1",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://example.org/about"
+      },
+      "output": "https://example.org/about"
+    },
+    {
+      "id": "linkDestination#2",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "http://example.com"
+      },
+      "output": "http://example.com"
+    },
+    {
+      "id": "linkDestination#3",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "example.org/faq"
+      },
+      "output": "https://example.org/faq"
+    },
+    {
+      "id": "linkDestination#4",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "example.com:8080/x"
+      },
+      "output": "https://example.com:8080/x"
+    },
+    {
+      "id": "linkDestination#5",
+      "fn": "linkDestination",
+      "input": {
+        "destination": ""
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#6",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "b"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#7",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "notes.txt"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#8",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "v1.2.3"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#9",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "/relative"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#10",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "//example.com"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#11",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "mailto:a@b.com"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#12",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "javascript:alert(1)"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#13",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "at://did:plc:x/app.bsky.feed.post/1"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#14",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "ftp://example.com"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#15",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://localhost:3000"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#16",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "192.168.0.1"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#17",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "HTTPS://EXAMPLE.ORG/X"
+      },
+      "output": "HTTPS://EXAMPLE.ORG/X"
+    },
+    {
+      "id": "linkDestination#18",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "bücher.de/x"
+      },
+      "output": "https://bücher.de/x"
+    },
+    {
+      "id": "linkDestination#19",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://exa mple.com"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#20",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "example.com:abc"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#21",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "a:1"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#22",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "localhost:8080"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#23",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://example.com/a)b"
+      },
+      "output": "https://example.com/a)b"
+    },
+    {
+      "id": "linkDestination#24",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "www.example.com"
+      },
+      "output": "https://www.example.com"
+    },
+    {
+      "id": "linkDestination#25",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://[::1]/x"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#26",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://1.2.3.4/x"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#27",
+      "fn": "linkDestination",
+      "input": {
+        "destination": "https://xn--abc.com"
+      },
+      "output": null
+    },
+    {
+      "id": "linkDestination#28",
+      "fn": "linkDestination",
+      "input": {
+        "destination": null
+      },
+      "output": null
+    },
+    {
+      "id": "labelMisleads#1",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "my essay",
+        "uri": "https://example.com/essay"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#2",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "e.g. this",
+        "uri": "https://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#3",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "example.org",
+        "uri": "https://example.org/about"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#4",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "www.example.org",
+        "uri": "https://example.org"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#5",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "https://example.org/faq",
+        "uri": "https://example.org/about"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#6",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "Example.org, the site",
+        "uri": "https://example.org"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#7",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bsky.app",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#8",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "https://bsky.app/profile/x",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#9",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bsky.app is great",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#10",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "@dame.is",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#11",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "example.com",
+        "uri": "https://blog.example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#12",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "read it on bsky.app",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#13",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bsky.app's feed",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#14",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "(bsky.app)",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#15",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "https://bsky.app...",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#16",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bsky.app or example.org",
+        "uri": "https://bsky.app"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#17",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bsky.app's own feed",
+        "uri": "https://bsky.app/profile/x"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#18",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bücher.de",
+        "uri": "https://xn--bcher-kva.de"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#19",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "bücher.de",
+        "uri": "https://bucher.de"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#20",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "BÜCHER.DE",
+        "uri": "https://bücher.de/x"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#21",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "v1.2.3",
+        "uri": "https://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#22",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "notes.txt",
+        "uri": "https://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#23",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "\"quoted.example\"",
+        "uri": "https://quoted.example"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#24",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "“curly.example”",
+        "uri": "https://other.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#25",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "HTTPS://BSKY.APP",
+        "uri": "https://bsky.app"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#26",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "https://bsky.app",
+        "uri": "not a url"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#27",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "",
+        "uri": "https://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#28",
+      "fn": "labelMisleads",
+      "input": {
+        "label": null,
+        "uri": "https://example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#29",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "日本.jp",
+        "uri": "https://xn--wgv71a.jp"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#30",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "ex-ample.co.uk",
+        "uri": "https://ex-ample.co.uk"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#31",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "-bad-.com",
+        "uri": "https://elsewhere.example"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#32",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "192.168.0.1",
+        "uri": "https://elsewhere.example"
+      },
+      "output": false
+    },
+    {
+      "id": "labelMisleads#33",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "ͅab.com",
+        "uri": "https://x.com"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#34",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "abͅ.com",
+        "uri": "https://x.com"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#35",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "aͅb.com",
+        "uri": "https://x.com"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#36",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "ab.coͅ",
+        "uri": "https://x.com"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#37",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "notes.txtͅ",
+        "uri": "not a url"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#38",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "httpſ://bsky.app",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#39",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "Kelvin.example",
+        "uri": "https://elsewhere.example"
+      },
+      "output": true
+    },
+    {
+      "id": "labelMisleads#40",
+      "fn": "labelMisleads",
+      "input": {
+        "label": "ͅ",
+        "uri": "https://x.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#1",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "https://old.example/x"
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#2",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": " example.org "
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#3",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "my essay"
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#4",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "on example.org"
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#5",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "@dame.is"
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#6",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "bsky.app."
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#7",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#8",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": null
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#9",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "v1.2.3"
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#10",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "example.org example.com"
+      },
+      "output": false
+    },
+    {
+      "id": "isSingleAddress#11",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "ͅab.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#12",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": "ſt.ͅab12"
+      },
+      "output": true
+    },
+    {
+      "id": "isSingleAddress#13",
+      "fn": "isSingleAddress",
+      "input": {
+        "text": " ͅab.appͅ "
+      },
+      "output": true
+    },
+    {
+      "id": "findInlineLinks#1",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) and [the faq](example.org/faq)."
+      },
+      "output": [
+        {
+          "start": 5,
+          "end": 42,
+          "labelStart": 6,
+          "labelEnd": 14,
+          "label": "my essay",
+          "uri": "https://example.com/essay",
+          "misleading": false
+        },
+        {
+          "start": 47,
+          "end": 73,
+          "labelStart": 48,
+          "labelEnd": 55,
+          "label": "the faq",
+          "uri": "https://example.org/faq",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#2",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) here"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 59,
+          "labelStart": 1,
+          "labelEnd": 6,
+          "label": "notes",
+          "uri": "https://en.wikipedia.org/wiki/Bee_(disambiguation)",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#3",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[a](b)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#4",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[](https://example.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#5",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[ ](https://example.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#6",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[a] (https://example.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#7",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[a](https://example.com"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#8",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[a\nb](https://example.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#9",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[a](https://exa mple.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#10",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "arr[0](x)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#11",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[[label](https://example.com)"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 29,
+          "labelStart": 2,
+          "labelEnd": 7,
+          "label": "label",
+          "uri": "https://example.com",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#12",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example)"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 37,
+          "labelStart": 1,
+          "labelEnd": 9,
+          "label": "bsky.app",
+          "uri": "https://elsewhere.example",
+          "misleading": true
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#13",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "a [b](https://b.com) c [dd](https://d.com) e"
+      },
+      "output": [
+        {
+          "start": 2,
+          "end": 20,
+          "labelStart": 3,
+          "labelEnd": 4,
+          "label": "b",
+          "uri": "https://b.com",
+          "misleading": false
+        },
+        {
+          "start": 23,
+          "end": 42,
+          "labelStart": 24,
+          "labelEnd": 26,
+          "label": "dd",
+          "uri": "https://d.com",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#14",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "see [bsky.app](https://elsewhere.example)"
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 41,
+          "labelStart": 5,
+          "labelEnd": 13,
+          "label": "bsky.app",
+          "uri": "https://elsewhere.example",
+          "misleading": true
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#15",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x](https://a.com)[y](https://b.com)"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 18,
+          "labelStart": 1,
+          "labelEnd": 2,
+          "label": "x",
+          "uri": "https://a.com",
+          "misleading": false
+        },
+        {
+          "start": 18,
+          "end": 36,
+          "labelStart": 19,
+          "labelEnd": 20,
+          "label": "y",
+          "uri": "https://b.com",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#16",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/(b)(c))"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 25,
+          "labelStart": 1,
+          "labelEnd": 2,
+          "label": "x",
+          "uri": "https://a.com/(b)(c)",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#17",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/((b)))tail"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 24,
+          "labelStart": 1,
+          "labelEnd": 2,
+          "label": "x",
+          "uri": "https://a.com/((b))",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#18",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/(b) more"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#19",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x [y](https://a.com)"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 21,
+          "labelStart": 4,
+          "labelEnd": 5,
+          "label": "y",
+          "uri": "https://a.com",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#20",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x]](https://a.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#21",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[🦋 émoji](https://example.com/é)"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 33,
+          "labelStart": 1,
+          "labelEnd": 9,
+          "label": "🦋 émoji",
+          "uri": "https://example.com/é",
+          "misleading": false
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#22",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[label](mailto:a@b.com)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#23",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[label](/relative)"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#24",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[ͅab.com](https://x.com) refused, as a domain that is not x.com"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 24,
+          "labelStart": 1,
+          "labelEnd": 8,
+          "label": "ͅab.com",
+          "uri": "https://x.com",
+          "misleading": true
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#25",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "[x.coͅm](https://x.com)"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 23,
+          "labelStart": 1,
+          "labelEnd": 7,
+          "label": "x.coͅm",
+          "uri": "https://x.com",
+          "misleading": true
+        }
+      ]
+    },
+    {
+      "id": "findInlineLinks#26",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "no links here"
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#27",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "]("
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#28",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": "["
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#29",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "findInlineLinks#30",
+      "fn": "findInlineLinks",
+      "input": {
+        "text": null
+      },
+      "output": []
+    },
+    {
+      "id": "collapseInlineLinks#1",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) and [the faq](example.org/faq)."
+      },
+      "output": {
+        "text": "read my essay and the faq.",
+        "links": [
+          {
+            "charStart": 5,
+            "charEnd": 13,
+            "label": "my essay",
+            "uri": "https://example.com/essay"
+          },
+          {
+            "charStart": 18,
+            "charEnd": 25,
+            "label": "the faq",
+            "uri": "https://example.org/faq"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#2",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) here"
+      },
+      "output": {
+        "text": "notes here",
+        "links": [
+          {
+            "charStart": 0,
+            "charEnd": 5,
+            "label": "notes",
+            "uri": "https://en.wikipedia.org/wiki/Bee_(disambiguation)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#3",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[a](b)"
+      },
+      "output": {
+        "text": "[a](b)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#4",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[](https://example.com)"
+      },
+      "output": {
+        "text": "[](https://example.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#5",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[ ](https://example.com)"
+      },
+      "output": {
+        "text": "[ ](https://example.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#6",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[a] (https://example.com)"
+      },
+      "output": {
+        "text": "[a] (https://example.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#7",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[a](https://example.com"
+      },
+      "output": {
+        "text": "[a](https://example.com",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#8",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[a\nb](https://example.com)"
+      },
+      "output": {
+        "text": "[a\nb](https://example.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#9",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[a](https://exa mple.com)"
+      },
+      "output": {
+        "text": "[a](https://exa mple.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#10",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "arr[0](x)"
+      },
+      "output": {
+        "text": "arr[0](x)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#11",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[[label](https://example.com)"
+      },
+      "output": {
+        "text": "[label",
+        "links": [
+          {
+            "charStart": 1,
+            "charEnd": 6,
+            "label": "label",
+            "uri": "https://example.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#12",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example)"
+      },
+      "output": {
+        "text": "[bsky.app](https://elsewhere.example)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#13",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "a [b](https://b.com) c [dd](https://d.com) e"
+      },
+      "output": {
+        "text": "a b c dd e",
+        "links": [
+          {
+            "charStart": 2,
+            "charEnd": 3,
+            "label": "b",
+            "uri": "https://b.com"
+          },
+          {
+            "charStart": 6,
+            "charEnd": 8,
+            "label": "dd",
+            "uri": "https://d.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#14",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "see [bsky.app](https://elsewhere.example)"
+      },
+      "output": {
+        "text": "see [bsky.app](https://elsewhere.example)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#15",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x](https://a.com)[y](https://b.com)"
+      },
+      "output": {
+        "text": "xy",
+        "links": [
+          {
+            "charStart": 0,
+            "charEnd": 1,
+            "label": "x",
+            "uri": "https://a.com"
+          },
+          {
+            "charStart": 1,
+            "charEnd": 2,
+            "label": "y",
+            "uri": "https://b.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#16",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/(b)(c))"
+      },
+      "output": {
+        "text": "x",
+        "links": [
+          {
+            "charStart": 0,
+            "charEnd": 1,
+            "label": "x",
+            "uri": "https://a.com/(b)(c)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#17",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/((b)))tail"
+      },
+      "output": {
+        "text": "xtail",
+        "links": [
+          {
+            "charStart": 0,
+            "charEnd": 1,
+            "label": "x",
+            "uri": "https://a.com/((b))"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#18",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x](https://a.com/(b) more"
+      },
+      "output": {
+        "text": "[x](https://a.com/(b) more",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#19",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x [y](https://a.com)"
+      },
+      "output": {
+        "text": "[x y",
+        "links": [
+          {
+            "charStart": 3,
+            "charEnd": 4,
+            "label": "y",
+            "uri": "https://a.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#20",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x]](https://a.com)"
+      },
+      "output": {
+        "text": "[x]](https://a.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#21",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[🦋 émoji](https://example.com/é)"
+      },
+      "output": {
+        "text": "🦋 émoji",
+        "links": [
+          {
+            "charStart": 0,
+            "charEnd": 8,
+            "label": "🦋 émoji",
+            "uri": "https://example.com/é"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collapseInlineLinks#22",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[label](mailto:a@b.com)"
+      },
+      "output": {
+        "text": "[label](mailto:a@b.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#23",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[label](/relative)"
+      },
+      "output": {
+        "text": "[label](/relative)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#24",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[ͅab.com](https://x.com) refused, as a domain that is not x.com"
+      },
+      "output": {
+        "text": "[ͅab.com](https://x.com) refused, as a domain that is not x.com",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#25",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "[x.coͅm](https://x.com)"
+      },
+      "output": {
+        "text": "[x.coͅm](https://x.com)",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#26",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "no links here"
+      },
+      "output": {
+        "text": "no links here",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#27",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "]("
+      },
+      "output": {
+        "text": "](",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#28",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": "["
+      },
+      "output": {
+        "text": "[",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#29",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": ""
+      },
+      "output": {
+        "text": "",
+        "links": []
+      }
+    },
+    {
+      "id": "collapseInlineLinks#30",
+      "fn": "collapseInlineLinks",
+      "input": {
+        "text": null
+      },
+      "output": {
+        "text": "",
+        "links": []
+      }
+    },
+    {
+      "id": "applyInlineLinks#1",
+      "fn": "applyInlineLinks",
+      "input": {
+        "text": "go [here](https://bsky.app/profile/a.test/post/3abc) "
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://bsky.app/profile/a.test/post/3abc"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 8
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": []
+      }
+    },
+    {
+      "id": "applyInlineLinks#2",
+      "fn": "applyInlineLinks",
+      "input": {
+        "text": "see [example.org](https://example.org) and https://other.example/x "
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 16
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://other.example/x"
+              }
+            ],
+            "index": {
+              "byteStart": 43,
+              "byteEnd": 66
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://other.example/x",
+            "charStart": 43,
+            "charEnd": 66,
+            "byteStart": 43,
+            "byteEnd": 66
+          }
+        ]
+      }
+    },
+    {
+      "id": "applyInlineLinks#3",
+      "fn": "applyInlineLinks",
+      "input": {
+        "text": "[a](https://a.com) @x.test #tag [b](https://b.com)"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://a.com"
+              }
+            ],
+            "index": {
+              "byteStart": 1,
+              "byteEnd": 2
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "placeholder:x.test"
+              }
+            ],
+            "index": {
+              "byteStart": 19,
+              "byteEnd": 26
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "tag"
+              }
+            ],
+            "index": {
+              "byteStart": 27,
+              "byteEnd": 31
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://b.com"
+              }
+            ],
+            "index": {
+              "byteStart": 33,
+              "byteEnd": 34
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": []
+      }
+    },
+    {
+      "id": "applyInlineLinks#4",
+      "fn": "applyInlineLinks",
+      "input": {
+        "text": "no links"
+      },
+      "output": {
+        "facets": [],
+        "postEmbeds": [],
+        "externalLinks": []
+      }
+    },
+    {
+      "id": "detectComposerFacets#1",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) tonight"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/essay"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "read my essay tonight",
+        "markdownLinks": [],
+        "text": "read my essay tonight"
+      }
+    },
+    {
+      "id": "detectComposerFacets#2",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "🦋 [ünïcödé](https://example.com) #notes"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 16
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "notes"
+              }
+            ],
+            "index": {
+              "byteStart": 17,
+              "byteEnd": 23
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "🦋 ünïcödé #notes",
+        "markdownLinks": [],
+        "text": "🦋 ünïcödé #notes"
+      }
+    },
+    {
+      "id": "detectComposerFacets#3",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "@luna.test see [this](https://a.com/x) and https://b.com/y #tag",
+        "table": {
+          "luna.test": "did:plc:luna"
+        }
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:luna"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 10
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://a.com/x"
+              }
+            ],
+            "index": {
+              "byteStart": 15,
+              "byteEnd": 19
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://b.com/y"
+              }
+            ],
+            "index": {
+              "byteStart": 24,
+              "byteEnd": 39
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "tag"
+              }
+            ],
+            "index": {
+              "byteStart": 40,
+              "byteEnd": 44
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://b.com/y",
+            "charStart": 24,
+            "charEnd": 39,
+            "byteStart": 24,
+            "byteEnd": 39
+          }
+        ],
+        "displayText": "@luna.test see this and https://b.com/y #tag",
+        "markdownLinks": [],
+        "text": "@luna.test see this and https://b.com/y #tag"
+      }
+    },
+    {
+      "id": "detectComposerFacets#4",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "see [example.org by @example.org #notes](https://example.org) now",
+        "table": {
+          "example.org": "did:plc:example"
+        }
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 38
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "see example.org by @example.org #notes now",
+        "markdownLinks": [],
+        "text": "see example.org by @example.org #notes now"
+      }
+    },
+    {
+      "id": "detectComposerFacets#5",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "[example.org](https://example.org/about) ",
+        "preview": true
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/about"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 11
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "example.org ",
+        "markdownLinks": [],
+        "text": "example.org "
+      }
+    },
+    {
+      "id": "detectComposerFacets#6",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "[this post](https://bsky.app/profile/a.test/post/3abc) ",
+        "preview": true
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://bsky.app/profile/a.test/post/3abc"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 9
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "this post ",
+        "markdownLinks": [],
+        "text": "this post "
+      }
+    },
+    {
+      "id": "detectComposerFacets#7",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example) ok"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://elsewhere.example"
+              }
+            ],
+            "index": {
+              "byteStart": 11,
+              "byteEnd": 36
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://elsewhere.example",
+            "charStart": 11,
+            "charEnd": 36,
+            "byteStart": 11,
+            "byteEnd": 36
+          }
+        ],
+        "displayText": "[bsky.app](https://elsewhere.example) ok",
+        "markdownLinks": [],
+        "text": "[bsky.app](https://elsewhere.example) ok"
+      }
+    },
+    {
+      "id": "detectComposerFacets#8",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "hello example.org and https://example.com/long/path/to/a/page #notes",
+        "preview": true
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org"
+              }
+            ],
+            "index": {
+              "byteStart": 6,
+              "byteEnd": 17
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/long/path/to/a/page"
+              }
+            ],
+            "index": {
+              "byteStart": 22,
+              "byteEnd": 61
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "notes"
+              }
+            ],
+            "index": {
+              "byteStart": 62,
+              "byteEnd": 68
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://example.org",
+            "charStart": 6,
+            "charEnd": 17,
+            "byteStart": 6,
+            "byteEnd": 17
+          },
+          {
+            "url": "https://example.com/long/path/to/a/page",
+            "charStart": 22,
+            "charEnd": 61,
+            "byteStart": 22,
+            "byteEnd": 61
+          }
+        ],
+        "displayText": "hello example.org and https://example.com/long/path/to/a/page #notes",
+        "markdownLinks": [],
+        "text": "hello example.org and https://example.com/long/path/to/a/page #notes"
+      }
+    },
+    {
+      "id": "detectComposerFacets#9",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "a [https://example.org/profile/x/y/z/w](https://example.org/profile/x/y/z/w) b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org/profile/x/y/z/w"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 37
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com"
+              }
+            ],
+            "index": {
+              "byteStart": 40,
+              "byteEnd": 85
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/another/long/path"
+              }
+            ],
+            "index": {
+              "byteStart": 88,
+              "byteEnd": 125
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://example.com/another/long/path",
+            "charStart": 88,
+            "charEnd": 125,
+            "byteStart": 88,
+            "byteEnd": 125
+          }
+        ],
+        "displayText": "a https://example.org/profile/x/y/z/w b see https://example.com/long/path/here inside c https://example.com/another/long/path d",
+        "markdownLinks": [],
+        "text": "a https://example.org/profile/x/y/z/w b see https://example.com/long/path/here inside c https://example.com/another/long/path d"
+      }
+    },
+    {
+      "id": "detectComposerFacets#10",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://elsewhere.example/a/long/path/here"
+              }
+            ],
+            "index": {
+              "byteStart": 11,
+              "byteEnd": 53
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://elsewhere.example/a/long/path/here",
+            "charStart": 11,
+            "charEnd": 53,
+            "byteStart": 11,
+            "byteEnd": 53
+          }
+        ],
+        "displayText": "[bsky.app](https://elsewhere.example/a/long/path/here) ok",
+        "markdownLinks": [],
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      }
+    },
+    {
+      "id": "detectComposerFacets#11",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "🦋 [my essay](https://example.com/essay), [notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) and https://example.com/a/long/path/to/somewhere"
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/essay"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://en.wikipedia.org/wiki/Bee_(disambiguation)"
+              }
+            ],
+            "index": {
+              "byteStart": 15,
+              "byteEnd": 20
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a/long/path/to/somewhere"
+              }
+            ],
+            "index": {
+              "byteStart": 25,
+              "byteEnd": 69
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [
+          {
+            "url": "https://example.com/a/long/path/to/somewhere",
+            "charStart": 23,
+            "charEnd": 67,
+            "byteStart": 25,
+            "byteEnd": 69
+          }
+        ],
+        "displayText": "🦋 my essay, notes and https://example.com/a/long/path/to/somewhere",
+        "markdownLinks": [],
+        "text": "🦋 my essay, notes and https://example.com/a/long/path/to/somewhere"
+      }
+    },
+    {
+      "id": "detectComposerFacets#12",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "[@a.test](https://a.test) and @a.test",
+        "table": {
+          "a.test": "did:plc:a"
+        }
+      },
+      "output": {
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://a.test"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 7
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:a"
+              }
+            ],
+            "index": {
+              "byteStart": 12,
+              "byteEnd": 19
+            }
+          }
+        ],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "@a.test and @a.test",
+        "markdownLinks": [],
+        "text": "@a.test and @a.test"
+      }
+    },
+    {
+      "id": "detectComposerFacets#13",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": "",
+        "preview": true
+      },
+      "output": {
+        "facets": [],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "",
+        "markdownLinks": [],
+        "text": ""
+      }
+    },
+    {
+      "id": "detectComposerFacets#14",
+      "fn": "detectComposerFacets",
+      "input": {
+        "text": null,
+        "preview": true
+      },
+      "output": {
+        "facets": [],
+        "postEmbeds": [],
+        "externalLinks": [],
+        "displayText": "",
+        "markdownLinks": [],
+        "text": ""
+      }
+    },
+    {
+      "id": "composerCountText#1",
+      "fn": "composerCountText",
+      "input": {
+        "text": "read [my essay](https://example.com/a/very/long/path/that/costs/nothing/now)"
+      },
+      "output": "read my essay"
+    },
+    {
+      "id": "composerCountText#2",
+      "fn": "composerCountText",
+      "input": {
+        "text": "a [https://example.org/profile/x/y/z/w](https://example.org/profile/x/y/z/w) b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+      },
+      "output": "a example.org/profile/x/y/... b see https://example.com/long/path/here inside c example.com/another/long... d"
+    },
+    {
+      "id": "composerCountText#3",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      },
+      "output": "[bsky.app](elsewhere.example/a/long/path/...) ok"
+    },
+    {
+      "id": "composerCountText#4",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[https://bücher.de/straße/und/mehr](https://bücher.de/straße/und/mehr)"
+      },
+      "output": "xn--bcher-kva.de/stra%C3%9Fe/..."
+    },
+    {
+      "id": "composerCountText#5",
+      "fn": "composerCountText",
+      "input": {
+        "text": "plain text only"
+      },
+      "output": "plain text only"
+    },
+    {
+      "id": "composerCountText#6",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[ͅab.com](https://x.com/a/long/path/that/shortens) and [ok](https://x.com/a/long/path/that/shortens)"
+      },
+      "output": "[ͅab.com](x.com/a/long/path/...) and ok"
+    },
+    {
+      "id": "composerCountText#7",
+      "fn": "composerCountText",
+      "input": {
+        "text": "👨‍👩‍👧‍👦 [🇯🇵](https://example.jp) é"
+      },
+      "output": "👨‍👩‍👧‍👦 🇯🇵 é"
+    },
+    {
+      "id": "composerCountText#8",
+      "fn": "composerCountText",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "composerCountText#9",
+      "fn": "composerCountText",
+      "input": {
+        "text": null
+      },
+      "output": ""
+    },
+    {
+      "id": "composerCountText#10",
+      "fn": "composerCountText",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) and [the faq](example.org/faq)."
+      },
+      "output": "read my essay and the faq."
+    },
+    {
+      "id": "composerCountText#11",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) here"
+      },
+      "output": "notes here"
+    },
+    {
+      "id": "composerCountText#12",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[a](b)"
+      },
+      "output": "[a](b)"
+    },
+    {
+      "id": "composerCountText#13",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[](https://example.com)"
+      },
+      "output": "[](example.com)"
+    },
+    {
+      "id": "composerCountText#14",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[ ](https://example.com)"
+      },
+      "output": "[ ](example.com)"
+    },
+    {
+      "id": "composerCountText#15",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[a] (https://example.com)"
+      },
+      "output": "[a] (example.com)"
+    },
+    {
+      "id": "composerCountText#16",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[a](https://example.com"
+      },
+      "output": "[a](example.com"
+    },
+    {
+      "id": "composerCountText#17",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[a\nb](https://example.com)"
+      },
+      "output": "[a\nb](example.com)"
+    },
+    {
+      "id": "composerCountText#18",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[a](https://exa mple.com)"
+      },
+      "output": "[a](https://exa mple.com)"
+    },
+    {
+      "id": "composerCountText#19",
+      "fn": "composerCountText",
+      "input": {
+        "text": "arr[0](x)"
+      },
+      "output": "arr[0](x)"
+    },
+    {
+      "id": "composerCountText#20",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[[label](https://example.com)"
+      },
+      "output": "[label"
+    },
+    {
+      "id": "composerCountText#21",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example)"
+      },
+      "output": "[bsky.app](elsewhere.example)"
+    },
+    {
+      "id": "composerCountText#22",
+      "fn": "composerCountText",
+      "input": {
+        "text": "a [b](https://b.com) c [dd](https://d.com) e"
+      },
+      "output": "a b c dd e"
+    },
+    {
+      "id": "composerCountText#23",
+      "fn": "composerCountText",
+      "input": {
+        "text": "see [bsky.app](https://elsewhere.example)"
+      },
+      "output": "see [bsky.app](elsewhere.example)"
+    },
+    {
+      "id": "composerCountText#24",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x](https://a.com)[y](https://b.com)"
+      },
+      "output": "xy"
+    },
+    {
+      "id": "composerCountText#25",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x](https://a.com/(b)(c))"
+      },
+      "output": "x"
+    },
+    {
+      "id": "composerCountText#26",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x](https://a.com/((b)))tail"
+      },
+      "output": "xtail"
+    },
+    {
+      "id": "composerCountText#27",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x](https://a.com/(b) more"
+      },
+      "output": "[x](a.com/(b) more"
+    },
+    {
+      "id": "composerCountText#28",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x [y](https://a.com)"
+      },
+      "output": "[x y"
+    },
+    {
+      "id": "composerCountText#29",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x]](https://a.com)"
+      },
+      "output": "[x]](a.com)"
+    },
+    {
+      "id": "composerCountText#30",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[🦋 émoji](https://example.com/é)"
+      },
+      "output": "🦋 émoji"
+    },
+    {
+      "id": "composerCountText#31",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[label](mailto:a@b.com)"
+      },
+      "output": "[label](mailto:a@b.com)"
+    },
+    {
+      "id": "composerCountText#32",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[label](/relative)"
+      },
+      "output": "[label](/relative)"
+    },
+    {
+      "id": "composerCountText#33",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[ͅab.com](https://x.com) refused, as a domain that is not x.com"
+      },
+      "output": "[ͅab.com](x.com) refused, as a domain that is not x.com"
+    },
+    {
+      "id": "composerCountText#34",
+      "fn": "composerCountText",
+      "input": {
+        "text": "[x.coͅm](https://x.com)"
+      },
+      "output": "[x.coͅm](x.com)"
+    },
+    {
+      "id": "composerCountText#35",
+      "fn": "composerCountText",
+      "input": {
+        "text": "no links here"
+      },
+      "output": "no links here"
+    },
+    {
+      "id": "composerCountText#36",
+      "fn": "composerCountText",
+      "input": {
+        "text": "]("
+      },
+      "output": "]("
+    },
+    {
+      "id": "composerCountText#37",
+      "fn": "composerCountText",
+      "input": {
+        "text": "["
+      },
+      "output": "["
+    },
+    {
+      "id": "composerCountText#38",
+      "fn": "composerCountText",
+      "input": {
+        "text": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "composerCountText#39",
+      "fn": "composerCountText",
+      "input": {
+        "text": null
+      },
+      "output": ""
+    },
+    {
+      "id": "countComposerGraphemes#1",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "read [my essay](https://example.com/a/very/long/path/that/costs/nothing/now)"
+      },
+      "output": 13
+    },
+    {
+      "id": "countComposerGraphemes#2",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "a [https://example.org/profile/x/y/z/w](https://example.org/profile/x/y/z/w) b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+      },
+      "output": 109
+    },
+    {
+      "id": "countComposerGraphemes#3",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      },
+      "output": 48
+    },
+    {
+      "id": "countComposerGraphemes#4",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[https://bücher.de/straße/und/mehr](https://bücher.de/straße/und/mehr)"
+      },
+      "output": 32
+    },
+    {
+      "id": "countComposerGraphemes#5",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "plain text only"
+      },
+      "output": 15
+    },
+    {
+      "id": "countComposerGraphemes#6",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[ͅab.com](https://x.com/a/long/path/that/shortens) and [ok](https://x.com/a/long/path/that/shortens)"
+      },
+      "output": 38
+    },
+    {
+      "id": "countComposerGraphemes#7",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "👨‍👩‍👧‍👦 [🇯🇵](https://example.jp) é"
+      },
+      "output": 5
+    },
+    {
+      "id": "countComposerGraphemes#8",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "countComposerGraphemes#9",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": null
+      },
+      "output": 0
+    },
+    {
+      "id": "countComposerGraphemes#10",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) and [the faq](example.org/faq)."
+      },
+      "output": 26
+    },
+    {
+      "id": "countComposerGraphemes#11",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) here"
+      },
+      "output": 10
+    },
+    {
+      "id": "countComposerGraphemes#12",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[a](b)"
+      },
+      "output": 6
+    },
+    {
+      "id": "countComposerGraphemes#13",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[](https://example.com)"
+      },
+      "output": 15
+    },
+    {
+      "id": "countComposerGraphemes#14",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[ ](https://example.com)"
+      },
+      "output": 16
+    },
+    {
+      "id": "countComposerGraphemes#15",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[a] (https://example.com)"
+      },
+      "output": 17
+    },
+    {
+      "id": "countComposerGraphemes#16",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[a](https://example.com"
+      },
+      "output": 15
+    },
+    {
+      "id": "countComposerGraphemes#17",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[a\nb](https://example.com)"
+      },
+      "output": 18
+    },
+    {
+      "id": "countComposerGraphemes#18",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[a](https://exa mple.com)"
+      },
+      "output": 25
+    },
+    {
+      "id": "countComposerGraphemes#19",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "arr[0](x)"
+      },
+      "output": 9
+    },
+    {
+      "id": "countComposerGraphemes#20",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[[label](https://example.com)"
+      },
+      "output": 6
+    },
+    {
+      "id": "countComposerGraphemes#21",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example)"
+      },
+      "output": 29
+    },
+    {
+      "id": "countComposerGraphemes#22",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "a [b](https://b.com) c [dd](https://d.com) e"
+      },
+      "output": 10
+    },
+    {
+      "id": "countComposerGraphemes#23",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "see [bsky.app](https://elsewhere.example)"
+      },
+      "output": 33
+    },
+    {
+      "id": "countComposerGraphemes#24",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x](https://a.com)[y](https://b.com)"
+      },
+      "output": 2
+    },
+    {
+      "id": "countComposerGraphemes#25",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x](https://a.com/(b)(c))"
+      },
+      "output": 1
+    },
+    {
+      "id": "countComposerGraphemes#26",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x](https://a.com/((b)))tail"
+      },
+      "output": 5
+    },
+    {
+      "id": "countComposerGraphemes#27",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x](https://a.com/(b) more"
+      },
+      "output": 18
+    },
+    {
+      "id": "countComposerGraphemes#28",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x [y](https://a.com)"
+      },
+      "output": 4
+    },
+    {
+      "id": "countComposerGraphemes#29",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x]](https://a.com)"
+      },
+      "output": 11
+    },
+    {
+      "id": "countComposerGraphemes#30",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[🦋 émoji](https://example.com/é)"
+      },
+      "output": 7
+    },
+    {
+      "id": "countComposerGraphemes#31",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[label](mailto:a@b.com)"
+      },
+      "output": 23
+    },
+    {
+      "id": "countComposerGraphemes#32",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[label](/relative)"
+      },
+      "output": 18
+    },
+    {
+      "id": "countComposerGraphemes#33",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[ͅab.com](https://x.com) refused, as a domain that is not x.com"
+      },
+      "output": 54
+    },
+    {
+      "id": "countComposerGraphemes#34",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "[x.coͅm](https://x.com)"
+      },
+      "output": 14
+    },
+    {
+      "id": "countComposerGraphemes#35",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "no links here"
+      },
+      "output": 13
+    },
+    {
+      "id": "countComposerGraphemes#36",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "]("
+      },
+      "output": 2
+    },
+    {
+      "id": "countComposerGraphemes#37",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": "["
+      },
+      "output": 1
+    },
+    {
+      "id": "countComposerGraphemes#38",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": ""
+      },
+      "output": 0
+    },
+    {
+      "id": "countComposerGraphemes#39",
+      "fn": "countComposerGraphemes",
+      "input": {
+        "text": null
+      },
+      "output": 0
+    },
+    {
+      "id": "writtenEqualsCounted#1",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) tonight"
+      },
+      "output": {
+        "counted": "read my essay tonight",
+        "written": {
+          "text": "read my essay tonight",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/essay"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 13
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#2",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "🦋 [ünïcödé](https://example.com) #notes"
+      },
+      "output": {
+        "counted": "🦋 ünïcödé #notes",
+        "written": {
+          "text": "🦋 ünïcödé #notes",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 16
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "notes"
+                }
+              ],
+              "index": {
+                "byteStart": 17,
+                "byteEnd": 23
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#3",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "@luna.test see [this](https://a.com/x) and https://b.com/y #tag",
+        "table": {
+          "luna.test": "did:plc:luna"
+        }
+      },
+      "output": {
+        "counted": "@luna.test see this and b.com/y #tag",
+        "written": {
+          "text": "@luna.test see this and b.com/y #tag",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:luna"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 10
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a.com/x"
+                }
+              ],
+              "index": {
+                "byteStart": 15,
+                "byteEnd": 19
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://b.com/y"
+                }
+              ],
+              "index": {
+                "byteStart": 24,
+                "byteEnd": 31
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "tag"
+                }
+              ],
+              "index": {
+                "byteStart": 32,
+                "byteEnd": 36
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#4",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "see [example.org by @example.org #notes](https://example.org) now",
+        "table": {
+          "example.org": "did:plc:example"
+        }
+      },
+      "output": {
+        "counted": "see example.org by @example.org #notes now",
+        "written": {
+          "text": "see example.org by @example.org #notes now",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.org"
+                }
+              ],
+              "index": {
+                "byteStart": 4,
+                "byteEnd": 38
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#5",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "[example.org](https://example.org/about) "
+      },
+      "output": {
+        "counted": "example.org ",
+        "written": {
+          "text": "example.org ",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.org/about"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 11
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#6",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "[this post](https://bsky.app/profile/a.test/post/3abc) "
+      },
+      "output": {
+        "counted": "this post ",
+        "written": {
+          "text": "this post ",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://bsky.app/profile/a.test/post/3abc"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 9
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#7",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example) ok"
+      },
+      "output": {
+        "counted": "[bsky.app](elsewhere.example) ok",
+        "written": {
+          "text": "[bsky.app](elsewhere.example) ok",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://elsewhere.example"
+                }
+              ],
+              "index": {
+                "byteStart": 11,
+                "byteEnd": 28
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#8",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "hello example.org and https://example.com/long/path/to/a/page #notes"
+      },
+      "output": {
+        "counted": "hello example.org and example.com/long/path/to... #notes",
+        "written": {
+          "text": "hello example.org and example.com/long/path/to... #notes",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.org"
+                }
+              ],
+              "index": {
+                "byteStart": 6,
+                "byteEnd": 17
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/long/path/to/a/page"
+                }
+              ],
+              "index": {
+                "byteStart": 22,
+                "byteEnd": 49
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#tag",
+                  "tag": "notes"
+                }
+              ],
+              "index": {
+                "byteStart": 50,
+                "byteEnd": 56
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#9",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "a [https://example.org/profile/x/y/z/w](https://example.org/profile/x/y/z/w) b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+      },
+      "output": {
+        "counted": "a example.org/profile/x/y/... b see https://example.com/long/path/here inside c example.com/another/long... d",
+        "written": {
+          "text": "a example.org/profile/x/y/... b see https://example.com/long/path/here inside c example.com/another/long... d",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.org/profile/x/y/z/w"
+                }
+              ],
+              "index": {
+                "byteStart": 2,
+                "byteEnd": 29
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com"
+                }
+              ],
+              "index": {
+                "byteStart": 32,
+                "byteEnd": 77
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/another/long/path"
+                }
+              ],
+              "index": {
+                "byteStart": 80,
+                "byteEnd": 107
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#10",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      },
+      "output": {
+        "counted": "[bsky.app](elsewhere.example/a/long/path/...) ok",
+        "written": {
+          "text": "[bsky.app](elsewhere.example/a/long/path/...) ok",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://elsewhere.example/a/long/path/here"
+                }
+              ],
+              "index": {
+                "byteStart": 11,
+                "byteEnd": 44
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#11",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "🦋 [my essay](https://example.com/essay), [notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) and https://example.com/a/long/path/to/somewhere"
+      },
+      "output": {
+        "counted": "🦋 my essay, notes and example.com/a/long/path/...",
+        "written": {
+          "text": "🦋 my essay, notes and example.com/a/long/path/...",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/essay"
+                }
+              ],
+              "index": {
+                "byteStart": 5,
+                "byteEnd": 13
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://en.wikipedia.org/wiki/Bee_(disambiguation)"
+                }
+              ],
+              "index": {
+                "byteStart": 15,
+                "byteEnd": 20
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://example.com/a/long/path/to/somewhere"
+                }
+              ],
+              "index": {
+                "byteStart": 25,
+                "byteEnd": 52
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "writtenEqualsCounted#12",
+      "fn": "writtenEqualsCounted",
+      "input": {
+        "text": "[@a.test](https://a.test) and @a.test",
+        "table": {
+          "a.test": "did:plc:a"
+        }
+      },
+      "output": {
+        "counted": "@a.test and @a.test",
+        "written": {
+          "text": "@a.test and @a.test",
+          "facets": [
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#link",
+                  "uri": "https://a.test"
+                }
+              ],
+              "index": {
+                "byteStart": 0,
+                "byteEnd": 7
+              }
+            },
+            {
+              "$type": "app.bsky.richtext.facet",
+              "features": [
+                {
+                  "$type": "app.bsky.richtext.facet#mention",
+                  "did": "did:plc:a"
+                }
+              ],
+              "index": {
+                "byteStart": 12,
+                "byteEnd": 19
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "composerTextFromRecord#1",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/essay"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          }
+        ]
+      },
+      "output": "read [my essay](https://example.com/essay) tonight"
+    },
+    {
+      "id": "composerTextFromRecord#2",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "see example.org and example.com/long/path/he...",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.org"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 15
+            }
+          },
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/long/path/here/and/more"
+              }
+            ],
+            "index": {
+              "byteStart": 20,
+              "byteEnd": 47
+            }
+          }
+        ]
+      },
+      "output": "see https://example.org and https://example.com/long/path/here/and/more"
+    },
+    {
+      "id": "composerTextFromRecord#3",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "odd link",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/a)b"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 3
+            }
+          }
+        ]
+      },
+      "output": "[odd](https://example.com/a%29b) link"
+    },
+    {
+      "id": "composerTextFromRecord#4",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "odd link",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/(a"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 3
+            }
+          }
+        ]
+      },
+      "output": "[odd](https://example.com/%28a) link"
+    },
+    {
+      "id": "composerTextFromRecord#5",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "odd link",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/(a)"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 3
+            }
+          }
+        ]
+      },
+      "output": "[odd](https://example.com/(a)) link"
+    },
+    {
+      "id": "composerTextFromRecord#6",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "a [b] c",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com"
+              }
+            ],
+            "index": {
+              "byteStart": 2,
+              "byteEnd": 5
+            }
+          }
+        ]
+      },
+      "output": "a [b] c"
+    },
+    {
+      "id": "composerTextFromRecord#7",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "@luna.test #notes",
+        "facets": [
+          {
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#mention",
+                "did": "did:plc:luna"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 10
+            }
+          },
+          {
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#tag",
+                "tag": "notes"
+              }
+            ],
+            "index": {
+              "byteStart": 11,
+              "byteEnd": 17
+            }
+          }
+        ]
+      },
+      "output": "@luna.test #notes"
+    },
+    {
+      "id": "composerTextFromRecord#8",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "mailto:a@b.com"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          }
+        ]
+      },
+      "output": "read my essay tonight"
+    },
+    {
+      "id": "composerTextFromRecord#9",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "at://did:plc:x/a/b"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          }
+        ]
+      },
+      "output": "read my essay tonight"
+    },
+    {
+      "id": "composerTextFromRecord#10",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://bsky.app"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 7
+            }
+          }
+        ]
+      },
+      "output": "read [my](https://bsky.app) essay tonight"
+    },
+    {
+      "id": "composerTextFromRecord#11",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com"
+              }
+            ],
+            "index": {
+              "byteStart": 4,
+              "byteEnd": 5
+            }
+          }
+        ]
+      },
+      "output": "read my essay tonight"
+    },
+    {
+      "id": "composerTextFromRecord#12",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "line\nbreak",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://x.com"
+              }
+            ],
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 10
+            }
+          }
+        ]
+      },
+      "output": "line\nbreak"
+    },
+    {
+      "id": "composerTextFromRecord#13",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "",
+        "facets": []
+      },
+      "output": ""
+    },
+    {
+      "id": "composerTextFromRecord#14",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": null,
+        "facets": null
+      },
+      "output": ""
+    },
+    {
+      "id": "composerTextFromRecord#15",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "read my essay tonight",
+        "facets": [
+          {
+            "index": {
+              "byteStart": 0,
+              "byteEnd": 4
+            }
+          }
+        ]
+      },
+      "output": "read my essay tonight"
+    },
+    {
+      "id": "composerTextFromRecord#16",
+      "fn": "composerTextFromRecord",
+      "input": {
+        "text": "🦋 my essay",
+        "facets": [
+          {
+            "$type": "app.bsky.richtext.facet",
+            "features": [
+              {
+                "$type": "app.bsky.richtext.facet#link",
+                "uri": "https://example.com/essay"
+              }
+            ],
+            "index": {
+              "byteStart": 5,
+              "byteEnd": 13
+            }
+          }
+        ]
+      },
+      "output": "🦋 [my essay](https://example.com/essay)"
+    },
+    {
+      "id": "reopenRoundTrip#1",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "read [my essay](https://example.com/essay) tonight"
+      },
+      "output": "read [my essay](https://example.com/essay) tonight"
+    },
+    {
+      "id": "reopenRoundTrip#2",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "🦋 [ünïcödé](https://example.com) #notes"
+      },
+      "output": "🦋 [ünïcödé](https://example.com) #notes"
+    },
+    {
+      "id": "reopenRoundTrip#3",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "@luna.test see [this](https://a.com/x) and https://b.com/y #tag",
+        "table": {
+          "luna.test": "did:plc:luna"
+        }
+      },
+      "output": "@luna.test see [this](https://a.com/x) and https://b.com/y #tag"
+    },
+    {
+      "id": "reopenRoundTrip#4",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "see [example.org by @example.org #notes](https://example.org) now",
+        "table": {
+          "example.org": "did:plc:example"
+        }
+      },
+      "output": "see [example.org by @example.org #notes](https://example.org) now"
+    },
+    {
+      "id": "reopenRoundTrip#5",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example) ok"
+      },
+      "output": "[bsky.app](https://elsewhere.example) ok"
+    },
+    {
+      "id": "reopenRoundTrip#6",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "a [https://example.org/profile/x/y/z/w](https://example.org/profile/x/y/z/w) b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+      },
+      "output": "a https://example.org/profile/x/y/z/w b [see https://example.com/long/path/here inside](https://example.com) c https://example.com/another/long/path d"
+    },
+    {
+      "id": "reopenRoundTrip#7",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+      },
+      "output": "[bsky.app](https://elsewhere.example/a/long/path/here) ok"
+    },
+    {
+      "id": "reopenRoundTrip#8",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "🦋 [my essay](https://example.com/essay), [notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) and https://example.com/a/long/path/to/somewhere"
+      },
+      "output": "🦋 [my essay](https://example.com/essay), [notes](https://en.wikipedia.org/wiki/Bee_(disambiguation)) and https://example.com/a/long/path/to/somewhere"
+    },
+    {
+      "id": "reopenRoundTrip#9",
+      "fn": "reopenRoundTrip",
+      "input": {
+        "text": "[@a.test](https://a.test) and @a.test",
+        "table": {
+          "a.test": "did:plc:a"
+        }
+      },
+      "output": "[@a.test](https://a.test) and @a.test"
+    }
+  ]
+}

@@ -1,0 +1,1766 @@
+{
+  "name": "core.sky",
+  "sources": [
+    "src/lib/sky.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "SKY_PHASES": [
+          "dawn",
+          "day",
+          "dusk",
+          "night"
+        ],
+        "SKY_CHOICES": [
+          "clock",
+          "dawn",
+          "day",
+          "dusk",
+          "night"
+        ]
+      }
+    },
+    {
+      "id": "phaseAtHour#1",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#2",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 4.99
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#3",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 5
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#4",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 6.5
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#5",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 7.99
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#6",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 8
+      },
+      "output": "day"
+    },
+    {
+      "id": "phaseAtHour#7",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "phaseAtHour#8",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 16.99
+      },
+      "output": "day"
+    },
+    {
+      "id": "phaseAtHour#9",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 17
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "phaseAtHour#10",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "phaseAtHour#11",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 19.99
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "phaseAtHour#12",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 20
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#13",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 23
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#14",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 23.99
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#15",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 24
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#16",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 30
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#17",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": -1
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#18",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": -25
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#19",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 48.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#20",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": 1000000000
+      },
+      "output": "day"
+    },
+    {
+      "id": "phaseAtHour#21",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": "six"
+      },
+      "output": "day"
+    },
+    {
+      "id": "phaseAtHour#22",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": "6"
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#23",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": ""
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#24",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": null
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#25",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": true
+      },
+      "output": "night"
+    },
+    {
+      "id": "phaseAtHour#26",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": [
+          7
+        ]
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "phaseAtHour#27",
+      "fn": "phaseAtHour",
+      "input": {
+        "hour": "NaN"
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#1",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#2",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#3",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#4",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#5",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#6",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#7",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#8",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#9",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#10",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#11",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#12",
+      "fn": "skyFor",
+      "input": {
+        "choice": "clock",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#13",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#14",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#15",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#16",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#17",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#18",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#19",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#20",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#21",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#22",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#23",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#24",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dawn",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#25",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#26",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#27",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#28",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#29",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#30",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#31",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#32",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#33",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#34",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#35",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#36",
+      "fn": "skyFor",
+      "input": {
+        "choice": "day",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#37",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#38",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#39",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#40",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#41",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#42",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#43",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#44",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#45",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#46",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#47",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#48",
+      "fn": "skyFor",
+      "input": {
+        "choice": "dusk",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#49",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#50",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#51",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#52",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#53",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#54",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#55",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#56",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#57",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#58",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#59",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#60",
+      "fn": "skyFor",
+      "input": {
+        "choice": "night",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#61",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#62",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#63",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#64",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#65",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#66",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#67",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#68",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#69",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#70",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#71",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#72",
+      "fn": "skyFor",
+      "input": {
+        "choice": "noon",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#73",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#74",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#75",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#76",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#77",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#78",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#79",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#80",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#81",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#82",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#83",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#84",
+      "fn": "skyFor",
+      "input": {
+        "choice": null,
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#85",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#86",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#87",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#88",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#89",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#90",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#91",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#92",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#93",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#94",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#95",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#96",
+      "fn": "skyFor",
+      "input": {
+        "choice": "",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#97",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#98",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 6
+      },
+      "output": "dawn"
+    },
+    {
+      "id": "skyFor#99",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 12
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyFor#100",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 18
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "skyFor#101",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#102",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": false,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#103",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 0
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#104",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 6
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#105",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 12
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#106",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 18
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#107",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 22
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyFor#108",
+      "fn": "skyFor",
+      "input": {
+        "choice": "Night",
+        "dark": true,
+        "hour": 3.5
+      },
+      "output": "night"
+    },
+    {
+      "id": "skyForDefaults#1",
+      "fn": "skyForDefaults",
+      "input": {
+        "choice": "clock"
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyForDefaults#2",
+      "fn": "skyForDefaults",
+      "input": {
+        "choice": null
+      },
+      "output": "day"
+    },
+    {
+      "id": "skyForDefaults#3",
+      "fn": "skyForDefaults",
+      "input": {
+        "choice": "dusk"
+      },
+      "output": "dusk"
+    },
+    {
+      "id": "themeOf#1",
+      "fn": "themeOf",
+      "input": {
+        "sky": "dawn"
+      },
+      "output": "light"
+    },
+    {
+      "id": "themeOf#2",
+      "fn": "themeOf",
+      "input": {
+        "sky": "day"
+      },
+      "output": "light"
+    },
+    {
+      "id": "themeOf#3",
+      "fn": "themeOf",
+      "input": {
+        "sky": "dusk"
+      },
+      "output": "light"
+    },
+    {
+      "id": "themeOf#4",
+      "fn": "themeOf",
+      "input": {
+        "sky": "night"
+      },
+      "output": "dark"
+    },
+    {
+      "id": "themeOf#5",
+      "fn": "themeOf",
+      "input": {
+        "sky": "clock"
+      },
+      "output": "light"
+    },
+    {
+      "id": "themeOf#6",
+      "fn": "themeOf",
+      "input": {
+        "sky": null
+      },
+      "output": "light"
+    },
+    {
+      "id": "themeOf#7",
+      "fn": "themeOf",
+      "input": {
+        "sky": "NIGHT"
+      },
+      "output": "light"
+    },
+    {
+      "id": "skyColor#1",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dawn",
+        "contrast": "normal"
+      },
+      "output": "#ffd8c4"
+    },
+    {
+      "id": "skyColor#2",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dawn",
+        "contrast": "high"
+      },
+      "output": "#ffffff"
+    },
+    {
+      "id": "skyColor#3",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dawn",
+        "contrast": "system"
+      },
+      "output": "#ffd8c4"
+    },
+    {
+      "id": "skyColor#4",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dawn",
+        "contrast": null
+      },
+      "output": "#ffd8c4"
+    },
+    {
+      "id": "skyColor#5",
+      "fn": "skyColor",
+      "input": {
+        "sky": "day",
+        "contrast": "normal"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#6",
+      "fn": "skyColor",
+      "input": {
+        "sky": "day",
+        "contrast": "high"
+      },
+      "output": "#ffffff"
+    },
+    {
+      "id": "skyColor#7",
+      "fn": "skyColor",
+      "input": {
+        "sky": "day",
+        "contrast": "system"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#8",
+      "fn": "skyColor",
+      "input": {
+        "sky": "day",
+        "contrast": null
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#9",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dusk",
+        "contrast": "normal"
+      },
+      "output": "#cbc5f4"
+    },
+    {
+      "id": "skyColor#10",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dusk",
+        "contrast": "high"
+      },
+      "output": "#ffffff"
+    },
+    {
+      "id": "skyColor#11",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dusk",
+        "contrast": "system"
+      },
+      "output": "#cbc5f4"
+    },
+    {
+      "id": "skyColor#12",
+      "fn": "skyColor",
+      "input": {
+        "sky": "dusk",
+        "contrast": null
+      },
+      "output": "#cbc5f4"
+    },
+    {
+      "id": "skyColor#13",
+      "fn": "skyColor",
+      "input": {
+        "sky": "night",
+        "contrast": "normal"
+      },
+      "output": "#0e1a3a"
+    },
+    {
+      "id": "skyColor#14",
+      "fn": "skyColor",
+      "input": {
+        "sky": "night",
+        "contrast": "high"
+      },
+      "output": "#000000"
+    },
+    {
+      "id": "skyColor#15",
+      "fn": "skyColor",
+      "input": {
+        "sky": "night",
+        "contrast": "system"
+      },
+      "output": "#0e1a3a"
+    },
+    {
+      "id": "skyColor#16",
+      "fn": "skyColor",
+      "input": {
+        "sky": "night",
+        "contrast": null
+      },
+      "output": "#0e1a3a"
+    },
+    {
+      "id": "skyColor#17",
+      "fn": "skyColor",
+      "input": {
+        "sky": "clock",
+        "contrast": "normal"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#18",
+      "fn": "skyColor",
+      "input": {
+        "sky": "clock",
+        "contrast": "high"
+      },
+      "output": "#ffffff"
+    },
+    {
+      "id": "skyColor#19",
+      "fn": "skyColor",
+      "input": {
+        "sky": "clock",
+        "contrast": "system"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#20",
+      "fn": "skyColor",
+      "input": {
+        "sky": "clock",
+        "contrast": null
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#21",
+      "fn": "skyColor",
+      "input": {
+        "sky": null,
+        "contrast": "normal"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#22",
+      "fn": "skyColor",
+      "input": {
+        "sky": null,
+        "contrast": "high"
+      },
+      "output": "#ffffff"
+    },
+    {
+      "id": "skyColor#23",
+      "fn": "skyColor",
+      "input": {
+        "sky": null,
+        "contrast": "system"
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "skyColor#24",
+      "fn": "skyColor",
+      "input": {
+        "sky": null,
+        "contrast": null
+      },
+      "output": "#b9d5ff"
+    },
+    {
+      "id": "hourOf#1",
+      "fn": "hourOf",
+      "input": {
+        "zone": "UTC",
+        "time": 1794677400000
+      },
+      "output": 17.5
+    },
+    {
+      "id": "hourOf#2",
+      "fn": "hourOf",
+      "input": {
+        "zone": "UTC",
+        "time": 1794614400000
+      },
+      "output": 0
+    },
+    {
+      "id": "hourOf#3",
+      "fn": "hourOf",
+      "input": {
+        "zone": "UTC",
+        "time": 1794700799000
+      },
+      "output": 23.983333333333334
+    },
+    {
+      "id": "hourOf#4",
+      "fn": "hourOf",
+      "input": {
+        "zone": "UTC",
+        "time": 1772954100000
+      },
+      "output": 7.25
+    },
+    {
+      "id": "hourOf#5",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "time": 1794677400000
+      },
+      "output": 23
+    },
+    {
+      "id": "hourOf#6",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "time": 1794614400000
+      },
+      "output": 5.5
+    },
+    {
+      "id": "hourOf#7",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "time": 1794700799000
+      },
+      "output": 5.483333333333333
+    },
+    {
+      "id": "hourOf#8",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "time": 1772954100000
+      },
+      "output": 12.75
+    },
+    {
+      "id": "hourOf#9",
+      "fn": "hourOf",
+      "input": {
+        "zone": "America/New_York",
+        "time": 1794677400000
+      },
+      "output": 12.5
+    },
+    {
+      "id": "hourOf#10",
+      "fn": "hourOf",
+      "input": {
+        "zone": "America/New_York",
+        "time": 1794614400000
+      },
+      "output": 19
+    },
+    {
+      "id": "hourOf#11",
+      "fn": "hourOf",
+      "input": {
+        "zone": "America/New_York",
+        "time": 1794700799000
+      },
+      "output": 18.983333333333334
+    },
+    {
+      "id": "hourOf#12",
+      "fn": "hourOf",
+      "input": {
+        "zone": "America/New_York",
+        "time": 1772954100000
+      },
+      "output": 3.25
+    },
+    {
+      "id": "hourOf#13",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "time": 1794677400000
+      },
+      "output": 7.25
+    },
+    {
+      "id": "hourOf#14",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "time": 1794614400000
+      },
+      "output": 13.75
+    },
+    {
+      "id": "hourOf#15",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "time": 1794700799000
+      },
+      "output": 13.733333333333333
+    },
+    {
+      "id": "hourOf#16",
+      "fn": "hourOf",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "time": 1772954100000
+      },
+      "output": 21
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "domain": "core",
+  "target": "VirgaCore",
+  "wave": 1,
+  "summary": "Shared ground: lexicon models, identifiers, time, locale and formatting, the sky, preferences, routing paths and the app constants.",
+  "files": {
+    "src/config.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/AppConfig.swift"
+      ],
+      "synced": "9488998b16d8"
+    },
+    "src/lib/locale.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Lib/AppLocale.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Lib/AppLocale+Formatting.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Lib/LanguageTag.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Lib/LocaleData.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Lib/LocaleData+Table.swift"
+      ],
+      "fixtures": [
+        "core.locale",
+        "core.localeData"
+      ],
+      "note": "Every export is ported. Numbers, dates and times are written from the web runtime's own Intl data (LocaleData+Table.swift, written by ios/parity/locale-data.mjs and held to Node by core.localeData), in English in every region, the only language the web activates. Two branches differ by design: the SUNDAY_REGIONS/SATURDAY_REGIONS fallback, for engines without Intl.Locale weekInfo, is not ported (week starts are weekInfo's, as Chrome, Safari and Node give them); and a tag's -u- keywords (fw, rg, hc, nu) are not read, which no tag the app activates carries.",
+      "synced": "3b7c64391caf"
+    },
+    "src/lib/preferences.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Lib/Preferences.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Lib/PreferencesModel.swift"
+      ],
+      "fixtures": [
+        "core.preferences"
+      ],
+      "note": "Everything pure is ported (DEFAULT_PREFERENCES, the choices, readPreferences, writePreferences, applyFormats, effectiveContrast, rootAttributes), and PreferencesProvider/usePreferences are PreferencesModel (@MainActor @Observable, persisted through KeyValueStore, useSkyHour as lookAtClock). Stamping data-* on <html> and <meta name=theme-color>, and the matchMedia queries, are the DOM: VirgaUI applies rootAttributes and skyColor to the scene and feeds the environment's colorScheme and colorSchemeContrast to the model.",
+      "synced": "3a2e0c2e0fc0"
+    },
+    "src/lib/router.jsx": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Lib/Router.swift"
+      ],
+      "fixtures": [
+        "core.router"
+      ],
+      "note": "pathParts and hrefFor are ported. usePath, navigate and Link are React and the History API: on iOS the address is the shell's navigation state in VirgaUI (a NavigationStack path, built on Router.pathParts and Router.hrefFor), ported with src/shell.",
+      "synced": "25a3eae63916"
+    },
+    "src/lib/sky.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Lib/Sky.swift"
+      ],
+      "fixtures": [
+        "core.sky"
+      ],
+      "synced": "1cd5a2804b84"
+    },
+    "src/lib/time.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Lib/Time.swift"
+      ],
+      "fixtures": [
+        "core.time"
+      ],
+      "synced": "d87080474124"
+    },
+    "src/posting/lib/graphemes.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Graphemes.swift"
+      ],
+      "synced": "744898cac218"
+    },
+    "src/posting/lib/tid.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/TID.swift"
+      ],
+      "synced": "db9b091f6326"
+    }
+  }
+}

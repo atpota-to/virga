@@ -1,0 +1,120 @@
+{
+  "domain": "ui-insights",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "Dashboards, reports, charts, sharing and tools as SwiftUI screens.",
+  "files": {
+    "src/charts/BarList.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/ChartTable.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/Heatmap.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/SeriesChart.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/Sparkline.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/DashboardPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/DashboardsContext.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/NewDashboardDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/widgets/content.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/widgets/index.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/widgets/parts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/widgets/posting.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/people/people.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/ChartNotes.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/ContentReport.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/PostRow.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/ReportPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/parts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/share/ShareDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/ArchiveSearch.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/BestTime.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/FollowBack.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/FollowCleanup.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/Identity.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/InteractionLookup.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/ListsYoureOn.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/ToolPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/tools/UnfollowTracker.jsx": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

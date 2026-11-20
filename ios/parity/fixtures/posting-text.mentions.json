@@ -1,0 +1,5310 @@
+{
+  "name": "posting-text.mentions",
+  "sources": [
+    "src/posting/lib/mentions.js"
+  ],
+  "cases": [
+    {
+      "id": "findMentions#1",
+      "fn": "findMentions",
+      "input": {
+        "text": "hi @dame.art🦋"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#2",
+      "fn": "findMentions",
+      "input": {
+        "text": "🦋@dame.art"
+      },
+      "output": [
+        {
+          "start": 2,
+          "end": 11,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#3",
+      "fn": "findMentions",
+      "input": {
+        "text": "hi @dame.art…"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#4",
+      "fn": "findMentions",
+      "input": {
+        "text": "hi @dame.art..."
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#5",
+      "fn": "findMentions",
+      "input": {
+        "text": "thanks @dame.art."
+      },
+      "output": [
+        {
+          "start": 7,
+          "end": 16,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#6",
+      "fn": "findMentions",
+      "input": {
+        "text": "hi @dame.art, ok"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#7",
+      "fn": "findMentions",
+      "input": {
+        "text": "notes (@dame.art) ok"
+      },
+      "output": [
+        {
+          "start": 7,
+          "end": 16,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#8",
+      "fn": "findMentions",
+      "input": {
+        "text": "日@dame.art本"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#9",
+      "fn": "findMentions",
+      "input": {
+        "text": "“@dame.art”"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#10",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame.art's note"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 9,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#11",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame.art_x"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 9,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#12",
+      "fn": "findMentions",
+      "input": {
+        "text": "a@b.com"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 7,
+          "handle": "b.com",
+          "email": true
+        }
+      ]
+    },
+    {
+      "id": "findMentions#13",
+      "fn": "findMentions",
+      "input": {
+        "text": "mail note9@dame.art."
+      },
+      "output": [
+        {
+          "start": 10,
+          "end": 19,
+          "handle": "dame.art",
+          "email": true
+        }
+      ]
+    },
+    {
+      "id": "findMentions#14",
+      "fn": "findMentions",
+      "input": {
+        "text": "me@localhost"
+      },
+      "output": [
+        {
+          "start": 2,
+          "end": 12,
+          "handle": "localhost",
+          "email": true
+        }
+      ]
+    },
+    {
+      "id": "findMentions#15",
+      "fn": "findMentions",
+      "input": {
+        "text": "https://example.com/@dame.art/notes"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#16",
+      "fn": "findMentions",
+      "input": {
+        "text": "@ dame.art"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#17",
+      "fn": "findMentions",
+      "input": {
+        "text": "@"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#18",
+      "fn": "findMentions",
+      "input": {
+        "text": "@."
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#19",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#20",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame.2art"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#21",
+      "fn": "findMentions",
+      "input": {
+        "text": "@-dame.art"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#22",
+      "fn": "findMentions",
+      "input": {
+        "text": "@🦋"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#23",
+      "fn": "findMentions",
+      "input": {
+        "text": "@a.test,@b.test @@c.test"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "handle": "a.test",
+          "email": false
+        },
+        {
+          "start": 8,
+          "end": 15,
+          "handle": "b.test",
+          "email": false
+        },
+        {
+          "start": 17,
+          "end": 24,
+          "handle": "c.test",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#24",
+      "fn": "findMentions",
+      "input": {
+        "text": "hi @sphingicampa.test👩‍🔬"
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 21,
+          "handle": "sphingicampa.test",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#25",
+      "fn": "findMentions",
+      "input": {
+        "text": "@saturniid..test"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#26",
+      "fn": "findMentions",
+      "input": {
+        "text": "@saturniid.test- ok"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#27",
+      "fn": "findMentions",
+      "input": {
+        "text": "see @saturniid.2b"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#28",
+      "fn": "findMentions",
+      "input": {
+        "text": "@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 254,
+          "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#29",
+      "fn": "findMentions",
+      "input": {
+        "text": "@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#30",
+      "fn": "findMentions",
+      "input": {
+        "text": "@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test"
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#31",
+      "fn": "findMentions",
+      "input": {
+        "text": "@Alice.Bsky.Social"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 18,
+          "handle": "Alice.Bsky.Social",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#32",
+      "fn": "findMentions",
+      "input": {
+        "text": "x@@y.test"
+      },
+      "output": [
+        {
+          "start": 2,
+          "end": 9,
+          "handle": "y.test",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#33",
+      "fn": "findMentions",
+      "input": {
+        "text": "_@dame.art"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#34",
+      "fn": "findMentions",
+      "input": {
+        "text": ".@dame.art"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#35",
+      "fn": "findMentions",
+      "input": {
+        "text": "-@dame.art"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#36",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame.art@other.test"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 9,
+          "handle": "dame.art",
+          "email": false
+        },
+        {
+          "start": 9,
+          "end": 20,
+          "handle": "other.test",
+          "email": true
+        }
+      ]
+    },
+    {
+      "id": "findMentions#37",
+      "fn": "findMentions",
+      "input": {
+        "text": "@dame.art/@x.test"
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 9,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#38",
+      "fn": "findMentions",
+      "input": {
+        "text": "é@dame.art"
+      },
+      "output": [
+        {
+          "start": 2,
+          "end": 11,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#39",
+      "fn": "findMentions",
+      "input": {
+        "text": "é@dame.art"
+      },
+      "output": [
+        {
+          "start": 1,
+          "end": 10,
+          "handle": "dame.art",
+          "email": false
+        }
+      ]
+    },
+    {
+      "id": "findMentions#40",
+      "fn": "findMentions",
+      "input": {
+        "text": ""
+      },
+      "output": []
+    },
+    {
+      "id": "findMentions#41",
+      "fn": "findMentions",
+      "input": {
+        "text": "no mentions here"
+      },
+      "output": []
+    },
+    {
+      "id": "detectPartialMention#1",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#2",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#3",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#4",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#5",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#6",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 4
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#7",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 5
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#8",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 6
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#9",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#10",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#11",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#12",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#13",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#14",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 12
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#15",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#16",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋 more",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#17",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#18",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#19",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#20",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#21",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#22",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 4
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#23",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 5
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#24",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 6
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#25",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 7
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#26",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 8
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#27",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 9
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#28",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 10
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#29",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 11
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#30",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 12
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#31",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#32",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#33",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#34",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 16
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#35",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art, ok",
+        "cursor": 17
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#36",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#37",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#38",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#39",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#40",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#41",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 4
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#42",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 5
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#43",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 6
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#44",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 7
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#45",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 8
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#46",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 9
+      },
+      "output": {
+        "start": 3,
+        "end": 9,
+        "query": "dame.",
+        "fullText": "@dame."
+      }
+    },
+    {
+      "id": "detectPartialMention#47",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#48",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#49",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#50",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#51",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#52",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#53",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 4
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#54",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 5
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#55",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 6
+      },
+      "output": {
+        "start": 3,
+        "end": 6,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#56",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#57",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#58",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#59",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @da🦋x",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#60",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#61",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#62",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#63",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#64",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#65",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 4
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#66",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 5
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#67",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 6
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#68",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 7
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#69",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 8
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#70",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 9
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#71",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 10
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#72",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 11
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#73",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 12
+      },
+      "output": {
+        "start": 3,
+        "end": 12,
+        "query": "dame.art",
+        "fullText": "@dame.art"
+      }
+    },
+    {
+      "id": "detectPartialMention#74",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#75",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#76",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "hi @dame.art’s",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#77",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#78",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#79",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#80",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#81",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#82",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#83",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#84",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#85",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#86",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#87",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#88",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#89",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail me@da",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#90",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#91",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#92",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#93",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#94",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#95",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#96",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#97",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#98",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#99",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#100",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see /@da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#101",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#102",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#103",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#104",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#105",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#106",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#107",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#108",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 6
+      },
+      "output": {
+        "start": 5,
+        "end": 8,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#109",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 7
+      },
+      "output": {
+        "start": 5,
+        "end": 8,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#110",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 8
+      },
+      "output": {
+        "start": 5,
+        "end": 8,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#111",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "mail @da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#112",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#113",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#114",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#115",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 2
+      },
+      "output": {
+        "start": 1,
+        "end": 4,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#116",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 3
+      },
+      "output": {
+        "start": 1,
+        "end": 4,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#117",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 4
+      },
+      "output": {
+        "start": 1,
+        "end": 4,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#118",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "日@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#119",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#120",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#121",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#122",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#123",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#124",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#125",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#126",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#127",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#128",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#129",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#130",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#131",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#132",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 12
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#133",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#134",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#135",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#136",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 16
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#137",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 17
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#138",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 18
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#139",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 19
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#140",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 20
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#141",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 21
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#142",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 22
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#143",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 23
+      },
+      "output": {
+        "start": 22,
+        "end": 25,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#144",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 24
+      },
+      "output": {
+        "start": 22,
+        "end": 25,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#145",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 25
+      },
+      "output": {
+        "start": 22,
+        "end": 25,
+        "query": "da",
+        "fullText": "@da"
+      }
+    },
+    {
+      "id": "detectPartialMention#146",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "https://example.com/x @da",
+        "cursor": 26
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#147",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#148",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#149",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#150",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#151",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#152",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#153",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#154",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#155",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#156",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#157",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#158",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#159",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#160",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 12
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#161",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#162",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#163",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#164",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 16
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#165",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 17
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#166",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 18
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#167",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 19
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#168",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "www.example.com/@da",
+        "cursor": 20
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#169",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#170",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#171",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#172",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#173",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#174",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#175",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#176",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#177",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#178",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#179",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#180",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#181",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#182",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 12
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#183",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#184",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#185",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#186",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 16
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#187",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 17
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#188",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 18
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#189",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 19
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#190",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "example.com/path@da",
+        "cursor": 20
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#191",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#192",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#193",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#194",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#195",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#196",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#197",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#198",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#199",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#200",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#201",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#202",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#203",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#204",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 12
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#205",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 13
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#206",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 14
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#207",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 15
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#208",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 16
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#209",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 17
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#210",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 18
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#211",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 19
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#212",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 20
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#213",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 21
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#214",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 22
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#215",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "see http://x.y/z?q=@da",
+        "cursor": 23
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#216",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#217",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#218",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#219",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#220",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#221",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#222",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#223",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#224",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#225",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "a://b@c",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#226",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#227",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#228",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@",
+        "cursor": 1
+      },
+      "output": {
+        "start": 0,
+        "end": 1,
+        "query": "",
+        "fullText": "@"
+      }
+    },
+    {
+      "id": "detectPartialMention#229",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#230",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#231",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#232",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": 1
+      },
+      "output": {
+        "start": 0,
+        "end": 1,
+        "query": "",
+        "fullText": "@"
+      }
+    },
+    {
+      "id": "detectPartialMention#233",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": 2
+      },
+      "output": {
+        "start": 1,
+        "end": 3,
+        "query": "a",
+        "fullText": "@a"
+      }
+    },
+    {
+      "id": "detectPartialMention#234",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": 3
+      },
+      "output": {
+        "start": 1,
+        "end": 3,
+        "query": "a",
+        "fullText": "@a"
+      }
+    },
+    {
+      "id": "detectPartialMention#235",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "@@a",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#236",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#237",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#238",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#239",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": -1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#240",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 0
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#241",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 1
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#242",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 2
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#243",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 3
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#244",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 4
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#245",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 5
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#246",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 6
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#247",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 7
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#248",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 8
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#249",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 9
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#250",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 10
+      },
+      "output": null
+    },
+    {
+      "id": "detectPartialMention#251",
+      "fn": "detectPartialMention",
+      "input": {
+        "text": "no at sign",
+        "cursor": 11
+      },
+      "output": null
+    },
+    {
+      "id": "detectCompletedMentions#1",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 0
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#2",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#3",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#4",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#5",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#6",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art'",
+        "cursor": 14
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#7",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#8",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#9",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#10",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#11",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#12",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#13",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art's note",
+        "cursor": 19
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#14",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 0
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#15",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#16",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#17",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#18",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#19",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’",
+        "cursor": 14
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#20",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#21",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#22",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#23",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#24",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#25",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#26",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art’s note",
+        "cursor": 19
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#27",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#28",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 3
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#29",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#30",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#31",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#32",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#33",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "\"hi @dame.art\" ok",
+        "cursor": 17
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#34",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#35",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 3
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#36",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#37",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#38",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#39",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#40",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "“hi @dame.art” ok",
+        "cursor": 17
+      },
+      "output": [
+        {
+          "start": 4,
+          "end": 13,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#41",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#42",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#43",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#44",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#45",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#46",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#47",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#48",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#49",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#50",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#51",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#52",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art ",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#53",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#54",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#55",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#56",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#57",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#58",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#59",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art🦋 more",
+        "cursor": 19
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#60",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#61",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#62",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#63",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#64",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#65",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#66",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art日 more",
+        "cursor": 18
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#67",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#68",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#69",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#70",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#71",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#72",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#73",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art… more",
+        "cursor": 18
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#74",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 14,
+          "handle": "alice.bsky",
+          "fullText": "@alice.bsky"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#75",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#76",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#77",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#78",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#79",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 14
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#80",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @alice.bsky.",
+        "cursor": 15
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#81",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#82",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#83",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#84",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#85",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#86",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#87",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "hi @dame.art. More",
+        "cursor": 18
+      },
+      "output": [
+        {
+          "start": 3,
+          "end": 12,
+          "handle": "dame.art",
+          "fullText": "@dame.art"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#88",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 0
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#89",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 3
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#90",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 5
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#91",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 12
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#92",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 13
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#93",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 14
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#94",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "write to me@dame.art today",
+        "cursor": 26
+      },
+      "output": []
+    },
+    {
+      "id": "detectCompletedMentions#95",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 0
+      },
+      "output": [
+        {
+          "start": 8,
+          "end": 15,
+          "handle": "b.test",
+          "fullText": "@b.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#96",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 3
+      },
+      "output": [
+        {
+          "start": 8,
+          "end": 15,
+          "handle": "b.test",
+          "fullText": "@b.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#97",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 5
+      },
+      "output": [
+        {
+          "start": 8,
+          "end": 15,
+          "handle": "b.test",
+          "fullText": "@b.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#98",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 12
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "handle": "a.test",
+          "fullText": "@a.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#99",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 13
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "handle": "a.test",
+          "fullText": "@a.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#100",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 14
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "handle": "a.test",
+          "fullText": "@a.test"
+        },
+        {
+          "start": 16,
+          "end": 23,
+          "handle": "c.test",
+          "fullText": "@c.test"
+        }
+      ]
+    },
+    {
+      "id": "detectCompletedMentions#101",
+      "fn": "detectCompletedMentions",
+      "input": {
+        "text": "@a.test @b.test @c.test",
+        "cursor": 23
+      },
+      "output": [
+        {
+          "start": 0,
+          "end": 7,
+          "handle": "a.test",
+          "fullText": "@a.test"
+        },
+        {
+          "start": 8,
+          "end": 15,
+          "handle": "b.test",
+          "fullText": "@b.test"
+        }
+      ]
+    },
+    {
+      "id": "isValidHandle#1",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame.art"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#2",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "a.b"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#3",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "alice.bsky.social"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#4",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "x-y.test"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#5",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "note9.co"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#6",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "ab.c2"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#7",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#8",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#9",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#10",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame."
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#11",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": ".dame.art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#12",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame..art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#13",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "-dame.art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#14",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame-.art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#15",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame.art-"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#16",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame.2art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#17",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame_x.art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#18",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "déme.art"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#19",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "dame.art🦋"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#20",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.test"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#21",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#22",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#23",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": null
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#24",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": 42
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#25",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "A.B"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#26",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "1.a"
+      },
+      "output": true
+    },
+    {
+      "id": "isValidHandle#27",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "a.1a"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#28",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "a.-"
+      },
+      "output": false
+    },
+    {
+      "id": "isValidHandle#29",
+      "fn": "isValidHandle",
+      "input": {
+        "handle": "xn--bcher-kva.de"
+      },
+      "output": true
+    },
+    {
+      "id": "createMentionFacet#1",
+      "fn": "createMentionFacet",
+      "input": {
+        "text": "hi @dame.art",
+        "did": "did:plc:x",
+        "start": 3,
+        "end": 12
+      },
+      "output": {
+        "$type": "app.bsky.richtext.facet",
+        "features": [
+          {
+            "$type": "app.bsky.richtext.facet#mention",
+            "did": "did:plc:x"
+          }
+        ],
+        "index": {
+          "byteStart": 3,
+          "byteEnd": 12
+        }
+      }
+    },
+    {
+      "id": "createMentionFacet#2",
+      "fn": "createMentionFacet",
+      "input": {
+        "text": "🦋@dame.art",
+        "did": "did:plc:y",
+        "start": 2,
+        "end": 11
+      },
+      "output": {
+        "$type": "app.bsky.richtext.facet",
+        "features": [
+          {
+            "$type": "app.bsky.richtext.facet#mention",
+            "did": "did:plc:y"
+          }
+        ],
+        "index": {
+          "byteStart": 4,
+          "byteEnd": 13
+        }
+      }
+    },
+    {
+      "id": "createMentionFacet#3",
+      "fn": "createMentionFacet",
+      "input": {
+        "text": "café @a.test",
+        "did": "did:web:a.test",
+        "start": 5,
+        "end": 12
+      },
+      "output": {
+        "$type": "app.bsky.richtext.facet",
+        "features": [
+          {
+            "$type": "app.bsky.richtext.facet#mention",
+            "did": "did:web:a.test"
+          }
+        ],
+        "index": {
+          "byteStart": 6,
+          "byteEnd": 13
+        }
+      }
+    },
+    {
+      "id": "lowercased bare handle, custom appview",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {
+          "appview": "https://appview.test"
+        },
+        "table": {
+          "alice.test": {
+            "status": 200,
+            "body": {
+              "did": "did:plc:abc"
+            }
+          }
+        },
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "@Alice.Test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            "did:plc:abc"
+          ],
+          "requests": [
+            "https://appview.test/xrpc/com.atproto.identity.resolveHandle?handle=alice.test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ttl and shared request",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {
+          "ttlMs": 1000
+        },
+        "table": {
+          "a.test": {
+            "status": 200,
+            "body": {
+              "did": "did:plc:abc"
+            }
+          }
+        },
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "a.test",
+              "a.test"
+            ]
+          },
+          {
+            "at": 999,
+            "ask": [
+              "a.test"
+            ]
+          },
+          {
+            "at": 1000,
+            "ask": [
+              "a.test"
+            ]
+          },
+          {
+            "at": 1500,
+            "ask": [
+              "A.TEST",
+              "@a.test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            "did:plc:abc",
+            "did:plc:abc"
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=a.test"
+          ]
+        },
+        {
+          "results": [
+            "did:plc:abc"
+          ],
+          "requests": []
+        },
+        {
+          "results": [
+            "did:plc:abc"
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=a.test"
+          ]
+        },
+        {
+          "results": [
+            "did:plc:abc",
+            "did:plc:abc"
+          ],
+          "requests": []
+        }
+      ]
+    },
+    {
+      "id": "a definite no is remembered, a failure is not",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {},
+        "table": {
+          "gone.test": {
+            "status": 400,
+            "body": {
+              "error": "InvalidRequest"
+            }
+          },
+          "flaky.test": {
+            "throws": true
+          },
+          "down.test": {
+            "status": 502,
+            "body": {
+              "error": "BadGateway"
+            }
+          }
+        },
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "gone.test",
+              "flaky.test",
+              "down.test"
+            ]
+          },
+          {
+            "at": 10,
+            "ask": [
+              "gone.test",
+              "flaky.test",
+              "down.test"
+            ]
+          },
+          {
+            "at": 300000,
+            "ask": [
+              "gone.test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            null,
+            null,
+            null
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=down.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=flaky.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=gone.test"
+          ]
+        },
+        {
+          "results": [
+            null,
+            null,
+            null
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=down.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=flaky.test"
+          ]
+        },
+        {
+          "results": [
+            null
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=gone.test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "not handles are refused without asking",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {},
+        "table": {},
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "nodot",
+              "",
+              "@",
+              "dame..art",
+              "déme.art",
+              null
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "requests": []
+        }
+      ]
+    },
+    {
+      "id": "bodies without a DID",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {},
+        "table": {
+          "nope.test": {
+            "status": 200,
+            "body": {
+              "did": "nope"
+            }
+          },
+          "num.test": {
+            "status": 200,
+            "body": {
+              "did": 42
+            }
+          },
+          "empty.test": {
+            "status": 200,
+            "body": {}
+          },
+          "text.test": {
+            "status": 200
+          },
+          "ok.test": {
+            "status": 200,
+            "body": {
+              "did": "did:web:ok.test",
+              "handle": "x"
+            }
+          },
+          "mark.test": {
+            "status": 200,
+            "body": {
+              "did": "did:́web:mark.test"
+            }
+          },
+          "upper.test": {
+            "status": 200,
+            "body": {
+              "did": "DID:plc:upper"
+            }
+          }
+        },
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "nope.test",
+              "num.test",
+              "empty.test",
+              "text.test",
+              "ok.test",
+              "mark.test",
+              "upper.test"
+            ]
+          },
+          {
+            "at": 5,
+            "ask": [
+              "nope.test",
+              "text.test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            null,
+            null,
+            null,
+            null,
+            "did:web:ok.test",
+            "did:́web:mark.test",
+            null
+          ],
+          "requests": [
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=empty.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=mark.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=nope.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=num.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=ok.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=text.test",
+            "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=upper.test"
+          ]
+        },
+        {
+          "results": [
+            null,
+            null
+          ],
+          "requests": []
+        }
+      ]
+    },
+    {
+      "id": "encodes the handle into the URL",
+      "fn": "createMentionResolver",
+      "input": {
+        "options": {
+          "appview": "https://a.example/base"
+        },
+        "table": {
+          "x-y.test": {
+            "status": 200,
+            "body": {
+              "did": "did:plc:xy"
+            }
+          }
+        },
+        "steps": [
+          {
+            "at": 0,
+            "ask": [
+              "X-Y.test"
+            ]
+          }
+        ]
+      },
+      "output": [
+        {
+          "results": [
+            "did:plc:xy"
+          ],
+          "requests": [
+            "https://a.example/base/xrpc/com.atproto.identity.resolveHandle?handle=x-y.test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resolverTimeout#1",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "Infinity",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received Infinity"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received Infinity"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#2",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "Infinity",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#3",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-Infinity",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -Infinity"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -Infinity"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#4",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-Infinity",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#5",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "NaN",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received NaN"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received NaN"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#6",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "NaN",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#7",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#8",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#9",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1.5",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1.5"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1.5"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#10",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1.5",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#11",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-5000000000",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -5_000_000_000"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -5_000_000_000"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#12",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-5000000000",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#13",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-4294967297",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -4_294_967_297"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -4_294_967_297"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#14",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-4294967297",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#15",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "9007199254740992",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 9_007_199_254_740_992"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 9_007_199_254_740_992"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#16",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "9007199254740992",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#17",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "1e300",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 1e+_300"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received 1e+_300"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#18",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "1e300",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#19",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e21",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1e_+21"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1e_+21"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#20",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e21",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#21",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e-7",
+        "handle": "a.test"
+      },
+      "output": {
+        "outcomes": [
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1e-7"
+          },
+          {
+            "$throws": "The value of \"delay\" is out of range. It must be an integer. Received -1e-7"
+          }
+        ],
+        "requests": []
+      }
+    },
+    {
+      "id": "resolverTimeout#22",
+      "fn": "resolverTimeout",
+      "input": {
+        "timeoutMs": "-1e-7",
+        "handle": "not a handle"
+      },
+      "output": {
+        "outcomes": [
+          null,
+          null
+        ],
+        "requests": []
+      }
+    }
+  ]
+}

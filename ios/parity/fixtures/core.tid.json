@@ -1,0 +1,200 @@
+{
+  "name": "core.tid",
+  "sources": [
+    "src/posting/lib/tid.js"
+  ],
+  "cases": [
+    {
+      "id": "isTid#1",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3jzfcijpj2z2a"
+      },
+      "output": true
+    },
+    {
+      "id": "isTid#2",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3kghuxuyvtk2y"
+      },
+      "output": true
+    },
+    {
+      "id": "isTid#3",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3lbuq7mkfuc2c"
+      },
+      "output": true
+    },
+    {
+      "id": "isTid#4",
+      "fn": "isTid",
+      "input": {
+        "rkey": "2222222222222"
+      },
+      "output": true
+    },
+    {
+      "id": "isTid#5",
+      "fn": "isTid",
+      "input": {
+        "rkey": "jzzzzzzzzzzzz"
+      },
+      "output": true
+    },
+    {
+      "id": "isTid#6",
+      "fn": "isTid",
+      "input": {
+        "rkey": "kzzzzzzzzzzzz"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#7",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3jzfcijpj2z2"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#8",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3jzfcijpj2z2aa"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#9",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3JZFCIJPJ2Z2A"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#10",
+      "fn": "isTid",
+      "input": {
+        "rkey": "3jzfcijpj2z21"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#11",
+      "fn": "isTid",
+      "input": {
+        "rkey": "self"
+      },
+      "output": false
+    },
+    {
+      "id": "isTid#12",
+      "fn": "isTid",
+      "input": {
+        "rkey": ""
+      },
+      "output": false
+    },
+    {
+      "id": "tidTimestamp#1",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3jzfcijpj2z2a"
+      },
+      "output": 1688137381887
+    },
+    {
+      "id": "tidTimestamp#2",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3kghuxuyvtk2y"
+      },
+      "output": 1702519595036
+    },
+    {
+      "id": "tidTimestamp#3",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3lbuq7mkfuc2c"
+      },
+      "output": 1732647976447
+    },
+    {
+      "id": "tidTimestamp#4",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "2222222222222"
+      },
+      "output": 0
+    },
+    {
+      "id": "tidTimestamp#5",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "jzzzzzzzzzzzz"
+      },
+      "output": 18014398509481
+    },
+    {
+      "id": "tidTimestamp#6",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "kzzzzzzzzzzzz"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#7",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3jzfcijpj2z2"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#8",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3jzfcijpj2z2aa"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#9",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3JZFCIJPJ2Z2A"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#10",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "3jzfcijpj2z21"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#11",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": "self"
+      },
+      "output": null
+    },
+    {
+      "id": "tidTimestamp#12",
+      "fn": "tidTimestamp",
+      "input": {
+        "rkey": ""
+      },
+      "output": null
+    }
+  ]
+}

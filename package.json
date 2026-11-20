@@ -10,6 +10,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "parity:write": "PARITY_WRITE=1 vitest run ios/parity/parity.test.js",
+    "parity:check": "vitest run ios/parity",
+    "parity:drift": "node ios/parity/sync.mjs drift",
+    "parity:stamp": "node ios/parity/sync.mjs stamp",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

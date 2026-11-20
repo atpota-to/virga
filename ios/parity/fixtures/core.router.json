@@ -1,0 +1,386 @@
+{
+  "name": "core.router",
+  "sources": [
+    "src/lib/router.jsx"
+  ],
+  "cases": [
+    {
+      "id": "pathParts#1",
+      "fn": "pathParts",
+      "input": {
+        "path": "/"
+      },
+      "output": []
+    },
+    {
+      "id": "pathParts#2",
+      "fn": "pathParts",
+      "input": {
+        "path": ""
+      },
+      "output": []
+    },
+    {
+      "id": "pathParts#3",
+      "fn": "pathParts",
+      "input": {
+        "path": null
+      },
+      "output": []
+    },
+    {
+      "id": "pathParts#4",
+      "fn": "pathParts",
+      "input": {
+        "path": "/reports/followers/"
+      },
+      "output": [
+        "reports",
+        "followers"
+      ]
+    },
+    {
+      "id": "pathParts#5",
+      "fn": "pathParts",
+      "input": {
+        "path": "/dashboard/my%20board"
+      },
+      "output": [
+        "dashboard",
+        "my board"
+      ]
+    },
+    {
+      "id": "pathParts#6",
+      "fn": "pathParts",
+      "input": {
+        "path": "//double//slashes//"
+      },
+      "output": [
+        "double",
+        "slashes"
+      ]
+    },
+    {
+      "id": "pathParts#7",
+      "fn": "pathParts",
+      "input": {
+        "path": "/posting/drafts/xyz"
+      },
+      "output": [
+        "posting",
+        "drafts",
+        "xyz"
+      ]
+    },
+    {
+      "id": "pathParts#8",
+      "fn": "pathParts",
+      "input": {
+        "path": "/a%2Fb/c"
+      },
+      "output": [
+        "a/b",
+        "c"
+      ]
+    },
+    {
+      "id": "pathParts#9",
+      "fn": "pathParts",
+      "input": {
+        "path": "/caf%C3%A9/%F0%9F%91%8D"
+      },
+      "output": [
+        "café",
+        "👍"
+      ]
+    },
+    {
+      "id": "pathParts#10",
+      "fn": "pathParts",
+      "input": {
+        "path": "/%E2%9C%93?x=1"
+      },
+      "output": [
+        "✓?x=1"
+      ]
+    },
+    {
+      "id": "pathParts#11",
+      "fn": "pathParts",
+      "input": {
+        "path": "/emoji/👍🏽"
+      },
+      "output": [
+        "emoji",
+        "👍🏽"
+      ]
+    },
+    {
+      "id": "pathParts#12",
+      "fn": "pathParts",
+      "input": {
+        "path": "/bad/%"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "pathParts#13",
+      "fn": "pathParts",
+      "input": {
+        "path": "/bad/%zz"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "pathParts#14",
+      "fn": "pathParts",
+      "input": {
+        "path": "/bad/%C3%28"
+      },
+      "output": {
+        "$throws": "URI malformed"
+      }
+    },
+    {
+      "id": "pathParts#15",
+      "fn": "pathParts",
+      "input": {
+        "path": "relative/path"
+      },
+      "output": [
+        "relative",
+        "path"
+      ]
+    },
+    {
+      "id": "pathParts#16",
+      "fn": "pathParts",
+      "input": {
+        "path": "/intent/compose"
+      },
+      "output": [
+        "intent",
+        "compose"
+      ]
+    },
+    {
+      "id": "pathParts#17",
+      "fn": "pathParts",
+      "input": {
+        "path": "/a/́b"
+      },
+      "output": [
+        "a",
+        "́b"
+      ]
+    },
+    {
+      "id": "pathParts#18",
+      "fn": "pathParts",
+      "input": {
+        "path": "/́/x"
+      },
+      "output": [
+        "́",
+        "x"
+      ]
+    },
+    {
+      "id": "pathParts#19",
+      "fn": "pathParts",
+      "input": {
+        "path": "/reports/́"
+      },
+      "output": [
+        "reports",
+        "́"
+      ]
+    },
+    {
+      "id": "pathParts#20",
+      "fn": "pathParts",
+      "input": {
+        "path": "/%CC%81/x"
+      },
+      "output": [
+        "́",
+        "x"
+      ]
+    },
+    {
+      "id": "hrefFor#1",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/reports",
+        "currentSearch": "?latency=0",
+        "keepQuery": true
+      },
+      "output": "/reports?latency=0"
+    },
+    {
+      "id": "hrefFor#2",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/reports?x=1",
+        "currentSearch": "?latency=0",
+        "keepQuery": true
+      },
+      "output": "/reports?x=1"
+    },
+    {
+      "id": "hrefFor#3",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/posting",
+        "currentSearch": "?text=hello",
+        "keepQuery": false
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "hrefFor#4",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/posting",
+        "currentSearch": "",
+        "keepQuery": true
+      },
+      "output": "/posting"
+    },
+    {
+      "id": "hrefFor#5",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/privacy#contact",
+        "currentSearch": "?latency=0",
+        "keepQuery": true
+      },
+      "output": "/privacy?latency=0#contact"
+    },
+    {
+      "id": "hrefFor#6",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/privacy#contact",
+        "currentSearch": "",
+        "keepQuery": true
+      },
+      "output": "/privacy#contact"
+    },
+    {
+      "id": "hrefFor#7",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/privacy?x=1#contact",
+        "currentSearch": "?latency=0",
+        "keepQuery": true
+      },
+      "output": "/privacy?x=1#contact"
+    },
+    {
+      "id": "hrefFor#8",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/privacy#contact",
+        "currentSearch": "?text=hello",
+        "keepQuery": false
+      },
+      "output": "/privacy#contact"
+    },
+    {
+      "id": "hrefFor#9",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a#b#c",
+        "currentSearch": "?q",
+        "keepQuery": true
+      },
+      "output": "/a?q#b#c"
+    },
+    {
+      "id": "hrefFor#10",
+      "fn": "hrefFor",
+      "input": {
+        "to": "#top",
+        "currentSearch": "?q=1",
+        "keepQuery": true
+      },
+      "output": "?q=1#top"
+    },
+    {
+      "id": "hrefFor#11",
+      "fn": "hrefFor",
+      "input": {
+        "to": "",
+        "currentSearch": "?q=1",
+        "keepQuery": true
+      },
+      "output": "?q=1"
+    },
+    {
+      "id": "hrefFor#12",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/x?",
+        "currentSearch": "?q=1",
+        "keepQuery": true
+      },
+      "output": "/x?"
+    },
+    {
+      "id": "hrefFor#13",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/👍#🙂",
+        "currentSearch": "?é=1",
+        "keepQuery": true
+      },
+      "output": "/👍?é=1#🙂"
+    },
+    {
+      "id": "hrefFor#14",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/reports",
+        "currentSearch": null,
+        "keepQuery": true
+      },
+      "output": "/reports"
+    },
+    {
+      "id": "hrefFor#15",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a?́b",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?́b"
+    },
+    {
+      "id": "hrefFor#16",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a#́b",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?x=1#́b"
+    },
+    {
+      "id": "hrefFor#17",
+      "fn": "hrefFor",
+      "input": {
+        "to": "/a?́b#c",
+        "currentSearch": "?x=1",
+        "keepQuery": true
+      },
+      "output": "/a?́b#c"
+    }
+  ]
+}

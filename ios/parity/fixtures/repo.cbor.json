@@ -1,0 +1,4013 @@
+{
+  "name": "repo.cbor",
+  "sources": [
+    "src/posting/lib/recordCid.js",
+    "src/lib/carRepo.js"
+  ],
+  "cases": [
+    {
+      "id": "int 0",
+      "fn": "encode",
+      "input": {
+        "value": 0
+      },
+      "output": "00"
+    },
+    {
+      "id": "int 1",
+      "fn": "encode",
+      "input": {
+        "value": 1
+      },
+      "output": "01"
+    },
+    {
+      "id": "int 23",
+      "fn": "encode",
+      "input": {
+        "value": 23
+      },
+      "output": "17"
+    },
+    {
+      "id": "int 24",
+      "fn": "encode",
+      "input": {
+        "value": 24
+      },
+      "output": "1818"
+    },
+    {
+      "id": "int 255",
+      "fn": "encode",
+      "input": {
+        "value": 255
+      },
+      "output": "18ff"
+    },
+    {
+      "id": "int 256",
+      "fn": "encode",
+      "input": {
+        "value": 256
+      },
+      "output": "190100"
+    },
+    {
+      "id": "int 65535",
+      "fn": "encode",
+      "input": {
+        "value": 65535
+      },
+      "output": "19ffff"
+    },
+    {
+      "id": "int 65536",
+      "fn": "encode",
+      "input": {
+        "value": 65536
+      },
+      "output": "1a00010000"
+    },
+    {
+      "id": "int 4294967295",
+      "fn": "encode",
+      "input": {
+        "value": 4294967295
+      },
+      "output": "1affffffff"
+    },
+    {
+      "id": "int 4294967296",
+      "fn": "encode",
+      "input": {
+        "value": 4294967296
+      },
+      "output": "1b0000000100000000"
+    },
+    {
+      "id": "int 9007199254740991",
+      "fn": "encode",
+      "input": {
+        "value": 9007199254740991
+      },
+      "output": "1b001fffffffffffff"
+    },
+    {
+      "id": "int -1",
+      "fn": "encode",
+      "input": {
+        "value": -1
+      },
+      "output": "20"
+    },
+    {
+      "id": "int -24",
+      "fn": "encode",
+      "input": {
+        "value": -24
+      },
+      "output": "37"
+    },
+    {
+      "id": "int -25",
+      "fn": "encode",
+      "input": {
+        "value": -25
+      },
+      "output": "3818"
+    },
+    {
+      "id": "int -256",
+      "fn": "encode",
+      "input": {
+        "value": -256
+      },
+      "output": "38ff"
+    },
+    {
+      "id": "int -257",
+      "fn": "encode",
+      "input": {
+        "value": -257
+      },
+      "output": "390100"
+    },
+    {
+      "id": "int -65536",
+      "fn": "encode",
+      "input": {
+        "value": -65536
+      },
+      "output": "39ffff"
+    },
+    {
+      "id": "int -65537",
+      "fn": "encode",
+      "input": {
+        "value": -65537
+      },
+      "output": "3a00010000"
+    },
+    {
+      "id": "int -4294967296",
+      "fn": "encode",
+      "input": {
+        "value": -4294967296
+      },
+      "output": "3affffffff"
+    },
+    {
+      "id": "int -4294967297",
+      "fn": "encode",
+      "input": {
+        "value": -4294967297
+      },
+      "output": "3b0000000100000000"
+    },
+    {
+      "id": "int -9007199254740991",
+      "fn": "encode",
+      "input": {
+        "value": -9007199254740991
+      },
+      "output": "3b001ffffffffffffe"
+    },
+    {
+      "id": "num 0.5",
+      "fn": "encode",
+      "input": {
+        "value": 0.5
+      },
+      "output": "fb3fe0000000000000"
+    },
+    {
+      "id": "num -1.5",
+      "fn": "encode",
+      "input": {
+        "value": -1.5
+      },
+      "output": "fbbff8000000000000"
+    },
+    {
+      "id": "num 1e-7",
+      "fn": "encode",
+      "input": {
+        "value": 1e-7
+      },
+      "output": "fb3e7ad7f29abcaf48"
+    },
+    {
+      "id": "num 3.141592653589793",
+      "fn": "encode",
+      "input": {
+        "value": 3.141592653589793
+      },
+      "output": "fb400921fb54442d18"
+    },
+    {
+      "id": "num 1000000000000000.5",
+      "fn": "encode",
+      "input": {
+        "value": 1000000000000000.5
+      },
+      "output": "fb430c6bf526340004"
+    },
+    {
+      "id": "num 9007199254740992",
+      "fn": "encode",
+      "input": {
+        "value": 9007199254740992
+      },
+      "output": {
+        "$throws": "can't encode numbers beyond safe integer range"
+      }
+    },
+    {
+      "id": "num -9007199254740992",
+      "fn": "encode",
+      "input": {
+        "value": -9007199254740992
+      },
+      "output": {
+        "$throws": "can't encode numbers beyond safe integer range"
+      }
+    },
+    {
+      "id": "num 1e+300",
+      "fn": "encode",
+      "input": {
+        "value": 1e+300
+      },
+      "output": {
+        "$throws": "can't encode numbers beyond safe integer range"
+      }
+    },
+    {
+      "id": "negative zero",
+      "fn": "encode",
+      "input": {
+        "value": 0
+      },
+      "output": "00"
+    },
+    {
+      "id": "true",
+      "fn": "encode",
+      "input": {
+        "value": true
+      },
+      "output": "f5"
+    },
+    {
+      "id": "false",
+      "fn": "encode",
+      "input": {
+        "value": false
+      },
+      "output": "f4"
+    },
+    {
+      "id": "null",
+      "fn": "encode",
+      "input": {
+        "value": null
+      },
+      "output": "f6"
+    },
+    {
+      "id": "ascii 0",
+      "fn": "encode",
+      "input": {
+        "value": ""
+      },
+      "output": "60"
+    },
+    {
+      "id": "ascii 1",
+      "fn": "encode",
+      "input": {
+        "value": "x"
+      },
+      "output": "6178"
+    },
+    {
+      "id": "ascii 23",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "777878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 24",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "7818787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 255",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "78ff787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 256",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "79010078787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 1023",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "7903ff787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 1024",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "79040078787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "ascii 1025",
+      "fn": "encode",
+      "input": {
+        "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "7904017878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+    },
+    {
+      "id": "unicode",
+      "fn": "encode",
+      "input": {
+        "value": "héllo wörld"
+      },
+      "output": "6d68c3a96c6c6f2077c3b6726c64"
+    },
+    {
+      "id": "emoji",
+      "fn": "encode",
+      "input": {
+        "value": "👍🏽 thumbs, 🇬🇧, 👨‍👩‍👧‍👦"
+      },
+      "output": "7834f09f918df09f8fbd207468756d62732c20f09f87acf09f87a72c20f09f91a8e2808df09f91a9e2808df09f91a7e2808df09f91a6"
+    },
+    {
+      "id": "cjk",
+      "fn": "encode",
+      "input": {
+        "value": "日本語のテキスト"
+      },
+      "output": "7818e697a5e69cace8aa9ee381aee38386e382ade382b9e38388"
+    },
+    {
+      "id": "nul",
+      "fn": "encode",
+      "input": {
+        "value": "a\u0000b"
+      },
+      "output": "63610062"
+    },
+    {
+      "id": "bom",
+      "fn": "encode",
+      "input": {
+        "value": "﻿bom"
+      },
+      "output": "66efbbbf626f6d"
+    },
+    {
+      "id": "long unicode",
+      "fn": "encode",
+      "input": {
+        "value": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+      },
+      "output": "790578c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9"
+    },
+    {
+      "id": "long emoji",
+      "fn": "encode",
+      "input": {
+        "value": "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍"
+      },
+      "output": "7904b0f09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918d"
+    },
+    {
+      "id": "unicode 12",
+      "fn": "encode",
+      "input": {
+        "value": "ééééééééééé"
+      },
+      "output": "76c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9"
+    },
+    {
+      "id": "empty array",
+      "fn": "encode",
+      "input": {
+        "value": []
+      },
+      "output": "80"
+    },
+    {
+      "id": "empty map",
+      "fn": "encode",
+      "input": {
+        "value": {}
+      },
+      "output": "a0"
+    },
+    {
+      "id": "nested",
+      "fn": "encode",
+      "input": {
+        "value": [
+          1,
+          [
+            2,
+            [
+              3,
+              [
+                4,
+                []
+              ]
+            ]
+          ],
+          {
+            "a": [
+              {
+                "b": {}
+              }
+            ]
+          }
+        ]
+      },
+      "output": "830182028203820480a1616181a16162a0"
+    },
+    {
+      "id": "array 24",
+      "fn": "encode",
+      "input": {
+        "value": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ]
+      },
+      "output": "9818000102030405060708090a0b0c0d0e0f1011121314151617"
+    },
+    {
+      "id": "array 300",
+      "fn": "encode",
+      "input": {
+        "value": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "output": "99012c000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405"
+    },
+    {
+      "id": "key order",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "bb": 1,
+          "a": 2,
+          "aaa": 3,
+          "b": 4,
+          "ab": 5,
+          "": 6,
+          "B": 7,
+          "Z": 8,
+          "z": 9
+        }
+      },
+      "output": "a96006614207615a08616102616204617a0962616205626262016361616103"
+    },
+    {
+      "id": "unicode key order",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "é": 1,
+          "z": 2,
+          "ü": 3,
+          "aa": 4,
+          "日": 5,
+          "𐀀": 6,
+          "｡": 7
+        }
+      },
+      "output": "a7617a026261610462c3a90162c3bc0363e697a50563efbda10764f090808006"
+    },
+    {
+      "id": "many keys",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "k0": 0,
+          "k919": 1,
+          "k838": 2,
+          "k757": 3,
+          "k676": 4,
+          "k595": 5,
+          "k514": 6,
+          "k433": 7,
+          "k352": 8,
+          "k271": 9,
+          "k190": 10,
+          "k109": 11,
+          "k28": 12,
+          "k947": 13,
+          "k866": 14,
+          "k785": 15,
+          "k704": 16,
+          "k623": 17,
+          "k542": 18,
+          "k461": 19,
+          "k380": 20,
+          "k299": 21,
+          "k218": 22,
+          "k137": 23,
+          "k56": 24,
+          "k975": 25,
+          "k894": 26,
+          "k813": 27,
+          "k732": 28,
+          "k651": 29,
+          "k570": 30,
+          "k489": 31,
+          "k408": 32,
+          "k327": 33,
+          "k246": 34,
+          "k165": 35,
+          "k84": 36,
+          "k3": 37,
+          "k922": 38,
+          "k841": 39
+        }
+      },
+      "output": "b828626b3000626b331825636b32380c636b35361818636b38341824646b3130390b646b31333717646b3136351823646b3139300a646b32313816646b3234361822646b32373109646b32393915646b3332371821646b33353208646b33383014646b3430381820646b34333307646b34363113646b343839181f646b35313406646b35343212646b353730181e646b35393505646b36323311646b363531181d646b36373604646b37303410646b373332181c646b37353703646b3738350f646b383133181b646b38333802646b3834311827646b3836360e646b383934181a646b39313901646b3932321826646b3934370d646b3937351819"
+    },
+    {
+      "id": "many unicode keys",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "é0": 0,
+          "z1": 1,
+          "ü2": 2,
+          "aa3": 3,
+          "日4": 4,
+          "𐀀5": 5,
+          "｡6": 6,
+          "b7": 7,
+          "é8": 8,
+          "z9": 9,
+          "ü10": 10,
+          "aa11": 11,
+          "日12": 12,
+          "𐀀13": 13,
+          "｡14": 14,
+          "b15": 15,
+          "é16": 16,
+          "z17": 17,
+          "ü18": 18,
+          "aa19": 19,
+          "日20": 20,
+          "𐀀21": 21,
+          "｡22": 22,
+          "b23": 23,
+          "é24": 24,
+          "z25": 25,
+          "ü26": 26,
+          "aa27": 27,
+          "日28": 28,
+          "𐀀29": 29,
+          "｡30": 30,
+          "b31": 31,
+          "é32": 32,
+          "z33": 33,
+          "ü34": 34,
+          "aa35": 35
+        }
+      },
+      "output": "b82462623707627a3101627a39096361613303636231350f636232331763623331181f637a313711637a32351819637a3333182163c3a9300063c3a9380863c3bc320264616131310b6461613139136461613237181b6461613335182364c3a931361064c3a93234181864c3a93332182064c3bc31300a64c3bc31381264c3bc3236181a64c3bc3334182264e697a5340464efbda1360665e697a531320c65e697a532301465e697a53238181c65efbda131340e65efbda132321665efbda13330181e65f0908080350566f090808031330d66f090808032311566f09080803239181d"
+    },
+    {
+      "id": "link",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+        }
+      },
+      "output": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+    },
+    {
+      "id": "raw link",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+        }
+      },
+      "output": "d82a58250001551220b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f7"
+    },
+    {
+      "id": "bytes",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "AQID"
+        }
+      },
+      "output": "43010203"
+    },
+    {
+      "id": "bytes padded",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "AQI="
+        }
+      },
+      "output": "420102"
+    },
+    {
+      "id": "bytes empty",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": ""
+        }
+      },
+      "output": "40"
+    },
+    {
+      "id": "bytes long",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH"
+        }
+      },
+      "output": "59012c070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707"
+    },
+    {
+      "id": "link with company",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu",
+          "x": 1
+        }
+      },
+      "output": "a261780165246c696e6b783b6261667972656967366b67776761697878656e6b66763632676b7a3433666764796f653264646267716266723265646b7176357961356b67696e75"
+    },
+    {
+      "id": "bytes with company",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "AQID",
+          "x": 1
+        }
+      },
+      "output": "a2617801662462797465736441514944"
+    },
+    {
+      "id": "link not a string",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": 5
+        }
+      },
+      "output": {
+        "$throws": "unexpected cid-link value"
+      }
+    },
+    {
+      "id": "link null",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": null
+        }
+      },
+      "output": {
+        "$throws": "unexpected cid-link value"
+      }
+    },
+    {
+      "id": "link object",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": {
+            "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+          }
+        }
+      },
+      "output": {
+        "$throws": "unexpected cid-link value"
+      }
+    },
+    {
+      "id": "link invalid",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": "bafynope"
+        }
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "link v0",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$link": "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
+        }
+      },
+      "output": {
+        "$throws": "not a valid cid string"
+      }
+    },
+    {
+      "id": "bytes not a string",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": 1
+        }
+      },
+      "output": {
+        "$throws": "unexpected bytes value"
+      }
+    },
+    {
+      "id": "bytes invalid",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "!!"
+        }
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "bytes bad padding",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "AQ="
+        }
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "bytes non-canonical",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$bytes": "AR"
+        }
+      },
+      "output": {
+        "$throws": "invalid base64 string"
+      }
+    },
+    {
+      "id": "record",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "$type": "app.bsky.feed.post",
+          "text": "hello",
+          "createdAt": "2026-03-15T12:00:00.000Z",
+          "langs": [
+            "en"
+          ],
+          "embed": {
+            "$type": "app.bsky.embed.images",
+            "images": [
+              {
+                "alt": "",
+                "image": {
+                  "$type": "blob",
+                  "ref": {
+                    "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                  },
+                  "mimeType": "image/jpeg",
+                  "size": 1234
+                },
+                "aspectRatio": {
+                  "width": 4,
+                  "height": 3
+                }
+              }
+            ]
+          }
+        }
+      },
+      "output": "a564746578746568656c6c6f652474797065726170702e62736b792e666565642e706f737465656d626564a2652474797065756170702e62736b792e656d6265642e696d6167657366696d6167657381a363616c746065696d616765a463726566d82a58250001551220b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f76473697a651904d265247479706564626c6f62686d696d65547970656a696d6167652f6a7065676b617370656374526174696fa2657769647468046668656967687403656c616e67738162656e696372656174656441747818323032362d30332d31355431323a30303a30302e3030305a"
+    },
+    {
+      "id": "deep float",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "a": {
+            "b": [
+              0.25
+            ]
+          }
+        }
+      },
+      "output": "a16161a1616281fb3fd0000000000000"
+    },
+    {
+      "id": "constructor key",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": 2,
+          "a": 1
+        }
+      },
+      "output": {
+        "$throws": "unsupported type: [object Object]"
+      }
+    },
+    {
+      "id": "constructor key with link",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": 2,
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+        }
+      },
+      "output": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+    },
+    {
+      "id": "constructor key with bad link",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": 2,
+          "$link": 3
+        }
+      },
+      "output": {
+        "$throws": "unexpected cid-link value"
+      }
+    },
+    {
+      "id": "constructor key with bytes",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": "x",
+          "$bytes": "AQID"
+        }
+      },
+      "output": "43010203"
+    },
+    {
+      "id": "constructor key with both",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": "x",
+          "$bytes": "AQID",
+          "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+        }
+      },
+      "output": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+    },
+    {
+      "id": "constructor and toString keys",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "constructor": 1,
+          "toString": 2
+        }
+      },
+      "output": {
+        "$throws": "Cannot convert object to primitive value"
+      }
+    },
+    {
+      "id": "toString key",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "toString": 2
+        }
+      },
+      "output": "a168746f537472696e6702"
+    },
+    {
+      "id": "nested constructor key",
+      "fn": "encode",
+      "input": {
+        "value": {
+          "a": [
+            {
+              "constructor": null
+            }
+          ]
+        }
+      },
+      "output": {
+        "$throws": "unsupported type: [object Object]"
+      }
+    },
+    {
+      "id": "round trip: int 0",
+      "fn": "decode",
+      "input": {
+        "hex": "00"
+      },
+      "output": 0
+    },
+    {
+      "id": "round trip: int 1",
+      "fn": "decode",
+      "input": {
+        "hex": "01"
+      },
+      "output": 1
+    },
+    {
+      "id": "round trip: int 23",
+      "fn": "decode",
+      "input": {
+        "hex": "17"
+      },
+      "output": 23
+    },
+    {
+      "id": "round trip: int 24",
+      "fn": "decode",
+      "input": {
+        "hex": "1818"
+      },
+      "output": 24
+    },
+    {
+      "id": "round trip: int 255",
+      "fn": "decode",
+      "input": {
+        "hex": "18ff"
+      },
+      "output": 255
+    },
+    {
+      "id": "round trip: int 256",
+      "fn": "decode",
+      "input": {
+        "hex": "190100"
+      },
+      "output": 256
+    },
+    {
+      "id": "round trip: int 65535",
+      "fn": "decode",
+      "input": {
+        "hex": "19ffff"
+      },
+      "output": 65535
+    },
+    {
+      "id": "round trip: int 65536",
+      "fn": "decode",
+      "input": {
+        "hex": "1a00010000"
+      },
+      "output": 65536
+    },
+    {
+      "id": "round trip: int 4294967295",
+      "fn": "decode",
+      "input": {
+        "hex": "1affffffff"
+      },
+      "output": 4294967295
+    },
+    {
+      "id": "round trip: int 4294967296",
+      "fn": "decode",
+      "input": {
+        "hex": "1b0000000100000000"
+      },
+      "output": 4294967296
+    },
+    {
+      "id": "round trip: int 9007199254740991",
+      "fn": "decode",
+      "input": {
+        "hex": "1b001fffffffffffff"
+      },
+      "output": 9007199254740991
+    },
+    {
+      "id": "round trip: int -1",
+      "fn": "decode",
+      "input": {
+        "hex": "20"
+      },
+      "output": -1
+    },
+    {
+      "id": "round trip: int -24",
+      "fn": "decode",
+      "input": {
+        "hex": "37"
+      },
+      "output": -24
+    },
+    {
+      "id": "round trip: int -25",
+      "fn": "decode",
+      "input": {
+        "hex": "3818"
+      },
+      "output": -25
+    },
+    {
+      "id": "round trip: int -256",
+      "fn": "decode",
+      "input": {
+        "hex": "38ff"
+      },
+      "output": -256
+    },
+    {
+      "id": "round trip: int -257",
+      "fn": "decode",
+      "input": {
+        "hex": "390100"
+      },
+      "output": -257
+    },
+    {
+      "id": "round trip: int -65536",
+      "fn": "decode",
+      "input": {
+        "hex": "39ffff"
+      },
+      "output": -65536
+    },
+    {
+      "id": "round trip: int -65537",
+      "fn": "decode",
+      "input": {
+        "hex": "3a00010000"
+      },
+      "output": -65537
+    },
+    {
+      "id": "round trip: int -4294967296",
+      "fn": "decode",
+      "input": {
+        "hex": "3affffffff"
+      },
+      "output": -4294967296
+    },
+    {
+      "id": "round trip: int -4294967297",
+      "fn": "decode",
+      "input": {
+        "hex": "3b0000000100000000"
+      },
+      "output": -4294967297
+    },
+    {
+      "id": "round trip: int -9007199254740991",
+      "fn": "decode",
+      "input": {
+        "hex": "3b001ffffffffffffe"
+      },
+      "output": -9007199254740991
+    },
+    {
+      "id": "round trip: num 0.5",
+      "fn": "decode",
+      "input": {
+        "hex": "fb3fe0000000000000"
+      },
+      "output": 0.5
+    },
+    {
+      "id": "round trip: num -1.5",
+      "fn": "decode",
+      "input": {
+        "hex": "fbbff8000000000000"
+      },
+      "output": -1.5
+    },
+    {
+      "id": "round trip: num 1e-7",
+      "fn": "decode",
+      "input": {
+        "hex": "fb3e7ad7f29abcaf48"
+      },
+      "output": 1e-7
+    },
+    {
+      "id": "round trip: num 3.141592653589793",
+      "fn": "decode",
+      "input": {
+        "hex": "fb400921fb54442d18"
+      },
+      "output": 3.141592653589793
+    },
+    {
+      "id": "round trip: num 1000000000000000.5",
+      "fn": "decode",
+      "input": {
+        "hex": "fb430c6bf526340004"
+      },
+      "output": 1000000000000000.5
+    },
+    {
+      "id": "round trip: negative zero",
+      "fn": "decode",
+      "input": {
+        "hex": "00"
+      },
+      "output": 0
+    },
+    {
+      "id": "round trip: true",
+      "fn": "decode",
+      "input": {
+        "hex": "f5"
+      },
+      "output": true
+    },
+    {
+      "id": "round trip: false",
+      "fn": "decode",
+      "input": {
+        "hex": "f4"
+      },
+      "output": false
+    },
+    {
+      "id": "round trip: null",
+      "fn": "decode",
+      "input": {
+        "hex": "f6"
+      },
+      "output": null
+    },
+    {
+      "id": "round trip: ascii 0",
+      "fn": "decode",
+      "input": {
+        "hex": "60"
+      },
+      "output": ""
+    },
+    {
+      "id": "round trip: ascii 1",
+      "fn": "decode",
+      "input": {
+        "hex": "6178"
+      },
+      "output": "x"
+    },
+    {
+      "id": "round trip: ascii 23",
+      "fn": "decode",
+      "input": {
+        "hex": "777878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 24",
+      "fn": "decode",
+      "input": {
+        "hex": "7818787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 255",
+      "fn": "decode",
+      "input": {
+        "hex": "78ff787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 256",
+      "fn": "decode",
+      "input": {
+        "hex": "79010078787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 1023",
+      "fn": "decode",
+      "input": {
+        "hex": "7903ff787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 1024",
+      "fn": "decode",
+      "input": {
+        "hex": "79040078787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: ascii 1025",
+      "fn": "decode",
+      "input": {
+        "hex": "7904017878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "id": "round trip: unicode",
+      "fn": "decode",
+      "input": {
+        "hex": "6d68c3a96c6c6f2077c3b6726c64"
+      },
+      "output": "héllo wörld"
+    },
+    {
+      "id": "round trip: emoji",
+      "fn": "decode",
+      "input": {
+        "hex": "7834f09f918df09f8fbd207468756d62732c20f09f87acf09f87a72c20f09f91a8e2808df09f91a9e2808df09f91a7e2808df09f91a6"
+      },
+      "output": "👍🏽 thumbs, 🇬🇧, 👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "round trip: cjk",
+      "fn": "decode",
+      "input": {
+        "hex": "7818e697a5e69cace8aa9ee381aee38386e382ade382b9e38388"
+      },
+      "output": "日本語のテキスト"
+    },
+    {
+      "id": "round trip: nul",
+      "fn": "decode",
+      "input": {
+        "hex": "63610062"
+      },
+      "output": "a\u0000b"
+    },
+    {
+      "id": "round trip: bom",
+      "fn": "decode",
+      "input": {
+        "hex": "66efbbbf626f6d"
+      },
+      "output": "﻿bom"
+    },
+    {
+      "id": "round trip: long unicode",
+      "fn": "decode",
+      "input": {
+        "hex": "790578c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9"
+      },
+      "output": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+    },
+    {
+      "id": "round trip: long emoji",
+      "fn": "decode",
+      "input": {
+        "hex": "7904b0f09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918df09f918d"
+      },
+      "output": "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍"
+    },
+    {
+      "id": "round trip: unicode 12",
+      "fn": "decode",
+      "input": {
+        "hex": "76c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9"
+      },
+      "output": "ééééééééééé"
+    },
+    {
+      "id": "round trip: empty array",
+      "fn": "decode",
+      "input": {
+        "hex": "80"
+      },
+      "output": []
+    },
+    {
+      "id": "round trip: empty map",
+      "fn": "decode",
+      "input": {
+        "hex": "a0"
+      },
+      "output": {}
+    },
+    {
+      "id": "round trip: nested",
+      "fn": "decode",
+      "input": {
+        "hex": "830182028203820480a1616181a16162a0"
+      },
+      "output": [
+        1,
+        [
+          2,
+          [
+            3,
+            [
+              4,
+              []
+            ]
+          ]
+        ],
+        {
+          "a": [
+            {
+              "b": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "round trip: array 24",
+      "fn": "decode",
+      "input": {
+        "hex": "9818000102030405060708090a0b0c0d0e0f1011121314151617"
+      },
+      "output": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ]
+    },
+    {
+      "id": "round trip: array 300",
+      "fn": "decode",
+      "input": {
+        "hex": "99012c000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405060001020304050600010203040506000102030405"
+      },
+      "output": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "round trip: key order",
+      "fn": "decode",
+      "input": {
+        "hex": "a96006614207615a08616102616204617a0962616205626262016361616103"
+      },
+      "output": {
+        "": 6,
+        "B": 7,
+        "Z": 8,
+        "a": 2,
+        "b": 4,
+        "z": 9,
+        "ab": 5,
+        "bb": 1,
+        "aaa": 3
+      }
+    },
+    {
+      "id": "round trip: unicode key order",
+      "fn": "decode",
+      "input": {
+        "hex": "a7617a026261610462c3a90162c3bc0363e697a50563efbda10764f090808006"
+      },
+      "output": {
+        "z": 2,
+        "aa": 4,
+        "é": 1,
+        "ü": 3,
+        "日": 5,
+        "｡": 7,
+        "𐀀": 6
+      }
+    },
+    {
+      "id": "round trip: many keys",
+      "fn": "decode",
+      "input": {
+        "hex": "b828626b3000626b331825636b32380c636b35361818636b38341824646b3130390b646b31333717646b3136351823646b3139300a646b32313816646b3234361822646b32373109646b32393915646b3332371821646b33353208646b33383014646b3430381820646b34333307646b34363113646b343839181f646b35313406646b35343212646b353730181e646b35393505646b36323311646b363531181d646b36373604646b37303410646b373332181c646b37353703646b3738350f646b383133181b646b38333802646b3834311827646b3836360e646b383934181a646b39313901646b3932321826646b3934370d646b3937351819"
+      },
+      "output": {
+        "k0": 0,
+        "k3": 37,
+        "k28": 12,
+        "k56": 24,
+        "k84": 36,
+        "k109": 11,
+        "k137": 23,
+        "k165": 35,
+        "k190": 10,
+        "k218": 22,
+        "k246": 34,
+        "k271": 9,
+        "k299": 21,
+        "k327": 33,
+        "k352": 8,
+        "k380": 20,
+        "k408": 32,
+        "k433": 7,
+        "k461": 19,
+        "k489": 31,
+        "k514": 6,
+        "k542": 18,
+        "k570": 30,
+        "k595": 5,
+        "k623": 17,
+        "k651": 29,
+        "k676": 4,
+        "k704": 16,
+        "k732": 28,
+        "k757": 3,
+        "k785": 15,
+        "k813": 27,
+        "k838": 2,
+        "k841": 39,
+        "k866": 14,
+        "k894": 26,
+        "k919": 1,
+        "k922": 38,
+        "k947": 13,
+        "k975": 25
+      }
+    },
+    {
+      "id": "round trip: many unicode keys",
+      "fn": "decode",
+      "input": {
+        "hex": "b82462623707627a3101627a39096361613303636231350f636232331763623331181f637a313711637a32351819637a3333182163c3a9300063c3a9380863c3bc320264616131310b6461613139136461613237181b6461613335182364c3a931361064c3a93234181864c3a93332182064c3bc31300a64c3bc31381264c3bc3236181a64c3bc3334182264e697a5340464efbda1360665e697a531320c65e697a532301465e697a53238181c65efbda131340e65efbda132321665efbda13330181e65f0908080350566f090808031330d66f090808032311566f09080803239181d"
+      },
+      "output": {
+        "b7": 7,
+        "z1": 1,
+        "z9": 9,
+        "aa3": 3,
+        "b15": 15,
+        "b23": 23,
+        "b31": 31,
+        "z17": 17,
+        "z25": 25,
+        "z33": 33,
+        "é0": 0,
+        "é8": 8,
+        "ü2": 2,
+        "aa11": 11,
+        "aa19": 19,
+        "aa27": 27,
+        "aa35": 35,
+        "é16": 16,
+        "é24": 24,
+        "é32": 32,
+        "ü10": 10,
+        "ü18": 18,
+        "ü26": 26,
+        "ü34": 34,
+        "日4": 4,
+        "｡6": 6,
+        "日12": 12,
+        "日20": 20,
+        "日28": 28,
+        "｡14": 14,
+        "｡22": 22,
+        "｡30": 30,
+        "𐀀5": 5,
+        "𐀀13": 13,
+        "𐀀21": 21,
+        "𐀀29": 29
+      }
+    },
+    {
+      "id": "round trip: link",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+      },
+      "output": {
+        "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      }
+    },
+    {
+      "id": "round trip: raw link",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a58250001551220b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f7"
+      },
+      "output": {
+        "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+      }
+    },
+    {
+      "id": "round trip: bytes",
+      "fn": "decode",
+      "input": {
+        "hex": "43010203"
+      },
+      "output": {
+        "$bytes": "AQID"
+      }
+    },
+    {
+      "id": "round trip: bytes padded",
+      "fn": "decode",
+      "input": {
+        "hex": "420102"
+      },
+      "output": {
+        "$bytes": "AQI"
+      }
+    },
+    {
+      "id": "round trip: bytes empty",
+      "fn": "decode",
+      "input": {
+        "hex": "40"
+      },
+      "output": {
+        "$bytes": ""
+      }
+    },
+    {
+      "id": "round trip: bytes long",
+      "fn": "decode",
+      "input": {
+        "hex": "59012c070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707070707"
+      },
+      "output": {
+        "$bytes": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcH"
+      }
+    },
+    {
+      "id": "round trip: link with company",
+      "fn": "decode",
+      "input": {
+        "hex": "a261780165246c696e6b783b6261667972656967366b67776761697878656e6b66763632676b7a3433666764796f653264646267716266723265646b7176357961356b67696e75"
+      },
+      "output": {
+        "x": 1,
+        "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      }
+    },
+    {
+      "id": "round trip: bytes with company",
+      "fn": "decode",
+      "input": {
+        "hex": "a2617801662462797465736441514944"
+      },
+      "output": {
+        "x": 1,
+        "$bytes": "AQID"
+      }
+    },
+    {
+      "id": "round trip: record",
+      "fn": "decode",
+      "input": {
+        "hex": "a564746578746568656c6c6f652474797065726170702e62736b792e666565642e706f737465656d626564a2652474797065756170702e62736b792e656d6265642e696d6167657366696d6167657381a363616c746065696d616765a463726566d82a58250001551220b5b7069657ed2639ddb4b87671575eb1b456d7b025393208c9be7ad5115636f76473697a651904d265247479706564626c6f62686d696d65547970656a696d6167652f6a7065676b617370656374526174696fa2657769647468046668656967687403656c616e67738162656e696372656174656441747818323032362d30332d31355431323a30303a30302e3030305a"
+      },
+      "output": {
+        "text": "hello",
+        "$type": "app.bsky.feed.post",
+        "embed": {
+          "$type": "app.bsky.embed.images",
+          "images": [
+            {
+              "alt": "",
+              "image": {
+                "ref": {
+                  "$link": "bafkreifvw4djmv7ney453nfyozyvoxvrwrlnpmbfhezarsn6plkrcvrw64"
+                },
+                "size": 1234,
+                "$type": "blob",
+                "mimeType": "image/jpeg"
+              },
+              "aspectRatio": {
+                "width": 4,
+                "height": 3
+              }
+            }
+          ]
+        },
+        "langs": [
+          "en"
+        ],
+        "createdAt": "2026-03-15T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "round trip: deep float",
+      "fn": "decode",
+      "input": {
+        "hex": "a16161a1616281fb3fd0000000000000"
+      },
+      "output": {
+        "a": {
+          "b": [
+            0.25
+          ]
+        }
+      }
+    },
+    {
+      "id": "round trip: constructor key with link",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+      },
+      "output": {
+        "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      }
+    },
+    {
+      "id": "round trip: constructor key with bytes",
+      "fn": "decode",
+      "input": {
+        "hex": "43010203"
+      },
+      "output": {
+        "$bytes": "AQID"
+      }
+    },
+    {
+      "id": "round trip: constructor key with both",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d"
+      },
+      "output": {
+        "$link": "bafyreig6kgwgaixxenkfv62gkz43fgdyoe2ddbgqbfr2edkqv5ya5kginu"
+      }
+    },
+    {
+      "id": "round trip: toString key",
+      "fn": "decode",
+      "input": {
+        "hex": "a168746f537472696e6702"
+      },
+      "output": {
+        "toString": 2
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "decode",
+      "input": {
+        "hex": ""
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "remainder",
+      "fn": "decode",
+      "input": {
+        "hex": "0000"
+      },
+      "output": {
+        "$throws": "decoded value contains remainder"
+      }
+    },
+    {
+      "id": "non-canonical uint8",
+      "fn": "decode",
+      "input": {
+        "hex": "1805"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "non-canonical uint16",
+      "fn": "decode",
+      "input": {
+        "hex": "1900ff"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "non-canonical uint32",
+      "fn": "decode",
+      "input": {
+        "hex": "1a0000ffff"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "non-canonical uint64",
+      "fn": "decode",
+      "input": {
+        "hex": "1b00000000ffffffff"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "uint64 past safe",
+      "fn": "decode",
+      "input": {
+        "hex": "1b0020000000000000"
+      },
+      "output": {
+        "$throws": "can't decode integers beyond safe integer range"
+      }
+    },
+    {
+      "id": "uint64 max safe",
+      "fn": "decode",
+      "input": {
+        "hex": "1b001fffffffffffff"
+      },
+      "output": 9007199254740991
+    },
+    {
+      "id": "negative max safe",
+      "fn": "decode",
+      "input": {
+        "hex": "3b001ffffffffffffe"
+      },
+      "output": -9007199254740991
+    },
+    {
+      "id": "negative 2^53",
+      "fn": "decode",
+      "input": {
+        "hex": "3b001fffffffffffff"
+      },
+      "output": {
+        "$throws": "can't decode integers beyond safe integer range"
+      }
+    },
+    {
+      "id": "indefinite array",
+      "fn": "decode",
+      "input": {
+        "hex": "9f01ff"
+      },
+      "output": {
+        "$throws": "invalid argument encoding; got 31"
+      }
+    },
+    {
+      "id": "indefinite map",
+      "fn": "decode",
+      "input": {
+        "hex": "bf616101ff"
+      },
+      "output": {
+        "$throws": "invalid argument encoding; got 31"
+      }
+    },
+    {
+      "id": "indefinite string",
+      "fn": "decode",
+      "input": {
+        "hex": "7f6161ff"
+      },
+      "output": {
+        "$throws": "invalid argument encoding; got 31"
+      }
+    },
+    {
+      "id": "argument 28",
+      "fn": "decode",
+      "input": {
+        "hex": "1c"
+      },
+      "output": {
+        "$throws": "invalid argument encoding; got 28"
+      }
+    },
+    {
+      "id": "half float",
+      "fn": "decode",
+      "input": {
+        "hex": "f93c00"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 25"
+      }
+    },
+    {
+      "id": "single float",
+      "fn": "decode",
+      "input": {
+        "hex": "fa3fc00000"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 26"
+      }
+    },
+    {
+      "id": "double float",
+      "fn": "decode",
+      "input": {
+        "hex": "fb3ff8000000000000"
+      },
+      "output": 1.5
+    },
+    {
+      "id": "double negative zero",
+      "fn": "decode",
+      "input": {
+        "hex": "fb8000000000000000"
+      },
+      "output": 0
+    },
+    {
+      "id": "double subnormal",
+      "fn": "decode",
+      "input": {
+        "hex": "fb0000000000000001"
+      },
+      "output": 5e-324
+    },
+    {
+      "id": "double NaN",
+      "fn": "decode",
+      "input": {
+        "hex": "fb7ff8000000000000"
+      },
+      "output": {
+        "$throws": "NaN and Infinity values not supported"
+      }
+    },
+    {
+      "id": "double Infinity",
+      "fn": "decode",
+      "input": {
+        "hex": "fb7ff0000000000000"
+      },
+      "output": {
+        "$throws": "NaN and Infinity values not supported"
+      }
+    },
+    {
+      "id": "double -Infinity",
+      "fn": "decode",
+      "input": {
+        "hex": "fbfff0000000000000"
+      },
+      "output": {
+        "$throws": "NaN and Infinity values not supported"
+      }
+    },
+    {
+      "id": "double cut short",
+      "fn": "decode",
+      "input": {
+        "hex": "fb3ff8"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "undefined",
+      "fn": "decode",
+      "input": {
+        "hex": "f7"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 23"
+      }
+    },
+    {
+      "id": "simple 16",
+      "fn": "decode",
+      "input": {
+        "hex": "f0"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 16"
+      }
+    },
+    {
+      "id": "simple one byte",
+      "fn": "decode",
+      "input": {
+        "hex": "f820"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 24"
+      }
+    },
+    {
+      "id": "break",
+      "fn": "decode",
+      "input": {
+        "hex": "ff"
+      },
+      "output": {
+        "$throws": "invalid simple value; got 31"
+      }
+    },
+    {
+      "id": "tag 0",
+      "fn": "decode",
+      "input": {
+        "hex": "c074323031332d30332d32315432303a30343a30305a"
+      },
+      "output": {
+        "$throws": "unsupported tag; got 0"
+      }
+    },
+    {
+      "id": "tag 1",
+      "fn": "decode",
+      "input": {
+        "hex": "c11a514b67b0"
+      },
+      "output": {
+        "$throws": "unsupported tag; got 1"
+      }
+    },
+    {
+      "id": "tag 42 of a string",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a6161"
+      },
+      "output": {
+        "$throws": "expected cid-link to be type 2 (bytes); got type 3"
+      }
+    },
+    {
+      "id": "tag 42 cut short",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "tag 42 ok",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a582500017112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$link": "bafyreiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+      }
+    },
+    {
+      "id": "tag 42 raw",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a582500015512201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$link": "bafkreiarceirceirceirceirceirceirceirceirceirceirceirceirce"
+      }
+    },
+    {
+      "id": "tag 42 no prefix",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a582501711220111111111111111111111111111111111111111111111111111111111111111100"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "tag 42 version 2",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a582500027112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid version (got v2)"
+      }
+    },
+    {
+      "id": "tag 42 dag-pb",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a582500017012201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid codec (got 0x70)"
+      }
+    },
+    {
+      "id": "tag 42 blake",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a5825000171e4201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "incorrect cid digest codec (got 0xe4)"
+      }
+    },
+    {
+      "id": "tag 42 size 31",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a5824000171121f11111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "tag 42 long",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a58260001711220111111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "invalid binary cid"
+      }
+    },
+    {
+      "id": "tag 42 short",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a5815000171122011111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "tag 42 length cut",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a5825000171"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "tag 42 non-canonical length",
+      "fn": "decode",
+      "input": {
+        "hex": "d82a59002500017112201111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "map int key",
+      "fn": "decode",
+      "input": {
+        "hex": "a10102"
+      },
+      "output": {
+        "$throws": "expected map to only have string keys; got type 0"
+      }
+    },
+    {
+      "id": "map bytes key",
+      "fn": "decode",
+      "input": {
+        "hex": "a1410102"
+      },
+      "output": {
+        "$throws": "expected map to only have string keys; got type 2"
+      }
+    },
+    {
+      "id": "map keys out of order",
+      "fn": "decode",
+      "input": {
+        "hex": "a2616201616101"
+      },
+      "output": {
+        "$throws": "map keys are not in canonical order or contain duplicates"
+      }
+    },
+    {
+      "id": "map keys by length",
+      "fn": "decode",
+      "input": {
+        "hex": "a262616101616201"
+      },
+      "output": {
+        "$throws": "map keys are not in canonical order or contain duplicates"
+      }
+    },
+    {
+      "id": "map keys longer first",
+      "fn": "decode",
+      "input": {
+        "hex": "a262616101616201"
+      },
+      "output": {
+        "$throws": "map keys are not in canonical order or contain duplicates"
+      }
+    },
+    {
+      "id": "map duplicate keys",
+      "fn": "decode",
+      "input": {
+        "hex": "a2616101616102"
+      },
+      "output": {
+        "$throws": "map keys are not in canonical order or contain duplicates"
+      }
+    },
+    {
+      "id": "map ordered",
+      "fn": "decode",
+      "input": {
+        "hex": "a2616101616202"
+      },
+      "output": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    {
+      "id": "map key cut",
+      "fn": "decode",
+      "input": {
+        "hex": "a16261"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "map value missing",
+      "fn": "decode",
+      "input": {
+        "hex": "a16161"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "map length too big",
+      "fn": "decode",
+      "input": {
+        "hex": "a3616101616202"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "map key non-canonical length",
+      "fn": "decode",
+      "input": {
+        "hex": "a178016101"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "map unicode key order",
+      "fn": "decode",
+      "input": {
+        "hex": "a2617a0162c3a902"
+      },
+      "output": {
+        "z": 1,
+        "é": 2
+      }
+    },
+    {
+      "id": "map unicode same length",
+      "fn": "decode",
+      "input": {
+        "hex": "a262c3a90162c3bc02"
+      },
+      "output": {
+        "é": 1,
+        "ü": 2
+      }
+    },
+    {
+      "id": "map unicode same length reversed",
+      "fn": "decode",
+      "input": {
+        "hex": "a262c3bc0162c3a902"
+      },
+      "output": {
+        "$throws": "map keys are not in canonical order or contain duplicates"
+      }
+    },
+    {
+      "id": "array cut",
+      "fn": "decode",
+      "input": {
+        "hex": "830102"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "array length beyond input",
+      "fn": "decode",
+      "input": {
+        "hex": "9a0000ffff01"
+      },
+      "output": {
+        "$throws": "non-canonical argument encoding"
+      }
+    },
+    {
+      "id": "array uint64 length",
+      "fn": "decode",
+      "input": {
+        "hex": "9b0000000100000000"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "bytes cut",
+      "fn": "decode",
+      "input": {
+        "hex": "44010203"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "string cut",
+      "fn": "decode",
+      "input": {
+        "hex": "64616263"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "string invalid utf-8",
+      "fn": "decode",
+      "input": {
+        "hex": "62c328"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string lone continuation",
+      "fn": "decode",
+      "input": {
+        "hex": "6180"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string overlong",
+      "fn": "decode",
+      "input": {
+        "hex": "62c0af"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string surrogate",
+      "fn": "decode",
+      "input": {
+        "hex": "63eda080"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string past max",
+      "fn": "decode",
+      "input": {
+        "hex": "64f4908080"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string truncated sequence",
+      "fn": "decode",
+      "input": {
+        "hex": "62e282"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "string replacement char",
+      "fn": "decode",
+      "input": {
+        "hex": "63efbfbd"
+      },
+      "output": "�"
+    },
+    {
+      "id": "string bom",
+      "fn": "decode",
+      "input": {
+        "hex": "63efbbbf"
+      },
+      "output": "﻿"
+    },
+    {
+      "id": "string long invalid",
+      "fn": "decode",
+      "input": {
+        "hex": "7819616161616161616161616161616161616161616161616161ff"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "key invalid utf-8",
+      "fn": "decode",
+      "input": {
+        "hex": "a162c32801"
+      },
+      "output": {
+        "$throws": "input is not valid utf-8"
+      }
+    },
+    {
+      "id": "deep nesting",
+      "fn": "decode",
+      "input": {
+        "hex": "818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818100"
+      },
+      "output": [
+        [
+          [
+            [
+              [
+                [
+                  [
+                    [
+                      [
+                        [
+                          [
+                            [
+                              [
+                                [
+                                  [
+                                    [
+                                      [
+                                        [
+                                          [
+                                            [
+                                              [
+                                                [
+                                                  [
+                                                    [
+                                                      [
+                                                        [
+                                                          [
+                                                            [
+                                                              [
+                                                                [
+                                                                  [
+                                                                    [
+                                                                      [
+                                                                        [
+                                                                          [
+                                                                            [
+                                                                              [
+                                                                                [
+                                                                                  [
+                                                                                    [
+                                                                                      [
+                                                                                        [
+                                                                                          [
+                                                                                            [
+                                                                                              [
+                                                                                                [
+                                                                                                  [
+                                                                                                    [
+                                                                                                      [
+                                                                                                        [
+                                                                                                          [
+                                                                                                            [
+                                                                                                              [
+                                                                                                                [
+                                                                                                                  [
+                                                                                                                    [
+                                                                                                                      [
+                                                                                                                        [
+                                                                                                                          [
+                                                                                                                            [
+                                                                                                                              [
+                                                                                                                                [
+                                                                                                                                  [
+                                                                                                                                    [
+                                                                                                                                      [
+                                                                                                                                        [
+                                                                                                                                          [
+                                                                                                                                            [
+                                                                                                                                              [
+                                                                                                                                                [
+                                                                                                                                                  [
+                                                                                                                                                    [
+                                                                                                                                                      [
+                                                                                                                                                        [
+                                                                                                                                                          [
+                                                                                                                                                            [
+                                                                                                                                                              [
+                                                                                                                                                                [
+                                                                                                                                                                  [
+                                                                                                                                                                    [
+                                                                                                                                                                      [
+                                                                                                                                                                        [
+                                                                                                                                                                          [
+                                                                                                                                                                            [
+                                                                                                                                                                              [
+                                                                                                                                                                                [
+                                                                                                                                                                                  [
+                                                                                                                                                                                    [
+                                                                                                                                                                                      [
+                                                                                                                                                                                        [
+                                                                                                                                                                                          [
+                                                                                                                                                                                            [
+                                                                                                                                                                                              [
+                                                                                                                                                                                                [
+                                                                                                                                                                                                  [
+                                                                                                                                                                                                    [
+                                                                                                                                                                                                      [
+                                                                                                                                                                                                        [
+                                                                                                                                                                                                          [
+                                                                                                                                                                                                            [
+                                                                                                                                                                                                              [
+                                                                                                                                                                                                                [
+                                                                                                                                                                                                                  [
+                                                                                                                                                                                                                    [
+                                                                                                                                                                                                                      [
+                                                                                                                                                                                                                        [
+                                                                                                                                                                                                                          [
+                                                                                                                                                                                                                            [
+                                                                                                                                                                                                                              [
+                                                                                                                                                                                                                                [
+                                                                                                                                                                                                                                  [
+                                                                                                                                                                                                                                    [
+                                                                                                                                                                                                                                      [
+                                                                                                                                                                                                                                        [
+                                                                                                                                                                                                                                          [
+                                                                                                                                                                                                                                            [
+                                                                                                                                                                                                                                              [
+                                                                                                                                                                                                                                                [
+                                                                                                                                                                                                                                                  [
+                                                                                                                                                                                                                                                    [
+                                                                                                                                                                                                                                                      [
+                                                                                                                                                                                                                                                        [
+                                                                                                                                                                                                                                                          [
+                                                                                                                                                                                                                                                            [
+                                                                                                                                                                                                                                                              [
+                                                                                                                                                                                                                                                                [
+                                                                                                                                                                                                                                                                  [
+                                                                                                                                                                                                                                                                    [
+                                                                                                                                                                                                                                                                      0
+                                                                                                                                                                                                                                                                    ]
+                                                                                                                                                                                                                                                                  ]
+                                                                                                                                                                                                                                                                ]
+                                                                                                                                                                                                                                                              ]
+                                                                                                                                                                                                                                                            ]
+                                                                                                                                                                                                                                                          ]
+                                                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                                                      ]
+                                                                                                                                                                                                                                                    ]
+                                                                                                                                                                                                                                                  ]
+                                                                                                                                                                                                                                                ]
+                                                                                                                                                                                                                                              ]
+                                                                                                                                                                                                                                            ]
+                                                                                                                                                                                                                                          ]
+                                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                                      ]
+                                                                                                                                                                                                                                    ]
+                                                                                                                                                                                                                                  ]
+                                                                                                                                                                                                                                ]
+                                                                                                                                                                                                                              ]
+                                                                                                                                                                                                                            ]
+                                                                                                                                                                                                                          ]
+                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                      ]
+                                                                                                                                                                                                                    ]
+                                                                                                                                                                                                                  ]
+                                                                                                                                                                                                                ]
+                                                                                                                                                                                                              ]
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                                          ]
+                                                                                                                                                                                                        ]
+                                                                                                                                                                                                      ]
+                                                                                                                                                                                                    ]
+                                                                                                                                                                                                  ]
+                                                                                                                                                                                                ]
+                                                                                                                                                                                              ]
+                                                                                                                                                                                            ]
+                                                                                                                                                                                          ]
+                                                                                                                                                                                        ]
+                                                                                                                                                                                      ]
+                                                                                                                                                                                    ]
+                                                                                                                                                                                  ]
+                                                                                                                                                                                ]
+                                                                                                                                                                              ]
+                                                                                                                                                                            ]
+                                                                                                                                                                          ]
+                                                                                                                                                                        ]
+                                                                                                                                                                      ]
+                                                                                                                                                                    ]
+                                                                                                                                                                  ]
+                                                                                                                                                                ]
+                                                                                                                                                              ]
+                                                                                                                                                            ]
+                                                                                                                                                          ]
+                                                                                                                                                        ]
+                                                                                                                                                      ]
+                                                                                                                                                    ]
+                                                                                                                                                  ]
+                                                                                                                                                ]
+                                                                                                                                              ]
+                                                                                                                                            ]
+                                                                                                                                          ]
+                                                                                                                                        ]
+                                                                                                                                      ]
+                                                                                                                                    ]
+                                                                                                                                  ]
+                                                                                                                                ]
+                                                                                                                              ]
+                                                                                                                            ]
+                                                                                                                          ]
+                                                                                                                        ]
+                                                                                                                      ]
+                                                                                                                    ]
+                                                                                                                  ]
+                                                                                                                ]
+                                                                                                              ]
+                                                                                                            ]
+                                                                                                          ]
+                                                                                                        ]
+                                                                                                      ]
+                                                                                                    ]
+                                                                                                  ]
+                                                                                                ]
+                                                                                              ]
+                                                                                            ]
+                                                                                          ]
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
+                                                                                  ]
+                                                                                ]
+                                                                              ]
+                                                                            ]
+                                                                          ]
+                                                                        ]
+                                                                      ]
+                                                                    ]
+                                                                  ]
+                                                                ]
+                                                              ]
+                                                            ]
+                                                          ]
+                                                        ]
+                                                      ]
+                                                    ]
+                                                  ]
+                                                ]
+                                              ]
+                                            ]
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "deep nesting cut",
+      "fn": "decode",
+      "input": {
+        "hex": "8181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181818181"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "deep maps",
+      "fn": "decode",
+      "input": {
+        "hex": "a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a16161a1616180"
+      },
+      "output": {
+        "a": {
+          "a": {
+            "a": {
+              "a": {
+                "a": {
+                  "a": {
+                    "a": {
+                      "a": {
+                        "a": {
+                          "a": {
+                            "a": {
+                              "a": {
+                                "a": {
+                                  "a": {
+                                    "a": {
+                                      "a": {
+                                        "a": {
+                                          "a": {
+                                            "a": {
+                                              "a": {
+                                                "a": {
+                                                  "a": {
+                                                    "a": {
+                                                      "a": {
+                                                        "a": {
+                                                          "a": {
+                                                            "a": {
+                                                              "a": {
+                                                                "a": {
+                                                                  "a": {
+                                                                    "a": {
+                                                                      "a": {
+                                                                        "a": {
+                                                                          "a": {
+                                                                            "a": {
+                                                                              "a": {
+                                                                                "a": {
+                                                                                  "a": {
+                                                                                    "a": {
+                                                                                      "a": {
+                                                                                        "a": {
+                                                                                          "a": {
+                                                                                            "a": {
+                                                                                              "a": {
+                                                                                                "a": {
+                                                                                                  "a": {
+                                                                                                    "a": {
+                                                                                                      "a": {
+                                                                                                        "a": {
+                                                                                                          "a": {
+                                                                                                            "a": {
+                                                                                                              "a": {
+                                                                                                                "a": {
+                                                                                                                  "a": {
+                                                                                                                    "a": {
+                                                                                                                      "a": {
+                                                                                                                        "a": {
+                                                                                                                          "a": {
+                                                                                                                            "a": {
+                                                                                                                              "a": {
+                                                                                                                                "a": {
+                                                                                                                                  "a": {
+                                                                                                                                    "a": {
+                                                                                                                                      "a": {
+                                                                                                                                        "a": {
+                                                                                                                                          "a": {
+                                                                                                                                            "a": {
+                                                                                                                                              "a": {
+                                                                                                                                                "a": {
+                                                                                                                                                  "a": {
+                                                                                                                                                    "a": {
+                                                                                                                                                      "a": {
+                                                                                                                                                        "a": {
+                                                                                                                                                          "a": {
+                                                                                                                                                            "a": {
+                                                                                                                                                              "a": {
+                                                                                                                                                                "a": {
+                                                                                                                                                                  "a": {
+                                                                                                                                                                    "a": {
+                                                                                                                                                                      "a": {
+                                                                                                                                                                        "a": {
+                                                                                                                                                                          "a": {
+                                                                                                                                                                            "a": {
+                                                                                                                                                                              "a": {
+                                                                                                                                                                                "a": {
+                                                                                                                                                                                  "a": {
+                                                                                                                                                                                    "a": {
+                                                                                                                                                                                      "a": {
+                                                                                                                                                                                        "a": {
+                                                                                                                                                                                          "a": {
+                                                                                                                                                                                            "a": {
+                                                                                                                                                                                              "a": {
+                                                                                                                                                                                                "a": {
+                                                                                                                                                                                                  "a": {
+                                                                                                                                                                                                    "a": {
+                                                                                                                                                                                                      "a": {
+                                                                                                                                                                                                        "a": {
+                                                                                                                                                                                                          "a": {
+                                                                                                                                                                                                            "a": {
+                                                                                                                                                                                                              "a": {
+                                                                                                                                                                                                                "a": {
+                                                                                                                                                                                                                  "a": {
+                                                                                                                                                                                                                    "a": {
+                                                                                                                                                                                                                      "a": {
+                                                                                                                                                                                                                        "a": {
+                                                                                                                                                                                                                          "a": {
+                                                                                                                                                                                                                            "a": {
+                                                                                                                                                                                                                              "a": {
+                                                                                                                                                                                                                                "a": {
+                                                                                                                                                                                                                                  "a": {
+                                                                                                                                                                                                                                    "a": {
+                                                                                                                                                                                                                                      "a": {
+                                                                                                                                                                                                                                        "a": {
+                                                                                                                                                                                                                                          "a": {
+                                                                                                                                                                                                                                            "a": {
+                                                                                                                                                                                                                                              "a": {
+                                                                                                                                                                                                                                                "a": {
+                                                                                                                                                                                                                                                  "a": {
+                                                                                                                                                                                                                                                    "a": {
+                                                                                                                                                                                                                                                      "a": {
+                                                                                                                                                                                                                                                        "a": {
+                                                                                                                                                                                                                                                          "a": {
+                                                                                                                                                                                                                                                            "a": {
+                                                                                                                                                                                                                                                              "a": {
+                                                                                                                                                                                                                                                                "a": {
+                                                                                                                                                                                                                                                                  "a": {
+                                                                                                                                                                                                                                                                    "a": []
+                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                              }
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                              }
+                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                              }
+                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                              }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                          }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                      }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                  }
+                                                                                                                                                                                                }
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          }
+                                                                                                                                                                                        }
+                                                                                                                                                                                      }
+                                                                                                                                                                                    }
+                                                                                                                                                                                  }
+                                                                                                                                                                                }
+                                                                                                                                                                              }
+                                                                                                                                                                            }
+                                                                                                                                                                          }
+                                                                                                                                                                        }
+                                                                                                                                                                      }
+                                                                                                                                                                    }
+                                                                                                                                                                  }
+                                                                                                                                                                }
+                                                                                                                                                              }
+                                                                                                                                                            }
+                                                                                                                                                          }
+                                                                                                                                                        }
+                                                                                                                                                      }
+                                                                                                                                                    }
+                                                                                                                                                  }
+                                                                                                                                                }
+                                                                                                                                              }
+                                                                                                                                            }
+                                                                                                                                          }
+                                                                                                                                        }
+                                                                                                                                      }
+                                                                                                                                    }
+                                                                                                                                  }
+                                                                                                                                }
+                                                                                                                              }
+                                                                                                                            }
+                                                                                                                          }
+                                                                                                                        }
+                                                                                                                      }
+                                                                                                                    }
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              }
+                                                                                                            }
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "record prefix 0",
+      "fn": "decode",
+      "input": {
+        "hex": ""
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 3",
+      "fn": "decode",
+      "input": {
+        "hex": "a56372"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 6",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d8"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 9",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a5825"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 12",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a5825000171"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 15",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 18",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac60"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 21",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 24",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 27",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 30",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b29878"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 33",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b29878713431"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 36",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d009"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 39",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 42",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af70"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 45",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c8"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 48",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 51",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 54",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 57",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 60",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465787462"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 63",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465787462686965"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 66",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465787462686965247479"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 69",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465787462686965247479706572"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 72",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d6373696743010203647465787462686965247479706572617070"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 75",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e6273"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 78",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 81",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 84",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e70"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 87",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f7374"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 90",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f7374666661"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 93",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f7374666661636574"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 96",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a2"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 99",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 102",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 105",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 108",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 111",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 114",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 117",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 120",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465537461"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 123",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465537461727400"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 126",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465537461727400686665"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 129",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465537461727400686665617475"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    },
+    {
+      "id": "record prefix 132",
+      "fn": "decode",
+      "input": {
+        "hex": "a563726566d82a58250001711220de51ac6022f723545afb465679b2987871343184d00963a20d50af700ea8c86d63736967430102036474657874626869652474797065726170702e62736b792e666565642e706f73746666616365747381a265696e646578a26762797465456e64026962797465537461727400686665617475726573"
+      },
+      "output": {
+        "$throws": "unexpected end of input"
+      }
+    }
+  ]
+}

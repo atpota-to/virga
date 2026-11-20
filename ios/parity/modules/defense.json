@@ -1,0 +1,138 @@
+{
+  "domain": "defense",
+  "target": "VirgaDefense",
+  "wave": 2,
+  "summary": "Defense: harvest, scan, score and canary, radar layout, lists, veto, plan, history and the moderator's commands.",
+  "files": {
+    "src/defense/bandWords.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/BandWords.swift"
+      ],
+      "fixtures": [
+        "defense-early.bandWords"
+      ],
+      "synced": "83a4e7f378b5"
+    },
+    "src/defense/command.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Command.swift"
+      ],
+      "fixtures": [
+        "defense-early.command"
+      ],
+      "synced": "202b501d6fdb"
+    },
+    "src/defense/defenseService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/dmMessage.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/DmMessage.swift"
+      ],
+      "fixtures": [
+        "defense-early.dmMessage"
+      ],
+      "synced": "51896cd6e947"
+    },
+    "src/defense/harvest.js": {
+      "status": "pending",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Harvest+Types.swift"
+      ],
+      "note": "Only its data shapes so far (Harvest, HarvestTotals, Participant, HarvestSource, EngagementRecord, UnreadKind), which score.js and radar.js read. harvestPost reads Constellation and comes with VirgaNetwork in wave 2, with the module's pure helpers (engagementKind, KIND_ORDER, primaryKind, isDid, MAX_PAGES), building these same structs."
+    },
+    "src/defense/historyModel.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/HistoryModel.swift"
+      ],
+      "fixtures": [
+        "defense-early.historyModel"
+      ],
+      "synced": "5827741d6a9d"
+    },
+    "src/defense/limit.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Limit.swift"
+      ],
+      "fixtures": [
+        "defense-early.limit"
+      ],
+      "synced": "566f74a6145f"
+    },
+    "src/defense/pace.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Pace.swift"
+      ],
+      "fixtures": [
+        "defense-early.pace"
+      ],
+      "synced": "ac391cadf6a9"
+    },
+    "src/defense/pageModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/plan.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Plan.swift"
+      ],
+      "fixtures": [
+        "defense-early.plan"
+      ],
+      "synced": "6ea63b7b181b"
+    },
+    "src/defense/radar.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Radar.swift"
+      ],
+      "fixtures": [
+        "defense-early.radar"
+      ],
+      "synced": "4f3c28c978af"
+    },
+    "src/defense/scan.js": {
+      "status": "pending",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Scan+Types.swift"
+      ],
+      "note": "Only its data shapes so far (ScanResult, ScanPost, ScanStageReport, ScanStageHandler), which ScanStore keeps. runScan needs VirgaNetwork and VirgaSession (resolveHandle, the signed-in getProfiles, publicRelationships, curation lists through veto.js, isMissingScopeError) and VirgaPosting's parsePostLink (readPostInput), and comes in wave 2 with the rest of the module (STAGES, ScanError, scanErrorFrom, canaryCandidates, CANARY_CANDIDATES, CANARY_REQUIRED_AT). ScanStageHandler and Scorer's onProgress are async, so the port awaits each report."
+    },
+    "src/defense/scanStore.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/ScanStore.swift"
+      ],
+      "synced": "15baa5dfb174"
+    },
+    "src/defense/score.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Score.swift",
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Scorer.swift",
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Types.swift"
+      ],
+      "fixtures": [
+        "defense-early.score"
+      ],
+      "note": "All but publicRelationships, the one read score.js makes itself (the public app.bsky.graph.getRelationships through fetchWithTimeout and config’s APPVIEW): it comes with VirgaNetwork in wave 2. Until then Score.createScorer takes getRelationships from its caller, where the web defaults it to publicRelationships().",
+      "synced": "1007ad5be340"
+    },
+    "src/defense/useDefense.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/veto.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

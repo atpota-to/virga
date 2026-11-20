@@ -1,0 +1,213 @@
+{
+  "domain": "session",
+  "target": "VirgaSession",
+  "wave": 1,
+  "summary": "Accounts and sessions, scopes and health, sign-in a step at a time, and agreeing to the terms.",
+  "files": {
+    "src/accounts/accountCopy.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/AccountCopy.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionEvents.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. reauthModeFor and offersLongerSession take the account's mode. requestReauth and showSessionNotice dispatch on SessionEvents (the window's events: a @MainActor bus SessionNotices listens to). pendingWorkWarning also takes a PendingWorkEntry, where an account the check didn't cover reads as one it couldn't check, as undefined does on the web.",
+      "synced": "f83582ec6aa3"
+    },
+    "src/accounts/pendingWork.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/PendingWork.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. The posting services readPendingWork imports (listScheduled, listTimers, isActiveScheduledRow, isLiveTimer) sit above this target, so they come in as PendingWorkServices, which VirgaPosting supplies. readPendingWork's deadline is withDeadline over both lists (the web hands an 8 s AbortSignal to both). usePendingWork is PendingWorkModel (update(accounts:enabled:), entry(did) telling unasked from unreadable). Behaviour tests in AccountsModelTests.",
+      "synced": "1d537e12d271"
+    },
+    "src/accounts/usePendingReauth.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Accounts/PendingReauthModel.swift"
+      ],
+      "note": "As PendingReauthModel (@MainActor @Observable): beginPendingReauth, cancelPendingReauth, stop() for the unmount, and an injected sleep for the 2.5 s delay. On the web the sign-in navigates away; here it comes back, so the notice is taken down when it finishes. Behaviour tests in AccountsModelTests.",
+      "synced": "d19337ab4169"
+    },
+    "src/legal/acceptance.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Acceptance.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "fe97981d988c"
+    },
+    "src/legal/documents.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Documents.swift"
+      ],
+      "fixtures": [
+        "session.legal",
+        "session.markdown"
+      ],
+      "note": "All of it. The web imports the two Markdown files at build time; the app bundles the same files (ios/project.yml) and readDocument(key) loads them through LegalDocuments.loader (Bundle.main by default); readDocument(key, source:) reads given text.",
+      "synced": "c664020730c8"
+    },
+    "src/legal/markdown.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Markdown.swift"
+      ],
+      "fixtures": [
+        "session.markdown"
+      ],
+      "synced": "652610693c7a"
+    },
+    "src/legal/termsService.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/TermsService.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "cbd281c2703f"
+    },
+    "src/legal/useTermsAcceptance.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/TermsAcceptanceModel.swift"
+      ],
+      "note": "As TermsAcceptanceModel (@MainActor @Observable): update(did:mode:) stands for the hook's props, storageChanged(key:) for the window's storage event (the host calls it if it watches the store), stop() for the unmount. The page-load Set of reported agreements is a static for the app's run. Behaviour tests in TermsAcceptanceModelTests.",
+      "synced": "df3dac0ae0f8"
+    },
+    "src/legal/version.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Legal/Version.swift"
+      ],
+      "fixtures": [
+        "session.legal"
+      ],
+      "synced": "0084abb10869"
+    },
+    "src/lib/oauthClient.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Lib/OAuthClient.swift"
+      ],
+      "fixtures": [
+        "session.oauth"
+      ],
+      "note": "signInErrorMessage and callbackErrorMessage, word for word. Not ported: getOauthClient, getOauthEvents, buildLoopbackClientId and buildClientMetadata, the browser's own OAuth client (@atproto/oauth-client-browser) and its metadata (which api/client-metadata.js serves for the web): the iOS app signs in only through Virga's server, through VirgaSession's SessionController and a WebAuthenticator (ASWebAuthenticationSession in VirgaUI).",
+      "synced": "cfada69b84e4"
+    },
+    "src/lib/sessionHint.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Lib/SessionHint.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "synced": "c77c5309a1b5"
+    },
+    "src/session/accounts.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/Accounts.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SecretStore.swift"
+      ],
+      "fixtures": [
+        "session.accounts"
+      ],
+      "note": "All of it. The token is kept in a SecretStore (the Keychain on Apple platforms, KeychainSecretStore) under the web's key instead of beside the rest in the key-value store, so readBackendToken/writeBackendToken/removeBackendToken take the secret store and forgetAccount takes both. updateAccount takes a closure that changes the row (the web's merged fields), recordSignIn's scope is SignInScope (.unsaid = undefined, .cleared = null, .granted). localDataKeys gives the keep lists it finds in code-unit order (the web: the browser's storage order). lastOpenedLabel takes the zone (AppLocale.activeTimeZone() by default).",
+      "synced": "9142b9727b12"
+    },
+    "src/session/browserDriver.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/BrowserDriver.swift"
+      ],
+      "note": "Only the driver's interface, as BrowserSessionDriver (with BrowserOAuthSession and BrowserRestoreError), which SessionController takes so its browser branches are the web's; the app passes NoBrowserSessions. Not ported: createBrowserDriver and its helpers (classifyRestoreError, isRevokedCause, grantedScopeOf, isCallbackResult), which wrap @atproto/oauth-client-browser: there are no browser sessions on iOS, which signs in only through Virga's server.",
+      "synced": "17608a4bf954"
+    },
+    "src/session/scopes.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/Scopes.swift"
+      ],
+      "fixtures": [
+        "session.scopes"
+      ],
+      "synced": "12a957b53583"
+    },
+    "src/session/sessionController.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/session/sessionHealth.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionHealth.swift"
+      ],
+      "fixtures": [
+        "session.health"
+      ],
+      "note": "All of it. createSessionChecker is SessionChecker, a @MainActor class (check/forget/peek); the probe and onResult run on the main actor, as the controller's do.",
+      "synced": "1d1f9e911cf5"
+    },
+    "src/session/useAtprotoSession.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/flow.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Flow.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. The events are SignInFlowEvent cases (the web's { type } objects); a state the web hands back untouched is the same value here.",
+      "synced": "2e5a380e62c0"
+    },
+    "src/signin/hosts.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Hosts.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. signUpAt takes the session's signIn and SignInOptions; cancelling the task is the web's aborted signal.",
+      "synced": "d7b7c2f473df"
+    },
+    "src/signin/identity.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Identity.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. createIdentityResolver is SignInIdentity.Resolver (transport, clock, DID-document cache, appview), the module's shared resolveSignInHost/resolveSignInIdentity its statics. Cancelling the task stands for the signal: the lookup throws CancellationError where the web throws an AbortError DOMException. A profile's handle or avatar that isn't a string is dropped (the web keeps any truthy value).",
+      "synced": "7b24ac6fc866"
+    },
+    "src/signin/suggest.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/SignIn/Suggest.swift"
+      ],
+      "fixtures": [
+        "session.signin"
+      ],
+      "note": "All of it. searchAccounts' error is SuggestError (message HTTP <status>, status). A negative limit takes none (the web's slice(0, -n) takes all but the last n).",
+      "synced": "94b89e05a9a3"
+    }
+  }
+}

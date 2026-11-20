@@ -1,0 +1,77 @@
+{
+  "name": "api.surface",
+  "sources": [
+    "api/ai/[action].js",
+    "api/defense/[action].js",
+    "api/limits/[action].js",
+    "api/oauth/[action].js",
+    "api/schedule/[action].js",
+    "api/self-destruct/[action].js",
+    "api/terms/[action].js"
+  ],
+  "cases": [
+    {
+      "id": "areas",
+      "fn": "areas",
+      "input": {},
+      "output": {
+        "ai": [
+          "alt-text",
+          "analyze-post",
+          "synthesize-style"
+        ],
+        "defense": [
+          "approve",
+          "history",
+          "keep",
+          "link",
+          "link-code",
+          "link-list",
+          "list-create",
+          "lists",
+          "moderator",
+          "plan",
+          "run",
+          "undo",
+          "unkeep",
+          "unlink"
+        ],
+        "limits": [
+          "status"
+        ],
+        "oauth": [
+          "callback",
+          "client-metadata",
+          "client-metadata.json",
+          "jwks",
+          "jwks.json",
+          "login",
+          "logout",
+          "proxy",
+          "session",
+          "upload-blob"
+        ],
+        "schedule": [
+          "cancel",
+          "create",
+          "get",
+          "list",
+          "media",
+          "reorder",
+          "run",
+          "update"
+        ],
+        "self-destruct": [
+          "cancel",
+          "create",
+          "list",
+          "run"
+        ],
+        "terms": [
+          "accept",
+          "status"
+        ]
+      }
+    }
+  ]
+}

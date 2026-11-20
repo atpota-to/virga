@@ -1,0 +1,295 @@
+{
+  "domain": "ui-shell",
+  "target": "VirgaUI",
+  "wave": 4,
+  "summary": "The SwiftUI shell: the sky and theme, components, navigation, sign-in, the agreement, legal pages, accounts and settings.",
+  "files": {
+    "src/App.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/AccountMenu.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/AccountsSettings.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/AddAccountDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/PostingPermissionNotice.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/SessionNotices.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/accounts/accounts.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/charts/charts.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/AccessBadge.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Avatar.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Button.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Delta.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Dialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Figures.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/InfoTip.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Menu.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/components/Segmented.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/dashboards/dashboards.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/defense/defense.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/Hillside.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/LiveSky.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/clouds.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/hillside.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/land.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/hillside/scene.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/LegalDialog.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/LegalDocument.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/LegalPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/TermsGate.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/legal/legal.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/main.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/pages/Landing.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/pages/SignInReturn.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/composer/composer.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/library/library.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/hub.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/pages/schedule.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/posting.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/adviser.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/reports/reports.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/settings/SettingsPage.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/settings/settings.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/share/share.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/CommandPalette.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/FirstRun.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/MobileNav.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/Shell.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/Sidebar.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/SyncStatus.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/bits.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/commandPalette.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/shell/shell.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/HandleField.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/HowSigningInWorks.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/SignInFlow.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/parts.jsx": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/signin/signin.css": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/styles/app.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "989bc46fd9c1"
+    },
+    "src/styles/base.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "25a6fa774758"
+    },
+    "src/styles/controls.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "synced": "68853fcaa0a5"
+    },
+    "src/styles/theme.css": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Values.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Cascade.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Blocks.swift",
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+      ],
+      "fixtures": [
+        "ui.theme",
+        "ui.themeKit"
+      ],
+      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4). Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
+      "synced": "6fa7f1283fe1"
+    },
+    "src/tools/tools.css": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

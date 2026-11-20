@@ -1,0 +1,6801 @@
+{
+  "name": "ui.themeKit",
+  "sources": [
+    "src/styles/theme.css",
+    "src/styles/base.css",
+    "src/styles/controls.css",
+    "src/styles/app.css"
+  ],
+  "cases": [
+    {
+      "id": "bodyFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "body",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-base)",
+        "important": false,
+        "value": {
+          "var": "--text-base"
+        }
+      }
+    },
+    {
+      "id": "bodyLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "body",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.45",
+        "important": false,
+        "value": {
+          "number": 1.45
+        }
+      }
+    },
+    {
+      "id": "bodyFont",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "body",
+        "media": null,
+        "property": "font-family",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--sans)",
+        "important": false,
+        "value": {
+          "var": "--sans"
+        }
+      }
+    },
+    {
+      "id": "bodyNumerals",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "body",
+        "media": null,
+        "property": "font-variant-numeric",
+        "kind": "keyword"
+      },
+      "output": {
+        "css": "tabular-nums",
+        "important": false,
+        "value": {
+          "keyword": "tabular-nums"
+        }
+      }
+    },
+    {
+      "id": "skyWash",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "body",
+        "media": null,
+        "property": "background-image",
+        "kind": "gradient"
+      },
+      "output": {
+        "css": "linear-gradient(180deg, var(--sky-top) 0, var(--sky-mid) var(--sky-mid-at), var(--bg) var(--sky-end))",
+        "important": false,
+        "value": {
+          "gradient": {
+            "angle": 180,
+            "stops": [
+              {
+                "color": {
+                  "var": "--sky-top"
+                },
+                "position": {
+                  "value": 0,
+                  "unit": "px"
+                }
+              },
+              {
+                "color": {
+                  "var": "--sky-mid"
+                },
+                "position": {
+                  "var": "--sky-mid-at"
+                }
+              },
+              {
+                "color": {
+                  "var": "--bg"
+                },
+                "position": {
+                  "var": "--sky-end"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "headingWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "h1",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "headingTracking",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "h1",
+        "media": null,
+        "property": "letter-spacing",
+        "kind": "length"
+      },
+      "output": {
+        "css": "-0.012em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": -0.012,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "headingLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "h1",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.25",
+        "important": false,
+        "value": {
+          "number": 1.25
+        }
+      }
+    },
+    {
+      "id": "strongWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "strong",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "linkUnderlineOffset",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "a",
+        "media": null,
+        "property": "text-underline-offset",
+        "kind": "length"
+      },
+      "output": {
+        "css": "0.2em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 0.2,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "linkUnderlineThickness",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "a",
+        "media": null,
+        "property": "text-decoration-thickness",
+        "kind": "length"
+      },
+      "output": {
+        "css": "1px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 1,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "linkHoverUnderlineThickness",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "a:hover",
+        "media": "(hover: hover)",
+        "property": "text-decoration-thickness",
+        "kind": "length"
+      },
+      "output": {
+        "css": "2px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "codeFont",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "code",
+        "media": null,
+        "property": "font-family",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--code)",
+        "important": false,
+        "value": {
+          "var": "--code"
+        }
+      }
+    },
+    {
+      "id": "codeFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "code",
+        "media": null,
+        "property": "font-size",
+        "kind": "length"
+      },
+      "output": {
+        "css": "0.92em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 0.92,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "focusOutline",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": ":focus-visible",
+        "media": null,
+        "property": "outline",
+        "kind": "border"
+      },
+      "output": {
+        "css": "2px solid var(--focus-ring)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 2,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--focus-ring"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "focusOutlineOffset",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": ":focus-visible",
+        "media": null,
+        "property": "outline-offset",
+        "kind": "length"
+      },
+      "output": {
+        "css": "2px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "selectionFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "::selection",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--accent-line)",
+        "important": false,
+        "value": {
+          "var": "--accent-line"
+        }
+      }
+    },
+    {
+      "id": "selectionInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "::selection",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink)",
+        "important": false,
+        "value": {
+          "var": "--ink"
+        }
+      }
+    },
+    {
+      "id": "reducedMotionDuration",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/base.css",
+        "selector": "*",
+        "media": "(prefers-reduced-motion: reduce)",
+        "property": "transition-duration",
+        "kind": "time"
+      },
+      "output": {
+        "css": "0.01ms",
+        "important": true,
+        "value": {
+          "time": 0.00001
+        }
+      }
+    },
+    {
+      "id": "buttonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--control-h)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--control-h"
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 16px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 16,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 16,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "8px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 8,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonBorder",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "border",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--line-2)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line-2"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "border-radius",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--pill)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--pill"
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "font-size",
+        "kind": "length"
+      },
+      "output": {
+        "css": "0.875rem",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 0.875,
+            "unit": "rem"
+          }
+        }
+      }
+    },
+    {
+      "id": "buttonWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "buttonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink)",
+        "important": false,
+        "value": {
+          "var": "--ink"
+        }
+      }
+    },
+    {
+      "id": "buttonTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "background-color",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            },
+            {
+              "property": "border-color",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            },
+            {
+              "property": "color",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "buttonHoverEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn:hover:not(:disabled)",
+        "media": "(hover: hover)",
+        "property": "border-color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink)",
+        "important": false,
+        "value": {
+          "var": "--ink"
+        }
+      }
+    },
+    {
+      "id": "primaryButtonFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--primary",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--btn)",
+        "important": false,
+        "value": {
+          "var": "--btn"
+        }
+      }
+    },
+    {
+      "id": "primaryButtonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--primary",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--on-btn)",
+        "important": false,
+        "value": {
+          "var": "--on-btn"
+        }
+      }
+    },
+    {
+      "id": "primaryButtonWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--primary",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "primaryButtonHoverFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--primary:hover:not(:disabled)",
+        "media": "(hover: hover)",
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--btn-hover)",
+        "important": false,
+        "value": {
+          "var": "--btn-hover"
+        }
+      }
+    },
+    {
+      "id": "dangerButtonFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--danger",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "dangerButtonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--danger",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "#ffffff",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "dangerButtonHoverFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--danger:hover:not(:disabled)",
+        "media": "(hover: hover)",
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger-hover)",
+        "important": false,
+        "value": {
+          "var": "--danger-hover"
+        }
+      }
+    },
+    {
+      "id": "dangerButtonFillAtNight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ":root[data-theme='dark'] .btn--danger",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "#b42318",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 0.7058823529411765,
+            "green": 0.13725490196078433,
+            "blue": 0.09411764705882353,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "dangerButtonHoverFillAtNight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ":root[data-theme='dark'] .btn--danger:hover:not(:disabled)",
+        "media": "(hover: hover)",
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "#912018",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 0.5686274509803921,
+            "green": 0.12549019607843137,
+            "blue": 0.09411764705882353,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "ghostButtonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--ghost",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink-2)",
+        "important": false,
+        "value": {
+          "var": "--ink-2"
+        }
+      }
+    },
+    {
+      "id": "ghostButtonHoverFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--ghost:hover:not(:disabled)",
+        "media": "(hover: hover)",
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--hover)",
+        "important": false,
+        "value": {
+          "var": "--hover"
+        }
+      }
+    },
+    {
+      "id": "smallButtonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--sm",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "30px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 30,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallButtonPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--sm",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 12,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "smallButtonGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--sm",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "6px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 6,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallButtonFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--sm",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "largeButtonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--lg",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "46px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 46,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "largeButtonPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--lg",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 22px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 22,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 22,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "largeButtonFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--lg",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-md)",
+        "important": false,
+        "value": {
+          "var": "--text-md"
+        }
+      }
+    },
+    {
+      "id": "iconButtonWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--icon",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--control-h)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--control-h"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallIconButtonWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--icon.btn--sm",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "30px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 30,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "largeIconButtonWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--icon.btn--lg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "46px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 46,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "stateButtonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn.is-on",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "disabledOpacity",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn:disabled",
+        "media": null,
+        "property": "opacity",
+        "kind": "number"
+      },
+      "output": {
+        "css": "0.45",
+        "important": false,
+        "value": {
+          "number": 0.45
+        }
+      }
+    },
+    {
+      "id": "destructiveButtonInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn.is-danger",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "linkActionFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "linkActionWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "linkActionGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "6px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 6,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "linkActionUnderlineOffset",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action",
+        "media": null,
+        "property": "text-underline-offset",
+        "kind": "length"
+      },
+      "output": {
+        "css": "3px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 3,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "linkActionIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action svg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "14px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 14,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "linkActionOpenWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".link-action[aria-expanded='true']",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "moreLinkFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".more-link",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "moreLinkInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".more-link",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "moreLinkWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".more-link",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "400",
+        "important": false,
+        "value": {
+          "number": 400
+        }
+      }
+    },
+    {
+      "id": "segmentedGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "18px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 18,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "segmentedKeyHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--control-h)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--control-h"
+          }
+        }
+      }
+    },
+    {
+      "id": "segmentedKeyFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-base)",
+        "important": false,
+        "value": {
+          "var": "--text-base"
+        }
+      }
+    },
+    {
+      "id": "segmentedKeyWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "400",
+        "important": false,
+        "value": {
+          "number": 400
+        }
+      }
+    },
+    {
+      "id": "segmentedKeyInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "segmentedKeyTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "color 0.12s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "color",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "segmentedOnInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key.is-on",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink)",
+        "important": false,
+        "value": {
+          "var": "--ink"
+        }
+      }
+    },
+    {
+      "id": "segmentedOnWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key.is-on",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "segmentedOnUnderline",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key.is-on",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 -2px 0 var(--ink)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": -2,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": null,
+              "color": {
+                "var": "--ink"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "segmentedIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-icon",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "15px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 15,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallSegmentedGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented--sm",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "16px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 16,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallSegmentedKeyHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented--sm .segmented-key",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "28px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 28,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallSegmentedKeyFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented--sm .segmented-key",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "scrollFadeWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".scroll-row[data-overflow='both']",
+        "media": null,
+        "property": "mask-image",
+        "kind": "gradient"
+      },
+      "output": {
+        "css": "linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent)",
+        "important": false,
+        "value": {
+          "gradient": {
+            "angle": 90,
+            "stops": [
+              {
+                "color": {
+                  "color": {
+                    "red": 0,
+                    "green": 0,
+                    "blue": 0,
+                    "alpha": 0
+                  }
+                },
+                "position": null
+              },
+              {
+                "color": {
+                  "color": {
+                    "red": 0,
+                    "green": 0,
+                    "blue": 0,
+                    "alpha": 1
+                  }
+                },
+                "position": {
+                  "value": 24,
+                  "unit": "px"
+                }
+              },
+              {
+                "color": {
+                  "color": {
+                    "red": 0,
+                    "green": 0,
+                    "blue": 0,
+                    "alpha": 1
+                  }
+                },
+                "position": {
+                  "fn": "calc",
+                  "args": [
+                    {
+                      "op": "-",
+                      "left": {
+                        "value": 100,
+                        "unit": "%"
+                      },
+                      "right": {
+                        "value": 24,
+                        "unit": "px"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "color": {
+                  "color": {
+                    "red": 0,
+                    "green": 0,
+                    "blue": 0,
+                    "alpha": 0
+                  }
+                },
+                "position": null
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "cardHeadGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-head",
+        "media": null,
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "var(--space-2) var(--space-4)",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "var": "--space-2"
+            },
+            "column": {
+              "var": "--space-4"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "cardHeadSpaceBelow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-head",
+        "media": null,
+        "property": "margin-bottom",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-4)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-4"
+          }
+        }
+      }
+    },
+    {
+      "id": "cardTitleFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-title",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-md)",
+        "important": false,
+        "value": {
+          "var": "--text-md"
+        }
+      }
+    },
+    {
+      "id": "cardTitleWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-title",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "cardTitleTracking",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-title",
+        "media": null,
+        "property": "letter-spacing",
+        "kind": "length"
+      },
+      "output": {
+        "css": "-0.005em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": -0.005,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "cardSubFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-sub",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "cardSubInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-sub",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "cardSubSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-sub",
+        "media": null,
+        "property": "margin-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "2px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "cardSubMaxWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-sub",
+        "media": null,
+        "property": "max-width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--measure)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--measure"
+          }
+        }
+      }
+    },
+    {
+      "id": "cardCaptionSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-caption",
+        "media": null,
+        "property": "margin-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-3)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-3"
+          }
+        }
+      }
+    },
+    {
+      "id": "flushHeadSpaceBelow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card--flush > .card-head",
+        "media": null,
+        "property": "padding-bottom",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-3)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-3"
+          }
+        }
+      }
+    },
+    {
+      "id": "flushHeadRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card--flush > .card-head",
+        "media": null,
+        "property": "border-bottom",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--rule)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--rule"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "cardFootSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".card-foot",
+        "media": null,
+        "property": "margin-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-3)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-3"
+          }
+        }
+      }
+    },
+    {
+      "id": "headActionsGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".head-actions",
+        "media": null,
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "8px 24px",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "value": 8,
+              "unit": "px"
+            },
+            "column": {
+              "value": 24,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "headToolsGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".head-tools",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "4px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 4,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "listToolbarGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".list-toolbar",
+        "media": null,
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "12px 32px",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "value": 12,
+              "unit": "px"
+            },
+            "column": {
+              "value": 32,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "listToolbarSpaceBelow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".list-toolbar",
+        "media": null,
+        "property": "margin-bottom",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-4)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-4"
+          }
+        }
+      }
+    },
+    {
+      "id": "phoneListToolbarGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".list-toolbar",
+        "media": "(max-width: 560px)",
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "12px 16px",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "value": 12,
+              "unit": "px"
+            },
+            "column": {
+              "value": 16,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "rowActionsGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".row-actions",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "8px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 8,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "chartFootGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chart-foot",
+        "media": null,
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "8px 24px",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "value": 8,
+              "unit": "px"
+            },
+            "column": {
+              "value": 24,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chartFootSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chart-foot",
+        "media": null,
+        "property": "margin-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--space-3)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--space-3"
+          }
+        }
+      }
+    },
+    {
+      "id": "figuresGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures",
+        "media": null,
+        "property": "gap",
+        "kind": "gap"
+      },
+      "output": {
+        "css": "20px var(--space-6)",
+        "important": false,
+        "value": {
+          "gap": {
+            "row": {
+              "value": 20,
+              "unit": "px"
+            },
+            "column": {
+              "var": "--space-6"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "figureCellGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-cell",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "8px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 8,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "figureCellPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-cell",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "16px 0 0",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 16,
+              "unit": "px"
+            },
+            "right": {
+              "value": 0,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "figureCellRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-cell",
+        "media": null,
+        "property": "border-top",
+        "kind": "border"
+      },
+      "output": {
+        "css": "2px solid var(--line)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 2,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "figureLabelFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-label",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "figureLabelWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-label",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "figureLabelInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-label",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink-2)",
+        "important": false,
+        "value": {
+          "var": "--ink-2"
+        }
+      }
+    },
+    {
+      "id": "figureValueFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-value",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--figure-size)",
+        "important": false,
+        "value": {
+          "var": "--figure-size"
+        }
+      }
+    },
+    {
+      "id": "figureValueWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-value",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "figureValueTracking",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-value",
+        "media": null,
+        "property": "letter-spacing",
+        "kind": "length"
+      },
+      "output": {
+        "css": "-0.04em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": -0.04,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "figureValueLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-value",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1",
+        "important": false,
+        "value": {
+          "number": 1
+        }
+      }
+    },
+    {
+      "id": "figureNoteFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-note",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "figureNoteLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-note",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.35",
+        "important": false,
+        "value": {
+          "number": 1.35
+        }
+      }
+    },
+    {
+      "id": "phoneFiguresColumnGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures",
+        "media": "(max-width: 560px)",
+        "property": "column-gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "20px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 20,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "phoneFigureCellPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".figures-cell",
+        "media": "(max-width: 560px)",
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "12px 0 0",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 12,
+              "unit": "px"
+            },
+            "right": {
+              "value": 0,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "deltaFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".delta",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "deltaWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".delta",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "menuListMinWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "min-width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "13rem",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 13,
+            "unit": "rem"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuListPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "6px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 6,
+              "unit": "px"
+            },
+            "right": {
+              "value": 6,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 6,
+              "unit": "px"
+            },
+            "left": {
+              "value": 6,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "menuListRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "border-radius",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--radius-lg)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--radius-lg"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuListEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "border",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--line)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "menuListFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--surface)",
+        "important": false,
+        "value": {
+          "var": "--surface"
+        }
+      }
+    },
+    {
+      "id": "menuListShadow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--shadow-lg)",
+        "important": false,
+        "value": {
+          "var": "--shadow-lg"
+        }
+      }
+    },
+    {
+      "id": "menuItemPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "8px 10px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 8,
+              "unit": "px"
+            },
+            "right": {
+              "value": 10,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 8,
+              "unit": "px"
+            },
+            "left": {
+              "value": 10,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "menuItemGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "10px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 10,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuItemRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item",
+        "media": null,
+        "property": "border-radius",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--radius)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--radius"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuItemHoverFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item:hover",
+        "media": "(hover: hover)",
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--hover)",
+        "important": false,
+        "value": {
+          "var": "--hover"
+        }
+      }
+    },
+    {
+      "id": "menuItemDangerInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item[data-tone='danger']",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "menuItemIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item-icon",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "16px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 16,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuItemLabelWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item-label",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "menuItemHintLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item-hint",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.35",
+        "important": false,
+        "value": {
+          "number": 1.35
+        }
+      }
+    },
+    {
+      "id": "menuSheetRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list.menu-list--sheet",
+        "media": null,
+        "property": "border-radius",
+        "kind": "box"
+      },
+      "output": {
+        "css": "16px 16px 0 0",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 16,
+              "unit": "px"
+            },
+            "right": {
+              "value": 16,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "menuScrimFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-scrim",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--scrim)",
+        "important": false,
+        "value": {
+          "var": "--scrim"
+        }
+      }
+    },
+    {
+      "id": "menuScrimAnimation",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-scrim",
+        "media": "(prefers-reduced-motion: no-preference)",
+        "property": "animation",
+        "kind": "animation"
+      },
+      "output": {
+        "css": "menu-scrim-in 0.16s var(--ease)",
+        "important": false,
+        "value": {
+          "animation": {
+            "name": "menu-scrim-in",
+            "duration": 0.16,
+            "easing": {
+              "var": "--ease"
+            },
+            "delay": 0,
+            "iterations": 1,
+            "infinite": false,
+            "fill": "none"
+          }
+        }
+      }
+    },
+    {
+      "id": "menuSheetAnimation",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-list--sheet",
+        "media": "(prefers-reduced-motion: no-preference)",
+        "property": "animation",
+        "kind": "animation"
+      },
+      "output": {
+        "css": "menu-sheet-in 0.2s var(--ease)",
+        "important": false,
+        "value": {
+          "animation": {
+            "name": "menu-sheet-in",
+            "duration": 0.2,
+            "easing": {
+              "var": "--ease"
+            },
+            "delay": 0,
+            "iterations": 1,
+            "infinite": false,
+            "fill": "none"
+          }
+        }
+      }
+    },
+    {
+      "id": "fieldGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".field",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "6px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 6,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "fieldLabelFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".field-label",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "fieldLabelWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".field-label",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "inputHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--control-h)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--control-h"
+          }
+        }
+      }
+    },
+    {
+      "id": "inputPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 12,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "inputBorder",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "border",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--line-2)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line-2"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "inputRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "border-radius",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--radius)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--radius"
+          }
+        }
+      }
+    },
+    {
+      "id": "inputFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "color-mix(in srgb, var(--surface) 72%, transparent)",
+        "important": false,
+        "value": {
+          "colorMix": {
+            "space": "srgb",
+            "first": {
+              "var": "--surface"
+            },
+            "firstPercent": 72,
+            "second": {
+              "color": {
+                "red": 0,
+                "green": 0,
+                "blue": 0,
+                "alpha": 0
+              }
+            },
+            "secondPercent": null
+          }
+        }
+      }
+    },
+    {
+      "id": "inputTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "border-color 0.12s ease, box-shadow 0.12s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "border-color",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            },
+            {
+              "property": "box-shadow",
+              "duration": 0.12,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "inputPlaceholderInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input::placeholder",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "invalidFocusRing",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input[aria-invalid='true']",
+        "media": null,
+        "property": "--focus-ring",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "invalidFocus",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input[aria-invalid='true']",
+        "media": null,
+        "property": "--focus",
+        "kind": "value"
+      },
+      "output": {
+        "css": "0 0 0 1px var(--focus-ring), 0 0 0 4px color-mix(in srgb, var(--focus-ring) 32%, transparent)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 1,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--focus-ring"
+              }
+            },
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 4,
+                "unit": "px"
+              },
+              "color": {
+                "colorMix": {
+                  "space": "srgb",
+                  "first": {
+                    "var": "--focus-ring"
+                  },
+                  "firstPercent": 32,
+                  "second": {
+                    "color": {
+                      "red": 0,
+                      "green": 0,
+                      "blue": 0,
+                      "alpha": 0
+                    }
+                  },
+                  "secondPercent": null
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalidEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input[aria-invalid='true']",
+        "media": null,
+        "property": "border-color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "highContrastInvalidFocus",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ":root[data-contrast='high'] .input[aria-invalid='true']",
+        "media": null,
+        "property": "--focus",
+        "kind": "value"
+      },
+      "output": {
+        "css": "0 0 0 2px var(--surface), 0 0 0 5px var(--focus-ring)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 2,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--surface"
+              }
+            },
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 5,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--focus-ring"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "largeInputHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input--lg",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "46px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 46,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "largeInputPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input--lg",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 16px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 16,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 16,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "textAreaMinHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": "textarea.input",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "calc(var(--control-h) * 2.5)",
+        "important": false,
+        "value": {
+          "length": {
+            "fn": "calc",
+            "args": [
+              {
+                "op": "*",
+                "left": {
+                  "var": "--control-h"
+                },
+                "right": {
+                  "number": 2.5
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "textAreaPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": "textarea.input",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "9px 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 9,
+              "unit": "px"
+            },
+            "right": {
+              "value": 12,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 9,
+              "unit": "px"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "textAreaLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": "textarea.input",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.5",
+        "important": false,
+        "value": {
+          "number": 1.5
+        }
+      }
+    },
+    {
+      "id": "disabledInputFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input:disabled",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--surface-2)",
+        "important": false,
+        "value": {
+          "var": "--surface-2"
+        }
+      }
+    },
+    {
+      "id": "overLimitInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".field-hint.is-over",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "checkGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".check",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "8px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 8,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "checkboxSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": "input[type='checkbox']",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "16px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 16,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "searchIconInset",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".search > svg",
+        "media": null,
+        "property": "left",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "searchInputLeading",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".search > .input",
+        "media": null,
+        "property": "padding-left",
+        "kind": "length"
+      },
+      "output": {
+        "css": "36px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 36,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "switchWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "40px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "switchHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch",
+        "media": null,
+        "property": "height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "24px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 24,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "switchPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "2px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 2,
+              "unit": "px"
+            },
+            "right": {
+              "value": 2,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 2,
+              "unit": "px"
+            },
+            "left": {
+              "value": 2,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "switchOffFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--line-2)",
+        "important": false,
+        "value": {
+          "var": "--line-2"
+        }
+      }
+    },
+    {
+      "id": "switchTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "background-color 0.15s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "background-color",
+              "duration": 0.15,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "switchKnobSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch::after",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "20px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 20,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "switchKnobFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch::after",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "#ffffff",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "switchKnobShadow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch::after",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "0 1px 2px rgb(15 27 51 / 0.3)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 1,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 2,
+                "unit": "px"
+              },
+              "spread": null,
+              "color": {
+                "color": {
+                  "red": 0.058823529411764705,
+                  "green": 0.10588235294117647,
+                  "blue": 0.2,
+                  "alpha": 0.3
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "switchKnobTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch::after",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "transform 0.15s var(--ease), background-color 0.15s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "transform",
+              "duration": 0.15,
+              "easing": {
+                "var": "--ease"
+              },
+              "delay": 0
+            },
+            {
+              "property": "background-color",
+              "duration": 0.15,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "switchOnFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch[aria-checked='true']",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--accent)",
+        "important": false,
+        "value": {
+          "var": "--accent"
+        }
+      }
+    },
+    {
+      "id": "switchOnKnobFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch[aria-checked='true']::after",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--on-accent)",
+        "important": false,
+        "value": {
+          "var": "--on-accent"
+        }
+      }
+    },
+    {
+      "id": "switchDisabledOpacity",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".switch:disabled",
+        "media": null,
+        "property": "opacity",
+        "kind": "number"
+      },
+      "output": {
+        "css": "0.5",
+        "important": false,
+        "value": {
+          "number": 0.5
+        }
+      }
+    },
+    {
+      "id": "badgeFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-xs)",
+        "important": false,
+        "value": {
+          "var": "--text-xs"
+        }
+      }
+    },
+    {
+      "id": "badgeLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge",
+        "media": null,
+        "property": "line-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "20px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 20,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "badgePadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 7px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 7,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 7,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "badgeWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "badgeGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "5px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 5,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "badgeIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge svg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "warnBadgeFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge--warn",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--warn-wash)",
+        "important": false,
+        "value": {
+          "var": "--warn-wash"
+        }
+      }
+    },
+    {
+      "id": "warnBadgeInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge--warn",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--warn)",
+        "important": false,
+        "value": {
+          "var": "--warn"
+        }
+      }
+    },
+    {
+      "id": "dangerBadgeFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge--danger",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger-wash)",
+        "important": false,
+        "value": {
+          "var": "--danger-wash"
+        }
+      }
+    },
+    {
+      "id": "dangerBadgeInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".badge--danger",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "metaFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "metaInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "metaLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.45",
+        "important": false,
+        "value": {
+          "number": 1.45
+        }
+      }
+    },
+    {
+      "id": "metaItemGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta > *",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "5px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 5,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "metaDotMargin",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta > :not(:last-child)::after",
+        "media": null,
+        "property": "margin",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 6px 0 1px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 6,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 1,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "metaIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta svg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "13px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 13,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "metaGroupGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta > .meta-group",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "metaKeyInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta .is-key",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink-2)",
+        "important": false,
+        "value": {
+          "var": "--ink-2"
+        }
+      }
+    },
+    {
+      "id": "metaKeyWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".meta .is-key",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "chipHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "30px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 30,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "chipPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 13px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 13,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 13,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chipFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "chipWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "chipBorder",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "border",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--line-2)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line-2"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chipInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink-2)",
+        "important": false,
+        "value": {
+          "var": "--ink-2"
+        }
+      }
+    },
+    {
+      "id": "chipOnFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip[aria-pressed='true']",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--btn)",
+        "important": false,
+        "value": {
+          "var": "--btn"
+        }
+      }
+    },
+    {
+      "id": "chipOnInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip[aria-pressed='true']",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--on-btn)",
+        "important": false,
+        "value": {
+          "var": "--on-btn"
+        }
+      }
+    },
+    {
+      "id": "chipOnWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip[aria-pressed='true']",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "tokenHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "30px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 30,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "tokenPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "0 4px 0 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 0,
+              "unit": "px"
+            },
+            "right": {
+              "value": 4,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 0,
+              "unit": "px"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tokenGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "4px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 4,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "tokenRemoveSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token-remove",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "24px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 24,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "tokenRemoveIconSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token-remove svg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "14px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 14,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "tokensGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".tokens",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "8px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 8,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "avatarSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "34px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 34,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "avatarFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "avatarWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "smallAvatarSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar--sm",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "24px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 24,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "smallAvatarFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar--sm",
+        "media": null,
+        "property": "font-size",
+        "kind": "length"
+      },
+      "output": {
+        "css": "11px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 11,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "largeAvatarSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar--lg",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "largeAvatarFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".avatar--lg",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-md)",
+        "important": false,
+        "value": {
+          "var": "--text-md"
+        }
+      }
+    },
+    {
+      "id": "dotSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "7px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 7,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "dotFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ok)",
+        "important": false,
+        "value": {
+          "var": "--ok"
+        }
+      }
+    },
+    {
+      "id": "warnDotFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot--warn",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--warn)",
+        "important": false,
+        "value": {
+          "var": "--warn"
+        }
+      }
+    },
+    {
+      "id": "dangerDotFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot--danger",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "idleDotFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot--idle",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--faint)",
+        "important": false,
+        "value": {
+          "var": "--faint"
+        }
+      }
+    },
+    {
+      "id": "currentDotFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".dot--current",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--accent)",
+        "important": false,
+        "value": {
+          "var": "--accent"
+        }
+      }
+    },
+    {
+      "id": "tableCellPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table td",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "var(--row-pad) 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "var": "--row-pad"
+            },
+            "right": {
+              "value": 12,
+              "unit": "px"
+            },
+            "bottom": {
+              "var": "--row-pad"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tableRowRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table td",
+        "media": null,
+        "property": "border-bottom",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--line)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tableHeadSpaceBelow",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table thead th",
+        "media": null,
+        "property": "padding-bottom",
+        "kind": "length"
+      },
+      "output": {
+        "css": "10px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 10,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "tableHeadRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table thead th",
+        "media": null,
+        "property": "border-bottom",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--rule)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--rule"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "tableHeadFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table thead th",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "tableHeadWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table thead th",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "selectedRowFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".table tr.is-selected",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--accent-tint)",
+        "important": false,
+        "value": {
+          "var": "--accent-tint"
+        }
+      }
+    },
+    {
+      "id": "emptyPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".empty",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "var(--space-5) 0",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "var": "--space-5"
+            },
+            "right": {
+              "value": 0,
+              "unit": "px"
+            },
+            "bottom": {
+              "var": "--space-5"
+            },
+            "left": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "emptyBlockGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".empty-block",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "noteFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".note",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "noteMaxWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".note",
+        "media": null,
+        "property": "max-width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--measure)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--measure"
+          }
+        }
+      }
+    },
+    {
+      "id": "calloutPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "2px 0 2px 14px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 2,
+              "unit": "px"
+            },
+            "right": {
+              "value": 0,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 2,
+              "unit": "px"
+            },
+            "left": {
+              "value": 14,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "calloutEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout",
+        "media": null,
+        "property": "border-left",
+        "kind": "border"
+      },
+      "output": {
+        "css": "2px solid var(--line-2)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 2,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line-2"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "calloutGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout",
+        "media": null,
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "10px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 10,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "calloutInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--ink-2)",
+        "important": false,
+        "value": {
+          "var": "--ink-2"
+        }
+      }
+    },
+    {
+      "id": "warnCalloutPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout--warn",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "12px 14px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 12,
+              "unit": "px"
+            },
+            "right": {
+              "value": 14,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 12,
+              "unit": "px"
+            },
+            "left": {
+              "value": 14,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "warnCalloutFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout--warn",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--warn-wash)",
+        "important": false,
+        "value": {
+          "var": "--warn-wash"
+        }
+      }
+    },
+    {
+      "id": "warnCalloutEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout--warn",
+        "media": null,
+        "property": "border-left-color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--warn)",
+        "important": false,
+        "value": {
+          "var": "--warn"
+        }
+      }
+    },
+    {
+      "id": "dangerCalloutFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout--danger",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger-wash)",
+        "important": false,
+        "value": {
+          "var": "--danger-wash"
+        }
+      }
+    },
+    {
+      "id": "dangerCalloutEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".callout--danger",
+        "media": null,
+        "property": "border-left-color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--danger)",
+        "important": false,
+        "value": {
+          "var": "--danger"
+        }
+      }
+    },
+    {
+      "id": "disclosureTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".disclosure > summary::before",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "transform 0.15s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "transform",
+              "duration": 0.15,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "progressHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress",
+        "media": null,
+        "property": "height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "3px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 3,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "progressTrack",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--line)",
+        "important": false,
+        "value": {
+          "var": "--line"
+        }
+      }
+    },
+    {
+      "id": "progressFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress-fill",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--accent)",
+        "important": false,
+        "value": {
+          "var": "--accent"
+        }
+      }
+    },
+    {
+      "id": "progressTransition",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress-fill",
+        "media": null,
+        "property": "transition",
+        "kind": "transitions"
+      },
+      "output": {
+        "css": "width 0.3s ease",
+        "important": false,
+        "value": {
+          "transitions": [
+            {
+              "property": "width",
+              "duration": 0.3,
+              "easing": {
+                "keyword": "ease"
+              },
+              "delay": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "progressIndeterminateWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress-fill[data-indeterminate]",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "35%",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 35,
+            "unit": "%"
+          }
+        }
+      }
+    },
+    {
+      "id": "progressIndeterminateAnimation",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".progress-fill[data-indeterminate]",
+        "media": null,
+        "property": "animation",
+        "kind": "animation"
+      },
+      "output": {
+        "css": "progress-slide 1.2s ease-in-out infinite",
+        "important": false,
+        "value": {
+          "animation": {
+            "name": "progress-slide",
+            "duration": 1.2,
+            "easing": {
+              "keyword": "ease-in-out"
+            },
+            "delay": 0,
+            "iterations": 1,
+            "infinite": true,
+            "fill": "none"
+          }
+        }
+      }
+    },
+    {
+      "id": "infoTipButtonSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-button",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "20px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 20,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "infoTipWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-pop",
+        "media": null,
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "min(280px, calc(100vw - 32px))",
+        "important": false,
+        "value": {
+          "length": {
+            "fn": "min",
+            "args": [
+              {
+                "value": 280,
+                "unit": "px"
+              },
+              {
+                "fn": "calc",
+                "args": [
+                  {
+                    "op": "-",
+                    "left": {
+                      "value": 100,
+                      "unit": "vw"
+                    },
+                    "right": {
+                      "value": 32,
+                      "unit": "px"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "infoTipPadding",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-pop",
+        "media": null,
+        "property": "padding",
+        "kind": "box"
+      },
+      "output": {
+        "css": "9px 12px",
+        "important": false,
+        "value": {
+          "box": {
+            "top": {
+              "value": 9,
+              "unit": "px"
+            },
+            "right": {
+              "value": 12,
+              "unit": "px"
+            },
+            "bottom": {
+              "value": 9,
+              "unit": "px"
+            },
+            "left": {
+              "value": 12,
+              "unit": "px"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "infoTipRadius",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-pop",
+        "media": null,
+        "property": "border-radius",
+        "kind": "length"
+      },
+      "output": {
+        "css": "var(--radius)",
+        "important": false,
+        "value": {
+          "length": {
+            "var": "--radius"
+          }
+        }
+      }
+    },
+    {
+      "id": "infoTipFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-pop",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--btn)",
+        "important": false,
+        "value": {
+          "var": "--btn"
+        }
+      }
+    },
+    {
+      "id": "infoTipInk",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-pop",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--on-btn)",
+        "important": false,
+        "value": {
+          "var": "--on-btn"
+        }
+      }
+    },
+    {
+      "id": "touchButtonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "40px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchLargeButtonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--lg",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "46px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 46,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchIconButtonWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--icon",
+        "media": "(pointer: coarse)",
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "40px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchSmallButtonHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--sm",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "32px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 32,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchSmallIconButtonWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--icon.btn--sm",
+        "media": "(pointer: coarse)",
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "32px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 32,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchGhostIconButtonSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".btn--ghost.btn--icon",
+        "media": "(pointer: coarse)",
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchChipHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chip",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "40px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchInputHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "40px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchInputFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".input",
+        "media": "(pointer: coarse)",
+        "property": "font-size",
+        "kind": "length"
+      },
+      "output": {
+        "css": "16px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 16,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchTokenHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".token",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "32px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 32,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchTokensRowGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".tokens",
+        "media": "(pointer: coarse)",
+        "property": "row-gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchSegmentedGap",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented",
+        "media": "(pointer: coarse)",
+        "property": "gap",
+        "kind": "length"
+      },
+      "output": {
+        "css": "22px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 22,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchSegmentedKeyHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".segmented-key",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchMenuItemHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".menu-item",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchChartFootActionHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".chart-foot .link-action",
+        "media": "(pointer: coarse)",
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "touchInfoTipButtonSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/controls.css",
+        "selector": ".info-tip-button",
+        "media": "(pointer: coarse)",
+        "property": "width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "32px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 32,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "highContrastFocusOutlineWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] :focus-visible",
+        "media": null,
+        "property": "outline-width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "3px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 3,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "highContrastSegmentedOnUnderline",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .segmented .segmented-key.is-on",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 -3px 0 var(--ink)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": -3,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": null,
+              "color": {
+                "var": "--ink"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "highContrastSwitchEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .switch",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 0 0 2px var(--muted)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 2,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--muted"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "highContrastSwitchFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .switch",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "transparent",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 0,
+            "green": 0,
+            "blue": 0,
+            "alpha": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "highContrastSwitchKnobFill",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .switch::after",
+        "media": null,
+        "property": "background",
+        "kind": "color"
+      },
+      "output": {
+        "css": "var(--muted)",
+        "important": false,
+        "value": {
+          "var": "--muted"
+        }
+      }
+    },
+    {
+      "id": "highContrastHeatCellEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .heatmap-cell:not(.is-best):not([data-empty])",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 0 0 1px var(--line-soft)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 1,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--line-soft"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "highContrastBarTrackEdge",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .barlist-track",
+        "media": null,
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 0 0 1px var(--line-soft)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 1,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--line-soft"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "highContrastCurrentUnderlineThickness",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .nav-link[aria-current='page']",
+        "media": null,
+        "property": "text-decoration-thickness",
+        "kind": "length"
+      },
+      "output": {
+        "css": "2px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "highContrastCurrentUnderlineOffset",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .nav-link[aria-current='page']",
+        "media": null,
+        "property": "text-underline-offset",
+        "kind": "length"
+      },
+      "output": {
+        "css": "4px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 4,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "highContrastCurrentTabRing",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-contrast='high'] .tabbar-item[aria-current='page']",
+        "media": "(max-width: 374px)",
+        "property": "box-shadow",
+        "kind": "shadow"
+      },
+      "output": {
+        "css": "inset 0 0 0 2px var(--ink)",
+        "important": false,
+        "value": {
+          "shadow": [
+            {
+              "inset": true,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 2,
+                "unit": "px"
+              },
+              "color": {
+                "var": "--ink"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "imageLabelInkAtNight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/theme.css",
+        "selector": ":root[data-theme='dark'] .image-tool",
+        "media": null,
+        "property": "color",
+        "kind": "color"
+      },
+      "output": {
+        "css": "#ffffff",
+        "important": false,
+        "value": {
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "landingMaxWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing",
+        "media": null,
+        "property": "--landing-max",
+        "kind": "value"
+      },
+      "output": {
+        "css": "1160px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 1160,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "landingBarHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-bar",
+        "media": null,
+        "property": "min-height",
+        "kind": "length"
+      },
+      "output": {
+        "css": "44px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "landingBarSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-bar",
+        "media": null,
+        "property": "padding-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "28px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 28,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "phoneLandingBarSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-bar",
+        "media": "(max-width: 899px)",
+        "property": "padding-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "12px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 12,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "landingMainSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-main",
+        "media": null,
+        "property": "padding-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "clamp(32px, 7svh, 72px)",
+        "important": false,
+        "value": {
+          "length": {
+            "fn": "clamp",
+            "args": [
+              {
+                "value": 32,
+                "unit": "px"
+              },
+              {
+                "value": 7,
+                "unit": "svh"
+              },
+              {
+                "value": 72,
+                "unit": "px"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "landingEyebrowFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-eyebrow",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-sm)",
+        "important": false,
+        "value": {
+          "var": "--text-sm"
+        }
+      }
+    },
+    {
+      "id": "landingEyebrowWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-eyebrow",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "500",
+        "important": false,
+        "value": {
+          "number": 500
+        }
+      }
+    },
+    {
+      "id": "landingTitleFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-title",
+        "media": null,
+        "property": "font-size",
+        "kind": "length"
+      },
+      "output": {
+        "css": "clamp(2.5rem, 1.35rem + 4vw, 4.5rem)",
+        "important": false,
+        "value": {
+          "length": {
+            "fn": "clamp",
+            "args": [
+              {
+                "value": 2.5,
+                "unit": "rem"
+              },
+              {
+                "op": "+",
+                "left": {
+                  "value": 1.35,
+                  "unit": "rem"
+                },
+                "right": {
+                  "value": 4,
+                  "unit": "vw"
+                }
+              },
+              {
+                "value": 4.5,
+                "unit": "rem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "landingTitleWeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-title",
+        "media": null,
+        "property": "font-weight",
+        "kind": "number"
+      },
+      "output": {
+        "css": "600",
+        "important": false,
+        "value": {
+          "number": 600
+        }
+      }
+    },
+    {
+      "id": "landingTitleTracking",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-title",
+        "media": null,
+        "property": "letter-spacing",
+        "kind": "length"
+      },
+      "output": {
+        "css": "-0.04em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": -0.04,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "landingTitleLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-title",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.02",
+        "important": false,
+        "value": {
+          "number": 1.02
+        }
+      }
+    },
+    {
+      "id": "landingLedeFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-lede",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-lg)",
+        "important": false,
+        "value": {
+          "var": "--text-lg"
+        }
+      }
+    },
+    {
+      "id": "landingLedeLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-lede",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.5",
+        "important": false,
+        "value": {
+          "number": 1.5
+        }
+      }
+    },
+    {
+      "id": "landingLedeMaxWidth",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-lede",
+        "media": null,
+        "property": "max-width",
+        "kind": "length"
+      },
+      "output": {
+        "css": "52ch",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 52,
+            "unit": "ch"
+          }
+        }
+      }
+    },
+    {
+      "id": "landingPointRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-points > div",
+        "media": null,
+        "property": "border-top",
+        "kind": "border"
+      },
+      "output": {
+        "css": "1px solid var(--rule)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 1,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--rule"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "landingPointSpaceAbove",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".landing-points > div",
+        "media": null,
+        "property": "padding-top",
+        "kind": "length"
+      },
+      "output": {
+        "css": "18px",
+        "important": false,
+        "value": {
+          "length": {
+            "value": 18,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    {
+      "id": "returnTitleFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".return-title",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-title)",
+        "important": false,
+        "value": {
+          "var": "--text-title"
+        }
+      }
+    },
+    {
+      "id": "returnTitleTracking",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".return-title",
+        "media": null,
+        "property": "letter-spacing",
+        "kind": "length"
+      },
+      "output": {
+        "css": "-0.025em",
+        "important": false,
+        "value": {
+          "length": {
+            "value": -0.025,
+            "unit": "em"
+          }
+        }
+      }
+    },
+    {
+      "id": "returnTitleLineHeight",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".return-title",
+        "media": null,
+        "property": "line-height",
+        "kind": "number"
+      },
+      "output": {
+        "css": "1.1",
+        "important": false,
+        "value": {
+          "number": 1.1
+        }
+      }
+    },
+    {
+      "id": "appStatusFontSize",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".app-status",
+        "media": null,
+        "property": "font-size",
+        "kind": "value"
+      },
+      "output": {
+        "css": "var(--text-lg)",
+        "important": false,
+        "value": {
+          "var": "--text-lg"
+        }
+      }
+    },
+    {
+      "id": "appStatusAnimation",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".app-status",
+        "media": null,
+        "property": "animation",
+        "kind": "animation"
+      },
+      "output": {
+        "css": "app-status-in 0.4s ease 0.5s both",
+        "important": false,
+        "value": {
+          "animation": {
+            "name": "app-status-in",
+            "duration": 0.4,
+            "easing": {
+              "keyword": "ease"
+            },
+            "delay": 0.5,
+            "iterations": 1,
+            "infinite": false,
+            "fill": "both"
+          }
+        }
+      }
+    },
+    {
+      "id": "sketchFigureRule",
+      "fn": "kit",
+      "input": {
+        "file": "src/styles/app.css",
+        "selector": ".sketch-figure",
+        "media": null,
+        "property": "border-top",
+        "kind": "border"
+      },
+      "output": {
+        "css": "2px solid var(--line)",
+        "important": false,
+        "value": {
+          "border": {
+            "width": {
+              "value": 2,
+              "unit": "px"
+            },
+            "style": "solid",
+            "color": {
+              "var": "--line"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

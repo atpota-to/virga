@@ -1,0 +1,6 @@
+// Copy to Local.xcconfig (ignored by git) and fill in.
+// VIRGA_TEAM_ID = ABCDE12345
+// VIRGA_BUNDLE_ID = com.example.virga
+// VIRGA_BACKEND_URL = https:/$()/your-deployment.vercel.app
+// VIRGA_HOST = your-deployment.vercel.app
+// VIRGA_DEFENSE = on

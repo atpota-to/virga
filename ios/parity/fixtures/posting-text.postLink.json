@@ -1,0 +1,2467 @@
+{
+  "name": "posting-text.postLink",
+  "sources": [
+    "src/posting/lib/postLink.js"
+  ],
+  "cases": [
+    {
+      "id": "RECORD_COLLECTIONS",
+      "fn": "RECORD_COLLECTIONS",
+      "input": {},
+      "output": {
+        "post": "app.bsky.feed.post",
+        "feed": "app.bsky.feed.generator",
+        "list": "app.bsky.graph.list",
+        "starterpack": "app.bsky.graph.starterpack"
+      }
+    },
+    {
+      "id": "kindForCollection#1",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": "app.bsky.feed.post"
+      },
+      "output": "post"
+    },
+    {
+      "id": "kindForCollection#2",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": "app.bsky.feed.generator"
+      },
+      "output": "feed"
+    },
+    {
+      "id": "kindForCollection#3",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": "app.bsky.graph.list"
+      },
+      "output": "list"
+    },
+    {
+      "id": "kindForCollection#4",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": "app.bsky.graph.starterpack"
+      },
+      "output": "starterpack"
+    },
+    {
+      "id": "kindForCollection#5",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": "app.bsky.feed.like"
+      },
+      "output": null
+    },
+    {
+      "id": "kindForCollection#6",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": ""
+      },
+      "output": null
+    },
+    {
+      "id": "kindForCollection#7",
+      "fn": "kindForCollection",
+      "input": {
+        "collection": null
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#1",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/did:plc:mzqt/app.bsky.feed.post/3mcft"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "did:plc:mzqt",
+        "rkey": "3mcft",
+        "url": "https://aturi.to/did:plc:mzqt/app.bsky.feed.post/3mcft",
+        "did": "did:plc:mzqt",
+        "uri": "at://did:plc:mzqt/app.bsky.feed.post/3mcft"
+      }
+    },
+    {
+      "id": "parseRecordLink#2",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://www.aturi.to/alice.test/app.bsky.feed.generator/whats-hot"
+      },
+      "output": {
+        "kind": "feed",
+        "collection": "app.bsky.feed.generator",
+        "actor": "alice.test",
+        "rkey": "whats-hot",
+        "url": "https://www.aturi.to/alice.test/app.bsky.feed.generator/whats-hot",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#3",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "kind": "list",
+        "collection": "app.bsky.graph.list",
+        "actor": "alice.test",
+        "rkey": "3abc",
+        "url": "https://aturi.to/alice.test/app.bsky.graph.list/3abc",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#4",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.starterpack/3pack"
+      },
+      "output": {
+        "kind": "starterpack",
+        "collection": "app.bsky.graph.starterpack",
+        "actor": "alice.test",
+        "rkey": "3pack",
+        "url": "https://aturi.to/alice.test/app.bsky.graph.starterpack/3pack",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#5",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft?ref=share"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.test",
+        "rkey": "3mcft",
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft?ref=share",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#6",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft#top"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.test",
+        "rkey": "3mcft",
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft#top",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#7",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/pub.leaflet.document/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#8",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#9",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "HTTPS://ATURI.TO/Alice.Test/app.bsky.feed.post/3X"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "Alice.Test",
+        "rkey": "3X",
+        "url": "HTTPS://ATURI.TO/Alice.Test/app.bsky.feed.post/3X",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#10",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#11",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "http://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "http://bsky.app/profile/alice.bsky.social/post/3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#12",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://www.bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://www.bsky.app/profile/alice.bsky.social/post/3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#13",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#14",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c?ref=share"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c?ref=share",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#15",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c#top"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c#top",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#16",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/likes"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/likes",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parseRecordLink#17",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/feed/whats-hot"
+      },
+      "output": {
+        "kind": "feed",
+        "collection": "app.bsky.feed.generator",
+        "actor": "alice",
+        "rkey": "whats-hot",
+        "url": "https://bsky.app/profile/alice/feed/whats-hot",
+        "handle": "alice"
+      }
+    },
+    {
+      "id": "parseRecordLink#18",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/lists/3abc"
+      },
+      "output": {
+        "kind": "list",
+        "collection": "app.bsky.graph.list",
+        "actor": "alice",
+        "rkey": "3abc",
+        "url": "https://bsky.app/profile/alice/lists/3abc",
+        "handle": "alice"
+      }
+    },
+    {
+      "id": "parseRecordLink#19",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/alice.test/3pack"
+      },
+      "output": {
+        "kind": "starterpack",
+        "collection": "app.bsky.graph.starterpack",
+        "actor": "alice.test",
+        "rkey": "3pack",
+        "url": "https://bsky.app/starter-pack/alice.test/3pack",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#20",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/start/alice.test/3pack"
+      },
+      "output": {
+        "kind": "starterpack",
+        "collection": "app.bsky.graph.starterpack",
+        "actor": "alice.test",
+        "rkey": "3pack",
+        "url": "https://bsky.app/start/alice.test/3pack",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#21",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#22",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile//post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#23",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#24",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://notbsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#25",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app.evil.com/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#26",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://evil.com/https://bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#27",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://staging.bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#28",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://example.com/blog/post/1"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#29",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "not a url"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#30",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": ""
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#31",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "   "
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#32",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "did:plc:abc",
+        "rkey": "3lab2c",
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c",
+        "did": "did:plc:abc",
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3lab2c"
+      }
+    },
+    {
+      "id": "parseRecordLink#33",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c/"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "did:plc:abc",
+        "rkey": "3lab2c",
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c/",
+        "did": "did:plc:abc",
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3lab2c"
+      }
+    },
+    {
+      "id": "parseRecordLink#34",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.like/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#35",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#36",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://alice.test/app.bsky.graph.list/3l"
+      },
+      "output": {
+        "kind": "list",
+        "collection": "app.bsky.graph.list",
+        "actor": "alice.test",
+        "rkey": "3l",
+        "url": "at://alice.test/app.bsky.graph.list/3l",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#37",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.generator/hot?x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#38",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "AT://did:plc:abc/app.bsky.feed.post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#39",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/Alice.Test/lists/3abc"
+      },
+      "output": {
+        "kind": "list",
+        "collection": "app.bsky.graph.list",
+        "actor": "Alice.Test",
+        "rkey": "3abc",
+        "url": "https://bsky.app/profile/Alice.Test/lists/3abc",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#40",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "did:plc:abc",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x",
+        "did": "did:plc:abc",
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x"
+      }
+    },
+    {
+      "id": "parseRecordLink#41",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3aplc%3aabc/post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "did:plc:abc",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/did%3aplc%3aabc/post/3x",
+        "did": "did:plc:abc",
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x"
+      }
+    },
+    {
+      "id": "parseRecordLink#42",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/%40Alice.Test/post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "@Alice.Test",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/%40Alice.Test/post/3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#43",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/@alice.test/post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "@alice.test",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/@alice.test/post/3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#44",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/%E0%A4%A/post/%ZZ"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "%E0%A4%A",
+        "rkey": "%ZZ",
+        "url": "https://bsky.app/profile/%E0%A4%A/post/%ZZ",
+        "handle": "%e0%a4%a"
+      }
+    },
+    {
+      "id": "parseRecordLink#45",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/caf%C3%A9.test/post/3%20x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "café.test",
+        "rkey": "3 x",
+        "url": "https://bsky.app/profile/caf%C3%A9.test/post/3%20x",
+        "handle": "café.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#46",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "  https://bsky.app/profile/alice.test/post/3x \n"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "alice.test",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/alice.test/post/3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#47",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "HTTPS://BSKY.APP/PROFILE/ALICE.TEST/POST/3X"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "ALICE.TEST",
+        "rkey": "3X",
+        "url": "HTTPS://BSKY.APP/PROFILE/ALICE.TEST/POST/3X",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#48",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/PROFILE/a.test/LISTS/3l"
+      },
+      "output": {
+        "kind": "list",
+        "collection": "app.bsky.graph.list",
+        "actor": "a.test",
+        "rkey": "3l",
+        "url": "https://bsky.app/PROFILE/a.test/LISTS/3l",
+        "handle": "a.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#49",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x/extra/segments"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "a.test",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/a.test/post/3x/extra/segments",
+        "handle": "a.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#50",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/posts/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#51",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/ΑΛΙΚΗ.test/post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "ΑΛΙΚΗ.test",
+        "rkey": "3x",
+        "url": "https://bsky.app/profile/ΑΛΙΚΗ.test/post/3x",
+        "handle": "αλικη.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#52",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x\nhttps://bsky.app/profile/b.test/post/3y"
+      },
+      "output": {
+        "kind": "post",
+        "collection": "app.bsky.feed.post",
+        "actor": "a.test",
+        "rkey": "3x\nhttps:",
+        "url": "https://bsky.app/profile/a.test/post/3x\nhttps://bsky.app/profile/b.test/post/3y",
+        "handle": "a.test"
+      }
+    },
+    {
+      "id": "parseRecordLink#53",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/did:plc:abc/3p"
+      },
+      "output": {
+        "kind": "starterpack",
+        "collection": "app.bsky.graph.starterpack",
+        "actor": "did:plc:abc",
+        "rkey": "3p",
+        "url": "https://bsky.app/starter-pack/did:plc:abc/3p",
+        "did": "did:plc:abc",
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p"
+      }
+    },
+    {
+      "id": "parseRecordLink#54",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "ftp://bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#55",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": "https:/bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#56",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": null
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordLink#57",
+      "fn": "parseRecordLink",
+      "input": {
+        "url": 42
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#1",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/did:plc:mzqt/app.bsky.feed.post/3mcft"
+      },
+      "output": {
+        "actor": "did:plc:mzqt",
+        "rkey": "3mcft",
+        "did": "did:plc:mzqt"
+      }
+    },
+    {
+      "id": "parsePostLink#2",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://www.aturi.to/alice.test/app.bsky.feed.generator/whats-hot"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#3",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.list/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#4",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.starterpack/3pack"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#5",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft?ref=share"
+      },
+      "output": {
+        "actor": "alice.test",
+        "rkey": "3mcft",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#6",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft#top"
+      },
+      "output": {
+        "actor": "alice.test",
+        "rkey": "3mcft",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#7",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/pub.leaflet.document/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#8",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#9",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "HTTPS://ATURI.TO/Alice.Test/app.bsky.feed.post/3X"
+      },
+      "output": {
+        "actor": "Alice.Test",
+        "rkey": "3X",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#10",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#11",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "http://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#12",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://www.bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#13",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#14",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c?ref=share"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#15",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c#top"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#16",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/likes"
+      },
+      "output": {
+        "actor": "alice.bsky.social",
+        "rkey": "3lab2c",
+        "handle": "alice.bsky.social"
+      }
+    },
+    {
+      "id": "parsePostLink#17",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/feed/whats-hot"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#18",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/lists/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#19",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/alice.test/3pack"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#20",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/start/alice.test/3pack"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#21",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#22",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile//post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#23",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#24",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://notbsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#25",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app.evil.com/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#26",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://evil.com/https://bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#27",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://staging.bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#28",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://example.com/blog/post/1"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#29",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "not a url"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#30",
+      "fn": "parsePostLink",
+      "input": {
+        "url": ""
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#31",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "   "
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#32",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c"
+      },
+      "output": {
+        "actor": "did:plc:abc",
+        "rkey": "3lab2c",
+        "did": "did:plc:abc"
+      }
+    },
+    {
+      "id": "parsePostLink#33",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c/"
+      },
+      "output": {
+        "actor": "did:plc:abc",
+        "rkey": "3lab2c",
+        "did": "did:plc:abc"
+      }
+    },
+    {
+      "id": "parsePostLink#34",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.like/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#35",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#36",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://alice.test/app.bsky.graph.list/3l"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#37",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.generator/hot?x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#38",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "AT://did:plc:abc/app.bsky.feed.post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#39",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/Alice.Test/lists/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#40",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+      },
+      "output": {
+        "actor": "did:plc:abc",
+        "rkey": "3x",
+        "did": "did:plc:abc"
+      }
+    },
+    {
+      "id": "parsePostLink#41",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3aplc%3aabc/post/3x"
+      },
+      "output": {
+        "actor": "did:plc:abc",
+        "rkey": "3x",
+        "did": "did:plc:abc"
+      }
+    },
+    {
+      "id": "parsePostLink#42",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/%40Alice.Test/post/3x"
+      },
+      "output": {
+        "actor": "@Alice.Test",
+        "rkey": "3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#43",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/@alice.test/post/3x"
+      },
+      "output": {
+        "actor": "@alice.test",
+        "rkey": "3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#44",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/%E0%A4%A/post/%ZZ"
+      },
+      "output": {
+        "actor": "%E0%A4%A",
+        "rkey": "%ZZ",
+        "handle": "%e0%a4%a"
+      }
+    },
+    {
+      "id": "parsePostLink#45",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/caf%C3%A9.test/post/3%20x"
+      },
+      "output": {
+        "actor": "café.test",
+        "rkey": "3 x",
+        "handle": "café.test"
+      }
+    },
+    {
+      "id": "parsePostLink#46",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "  https://bsky.app/profile/alice.test/post/3x \n"
+      },
+      "output": {
+        "actor": "alice.test",
+        "rkey": "3x",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#47",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "HTTPS://BSKY.APP/PROFILE/ALICE.TEST/POST/3X"
+      },
+      "output": {
+        "actor": "ALICE.TEST",
+        "rkey": "3X",
+        "handle": "alice.test"
+      }
+    },
+    {
+      "id": "parsePostLink#48",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/PROFILE/a.test/LISTS/3l"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#49",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x/extra/segments"
+      },
+      "output": {
+        "actor": "a.test",
+        "rkey": "3x",
+        "handle": "a.test"
+      }
+    },
+    {
+      "id": "parsePostLink#50",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/posts/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#51",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/ΑΛΙΚΗ.test/post/3x"
+      },
+      "output": {
+        "actor": "ΑΛΙΚΗ.test",
+        "rkey": "3x",
+        "handle": "αλικη.test"
+      }
+    },
+    {
+      "id": "parsePostLink#52",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x\nhttps://bsky.app/profile/b.test/post/3y"
+      },
+      "output": {
+        "actor": "a.test",
+        "rkey": "3x\nhttps:",
+        "handle": "a.test"
+      }
+    },
+    {
+      "id": "parsePostLink#53",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/did:plc:abc/3p"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#54",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "ftp://bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#55",
+      "fn": "parsePostLink",
+      "input": {
+        "url": "https:/bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#56",
+      "fn": "parsePostLink",
+      "input": {
+        "url": null
+      },
+      "output": null
+    },
+    {
+      "id": "parsePostLink#57",
+      "fn": "parsePostLink",
+      "input": {
+        "url": 42
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#1",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/did:plc:mzqt/app.bsky.feed.post/3mcft"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "did:plc:mzqt",
+        "postId": "3mcft",
+        "url": "https://aturi.to/did:plc:mzqt/app.bsky.feed.post/3mcft"
+      }
+    },
+    {
+      "id": "detectPostLink#2",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://www.aturi.to/alice.test/app.bsky.feed.generator/whats-hot"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "feed",
+        "handle": "alice.test",
+        "feedId": "whats-hot",
+        "url": "https://www.aturi.to/alice.test/app.bsky.feed.generator/whats-hot"
+      }
+    },
+    {
+      "id": "detectPostLink#3",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.list/3abc"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "list",
+        "handle": "alice.test",
+        "listId": "3abc",
+        "url": "https://aturi.to/alice.test/app.bsky.graph.list/3abc"
+      }
+    },
+    {
+      "id": "detectPostLink#4",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.graph.starterpack/3pack"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "starterpack",
+        "handle": "alice.test",
+        "packId": "3pack",
+        "url": "https://aturi.to/alice.test/app.bsky.graph.starterpack/3pack"
+      }
+    },
+    {
+      "id": "detectPostLink#5",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft?ref=share"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.test",
+        "postId": "3mcft",
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft?ref=share"
+      }
+    },
+    {
+      "id": "detectPostLink#6",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft#top"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.test",
+        "postId": "3mcft",
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post/3mcft#top"
+      }
+    },
+    {
+      "id": "detectPostLink#7",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/pub.leaflet.document/3abc"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#8",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://aturi.to/alice.test/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#9",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "HTTPS://ATURI.TO/Alice.Test/app.bsky.feed.post/3X"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "Alice.Test",
+        "postId": "3X",
+        "url": "HTTPS://ATURI.TO/Alice.Test/app.bsky.feed.post/3X"
+      }
+    },
+    {
+      "id": "detectPostLink#10",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      }
+    },
+    {
+      "id": "detectPostLink#11",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "http://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "http://bsky.app/profile/alice.bsky.social/post/3lab2c"
+      }
+    },
+    {
+      "id": "detectPostLink#12",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://www.bsky.app/profile/alice.bsky.social/post/3lab2c"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://www.bsky.app/profile/alice.bsky.social/post/3lab2c"
+      }
+    },
+    {
+      "id": "detectPostLink#13",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/"
+      }
+    },
+    {
+      "id": "detectPostLink#14",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c?ref=share"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c?ref=share"
+      }
+    },
+    {
+      "id": "detectPostLink#15",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c#top"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c#top"
+      }
+    },
+    {
+      "id": "detectPostLink#16",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/likes"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.bsky.social",
+        "postId": "3lab2c",
+        "url": "https://bsky.app/profile/alice.bsky.social/post/3lab2c/likes"
+      }
+    },
+    {
+      "id": "detectPostLink#17",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/feed/whats-hot"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "feed",
+        "handle": "alice",
+        "feedId": "whats-hot",
+        "url": "https://bsky.app/profile/alice/feed/whats-hot"
+      }
+    },
+    {
+      "id": "detectPostLink#18",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice/lists/3abc"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "list",
+        "handle": "alice",
+        "listId": "3abc",
+        "url": "https://bsky.app/profile/alice/lists/3abc"
+      }
+    },
+    {
+      "id": "detectPostLink#19",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/alice.test/3pack"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "starterpack",
+        "handle": "alice.test",
+        "packId": "3pack",
+        "url": "https://bsky.app/starter-pack/alice.test/3pack"
+      }
+    },
+    {
+      "id": "detectPostLink#20",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/start/alice.test/3pack"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "starterpack",
+        "handle": "alice.test",
+        "packId": "3pack",
+        "url": "https://bsky.app/start/alice.test/3pack"
+      }
+    },
+    {
+      "id": "detectPostLink#21",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social/post/"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#22",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile//post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#23",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/alice.bsky.social"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#24",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://notbsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#25",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app.evil.com/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#26",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://evil.com/https://bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#27",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://staging.bsky.app/profile/alice/post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#28",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://example.com/blog/post/1"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#29",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "not a url"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#30",
+      "fn": "detectPostLink",
+      "input": {
+        "url": ""
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#31",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "   "
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#32",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#33",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post/3lab2c/"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#34",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.like/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#35",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.post"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#36",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://alice.test/app.bsky.graph.list/3l"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#37",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "at://did:plc:abc/app.bsky.feed.generator/hot?x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#38",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "AT://did:plc:abc/app.bsky.feed.post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#39",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/Alice.Test/lists/3abc"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "list",
+        "handle": "Alice.Test",
+        "listId": "3abc",
+        "url": "https://bsky.app/profile/Alice.Test/lists/3abc"
+      }
+    },
+    {
+      "id": "detectPostLink#40",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "did:plc:abc",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#41",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/did%3aplc%3aabc/post/3x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "did:plc:abc",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/did%3aplc%3aabc/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#42",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/%40Alice.Test/post/3x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "@Alice.Test",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/%40Alice.Test/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#43",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/@alice.test/post/3x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "@alice.test",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/@alice.test/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#44",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/%E0%A4%A/post/%ZZ"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "%E0%A4%A",
+        "postId": "%ZZ",
+        "url": "https://bsky.app/profile/%E0%A4%A/post/%ZZ"
+      }
+    },
+    {
+      "id": "detectPostLink#45",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/caf%C3%A9.test/post/3%20x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "café.test",
+        "postId": "3 x",
+        "url": "https://bsky.app/profile/caf%C3%A9.test/post/3%20x"
+      }
+    },
+    {
+      "id": "detectPostLink#46",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "  https://bsky.app/profile/alice.test/post/3x \n"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "alice.test",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/alice.test/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#47",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "HTTPS://BSKY.APP/PROFILE/ALICE.TEST/POST/3X"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "ALICE.TEST",
+        "postId": "3X",
+        "url": "HTTPS://BSKY.APP/PROFILE/ALICE.TEST/POST/3X"
+      }
+    },
+    {
+      "id": "detectPostLink#48",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/PROFILE/a.test/LISTS/3l"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "list",
+        "handle": "a.test",
+        "listId": "3l",
+        "url": "https://bsky.app/PROFILE/a.test/LISTS/3l"
+      }
+    },
+    {
+      "id": "detectPostLink#49",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x/extra/segments"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "a.test",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/a.test/post/3x/extra/segments"
+      }
+    },
+    {
+      "id": "detectPostLink#50",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/posts/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#51",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/ΑΛΙΚΗ.test/post/3x"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "ΑΛΙΚΗ.test",
+        "postId": "3x",
+        "url": "https://bsky.app/profile/ΑΛΙΚΗ.test/post/3x"
+      }
+    },
+    {
+      "id": "detectPostLink#52",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/profile/a.test/post/3x\nhttps://bsky.app/profile/b.test/post/3y"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "post",
+        "handle": "a.test",
+        "postId": "3x\nhttps:",
+        "url": "https://bsky.app/profile/a.test/post/3x\nhttps://bsky.app/profile/b.test/post/3y"
+      }
+    },
+    {
+      "id": "detectPostLink#53",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https://bsky.app/starter-pack/did:plc:abc/3p"
+      },
+      "output": {
+        "type": "bluesky",
+        "linkType": "starterpack",
+        "handle": "did:plc:abc",
+        "packId": "3p",
+        "url": "https://bsky.app/starter-pack/did:plc:abc/3p"
+      }
+    },
+    {
+      "id": "detectPostLink#54",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "ftp://bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#55",
+      "fn": "detectPostLink",
+      "input": {
+        "url": "https:/bsky.app/profile/a.test/post/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#56",
+      "fn": "detectPostLink",
+      "input": {
+        "url": null
+      },
+      "output": null
+    },
+    {
+      "id": "detectPostLink#57",
+      "fn": "detectPostLink",
+      "input": {
+        "url": 42
+      },
+      "output": null
+    },
+    {
+      "id": "recordUri#1",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "post",
+        "rkey": "3x"
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.post/3x"
+    },
+    {
+      "id": "recordUri#2",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "feed",
+        "rkey": "3x"
+      },
+      "output": "at://did:plc:abc/app.bsky.feed.generator/3x"
+    },
+    {
+      "id": "recordUri#3",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "list",
+        "rkey": "3x"
+      },
+      "output": "at://did:plc:abc/app.bsky.graph.list/3x"
+    },
+    {
+      "id": "recordUri#4",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "starterpack",
+        "rkey": "3x"
+      },
+      "output": "at://did:plc:abc/app.bsky.graph.starterpack/3x"
+    },
+    {
+      "id": "recordUri#5",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "like",
+        "rkey": "3x"
+      },
+      "output": {
+        "$throws": "Not an embeddable kind: like"
+      }
+    },
+    {
+      "id": "recordUri#6",
+      "fn": "recordUri",
+      "input": {
+        "did": "did:plc:abc",
+        "kind": "",
+        "rkey": "3x"
+      },
+      "output": {
+        "$throws": "Not an embeddable kind: "
+      }
+    },
+    {
+      "id": "parseRecordUri#1",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3x"
+      }
+    },
+    {
+      "id": "parseRecordUri#2",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/hot"
+      },
+      "output": {
+        "kind": "feed",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.feed.generator",
+        "rkey": "hot"
+      }
+    },
+    {
+      "id": "parseRecordUri#3",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.list/3x"
+      },
+      "output": {
+        "kind": "list",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.graph.list",
+        "rkey": "3x"
+      }
+    },
+    {
+      "id": "parseRecordUri#4",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p"
+      },
+      "output": {
+        "kind": "starterpack",
+        "did": "did:plc:abc",
+        "collection": "app.bsky.graph.starterpack",
+        "rkey": "3p"
+      }
+    },
+    {
+      "id": "parseRecordUri#5",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.like/3x"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#6",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "at://alice.test/app.bsky.feed.post/3x"
+      },
+      "output": {
+        "kind": "post",
+        "did": "alice.test",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3x"
+      }
+    },
+    {
+      "id": "parseRecordUri#7",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": "nope"
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#8",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": ""
+      },
+      "output": null
+    },
+    {
+      "id": "parseRecordUri#9",
+      "fn": "parseRecordUri",
+      "input": {
+        "uri": null
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#1",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x",
+        "actor": null
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#2",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x",
+        "actor": ""
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#3",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x",
+        "actor": "alice.test"
+      },
+      "output": "https://bsky.app/profile/alice.test/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#4",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.post/3x",
+        "actor": "Alice Test/é"
+      },
+      "output": "https://bsky.app/profile/Alice%20Test%2F%C3%A9/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#5",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "actor": null
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/feed/hot"
+    },
+    {
+      "id": "bskyUrlFor#6",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "actor": ""
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/feed/hot"
+    },
+    {
+      "id": "bskyUrlFor#7",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "actor": "alice.test"
+      },
+      "output": "https://bsky.app/profile/alice.test/feed/hot"
+    },
+    {
+      "id": "bskyUrlFor#8",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.generator/hot",
+        "actor": "Alice Test/é"
+      },
+      "output": "https://bsky.app/profile/Alice%20Test%2F%C3%A9/feed/hot"
+    },
+    {
+      "id": "bskyUrlFor#9",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.list/3x",
+        "actor": null
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/lists/3x"
+    },
+    {
+      "id": "bskyUrlFor#10",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.list/3x",
+        "actor": ""
+      },
+      "output": "https://bsky.app/profile/did%3Aplc%3Aabc/lists/3x"
+    },
+    {
+      "id": "bskyUrlFor#11",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.list/3x",
+        "actor": "alice.test"
+      },
+      "output": "https://bsky.app/profile/alice.test/lists/3x"
+    },
+    {
+      "id": "bskyUrlFor#12",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.list/3x",
+        "actor": "Alice Test/é"
+      },
+      "output": "https://bsky.app/profile/Alice%20Test%2F%C3%A9/lists/3x"
+    },
+    {
+      "id": "bskyUrlFor#13",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p",
+        "actor": null
+      },
+      "output": "https://bsky.app/starter-pack/did%3Aplc%3Aabc/3p"
+    },
+    {
+      "id": "bskyUrlFor#14",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p",
+        "actor": ""
+      },
+      "output": "https://bsky.app/starter-pack/did%3Aplc%3Aabc/3p"
+    },
+    {
+      "id": "bskyUrlFor#15",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p",
+        "actor": "alice.test"
+      },
+      "output": "https://bsky.app/starter-pack/alice.test/3p"
+    },
+    {
+      "id": "bskyUrlFor#16",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.graph.starterpack/3p",
+        "actor": "Alice Test/é"
+      },
+      "output": "https://bsky.app/starter-pack/Alice%20Test%2F%C3%A9/3p"
+    },
+    {
+      "id": "bskyUrlFor#17",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.like/3x",
+        "actor": null
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#18",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.like/3x",
+        "actor": ""
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#19",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.like/3x",
+        "actor": "alice.test"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#20",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://did:plc:abc/app.bsky.feed.like/3x",
+        "actor": "Alice Test/é"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#21",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://alice.test/app.bsky.feed.post/3x",
+        "actor": null
+      },
+      "output": "https://bsky.app/profile/alice.test/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#22",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://alice.test/app.bsky.feed.post/3x",
+        "actor": ""
+      },
+      "output": "https://bsky.app/profile/alice.test/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#23",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://alice.test/app.bsky.feed.post/3x",
+        "actor": "alice.test"
+      },
+      "output": "https://bsky.app/profile/alice.test/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#24",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "at://alice.test/app.bsky.feed.post/3x",
+        "actor": "Alice Test/é"
+      },
+      "output": "https://bsky.app/profile/Alice%20Test%2F%C3%A9/post/3x"
+    },
+    {
+      "id": "bskyUrlFor#25",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "nope",
+        "actor": null
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#26",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "nope",
+        "actor": ""
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#27",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "nope",
+        "actor": "alice.test"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#28",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "nope",
+        "actor": "Alice Test/é"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#29",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "",
+        "actor": null
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#30",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "",
+        "actor": ""
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#31",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "",
+        "actor": "alice.test"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#32",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": "",
+        "actor": "Alice Test/é"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#33",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": null,
+        "actor": null
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#34",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": null,
+        "actor": ""
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#35",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": null,
+        "actor": "alice.test"
+      },
+      "output": null
+    },
+    {
+      "id": "bskyUrlFor#36",
+      "fn": "bskyUrlFor",
+      "input": {
+        "uri": null,
+        "actor": "Alice Test/é"
+      },
+      "output": null
+    }
+  ]
+}

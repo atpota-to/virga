@@ -1,0 +1,87 @@
+{
+  "domain": "network",
+  "target": "VirgaNetwork",
+  "wave": 1,
+  "summary": "HTTP, XRPC, the public AppView, PDS and PLC resolution, Constellation, blobs and Virga's server API.",
+  "files": {
+    "src/lib/activity.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Activity.swift"
+      ],
+      "fixtures": [
+        "network.activity"
+      ],
+      "note": "checkActivity's results come in the order of the DIDs; the web's come in the order its reads finished, which nothing depends on (the archive keys them by DID).",
+      "synced": "0feb961f5be3"
+    },
+    "src/lib/atproto.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Atproto.swift"
+      ],
+      "fixtures": [
+        "network.atproto"
+      ],
+      "synced": "3762f459257e",
+      "note": "resolveProfiles keeps each profile's handle, displayName and avatar as a String (ResolvedProfile): a truthy non-string the AppView sent is stringified where the web passes it through. Reads report statusText as \"\" (URLSession doesn't expose the reason phrase), as browsers do over HTTP/2."
+    },
+    "src/lib/constellation.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Lib/Constellation.swift"
+      ],
+      "fixtures": [
+        "network.constellation",
+        "network.jssort"
+      ],
+      "synced": "ff54b888b847"
+    },
+    "src/posting/lib/asyncPool.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Posting/Lib/AsyncPool.swift"
+      ],
+      "fixtures": [
+        "network.asyncPool"
+      ],
+      "synced": "092de914ae14"
+    },
+    "src/posting/lib/blobs.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Posting/Lib/Blobs.swift"
+      ],
+      "fixtures": [
+        "network.blobs"
+      ],
+      "synced": "a3fe68a0a50f",
+      "note": "uploadBlob returns VirgaCore's BlobRef: a non-string $link or mimeType in the PDS's answer is stringified and a fractional size truncated, where the web passes them through (an answer the SDK's lexicon check accepts never has them). Cancelling the task is the web's AbortSignal: BlobUploadError.cancelled keeps its name and message."
+    },
+    "src/session/backendClient.js": {
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/BackendClient.swift",
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/BackendFetchHandler.swift",
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/VirgaBackend.swift"
+      ],
+      "fixtures": [
+        "network.backendClient",
+        "network.agent",
+        "network.url"
+      ],
+      "note": "stripReturnFromAddress isn't ported: it takes the token out of the browser's address bar with history.replaceState, and on iOS the sign-in comes back through ASWebAuthenticationSession's callback URL, which never reaches an address bar (VirgaUI's sign-in reads that URL with BackendClient.readBackendReturn). startBackendSignIn returns the authorization address for ASWebAuthenticationSession (and hands it to `assign`) instead of navigating away and never settling. Where the web falls back to location.origin for an empty backendUrl, the port takes `origin` as a parameter.",
+      "synced": "0b4dec4501e2"
+    },
+    "src/session/pds.js": {
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaNetwork/Session/PDS.swift"
+      ],
+      "fixtures": [
+        "network.pds"
+      ],
+      "synced": "bc4a09ec2425"
+    }
+  }
+}

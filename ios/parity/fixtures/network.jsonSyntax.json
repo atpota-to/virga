@@ -1,0 +1,6393 @@
+{
+  "name": "network.jsonSyntax",
+  "sources": [
+    "src/lib/atproto.js",
+    "src/posting/library/sources.js"
+  ],
+  "cases": [
+    {
+      "id": "v8#1",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#2",
+      "fn": "v8",
+      "input": {
+        "text": " "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#3",
+      "fn": "v8",
+      "input": {
+        "text": "\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#4",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#5",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#6",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\""
+      },
+      "output": "Expected ':' after property name in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#7",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\" 1}"
+      },
+      "output": "Expected ':' after property name in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#8",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":}"
+      },
+      "output": "Unexpected token '}', \"{\"a\":}\" is not valid JSON"
+    },
+    {
+      "id": "v8#9",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":1,}"
+      },
+      "output": "Expected double-quoted property name in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#10",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":1 \"b\"}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#11",
+      "fn": "v8",
+      "input": {
+        "text": "[1,]"
+      },
+      "output": "Unexpected token ']', \"[1,]\" is not valid JSON"
+    },
+    {
+      "id": "v8#12",
+      "fn": "v8",
+      "input": {
+        "text": "[1 2]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#13",
+      "fn": "v8",
+      "input": {
+        "text": "01"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#14",
+      "fn": "v8",
+      "input": {
+        "text": "-01"
+      },
+      "output": "Unexpected number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#15",
+      "fn": "v8",
+      "input": {
+        "text": "-"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#16",
+      "fn": "v8",
+      "input": {
+        "text": "-a"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#17",
+      "fn": "v8",
+      "input": {
+        "text": "-.5"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#18",
+      "fn": "v8",
+      "input": {
+        "text": "1."
+      },
+      "output": "Unterminated fractional number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#19",
+      "fn": "v8",
+      "input": {
+        "text": "1.e5"
+      },
+      "output": "Unterminated fractional number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#20",
+      "fn": "v8",
+      "input": {
+        "text": "1e"
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#21",
+      "fn": "v8",
+      "input": {
+        "text": "1e+"
+      },
+      "output": "Exponent part is missing a number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#22",
+      "fn": "v8",
+      "input": {
+        "text": "0e"
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#23",
+      "fn": "v8",
+      "input": {
+        "text": "0.5.5"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#24",
+      "fn": "v8",
+      "input": {
+        "text": "-0x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#25",
+      "fn": "v8",
+      "input": {
+        "text": "+1"
+      },
+      "output": "Unexpected token '+', \"+1\" is not valid JSON"
+    },
+    {
+      "id": "v8#26",
+      "fn": "v8",
+      "input": {
+        "text": ".5"
+      },
+      "output": "Unexpected token '.', \".5\" is not valid JSON"
+    },
+    {
+      "id": "v8#27",
+      "fn": "v8",
+      "input": {
+        "text": "\"abc"
+      },
+      "output": "Unterminated string in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#28",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\x\""
+      },
+      "output": "Bad escaped character in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#29",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\u12g4\""
+      },
+      "output": "Bad Unicode escape in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#30",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\u12"
+      },
+      "output": "Bad Unicode escape in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#31",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#32",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\nb\""
+      },
+      "output": "Bad control character in string literal in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#33",
+      "fn": "v8",
+      "input": {
+        "text": "\"\u0001\""
+      },
+      "output": "Bad control character in string literal in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#34",
+      "fn": "v8",
+      "input": {
+        "text": "\"\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#35",
+      "fn": "v8",
+      "input": {
+        "text": "tru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#36",
+      "fn": "v8",
+      "input": {
+        "text": "trux"
+      },
+      "output": "Unexpected token 'x', \"trux\" is not valid JSON"
+    },
+    {
+      "id": "v8#37",
+      "fn": "v8",
+      "input": {
+        "text": "tr\""
+      },
+      "output": "Unexpected string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#38",
+      "fn": "v8",
+      "input": {
+        "text": "t1"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#39",
+      "fn": "v8",
+      "input": {
+        "text": "t "
+      },
+      "output": "Unexpected token ' ', \"t \" is not valid JSON"
+    },
+    {
+      "id": "v8#40",
+      "fn": "v8",
+      "input": {
+        "text": "nul"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#41",
+      "fn": "v8",
+      "input": {
+        "text": "nulx"
+      },
+      "output": "Unexpected token 'x', \"nulx\" is not valid JSON"
+    },
+    {
+      "id": "v8#42",
+      "fn": "v8",
+      "input": {
+        "text": "fals"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#43",
+      "fn": "v8",
+      "input": {
+        "text": "falsey"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#44",
+      "fn": "v8",
+      "input": {
+        "text": "NaN"
+      },
+      "output": "\"NaN\" is not valid JSON"
+    },
+    {
+      "id": "v8#45",
+      "fn": "v8",
+      "input": {
+        "text": "undefined"
+      },
+      "output": "\"undefined\" is not valid JSON"
+    },
+    {
+      "id": "v8#46",
+      "fn": "v8",
+      "input": {
+        "text": "Infinity"
+      },
+      "output": "\"Infinity\" is not valid JSON"
+    },
+    {
+      "id": "v8#47",
+      "fn": "v8",
+      "input": {
+        "text": "[object Object]"
+      },
+      "output": "\"[object Object]\" is not valid JSON"
+    },
+    {
+      "id": "v8#48",
+      "fn": "v8",
+      "input": {
+        "text": "nan"
+      },
+      "output": "Unexpected token 'a', \"nan\" is not valid JSON"
+    },
+    {
+      "id": "v8#49",
+      "fn": "v8",
+      "input": {
+        "text": "<html>"
+      },
+      "output": "Unexpected token '<', \"<html>\" is not valid JSON"
+    },
+    {
+      "id": "v8#50",
+      "fn": "v8",
+      "input": {
+        "text": "<!DOCTYPE html><html><head>"
+      },
+      "output": "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+    },
+    {
+      "id": "v8#51",
+      "fn": "v8",
+      "input": {
+        "text": "abcdefghijklmnopqrstuvwxyz"
+      },
+      "output": "Unexpected token 'a', \"abcdefghij\"... is not valid JSON"
+    },
+    {
+      "id": "v8#52",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":1}x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#53",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":1} x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#54",
+      "fn": "v8",
+      "input": {
+        "text": "[1]\n\nx"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 3 column 1)"
+    },
+    {
+      "id": "v8#55",
+      "fn": "v8",
+      "input": {
+        "text": "[1]\r\n\r\nx"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 7 (line 3 column 1)"
+    },
+    {
+      "id": "v8#56",
+      "fn": "v8",
+      "input": {
+        "text": "[1]\r\rx"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 3 column 1)"
+    },
+    {
+      "id": "v8#57",
+      "fn": "v8",
+      "input": {
+        "text": "\r\n\r\n]"
+      },
+      "output": "Unexpected token ']', \"\r\n\r\n]\" is not valid JSON"
+    },
+    {
+      "id": "v8#58",
+      "fn": "v8",
+      "input": {
+        "text": "1 2"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#59",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\" \"b\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#60",
+      "fn": "v8",
+      "input": {
+        "text": "{1:2}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#61",
+      "fn": "v8",
+      "input": {
+        "text": "{,}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#62",
+      "fn": "v8",
+      "input": {
+        "text": "[,1]"
+      },
+      "output": "Unexpected token ',', \"[,1]\" is not valid JSON"
+    },
+    {
+      "id": "v8#63",
+      "fn": "v8",
+      "input": {
+        "text": "é"
+      },
+      "output": "Unexpected token 'é', \"é\" is not valid JSON"
+    },
+    {
+      "id": "v8#64",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\é\""
+      },
+      "output": "Bad escaped character in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#65",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\€\""
+      },
+      "output": "Unexpected token '€', \"\"\\€\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#66",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":1,\"b\"}"
+      },
+      "output": "Expected ':' after property name in JSON at position 10 (line 1 column 11)"
+    },
+    {
+      "id": "v8#67",
+      "fn": "v8",
+      "input": {
+        "text": "[\"a\" : 1]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#68",
+      "fn": "v8",
+      "input": {
+        "text": "1e5x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#69",
+      "fn": "v8",
+      "input": {
+        "text": "123456789012x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 12 (line 1 column 13)"
+    },
+    {
+      "id": "v8#70",
+      "fn": "v8",
+      "input": {
+        "text": "1234567890.x"
+      },
+      "output": "Unterminated fractional number in JSON at position 11 (line 1 column 12)"
+    },
+    {
+      "id": "v8#71",
+      "fn": "v8",
+      "input": {
+        "text": "[1,2,3,4,5,6,7,8,9,10,11,12,13x]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 30 (line 1 column 31)"
+    },
+    {
+      "id": "v8#72",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":\"xxxxxxxxxxxxxxxx\" x}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 24 (line 1 column 25)"
+    },
+    {
+      "id": "v8#73",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\\ud800\":1"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 11 (line 1 column 12)"
+    },
+    {
+      "id": "v8#74",
+      "fn": "v8",
+      "input": {
+        "text": "﻿{}"
+      },
+      "output": "Unexpected token '﻿', \"﻿{}\" is not valid JSON"
+    },
+    {
+      "id": "v8#75",
+      "fn": "v8",
+      "input": {
+        "text": "[-]"
+      },
+      "output": "No number after minus sign in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#76",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":-}"
+      },
+      "output": "No number after minus sign in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#77",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\"x"
+      },
+      "output": "Expected ':' after property name in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#78",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\","
+      },
+      "output": "Expected ':' after property name in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#79",
+      "fn": "v8",
+      "input": {
+        "text": "[1}"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#80",
+      "fn": "v8",
+      "input": {
+        "text": "{]"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#81",
+      "fn": "v8",
+      "input": {
+        "text": "Bad Gateway"
+      },
+      "output": "Unexpected token 'B', \"Bad Gateway\" is not valid JSON"
+    },
+    {
+      "id": "v8#82",
+      "fn": "v8",
+      "input": {
+        "text": "Internal Server Error"
+      },
+      "output": "Unexpected token 'I', \"Internal S\"... is not valid JSON"
+    },
+    {
+      "id": "v8#83",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":\"x\""
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 12 (line 1 column 13)"
+    },
+    {
+      "id": "v8#84",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":\"x\",}"
+      },
+      "output": "Expected double-quoted property name in JSON at position 13 (line 1 column 14)"
+    },
+    {
+      "id": "v8#85",
+      "fn": "v8",
+      "input": {
+        "text": "🦋"
+      },
+      "output": "Unexpected token '�', \"🦋\" is not valid JSON"
+    },
+    {
+      "id": "v8#86",
+      "fn": "v8",
+      "input": {
+        "text": "\"🦋"
+      },
+      "output": "Unterminated string in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#87",
+      "fn": "v8",
+      "input": {
+        "text": "[🦋]"
+      },
+      "output": "Unexpected token '�', \"[🦋]\" is not valid JSON"
+    },
+    {
+      "id": "v8#88",
+      "fn": "v8",
+      "input": {
+        "text": "x🦋xxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": "Unexpected token 'x', \"x🦋xxxxxxx\"... is not valid JSON"
+    },
+    {
+      "id": "v8#89",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[1,{\"b\":[true,false,null,\"s\\n\"]}]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#90",
+      "fn": "v8",
+      "input": {
+        "text": " [ ] "
+      },
+      "output": null
+    },
+    {
+      "id": "v8#91",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#92",
+      "fn": "v8",
+      "input": {
+        "text": "[]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#93",
+      "fn": "v8",
+      "input": {
+        "text": "0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#94",
+      "fn": "v8",
+      "input": {
+        "text": "-0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#95",
+      "fn": "v8",
+      "input": {
+        "text": "1E+2"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#96",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\u00e9\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#97",
+      "fn": "v8",
+      "input": {
+        "text": "[[[[[[[[[[1]]]]]]]]]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#98",
+      "fn": "v8",
+      "input": {
+        "text": "[[[[[[[[[[1]]]]]]]]]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 20 (line 1 column 21)"
+    },
+    {
+      "id": "v8#99",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {\n      \"\": -1.5\n    },\n\"    {},\n  [  []  ]\n]"
+      },
+      "output": "Bad control character in string literal in JSON at position 42 (line 6 column 9)"
+    },
+    {
+      "id": "v8#100",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#101",
+      "fn": "v8",
+      "input": {
+        "text": "{\"e\rrr"
+      },
+      "output": "Bad control character in string literal in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#102",
+      "fn": "v8",
+      "input": {
+        "text": "[\n ]\n]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 3 column 1)"
+    },
+    {
+      "id": "v8#103",
+      "fn": "v8",
+      "input": {
+        "text": "+{"
+      },
+      "output": "Unexpected token '+', \"+{\" is not valid JSON"
+    },
+    {
+      "id": "v8#104",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error"
+      },
+      "output": "Unterminated string in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#105",
+      "fn": "v8",
+      "input": {
+        "text": "é\"\""
+      },
+      "output": "Unexpected token 'é', \"é\"\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#106",
+      "fn": "v8",
+      "input": {
+        "text": "n]🦋"
+      },
+      "output": "Unexpected token ']', \"n]🦋\" is not valid JSON"
+    },
+    {
+      "id": "v8#107",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n     \"\":0 {\n      \"\": {}\n    },\n    \"error\": []\n "
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 16 (line 3 column 11)"
+    },
+    {
+      "id": "v8#108",
+      "fn": "v8",
+      "input": {
+        "text": "t]rueu"
+      },
+      "output": "Unexpected token ']', \"t]rueu\" is not valid JSON"
+    },
+    {
+      "id": "v8#109",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\"\":\"}é\".}}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 19 (line 1 column 20)"
+    },
+    {
+      "id": "v8#110",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"a\":0},\"ké\":{\"a\":{}},\"error\":true}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#111",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\\"b\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#112",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"a\":false,\"ké\":[]},{\"a\":\"str\",\"error\":true},[[1.5,\"é\",false],{\"ké\":\"str\",\"\":null},{\"\":0,\"ké\":true,\"a\":0}]]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#113",
+      "fn": "v8",
+      "input": {
+        "text": "[]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#114",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  \"\",\r\n  []\r\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#115",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {\n      \"\": [\n        -1.5,\n        \"\"\n      ],\n      \"ké\": {\n        \"ké\": 0,\n        \"error\": true\n      }\n    },\n    [\n      2e+21,\n      null\n    ]\n  ],\n  {}, [\n    {\n      \"a\": -1.5,\n      \"ké\": [\n        2e+21,\n        \"\"\n      ],\n      \"\": {\n "
+      },
+      "output": "Expected property name or '}' in JSON at position 260 (line 26 column 2)"
+    },
+    {
+      "id": "v8#116",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":{\"\":null}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#117",
+      "fn": "v8",
+      "input": {
+        "text": "[]\n"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#118",
+      "fn": "v8",
+      "input": {
+        "text": "tru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#119",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\": [],\n  \"error\": -1.5,\n  \"a\": \"\"\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#120",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#121",
+      "fn": "v8",
+      "input": {
+        "text": "-1.\u0000-5"
+      },
+      "output": "Unterminated fractional number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#122",
+      "fn": "v8",
+      "input": {
+        "text": "\rnull}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 2 column 5)"
+    },
+    {
+      "id": "v8#123",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\": {\n    \"ké\": {\n,      \"\": [\n        2e+21\n      ]\n    },\n    \"message\": [\n      {\n        \"a\": 0\n      },\n      0\n    ]\n  },\n  \"\": [\n    2e+21\n  ]\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 24 (line 4 column 1)"
+    },
+    {
+      "id": "v8#124",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":e{\":ké\":[\"str\"],\"\":\"a\\\"b\"},\"error\":{\"\":+{\"ké\":\"str\"}}}"
+      },
+      "output": "Unexpected token 'e', \"{\"\":e{\":ké\":[\"\"... is not valid JSON"
+    },
+    {
+      "id": "v8#125",
+      "fn": "v8",
+      "input": {
+        "text": "nll"
+      },
+      "output": "Unexpected token 'l', \"nll\" is not valid JSON"
+    },
+    {
+      "id": "v8#126",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[\"a\\\"b\"\t,[false]],\"message\":\"str\"}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#127",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":[-1.5,{\"ké\":[null,\"é\",\"\"]},{\"\":[0,0],\"mesage\":{\"error\":false,\"\":\"str\"}}],\"ké\":{}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#128",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#129",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  [\r\n    {\r\n      \"error\": {\r\n        \"ké\"E: \"é\",\r\n        \"message\": true€,\r\n        \"\": -1.5\r\n      }\r\n    }\r\n  ]\r\n]"
+      },
+      "output": "Expected ':' after property name in JSON at position 45 (line 5 column 13)"
+    },
+    {
+      "id": "v8#130",
+      "fn": "v8",
+      "input": {
+        "text": "{}€"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#131",
+      "fn": "v8",
+      "input": {
+        "text": "\"{\"er{ror\":[]}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#132",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"\":[]},[]],[[{\"message\":true,\"a\":0}],{\"error\":{\"message\":0,\"a\":null,\"ké\":\"\"},\"\":{}},][{\"\":-1.5},true,[]]]]"
+      },
+      "output": "Unexpected token ']', ...\"\"},\"\":{}},][{\"\":-1.5\"... is not valid JSON"
+    },
+    {
+      "id": "v8#133",
+      "fn": "v8",
+      "input": {
+        "text": "[  {\n    true\":error\": 0\n  }\n]"
+      },
+      "output": "Expected property name or '}' in JSON at position 9 (line 2 column 5)"
+    },
+    {
+      "id": "v8#134",
+      "fn": "v8",
+      "input": {
+        "text": "]"
+      },
+      "output": "Unexpected token ']', \"]\" is not valid JSON"
+    },
+    {
+      "id": "v8#135",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[],\"erro-r\":{\"\":{\"\":false,\"error\":n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#136",
+      "fn": "v8",
+      "input": {
+        "text": "[{},{,{\"+ké\":false}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#137",
+      "fn": "v8",
+      "input": {
+        "text": "fa\\se"
+      },
+      "output": "Unexpected token '\\', \"fa\\se\" is not valid JSON"
+    },
+    {
+      "id": "v8#138",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\""
+      },
+      "output": "Expected ':' after property name in JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#139",
+      "fn": "v8",
+      "input": {
+        "text": "[a\\\"b\",{\"ké\":[],\"message\":{\"a\":{},\"error\":[\"é\",-1.5,\"é\"],\"\":2e+21},\"error\":{\"ké\":[],\"a\":-1.5}}]"
+      },
+      "output": "Unexpected token 'a', \"[a\\\"b\",{\"ké\"... is not valid JSON"
+    },
+    {
+      "id": "v8#140",
+      "fn": "v8",
+      "input": {
+        "text": "nll"
+      },
+      "output": "Unexpected token 'l', \"nll\" is not valid JSON"
+    },
+    {
+      "id": "v8#141",
+      "fn": "v8",
+      "input": {
+        "text": "t2e+2"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#142",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"\": [\n      [\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#143",
+      "fn": "v8",
+      "input": {
+        "text": "-\":15"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#144",
+      "fn": "v8",
+      "input": {
+        "text": "tue"
+      },
+      "output": "Unexpected token 'u', \"tue\" is not valid JSON"
+    },
+    {
+      "id": "v8#145",
+      "fn": "v8",
+      "input": {
+        "text": "[[\"a\"b\"],{\"\":true,\"message\":\"str\",\"a\":{}},[[{\"\":\"é\"},[\"\",null],2e+21],[]]]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#146",
+      "fn": "v8",
+      "input": {
+        "text": "[\"a\\\"b\",nul]"
+      },
+      "output": "Unexpected token ']', \"[\"a\\\"b\",nul]\" is not valid JSON"
+    },
+    {
+      "id": "v8#147",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"error\": [\n t     {\n        \"a\": \"é\"\n      },\n     {\n        \"error\": \"str\",\n        \"a\": \"é\",\n 0       \"ké\": -1.5\n      }\n    ],\n    \"message\": [\n      {\n        \"error\": 0,\n        \"a\": 0\n      }\n    ]\n  }\n]"
+      },
+      "output": "Unexpected token ' ', ...\"ror\": [\n t     {\n   \"... is not valid JSON"
+    },
+    {
+      "id": "v8#148",
+      "fn": "v8",
+      "input": {
+        "text": "{\"er\"ro"
+      },
+      "output": "Expected ':' after property name in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#149",
+      "fn": "v8",
+      "input": {
+        "text": "\tfalse"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#150",
+      "fn": "v8",
+      "input": {
+        "text": "{🦋}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#151",
+      "fn": "v8",
+      "input": {
+        "text": "fal"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#152",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": {\n    \"\": {\n      \"a\": false,\n      \"ké\": []\n    },\n    \"ké\": {},\n    \"a\": {\n      \"message\": [],\n      \"\" {\n        \"\": true\n      },\n      \"error\": \"str\"\n    }\n  },\n  \"\": {\n    \"error\": false,\n    \"message\": {\n      \"message\": {\n        \"error\": -1.5,\n        \"ké\": \"a\\\"b\"\n      }\n    }\n  }\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 120 (line 10 column 10)"
+    },
+    {
+      "id": "v8#153",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"error\":2e+21,\"\":{\"a\":{\"\":true},\"\":{\"ké\":\"str\",\"mess\rage\":\"\"}},\"message\":{}},[]]"
+      },
+      "output": "Bad control character in string literal in JSON at position 54 (line 1 column 55)"
+    },
+    {
+      "id": "v8#154",
+      "fn": "v8",
+      "input": {
+        "text": "\"s\ntr\"{"
+      },
+      "output": "Bad control character in string literal in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#155",
+      "fn": "v8",
+      "input": {
+        "text": "\t\"str\",."
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#156",
+      "fn": "v8",
+      "input": {
+        "text": "\"\u0000"
+      },
+      "output": "Bad control character in string literal in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#157",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"ké\": [\r\n    [\r\n      {\r\n        \"error\": \"\"\r\n      },\r\n      [\r\n        -1.5\r\n      ],\r\n      0\r\n    ],\r\n    {\r\n      \"ké\": {\r\n        \"ké\": \"str\",\r\n       \"message\": null\r\n      }\r\n    },\r\n    {\r      \"ké\": \"a\\\"b\"\r\n    }\r\n  ],null\r\n  \"\": \"str\"\r\n}"
+      },
+      "output": "Expected double-quoted property name in JSON at position 233 (line 21 column 5)"
+    },
+    {
+      "id": "v8#158",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  \r\n    \"a\\\"b\",\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#159",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":\"é\",\"ké\":[{\"\"k\"a\":[\"é\",\"str\"],\"message\":[\"\"]},\"\"]}"
+      },
+      "output": "Expected ':' after property name in JSON at position 18 (line 1 column 19)"
+    },
+    {
+      "id": "v8#160",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"a\": {\r\n    \"ké\": {\r\n      \"ké\": {},\r\n      \"eror\": \"str\"\r\n    },\r\n    \"a\": {\r\n      \"error\": {\r\n        \"ké\": null,\r\n        \"a\": 2e+21\r\n      },\r\n      \"\": [\r\n        null,\r\n        true\r\n      ],\r\n      \"message\": 0\r\n    }\r\n  },\r\n  \"message\": {\r\n    \"error\": \"str\",\r\n    \"ké\": {\r\n      \"ké\": [\r\n        \"\",\r\n        \"a\\\"b\"\r\n      ],\r\n      \"a\": []\r\n    }\r\n  }\r\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#161",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#162",
+      "fn": "v8",
+      "input": {
+        "text": "\"k}"
+      },
+      "output": "Unterminated string in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#163",
+      "fn": "v8",
+      "input": {
+        "text": "1.5"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#164",
+      "fn": "v8",
+      "input": {
+        "text": "[\"é\"e]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#165",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [],\n  étrue\\\"\n]"
+      },
+      "output": "Unexpected token 'é', \"[\n  [],\n  étrue\\\"\n]\" is not valid JSON"
+    },
+    {
+      "id": "v8#166",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#167",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    [\n      {\n        \"a\": \"str\"\n      }\n    ],\n    [\n      {\n        \"\": \"\"\n      },\n      \"\",\n      {\n        \"me0ssage\": false\n      }\n    ]\n  ],\n  [\n    [\n      [\n        \"\",\n        \"é\"\n      ]\n    ]\n  ]\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#168",
+      "fn": "v8",
+      "input": {
+        "text": "\"\n"
+      },
+      "output": "Bad control character in string literal in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#169",
+      "fn": "v8",
+      "input": {
+        "text": "tru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#170",
+      "fn": "v8",
+      "input": {
+        "text": "[nul,{"
+      },
+      "output": "Unexpected token ',', \"[nul,{\" is not valid JSON"
+    },
+    {
+      "id": "v8#171",
+      "fn": "v8",
+      "input": {
+        "text": "\"message\":\"a\\\"b\"}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 9 (line 1 column 10)"
+    },
+    {
+      "id": "v8#172",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {},  "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#173",
+      "fn": "v8",
+      "input": {
+        "text": "tr\""
+      },
+      "output": "Unexpected string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#174",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"\":[{\"\":\"\"},{\"ké\":false}],\"error\":[[fa-lse,2e+21,-1.5].]}}"
+      },
+      "output": "Unexpected number in JSON at position 43 (line 1 column 44)"
+    },
+    {
+      "id": "v8#175",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":tue,\"message\":{\"a\":[[true,2e+21,null]]}}"
+      },
+      "output": "Unexpected token 'u', \"{\"ké\":tue,\"messag\"... is not valid JSON"
+    },
+    {
+      "id": "v8#176",
+      "fn": "v8",
+      "input": {
+        "text": "[2e,+[2\r1]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#177",
+      "fn": "v8",
+      "input": {
+        "text": "-{"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#178",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#179",
+      "fn": "v8",
+      "input": {
+        "text": "0t\t."
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#180",
+      "fn": "v8",
+      "input": {
+        "text": "\"a]\\\"bnul\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#181",
+      "fn": "v8",
+      "input": {
+        "text": "x\"{,}"
+      },
+      "output": "Unexpected token 'x', \"x\"{,}\" is not valid JSON"
+    },
+    {
+      "id": "v8#182",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":n\"k\"ull}"
+      },
+      "output": "Unexpected string in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#183",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#184",
+      "fn": "v8",
+      "input": {
+        "text": "1.5"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#185",
+      "fn": "v8",
+      "input": {
+        "text": "[[[],{\"ké\":[2e+21]},{\"error\":0}+],{\"\":{}}]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 31 (line 1 column 32)"
+    },
+    {
+      "id": "v8#186",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#187",
+      "fn": "v8",
+      "input": {
+        "text": "né\""
+      },
+      "output": "Unexpected token 'é', \"né\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#188",
+      "fn": "v8",
+      "input": {
+        "text": "f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#189",
+      "fn": "v8",
+      "input": {
+        "text": "{\"errorE\":[],\"message\":{\"message\":[2e+21,[]]}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#190",
+      "fn": "v8",
+      "input": {
+        "text": "[]["
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#191",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#192",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[],\"message\":[[false,{\"a\":true,\"\":nll}],[[-1.5],][\"a\\\"b\",\"a\\\"b\",true],[\"\",\"str\",\"str\"]],[\"a\\\"b\",{},{\"error\":false}]]}"
+      },
+      "output": "Unexpected token 'l', ...\":true,\"\":nll}],[[-1.\"... is not valid JSON"
+    },
+    {
+      "id": "v8#193",
+      "fn": "v8",
+      "input": {
+        "text": "[[\"\",true,{\"\":\"\",\"ké\":{\"message\":\"a\\\"b\",\"\":\"a\\\"b\",\"ké\":false},\"a\":true}],[[\"\"],0{\"\":[\"a\\\"b\"]}],{\"ké\":[[],\"\"]}]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 80 (line 1 column 81)"
+    },
+    {
+      "id": "v8#194",
+      "fn": "v8",
+      "input": {
+        "text": "]"
+      },
+      "output": "Unexpected token ']', \"]\" is not valid JSON"
+    },
+    {
+      "id": "v8#195",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{},\"a\":{\"[error\":[-1.5]},\"error\":\"a\\\"b\"}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#196",
+      "fn": "v8",
+      "input": {
+        "text": "\"ae\\\"b\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#197",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#198",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  [\r\n    [\r\n      {}\r\n    ],\r\n    [\r\n \\     [\r\n        \"a\\\"b\"\r\n      ],\r\n      {\r\n        \"message\": -1.5,\r\n        \"ké\": \"str\"\r\n        \"error\": true\r\n      }\r\n    ],\r\n    []\r\n  ]\r\n]"
+      },
+      "output": "Unexpected token '\\', ...\"\r\n    [\r\n \\     [\r\n \"... is not valid JSON"
+    },
+    {
+      "id": "v8#199",
+      "fn": "v8",
+      "input": {
+        "text": "truef[{},0,{\"error\":\"\":,\"ké\":false}]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#200",
+      "fn": "v8",
+      "input": {
+        "text": "{1"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#201",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"a\": [\n      0\n    ]\n  },\n  {\n    \"\": {\n      \"\": 0\n   }\n  },\n  []\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#202",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {e\n    \"\": [\n      [\n        e+21\n      x]\n    ]\n  }\n]"
+      },
+      "output": "Expected property name or '}' in JSON at position 5 (line 2 column 4)"
+    },
+    {
+      "id": "v8#203",
+      "fn": "v8",
+      "input": {
+        "text": "[]null"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#204",
+      "fn": "v8",
+      "input": {
+        "text": "[t2e+2\u00001]"
+      },
+      "output": "Unexpected number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#205",
+      "fn": "v8",
+      "input": {
+        "text": "{}E"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#206",
+      "fn": "v8",
+      "input": {
+        "text": "[\t{"
+      },
+      "output": "Expected property name or '}' in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#207",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#208",
+      "fn": "v8",
+      "input": {
+        "text": "nul\u0000l"
+      },
+      "output": "Unexpected token '\u0000', \"nul\u0000l\" is not valid JSON"
+    },
+    {
+      "id": "v8#209",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"eror\": []\r\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#210",
+      "fn": "v8",
+      "input": {
+        "text": "[[],\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#211",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {\n    \"a\": [\n      {}\n    ],\n    \"error\": [\n      [\n        false,\n        \"str\"\n      ]\n    ]\n  },\n  \"ké\": {\n    \"ké\": {\n      \"ké\": {\n        \"\": \"str\"\n      },\n      \"a\": \"é\",\n      \"error\": \"str\"\n    },\n    \"error\": {\n      \"error\": [\n       false\n      ],\n      \"message\": null\n    }\n  }\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#212",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#213",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[}"
+      },
+      "output": "Unexpected token '}', \"{\"a\":[}\" is not valid JSON"
+    },
+    {
+      "id": "v8#214",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#215",
+      "fn": "v8",
+      "input": {
+        "text": "é[]"
+      },
+      "output": "Unexpected token 'é', \"é[]\" is not valid JSON"
+    },
+    {
+      "id": "v8#216",
+      "fn": "v8",
+      "input": {
+        "text": "nul l\r"
+      },
+      "output": "Unexpected token ' ', \"nul l\r\" is not valid JSON"
+    },
+    {
+      "id": "v8#217",
+      "fn": "v8",
+      "input": {
+        "text": "-\r1.5"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#218",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[\"a\\\"nullb\",[]],\"ké\":[\"\"]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#219",
+      "fn": "v8",
+      "input": {
+        "text": "}+"
+      },
+      "output": "Unexpected token '}', \"}+\" is not valid JSON"
+    },
+    {
+      "id": "v8#220",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#221",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":{\"error\":[[\"str\"],\"\",{}]},\"a\":{\"\":[[str\"]],\"error:{\"ké\":{\"a\":null,\"\":\"a\\\"b\"},\"message\":[\"str\",\"str\",\"\"],\"a\":{\"a\":2e+21}},\"message\":[]}}"
+      },
+      "output": "Unexpected token 's', ...\"\"a\":{\"\":[[str\"]],\"er\"... is not valid JSON"
+    },
+    {
+      "id": "v8#222",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":{\"error\":[\"éf\"],\"a\":{\"\":false,\"message\":\"é\"},\"\":{}},\"ké\":[[true],{\"message\":-1.5,\"\":true}],\"error\":\"a\\\"b\"},2e+21]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#223",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#224",
+      "fn": "v8",
+      "input": {
+        "text": " f,als"
+      },
+      "output": "Unexpected token ',', \" f,als\" is not valid JSON"
+    },
+    {
+      "id": "v8#225",
+      "fn": "v8",
+      "input": {
+        "text": "{}}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#226",
+      "fn": "v8",
+      "input": {
+        "text": "1e\\{}"
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#227",
+      "fn": "v8",
+      "input": {
+        "text": "null\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#228",
+      "fn": "v8",
+      "input": {
+        "text": "1é\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#229",
+      "fn": "v8",
+      "input": {
+        "text": "02e\\+21"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#230",
+      "fn": "v8",
+      "input": {
+        "text": "-}1"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#231",
+      "fn": "v8",
+      "input": {
+        "text": "{n"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#232",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {   \"\": {}\n  },\n  \"ké\": [\n    \"\",\n    [\n .     {},\n      {}\n    ]\n  ]\n}"
+      },
+      "output": "Unexpected token '.', ...\"\",\n    [\n .     {},\n\"... is not valid JSON"
+    },
+    {
+      "id": "v8#233",
+      "fn": "v8",
+      "input": {
+        "text": "\t[true"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#234",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":2e+21,\"mssage\"🦋:{}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 19 (line 1 column 20)"
+    },
+    {
+      "id": "v8#235",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": {\n    \"ké\": {\n  \\    \"\"{: {},\n      \"error\": {}\n    }\n  },\n  \"ké\": {},\n  \"message\": fals\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 24 (line 4 column 3)"
+    },
+    {
+      "id": "v8#236",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#237",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#238",
+      "fn": "v8",
+      "input": {
+        "text": "E[]"
+      },
+      "output": "Unexpected token 'E', \"E[]\" is not valid JSON"
+    },
+    {
+      "id": "v8#239",
+      "fn": "v8",
+      "input": {
+        "text": "E[false,[]]]"
+      },
+      "output": "Unexpected token 'E', \"E[false,[]]]\" is not valid JSON"
+    },
+    {
+      "id": "v8#240",
+      "fn": "v8",
+      "input": {
+        "text": "{, }"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#241",
+      "fn": "v8",
+      "input": {
+        "text": "e-+\\21"
+      },
+      "output": "Unexpected token 'e', \"e-+\\21\" is not valid JSON"
+    },
+    {
+      "id": "v8#242",
+      "fn": "v8",
+      "input": {
+        "text": "é\""
+      },
+      "output": "Unexpected token 'é', \"é\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#243",
+      "fn": "v8",
+      "input": {
+        "text": "\"é\"\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#244",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":{\"a\":}},\"message\":{\"message\":null,\"ké\":\"\"}}"
+      },
+      "output": "Unexpected token '}', ...\"ror\":{\"a\":}},\"messag\"... is not valid JSON"
+    },
+    {
+      "id": "v8#245",
+      "fn": "v8",
+      "input": {
+        "text": "}\t"
+      },
+      "output": "Unexpected token '}', \"}\t\" is not valid JSON"
+    },
+    {
+      "id": "v8#246",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {\n    \"error\": [\n      false\n    ]\n  },\n  \"error\": \"s"
+      },
+      "output": "Unterminated string in JSON at position 62 (line 7 column 14)"
+    },
+    {
+      "id": "v8#247",
+      "fn": "v8",
+      "input": {
+        "text": "\n0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#248",
+      "fn": "v8",
+      "input": {
+        "text": "t[\n "
+      },
+      "output": "Unexpected token '[', \"t[\n \" is not valid JSON"
+    },
+    {
+      "id": "v8#249",
+      "fn": "v8",
+      "input": {
+        "text": "\n{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#250",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":0,\":st1r\"}"
+      },
+      "output": "Expected ':' after property name in JSON at position 15 (line 1 column 16)"
+    },
+    {
+      "id": "v8#251",
+      "fn": "v8",
+      "input": {
+        "text": "[[[[\"a\\\"b\",false,null],{\"error\":-1.{5},[2e+21,true,2e+21]],true,true]]"
+      },
+      "output": "Unterminated fractional number in JSON at position 35 (line 1 column 36)"
+    },
+    {
+      "id": "v8#252",
+      "fn": "v8",
+      "input": {
+        "text": "}e"
+      },
+      "output": "Unexpected token '}', \"}e\" is not valid JSON"
+    },
+    {
+      "id": "v8#253",
+      "fn": "v8",
+      "input": {
+        "text": "[]🦋]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#254",
+      "fn": "v8",
+      "input": {
+        "text": "-1.5]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#255",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": {\n    \"message\": [\n      {\n        \"ké\": \"\"\n      \n    ],\n    \"\": \"é\"\n  },\n  \"error\": \n    \"\": {}\n  }\n}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 63 (line 7 column 5)"
+    },
+    {
+      "id": "v8#256",
+      "fn": "v8",
+      "input": {
+        "text": "[[[{u},true],[false,\"me\u0000ssage\":0}]],null,{}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#257",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"a\":{\"\":{\"ké\":\"é\",\"message\":0},\"message\"0}}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 45 (line 1 column 46)"
+    },
+    {
+      "id": "v8#258",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#259",
+      "fn": "v8",
+      "input": {
+        "text": "\"s] t"
+      },
+      "output": "Unterminated string in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#260",
+      "fn": "v8",
+      "input": {
+        "text": "{-}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#261",
+      "fn": "v8",
+      "input": {
+        "text": "{error\":{},\"\":[-1.5,fal1se]}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#262",
+      "fn": "v8",
+      "input": {
+        "text": "0f"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#263",
+      "fn": "v8",
+      "input": {
+        "text": "[-é.5]"
+      },
+      "output": "No number after minus sign in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#264",
+      "fn": "v8",
+      "input": {
+        "text": "tru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#265",
+      "fn": "v8",
+      "input": {
+        "text": "🦋\"\""
+      },
+      "output": "Unexpected token '�', \"🦋\"\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#266",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {\n     \"message\": 0,\n      \"\": null\n    }\n  ],\n  true,\n  true\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#267",
+      "fn": "v8",
+      "input": {
+        "text": "\"\"true"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#268",
+      "fn": "v8",
+      "input": {
+        "text": "[2e+,2e+21]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#269",
+      "fn": "v8",
+      "input": {
+        "text": "true"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#270",
+      "fn": "v8",
+      "input": {
+        "text": "[\"\",{\"\":\"str,\"a\":\"é\"}]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 14 (line 1 column 15)"
+    },
+    {
+      "id": "v8#271",
+      "fn": "v8",
+      "input": {
+        "text": "{\""
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#272",
+      "fn": "v8",
+      "input": {
+        "text": "1e["
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#273",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#274",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#275",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\": [],\n  \"error\": \"a\\\"b\",\n  \"mesag,e\": "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#276",
+      "fn": "v8",
+      "input": {
+        "text": "{\"k\":{},\"-a\":2e+21}."
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 19 (line 1 column 20)"
+    },
+    {
+      "id": "v8#277",
+      "fn": "v8",
+      "input": {
+        "text": "[[tru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#278",
+      "fn": "v8",
+      "input": {
+        "text": "f\u0000alse"
+      },
+      "output": "Unexpected token '\u0000', \"f\u0000alse\" is not valid JSON"
+    },
+    {
+      "id": "v8#279",
+      "fn": "v8",
+      "input": {
+        "text": "\"+\":]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#280",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#281",
+      "fn": "v8",
+      "input": {
+        "text": "f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#282",
+      "fn": "v8",
+      "input": {
+        "text": "Enu,"
+      },
+      "output": "Unexpected token 'E', \"Enu,\" is not valid JSON"
+    },
+    {
+      "id": "v8#283",
+      "fn": "v8",
+      "input": {
+        "text": "]"
+      },
+      "output": "Unexpected token ']', \"]\" is not valid JSON"
+    },
+    {
+      "id": "v8#284",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[{\"t\":true},[[0],{}]],\"a\":[0,{\"errotr\":false,\"\":false}],\"\":[[[\"{a\\\"b\",false],[-1.5,\"\",-1.5]],{\"a\":true}]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#285",
+      "fn": "v8",
+      "input": {
+        "text": "}true"
+      },
+      "output": "Unexpected token '}', \"}true\" is not valid JSON"
+    },
+    {
+      "id": "v8#286",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#287",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n   E \"\",\n    {\n      \"a\": {\n        \"message\": true,\n        \"a\": 2e+21\n      },\n      \"ké\": {\n        \"a\": \"a\\\"b\"\n      },\n      \"\""
+      },
+      "output": "Unexpected token 'E', \"[\n  [\n   E \"\",\n    \"... is not valid JSON"
+    },
+    {
+      "id": "v8#288",
+      "fn": "v8",
+      "input": {
+        "text": "nul"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#289",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"a\":{\"ké\":{\"error\":\"a\\\"b\",\"ké\":ftruealse}},\"ké\":true},\"ké\":\"é\",\"a\":{}}"
+      },
+      "output": "Unexpected token 't', ...\"\"b\",\"ké\":ftruealse}}\"... is not valid JSON"
+    },
+    {
+      "id": "v8#290",
+      "fn": "v8",
+      "input": {
+        "text": "0:é"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#291",
+      "fn": "v8",
+      "input": {
+        "text": "{true\"a\":{},\"error\":{\"a\":\r[]},\"ké\":\"str\"}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#292",
+      "fn": "v8",
+      "input": {
+        "text": "fatruelse"
+      },
+      "output": "Unexpected token 't', \"fatruelse\" is not valid JSON"
+    },
+    {
+      "id": "v8#293",
+      "fn": "v8",
+      "input": {
+        "text": "0."
+      },
+      "output": "Unterminated fractional number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#294",
+      "fn": "v8",
+      "input": {
+        "text": "{\"m{essage\":[[],flse],\"a\":{\"message\":\"é\",\"ké\":[{}]}}"
+      },
+      "output": "Unexpected token 'l', ...\"age\":[[],flse],\"a\":{\"... is not valid JSON"
+    },
+    {
+      "id": "v8#295",
+      "fn": "v8",
+      "input": {
+        "text": "[null,[{\"message\":{\"\":\"\"}},[{}]]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 32 (line 1 column 33)"
+    },
+    {
+      "id": "v8#296",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\" : {},\n \"ké\": \"str\"\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#297",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  {\r\n    \"message\": {\r\n      \"ké\": true,\r\n     \"\": []\r\n    }\r\n  }\r\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#298",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#299",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#300",
+      "fn": "v8",
+      "input": {
+        "text": "{ké:]}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#301",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {\n    \"ké\": {\n"
+      },
+      "output": "Expected property name or '}' in JSON at position 23 (line 4 column 1)"
+    },
+    {
+      "id": "v8#302",
+      "fn": "v8",
+      "input": {
+        "text": "{}t"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#303",
+      "fn": "v8",
+      "input": {
+        "text": "nul]l"
+      },
+      "output": "Unexpected token ']', \"nul]l\" is not valid JSON"
+    },
+    {
+      "id": "v8#304",
+      "fn": "v8",
+      "input": {
+        "text": "]e"
+      },
+      "output": "Unexpected token ']', \"]e\" is not valid JSON"
+    },
+    {
+      "id": "v8#305",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[{}],\"k\":{\"me ssage\":2e+21,\"eror\":[],\"ké\":\"é\"}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#306",
+      "fn": "v8",
+      "input": {
+        "text": "{+\"ké\":{}\"message\":{\"ké\":{}}}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#307",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#308",
+      "fn": "v8",
+      "input": {
+        "text": "alse"
+      },
+      "output": "Unexpected token 'a', \"alse\" is not valid JSON"
+    },
+    {
+      "id": "v8#309",
+      "fn": "v8",
+      "input": {
+        "text": "[]t "
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#310",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[\"a\\\"b\",{}],\"message\":[0,2e+21,[[\"\",true,true],{\"a\":\"a\\\"b\",\"error\":\"str\"}]],\"error\":{\"message\":{\"\":{\"error\":\"str\",\"\":\"é\",\"message\":2e+2-1},\"ké\":\"é\",\"message\":{\"message\":false,\"a\":\"\"}},\"\":[-1.5,[]],\"a\":\"\"}}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 140 (line 1 column 141)"
+    },
+    {
+      "id": "v8#311",
+      "fn": "v8",
+      "input": {
+        "text": "[[\"é\",[\"error\":false,\"message\":\"a\\\"b\"},{\"\":2e+21,\"error\":\"a\\\"b\",\"message\":\"é\"}]]]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 14 (line 1 column 15)"
+    },
+    {
+      "id": "v8#312",
+      "fn": "v8",
+      "input": {
+        "text": "true["
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#313",
+      "fn": "v8",
+      "input": {
+        "text": "{tue}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#314",
+      "fn": "v8",
+      "input": {
+        "text": "{\"}"
+      },
+      "output": "Unterminated string in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#315",
+      "fn": "v8",
+      "input": {
+        "text": ".\"é\""
+      },
+      "output": "Unexpected token '.', \".\"é\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#316",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#317",
+      "fn": "v8",
+      "input": {
+        "text": "}"
+      },
+      "output": "Unexpected token '}', \"}\" is not valid JSON"
+    },
+    {
+      "id": "v8#318",
+      "fn": "v8",
+      "input": {
+        "text": "\"}"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#319",
+      "fn": "v8",
+      "input": {
+        "text": "[[2e++21,[],\"a\\\"b\"],{\"ké\":{\"ké\":2e+21,\"message\":{\"a\":false,\"ké\"\t:true}}}]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#320",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":[],\"a\":{\"error\":\"a\\\"\"}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#321",
+      "fn": "v8",
+      "input": {
+        "text": "[\nn  \"\",\n  \"é\",\n  null]"
+      },
+      "output": "Unexpected token ' ', \"[\nn  \"\",\n  \"é\"... is not valid JSON"
+    },
+    {
+      "id": "v8#322",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\": {\n    \"\": {\n      \"a\": {\n        \"error\": \"é\"\n      }\n    }\n  },\n  \"message\": {\n    \"error\": [      [\n        \"a\\\"b\"\n      ],\n      [\n        \"é\",\n        \"é\"\n      ],\n      [\n       0\n      ]\n    ]\n  }\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#323",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#324",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\b\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#325",
+      "fn": "v8",
+      "input": {
+        "text": "ru\"e"
+      },
+      "output": "Unexpected token 'r', \"ru\"e\" is not valid JSON"
+    },
+    {
+      "id": "v8#326",
+      "fn": "v8",
+      "input": {
+        "text": "{0"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#327",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#328",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": 0,\n  \"\": -.5\n}"
+      },
+      "output": "No number after minus sign in JSON at position 25 (line 3 column 8)"
+    },
+    {
+      "id": "v8#329",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\"[[[\"é"
+      },
+      "output": "Expected ':' after property name in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#330",
+      "fn": "v8",
+      "input": {
+        "text": "-1e.5,"
+      },
+      "output": "Exponent part is missing a number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#331",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"\":{\"a\":\"é\"},\"message\":{\"ké\":\"str\"}}],{\"message\":{\"a\":[true,true,\"a\"b\"],\"error\":0t},\"ké\":2e+21}]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 71 (line 1 column 72)"
+    },
+    {
+      "id": "v8#332",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#333",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\🦋\"\""
+      },
+      "output": "Unexpected token '�', \"\"a\\🦋\"\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#334",
+      "fn": "v8",
+      "input": {
+        "text": "\"\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#335",
+      "fn": "v8",
+      "input": {
+        "text": "-"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#336",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":[{\"ké\":true,\"message\":-1.5,\"\":\"str\"},{\"message\":false,\"error\":\"\"}],\"message\":[[faltruese,\"str\",\"}é\"],-1.5,{\"message\":\"str\",\"error\":true}]},[[],[]]]"
+      },
+      "output": "Unexpected token 't', ...\"age\":[[faltruese,\"st\"... is not valid JSON"
+    },
+    {
+      "id": "v8#337",
+      "fn": "v8",
+      "input": {
+        "text": "+["
+      },
+      "output": "Unexpected token '+', \"+[\" is not valid JSON"
+    },
+    {
+      "id": "v8#338",
+      "fn": "v8",
+      "input": {
+        "text": "fals"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#339",
+      "fn": "v8",
+      "input": {
+        "text": "-01..5"
+      },
+      "output": "Unexpected number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#340",
+      "fn": "v8",
+      "input": {
+        "text": "\":\"€e"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#341",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#342",
+      "fn": "v8",
+      "input": {
+        "text": "true]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#343",
+      "fn": "v8",
+      "input": {
+        "text": "\"+"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#344",
+      "fn": "v8",
+      "input": {
+        "text": "[-1.15,-1.5]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#345",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[[2e}+21],[true]],\"a\":true,\"\":\"st\"r\"1e}"
+      },
+      "output": "Exponent part is missing a number in JSON at position 10 (line 1 column 11)"
+    },
+    {
+      "id": "v8#346",
+      "fn": "v8",
+      "input": {
+        "text": "[0,{\"me"
+      },
+      "output": "Unterminated string in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#347",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#348",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": {},\n  \"\": "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#349",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[[{\"message\":2e+21,\"a\":true}],{,[\"a\\\"b\"]],\"a\":[{\"a\":{\"error\":\"\",\"a\":0},\"\":{\"error\":true,\"a\":null}},[[null,false,\"a\\\"b\"],[0,true"
+      },
+      "output": "Expected property name or '}' in JSON at position 35 (line 1 column 36)"
+    },
+    {
+      "id": "v8#350",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#351",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error:[[[2e+21],{}]}"
+      },
+      "output": "Unterminated string in JSON at position 22 (line 1 column 23)"
+    },
+    {
+      "id": "v8#352",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#353",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":{\"ké\":{\"message\":false,\"ké\":false},\"\":-1.5,\"messfage\":[\"a\\\"b\"]},\"\":{\"a\":{\"error\":-1.5,\"\":2e+21}}},"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#354",
+      "fn": "v8",
+      "input": {
+        "text": "\n  "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#355",
+      "fn": "v8",
+      "input": {
+        "text": "[[[{\"é\":\"a\\\"b\",\"a\":null,\"message\":\"str\"},\"a\\\"b\"],{\"\":{},\"a\":[-1.5,0],\"error\":{\"message\":true,\"a\":null,\"error\":false}}]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#356",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  nullf\r\n]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 9 (line 2 column 7)"
+    },
+    {
+      "id": "v8#357",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[{\"a\":{\"message\":null,\"ké\":0},\"message\":[-1.5,\"\",\"a\\\"b\"],\"ké\":null}],\"errr\":{}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#358",
+      "fn": "v8",
+      "input": {
+        "text": "[{},{\"a\":{\"mesage\":{}},\"\":{\"ké\""
+      },
+      "output": "Expected ':' after property name in JSON at position 31 (line 1 column 32)"
+    },
+    {
+      "id": "v8#359",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"ké\":{\n      \"message\": "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#360",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"ertrueror\": {\r\n    \"\": []\r\n  },\r\n  \"message\": null,\r"
+      },
+      "output": "Expected double-quoted property name in JSON at position 58 (line 6 column 1)"
+    },
+    {
+      "id": "v8#361",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {\n    \"a\": \"a\\\"\"\n  },\n  \"\": null,\n  \"message\": {\n   \"\": 2e+21,\n    \"me"
+      },
+      "output": "Unterminated string in JSON at position 79 (line 8 column 8)"
+    },
+    {
+      "id": "v8#362",
+      "fn": "v8",
+      "input": {
+        "text": "f,lse"
+      },
+      "output": "Unexpected token ',', \"f,lse\" is not valid JSON"
+    },
+    {
+      "id": "v8#363",
+      "fn": "v8",
+      "input": {
+        "text": "\"é\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#364",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#365",
+      "fn": "v8",
+      "input": {
+        "text": "[fal€"
+      },
+      "output": "Unexpected token '€', \"[fal€\" is not valid JSON"
+    },
+    {
+      "id": "v8#366",
+      "fn": "v8",
+      "input": {
+        "text": "true"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#367",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#368",
+      "fn": "v8",
+      "input": {
+        "text": "-"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#369",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":2e+21,\"a\":{\"message\":[[],{},-1.5],\"ké\":{\"messae\":]},\"\":-1.5},\"error\":{\"message\":{\"message\":{\"error\":\"\"}},\"error\":{\"a"
+      },
+      "output": "Unexpected token ']', ...\"{\"messae\":]},\"\":-1.5\"... is not valid JSON"
+    },
+    {
+      "id": "v8#370",
+      "fn": "v8",
+      "input": {
+        "text": "{}\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#371",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\"\""
+      },
+      "output": "Expected ':' after property name in JSON at position 14 (line 1 column 15)"
+    },
+    {
+      "id": "v8#372",
+      "fn": "v8",
+      "input": {
+        "text": "[\"a\\\"b\",f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#373",
+      "fn": "v8",
+      "input": {
+        "text": "[\"a+\\\"b\"true]n"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#374",
+      "fn": "v8",
+      "input": {
+        "text": "€[\n "
+      },
+      "output": "Unexpected token '€', \"€[\n \" is not valid JSON"
+    },
+    {
+      "id": "v8#375",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"error"
+      },
+      "output": "Unterminated string in JSON at position 11 (line 2 column 9)"
+    },
+    {
+      "id": "v8#376",
+      "fn": "v8",
+      "input": {
+        "text": "\"stnr\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#377",
+      "fn": "v8",
+      "input": {
+        "text": "-115"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#378",
+      "fn": "v8",
+      "input": {
+        "text": "\"\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#379",
+      "fn": "v8",
+      "input": {
+        "text": "\"st\" "
+      },
+      "output": null
+    },
+    {
+      "id": "v8#380",
+      "fn": "v8",
+      "input": {
+        "text": "e\u0000{}\n"
+      },
+      "output": "Unexpected token 'e', \"e\u0000{}\n\" is not valid JSON"
+    },
+    {
+      "id": "v8#381",
+      "fn": "v8",
+      "input": {
+        "text": "\"\"["
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#382",
+      "fn": "v8",
+      "input": {
+        "text": "t0"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#383",
+      "fn": "v8",
+      "input": {
+        "text": "[é]n"
+      },
+      "output": "Unexpected token 'é', \"[é]n\" is not valid JSON"
+    },
+    {
+      "id": "v8#384",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"\":{\":{},\"message\":\"a\\\"b\",\"a\":true}},[\"a\\\"b\",[{\"ké\":\"\",\"mesage\":-1.5}]]]"
+      },
+      "output": "Expected ':' after property name in JSON at position 12 (line 1 column 13)"
+    },
+    {
+      "id": "v8#385",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#386",
+      "fn": "v8",
+      "input": {
+        "text": "\"str1\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#387",
+      "fn": "v8",
+      "input": {
+        "text": "{ké\":-1.5,\"message\":{\"a\":[{\"a\":\"eé\",\"message\":\"é\"}],\"ké\":{\"ké\":{\"\":-1.5},\"a\":{},\"error\":\"a\\\"b\"}},\"\":[[{}],\"str\",2e+21]"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#388",
+      "fn": "v8",
+      "input": {
+        "text": "flse"
+      },
+      "output": "Unexpected token 'l', \"flse\" is not valid JSON"
+    },
+    {
+      "id": "v8#389",
+      "fn": "v8",
+      "input": {
+        "text": "{\"}error\":{\"a\":2e+21\r}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 22 (line 2 column 2)"
+    },
+    {
+      "id": "v8#390",
+      "fn": "v8",
+      "input": {
+        "text": "{\""
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#391",
+      "fn": "v8",
+      "input": {
+        "text": "{\"messag\":{\"a\"[[\"\",null,nll]]}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 14 (line 1 column 15)"
+    },
+    {
+      "id": "v8#392",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":null,\"\":{\"message\":{error\":[falEse,false]}}}"
+      },
+      "output": "Expected property name or '}' in JSON at position 26 (line 1 column 27)"
+    },
+    {
+      "id": "v8#393",
+      "fn": "v8",
+      "input": {
+        "text": "}\"k\""
+      },
+      "output": "Unexpected token '}', \"}\"k\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#394",
+      "fn": "v8",
+      "input": {
+        "text": "."
+      },
+      "output": "Unexpected token '.', \".\" is not valid JSON"
+    },
+    {
+      "id": "v8#395",
+      "fn": "v8",
+      "input": {
+        "text": "{\"éerror\":\"\"}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#396",
+      "fn": "v8",
+      "input": {
+        "text": "u{}🦋"
+      },
+      "output": "Unexpected token 'u', \"u{}🦋\" is not valid JSON"
+    },
+    {
+      "id": "v8#397",
+      "fn": "v8",
+      "input": {
+        "text": "{\\}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#398",
+      "fn": "v8",
+      "input": {
+        "text": "\"é"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#399",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#400",
+      "fn": "v8",
+      "input": {
+        "text": "\"\t\""
+      },
+      "output": "Bad control character in string literal in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#401",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {[]\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 10 (line 2 column 9)"
+    },
+    {
+      "id": "v8#402",
+      "fn": "v8",
+      "input": {
+        "text": "[{},2e+21]\n"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#403",
+      "fn": "v8",
+      "input": {
+        "text": "nul-l"
+      },
+      "output": "Unexpected number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#404",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\"a\":{\"a\":\"\",\"\":0{}},\"\":{},\"error\":[]}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 28 (line 1 column 29)"
+    },
+    {
+      "id": "v8#405",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": \"é\",\n  \"ké\": [\n    {\n      \"a\": \"str\",\n      \"message\": €[]\n    }\n  ]\n}"
+      },
+      "output": "Unexpected token '€', ...\"message\": €[]\n    }\n\"... is not valid JSON"
+    },
+    {
+      "id": "v8#406",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#407",
+      "fn": "v8",
+      "input": {
+        "text": "\u0000{}"
+      },
+      "output": "Unexpected token '\u0000', \"\u0000{}\" is not valid JSON"
+    },
+    {
+      "id": "v8#408",
+      "fn": "v8",
+      "input": {
+        "text": "{true}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#409",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#410",
+      "fn": "v8",
+      "input": {
+        "text": "\"+\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#411",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#412",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#413",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[{\"\":[],\"error\":{}},[\"str\",[0,\"\"]],{\"message\":false,\"error\":\"é\""
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 67 (line 1 column 68)"
+    },
+    {
+      "id": "v8#414",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"message\": -1.5nll\n}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 20 (line 2 column 18)"
+    },
+    {
+      "id": "v8#415",
+      "fn": "v8",
+      "input": {
+        "text": "[[\n  \"str\"\nnull:]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 11 (line 3 column 1)"
+    },
+    {
+      "id": "v8#416",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"mesage\": {\n    \"\": {},\n   \"error: \"str\"\n  }\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 40 (line 4 column 13)"
+    },
+    {
+      "id": "v8#417",
+      "fn": "v8",
+      "input": {
+        "text": "\"str\"\r"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#418",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"error\":{\"\":true,\"message\":{},\"\":{}},\"a\":[null]}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#419",
+      "fn": "v8",
+      "input": {
+        "text": "0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#420",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":{\"a\":{\"message\"false,\"a\":[]},\"ké\":[]},\"\":[{\"error\":[\"\",\"a\\\"b\""
+      },
+      "output": "Expected ':' after property name in JSON at position 20 (line 1 column 21)"
+    },
+    {
+      "id": "v8#421",
+      "fn": "v8",
+      "input": {
+        "text": "[[[],null]\"\"]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 10 (line 1 column 11)"
+    },
+    {
+      "id": "v8#422",
+      "fn": "v8",
+      "input": {
+        "text": "{\"messge\":{\"\":true,\"message\":{}}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#423",
+      "fn": "v8",
+      "input": {
+        "text": "}"
+      },
+      "output": "Unexpected token '}', \"}\" is not valid JSON"
+    },
+    {
+      "id": "v8#424",
+      "fn": "v8",
+      "input": {
+        "text": "{€\"a\":[]}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#425",
+      "fn": "v8",
+      "input": {
+        "text": "15"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#426",
+      "fn": "v8",
+      "input": {
+        "text": "strtrue\""
+      },
+      "output": "Unexpected token 's', \"strtrue\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#427",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#428",
+      "fn": "v8",
+      "input": {
+        "text": "t{}["
+      },
+      "output": "Unexpected token '{', \"t{}[\" is not valid JSON"
+    },
+    {
+      "id": "v8#429",
+      "fn": "v8",
+      "input": {
+        "text": "null{}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#430",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [1e\n    [\n      {}\n    ],\n    {\n      \"error\": \"é\"\n    }\n  ]\n"
+      },
+      "output": "Exponent part is missing a number in JSON at position 7 (line 2 column 6)"
+    },
+    {
+      "id": "v8#431",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#432",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#433",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":{\"a\":"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#434",
+      "fn": "v8",
+      "input": {
+        "text": "\n  2e+21\n]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 9 (line 3 column 1)"
+    },
+    {
+      "id": "v8#435",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":[{\":\"é\",\"error\":\"\"}],\"\":false},\"\"]"
+      },
+      "output": "Expected ':' after property name in JSON at position 17 (line 1 column 18)"
+    },
+    {
+      "id": "v8#436",
+      "fn": "v8",
+      "input": {
+        "text": "{]"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#437",
+      "fn": "v8",
+      "input": {
+        "text": "€"
+      },
+      "output": "Unexpected token '€', \"€\" is not valid JSON"
+    },
+    {
+      "id": "v8#438",
+      "fn": "v8",
+      "input": {
+        "text": "[{,[\"a\\\"b\",{},-1.5],2e+21]"
+      },
+      "output": "Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#439",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\""
+      },
+      "output": "Expected ':' after property name in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#440",
+      "fn": "v8",
+      "input": {
+        "text": "-15{"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#441",
+      "fn": "v8",
+      "input": {
+        "text": "é\"\n"
+      },
+      "output": "Unexpected token 'é', \"é\"\n\" is not valid JSON"
+    },
+    {
+      "id": "v8#442",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#443",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  false,\r\n  {},\r\n fse\r\n]"
+      },
+      "output": "Unexpected token 's', ...\"\n  {},\r\n fse\r\n]\" is not valid JSON"
+    },
+    {
+      "id": "v8#444",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\"ké\":null,\"\":{\"\":[-1.5,true],\"ké\":{\"\":\"é\",\"messagenull\":trueu}}},\"error\":{error\":{\"a\":[],\"ké\":\"a\\\"b\",\"\":{\"a\":\"a\\\"b\",\"ké\":2e+21}}}}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 72 (line 1 column 73)"
+    },
+    {
+      "id": "v8#445",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":\"a\\\"b},[[\"\",\"é\","
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 22 (line 1 column 23)"
+    },
+    {
+      "id": "v8#446",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#447",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {},\n    {\n    \"\": []\n    "
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 35 (line 6 column 5)"
+    },
+    {
+      "id": "v8#448",
+      "fn": "v8",
+      "input": {
+        "text": "-5E"
+      },
+      "output": "Exponent part is missing a number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#449",
+      "fn": "v8",
+      "input": {
+        "text": "2\re+21e"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 2 column 1)"
+    },
+    {
+      "id": "v8#450",
+      "fn": "v8",
+      "input": {
+        "text": "{k"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#451",
+      "fn": "v8",
+      "input": {
+        "text": "{\"erro\"r\":0:\"a\\\"b\"}"
+      },
+      "output": "Expected ':' after property name in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#452",
+      "fn": "v8",
+      "input": {
+        "text": "[.\n  {\n    \"a\": {}\n  ,"
+      },
+      "output": "Unexpected token '.', \"[.\n  {\n    \"... is not valid JSON"
+    },
+    {
+      "id": "v8#453",
+      "fn": "v8",
+      "input": {
+        "text": "ntull"
+      },
+      "output": "Unexpected token 't', \"ntull\" is not valid JSON"
+    },
+    {
+      "id": "v8#454",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"message\": [\n      0\n    ],\n    \"error\": [\n      [],\n      [\n        \"a\\\"b\"\n        \"str\"\n      ],\n\r      [\n        true,\n        null,\n        \"str\"\n      ]\n    ]\n  },\n  [\n    [\n      true\n    ],\n    {\n      \"\": \"str\"\n    },\n    {\n      \"a\": \"\",\n      \"ké\": [\n        2e+21,\n        \"a\\\"b\"\n      ]\n    }\n  ]\n]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 94 (line 10 column 9)"
+    },
+    {
+      "id": "v8#455",
+      "fn": "v8",
+      "input": {
+        "text": "{\"é\":{\"error\":{\"ké\":\"a\\\"b\"}},\"a\":[[]]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#456",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":{\"é\" :false}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#457",
+      "fn": "v8",
+      "input": {
+        "text": "\"é\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#458",
+      "fn": "v8",
+      "input": {
+        "text": "-1\n.5"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 2 column 1)"
+    },
+    {
+      "id": "v8#459",
+      "fn": "v8",
+      "input": {
+        "text": "1e0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#460",
+      "fn": "v8",
+      "input": {
+        "text": "f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#461",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#462",
+      "fn": "v8",
+      "input": {
+        "text": "nu"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#463",
+      "fn": "v8",
+      "input": {
+        "text": "€[[e+21]"
+      },
+      "output": "Unexpected token '€', \"€[[e+21]\" is not valid JSON"
+    },
+    {
+      "id": "v8#464",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": {\n    \"message\": {\n      \"error\": {\n        \"message\": false,\n        \"a\": \"\",\n        \"\": \"é\"\n      }\n    },\n    \"\": {\n      \"ké\": {\n        \"a\": -1.5,\n        \"\": null\n      }\n    }\n  },\n  \"message\": {\n    \"\": {\n      \"a\": {\n       \"a\": false\n      }\n    }\n  },\n  \"a\": [\n    {}\n  ]\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#465",
+      "fn": "v8",
+      "input": {
+        "text": "0"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#466",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":\"é\",a\":[0,{\"ké\":[null]},{\"a\":.[\"a\\\"b\",\"é\",\"a\\\"b\"]}],\"\":2e+21}"
+      },
+      "output": "Expected double-quoted property name in JSON at position 10 (line 1 column 11)"
+    },
+    {
+      "id": "v8#467",
+      "fn": "v8",
+      "input": {
+        "text": "🦋als"
+      },
+      "output": "Unexpected token '�', \"🦋als\" is not valid JSON"
+    },
+    {
+      "id": "v8#468",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":[true,\"é\"]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 21 (line 1 column 22)"
+    },
+    {
+      "id": "v8#469",
+      "fn": "v8",
+      "input": {
+        "text": "f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#470",
+      "fn": "v8",
+      "input": {
+        "text": "[[{},[{\"ké\":\"a\\\"b\"}],[{\"ké\":\"str\"},-1.5,[null]]],{\"\":{\"message\":{\"ké\":\"\",\"a\":null},\"ké\":{}},\"message\":[]},[2e+21,{\"message\":{\"error\":\"a\\\"b\"},\"\":{\"error\":\"a\\\"b\"}},{\"é\":{},\"a\":\"é\"}]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#471",
+      "fn": "v8",
+      "input": {
+        "text": "-é\""
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#472",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#473",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  null[,\r\n  2e+21e1\r\n]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 9 (line 2 column 7)"
+    },
+    {
+      "id": "v8#474",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#475",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#476",
+      "fn": "v8",
+      "input": {
+        "text": "[[true]null,{\"\":[fal\rse,[false],\"a\\b\"],\"ké\":\"é\"}]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#477",
+      "fn": "v8",
+      "input": {
+        "text": "[€\n  {\n    \"a\": true\n  }\n]"
+      },
+      "output": "Unexpected token '€', \"[€\n  {\n    \"... is not valid JSON"
+    },
+    {
+      "id": "v8#478",
+      "fn": "v8",
+      "input": {
+        "text": "f"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#479",
+      "fn": "v8",
+      "input": {
+        "text": "[\"sr\",\"str\",[]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#480",
+      "fn": "v8",
+      "input": {
+        "text": "{message\":"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#481",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":rue,\"messa:ge\":{},\"ké\":\"\"}"
+      },
+      "output": "Unexpected token 'r', \"{\"\":rue,\"messa\"... is not valid JSON"
+    },
+    {
+      "id": "v8#482",
+      "fn": "v8",
+      "input": {
+        "text": "[[[]n],{\"a\":{\"message\":[\"é\",null,false"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#483",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#484",
+      "fn": "v8",
+      "input": {
+        "text": "0\"st\nr\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#485",
+      "fn": "v8",
+      "input": {
+        "text": "[]\t"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#486",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":{\"a\":[0],\"ké\": {}}},[{}],2e+21]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#487",
+      "fn": "v8",
+      "input": {
+        "text": "\"str\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#488",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"error\":{\"error\":{\"a\":\"\"},\"a\":[\"a\\\"b\",\"str\"]},\"message\":{\"a\":{\"message\":\"é\",\"\":\"str\"},\"error\":[0]}},\"ké\":[[{},{\"ké\":-1.5}],[\"a\\\"b\"]],\"a\":{\"err\\or\":\"str\"}}"
+      },
+      "output": "Bad escaped character in JSON at position 148 (line 1 column 149)"
+    },
+    {
+      "id": "v8#489",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":-1.5,\"rror:[]}"
+      },
+      "output": "Unterminated string in JSON at position 20 (line 1 column 21)"
+    },
+    {
+      "id": "v8#490",
+      "fn": "v8",
+      "input": {
+        "text": "2e+2"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#491",
+      "fn": "v8",
+      "input": {
+        "text": "}é\""
+      },
+      "output": "Unexpected token '}', \"}é\"\" is not valid JSON"
+    },
+    {
+      "id": "v8#492",
+      "fn": "v8",
+      "input": {
+        "text": "[[{}],{\"message\":{\"messfa\tge\":{\"\""
+      },
+      "output": "Bad control character in string literal in JSON at position 25 (line 1 column 26)"
+    },
+    {
+      "id": "v8#493",
+      "fn": "v8",
+      "input": {
+        "text": "{1\"a\"null,\"\":\"str\",\"message\":[]}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#494",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":{\"error\":{\"a\":{\"message\":\"str\",\"ké\":null},\"\":[]},\"a\":{\"message\":{\"ké\":\"a\\\"b\"},\"ké\":{\"a\":true,\"\":\"str\"}},\"\":[{\"message\":-1.5,\"ké\":\"a\\\"b\"}]},\"\":null}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#495",
+      "fn": "v8",
+      "input": {
+        "text": "1e-15\r"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#496",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  [\r\n    {\r\n      \"error\": [],\r\n      \"a"
+      },
+      "output": "Unterminated string in JSON at position 43 (line 5 column 9)"
+    },
+    {
+      "id": "v8#497",
+      "fn": "v8",
+      "input": {
+        "text": "\"str"
+      },
+      "output": "Unterminated string in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#498",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\n  \"\": [],\r\n  \"message\": {\r\n    \"a\": {\r\n     \"a\"]: []\r\n    },\r\n    \"\": {\r\n      \"ké\": [\r\n        false\r\n      ],\r\n      \"error\": [\r\n        2e+21,\r\n        \"é\",\r\n        \"\"\r\n      ]\r\n   }\r\n  }\r\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 50 (line 5 column 9)"
+    },
+    {
+      "id": "v8#499",
+      "fn": "v8",
+      "input": {
+        "text": "[  {\n    \"a\":e null\n  },\n  2e+21\n]"
+      },
+      "output": "Unexpected token 'e', ...\"{\n    \"a\":e null\n  }\"... is not valid JSON"
+    },
+    {
+      "id": "v8#500",
+      "fn": "v8",
+      "input": {
+        "text": ":0"
+      },
+      "output": "Unexpected token ':', \":0\" is not valid JSON"
+    },
+    {
+      "id": "v8#501",
+      "fn": "v8",
+      "input": {
+        "text": "🦋{e\"\":-1"
+      },
+      "output": "Unexpected token '�', \"🦋{e\"\":-1\" is not valid JSON"
+    },
+    {
+      "id": "v8#502",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":2e+21,\"message\":{\"e:[],\"a\":\"é\"}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 33 (line 1 column 34)"
+    },
+    {
+      "id": "v8#503",
+      "fn": "v8",
+      "input": {
+        "text": "[[],2\u0000e+1]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#504",
+      "fn": "v8",
+      "input": {
+        "text": "u{}"
+      },
+      "output": "Unexpected token 'u', \"u{}\" is not valid JSON"
+    },
+    {
+      "id": "v8#505",
+      "fn": "v8",
+      "input": {
+        "text": "nul"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#506",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#507",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"a\":[null],\"error\":\"é\",\"\":[]},2e+f21,{\"\":2e+21,\"error\":\"\"}],\"é0\"]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 36 (line 1 column 37)"
+    },
+    {
+      "id": "v8#508",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#509",
+      "fn": "v8",
+      "input": {
+        "text": "[2e+21,{u\"\":true,\"error\":{},\"ké\":{\"message\":[-1.5,\"é\"],\"a\":[]}}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#510",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#511",
+      "fn": "v8",
+      "input": {
+        "text": "[{},2e+21,{\"ké\":\"k\"\"\",\"\":[{\"a\":ull,\"ké\":\"\"},{\"error\":\"é\"}],\"a\":\"a\\\"b\"}]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 19 (line 1 column 20)"
+    },
+    {
+      "id": "v8#512",
+      "fn": "v8",
+      "input": {
+        "text": "e-"
+      },
+      "output": "Unexpected token 'e', \"e-\" is not valid JSON"
+    },
+    {
+      "id": "v8#513",
+      "fn": "v8",
+      "input": {
+        "text": "1e{\"ké\":-"
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#514",
+      "fn": "v8",
+      "input": {
+        "text": "{\"-\":true,\"messag\":-1.5}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#515",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#516",
+      "fn": "v8",
+      "input": {
+        "text": "[é\",{\"ké\":{},\"error\":{\"\":\"\",\"a\":true}},{\"\":{\"message\":{}},\"error\":\"a\\\"b\"]"
+      },
+      "output": "Unexpected token 'é', \"[é\",{\"ké\":{\"... is not valid JSON"
+    },
+    {
+      "id": "v8#517",
+      "fn": "v8",
+      "input": {
+        "text": "{\"k.é\":{},\"message\":[\"\"]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#518",
+      "fn": "v8",
+      "input": {
+        "text": "true"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#519",
+      "fn": "v8",
+      "input": {
+        "text": "\u0000true"
+      },
+      "output": "Unexpected token '\u0000', \"\u0000true\" is not valid JSON"
+    },
+    {
+      "id": "v8#520",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":\"a\\\"b\"}\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 18 (line 1 column 19)"
+    },
+    {
+      "id": "v8#521",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  2e+21,\n  [\n    true,\n    {\n     t \"mesage\": 0\n    },\n    \"str\"\n  ],\n  [\n    {}\n  ]\n]"
+      },
+      "output": "Expected property name or '}' in JSON at position 36 (line 6 column 6)"
+    },
+    {
+      "id": "v8#522",
+      "fn": "v8",
+      "input": {
+        "text": "ll\n"
+      },
+      "output": "Unexpected token 'l', \"ll\n\" is not valid JSON"
+    },
+    {
+      "id": "v8#523",
+      "fn": "v8",
+      "input": {
+        "text": "nullE"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#524",
+      "fn": "v8",
+      "input": {
+        "text": "\"k\"false"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#525",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#526",
+      "fn": "v8",
+      "input": {
+        "text": "\"ée\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#527",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#528",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#529",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\\"\"b\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#530",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":fal1se}"
+      },
+      "output": "Unexpected number in JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#531",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"mexsséag"
+      },
+      "output": "Unterminated string in JSON at position 13 (line 2 column 12)"
+    },
+    {
+      "id": "v8#532",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\b\"\\"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#533",
+      "fn": "v8",
+      "input": {
+        "text": "{\n \"ké\": \"\"\"\n}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 11 (line 2 column 10)"
+    },
+    {
+      "id": "v8#534",
+      "fn": "v8",
+      "input": {
+        "text": "\u0000"
+      },
+      "output": "Unexpected token '\u0000', \"\u0000\" is not valid JSON"
+    },
+    {
+      "id": "v8#535",
+      "fn": "v8",
+      "input": {
+        "text": "\"-"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#536",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [],\n  [\n 1e   true,\n    [],\n    2e+21\n  ],\n  true\n]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 15 (line 4 column 4)"
+    },
+    {
+      "id": "v8#537",
+      "fn": "v8",
+      "input": {
+        "text": "{\r}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#538",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#539",
+      "fn": "v8",
+      "input": {
+        "text": "{\"errxor\":[{},\"st\nr\"null],\"ké\":{}}"
+      },
+      "output": "Bad control character in string literal in JSON at position 17 (line 1 column 18)"
+    },
+    {
+      "id": "v8#540",
+      "fn": "v8",
+      "input": {
+        "text": "nu"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#541",
+      "fn": "v8",
+      "input": {
+        "text": "\"\":{\"a\":[{\"ké\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#542",
+      "fn": "v8",
+      "input": {
+        "text": "[\"str"
+      },
+      "output": "Unterminated string in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#543",
+      "fn": "v8",
+      "input": {
+        "text": "é"
+      },
+      "output": "Unexpected token 'é', \"é\" is not valid JSON"
+    },
+    {
+      "id": "v8#544",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#545",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#546",
+      "fn": "v8",
+      "input": {
+        "text": ".5,"
+      },
+      "output": "Unexpected token '.', \".5,\" is not valid JSON"
+    },
+    {
+      "id": "v8#547",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#548",
+      "fn": "v8",
+      "input": {
+        "text": "alse"
+      },
+      "output": "Unexpected token 'a', \"alse\" is not valid JSON"
+    },
+    {
+      "id": "v8#549",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\\"b"
+      },
+      "output": "Unterminated string in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#550",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#551",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#552",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#553",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": \"\",\n  a\": {\n    \"\": \"str\",\n    \"error\": []\n  },\n  \"ké"
+      },
+      "output": "Expected double-quoted property name in JSON at position 14 (line 3 column 3)"
+    },
+    {
+      "id": "v8#554",
+      "fn": "v8",
+      "input": {
+        "text": "[null{]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#555",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":2e+21,\"error\"\r:[],\"\":[{},false]}]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#556",
+      "fn": "v8",
+      "input": {
+        "text": "\t,[]"
+      },
+      "output": "Unexpected token ',', \"\t,[]\" is not valid JSON"
+    },
+    {
+      "id": "v8#557",
+      "fn": "v8",
+      "input": {
+        "text": "{+}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#558",
+      "fn": "v8",
+      "input": {
+        "text": "re"
+      },
+      "output": "Unexpected token 'r', \"re\" is not valid JSON"
+    },
+    {
+      "id": "v8#559",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#560",
+      "fn": "v8",
+      "input": {
+        "text": "nu\"k\"l"
+      },
+      "output": "Unexpected string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#561",
+      "fn": "v8",
+      "input": {
+        "text": "{\"e"
+      },
+      "output": "Unterminated string in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#562",
+      "fn": "v8",
+      "input": {
+        "text": "{E\"ké\":\"str\",\"a\":[]},"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#563",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":[\"\"]},🦋"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 9 (line 1 column 10)"
+    },
+    {
+      "id": "v8#564",
+      "fn": "v8",
+      "input": {
+        "text": "[[[],[-1.5,{}],{\"error\":false"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 29 (line 1 column 30)"
+    },
+    {
+      "id": "v8#565",
+      "fn": "v8",
+      "input": {
+        "text": "{}0"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#566",
+      "fn": "v8",
+      "input": {
+        "text": "[-1.5,\"é\","
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#567",
+      "fn": "v8",
+      "input": {
+        "text": "\\[{2e+2"
+      },
+      "output": "Unexpected token '\\', \"\\[{2e+2\" is not valid JSON"
+    },
+    {
+      "id": "v8#568",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[2e+21]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#569",
+      "fn": "v8",
+      "input": {
+        "text": "trte"
+      },
+      "output": "Unexpected token 't', \"trte\" is not valid JSON"
+    },
+    {
+      "id": "v8#570",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":{\"\":\"\",\"error\":[{\"error\"\u0000:00,\"\":2e+21}]}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 36 (line 1 column 37)"
+    },
+    {
+      "id": "v8#571",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": {\n    \"error\": -1.5,\n    \"message\": {},\n    \"a\": null\n"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 67 (line 6 column 1)"
+    },
+    {
+      "id": "v8#572",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    [\n      [\n        \"str\",\n        \"é\"\n      ]\n    ],\n    [\n      [\n        true,\n  "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#573",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#574",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [],\n  {\n    \"ké\": [\n      false,\n      true,\n      {\n        \"a\": false\n      }\n    ],\n    \"\": [\n      {},\n      {e},\n      2e+21\n    ],\n    \"errr\": \"é\"\n  }\n]"
+      },
+      "output": "Expected property name or '}' in JSON at position 118 (line 13 column 8)"
+    },
+    {
+      "id": "v8#575",
+      "fn": "v8",
+      "input": {
+        "text": "{1é"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#576",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":é\",\"a\":{\"rror\"\"k\":null}}"
+      },
+      "output": "Unexpected token 'é', \"{\"ké\":é\",\"a\":{\"r\"... is not valid JSON"
+    },
+    {
+      "id": "v8#577",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n - \"sr\"\r\n]"
+      },
+      "output": "No number after minus sign in JSON at position 5 (line 2 column 3)"
+    },
+    {
+      "id": "v8#578",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[{\"error\":2e+21,\"mesage\":[\"a\\\"b\",0]},[{},{}],{\"error\":0}]],\"a\":0}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 63 (line 1 column 64)"
+    },
+    {
+      "id": "v8#579",
+      "fn": "v8",
+      "input": {
+        "text": "null2e+21"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#580",
+      "fn": "v8",
+      "input": {
+        "text": "[][]"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#581",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#582",
+      "fn": "v8",
+      "input": {
+        "text": "\"221"
+      },
+      "output": "Unterminated string in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#583",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"\": {\n      \"error\": {\n        \"a\": 2e+21\n      },\n      \"ké\": true,\n      \"message\": \n        2e+21\n      ]\n    },\n    \"a\": []\n  }\n  {\n€    \"\": {},\n    \"message\": [\n      \"str\",\n      {\n        \"\": true,\n        \"message\": -1.5\n      },\n      2e+21\n    ]\n  }\n]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 117 (line 10 column 7)"
+    },
+    {
+      "id": "v8#584",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#585",
+      "fn": "v8",
+      "input": {
+        "text": "nu€"
+      },
+      "output": "Unexpected token '€', \"nu€\" is not valid JSON"
+    },
+    {
+      "id": "v8#586",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\r\""
+      },
+      "output": "Bad control character in string literal in JSON at position 9 (line 1 column 10)"
+    },
+    {
+      "id": "v8#587",
+      "fn": "v8",
+      "input": {
+        "text": "10"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#588",
+      "fn": "v8",
+      "input": {
+        "text": "tu\neE"
+      },
+      "output": "Unexpected token 'u', \"tu\neE\" is not valid JSON"
+    },
+    {
+      "id": "v8#589",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": [\n    0,\"k\"\n  }  [\n      2e+21,\n      [],\n      []\n    ]  ],\n  \"message\": -1.5\n}"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 27 (line 4 column 3)"
+    },
+    {
+      "id": "v8#590",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"messeage\":{}},{},{}]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#591",
+      "fn": "v8",
+      "input": {
+        "text": "E-1."
+      },
+      "output": "Unexpected token 'E', \"E-1.\" is not valid JSON"
+    },
+    {
+      "id": "v8#592",
+      "fn": "v8",
+      "input": {
+        "text": "-1."
+      },
+      "output": "Unterminated fractional number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#593",
+      "fn": "v8",
+      "input": {
+        "text": "[  "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#594",
+      "fn": "v8",
+      "input": {
+        "text": "[[],"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#595",
+      "fn": "v8",
+      "input": {
+        "text": "{\u0000u"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#596",
+      "fn": "v8",
+      "input": {
+        "text": "\"atrue\\b\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#597",
+      "fn": "v8",
+      "input": {
+        "text": "ue"
+      },
+      "output": "Unexpected token 'u', \"ue\" is not valid JSON"
+    },
+    {
+      "id": "v8#598",
+      "fn": "v8",
+      "input": {
+        "text": "\n  \"error\": {-}\n}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 10 (line 2 column 10)"
+    },
+    {
+      "id": "v8#599",
+      "fn": "v8",
+      "input": {
+        "text": "\n n \"er"
+      },
+      "output": "Unexpected token ' ', \"\n n \"er\" is not valid JSON"
+    },
+    {
+      "id": "v8#600",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\n"
+      },
+      "output": "Bad control character in string literal in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#601",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":[[{\"ké\":0,\"message\":0},{\"\":true,\"ké\":-1.5,\"message\":\"a\\\"b\"},[-1.5]],{\"a\"{},\"\":{},\"message\":[]},{\"error\":[\"a\\\"b\"]}],\"error\":[true,[]]}"
+      },
+      "output": "Expected ':' after property name in JSON at position 78 (line 1 column 79)"
+    },
+    {
+      "id": "v8#602",
+      "fn": "v8",
+      "input": {
+        "text": "te"
+      },
+      "output": "Unexpected token 'e', \"te\" is not valid JSON"
+    },
+    {
+      "id": "v8#603",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": {\n    \"a\": [\n      [\n        true,\n        null,\n        2+21\n      ],\n      []\n    ],\n    \"message\": [\n      {\n        \"a\": \"é\"\n      },\n      {\n        \"error\": \"\"\n     u }\n    ]\n  }\n}"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 67 (line 7 column 10)"
+    },
+    {
+      "id": "v8#604",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#605",
+      "fn": "v8",
+      "input": {
+        "text": "[0\"\"]€\\"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#606",
+      "fn": "v8",
+      "input": {
+        "text": "[\"é,\\🦋2e+21,true]"
+      },
+      "output": "Unexpected token '�', \"[\"é,\\🦋2e+21,true]\" is not valid JSON"
+    },
+    {
+      "id": "v8#607",
+      "fn": "v8",
+      "input": {
+        "text": "\"é\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#608",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"message:[\"a\\\"b\",\"a\\\"b\"],\"ké\":[]},[],[]]]"
+      },
+      "output": "Expected ':' after property name in JSON at position 14 (line 1 column 15)"
+    },
+    {
+      "id": "v8#609",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#610",
+      "fn": "v8",
+      "input": {
+        "text": "-[ftalse]"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#611",
+      "fn": "v8",
+      "input": {
+        "text": "\"\"["
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#612",
+      "fn": "v8",
+      "input": {
+        "text": "}1e"
+      },
+      "output": "Unexpected token '}', \"}1e\" is not valid JSON"
+    },
+    {
+      "id": "v8#613",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#614",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  \"é\",\r\n  [],\r\n  [\r\n    "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#615",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": {\n  \r  \"a\": [\n      [\n        null,\n       \"str\"\n      ],\n      false\n    ]\n  }\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#616",
+      "fn": "v8",
+      "input": {
+        "text": "[{},[\"str\",{\"error\":2e+2,\"\":[\"\",\"str\",true],\"ké\":null}]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#617",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#618",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":\"aE\\\"b"
+      },
+      "output": "Unterminated string in JSON at position 10 (line 1 column 11)"
+    },
+    {
+      "id": "v8#619",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": [\n    [\n      {\n        \"error\": false\n      }\n    ],\n    {\n      \"ké\": \"a\\\"b\",\n      \"a\": {\n        \"\": -1.5\n      }\n    },\n    {}\n  ],\n  \"ké\": {\n    \"ké\": {\n      \"a\": \"a\\\"b\",\n      \"error\": {\n        \"ké\": \"str\",\n        \"\": 0\n      },\n      \"\": {\n        \"ké\": false,\n   ]     \"error\": \"str\"\n      }\n    }\n  }\n}"
+      },
+      "output": "Expected double-quoted property name in JSON at position 288 (line 25 column 4)"
+    },
+    {
+      "id": "v8#620",
+      "fn": "v8",
+      "input": {
+        "text": "[[{message\":true},[[-1.5,\"a\\\"b\",2e+21],fals\\e]],{\"error\":{\"me ssage\":[\"str\"]}}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#621",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":\"\",\"truetké\":[true]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#622",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": [\n    {\n      \"ké\": \"\",\n      \"message\": \"str\"\n    }\n  ],\n  \"message\": false,\n  -\"a\": {\n    \"ké\""
+      },
+      "output": "Expected double-quoted property name in JSON at position 88 (line 9 column 3)"
+    },
+    {
+      "id": "v8#623",
+      "fn": "v8",
+      "input": {
+        "text": "0é"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#624",
+      "fn": "v8",
+      "input": {
+        "text": "\u0000{n"
+      },
+      "output": "Unexpected token '\u0000', \"\u0000{n\" is not valid JSON"
+    },
+    {
+      "id": "v8#625",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#626",
+      "fn": "v8",
+      "input": {
+        "text": "\n[]\\"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 2 column 3)"
+    },
+    {
+      "id": "v8#627",
+      "fn": "v8",
+      "input": {
+        "text": "2e"
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#628",
+      "fn": "v8",
+      "input": {
+        "text": "true{}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#629",
+      "fn": "v8",
+      "input": {
+        "text": "[{+\"\":null,\"ké\":[]},[]]"
+      },
+      "output": "Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#630",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":-1.5},{\"ké\":[\"\"]},{\"error\":{\"message\":true},\"k\":\"a\\\"b\"}]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#631",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": {\n    \"error\": {\n      \"ké\": {\n        \"ké\": tru\n      },\n      \"a\": {\n        \"message\": false\n      }\n    },\n    \"a\": [\n      \"str\"\n    ]\n  },\n  \"\": {\n    \"error\": [],\n    \"a\": [\n      {\n        \"error\""
+      },
+      "output": "Unexpected token '\n', ...\" \"ké\": tru\n      },\n\"... is not valid JSON"
+    },
+    {
+      "id": "v8#632",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\": {\n    \"ké\": \"é\"\n  },\n  \"\": {\n    \"ké\": [\n      {},\n      {\n        \"mess age\": false\n      +},\n      [\n        false,\n        2e+21\n      ]\n    ],\n    \"\": 2e+21,\n    \"error\": [\n      [\n       \"a\\\"b\"\n      ],\n      0,\n      0\n    ]\n  }\n}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 101 (line 10 column 7)"
+    },
+    {
+      "id": "v8#633",
+      "fn": "v8",
+      "input": {
+        "text": "[\"é\"]1e"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#634",
+      "fn": "v8",
+      "input": {
+        "text": "ull"
+      },
+      "output": "Unexpected token 'u', \"ull\" is not valid JSON"
+    },
+    {
+      "id": "v8#635",
+      "fn": "v8",
+      "input": {
+        "text": "[["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#636",
+      "fn": "v8",
+      "input": {
+        "text": "\"é"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#637",
+      "fn": "v8",
+      "input": {
+        "text": "[]]x"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#638",
+      "fn": "v8",
+      "input": {
+        "text": "{-\"a\\\"b\"]"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#639",
+      "fn": "v8",
+      "input": {
+        "text": "false1e"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#640",
+      "fn": "v8",
+      "input": {
+        "text": "\"2e+21"
+      },
+      "output": "Unterminated string in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#641",
+      "fn": "v8",
+      "input": {
+        "text": "e"
+      },
+      "output": "Unexpected token 'e', \"e\" is not valid JSON"
+    },
+    {
+      "id": "v8#642",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#643",
+      "fn": "v8",
+      "input": {
+        "text": "{{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#644",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"\":{\"a\":true,\"message\":\"a\\\"b\"},\"a\":-1.5,\"ké\",:null},{\"a\":{},\"message\":{}},[{\"ké\":\"a\\\"b\",\"\":\"é\"},{\"a\":null}]]]"
+      },
+      "output": "Expected ':' after property name in JSON at position 47 (line 1 column 48)"
+    },
+    {
+      "id": "v8#645",
+      "fn": "v8",
+      "input": {
+        "text": "-\""
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#646",
+      "fn": "v8",
+      "input": {
+        "text": "\"a\\\" b\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#647",
+      "fn": "v8",
+      "input": {
+        "text": "[\n true }-"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 8 (line 2 column 7)"
+    },
+    {
+      "id": "v8#648",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\""
+      },
+      "output": "Unterminated string in JSON at position 13 (line 1 column 14)"
+    },
+    {
+      "id": "v8#649",
+      "fn": "v8",
+      "input": {
+        "text": "[{},[,{\"error\":{\"ta\":[-1.5]}}]"
+      },
+      "output": "Unexpected token ',', \"[{},[,{\"error\":\"... is not valid JSON"
+    },
+    {
+      "id": "v8#650",
+      "fn": "v8",
+      "input": {
+        "text": "{\"etrror\":{}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#651",
+      "fn": "v8",
+      "input": {
+        "text": "[[\"\",[\"é\",false],-1.5],["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#652",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"error\":[\"str\",\"\",e+21],\"ké\":-1.5},{\"messae\":{\"messa+ge\":\"str\"}}],[],{\"ké\":\"é\",\"\":true,\"message\":[null,[false,-1.5]]}]"
+      },
+      "output": "Unexpected token 'e', ...\"[\"str\",\"\",e+21],\"ké\"\"... is not valid JSON"
+    },
+    {
+      "id": "v8#653",
+      "fn": "v8",
+      "input": {
+        "text": "[[{},{\"\":[],\"a\":[],\"message\":{\"a\":true,\"\":false}}],[{},[{},-1.5]],{\"a\":[],\"ké\":[[\"\",0],{\"\":\"sr\"\"error\":null}]}]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 95 (line 1 column 96)"
+    },
+    {
+      "id": "v8#654",
+      "fn": "v8",
+      "input": {
+        "text": "{\"messagef\":[true],\"\":{\"\":{\"ké\":-1.5"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 36 (line 1 column 37)"
+    },
+    {
+      "id": "v8#655",
+      "fn": "v8",
+      "input": {
+        "text": "{}}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#656",
+      "fn": "v8",
+      "input": {
+        "text": "é\"{"
+      },
+      "output": "Unexpected token 'é', \"é\"{\" is not valid JSON"
+    },
+    {
+      "id": "v8#657",
+      "fn": "v8",
+      "input": {
+        "text": "+2"
+      },
+      "output": "Unexpected token '+', \"+2\" is not valid JSON"
+    },
+    {
+      "id": "v8#658",
+      "fn": "v8",
+      "input": {
+        "text": "\r{\"ké\":\"\",\"error\":{}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#659",
+      "fn": "v8",
+      "input": {
+        "text": "[\r\n  \"é\"\r\n]\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 11 (line 3 column 2)"
+    },
+    {
+      "id": "v8#660",
+      "fn": "v8",
+      "input": {
+        "text": "n1Eull"
+      },
+      "output": "Unexpected number in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#661",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"error\":\"é\\\"}}"
+      },
+      "output": "Unterminated string in JSON at position 19 (line 1 column 20)"
+    },
+    {
+      "id": "v8#662",
+      "fn": "v8",
+      "input": {
+        "text": "["
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#663",
+      "fn": "v8",
+      "input": {
+        "text": "\"{\nsr\""
+      },
+      "output": "Bad control character in string literal in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#664",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"\": {\n      \"message\": 0,\n      \"a\": {\n        \"error\": 0\n      },\n      \"error\": \"a\\\"b\"\n    },\n    \"error\": {\n      \"message\": {\n        \"\": \"é\"\n      }\n    }\n  },\n  {},\n  \"a\\\"\"b\"\n]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 188 (line 17 column 8)"
+    },
+    {
+      "id": "v8#665",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké: {},\n  \"\": null\n}"
+      },
+      "output": "Bad control character in string literal in JSON at position 12 (line 2 column 11)"
+    },
+    {
+      "id": "v8#666",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":{\"message\":-\n1.5,\"error\":[\"str\",null],\"ké\":null}}"
+      },
+      "output": "No number after minus sign in JSON at position 17 (line 1 column 18)"
+    },
+    {
+      "id": "v8#667",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": []\n"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 11 (line 3 column 1)"
+    },
+    {
+      "id": "v8#668",
+      "fn": "v8",
+      "input": {
+        "text": "{}u"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#669",
+      "fn": "v8",
+      "input": {
+        "text": "]]"
+      },
+      "output": "Unexpected token ']', \"]]\" is not valid JSON"
+    },
+    {
+      "id": "v8#670",
+      "fn": "v8",
+      "input": {
+        "text": "{}."
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#671",
+      "fn": "v8",
+      "input": {
+        "text": "{\"\":{\"a\":{\"ké\":[]}},\"error\":[true]}}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 35 (line 1 column 36)"
+    },
+    {
+      "id": "v8#672",
+      "fn": "v8",
+      "input": {
+        "text": "\"🦋st"
+      },
+      "output": "Unterminated string in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#673",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké:-1.5,\"a\":{\r\"error\":\"\"}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 11 (line 1 column 12)"
+    },
+    {
+      "id": "v8#674",
+      "fn": "v8",
+      "input": {
+        "text": "\"1e1str"
+      },
+      "output": "Unterminated string in JSON at position 7 (line 1 column 8)"
+    },
+    {
+      "id": "v8#675",
+      "fn": "v8",
+      "input": {
+        "text": "-\t.🦋1.5"
+      },
+      "output": "No number after minus sign in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#676",
+      "fn": "v8",
+      "input": {
+        "text": ".nll"
+      },
+      "output": "Unexpected token '.', \".nll\" is not valid JSON"
+    },
+    {
+      "id": "v8#677",
+      "fn": "v8",
+      "input": {
+        "text": "{\r\ntrue  \"ké: []\r\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 3 (line 2 column 1)"
+    },
+    {
+      "id": "v8#678",
+      "fn": "v8",
+      "input": {
+        "text": "nu"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#679",
+      "fn": "v8",
+      "input": {
+        "text": "\"\":"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#680",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  false,\n  {\n    \"ké\": {\n      \"error\": {\n        \"\": \"str\",\n        \"error\": \"a\\🦋\"b\",\n        \"message\": \"str\"\n      },\n      \"\": 2e+21\n    },\n    \"message\": \"str\"\n  }\n]"
+      },
+      "output": "Unexpected token '�', ...\"rror\": \"a\\🦋\"b\",\n   \"... is not valid JSON"
+    },
+    {
+      "id": "v8#681",
+      "fn": "v8",
+      "input": {
+        "text": "[\\EE]"
+      },
+      "output": "Unexpected token '\\', \"[\\EE]\" is not valid JSON"
+    },
+    {
+      "id": "v8#682",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#683",
+      "fn": "v8",
+      "input": {
+        "text": "\"{\"€"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#684",
+      "fn": "v8",
+      "input": {
+        "text": "t]"
+      },
+      "output": "Unexpected token ']', \"t]\" is not valid JSON"
+    },
+    {
+      "id": "v8#685",
+      "fn": "v8",
+      "input": {
+        "text": "[false,{\"eror\":{\"\":\"a\\\"b\",\"a\":{\"\":0},\"error\":{\"a\":-1.5,\"message\":false}},\"\":null}]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#686",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":[false],\"k:é\":{}}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#687",
+      "fn": "v8",
+      "input": {
+        "text": "2e+2\"k"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#688",
+      "fn": "v8",
+      "input": {
+        "text": "\"é"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#689",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#690",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":{\"error\":{\"\":-1.5,\"ké\":true}},\"a\":{\"a\":[],\"message\":[0],\"error\":{\"message\":-1.5,\"\":2e+21}},\"ké\":[\"st"
+      },
+      "output": "Unterminated string in JSON at position 112 (line 1 column 113)"
+    },
+    {
+      "id": "v8#691",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":{\"a\":{\"\":2e+21,\"a\":[0,true]},\"\":[[\"str\"],{},{\"a\":false,\"error\":\"\"é\",\"message\":\"é\"}],\"ké\":{\"\":false,\"error\":{\"a\":\"\",\"message\":true}}},\"\":false}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 76 (line 1 column 77)"
+    },
+    {
+      "id": "v8#692",
+      "fn": "v8",
+      "input": {
+        "text": "{\"message\":null,\"a\":{\"a\":{\"a\":{}},\"error\":\"é\"}\"\":{\"message\":{\"\":{},\"error\":{\"a\":false,\"message\":null,\"ké\":\"str\"}}}}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 46 (line 1 column 47)"
+    },
+    {
+      "id": "v8#693",
+      "fn": "v8",
+      "input": {
+        "text": "\"é"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#694",
+      "fn": "v8",
+      "input": {
+        "text": "\"\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#695",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#696",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":-1.5,\"muessage"
+      },
+      "output": "Unterminated string in JSON at position 20 (line 1 column 21)"
+    },
+    {
+      "id": "v8#697",
+      "fn": "v8",
+      "input": {
+        "text": "[[2e+21,tr"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#698",
+      "fn": "v8",
+      "input": {
+        "text": "\"ké\":\"a\\\"b\"}"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#699",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"\": \u0000{},\n  \"ké\": {\n    \"ké\": {}\n  },\n  \"message\": []\n}"
+      },
+      "output": "Unexpected token '\u0000', \"{\n  \"\": \u0000{},\n  \"ké\"... is not valid JSON"
+    },
+    {
+      "id": "v8#700",
+      "fn": "v8",
+      "input": {
+        "text": "{\"kéé\":2e+2"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 11 (line 1 column 12)"
+    },
+    {
+      "id": "v8#701",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {},\n   -1..5\n  ],\n  \"a\\\"b1\"\n]"
+      },
+      "output": "Unterminated fractional number in JSON at position 20 (line 4 column 7)"
+    },
+    {
+      "id": "v8#702",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": -1.5,  \"\": \"str\"\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#703",
+      "fn": "v8",
+      "input": {
+        "text": "[u"
+      },
+      "output": "Unexpected token 'u', \"[u\" is not valid JSON"
+    },
+    {
+      "id": "v8#704",
+      "fn": "v8",
+      "input": {
+        "text": "[null,{\"error\":{\"\":2enull+21,\"ké\":{\"a\":false},\"a\":{\"error\":2+21,\"a\":false,\"ké\":\"é\"}}},{\"message\":[]}-]"
+      },
+      "output": "Exponent part is missing a number in JSON at position 21 (line 1 column 22)"
+    },
+    {
+      "id": "v8#705",
+      "fn": "v8",
+      "input": {
+        "text": "tr1u"
+      },
+      "output": "Unexpected number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#706",
+      "fn": "v8",
+      "input": {
+        "text": "[[]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#707",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":{\"message\":null,\""
+      },
+      "output": "Unterminated string in JSON at position 23 (line 1 column 24)"
+    },
+    {
+      "id": "v8#708",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"ké\":{\"ké\":[\"\"],\"error\":{\"messag-e\":2e+21}},\"message\":{\"a\":\"str\"}}]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#709",
+      "fn": "v8",
+      "input": {
+        "text": "nul"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#710",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {\n      \"message\": {\n        \"message\": \"str\",\n        \"a\": null,\n        \"error\": \"a\\\"b\"\n      },\n      \"\": [\n        \"\"\n      ]\n    },\n    0,\n    {\n      \"a\": [\n        \"é\",\n        true,\n        \"é\"\n      ],\n      \"error\": \"str\"\n    }\n  ],\n  0,x\n  [\n    {},\n    []\n  ]\n]"
+      },
+      "output": "Unexpected token 'x', ...\"\n  ],\n  0,x\n  [\n    \"... is not valid JSON"
+    },
+    {
+      "id": "v8#711",
+      "fn": "v8",
+      "input": {
+        "text": "[[{},{\"error\":]"
+      },
+      "output": "Unexpected token ']', \"[[{},{\"error\":]\" is not valid JSON"
+    },
+    {
+      "id": "v8#712",
+      "fn": "v8",
+      "input": {
+        "text": "221"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#713",
+      "fn": "v8",
+      "input": {
+        "text": "\"str+\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#714",
+      "fn": "v8",
+      "input": {
+        "text": "[[],{\"message\":[],\"error\":null,\"\":[{\"message\":true,\"\":2e+21},\"é\",[\"a\\\"b\"]]},{\"\":{\"\":{},\"error\":[1.5],\"ké\":{\"ké\":\"a\"k\"\\\"b\"}},\"a\":{\"\":[]}}]"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 115 (line 1 column 116)"
+    },
+    {
+      "id": "v8#715",
+      "fn": "v8",
+      "input": {
+        "text": "[\"\",{\"a\":\"str\",\":true,\"ké\"\r:[{\"a\":tru}]}]"
+      },
+      "output": "Expected ':' after property name in JSON at position 23 (line 1 column 24)"
+    },
+    {
+      "id": "v8#716",
+      "fn": "v8",
+      "input": {
+        "text": "x{\"eror\":e+21}"
+      },
+      "output": "Unexpected token 'x', \"x{\"eror\":e+21}\" is not valid JSON"
+    },
+    {
+      "id": "v8#717",
+      "fn": "v8",
+      "input": {
+        "text": "[[],{}"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 6 (line 1 column 7)"
+    },
+    {
+      "id": "v8#718",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\"[: 2e+21\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 8 (line 2 column 7)"
+    },
+    {
+      "id": "v8#719",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#720",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"e"
+      },
+      "output": "Unterminated string in JSON at position 6 (line 2 column 5)"
+    },
+    {
+      "id": "v8#721",
+      "fn": "v8",
+      "input": {
+        "text": "é"
+      },
+      "output": "Unexpected token 'é', \"é\" is not valid JSON"
+    },
+    {
+      "id": "v8#722",
+      "fn": "v8",
+      "input": {
+        "text": "\"\"0é"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#723",
+      "fn": "v8",
+      "input": {
+        "text": "\"é\"f\u0000,"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#724",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": false,\n  \"\": [\n    true\n  ],\n  \"error\": {\n    \"message\" [],\n    \"\": null\n  }\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 65 (line 7 column 15)"
+    },
+    {
+      "id": "v8#725",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"messge\": [\n      [\n        false\n      ],\n      [\n        \"é\",\n        null\n      ],\n      {\n        \"\": \"a\\\"b\",\n        \"a\": -1.5\n      }\n    ]\n  }\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#726",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": 0,\n  \"\": {\n    \"ké\": [\n      -true,\n      [\n        2e+21,\n        \"é\",\n        \"a\\\"b\"\n      ]\n    ],\n    \"\": {\n      \"message\": {\n        \"error\": 0,\n        \"a\": null\n      }\n    }\n  }\n}"
+      },
+      "output": "No number after minus sign in JSON at position 43 (line 5 column 8)"
+    },
+    {
+      "id": "v8#727",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":[,\"ké\":[{}]}"
+      },
+      "output": "Unexpected token ',', ...\"{\"error\":[,\"ké\":[{}]\"... is not valid JSON"
+    },
+    {
+      "id": "v8#728",
+      "fn": "v8",
+      "input": {
+        "text": "\"e"
+      },
+      "output": "Unterminated string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#729",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"message\":[true,\"\"]},[{\"ké\":2e+21},{\"ké\":{},\"error\":[]}],tru\\e]"
+      },
+      "output": "Unexpected token '\\', ...\"\":[]}],tru\\e]\" is not valid JSON"
+    },
+    {
+      "id": "v8#730",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"error\": {\n    \"a\": {\n      \"message\": {\n        \"\": 0,\n"
+      },
+      "output": "Expected double-quoted property name in JSON at position 60 (line 6 column 1)"
+    },
+    {
+      "id": "v8#731",
+      "fn": "v8",
+      "input": {
+        "text": "+{}"
+      },
+      "output": "Unexpected token '+', \"+{}\" is not valid JSON"
+    },
+    {
+      "id": "v8#732",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"a\": \"\"\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#733",
+      "fn": "v8",
+      "input": {
+        "text": "[[]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#734",
+      "fn": "v8",
+      "input": {
+        "text": "[]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#735",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#736",
+      "fn": "v8",
+      "input": {
+        "text": "[]\n"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#737",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  [\n    {\n      \"k"
+      },
+      "output": "Unterminated string in JSON at position 20 (line 4 column 9)"
+    },
+    {
+      "id": "v8#738",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"\":{}},[2e+21,fale,[[2e+21,true"
+      },
+      "output": "Unexpected token 'e', ...\"[2e+21,fale,[[2e+21,\"... is not valid JSON"
+    },
+    {
+      "id": "v8#739",
+      "fn": "v8",
+      "input": {
+        "text": "[f]"
+      },
+      "output": "Unexpected token ']', \"[f]\" is not valid JSON"
+    },
+    {
+      "id": "v8#740",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"é\": \"a\\\"b\",\n  \"error\": {\n  null  \"message\": 1.5\n  }\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 32 (line 4 column 3)"
+    },
+    {
+      "id": "v8#741",
+      "fn": "v8",
+      "input": {
+        "text": "[[[2e+21],2e+21,{[\"error\":{\"error\":nu\tll},\"a\":[2e+21,null]}],[}],{}]"
+      },
+      "output": "Expected property name or '}' in JSON at position 17 (line 1 column 18)"
+    },
+    {
+      "id": "v8#742",
+      "fn": "v8",
+      "input": {
+        "text": "{0\n\n  \"error\": {}\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#743",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[-1.5],{\"a\":[true,\u0000true,2e+21],\"error\":{\""
+      },
+      "output": "Expected double-quoted property name in JSON at position 12 (line 1 column 13)"
+    },
+    {
+      "id": "v8#744",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": [\n    true\n  ],\n  \"]error\": [\n    0\n  ]\n}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#745",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  null,\n  \n    \"ké\": {\n      \"a\": {\n        \"\": true,\n        \"ké\": \"é\"\n      },\n      \"message\": {\n        \"ké\": \"str\"\n      }\n    },\n    \"a\": 0\n-  }\n]"
+      },
+      "output": "Expected ',' or ']' after array element in JSON at position 21 (line 4 column 9)"
+    },
+    {
+      "id": "v8#746",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#747",
+      "fn": "v8",
+      "input": {
+        "text": "e+21"
+      },
+      "output": "Unexpected token 'e', \"e+21\" is not valid JSON"
+    },
+    {
+      "id": "v8#748",
+      "fn": "v8",
+      "input": {
+        "text": "\"\\\"b"
+      },
+      "output": "Unterminated string in JSON at position 4 (line 1 column 5)"
+    },
+    {
+      "id": "v8#749",
+      "fn": "v8",
+      "input": {
+        "text": "fa\"l\nse"
+      },
+      "output": "Unexpected string in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#750",
+      "fn": "v8",
+      "input": {
+        "text": "{\"mesage\":{\"a\":\"é\"},\"ké\":[[]]}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#751",
+      "fn": "v8",
+      "input": {
+        "text": "[\"k\"]f"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#752",
+      "fn": "v8",
+      "input": {
+        "text": "n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#753",
+      "fn": "v8",
+      "input": {
+        "text": "n["
+      },
+      "output": "Unexpected token '[', \"n[\" is not valid JSON"
+    },
+    {
+      "id": "v8#754",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"a\":{\"\":{\"\":\"a\\\"b\",\"message\":false,\"error\":false}}"
+      },
+      "output": "Expected ',' or '}' after property value in JSON at position 52 (line 1 column 53)"
+    },
+    {
+      "id": "v8#755",
+      "fn": "v8",
+      "input": {
+        "text": "[[0]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#756",
+      "fn": "v8",
+      "input": {
+        "text": "\"str\"\"\"\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#757",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#758",
+      "fn": "v8",
+      "input": {
+        "text": "1e\"{\""
+      },
+      "output": "Exponent part is missing a number in JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#759",
+      "fn": "v8",
+      "input": {
+        "text": "[,[{},{}],{}🦋]"
+      },
+      "output": "Unexpected token ',', \"[,[{},{}],{}🦋]\" is not valid JSON"
+    },
+    {
+      "id": "v8#760",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\":{\"rror\":t0rue,\"a\":[]},\"\":null}"
+      },
+      "output": "Unexpected number in JSON at position 15 (line 1 column 16)"
+    },
+    {
+      "id": "v8#761",
+      "fn": "v8",
+      "input": {
+        "text": "fas🦋"
+      },
+      "output": "Unexpected token 's', \"fas🦋\" is not valid JSON"
+    },
+    {
+      "id": "v8#762",
+      "fn": "v8",
+      "input": {
+        "text": "[[{\"error\":{\""
+      },
+      "output": "Unterminated string in JSON at position 13 (line 1 column 14)"
+    },
+    {
+      "id": "v8#763",
+      "fn": "v8",
+      "input": {
+        "text": "[[[{},{}],{\"\":{\"ké\":\"\",\"\":false},\"erro\":{\"error\":\"é\"}},[]],[[t\nrue,\"é\"]]]"
+      },
+      "output": "Unexpected token '\n', ...\"}},[]],[[t\nrue,\"é\"]]\"... is not valid JSON"
+    },
+    {
+      "id": "v8#764",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"message\": {\n      \"message\": [],\n      \"a\": [\n        false,\n        "
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#765",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\"k\"\"\n:[]"
+      },
+      "output": "Expected ':' after property name in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#766",
+      "fn": "v8",
+      "input": {
+        "text": "\"\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#767",
+      "fn": "v8",
+      "input": {
+        "text": "0[é"
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#768",
+      "fn": "v8",
+      "input": {
+        "text": "{\n\\  \"\": []\"k\"\n}"
+      },
+      "output": "Expected property name or '}' in JSON at position 2 (line 2 column 1)"
+    },
+    {
+      "id": "v8#769",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#770",
+      "fn": "v8",
+      "input": {
+        "text": "2e+{.1"
+      },
+      "output": "Exponent part is missing a number in JSON at position 3 (line 1 column 4)"
+    },
+    {
+      "id": "v8#771",
+      "fn": "v8",
+      "input": {
+        "text": "{}"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#772",
+      "fn": "v8",
+      "input": {
+        "text": "truue"
+      },
+      "output": "Unexpected token 'u', \"truue\" is not valid JSON"
+    },
+    {
+      "id": "v8#773",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"ké\" {},\n  \"error: {\n    \"error\": 0\n  }\n}"
+      },
+      "output": "Expected ':' after property name in JSON at position 9 (line 2 column 8)"
+    },
+    {
+      "id": "v8#774",
+      "fn": "v8",
+      "input": {
+        "text": "e+21"
+      },
+      "output": "Unexpected token 'e', \"e+21\" is not valid JSON"
+    },
+    {
+      "id": "v8#775",
+      "fn": "v8",
+      "input": {
+        "text": "\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#776",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"message\": [\n    \"é\",\n    [\n      [\n        false,\n        \"é\",\n        null\n      ],\n      true,\n      [\n        false\n      ]\n    ]\n  ],\n  \"error\": {\n    \"error\": [\n      [\n        -1.5,\n  \\      \"é\"\n      ],\n      \"str\",\n      \"a\\\"b\"\n    ],\n    \"\": \"é\"\n  }\n}"
+      },
+      "output": "Unexpected token '\\', ...\"  -1.5,\n  \\      \"é\"\"... is not valid JSON"
+    },
+    {
+      "id": "v8#777",
+      "fn": "v8",
+      "input": {
+        "text": "\"sr\""
+      },
+      "output": null
+    },
+    {
+      "id": "v8#778",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  false,\n"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#779",
+      "fn": "v8",
+      "input": {
+        "text": "{"
+      },
+      "output": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#780",
+      "fn": "v8",
+      "input": {
+        "text": "[{\"\":{},\"errr\":\"é\",\"a\":[{\"a\":false,error\":2e+21},null]}x]"
+      },
+      "output": "Expected double-quoted property name in JSON at position 35 (line 1 column 36)"
+    },
+    {
+      "id": "v8#781",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#782",
+      "fn": "v8",
+      "input": {
+        "text": "[[],[{},\"0\",0]]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#783",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":{\"error\":[{\":1\"a\\\"b\",\"message\":-1.5,\"error\":\"str\"},\"str\"],\"a\":{\"error\":{}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 24 (line 1 column 25)"
+    },
+    {
+      "id": "v8#784",
+      "fn": "v8",
+      "input": {
+        "text": "{\"error\":true,\"messag"
+      },
+      "output": "Unterminated string in JSON at position 21 (line 1 column 22)"
+    },
+    {
+      "id": "v8#785",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#786",
+      "fn": "v8",
+      "input": {
+        "text": "null"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#787",
+      "fn": "v8",
+      "input": {
+        "text": "\rtru"
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#788",
+      "fn": "v8",
+      "input": {
+        "text": "{\n  \"e\nrror\": \"a\\\"b\",\n  \"message\": [\n    {\n      \"message\": [\n        \"\"\n      ],\n      \"a\": \"é\"\n    }\n  ],\n  \"a: {\n   \"message\": []\n  }\n}"
+      },
+      "output": "Bad control character in string literal in JSON at position 6 (line 2 column 5)"
+    },
+    {
+      "id": "v8#789",
+      "fn": "v8",
+      "input": {
+        "text": "{\"a\":[[{,\"\":-1.5,\"message\":\"a\\\"b\"},\"\",{\"ké\":0}],{\"error\":{\"a\":-1.5,\"ké\":\"str\",\"error\":\"é\"},\"\":[null],\"message\":\"a\\\"b\"},{}]}"
+      },
+      "output": "Expected property name or '}' in JSON at position 8 (line 1 column 9)"
+    },
+    {
+      "id": "v8#790",
+      "fn": "v8",
+      "input": {
+        "text": ""
+      },
+      "output": "Unexpected end of JSON input"
+    },
+    {
+      "id": "v8#791",
+      "fn": "v8",
+      "input": {
+        "text": "[f[{\"mesEsage\":{\"message\":\"str\"}}]]"
+      },
+      "output": "Unexpected token '[', \"[f[{\"mesEsag\"... is not valid JSON"
+    },
+    {
+      "id": "v8#792",
+      "fn": "v8",
+      "input": {
+        "text": "\""
+      },
+      "output": "Unterminated string in JSON at position 1 (line 1 column 2)"
+    },
+    {
+      "id": "v8#793",
+      "fn": "v8",
+      "input": {
+        "text": "[\n  {\n    \"ké\": {\n      \"message\": {},\n     \"ké\": {}\n    },\n    \"a\": \"str\",\n   \"message\": \"a\\\"b\"\n  }\n]"
+      },
+      "output": null
+    },
+    {
+      "id": "v8#794",
+      "fn": "v8",
+      "input": {
+        "text": "{\"ké\",:{},\"a\":{},\"messa\"ge\":{\"ké\":[{\"error\":true}],\"a\":{\"message\":[\"str\",-1.5],\"\":{}},\"message\":[[null],\"é\"]}}"
+      },
+      "output": "Expected ':' after property name in JSON at position 5 (line 1 column 6)"
+    },
+    {
+      "id": "v8#795",
+      "fn": "v8",
+      "input": {
+        "text": "t{"
+      },
+      "output": "Unexpected token '{', \"t{\" is not valid JSON"
+    },
+    {
+      "id": "v8#796",
+      "fn": "v8",
+      "input": {
+        "text": "x0"
+      },
+      "output": "Unexpected token 'x', \"x0\" is not valid JSON"
+    },
+    {
+      "id": "v8#797",
+      "fn": "v8",
+      "input": {
+        "text": "\"\"k\"\""
+      },
+      "output": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)"
+    },
+    {
+      "id": "v8#798",
+      "fn": "v8",
+      "input": {
+        "text": "\r{\"\":[]}"
+      },
+      "output": null
+    }
+  ]
+}

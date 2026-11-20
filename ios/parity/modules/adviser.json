@@ -1,0 +1,72 @@
+{
+  "domain": "adviser",
+  "target": "VirgaPosting",
+  "wave": 3,
+  "summary": "The post adviser: its gate, analysis, style, usage and alt text.",
+  "files": {
+    "src/posting/adviser/aiService.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/altTextFollowUp.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/altTextModel.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/analysis.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/context.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/gate.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/gateController.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/sheet.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/sheetView.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/style.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/styleSession.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/usage.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/useAdviserGate.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/adviser/useAdviserRead.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/backendAccess.js": {
+      "status": "pending",
+      "swift": []
+    },
+    "src/posting/ui/postPreview.js": {
+      "status": "pending",
+      "swift": []
+    }
+  }
+}

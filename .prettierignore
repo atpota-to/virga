@@ -1,0 +1,9 @@
+# Written by ios/parity tooling (JSON.stringify), compared byte for byte.
+ios/parity/fixtures/
+ios/parity/modules/
+# Swift, Xcode and build output.
+ios/VirgaKit/.build/
+ios/*.xcodeproj/
+
+# A Workflow script: run by Claude Code, with its own globals and a top-level return.
+ios/porting/*.workflow.js
