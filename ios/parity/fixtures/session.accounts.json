@@ -1,0 +1,6111 @@
+{
+  "name": "session.accounts",
+  "sources": [
+    "src/session/accounts.js",
+    "src/accounts/accountCopy.js",
+    "src/lib/sessionHint.js",
+    "src/accounts/pendingWork.js"
+  ],
+  "cases": [
+    {
+      "id": "ACCOUNTS_KEY",
+      "fn": "ACCOUNTS_KEY",
+      "input": {},
+      "output": "virga:accounts"
+    },
+    {
+      "id": "ACTIVE_KEY",
+      "fn": "ACTIVE_KEY",
+      "input": {},
+      "output": "virga:account"
+    },
+    {
+      "id": "MODES",
+      "fn": "MODES",
+      "input": {},
+      "output": [
+        "browser",
+        "backend"
+      ]
+    },
+    {
+      "id": "SESSION_EXPIRED_EVENT",
+      "fn": "SESSION_EXPIRED_EVENT",
+      "input": {},
+      "output": "virga:session-expired"
+    },
+    {
+      "id": "OPEN_AT_SIGNIN_KEY",
+      "fn": "OPEN_AT_SIGNIN_KEY",
+      "input": {},
+      "output": "virga:signin-open"
+    },
+    {
+      "id": "REAUTH_REQUIRED_CODE",
+      "fn": "REAUTH_REQUIRED_CODE",
+      "input": {},
+      "output": "REAUTH_REQUIRED"
+    },
+    {
+      "id": "backendTokenKey",
+      "fn": "backendTokenKey",
+      "input": {},
+      "output": "virga:backend-token:did:plc:virgaharnessmira2zq4x"
+    },
+    {
+      "id": "REAUTH_REQUEST_EVENT",
+      "fn": "REAUTH_REQUEST_EVENT",
+      "input": {},
+      "output": "virga:reauth-request"
+    },
+    {
+      "id": "SESSION_NOTICE_EVENT",
+      "fn": "SESSION_NOTICE_EVENT",
+      "input": {},
+      "output": "virga:session-notice"
+    },
+    {
+      "id": "POSTING_REGRANT_MESSAGE",
+      "fn": "POSTING_REGRANT_MESSAGE",
+      "input": {},
+      "output": "Virga needs permission to post. Sign in again to grant it."
+    },
+    {
+      "id": "SESSION_HINT_KEY",
+      "fn": "SESSION_HINT_KEY",
+      "input": {},
+      "output": "virga.oauth.session"
+    },
+    {
+      "id": "isDid#1",
+      "fn": "isDid",
+      "input": {
+        "value": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": true
+    },
+    {
+      "id": "isDid#2",
+      "fn": "isDid",
+      "input": {
+        "value": "did:web:example.com"
+      },
+      "output": true
+    },
+    {
+      "id": "isDid#3",
+      "fn": "isDid",
+      "input": {
+        "value": "did:plc:"
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#4",
+      "fn": "isDid",
+      "input": {
+        "value": "did::x"
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#5",
+      "fn": "isDid",
+      "input": {
+        "value": "DID:plc:x"
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#6",
+      "fn": "isDid",
+      "input": {
+        "value": "did:plc:a b"
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#7",
+      "fn": "isDid",
+      "input": {
+        "value": "did:plc:x#y"
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#8",
+      "fn": "isDid",
+      "input": {
+        "value": ""
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#9",
+      "fn": "isDid",
+      "input": {
+        "value": null
+      },
+      "output": false
+    },
+    {
+      "id": "isDid#10",
+      "fn": "isDid",
+      "input": {
+        "value": 5
+      },
+      "output": false
+    },
+    {
+      "id": "readAccounts#1",
+      "fn": "readAccounts",
+      "input": {
+        "stored": null
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#2",
+      "fn": "readAccounts",
+      "input": {
+        "stored": ""
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#3",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "{oops"
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#4",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "null"
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#5",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "{\"did\":\"x\"}"
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#6",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "\"[]\""
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#7",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[]"
+      },
+      "output": []
+    },
+    {
+      "id": "readAccounts#8",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"lastUsed\":1,\"mode\":\"browser\"},null,{\"handle\":\"nobody\"},{\"did\":\"not-a-did\",\"lastUsed\":9},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"lastUsed\":5,\"mode\":\"backend\"},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"lastUsed\":99}]"
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnesslab7k2pq",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "backend",
+          "lastUsed": 5,
+          "addedAt": 5
+        },
+        {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 1,
+          "addedAt": 1
+        }
+      ]
+    },
+    {
+      "id": "readAccounts#9",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"mode\":\"pigeon\"}]"
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 0,
+          "addedAt": 0
+        }
+      ]
+    },
+    {
+      "id": "readAccounts#10",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"  mira.example.com  \",\"displayName\":\"   \",\"avatar\":7,\"mode\":\"backend\",\"lastUsed\":\"5\",\"addedAt\":3,\"signedOut\":\"yes\",\"scope\":\"\",\"extra\":true},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"\",\"displayName\":\"Lab\",\"lastUsed\":5,\"signedOut\":true,\"scope\":null},{\"did\":\"did:plc:virgaharnessthird2kq\",\"lastUsed\":5,\"addedAt\":null,\"scope\":\"atproto\"},{\"did\":\"did:web:example.com\",\"lastUsed\":-1e+300,\"addedAt\":1e+300},{\"did\":\"did:plc:\",\"lastUsed\":1},{\"did\":\"DID:plc:x\",\"lastUsed\":1},\"did:plc:stringrow\",7,[\"did:plc:virgaharnessmira2zq4x\"]]"
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnesslab7k2pq",
+          "handle": null,
+          "displayName": "Lab",
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 5,
+          "addedAt": 5,
+          "signedOut": true
+        },
+        {
+          "did": "did:plc:virgaharnessthird2kq",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 5,
+          "addedAt": 5,
+          "scope": "atproto"
+        },
+        {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "mira.example.com",
+          "displayName": null,
+          "avatar": null,
+          "mode": "backend",
+          "lastUsed": 0,
+          "addedAt": 3,
+          "scope": ""
+        },
+        {
+          "did": "did:web:example.com",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": -1e+300,
+          "addedAt": 1e+300
+        }
+      ]
+    },
+    {
+      "id": "readAccounts#11",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"lastUsed\":3},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"lastUsed\":3},{\"did\":\"did:plc:virgaharnessthird2kq\",\"lastUsed\":3},{\"did\":\"did:plc:fourth\",\"lastUsed\":4}]"
+      },
+      "output": [
+        {
+          "did": "did:plc:fourth",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 4,
+          "addedAt": 4
+        },
+        {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 3,
+          "addedAt": 3
+        },
+        {
+          "did": "did:plc:virgaharnesslab7k2pq",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 3,
+          "addedAt": 3
+        },
+        {
+          "did": "did:plc:virgaharnessthird2kq",
+          "handle": null,
+          "displayName": null,
+          "avatar": null,
+          "mode": "browser",
+          "lastUsed": 3,
+          "addedAt": 3
+        }
+      ]
+    },
+    {
+      "id": "readAccounts#12",
+      "fn": "readAccounts",
+      "input": {
+        "stored": "[{\"did\":\"did:plc:café\",\"lastUsed\":1}]"
+      },
+      "output": []
+    },
+    {
+      "id": "sign-in-out-and-back",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "handle": "mira.example.com",
+            "now": 1000
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "backend",
+            "now": 2000
+          },
+          {
+            "op": "markSignedOut",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "now": 3000
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "backend",
+            "handle": "",
+            "displayName": "Lab",
+            "avatar": "https://cdn.example/a.jpg",
+            "now": 4000
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "backend",
+            "handle": "lab.example.org",
+            "displayName": "",
+            "now": 5000
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1000,
+              "addedAt": 1000
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1000,\"addedAt\":1000}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 2000,
+              "addedAt": 2000
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1000,
+              "addedAt": 1000
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":2000,\"addedAt\":2000},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1000,\"addedAt\":1000}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 2000,
+              "addedAt": 2000
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1000,
+              "addedAt": 1000,
+              "signedOut": true
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":2000,\"addedAt\":2000},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1000,\"addedAt\":1000,\"signedOut\":true}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 3000,
+              "addedAt": 1000
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 2000,
+              "addedAt": 2000
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":3000,\"addedAt\":1000},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":2000,\"addedAt\":2000}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": "Lab",
+              "avatar": "https://cdn.example/a.jpg",
+              "mode": "backend",
+              "lastUsed": 4000,
+              "addedAt": 2000
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 3000,
+              "addedAt": 1000
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":\"Lab\",\"avatar\":\"https://cdn.example/a.jpg\",\"mode\":\"backend\",\"lastUsed\":4000,\"addedAt\":2000},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":3000,\"addedAt\":1000}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": "Lab",
+              "avatar": "https://cdn.example/a.jpg",
+              "mode": "backend",
+              "lastUsed": 5000,
+              "addedAt": 2000
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "mira.example.com",
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 3000,
+              "addedAt": 1000
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":\"Lab\",\"avatar\":\"https://cdn.example/a.jpg\",\"mode\":\"backend\",\"lastUsed\":5000,\"addedAt\":2000},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"mira.example.com\",\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":3000,\"addedAt\":1000}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "scope",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "scope": "atproto",
+            "now": 1
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "now": 2
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "now": 3
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "scope": "atproto repo:*",
+            "now": 4
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "scope": null,
+            "now": 5
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "scope": "",
+            "now": 6
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "now": 7
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1,
+              "scope": "atproto"
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1,\"scope\":\"atproto\"}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 1,
+              "scope": "atproto"
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":1,\"scope\":\"atproto\"}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 3,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":3,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 4,
+              "addedAt": 1,
+              "scope": "atproto repo:*"
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":4,\"addedAt\":1,\"scope\":\"atproto repo:*\"}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 5,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":5,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 6,
+              "addedAt": 1,
+              "scope": ""
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":6,\"addedAt\":1,\"scope\":\"\"}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 7,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":7,\"addedAt\":1}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "odd-sign-ins",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "recordSignIn",
+            "did": "not-a-did",
+            "mode": "browser",
+            "now": 1
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "pigeon",
+            "handle": "  spaced.example  ",
+            "now": 2
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "now": 0
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "backend",
+            "now": 0
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessthird2kq",
+            "mode": "backend",
+            "now": 1.5
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [],
+          "stored": {
+            "virga:accounts": "[]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "spaced.example",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"spaced.example\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "spaced.example",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 0,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"spaced.example\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":0,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 0,
+              "addedAt": 0
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "spaced.example",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 0,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":0,\"addedAt\":0},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"spaced.example\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":0,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessthird2kq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 1.5,
+              "addedAt": 1.5
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 0,
+              "addedAt": 0
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": "spaced.example",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 0,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessthird2kq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":1.5,\"addedAt\":1.5},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":0,\"addedAt\":0},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":\"spaced.example\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":0,\"addedAt\":2}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "update",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "now": 1
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "browser",
+            "now": 2
+          },
+          {
+            "op": "updateAccount",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "fields": {
+              "displayName": "Mira Okafor",
+              "did": "did:plc:smuggled"
+            }
+          },
+          {
+            "op": "updateAccount",
+            "did": "did:plc:absent",
+            "fields": {
+              "handle": "x"
+            }
+          },
+          {
+            "op": "updateAccount",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "fields": {
+              "handle": "  lab.example.org ",
+              "avatar": "",
+              "displayName": null
+            }
+          },
+          {
+            "op": "updateAccount",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "fields": {
+              "scope": "atproto",
+              "signedOut": false,
+              "mode": "backend"
+            }
+          },
+          {
+            "op": "updateAccount",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "fields": {
+              "scope": null,
+              "mode": "pigeon"
+            }
+          },
+          {
+            "op": "touchAccount",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "now": 50
+          },
+          {
+            "op": "touchAccount",
+            "did": "did:plc:absent",
+            "now": 60
+          },
+          {
+            "op": "markSignedOut",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "markSignedOut",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 2,
+              "addedAt": 2,
+              "scope": "atproto"
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":2,\"addedAt\":2,\"scope\":\"atproto\"},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 50,
+              "addedAt": 1
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":50,\"addedAt\":1},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 50,
+              "addedAt": 1
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":50,\"addedAt\":1},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 50,
+              "addedAt": 1,
+              "signedOut": true
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":50,\"addedAt\":1,\"signedOut\":true},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": "Mira Okafor",
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 50,
+              "addedAt": 1,
+              "signedOut": true
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "lab.example.org",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":\"Mira Okafor\",\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":50,\"addedAt\":1,\"signedOut\":true},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"lab.example.org\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "forget",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "backend",
+            "now": 1
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "token": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          },
+          {
+            "op": "writeActiveDid",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "forgetAccount",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "readActiveDid"
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "mode": "browser",
+            "now": 2
+          },
+          {
+            "op": "recordSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "mode": "browser",
+            "now": 3
+          },
+          {
+            "op": "writeActiveDid",
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "op": "forgetAccount",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "readActiveDid"
+          },
+          {
+            "op": "forgetAccount",
+            "did": "did:plc:absent"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "backend",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": true,
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":1,\"addedAt\":1}]",
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:account": "did:plc:virgaharnessmira2zq4x",
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"backend\",\"lastUsed\":1,\"addedAt\":1}]",
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": [],
+          "stored": {
+            "virga:accounts": "[]"
+          }
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:accounts": "[]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 3,
+              "addedAt": 3
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":3,\"addedAt\":3},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:account": "did:plc:virgaharnesslab7k2pq",
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":3,\"addedAt\":3},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:account": "did:plc:virgaharnesslab7k2pq",
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": "did:plc:virgaharnesslab7k2pq",
+          "stored": {
+            "virga:account": "did:plc:virgaharnesslab7k2pq",
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        },
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2
+            }
+          ],
+          "stored": {
+            "virga:account": "did:plc:virgaharnesslab7k2pq",
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "write-accounts",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "writeAccounts",
+            "list": [
+              {
+                "did": "did:plc:virgaharnessmira2zq4x",
+                "lastUsed": 1
+              },
+              {
+                "did": "did:plc:virgaharnesslab7k2pq",
+                "lastUsed": 2,
+                "handle": " x ",
+                "signedOut": true,
+                "scope": "atproto"
+              },
+              {
+                "did": "did:plc:virgaharnessmira2zq4x",
+                "lastUsed": 3
+              },
+              {
+                "did": "nope"
+              }
+            ]
+          },
+          {
+            "op": "writeAccounts",
+            "list": []
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 3,
+              "addedAt": 3
+            },
+            {
+              "did": "did:plc:virgaharnesslab7k2pq",
+              "handle": "x",
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 2,
+              "addedAt": 2,
+              "signedOut": true,
+              "scope": "atproto"
+            },
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "handle": null,
+              "displayName": null,
+              "avatar": null,
+              "mode": "browser",
+              "lastUsed": 1,
+              "addedAt": 1
+            }
+          ],
+          "stored": {
+            "virga:accounts": "[{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":3,\"addedAt\":3},{\"did\":\"did:plc:virgaharnesslab7k2pq\",\"handle\":\"x\",\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":2,\"addedAt\":2,\"signedOut\":true,\"scope\":\"atproto\"},{\"did\":\"did:plc:virgaharnessmira2zq4x\",\"handle\":null,\"displayName\":null,\"avatar\":null,\"mode\":\"browser\",\"lastUsed\":1,\"addedAt\":1}]"
+          }
+        },
+        {
+          "result": [],
+          "stored": {
+            "virga:accounts": "[]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "active",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "readActiveDid"
+          },
+          {
+            "op": "writeActiveDid",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "readActiveDid"
+          },
+          {
+            "op": "writeActiveDid",
+            "did": "mira.example.com"
+          },
+          {
+            "op": "readActiveDid"
+          },
+          {
+            "op": "writeActiveDid",
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "op": "writeActiveDid",
+            "did": null
+          },
+          {
+            "op": "readActiveDid"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:account": "did:plc:virgaharnessmira2zq4x"
+          }
+        },
+        {
+          "result": "did:plc:virgaharnessmira2zq4x",
+          "stored": {
+            "virga:account": "did:plc:virgaharnessmira2zq4x"
+          }
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:account": "did:plc:virgaharnesslab7k2pq"
+          }
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        }
+      ]
+    },
+    {
+      "id": "open-at-sign-in",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "writeOpenAtSignIn",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "takeOpenAtSignIn"
+          },
+          {
+            "op": "takeOpenAtSignIn"
+          },
+          {
+            "op": "writeOpenAtSignIn",
+            "did": "nobody"
+          },
+          {
+            "op": "takeOpenAtSignIn"
+          },
+          {
+            "op": "writeOpenAtSignIn",
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "op": "writeOpenAtSignIn",
+            "did": null
+          },
+          {
+            "op": "takeOpenAtSignIn"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": null,
+          "stored": {
+            "virga:signin-open": "did:plc:virgaharnessmira2zq4x"
+          }
+        },
+        {
+          "result": "did:plc:virgaharnessmira2zq4x",
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:signin-open": "did:plc:virgaharnesslab7k2pq"
+          }
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        }
+      ]
+    },
+    {
+      "id": "tokens",
+      "fn": "script",
+      "input": {
+        "ops": [
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "token": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "token": "deadbeef"
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "nobody",
+            "token": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "token": "VG_A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1"
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "token": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a10"
+          },
+          {
+            "op": "readBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "readBackendToken",
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "op": "writeBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "token": "vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+          },
+          {
+            "op": "readBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "removeBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "readBackendToken",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": true,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": false,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": false,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": false,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": false,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": null,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          }
+        },
+        {
+          "result": true,
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+          }
+        },
+        {
+          "result": "vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+          "stored": {
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+          }
+        },
+        {
+          "result": null,
+          "stored": {}
+        },
+        {
+          "result": null,
+          "stored": {}
+        }
+      ]
+    },
+    {
+      "id": "local-data",
+      "fn": "script",
+      "input": {
+        "stored": {
+          "virga:keep:followback:did:plc:virgaharnessmira2zq4x": "[]",
+          "virga:keep:cleanup:did:plc:virgaharnessmira2zq4x": "[]",
+          "virga:keep:cleanup:did:plc:virgaharnesslab7k2pq": "[]",
+          "virga:keep:did:plc:virgaharnessmira2zq4x": "[]",
+          "virga:dashboards:did:plc:virgaharnessmira2zq4x": "[]",
+          "virga:dashboards:did:plc:virgaharnesslab7k2pq": "[]",
+          "virga:terms-accepted:did:plc:virgaharnessmira2zq4x": "{}",
+          "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "virga:preferences": "{}",
+          "virga:posting-device": "x",
+          "other:keep:did:plc:virgaharnessmira2zq4x": "x"
+        },
+        "ops": [
+          {
+            "op": "removeLocalData",
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "op": "removeLocalData",
+            "did": "nope"
+          },
+          {
+            "op": "removeLocalData",
+            "did": "did:plc:virgaharnesslab7k2pq"
+          }
+        ]
+      },
+      "output": [
+        {
+          "result": [
+            "virga:adviser-usage:did:plc:virgaharnessmira2zq4x",
+            "virga:annotations:did:plc:virgaharnessmira2zq4x",
+            "virga:composer-autosave:did:plc:virgaharnessmira2zq4x",
+            "virga:dashboards:did:plc:virgaharnessmira2zq4x",
+            "virga:keep:cleanup:did:plc:virgaharnessmira2zq4x",
+            "virga:keep:did:plc:virgaharnessmira2zq4x",
+            "virga:keep:followback:did:plc:virgaharnessmira2zq4x",
+            "virga:posting:did:plc:virgaharnessmira2zq4x",
+            "virga:template-usage:did:plc:virgaharnessmira2zq4x",
+            "virga:templates:did:plc:virgaharnessmira2zq4x",
+            "virga:terms-accepted:did:plc:virgaharnessmira2zq4x"
+          ],
+          "stored": {
+            "other:keep:did:plc:virgaharnessmira2zq4x": "x",
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "virga:dashboards:did:plc:virgaharnesslab7k2pq": "[]",
+            "virga:keep:cleanup:did:plc:virgaharnesslab7k2pq": "[]",
+            "virga:posting-device": "x",
+            "virga:preferences": "{}"
+          }
+        },
+        {
+          "result": [],
+          "stored": {
+            "other:keep:did:plc:virgaharnessmira2zq4x": "x",
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "virga:dashboards:did:plc:virgaharnesslab7k2pq": "[]",
+            "virga:keep:cleanup:did:plc:virgaharnesslab7k2pq": "[]",
+            "virga:posting-device": "x",
+            "virga:preferences": "{}"
+          }
+        },
+        {
+          "result": [
+            "virga:adviser-usage:did:plc:virgaharnesslab7k2pq",
+            "virga:annotations:did:plc:virgaharnesslab7k2pq",
+            "virga:composer-autosave:did:plc:virgaharnesslab7k2pq",
+            "virga:dashboards:did:plc:virgaharnesslab7k2pq",
+            "virga:keep:cleanup:did:plc:virgaharnesslab7k2pq",
+            "virga:posting:did:plc:virgaharnesslab7k2pq",
+            "virga:template-usage:did:plc:virgaharnesslab7k2pq",
+            "virga:templates:did:plc:virgaharnesslab7k2pq",
+            "virga:terms-accepted:did:plc:virgaharnesslab7k2pq"
+          ],
+          "stored": {
+            "other:keep:did:plc:virgaharnessmira2zq4x": "x",
+            "virga:backend-token:did:plc:virgaharnessmira2zq4x": "vg_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "virga:posting-device": "x",
+            "virga:preferences": "{}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "findAccount#1",
+      "fn": "findAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "findAccount#2",
+      "fn": "findAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:absent"
+      },
+      "output": null
+    },
+    {
+      "id": "findAccount#3",
+      "fn": "findAccount",
+      "input": {
+        "list": null,
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": null
+    },
+    {
+      "id": "findAccount#4",
+      "fn": "findAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": null
+      },
+      "output": null
+    },
+    {
+      "id": "signedInAccounts#1",
+      "fn": "signedInAccounts",
+      "input": {
+        "list": []
+      },
+      "output": []
+    },
+    {
+      "id": "signedInAccounts#2",
+      "fn": "signedInAccounts",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ]
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "lastUsed": 2
+        },
+        {
+          "did": "did:plc:virgaharnessthird2kq",
+          "lastUsed": 1
+        }
+      ]
+    },
+    {
+      "id": "signedInAccounts#3",
+      "fn": "signedInAccounts",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ]
+      },
+      "output": []
+    },
+    {
+      "id": "signedInAccounts#4",
+      "fn": "signedInAccounts",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ]
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        {
+          "did": "did:plc:virgaharnesslab7k2pq"
+        },
+        {
+          "did": "did:plc:virgaharnessthird2kq"
+        }
+      ]
+    },
+    {
+      "id": "signedInAccounts#5",
+      "fn": "signedInAccounts",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ]
+      },
+      "output": [
+        {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        }
+      ]
+    },
+    {
+      "id": "pickActiveAccount#1",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [],
+        "activeDid": "did:plc:virgaharnessthird2kq"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#2",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [],
+        "activeDid": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#3",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [],
+        "activeDid": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#4",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [],
+        "activeDid": null
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#5",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessthird2kq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessthird2kq",
+        "lastUsed": 1
+      }
+    },
+    {
+      "id": "pickActiveAccount#6",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "activeDid": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "pickActiveAccount#7",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "pickActiveAccount#8",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "activeDid": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "pickActiveAccount#9",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessthird2kq"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#10",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "activeDid": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#11",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#12",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "activeDid": null
+      },
+      "output": null
+    },
+    {
+      "id": "pickActiveAccount#13",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessthird2kq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessthird2kq"
+      }
+    },
+    {
+      "id": "pickActiveAccount#14",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnesslab7k2pq"
+      }
+    },
+    {
+      "id": "pickActiveAccount#15",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "pickActiveAccount#16",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "activeDid": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "pickActiveAccount#17",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessthird2kq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "pickActiveAccount#18",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "pickActiveAccount#19",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "activeDid": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "pickActiveAccount#20",
+      "fn": "pickActiveAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "activeDid": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "nextReadyAccount#1",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": null
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#2",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#3",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": null
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#4",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#5",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessthird2kq",
+        "lastUsed": 1
+      }
+    },
+    {
+      "id": "nextReadyAccount#6",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessthird2kq",
+        "lastUsed": 1
+      }
+    },
+    {
+      "id": "nextReadyAccount#7",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "nextReadyAccount#8",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "lastUsed": 3,
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "lastUsed": 2
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq",
+            "lastUsed": 1
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "lastUsed": 2
+      }
+    },
+    {
+      "id": "nextReadyAccount#9",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": null
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#10",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#11",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": null
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#12",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnesslab7k2pq",
+            "signedOut": true
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#13",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnesslab7k2pq"
+      }
+    },
+    {
+      "id": "nextReadyAccount#14",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessthird2kq"
+      }
+    },
+    {
+      "id": "nextReadyAccount#15",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "nextReadyAccount#16",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          },
+          {
+            "did": "did:plc:virgaharnesslab7k2pq"
+          },
+          {
+            "did": "did:plc:virgaharnessthird2kq"
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "nextReadyAccount#17",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": null
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#18",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": null
+    },
+    {
+      "id": "nextReadyAccount#19",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": null
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "nextReadyAccount#20",
+      "fn": "nextReadyAccount",
+      "input": {
+        "list": [
+          {
+            "did": "did:plc:virgaharnessmira2zq4x"
+          }
+        ],
+        "did": "did:plc:virgaharnesslab7k2pq",
+        "needsSignIn": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "naming#1",
+      "fn": "naming",
+      "input": {
+        "account": null
+      },
+      "output": {
+        "accountName": "",
+        "accountHandle": null,
+        "accountSignInId": "",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "This account"
+      }
+    },
+    {
+      "id": "naming#2",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "mira.example.com",
+          "displayName": "did:plc:virgaharnessmira2zq4x"
+        }
+      },
+      "output": {
+        "accountName": "@mira.example.com",
+        "accountHandle": "@mira.example.com",
+        "accountSignInId": "mira.example.com",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "@mira.example.com"
+      }
+    },
+    {
+      "id": "naming#3",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "mira.example.com",
+          "displayName": "Mira Okafor",
+          "avatar": "https://x"
+        }
+      },
+      "output": {
+        "accountName": "Mira Okafor",
+        "accountHandle": "@mira.example.com",
+        "accountSignInId": "mira.example.com",
+        "needsRefresh": false,
+        "reauthNoticeLabel": "@mira.example.com"
+      }
+    },
+    {
+      "id": "naming#4",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "did:plc:virgaharnessmira2zq4x"
+        }
+      },
+      "output": {
+        "accountName": "did:plc:virg…a2zq4x",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:virgaharnessmira2zq4x",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "naming#5",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "did:plc:virgaharnessmira2zq4x",
+          "displayName": "Mira",
+          "avatar": "https://x"
+        }
+      },
+      "output": {
+        "accountName": "Mira",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:virgaharnessmira2zq4x",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "Mira"
+      }
+    },
+    {
+      "id": "naming#6",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": null
+        }
+      },
+      "output": {
+        "accountName": "did:plc:virg…a2zq4x",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:virgaharnessmira2zq4x",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "naming#7",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "handle": "",
+          "displayName": ""
+        }
+      },
+      "output": {
+        "accountName": "did:plc:virg…a2zq4x",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:virgaharnessmira2zq4x",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "naming#8",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        }
+      },
+      "output": {
+        "accountName": "did:plc:virg…a2zq4x",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:virgaharnessmira2zq4x",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:virgaharnessmira2zq4x"
+      }
+    },
+    {
+      "id": "naming#9",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "",
+          "handle": ""
+        }
+      },
+      "output": {
+        "accountName": "",
+        "accountHandle": null,
+        "accountSignInId": "",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "This account"
+      }
+    },
+    {
+      "id": "naming#10",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:web:a-rather-long-host-name.example.com",
+          "handle": "a.example.com"
+        }
+      },
+      "output": {
+        "accountName": "@a.example.com",
+        "accountHandle": "@a.example.com",
+        "accountSignInId": "a.example.com",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "@a.example.com"
+      }
+    },
+    {
+      "id": "naming#11",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:exactly24charsxxxx",
+          "handle": "did:plc:also"
+        }
+      },
+      "output": {
+        "accountName": "did:plc:exac…rsxxxx",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:exactly24charsxxxx",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:exactly24charsxxxx"
+      }
+    },
+    {
+      "id": "naming#12",
+      "fn": "naming",
+      "input": {
+        "account": {
+          "did": "did:plc:😀😀😀😀😀😀😀😀",
+          "displayName": "did:x:y"
+        }
+      },
+      "output": {
+        "accountName": "did:plc:😀😀😀😀😀😀😀😀",
+        "accountHandle": null,
+        "accountSignInId": "did:plc:😀😀😀😀😀😀😀😀",
+        "needsRefresh": true,
+        "reauthNoticeLabel": "did:plc:😀😀😀😀😀😀😀😀"
+      }
+    },
+    {
+      "id": "shortDid#1",
+      "fn": "shortDid",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": "did:plc:virg…a2zq4x"
+    },
+    {
+      "id": "shortDid#2",
+      "fn": "shortDid",
+      "input": {
+        "did": "did:web:a-rather-long-host-name.example.com"
+      },
+      "output": "did:web:a-ra…le.com"
+    },
+    {
+      "id": "shortDid#3",
+      "fn": "shortDid",
+      "input": {
+        "did": ""
+      },
+      "output": ""
+    },
+    {
+      "id": "shortDid#4",
+      "fn": "shortDid",
+      "input": {
+        "did": null
+      },
+      "output": ""
+    },
+    {
+      "id": "shortDid#5",
+      "fn": "shortDid",
+      "input": {
+        "did": "did:plc:exactly24charsxx"
+      },
+      "output": "did:plc:exactly24charsxx"
+    },
+    {
+      "id": "shortDid#6",
+      "fn": "shortDid",
+      "input": {
+        "did": "did:plc:exactly25charsxxx"
+      },
+      "output": "did:plc:exac…arsxxx"
+    },
+    {
+      "id": "shortDid#7",
+      "fn": "shortDid",
+      "input": {
+        "did": "did:plc:😀😀😀😀😀😀😀😀"
+      },
+      "output": "did:plc:😀😀😀😀😀😀😀😀"
+    },
+    {
+      "id": "lastOpenedLabel#1",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794470400000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#2",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794441600000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#3",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794438000000,
+        "now": 1794517200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#4",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794355200000,
+        "now": 1794517200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#5",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794225600000,
+        "now": 1794517200000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#6",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793966400000,
+        "now": 1794517200000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#7",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793880000000,
+        "now": 1794517200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#8",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793793600000,
+        "now": 1794517200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#9",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792670400000,
+        "now": 1794517200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#10",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792411200000,
+        "now": 1794517200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#11",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791979200000,
+        "now": 1794517200000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#12",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791892800000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#13",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791028800000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#14",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790683200000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#15",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790510400000,
+        "now": 1794517200000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#16",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1763035200000,
+        "now": 1794517200000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#17",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762948800000,
+        "now": 1794517200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#18",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759924800000,
+        "now": 1794517200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#19",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "UTC",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794657600000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#20",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794488400000,
+        "now": 1794535200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#21",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794459600000,
+        "now": 1794535200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#22",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794456000000,
+        "now": 1794535200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#23",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794373200000,
+        "now": 1794535200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#24",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794243600000,
+        "now": 1794535200000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#25",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793984400000,
+        "now": 1794535200000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#26",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793898000000,
+        "now": 1794535200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#27",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793811600000,
+        "now": 1794535200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#28",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792684800000,
+        "now": 1794535200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#29",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792425600000,
+        "now": 1794535200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#30",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791993600000,
+        "now": 1794535200000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#31",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791907200000,
+        "now": 1794535200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#32",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791043200000,
+        "now": 1794535200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#33",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790697600000,
+        "now": 1794535200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#34",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790524800000,
+        "now": 1794535200000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#35",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1763053200000,
+        "now": 1794535200000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#36",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762966800000,
+        "now": 1794535200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#37",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759939200000,
+        "now": 1794535200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#38",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/New_York",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794675600000,
+        "now": 1794535200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#39",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794470400000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#40",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794441600000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#41",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794438000000,
+        "now": 1794517200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#42",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794355200000,
+        "now": 1794517200000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#43",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794225600000,
+        "now": 1794517200000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#44",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793966400000,
+        "now": 1794517200000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#45",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793880000000,
+        "now": 1794517200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#46",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793793600000,
+        "now": 1794517200000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#47",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792666800000,
+        "now": 1794517200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#48",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792407600000,
+        "now": 1794517200000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#49",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791975600000,
+        "now": 1794517200000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#50",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791889200000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#51",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791025200000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#52",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790679600000,
+        "now": 1794517200000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#53",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790506800000,
+        "now": 1794517200000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#54",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1763035200000,
+        "now": 1794517200000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#55",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762948800000,
+        "now": 1794517200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#56",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759921200000,
+        "now": 1794517200000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#57",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Europe/London",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794657600000,
+        "now": 1794517200000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#58",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794450600000,
+        "now": 1794497400000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#59",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794421800000,
+        "now": 1794497400000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#60",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794418200000,
+        "now": 1794497400000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#61",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794335400000,
+        "now": 1794497400000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#62",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794205800000,
+        "now": 1794497400000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#63",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793946600000,
+        "now": 1794497400000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#64",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793860200000,
+        "now": 1794497400000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#65",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793773800000,
+        "now": 1794497400000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#66",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792650600000,
+        "now": 1794497400000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#67",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792391400000,
+        "now": 1794497400000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#68",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791959400000,
+        "now": 1794497400000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#69",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791873000000,
+        "now": 1794497400000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#70",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791009000000,
+        "now": 1794497400000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#71",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790663400000,
+        "now": 1794497400000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#72",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790490600000,
+        "now": 1794497400000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#73",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1763015400000,
+        "now": 1794497400000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#74",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762929000000,
+        "now": 1794497400000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#75",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759905000000,
+        "now": 1794497400000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#76",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794637800000,
+        "now": 1794497400000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#77",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794430800000,
+        "now": 1794477600000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#78",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794402000000,
+        "now": 1794477600000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#79",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794398400000,
+        "now": 1794477600000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#80",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794315600000,
+        "now": 1794477600000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#81",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794186000000,
+        "now": 1794477600000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#82",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793926800000,
+        "now": 1794477600000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#83",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793840400000,
+        "now": 1794477600000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#84",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793754000000,
+        "now": 1794477600000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#85",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792630800000,
+        "now": 1794477600000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#86",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792371600000,
+        "now": 1794477600000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#87",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791939600000,
+        "now": 1794477600000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#88",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791853200000,
+        "now": 1794477600000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#89",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790991000000,
+        "now": 1794477600000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#90",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790645400000,
+        "now": 1794477600000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#91",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790472600000,
+        "now": 1794477600000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#92",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762995600000,
+        "now": 1794477600000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#93",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762909200000,
+        "now": 1794477600000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#94",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759885200000,
+        "now": 1794477600000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#95",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794618000000,
+        "now": 1794477600000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#96",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794420900000,
+        "now": 1794467700000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#97",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794392100000,
+        "now": 1794467700000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#98",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794388500000,
+        "now": 1794467700000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#99",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794305700000,
+        "now": 1794467700000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#100",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794176100000,
+        "now": 1794467700000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#101",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793916900000,
+        "now": 1794467700000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#102",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793830500000,
+        "now": 1794467700000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#103",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793744100000,
+        "now": 1794467700000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#104",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792620900000,
+        "now": 1794467700000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#105",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792361700000,
+        "now": 1794467700000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#106",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791929700000,
+        "now": 1794467700000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#107",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791843300000,
+        "now": 1794467700000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#108",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790979300000,
+        "now": 1794467700000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#109",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790633700000,
+        "now": 1794467700000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#110",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790460900000,
+        "now": 1794467700000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#111",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762985700000,
+        "now": 1794467700000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#112",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762899300000,
+        "now": 1794467700000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#113",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759875300000,
+        "now": 1794467700000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#114",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794608100000,
+        "now": 1794467700000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#115",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 0,
+        "hour": 8
+      },
+      "output": {
+        "lastUsed": 1794481200000,
+        "now": 1794528000000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#116",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 0,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794452400000,
+        "now": 1794528000000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#117",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 1,
+        "hour": 23
+      },
+      "output": {
+        "lastUsed": 1794448800000,
+        "now": 1794528000000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#118",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 1,
+        "hour": 0
+      },
+      "output": {
+        "lastUsed": 1794366000000,
+        "now": 1794528000000,
+        "label": "Last opened yesterday"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#119",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 3,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794236400000,
+        "now": 1794528000000,
+        "label": "Last opened 3 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#120",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 6,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793977200000,
+        "now": 1794528000000,
+        "label": "Last opened 6 days ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#121",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 7,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793890800000,
+        "now": 1794528000000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#122",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 8,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1793804400000,
+        "now": 1794528000000,
+        "label": "Last opened a week ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#123",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 21,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792681200000,
+        "now": 1794528000000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#124",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 24,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1792422000000,
+        "now": 1794528000000,
+        "label": "Last opened 3 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#125",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 29,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791990000000,
+        "now": 1794528000000,
+        "label": "Last opened 4 weeks ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#126",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 30,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791903600000,
+        "now": 1794528000000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#127",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 40,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1791039600000,
+        "now": 1794528000000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#128",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 44,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790694000000,
+        "now": 1794528000000,
+        "label": "Last opened a month ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#129",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 46,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1790521200000,
+        "now": 1794528000000,
+        "label": "Last opened 2 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#130",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 364,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1763046000000,
+        "now": 1794528000000,
+        "label": "Last opened 12 months ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#131",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 365,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1762959600000,
+        "now": 1794528000000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#132",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": 400,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1759935600000,
+        "now": 1794528000000,
+        "label": "Last opened over a year ago"
+      }
+    },
+    {
+      "id": "lastOpenedLabel#133",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "daysAgo": -2,
+        "hour": 12
+      },
+      "output": {
+        "lastUsed": 1794668400000,
+        "now": 1794528000000,
+        "label": "Last opened today"
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "lastUsed": null
+      },
+      "output": [
+        {
+          "zone": "UTC",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/New_York",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Europe/London",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Asia/Kolkata",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Australia/Lord_Howe",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Pacific/Chatham",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/Sao_Paulo",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        }
+      ]
+    },
+    {
+      "id": "zero",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "lastUsed": 0
+      },
+      "output": [
+        {
+          "zone": "UTC",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/New_York",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Europe/London",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Asia/Kolkata",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Australia/Lord_Howe",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Pacific/Chatham",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/Sao_Paulo",
+          "lastUsed": 0,
+          "now": 1794517200000,
+          "label": null
+        }
+      ]
+    },
+    {
+      "id": "nan",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "lastUsed": "NaN"
+      },
+      "output": [
+        {
+          "zone": "UTC",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/New_York",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Europe/London",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Asia/Kolkata",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Australia/Lord_Howe",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "Pacific/Chatham",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        },
+        {
+          "zone": "America/Sao_Paulo",
+          "lastUsed": null,
+          "now": 1794517200000,
+          "label": null
+        }
+      ]
+    },
+    {
+      "id": "march",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "lastUsed": 1773316800000,
+        "now": 1773576000000
+      },
+      "output": [
+        {
+          "zone": "UTC",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "America/New_York",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "Europe/London",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "Asia/Kolkata",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "Australia/Lord_Howe",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "Pacific/Chatham",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        },
+        {
+          "zone": "America/Sao_Paulo",
+          "lastUsed": 1773316800000,
+          "now": 1773576000000,
+          "label": "Last opened 3 days ago"
+        }
+      ]
+    },
+    {
+      "id": "dst-spring",
+      "fn": "lastOpenedLabel",
+      "input": {
+        "lastUsed": 1772884800000,
+        "now": 1773028800000
+      },
+      "output": [
+        {
+          "zone": "UTC",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        },
+        {
+          "zone": "America/New_York",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        },
+        {
+          "zone": "Europe/London",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        },
+        {
+          "zone": "Asia/Kolkata",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        },
+        {
+          "zone": "Australia/Lord_Howe",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        },
+        {
+          "zone": "Pacific/Chatham",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened yesterday"
+        },
+        {
+          "zone": "America/Sao_Paulo",
+          "lastUsed": 1772884800000,
+          "now": 1773028800000,
+          "label": "Last opened 2 days ago"
+        }
+      ]
+    },
+    {
+      "id": "isReauthRequiredError#1",
+      "fn": "isReauthRequiredError",
+      "input": {
+        "error": {
+          "code": "REAUTH_REQUIRED",
+          "message": "This account needs to sign in again."
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isReauthRequiredError#2",
+      "fn": "isReauthRequiredError",
+      "input": {
+        "error": {
+          "message": "REAUTH_REQUIRED"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReauthRequiredError#3",
+      "fn": "isReauthRequiredError",
+      "input": {
+        "error": {
+          "code": "reauth_required"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isReauthRequiredError#4",
+      "fn": "isReauthRequiredError",
+      "input": {
+        "error": null
+      },
+      "output": false
+    },
+    {
+      "id": "makeReauthRequiredError",
+      "fn": "makeReauthRequiredError",
+      "input": {},
+      "output": {
+        "message": "This account needs to sign in again.",
+        "code": "REAUTH_REQUIRED",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "isReauth": true
+      }
+    },
+    {
+      "id": "localDatabases#1",
+      "fn": "localDatabases",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": [
+        "virga-analytics:did:plc:virgaharnessmira2zq4x",
+        "virga-posting:did:plc:virgaharnessmira2zq4x"
+      ]
+    },
+    {
+      "id": "localDatabases#2",
+      "fn": "localDatabases",
+      "input": {
+        "did": "nope"
+      },
+      "output": []
+    },
+    {
+      "id": "localDatabases#3",
+      "fn": "localDatabases",
+      "input": {
+        "did": ""
+      },
+      "output": []
+    },
+    {
+      "id": "localDataKeys#1",
+      "fn": "localDataKeys",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x"
+      },
+      "output": [
+        "virga:dashboards:did:plc:virgaharnessmira2zq4x",
+        "virga:posting:did:plc:virgaharnessmira2zq4x",
+        "virga:annotations:did:plc:virgaharnessmira2zq4x",
+        "virga:composer-autosave:did:plc:virgaharnessmira2zq4x",
+        "virga:templates:did:plc:virgaharnessmira2zq4x",
+        "virga:template-usage:did:plc:virgaharnessmira2zq4x",
+        "virga:adviser-usage:did:plc:virgaharnessmira2zq4x",
+        "virga:terms-accepted:did:plc:virgaharnessmira2zq4x",
+        "virga:keep:followback:did:plc:virgaharnessmira2zq4x",
+        "virga:keep:cleanup:did:plc:virgaharnessmira2zq4x"
+      ]
+    },
+    {
+      "id": "localDataKeys#2",
+      "fn": "localDataKeys",
+      "input": {
+        "did": "did:plc:virgaharnesslab7k2pq"
+      },
+      "output": [
+        "virga:dashboards:did:plc:virgaharnesslab7k2pq",
+        "virga:posting:did:plc:virgaharnesslab7k2pq",
+        "virga:annotations:did:plc:virgaharnesslab7k2pq",
+        "virga:composer-autosave:did:plc:virgaharnesslab7k2pq",
+        "virga:templates:did:plc:virgaharnesslab7k2pq",
+        "virga:template-usage:did:plc:virgaharnesslab7k2pq",
+        "virga:adviser-usage:did:plc:virgaharnesslab7k2pq",
+        "virga:terms-accepted:did:plc:virgaharnesslab7k2pq",
+        "virga:keep:cleanup:did:plc:virgaharnesslab7k2pq",
+        "virga:keep:x:did:plc:virgaharnessmira2zq4x:did:plc:virgaharnesslab7k2pq"
+      ]
+    },
+    {
+      "id": "localDataKeys#3",
+      "fn": "localDataKeys",
+      "input": {
+        "did": "nope"
+      },
+      "output": []
+    },
+    {
+      "id": "modeLabel#1",
+      "fn": "modeLabel",
+      "input": {
+        "mode": "backend"
+      },
+      "output": "Long session through Virga’s server"
+    },
+    {
+      "id": "modeLabel#2",
+      "fn": "modeLabel",
+      "input": {
+        "mode": "browser"
+      },
+      "output": "Browser session"
+    },
+    {
+      "id": "modeLabel#3",
+      "fn": "modeLabel",
+      "input": {
+        "mode": null
+      },
+      "output": "Browser session"
+    },
+    {
+      "id": "modeLabel#4",
+      "fn": "modeLabel",
+      "input": {
+        "mode": "pigeon"
+      },
+      "output": "Browser session"
+    },
+    {
+      "id": "statusLabel#1",
+      "fn": "statusLabel",
+      "input": {
+        "status": "ready",
+        "active": false,
+        "switching": false
+      },
+      "output": null
+    },
+    {
+      "id": "statusLabel#2",
+      "fn": "statusLabel",
+      "input": {
+        "status": "ready",
+        "active": false,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#3",
+      "fn": "statusLabel",
+      "input": {
+        "status": "ready",
+        "active": true,
+        "switching": false
+      },
+      "output": "Open now"
+    },
+    {
+      "id": "statusLabel#4",
+      "fn": "statusLabel",
+      "input": {
+        "status": "ready",
+        "active": true,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#5",
+      "fn": "statusLabel",
+      "input": {
+        "status": "needsSignIn",
+        "active": false,
+        "switching": false
+      },
+      "output": "Signed out"
+    },
+    {
+      "id": "statusLabel#6",
+      "fn": "statusLabel",
+      "input": {
+        "status": "needsSignIn",
+        "active": false,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#7",
+      "fn": "statusLabel",
+      "input": {
+        "status": "needsSignIn",
+        "active": true,
+        "switching": false
+      },
+      "output": "Signed out"
+    },
+    {
+      "id": "statusLabel#8",
+      "fn": "statusLabel",
+      "input": {
+        "status": "needsSignIn",
+        "active": true,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#9",
+      "fn": "statusLabel",
+      "input": {
+        "status": "unknown",
+        "active": false,
+        "switching": false
+      },
+      "output": "Couldn’t check"
+    },
+    {
+      "id": "statusLabel#10",
+      "fn": "statusLabel",
+      "input": {
+        "status": "unknown",
+        "active": false,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#11",
+      "fn": "statusLabel",
+      "input": {
+        "status": "unknown",
+        "active": true,
+        "switching": false
+      },
+      "output": "Couldn’t check"
+    },
+    {
+      "id": "statusLabel#12",
+      "fn": "statusLabel",
+      "input": {
+        "status": "unknown",
+        "active": true,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#13",
+      "fn": "statusLabel",
+      "input": {
+        "status": null,
+        "active": false,
+        "switching": false
+      },
+      "output": null
+    },
+    {
+      "id": "statusLabel#14",
+      "fn": "statusLabel",
+      "input": {
+        "status": null,
+        "active": false,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "statusLabel#15",
+      "fn": "statusLabel",
+      "input": {
+        "status": null,
+        "active": true,
+        "switching": false
+      },
+      "output": "Open now"
+    },
+    {
+      "id": "statusLabel#16",
+      "fn": "statusLabel",
+      "input": {
+        "status": null,
+        "active": true,
+        "switching": true
+      },
+      "output": "Switching…"
+    },
+    {
+      "id": "reauthModeFor#1",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": "backend",
+        "authMode": "backend"
+      },
+      "output": {
+        "reauthModeFor": "backend",
+        "offersLongerSession": false
+      }
+    },
+    {
+      "id": "reauthModeFor#2",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": "backend",
+        "authMode": "browser"
+      },
+      "output": {
+        "reauthModeFor": "backend",
+        "offersLongerSession": false
+      }
+    },
+    {
+      "id": "reauthModeFor#3",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": "browser",
+        "authMode": "backend"
+      },
+      "output": {
+        "reauthModeFor": "backend",
+        "offersLongerSession": true
+      }
+    },
+    {
+      "id": "reauthModeFor#4",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": "browser",
+        "authMode": "browser"
+      },
+      "output": {
+        "reauthModeFor": "browser",
+        "offersLongerSession": false
+      }
+    },
+    {
+      "id": "reauthModeFor#5",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": null,
+        "authMode": "backend"
+      },
+      "output": {
+        "reauthModeFor": "backend",
+        "offersLongerSession": false
+      }
+    },
+    {
+      "id": "reauthModeFor#6",
+      "fn": "reauthModeFor",
+      "input": {
+        "mode": null,
+        "authMode": "browser"
+      },
+      "output": {
+        "reauthModeFor": "browser",
+        "offersLongerSession": false
+      }
+    },
+    {
+      "id": "pendingWorkWarning#1",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 3,
+          "timers": 1
+        }
+      },
+      "output": "Mira has 3 scheduled posts and 1 post timer waiting on Virga’s server. If no other browser or device is signed in to Virga as Mira, the posts won’t go out and the timer won’t delete anything until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#2",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 3,
+          "timers": 1
+        }
+      },
+      "output": "@mira.example.com has 3 scheduled posts and 1 post timer waiting on Virga’s server. If no other browser or device is signed in to Virga as @mira.example.com, the posts won’t go out and the timer won’t delete anything until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#3",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 1,
+          "timers": 0
+        }
+      },
+      "output": "Mira has 1 scheduled post waiting on Virga’s server. If no other browser or device is signed in to Virga as Mira, the post won’t go out until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#4",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 1,
+          "timers": 0
+        }
+      },
+      "output": "@mira.example.com has 1 scheduled post waiting on Virga’s server. If no other browser or device is signed in to Virga as @mira.example.com, the post won’t go out until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#5",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 0,
+          "timers": 2
+        }
+      },
+      "output": "Mira has 2 post timers waiting on Virga’s server. If no other browser or device is signed in to Virga as Mira, the timers won’t delete anything until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#6",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 0,
+          "timers": 2
+        }
+      },
+      "output": "@mira.example.com has 2 post timers waiting on Virga’s server. If no other browser or device is signed in to Virga as @mira.example.com, the timers won’t delete anything until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#7",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 1,
+          "timers": 1
+        }
+      },
+      "output": "Mira has 1 scheduled post and 1 post timer waiting on Virga’s server. If no other browser or device is signed in to Virga as Mira, the post won’t go out and the timer won’t delete anything until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#8",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 1,
+          "timers": 1
+        }
+      },
+      "output": "@mira.example.com has 1 scheduled post and 1 post timer waiting on Virga’s server. If no other browser or device is signed in to Virga as @mira.example.com, the post won’t go out and the timer won’t delete anything until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#9",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 2,
+          "timers": 3
+        }
+      },
+      "output": "Mira has 2 scheduled posts and 3 post timers waiting on Virga’s server. If no other browser or device is signed in to Virga as Mira, the posts won’t go out and the timers won’t delete anything until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#10",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 2,
+          "timers": 3
+        }
+      },
+      "output": "@mira.example.com has 2 scheduled posts and 3 post timers waiting on Virga’s server. If no other browser or device is signed in to Virga as @mira.example.com, the posts won’t go out and the timers won’t delete anything until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#11",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": {
+          "posts": 0,
+          "timers": 0
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pendingWorkWarning#12",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": {
+          "posts": 0,
+          "timers": 0
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "pendingWorkWarning#13",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "Mira",
+        "work": null
+      },
+      "output": "Virga couldn’t check whether Mira has scheduled posts or post timers waiting. If it has, and no other browser or device is signed in to Virga as Mira, they stop until Mira signs back in with a long session."
+    },
+    {
+      "id": "pendingWorkWarning#14",
+      "fn": "pendingWorkWarning",
+      "input": {
+        "name": "@mira.example.com",
+        "work": null
+      },
+      "output": "Virga couldn’t check whether @mira.example.com has scheduled posts or post timers waiting. If it has, and no other browser or device is signed in to Virga as @mira.example.com, they stop until @mira.example.com signs back in with a long session."
+    },
+    {
+      "id": "readSessionHint#1",
+      "fn": "readSessionHint",
+      "input": {
+        "stored": "1"
+      },
+      "output": true
+    },
+    {
+      "id": "readSessionHint#2",
+      "fn": "readSessionHint",
+      "input": {
+        "stored": "yes"
+      },
+      "output": false
+    },
+    {
+      "id": "readSessionHint#3",
+      "fn": "readSessionHint",
+      "input": {
+        "stored": ""
+      },
+      "output": false
+    },
+    {
+      "id": "readSessionHint#4",
+      "fn": "readSessionHint",
+      "input": {
+        "stored": "true"
+      },
+      "output": false
+    },
+    {
+      "id": "readSessionHint#5",
+      "fn": "readSessionHint",
+      "input": {
+        "stored": null
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#1",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [
+          {
+            "did": "did:plc:a",
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:b"
+          }
+        ],
+        "hinted": true
+      },
+      "output": true
+    },
+    {
+      "id": "syncSessionHint#2",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [
+          {
+            "did": "did:plc:a",
+            "signedOut": true
+          },
+          {
+            "did": "did:plc:b"
+          }
+        ],
+        "hinted": false
+      },
+      "output": true
+    },
+    {
+      "id": "syncSessionHint#3",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [
+          {
+            "did": "did:plc:a",
+            "signedOut": true
+          }
+        ],
+        "hinted": true
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#4",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [
+          {
+            "did": "did:plc:a",
+            "signedOut": true
+          }
+        ],
+        "hinted": false
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#5",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [],
+        "hinted": true
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#6",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": [],
+        "hinted": false
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#7",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": null,
+        "hinted": true
+      },
+      "output": false
+    },
+    {
+      "id": "syncSessionHint#8",
+      "fn": "syncSessionHint",
+      "input": {
+        "accounts": null,
+        "hinted": false
+      },
+      "output": false
+    },
+    {
+      "id": "restoresAtStartup#1",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": false,
+        "onReturn": false,
+        "hasAccounts": false
+      },
+      "output": false
+    },
+    {
+      "id": "restoresAtStartup#2",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": false,
+        "onReturn": false,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#3",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": false,
+        "onReturn": true,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#4",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": false,
+        "onReturn": true,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#5",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": true,
+        "onReturn": false,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#6",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": true,
+        "onReturn": false,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#7",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": true,
+        "onReturn": true,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#8",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": false,
+        "onCallback": true,
+        "onReturn": true,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#9",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": false,
+        "onReturn": false,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#10",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": false,
+        "onReturn": false,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#11",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": false,
+        "onReturn": true,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#12",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": false,
+        "onReturn": true,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#13",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": true,
+        "onReturn": false,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#14",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": true,
+        "onReturn": false,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#15",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": true,
+        "onReturn": true,
+        "hasAccounts": false
+      },
+      "output": true
+    },
+    {
+      "id": "restoresAtStartup#16",
+      "fn": "restoresAtStartup",
+      "input": {
+        "hint": true,
+        "onCallback": true,
+        "onReturn": true,
+        "hasAccounts": true
+      },
+      "output": true
+    },
+    {
+      "id": "countPendingWork#1",
+      "fn": "countPendingWork",
+      "input": {
+        "scheduled": [
+          {
+            "id": 1,
+            "status": "pending",
+            "clientKey": "virga"
+          },
+          {
+            "id": 2,
+            "status": "publishing",
+            "clientKey": "virga"
+          },
+          {
+            "id": 3,
+            "status": "failed",
+            "clientKey": "virga"
+          },
+          {
+            "id": 4,
+            "status": "published",
+            "clientKey": "virga"
+          },
+          {
+            "id": 5,
+            "status": "pending"
+          },
+          null,
+          {}
+        ],
+        "timers": [
+          {
+            "id": 1,
+            "status": "armed"
+          },
+          {
+            "id": 2,
+            "status": "checking"
+          },
+          {
+            "id": 3,
+            "status": "deleted"
+          },
+          {
+            "id": 4,
+            "status": "failed"
+          },
+          null
+        ]
+      },
+      "output": {
+        "posts": 3,
+        "timers": 2
+      }
+    },
+    {
+      "id": "countPendingWork#2",
+      "fn": "countPendingWork",
+      "input": {
+        "scheduled": [],
+        "timers": []
+      },
+      "output": {
+        "posts": 0,
+        "timers": 0
+      }
+    },
+    {
+      "id": "countPendingWork#3",
+      "fn": "countPendingWork",
+      "input": {
+        "scheduled": null,
+        "timers": null
+      },
+      "output": {
+        "posts": 0,
+        "timers": 0
+      }
+    },
+    {
+      "id": "countPendingWork#4",
+      "fn": "countPendingWork",
+      "input": {},
+      "output": {
+        "posts": 0,
+        "timers": 0
+      }
+    },
+    {
+      "id": "hasPendingWork#1",
+      "fn": "hasPendingWork",
+      "input": {
+        "work": {
+          "posts": 0,
+          "timers": 0
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "hasPendingWork#2",
+      "fn": "hasPendingWork",
+      "input": {
+        "work": {
+          "posts": 1,
+          "timers": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "hasPendingWork#3",
+      "fn": "hasPendingWork",
+      "input": {
+        "work": {
+          "posts": 0,
+          "timers": 2
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "hasPendingWork#4",
+      "fn": "hasPendingWork",
+      "input": {
+        "work": null
+      },
+      "output": true
+    },
+    {
+      "id": "hasPendingWork:undefined",
+      "fn": "hasPendingWork:undefined",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "isBackendToken",
+      "fn": "isBackendToken",
+      "input": {},
+      "output": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ]
+}

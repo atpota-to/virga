@@ -36,6 +36,10 @@ struct Thing: Codable, Equatable {
     #expect(store.getJSON("virga:b") == nil, "'' reads as nothing, as JSON.parse(x || 'null') does")
     try store.setItem("virga:unicode", "naïve 👍🏽 \u{2028}")
     #expect(store.getItem("virga:unicode") == "naïve 👍🏽 \u{2028}")
+    // A key that starts with a combining mark is still listed as itself.
+    try store.setItem("\u{301}k", "v")
+    #expect(store.allKeys().contains("\u{301}k"))
+    #expect(store.getItem("\u{301}k") == "v")
   }
 
   @Test func inMemory() throws {

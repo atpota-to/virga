@@ -38,6 +38,9 @@ public enum LocaleData {
     public var patterns: [String: String]
   }
 
+  /// A region's month and weekday names: as a date writes them (the M and
+  /// E fields: the month beside a day), and stand-alone (L and c: the field
+  /// by itself). They differ in en-AU, which writes "17 June" but "Jun".
   public struct Names: Codable, Hashable, Sendable {
     public var monthsShort: [String]
     public var monthsLong: [String]
@@ -46,6 +49,12 @@ public enum LocaleData {
     public var weekdaysShort: [String]
     public var weekdaysLong: [String]
     public var weekdaysNarrow: [String]
+    public var standaloneMonthsShort: [String]
+    public var standaloneMonthsLong: [String]
+    public var standaloneMonthsNarrow: [String]
+    public var standaloneWeekdaysShort: [String]
+    public var standaloneWeekdaysLong: [String]
+    public var standaloneWeekdaysNarrow: [String]
     public var am: String
     public var pm: String
   }
@@ -229,7 +238,8 @@ public enum LocaleData {
 
   /// Lays out the ICU `pattern` for `time` (epoch ms) in `timeZone`, with
   /// these names. The fields the web's patterns use: y yy M MM MMM MMMM
-  /// MMMMM d dd EEE EEEE EEEEE h hh H HH K KK k kk m mm s ss a, with
+  /// MMMMM (and stand-alone L to LLLLL) d dd EEE EEEE EEEEE (and
+  /// stand-alone ccc to ccccc) h hh H HH K KK k kk m mm s ss a, with
   /// literals in single quotes.
   public static func render(pattern: String, time: Double, timeZone: TimeZone, names: Names) -> String {
     guard let f = JSDate.fields(time, timeZone: timeZone) else { return "Invalid Date" }
@@ -246,11 +256,19 @@ public enum LocaleData {
       case "MMM": return names.monthsShort[f.month]
       case "MMMM": return names.monthsLong[f.month]
       case "MMMMM": return names.monthsNarrow[f.month]
+      case "L": return String(f.month + 1)
+      case "LL": return pad(f.month + 1)
+      case "LLL": return names.standaloneMonthsShort[f.month]
+      case "LLLL": return names.standaloneMonthsLong[f.month]
+      case "LLLLL": return names.standaloneMonthsNarrow[f.month]
       case "d": return String(f.date)
       case "dd": return pad(f.date)
-      case "EEE": return names.weekdaysShort[f.day]
+      case "E", "EE", "EEE": return names.weekdaysShort[f.day]
       case "EEEE": return names.weekdaysLong[f.day]
       case "EEEEE": return names.weekdaysNarrow[f.day]
+      case "ccc": return names.standaloneWeekdaysShort[f.day]
+      case "cccc": return names.standaloneWeekdaysLong[f.day]
+      case "ccccc": return names.standaloneWeekdaysNarrow[f.day]
       case "H": return String(f.hours)
       case "HH": return pad(f.hours)
       case "h": return String(h12)
@@ -437,15 +455,15 @@ extension LocaleData {
     if options.timeStyle != nil { template += profile.hourCycle == "h12" ? "hmm" : "Hmm" }
     let locale = Locale(identifier: "en_\(profile.region ?? "US")")
     let pattern = DateFormatter.dateFormat(fromTemplate: template, options: 0, locale: locale) ?? template
-    // The renderer's fields: stand-alone months and weekdays as their
-    // format forms, and a plain space where ICU puts U+202F (as V8 does).
+    // The renderer's fields: a local weekday (e) as the format one, and a
+    // plain space where ICU puts U+202F (as V8 does). Stand-alone months
+    // (L) and weekdays (c) stay stand-alone.
     var out = ""
     var quoted = false
     for ch in pattern {
       if ch == "'" { quoted.toggle() }
       switch (quoted, ch) {
-      case (false, "L"): out.append("M")
-      case (false, "c"), (false, "e"): out.append("E")
+      case (false, "e"): out.append("E")
       case (_, "\u{202F}"): out.append(" ")
       default: out.append(ch)
       }

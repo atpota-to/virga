@@ -183,22 +183,19 @@ extension JSURI {
   /// `new URLSearchParams(query)`'s pairs, in order: a leading `?` dropped,
   /// split on `&`, each at its first `=`, `+` read as a space and %XX
   /// decoded leniently (a `%` without two hex digits stays, and bytes that
-  /// aren't UTF-8 become U+FFFD), as browsers parse a query.
+  /// aren't UTF-8 become U+FFFD), as browsers parse a query. It works on
+  /// the UTF-8 bytes, as the WHATWG parser does: by Character, a `&`, `=`
+  /// or `?` with a combining mark after it would go unseen.
   public static func parseSearchParams(_ query: String) -> [(String, String)] {
-    var text = Substring(query)
-    if text.hasPrefix("?") { text = text.dropFirst() }
+    var bytes = Array(query.utf8)[...]
+    if bytes.first == 0x3F { bytes = bytes.dropFirst() }
     var out: [(String, String)] = []
-    for sequence in text.split(separator: "&", omittingEmptySubsequences: true) {
-      let name: Substring
-      let value: Substring
-      if let eq = sequence.firstIndex(of: "=") {
-        name = sequence[..<eq]
-        value = sequence[sequence.index(after: eq)...]
+    for sequence in bytes.split(separator: 0x26, omittingEmptySubsequences: true) {
+      if let eq = sequence.firstIndex(of: 0x3D) {
+        out.append((formDecode(sequence[..<eq]), formDecode(sequence[(eq + 1)...])))
       } else {
-        name = sequence
-        value = ""
+        out.append((formDecode(sequence), ""))
       }
-      out.append((formDecode(name), formDecode(value)))
     }
     return out
   }
@@ -208,8 +205,8 @@ extension JSURI {
     parseSearchParams(query).first { $0.0 == name }?.1
   }
 
-  static func formDecode(_ text: Substring) -> String {
-    let bytes = Array(text.utf8).map { $0 == 0x2B ? 0x20 : $0 }
+  static func formDecode(_ text: ArraySlice<UInt8>) -> String {
+    let bytes = text.map { $0 == 0x2B ? 0x20 : $0 }
     var out: [UInt8] = []
     out.reserveCapacity(bytes.count)
     var i = 0

@@ -215,6 +215,12 @@ export default async function cases() {
         '',
         '??a=1',
         'emoji=👍&x=%E2%9C',
+        // A combining mark after '?', '&' or '=' joins it to one grapheme;
+        // the parser still reads the byte.
+        '?\u0301a=1',
+        'a=1&\u0301b=2',
+        'a\u0301=\u0301b',
+        'a=\u0301&\u0301',
       ].map((query) => ({ query })),
       ({ query }) => [...new URLSearchParams(query)],
     )),

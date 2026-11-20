@@ -61,6 +61,7 @@ func withFormats<T>(locale: String? = nil, weekStart: Int? = nil, _ body: () thr
     let instants: [Double] = [
       JSDate.utc(2026, 2, 5, 9, 5, 7), JSDate.utc(2026, 10, 14, 14, 30, 45), JSDate.utc(2026, 8, 1, 0, 30, 0),
       JSDate.utc(2025, 11, 31, 23, 59, 59), JSDate.utc(1999, 0, 9, 12, 0, 0),
+      JSDate.utc(2026, 5, 17, 6, 6, 6), JSDate.utc(2026, 6, 4, 18, 45, 0),
     ]
     let utc = TimeZone(identifier: "UTC")!
     for c in try Parity.cases("core.locale", fn: "formatDate") {
@@ -78,6 +79,7 @@ func withFormats<T>(locale: String? = nil, weekStart: Int? = nil, _ body: () thr
     let instants: [Double] = [
       JSDate.utc(2026, 2, 5, 9, 5, 7), JSDate.utc(2026, 10, 14, 14, 30, 45), JSDate.utc(2026, 8, 1, 0, 30, 0),
       JSDate.utc(2025, 11, 31, 23, 59, 59), JSDate.utc(1999, 0, 9, 12, 0, 0),
+      JSDate.utc(2026, 5, 17, 6, 6, 6), JSDate.utc(2026, 6, 4, 18, 45, 0),
     ]
     for c in try Parity.cases("core.locale", fn: "toLocaleStrings") {
       let tz = zone(c)
@@ -98,6 +100,19 @@ func withFormats<T>(locale: String? = nil, weekStart: Int? = nil, _ body: () thr
       let d = Parity.diff(.array(actual), c.output)
       #expect(d == nil, "\(c) \(locale) \(tz.identifier): \(d ?? "")")
     }
+  }
+
+  /// en-AU abbreviates June and July in a date ("17 June 2026") but not
+  /// alone ("Jun"), and writes a narrow weekday beside a date ("Su.").
+  @Test func formatAndStandAloneNamesDiffer() {
+    let utc = TimeZone(identifier: "UTC")!
+    let june = JSDate.utc(2026, 5, 17, 12)
+    let short = DateFormatOptions(year: "numeric", month: "short", day: "numeric")
+    #expect(AppLocale.toLocaleDateString(june, short, locale: "en-AU", timeZone: utc) == "17 June 2026")
+    #expect(AppLocale.toLocaleDateString(june, short, locale: "en-GB", timeZone: utc) == "17 Jun 2026")
+    let names = LocaleData.profile(for: "en-AU").names
+    #expect(names.monthsShort[5] == "June" && names.standaloneMonthsShort[5] == "Jun")
+    #expect(LocaleData.render(pattern: "LLL", time: june, timeZone: utc, names: names) == "Jun")
   }
 
   @Test func invalidDate() throws {

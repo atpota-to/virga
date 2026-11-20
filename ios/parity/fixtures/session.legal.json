@@ -1,0 +1,3782 @@
+{
+  "name": "session.legal",
+  "sources": [
+    "src/legal/version.js",
+    "src/legal/acceptance.js",
+    "src/legal/documents.js",
+    "src/legal/termsService.js"
+  ],
+  "cases": [
+    {
+      "id": "TERMS_VERSION",
+      "fn": "TERMS_VERSION",
+      "input": {},
+      "output": 1
+    },
+    {
+      "id": "TERMS_EFFECTIVE_DATE",
+      "fn": "TERMS_EFFECTIVE_DATE",
+      "input": {},
+      "output": "2026-11-15"
+    },
+    {
+      "id": "TERMS_PATH",
+      "fn": "TERMS_PATH",
+      "input": {},
+      "output": "/terms"
+    },
+    {
+      "id": "PRIVACY_PATH",
+      "fn": "PRIVACY_PATH",
+      "input": {},
+      "output": "/privacy"
+    },
+    {
+      "id": "TERMS_ACCEPTED_PREFIX",
+      "fn": "TERMS_ACCEPTED_PREFIX",
+      "input": {},
+      "output": "virga:terms-accepted:"
+    },
+    {
+      "id": "MAX_REPORT_TRIES",
+      "fn": "MAX_REPORT_TRIES",
+      "input": {},
+      "output": 5
+    },
+    {
+      "id": "TERMS_API",
+      "fn": "TERMS_API",
+      "input": {},
+      "output": {
+        "status": "/api/terms/status",
+        "accept": "/api/terms/accept"
+      }
+    },
+    {
+      "id": "DOCUMENTS",
+      "fn": "DOCUMENTS",
+      "input": {},
+      "output": [
+        {
+          "key": "terms",
+          "title": "Terms of Service",
+          "short": "Terms",
+          "path": "/terms",
+          "file": "TERMS_OF_SERVICE.md"
+        },
+        {
+          "key": "privacy",
+          "title": "Privacy Policy",
+          "short": "Privacy",
+          "path": "/privacy",
+          "file": "PRIVACY_POLICY.md"
+        }
+      ]
+    },
+    {
+      "id": "formatLegalDate#1",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-11-14"
+      },
+      "output": "November 14, 2026"
+    },
+    {
+      "id": "formatLegalDate#2",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2027-01-05"
+      },
+      "output": "January 5, 2027"
+    },
+    {
+      "id": "formatLegalDate#3",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-11-15"
+      },
+      "output": "November 15, 2026"
+    },
+    {
+      "id": "formatLegalDate#4",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-12-31"
+      },
+      "output": "December 31, 2026"
+    },
+    {
+      "id": "formatLegalDate#5",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-02-31"
+      },
+      "output": "February 31, 2026"
+    },
+    {
+      "id": "formatLegalDate#6",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "0000-01-01"
+      },
+      "output": "January 1, 0000"
+    },
+    {
+      "id": "formatLegalDate#7",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": ""
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#8",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "14/11/2026"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#9",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-13-01"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#10",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-00-10"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#11",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-02-00"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#12",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-02-32"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#13",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "November 14, 2026"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#14",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": null
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#15",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-1-05"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#16",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-01-05 "
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#17",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": " 2026-01-05"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#18",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "2026-01-05\n"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#19",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "２０２６-01-05"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#20",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": "12026-01-05"
+      },
+      "output": null
+    },
+    {
+      "id": "formatLegalDate#21",
+      "fn": "formatLegalDate",
+      "input": {
+        "isoDate": 20261114
+      },
+      "output": null
+    },
+    {
+      "id": "termsKey#1",
+      "fn": "termsKey",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx"
+    },
+    {
+      "id": "termsKey#2",
+      "fn": "termsKey",
+      "input": {
+        "did": "did:web:example.com"
+      },
+      "output": "virga:terms-accepted:did:web:example.com"
+    },
+    {
+      "id": "termsKey#3",
+      "fn": "termsKey",
+      "input": {
+        "did": ""
+      },
+      "output": "virga:terms-accepted:"
+    },
+    {
+      "id": "readAcceptance#1",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": null,
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#2",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#3",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "null",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#4",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "not json",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#5",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "1",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#6",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "\"1\"",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#7",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#8",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "[1]",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#9",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "true",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#10",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":\"1\"}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#11",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":0}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#12",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":-1}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#13",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1.5}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#14",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#15",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":2}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 2,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#16",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1e3}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1000,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#17",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1.0,\"at\":\"2026-11-14T10:00:00.000Z\",\"recorded\":true,\"tries\":0,\"identity\":\"session\"}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": "2026-11-14T10:00:00.000Z",
+        "recorded": true,
+        "tries": 0,
+        "identity": "session"
+      }
+    },
+    {
+      "id": "readAcceptance#18",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":2,\"at\":42,\"recorded\":\"yes\",\"tries\":-3,\"identity\":\"verified\"}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 2,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#19",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,\"at\":null,\"recorded\":false,\"tries\":3,\"identity\":\"claimed\"}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": null,
+        "recorded": false,
+        "tries": 3,
+        "identity": "claimed"
+      }
+    },
+    {
+      "id": "readAcceptance#20",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,\"tries\":2.5,\"identity\":\"Session\"}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#21",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,\"tries\":7,\"recorded\":1}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": null,
+        "recorded": false,
+        "tries": 7,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#22",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,\"at\":\"\",\"identity\":null}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 1,
+        "at": "",
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#23",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,\"version\":3}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": {
+        "version": 3,
+        "at": null,
+        "recorded": false,
+        "tries": 0,
+        "identity": null
+      }
+    },
+    {
+      "id": "readAcceptance#24",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1,}",
+        "did": "did:plc:abcdefghijklmnopqrstuvwx"
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#25",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1}",
+        "did": null
+      },
+      "output": null
+    },
+    {
+      "id": "readAcceptance#26",
+      "fn": "readAcceptance",
+      "input": {
+        "stored": "{\"version\":1}",
+        "did": ""
+      },
+      "output": null
+    },
+    {
+      "id": "writeAcceptance#1",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx",
+        "options": {}
+      },
+      "output": {
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
+      }
+    },
+    {
+      "id": "writeAcceptance#2",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx",
+        "options": null
+      },
+      "output": {
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":null,\"recorded\":false,\"tries\":0,\"identity\":null}"
+      }
+    },
+    {
+      "id": "writeAcceptance#3",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx",
+        "options": {
+          "at": "2026-11-14T10:00:00.000Z",
+          "recorded": true,
+          "identity": "session"
+        }
+      },
+      "output": {
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":\"2026-11-14T10:00:00.000Z\",\"recorded\":true,\"tries\":0,\"identity\":\"session\"}"
+      }
+    },
+    {
+      "id": "writeAcceptance#4",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx",
+        "options": {
+          "version": 2,
+          "at": 42,
+          "recorded": true,
+          "tries": 3,
+          "identity": "claimed"
+        }
+      },
+      "output": {
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":2,\"at\":42,\"recorded\":true,\"tries\":3,\"identity\":\"claimed\"}"
+      }
+    },
+    {
+      "id": "writeAcceptance#5",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "did:plc:abcdefghijklmnopqrstuvwx",
+        "options": {
+          "at": "quote \" and \\ and ✓"
+        }
+      },
+      "output": {
+        "virga:terms-accepted:did:plc:abcdefghijklmnopqrstuvwx": "{\"version\":1,\"at\":\"quote \\\" and \\\\ and ✓\",\"recorded\":false,\"tries\":0,\"identity\":null}"
+      }
+    },
+    {
+      "id": "writeAcceptance#6",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": null,
+        "options": {}
+      },
+      "output": {}
+    },
+    {
+      "id": "writeAcceptance#7",
+      "fn": "writeAcceptance",
+      "input": {
+        "did": "",
+        "options": {}
+      },
+      "output": {}
+    },
+    {
+      "id": "coversCurrent#1",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": null
+      },
+      "output": false
+    },
+    {
+      "id": "coversCurrent#2",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#3",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#4",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#5",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#6",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#7",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#8",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "coversCurrent#9",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 3
+        },
+        "version": 3
+      },
+      "output": true
+    },
+    {
+      "id": "coversCurrent#10",
+      "fn": "coversCurrent",
+      "input": {
+        "entry": {
+          "version": 1
+        },
+        "version": 2
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#1",
+      "fn": "needsReport",
+      "input": {
+        "entry": null
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#2",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#3",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#4",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsReport#5",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "needsReport#6",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#7",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#8",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "needsReport#9",
+      "fn": "needsReport",
+      "input": {
+        "entry": {
+          "version": 1,
+          "recorded": false,
+          "tries": 0
+        },
+        "version": 2
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#1",
+      "fn": "opensGate",
+      "input": {
+        "entry": null,
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#2",
+      "fn": "opensGate",
+      "input": {
+        "entry": null,
+        "mode": "browser"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#3",
+      "fn": "opensGate",
+      "input": {
+        "entry": null,
+        "mode": null
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#4",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#5",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#6",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#7",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#8",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#9",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#10",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#11",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#12",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#13",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#14",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#15",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#16",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#17",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#18",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#19",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#20",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser"
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#21",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": null
+      },
+      "output": true
+    },
+    {
+      "id": "opensGate#22",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#23",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser"
+      },
+      "output": false
+    },
+    {
+      "id": "opensGate#24",
+      "fn": "opensGate",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": null
+      },
+      "output": false
+    },
+    {
+      "id": "startingStatus#1",
+      "fn": "startingStatus",
+      "input": {
+        "entry": null,
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#2",
+      "fn": "startingStatus",
+      "input": {
+        "entry": null,
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#3",
+      "fn": "startingStatus",
+      "input": {
+        "entry": null,
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#4",
+      "fn": "startingStatus",
+      "input": {
+        "entry": null,
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#5",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#6",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#7",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#8",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#9",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#10",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#11",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#12",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "claimed"
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#13",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#14",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#15",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#16",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 0,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#17",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#18",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#19",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#20",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 4,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#21",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#22",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#23",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#24",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 1,
+          "at": null,
+          "recorded": false,
+          "tries": 5,
+          "identity": null
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#25",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#26",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#27",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#28",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 2,
+          "at": "2026-11-14T10:00:00Z",
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "startingStatus#29",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": true
+      },
+      "output": "checking"
+    },
+    {
+      "id": "startingStatus#30",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "backend",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#31",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": true
+      },
+      "output": "needs"
+    },
+    {
+      "id": "startingStatus#32",
+      "fn": "startingStatus",
+      "input": {
+        "entry": {
+          "version": 0,
+          "at": null,
+          "recorded": true,
+          "tries": 0,
+          "identity": "session"
+        },
+        "mode": "browser",
+        "canAsk": false
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#1",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": true,
+          "version": 1
+        }
+      },
+      "output": "accepted"
+    },
+    {
+      "id": "statusFromAnswer#2",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": false,
+          "version": 1
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#3",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": true,
+          "version": 2
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#4",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": "true",
+          "version": 1
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#5",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": true,
+          "version": "1"
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#6",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": true,
+          "version": null
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#7",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {
+          "accepted": true
+        }
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#8",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": null
+      },
+      "output": "needs"
+    },
+    {
+      "id": "statusFromAnswer#9",
+      "fn": "statusFromAnswer",
+      "input": {
+        "answer": {}
+      },
+      "output": "needs"
+    },
+    {
+      "id": "acceptFailure#1",
+      "fn": "acceptFailure",
+      "input": {
+        "error": null
+      },
+      "output": {
+        "text": "Virga’s server couldn’t record your agreement just now. Try again in a little while.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#2",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "TERMS_VERSION_MISMATCH",
+          "status": 409
+        }
+      },
+      "output": {
+        "text": "The Terms of Service and Privacy Policy have changed since this page loaded. Reload to read the current ones.",
+        "reload": true
+      }
+    },
+    {
+      "id": "acceptFailure#3",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "NETWORK_ERROR",
+          "status": 0
+        }
+      },
+      "output": {
+        "text": "Couldn’t reach Virga’s server, so your agreement isn’t recorded yet. Check your connection and try again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#4",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "TIMEOUT",
+          "status": 0
+        }
+      },
+      "output": {
+        "text": "Couldn’t reach Virga’s server, so your agreement isn’t recorded yet. Check your connection and try again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#5",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "RATE_LIMITED",
+          "status": 429
+        }
+      },
+      "output": {
+        "text": "Virga’s server is busy with this account. Wait a minute and try again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#6",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "FRONTEND_SESSION_INVALID",
+          "status": 401
+        }
+      },
+      "output": {
+        "text": "Virga’s server didn’t recognise this account’s sign-in, so your agreement isn’t recorded yet. Try again; if it keeps happening, the account needs to sign in again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#7",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": null,
+          "status": 401
+        }
+      },
+      "output": {
+        "text": "Virga’s server didn’t recognise this account’s sign-in, so your agreement isn’t recorded yet. Try again; if it keeps happening, the account needs to sign in again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#8",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "UNAVAILABLE",
+          "status": 503
+        }
+      },
+      "output": {
+        "text": "Virga’s server couldn’t record your agreement just now. Try again in a little while.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#9",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "INTERNAL",
+          "status": 500
+        }
+      },
+      "output": {
+        "text": "Virga’s server couldn’t record your agreement just now. Try again in a little while.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#10",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "relation \"terms_acceptance\" does not exist"
+        }
+      },
+      "output": {
+        "text": "Virga’s server couldn’t record your agreement just now. Try again in a little while.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#11",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "",
+          "status": 401
+        }
+      },
+      "output": {
+        "text": "Virga’s server didn’t recognise this account’s sign-in, so your agreement isn’t recorded yet. Try again; if it keeps happening, the account needs to sign in again.",
+        "reload": false
+      }
+    },
+    {
+      "id": "acceptFailure#12",
+      "fn": "acceptFailure",
+      "input": {
+        "error": {
+          "name": "Error",
+          "message": "x",
+          "code": "network_error",
+          "status": 0
+        }
+      },
+      "output": {
+        "text": "Virga’s server couldn’t record your agreement just now. Try again in a little while.",
+        "reload": false
+      }
+    },
+    {
+      "id": "documentFor#1",
+      "fn": "documentFor",
+      "input": {
+        "path": "/terms"
+      },
+      "output": "terms"
+    },
+    {
+      "id": "documentFor#2",
+      "fn": "documentFor",
+      "input": {
+        "path": "/privacy"
+      },
+      "output": "privacy"
+    },
+    {
+      "id": "documentFor#3",
+      "fn": "documentFor",
+      "input": {
+        "path": "/terms/"
+      },
+      "output": "terms"
+    },
+    {
+      "id": "documentFor#4",
+      "fn": "documentFor",
+      "input": {
+        "path": "/terms///"
+      },
+      "output": "terms"
+    },
+    {
+      "id": "documentFor#5",
+      "fn": "documentFor",
+      "input": {
+        "path": "/privacy/"
+      },
+      "output": "privacy"
+    },
+    {
+      "id": "documentFor#6",
+      "fn": "documentFor",
+      "input": {
+        "path": "/"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#7",
+      "fn": "documentFor",
+      "input": {
+        "path": ""
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#8",
+      "fn": "documentFor",
+      "input": {
+        "path": null
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#9",
+      "fn": "documentFor",
+      "input": {
+        "path": "//"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#10",
+      "fn": "documentFor",
+      "input": {
+        "path": "/terms/more"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#11",
+      "fn": "documentFor",
+      "input": {
+        "path": "/termsandconditions"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#12",
+      "fn": "documentFor",
+      "input": {
+        "path": "/settings/terms"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#13",
+      "fn": "documentFor",
+      "input": {
+        "path": "/privacy-policy"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#14",
+      "fn": "documentFor",
+      "input": {
+        "path": "/Terms"
+      },
+      "output": null
+    },
+    {
+      "id": "documentFor#15",
+      "fn": "documentFor",
+      "input": {
+        "path": "terms"
+      },
+      "output": null
+    },
+    {
+      "id": "resolveDocumentLink#1",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "PRIVACY_POLICY.md"
+      },
+      "output": {
+        "href": "/privacy",
+        "document": "privacy",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#2",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "TERMS_OF_SERVICE.md"
+      },
+      "output": {
+        "href": "/terms",
+        "document": "terms",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#3",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "TERMS_OF_SERVICE.md#disputes"
+      },
+      "output": {
+        "href": "/terms#disputes",
+        "document": "terms",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#4",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "PRIVACY_POLICY.md#your-choices-and-rights"
+      },
+      "output": {
+        "href": "/privacy#your-choices-and-rights",
+        "document": "privacy",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#5",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "PRIVACY_POLICY.md#"
+      },
+      "output": {
+        "href": "PRIVACY_POLICY.md#",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#6",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "PRIVACY_POLICY.md#a b"
+      },
+      "output": {
+        "href": "PRIVACY_POLICY.md#a b",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#7",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "privacy_policy.md"
+      },
+      "output": {
+        "href": "privacy_policy.md",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#8",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "README.md"
+      },
+      "output": {
+        "href": null,
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#9",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "README.md#x"
+      },
+      "output": {
+        "href": null,
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#10",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "#contact"
+      },
+      "output": {
+        "href": "#contact",
+        "document": null,
+        "external": false,
+        "anchor": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#11",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "#"
+      },
+      "output": {
+        "href": "#",
+        "document": null,
+        "external": false,
+        "anchor": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#12",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "/privacy#contact"
+      },
+      "output": {
+        "href": "/privacy#contact",
+        "document": "privacy",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#13",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "/terms/#x"
+      },
+      "output": {
+        "href": "/terms/#x",
+        "document": "terms",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#14",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "/privacy"
+      },
+      "output": {
+        "href": "/privacy",
+        "document": "privacy",
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#15",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "/settings/account"
+      },
+      "output": {
+        "href": "/settings/account",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#16",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "https://atproto.com"
+      },
+      "output": {
+        "href": "https://atproto.com",
+        "document": null,
+        "external": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#17",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "HTTPS://ATPROTO.COM"
+      },
+      "output": {
+        "href": "HTTPS://ATPROTO.COM",
+        "document": null,
+        "external": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#18",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "http://plain.example"
+      },
+      "output": {
+        "href": "http://plain.example",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#19",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "mailto:someone@example.com"
+      },
+      "output": {
+        "href": "mailto:someone@example.com",
+        "document": null,
+        "external": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#20",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "MAILTO:someone@example.com"
+      },
+      "output": {
+        "href": "MAILTO:someone@example.com",
+        "document": null,
+        "external": true
+      }
+    },
+    {
+      "id": "resolveDocumentLink#21",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": "javascript:alert(1)"
+      },
+      "output": {
+        "href": "javascript:alert(1)",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#22",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": ""
+      },
+      "output": {
+        "href": "",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "resolveDocumentLink#23",
+      "fn": "resolveDocumentLink",
+      "input": {
+        "href": null
+      },
+      "output": {
+        "href": "",
+        "document": null,
+        "external": false
+      }
+    },
+    {
+      "id": "agreed",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "version": 1,
+              "accepted": true,
+              "acceptedAt": "2026-11-14T10:00:00Z"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"version\":1,\"accepted\":true,\"acceptedAt\":\"2026-11-14T10:00:00Z\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "accepted": true,
+          "acceptedAt": "2026-11-14T10:00:00Z",
+          "version": 1
+        }
+      }
+    },
+    {
+      "id": "not-a-plain-yes",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "accepted": "yes"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"accepted\":\"yes\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "accepted": false,
+          "acceptedAt": null,
+          "version": null
+        }
+      }
+    },
+    {
+      "id": "odd-fields",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "accepted": true,
+              "acceptedAt": 0,
+              "version": 0
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"accepted\":true,\"acceptedAt\":0,\"version\":0}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "accepted": true,
+          "acceptedAt": null,
+          "version": 0
+        }
+      }
+    },
+    {
+      "id": "number-at",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "accepted": false,
+              "acceptedAt": 42,
+              "version": "1"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"accepted\":false,\"acceptedAt\":42,\"version\":\"1\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "accepted": false,
+          "acceptedAt": 42,
+          "version": "1"
+        }
+      }
+    },
+    {
+      "id": "unavailable",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "UNAVAILABLE",
+              "error": "down"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"UNAVAILABLE\",\"error\":\"down\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "down",
+            "status": 503,
+            "code": "UNAVAILABLE"
+          }
+        }
+      }
+    },
+    {
+      "id": "a-page",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!doctype html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!doctype html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "accepted": false,
+          "acceptedAt": null,
+          "version": null
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "fetchTermsStatus",
+      "input": {
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "status": 0,
+            "code": "NETWORK_ERROR"
+          }
+        }
+      }
+    },
+    {
+      "id": "recorded",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "acceptedAt": "2026-11-14T10:00:00Z",
+              "identity": "session",
+              "created": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"acceptedAt\":\"2026-11-14T10:00:00Z\",\"identity\":\"session\",\"created\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "acceptedAt": "2026-11-14T10:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "version-2",
+      "fn": "recordAcceptance",
+      "input": {
+        "version": 2,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "acceptedAt": "x",
+              "identity": "session"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 2
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"acceptedAt\":\"x\",\"identity\":\"session\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "acceptedAt": "x"
+        }
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": null
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "bare",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "success-only",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "claimed",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "identity": "claimed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"identity\":\"claimed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "no-time",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "identity": "session"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"identity\":\"session\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "number-time",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "identity": "session",
+              "acceptedAt": 42
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"identity\":\"session\",\"acceptedAt\":42}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "a-page",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!doctype html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!doctype html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "mismatch",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 409,
+            "json": {
+              "success": false,
+              "code": "TERMS_VERSION_MISMATCH",
+              "error": "changed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"TERMS_VERSION_MISMATCH\",\"error\":\"changed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "changed",
+            "status": 409,
+            "code": "TERMS_VERSION_MISMATCH"
+          }
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "recordAcceptance",
+      "input": {
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "status": 0,
+            "code": "NETWORK_ERROR"
+          }
+        }
+      }
+    },
+    {
+      "id": "claimed",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "version": 1,
+              "identity": "claimed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"version\":1,\"identity\":\"claimed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "identity": "claimed"
+        }
+      }
+    },
+    {
+      "id": "no-identity",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "identity": null
+        }
+      }
+    },
+    {
+      "id": "no-did",
+      "fn": "reportAcceptance",
+      "input": {
+        "did": null,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "identity": ""
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"identity\":\"\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "identity": null
+        }
+      }
+    },
+    {
+      "id": "version-3",
+      "fn": "reportAcceptance",
+      "input": {
+        "version": 3,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "identity": "claimed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 3,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"identity\":\"claimed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "identity": "claimed"
+        }
+      }
+    },
+    {
+      "id": "mismatch",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 409,
+            "json": {
+              "success": false,
+              "code": "TERMS_VERSION_MISMATCH",
+              "error": "changed"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"TERMS_VERSION_MISMATCH\",\"error\":\"changed\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "changed",
+            "status": 409,
+            "code": "TERMS_VERSION_MISMATCH"
+          }
+        }
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "code": "SESSION_REQUIRED",
+              "error": "no"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"SESSION_REQUIRED\",\"error\":\"no\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "no",
+            "status": 401,
+            "code": "SESSION_REQUIRED"
+          }
+        }
+      }
+    },
+    {
+      "id": "a-page",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!doctype html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!doctype html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "not-success",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "hello": "world"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"hello\":\"world\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 200",
+            "status": 200,
+            "code": null
+          }
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "reportAcceptance",
+      "input": {
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://virga.example/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "status": 0,
+            "code": "NETWORK_ERROR"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-address",
+      "fn": "reportAcceptance",
+      "input": {
+        "backendUrl": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "status": 0,
+            "code": "NETWORK_ERROR"
+          }
+        }
+      }
+    },
+    {
+      "id": "prefix",
+      "fn": "reportAcceptance",
+      "input": {
+        "backendUrl": "https://other.example/base/",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://other.example/base/api/terms/accept",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "version": 1,
+                  "did": "did:plc:abcdefghijklmnopqrstuvwx"
+                }
+              },
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "identity": null
+        }
+      }
+    }
+  ]
+}

@@ -58,12 +58,8 @@ public enum JSONText {
 
     init(units: [UInt16]) { self.units = units }
 
-    /// A container being filled: an array's items so far, or an object's
-    /// members and the key of the value being read.
-    enum Frame {
-      case array([JSONValue])
-      case object([String: JSONValue], key: String)
-    }
+    /// The kind of a container being filled.
+    enum Kind { case array, object }
 
     func fail(_ message: String) -> JSONParseError {
       JSONParseError(message: i >= units.count ? "Unexpected end of JSON input" : message, position: i)
@@ -84,7 +80,15 @@ public enum JSONText {
     }
 
     mutating func parseDocument() throws -> JSONValue {
-      var stack: [Frame] = []
+      // The containers being filled, innermost last: the kind of each, and,
+      // kept apart so each is mutated in place (a frame popped off one stack
+      // and rebound would be copied on every insert, which is quadratic),
+      // the arrays' items, the objects' members and the key of the value
+      // each object is reading.
+      var kinds: [Kind] = []
+      var arrays: [[JSONValue]] = []
+      var objects: [[String: JSONValue]] = []
+      var keys: [String] = []
       var value: JSONValue
       readValue: while true {
         skipWhitespace()
@@ -97,8 +101,9 @@ public enum JSONText {
             i += 1
             value = .object([:])
           } else {
-            let key = try readKey()
-            stack.append(.object([:], key: key))
+            keys.append(try readKey())
+            kinds.append(.object)
+            objects.append([:])
             continue readValue
           }
         case 0x5B:  // [
@@ -108,7 +113,8 @@ public enum JSONText {
             i += 1
             value = .array([])
           } else {
-            stack.append(.array([]))
+            kinds.append(.array)
+            arrays.append([])
             continue readValue
           }
         case 0x22:  // "
@@ -122,37 +128,37 @@ public enum JSONText {
         // A value is complete: hand it to the container it belongs to,
         // closing every container it completes.
         while true {
-          guard let frame = stack.popLast() else {
+          guard let kind = kinds.last else {
             skipWhitespace()
             guard i == units.count else { throw fail("Unexpected non-whitespace character after JSON") }
             return value
           }
           skipWhitespace()
-          switch frame {
-          case .array(var items):
-            items.append(value)
+          switch kind {
+          case .array:
+            arrays[arrays.count - 1].append(value)
             guard i < units.count else { throw fail("Unexpected end of JSON input") }
             if units[i] == 0x2C {  // ,
               i += 1
-              stack.append(.array(items))
               continue readValue
             }
             guard units[i] == 0x5D else { throw fail("Expected ',' or ']' after array element") }
             i += 1
-            value = .array(items)
-          case .object(var members, let key):
-            members[key] = value
+            kinds.removeLast()
+            value = .array(arrays.removeLast())
+          case .object:
+            objects[objects.count - 1][keys.removeLast()] = value
             guard i < units.count else { throw fail("Unexpected end of JSON input") }
             if units[i] == 0x2C {  // ,
               i += 1
               skipWhitespace()
-              let next = try readKey()
-              stack.append(.object(members, key: next))
+              keys.append(try readKey())
               continue readValue
             }
             guard units[i] == 0x7D else { throw fail("Expected ',' or '}' after property value") }
             i += 1
-            value = .object(members)
+            kinds.removeLast()
+            value = .object(objects.removeLast())
           }
         }
       }
@@ -178,7 +184,18 @@ public enum JSONText {
     /// From the opening quote to past the closing one.
     mutating func readString() throws -> String {
       i += 1
-      var out: [UInt16] = []
+      // Most strings have no escape: read them in one piece.
+      let start = i
+      while i < units.count {
+        let unit = units[i]
+        if unit == 0x22 {
+          i += 1
+          return String(decoding: units[start..<(i - 1)], as: UTF16.self)
+        }
+        if unit == 0x5C || unit < 0x20 { break }
+        i += 1
+      }
+      var out = Array(units[start..<i])
       while i < units.count {
         let unit = units[i]
         switch unit {

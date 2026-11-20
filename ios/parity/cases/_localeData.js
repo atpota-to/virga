@@ -109,29 +109,40 @@ export function allRegions() {
 
 // Instants that tell the fields apart: single-digit day, month and hour in
 // the morning; an afternoon in a two-digit month; half past midnight in
-// September (the month CLDR abbreviates differently by region).
+// September (the month CLDR abbreviates differently by region); and June
+// and July, which en-AU abbreviates in a date ("17 June") but not alone
+// ("Jun").
 const SAMPLES = [
   Date.UTC(2026, 2, 5, 9, 5, 7),
   Date.UTC(2026, 10, 14, 14, 30, 45),
   Date.UTC(2026, 8, 1, 0, 30, 0),
   Date.UTC(2025, 0, 31, 12, 0, 9),
   Date.UTC(2027, 11, 25, 23, 59, 59),
+  Date.UTC(2026, 5, 6, 6, 6, 6),
+  Date.UTC(2026, 6, 20, 18, 45, 0),
 ];
 
+/**
+ * A region's month and weekday names, twice over: as a date writes them
+ * (the month beside a day, the weekday beside a date), which the patterns'
+ * M and E fields use, and stand-alone (the field by itself), which L and c
+ * use. They differ in en-AU: "17 June" but "Jun" alone.
+ */
 function namesFor(tag) {
-  const fmt = (options, ms) =>
-    new Intl.DateTimeFormat(tag, { ...options, timeZone: 'UTC' }).format(
-      new Date(ms),
-    );
-  const month = (style) =>
+  const part = (options, ms, type) =>
+    new Intl.DateTimeFormat(tag, { ...options, timeZone: 'UTC' })
+      .formatToParts(new Date(ms))
+      .find((p) => p.type === type).value;
+  const month = (style, context) =>
     Array.from({ length: 12 }, (_, i) =>
-      fmt({ month: style }, Date.UTC(2026, i, 1)),
+      part({ month: style, ...context }, Date.UTC(2026, i, 15), 'month'),
     );
   // 2026-03-01 is a Sunday.
-  const weekday = (style) =>
+  const weekday = (style, context) =>
     Array.from({ length: 7 }, (_, i) =>
-      fmt({ weekday: style }, Date.UTC(2026, 2, 1 + i)),
+      part({ weekday: style, ...context }, Date.UTC(2026, 2, 1 + i), 'weekday'),
     );
+  const inDate = { day: 'numeric', month: 'short' };
   const period = (ms) =>
     new Intl.DateTimeFormat(tag, {
       hour: 'numeric',
@@ -141,12 +152,18 @@ function namesFor(tag) {
       .formatToParts(new Date(ms))
       .find((p) => p.type === 'dayPeriod')?.value ?? '';
   return {
-    monthsShort: month('short'),
-    monthsLong: month('long'),
-    monthsNarrow: month('narrow'),
-    weekdaysShort: weekday('short'),
-    weekdaysLong: weekday('long'),
-    weekdaysNarrow: weekday('narrow'),
+    monthsShort: month('short', { day: 'numeric' }),
+    monthsLong: month('long', { day: 'numeric' }),
+    monthsNarrow: month('narrow', { day: 'numeric' }),
+    weekdaysShort: weekday('short', inDate),
+    weekdaysLong: weekday('long', inDate),
+    weekdaysNarrow: weekday('narrow', inDate),
+    standaloneMonthsShort: month('short'),
+    standaloneMonthsLong: month('long'),
+    standaloneMonthsNarrow: month('narrow'),
+    standaloneWeekdaysShort: weekday('short'),
+    standaloneWeekdaysLong: weekday('long'),
+    standaloneWeekdaysNarrow: weekday('narrow'),
     am: period(Date.UTC(2026, 0, 1, 9)),
     pm: period(Date.UTC(2026, 0, 1, 15)),
   };
@@ -186,6 +203,9 @@ function fieldTokens(part, f, names) {
       ['MMM', names.monthsShort[f.month]],
       ['MMMM', names.monthsLong[f.month]],
       ['MMMMM', names.monthsNarrow[f.month]],
+      ['LLL', names.standaloneMonthsShort[f.month]],
+      ['LLLL', names.standaloneMonthsLong[f.month]],
+      ['LLLLL', names.standaloneMonthsNarrow[f.month]],
     ],
     day: [
       ['d', String(f.day)],
@@ -195,6 +215,9 @@ function fieldTokens(part, f, names) {
       ['EEE', names.weekdaysShort[f.weekday]],
       ['EEEE', names.weekdaysLong[f.weekday]],
       ['EEEEE', names.weekdaysNarrow[f.weekday]],
+      ['ccc', names.standaloneWeekdaysShort[f.weekday]],
+      ['cccc', names.standaloneWeekdaysLong[f.weekday]],
+      ['ccccc', names.standaloneWeekdaysNarrow[f.weekday]],
     ],
     hour: [
       ['H', String(f.hour)],
@@ -254,11 +277,17 @@ export function renderPattern(pattern, ms, names) {
     MMM: names.monthsShort[f.month],
     MMMM: names.monthsLong[f.month],
     MMMMM: names.monthsNarrow[f.month],
+    LLL: names.standaloneMonthsShort[f.month],
+    LLLL: names.standaloneMonthsLong[f.month],
+    LLLLL: names.standaloneMonthsNarrow[f.month],
     d: String(f.day),
     dd: pad2(f.day),
     EEE: names.weekdaysShort[f.weekday],
     EEEE: names.weekdaysLong[f.weekday],
     EEEEE: names.weekdaysNarrow[f.weekday],
+    ccc: names.standaloneWeekdaysShort[f.weekday],
+    cccc: names.standaloneWeekdaysLong[f.weekday],
+    ccccc: names.standaloneWeekdaysNarrow[f.weekday],
     H: String(f.hour),
     HH: pad2(f.hour),
     h: String(h12),
@@ -390,11 +419,14 @@ export function regionRecord(region) {
 
 /**
  * What the Swift port needs to read a language tag the way Intl.Locale
- * does, for the languages Intl formats at all (supportedLocalesOf, which
- * takes deprecated codes too): the canonical form of each where it differs
- * (iw → he, eng → en), its likeliest region (maximize(): de → DE), and the
- * likeliest region of it in a script where that differs (zh-Hant → TW); and
- * the canonical form of deprecated region codes (UK → GB, 826 → GB).
+ * does: the languages Intl formats at all (supportedLocalesOf, which takes
+ * deprecated codes too); for every language code Intl.Locale reads, its
+ * canonical form where it differs (iw → he, eng → en, tw → ak) and its
+ * likeliest region (maximize(): de → DE, dv → MV), whether or not Intl can
+ * format in it, since systemLocale and regionWeekStart maximize any
+ * language; for the formatted ones, the likeliest region in a script where
+ * that differs (zh-Hant → TW); and the canonical form of deprecated region
+ * codes (UK → GB, 826 → GB).
  */
 export function languageRecord() {
   const A = 'abcdefghijklmnopqrstuvwxyz';
@@ -412,12 +444,17 @@ export function languageRecord() {
   const aliases = {};
   const likelyRegions = {};
   const scripts = new Set();
-  for (const code of supported) {
-    const locale = new Intl.Locale(code);
+  for (const code of codes) {
+    let locale;
+    try {
+      locale = new Intl.Locale(code);
+    } catch {
+      continue;
+    }
     if (locale.toString() !== code) aliases[code] = locale.toString();
     const max = locale.maximize();
     if (max.region) likelyRegions[code] = max.region;
-    if (max.script) scripts.add(max.script);
+    if (max.script && supported.includes(code)) scripts.add(max.script);
   }
   // `und` (no language) maximizes too: to the world's likeliest, en-Latn-US.
   likelyRegions.und = new Intl.Locale('und').maximize().region;

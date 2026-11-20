@@ -17,11 +17,11 @@
 
 import Foundation
 import VirgaCore
+import VirgaSession
 
-// From src/legal/version.js; use VirgaSession's once merged
-private let termsPath = "/terms"
-// From src/legal/version.js; use VirgaSession's once merged
-private let privacyPath = "/privacy"
+// src/legal/version.js's TERMS_PATH and PRIVACY_PATH (VirgaSession).
+private let termsPath = LegalVersion.termsPath
+private let privacyPath = LegalVersion.privacyPath
 
 /// One thing the palette can go to or do.
 public struct Command: Codable, Hashable, Sendable, Identifiable {

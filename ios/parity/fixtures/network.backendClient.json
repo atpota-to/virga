@@ -1,0 +1,3903 @@
+{
+  "name": "network.backendClient",
+  "sources": [
+    "src/session/backendClient.js"
+  ],
+  "cases": [
+    {
+      "id": "BACKEND_PATHS",
+      "fn": "BACKEND_PATHS",
+      "input": {},
+      "output": {
+        "login": "/api/oauth/login",
+        "session": "/api/oauth/session",
+        "proxy": "/api/oauth/proxy",
+        "uploadBlob": "/api/oauth/upload-blob",
+        "logout": "/api/oauth/logout"
+      }
+    },
+    {
+      "id": "SIGNIN_PENDING_KEY",
+      "fn": "SIGNIN_PENDING_KEY",
+      "input": {},
+      "output": "virga:signin-pending"
+    },
+    {
+      "id": "SIGNIN_PROMPTS",
+      "fn": "SIGNIN_PROMPTS",
+      "input": {},
+      "output": [
+        "login",
+        "consent",
+        "select_account",
+        "create"
+      ]
+    },
+    {
+      "id": "backendAddress#1",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://server.example",
+        "path": "/api/schedule/list"
+      },
+      "output": "https://server.example/api/schedule/list"
+    },
+    {
+      "id": "backendAddress#2",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://server.example/",
+        "path": "/api/schedule/list"
+      },
+      "output": "https://server.example/api/schedule/list"
+    },
+    {
+      "id": "backendAddress#3",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://server.example///",
+        "path": "api/limits/status"
+      },
+      "output": "https://server.example/api/limits/status"
+    },
+    {
+      "id": "backendAddress#4",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://other.example/prefix/",
+        "path": "/api/oauth/session"
+      },
+      "output": "https://other.example/prefix/api/oauth/session"
+    },
+    {
+      "id": "backendAddress#5",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://Other.Example:443/a/../b",
+        "path": "/api/x"
+      },
+      "output": "https://other.example/b/api/x"
+    },
+    {
+      "id": "backendAddress#6",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://other.example",
+        "path": "/api/a b?c=d e#f"
+      },
+      "output": "https://other.example/api/a%20b?c=d%20e#f"
+    },
+    {
+      "id": "backendAddress#7",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://other.example",
+        "path": ""
+      },
+      "output": "https://other.example/"
+    },
+    {
+      "id": "backendAddress#8",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "",
+        "origin": "https://virga.test",
+        "path": "/api/schedule/list"
+      },
+      "output": "https://virga.test/api/schedule/list"
+    },
+    {
+      "id": "backendAddress#9",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": null,
+        "origin": "https://virga.test/",
+        "path": "api/x"
+      },
+      "output": "https://virga.test/api/x"
+    },
+    {
+      "id": "backendAddress#10",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "",
+        "path": "/api/oauth/session"
+      },
+      "output": {
+        "$throws": "Virga’s server has no address here (pass backendUrl)"
+      }
+    },
+    {
+      "id": "backendAddress#11",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "/",
+        "origin": "https://virga.test",
+        "path": "/api/x"
+      },
+      "output": {
+        "$throws": "Virga’s server has no address here (pass backendUrl)"
+      }
+    },
+    {
+      "id": "backendAddress#12",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "not a url",
+        "path": "/api/x"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "backendAddress#13",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://other.example/؀/",
+        "path": "/api/x"
+      },
+      "output": "https://other.example/%D8%80/api/x"
+    },
+    {
+      "id": "backendAddress#14",
+      "fn": "backendAddress",
+      "input": {
+        "backendUrl": "https://exa mple.com",
+        "path": "/api/x"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "signInPrompt#1",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "login"
+      },
+      "output": "login"
+    },
+    {
+      "id": "signInPrompt#2",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "consent"
+      },
+      "output": "consent"
+    },
+    {
+      "id": "signInPrompt#3",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "select_account"
+      },
+      "output": "select_account"
+    },
+    {
+      "id": "signInPrompt#4",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "create"
+      },
+      "output": "create"
+    },
+    {
+      "id": "signInPrompt#5",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "none"
+      },
+      "output": null
+    },
+    {
+      "id": "signInPrompt#6",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": "Login"
+      },
+      "output": null
+    },
+    {
+      "id": "signInPrompt#7",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": ""
+      },
+      "output": null
+    },
+    {
+      "id": "signInPrompt#8",
+      "fn": "signInPrompt",
+      "input": {
+        "prompt": null
+      },
+      "output": null
+    },
+    {
+      "id": "buildLoginRequest#1",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#2",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "defense": true
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123&defense=1",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#3",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "defense": "yes"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#4",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "defense": "scan"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123&defense=1",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#5",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "defense": "lists"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123&defense=lists",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#6",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "defense": false
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#7",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "https://bsky.social",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "prompt": "create"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=https%3A%2F%2Fbsky.social&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123&prompt=create",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#8",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123",
+        "prompt": "none"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#9",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "did:plc:abc",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "a b&c=d"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=did%3Aplc%3Aabc&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Da%2Bb%2526c%253Dd",
+        "returnUrl": "https://virga.example/oauth/return?n=a+b%26c%3Dd"
+      }
+    },
+    {
+      "id": "buildLoginRequest#10",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "Mïra.Example.com ",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return?x=1#y",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=M%C3%AFra.Example.com+&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123%23y",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123#y"
+      }
+    },
+    {
+      "id": "buildLoginRequest#11",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example/app/",
+        "returnPath": "oauth/return",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Fapp%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/app/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#12",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://other.example/prefix/",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://other.example/prefix/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.example/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#13",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "",
+        "handle": "mira.example.com",
+        "origin": "https://virga.test",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://virga.test/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.test%2Foauth%2Freturn%3Fn%3Dabc123",
+        "returnUrl": "https://virga.test/oauth/return?n=abc123"
+      }
+    },
+    {
+      "id": "buildLoginRequest#14",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "not a url",
+        "returnPath": "/oauth/return",
+        "nonce": "abc123"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "buildLoginRequest#15",
+      "fn": "buildLoginRequest",
+      "input": {
+        "backendUrl": "https://server.example",
+        "handle": "mira.example.com",
+        "origin": "https://virga.example",
+        "returnPath": "https://evil.example/x",
+        "nonce": "abc123"
+      },
+      "output": {
+        "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fevil.example%2Fx%3Fn%3Dabc123",
+        "returnUrl": "https://evil.example/x?n=abc123"
+      }
+    },
+    {
+      "id": "readSigninPending#1",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "{\"nonce\":\"n1\",\"mode\":\"backend\",\"intent\":\"add\"}"
+      },
+      "output": {
+        "nonce": "n1",
+        "mode": "backend",
+        "intent": "add"
+      }
+    },
+    {
+      "id": "readSigninPending#2",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "{\"nonce\":\"n1\",\"mode\":\"backend\",\"intent\":\"add\",\"did\":null,\"at\":5}"
+      },
+      "output": {
+        "nonce": "n1",
+        "mode": "backend",
+        "intent": "add",
+        "did": null,
+        "at": 5
+      }
+    },
+    {
+      "id": "readSigninPending#3",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "{\"nonce\":5}"
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#4",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "{\"mode\":\"backend\"}"
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#5",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "\"n1\""
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#6",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "[]"
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#7",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "{bad"
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#8",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": ""
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#9",
+      "fn": "readSigninPending",
+      "input": {
+        "stored": "null"
+      },
+      "output": null
+    },
+    {
+      "id": "readSigninPending#10",
+      "fn": "readSigninPending",
+      "input": {},
+      "output": null
+    },
+    {
+      "id": "session",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did%3Aplc%3Avirgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "reauth",
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      }
+    },
+    {
+      "id": "session-trailing-slash",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return/",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "reauth",
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      }
+    },
+    {
+      "id": "no-pending",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": null
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "other-nonce",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "other"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "no-nonce",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "junk-orphan",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=nope&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "other"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        }
+      }
+    },
+    {
+      "id": "query-token",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1&session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x",
+          "hash": ""
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "bad-token",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=abc&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The sign-in came back without a usable session.",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "The sign-in came back without a usable session."
+          }
+        }
+      }
+    },
+    {
+      "id": "bad-did",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=mira"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The sign-in came back without a usable session.",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "The sign-in came back without a usable session."
+          }
+        }
+      }
+    },
+    {
+      "id": "uppercase-token",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The sign-in came back without a usable session.",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "The sign-in came back without a usable session."
+          }
+        }
+      }
+    },
+    {
+      "id": "did-web",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:web:example.com%3A8080"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:web:example.com:8080",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "reauth",
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      }
+    },
+    {
+      "id": "did-newline",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x%0A"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The sign-in came back without a usable session.",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "The sign-in came back without a usable session."
+          }
+        }
+      }
+    },
+    {
+      "id": "error",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?error=access_denied&error_description=The+user+declined",
+          "hash": ""
+        },
+        "pending": null
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The user declined",
+          "code": "access_denied",
+          "params": {
+            "error": "access_denied",
+            "error_description": "The user declined"
+          }
+        }
+      }
+    },
+    {
+      "id": "error-in-fragment",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "",
+          "hash": "#error=callback_failed"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "callback_failed",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed"
+          }
+        }
+      }
+    },
+    {
+      "id": "error-with-nonce",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1&error=callback_failed",
+          "hash": ""
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "callback_failed",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed"
+          }
+        }
+      }
+    },
+    {
+      "id": "empty-error",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?error=&n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "reauth",
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      }
+    },
+    {
+      "id": "other-path",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/callback",
+          "search": "?error=x",
+          "hash": ""
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "nothing",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "",
+          "hash": ""
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "did-only",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "The sign-in came back without a usable session.",
+          "code": "callback_failed",
+          "params": {
+            "error": "callback_failed",
+            "error_description": "The sign-in came back without a usable session."
+          }
+        }
+      }
+    },
+    {
+      "id": "intent-missing",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "add",
+        "pending": {
+          "nonce": "n1"
+        }
+      }
+    },
+    {
+      "id": "question-fragment",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n1",
+          "hash": "#?session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "reauth",
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      }
+    },
+    {
+      "id": "plus-encoded",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=n+1",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "n 1",
+          "intent": "add"
+        }
+      },
+      "output": {
+        "kind": "session",
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "token": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        "intent": "add",
+        "pending": {
+          "nonce": "n 1",
+          "intent": "add"
+        }
+      }
+    },
+    {
+      "id": "nonce-code-units",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=caf%C3%A9",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": "café",
+          "intent": "add"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "nonce-not-string",
+      "fn": "readBackendReturn",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=5",
+          "hash": "#session=vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f&did=did:plc:virgaharnessmira2zq4x"
+        },
+        "pending": {
+          "nonce": 5
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "This sign-in wasn’t started from this tab, so it was ignored.",
+          "code": "unexpected_return",
+          "params": {
+            "error": "unexpected_return",
+            "error_description": "This sign-in wasn’t started from this tab, so it was ignored."
+          }
+        },
+        "orphanToken": "vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+      }
+    },
+    {
+      "id": "path-code-units",
+      "fn": "readBackendReturn",
+      "input": {
+        "returnPath": "/café",
+        "location": {
+          "pathname": "/café",
+          "search": "",
+          "hash": "#error=x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "path-own",
+      "fn": "readBackendReturn",
+      "input": {
+        "returnPath": "/café",
+        "location": {
+          "pathname": "/café/",
+          "search": "",
+          "hash": "#error=x"
+        },
+        "pending": {
+          "nonce": "n1",
+          "mode": "backend",
+          "intent": "reauth"
+        }
+      },
+      "output": {
+        "kind": "error",
+        "error": {
+          "message": "x",
+          "code": "x",
+          "params": {
+            "error": "x"
+          }
+        }
+      }
+    },
+    {
+      "id": "strippedReturnAddress#1",
+      "fn": "strippedReturnAddress",
+      "input": {
+        "location": {
+          "pathname": "/oauth/return",
+          "search": "?n=1",
+          "hash": "#session=x"
+        }
+      },
+      "output": "/oauth/return"
+    },
+    {
+      "id": "requestError#1",
+      "fn": "requestError",
+      "input": {
+        "status": 429,
+        "body": {
+          "error": "monthly_limit"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "monthly_limit",
+        "status": 429,
+        "code": "monthly_limit",
+        "detail": "monthly_limit",
+        "payload": {
+          "error": "monthly_limit"
+        }
+      }
+    },
+    {
+      "id": "requestError#2",
+      "fn": "requestError",
+      "input": {
+        "status": 400,
+        "body": {
+          "error": "Something went wrong"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Something went wrong",
+        "status": 400,
+        "code": null,
+        "detail": "Something went wrong",
+        "payload": {
+          "error": "Something went wrong"
+        }
+      }
+    },
+    {
+      "id": "requestError#3",
+      "fn": "requestError",
+      "input": {
+        "status": 500,
+        "body": null
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 500",
+        "status": 500,
+        "code": null,
+        "detail": null,
+        "payload": null
+      }
+    },
+    {
+      "id": "requestError#4",
+      "fn": "requestError",
+      "input": {
+        "status": 0,
+        "body": null
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered nothing",
+        "status": 0,
+        "code": null,
+        "detail": null,
+        "payload": null
+      }
+    },
+    {
+      "id": "requestError#5",
+      "fn": "requestError",
+      "input": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "code": "QUOTA_EXCEEDED",
+          "feature": "scheduledPosts",
+          "error": "You have 3 of 3"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "You have 3 of 3",
+        "status": 403,
+        "code": "QUOTA_EXCEEDED",
+        "detail": "You have 3 of 3",
+        "payload": {
+          "success": false,
+          "code": "QUOTA_EXCEEDED",
+          "feature": "scheduledPosts",
+          "error": "You have 3 of 3"
+        }
+      }
+    },
+    {
+      "id": "requestError#6",
+      "fn": "requestError",
+      "input": {
+        "status": 401,
+        "body": {
+          "error": "Unauthorized"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Unauthorized",
+        "status": 401,
+        "code": null,
+        "detail": "Unauthorized",
+        "payload": {
+          "error": "Unauthorized"
+        }
+      }
+    },
+    {
+      "id": "requestError#7",
+      "fn": "requestError",
+      "input": {
+        "status": 502,
+        "body": {
+          "message": "Bad gateway"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Bad gateway",
+        "status": 502,
+        "code": null,
+        "detail": null,
+        "payload": {
+          "message": "Bad gateway"
+        }
+      }
+    },
+    {
+      "id": "requestError#8",
+      "fn": "requestError",
+      "input": {
+        "status": 502,
+        "body": {
+          "message": "",
+          "error": ""
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 502",
+        "status": 502,
+        "code": null,
+        "detail": "",
+        "payload": {
+          "message": "",
+          "error": ""
+        }
+      }
+    },
+    {
+      "id": "requestError#9",
+      "fn": "requestError",
+      "input": {
+        "status": 400,
+        "body": {
+          "code": null,
+          "error": "bad_thing"
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "bad_thing",
+        "status": 400,
+        "code": "bad_thing",
+        "detail": "bad_thing",
+        "payload": {
+          "code": null,
+          "error": "bad_thing"
+        }
+      }
+    },
+    {
+      "id": "requestError#10",
+      "fn": "requestError",
+      "input": {
+        "status": 400,
+        "body": {
+          "code": 0
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 400",
+        "status": 400,
+        "code": 0,
+        "detail": null,
+        "payload": {
+          "code": 0
+        }
+      }
+    },
+    {
+      "id": "requestError#11",
+      "fn": "requestError",
+      "input": {
+        "status": 400,
+        "body": {
+          "code": "X",
+          "error": 5
+        }
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 400",
+        "status": 400,
+        "code": "X",
+        "detail": null,
+        "payload": {
+          "code": "X",
+          "error": 5
+        }
+      }
+    },
+    {
+      "id": "requestError#12",
+      "fn": "requestError",
+      "input": {
+        "status": 200,
+        "body": "a page"
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 200",
+        "status": 200,
+        "code": null,
+        "detail": null,
+        "payload": "a page"
+      }
+    },
+    {
+      "id": "requestError#13",
+      "fn": "requestError",
+      "input": {
+        "status": 200,
+        "body": [
+          1,
+          2
+        ]
+      },
+      "output": {
+        "name": "Error",
+        "message": "Virga’s server answered 200",
+        "status": 200,
+        "code": null,
+        "detail": null,
+        "payload": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "post-body",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/reorder",
+        "options": {
+          "method": "POST",
+          "body": {
+            "moves": []
+          }
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "moved": 2
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/reorder",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "moves": []
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"moved\":2}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true,
+            "moved": 2
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "query",
+      "fn": "request",
+      "input": {
+        "path": "/api/self-destruct/list",
+        "options": {
+          "query": {
+            "history": true,
+            "ids": [
+              "a",
+              "b"
+            ],
+            "skip": null,
+            "n": 2.5
+          }
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "data": [],
+              "unavailable": true
+            }
+          }
+        ],
+        "queryKeys": [
+          "history",
+          "ids",
+          "skip",
+          "n",
+          "none"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/self-destruct/list?history=true&ids=a&ids=b&n=2.5",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"data\":[],\"unavailable\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "data": [],
+            "unavailable": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "query-replaces",
+      "fn": "request",
+      "input": {
+        "path": "/api/x?ids=z&keep=1",
+        "options": {
+          "query": {
+            "ids": [
+              "a"
+            ],
+            "keep": "b c",
+            "obj": {
+              "a": 1
+            }
+          }
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ],
+        "queryKeys": [
+          "ids",
+          "keep",
+          "obj"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x?ids=z&keep=b+c&ids=a&obj=%5Bobject+Object%5D",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "bare-ai",
+      "fn": "request",
+      "input": {
+        "path": "/api/ai/analyze-post",
+        "options": {
+          "method": "POST",
+          "body": {}
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "read": "fine",
+              "monthly_limit": 30
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/ai/analyze-post",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"read\":\"fine\",\"monthly_limit\":30}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "read": "fine",
+            "monthly_limit": 30
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "quota",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/create",
+        "options": {
+          "method": "POST",
+          "body": {
+            "text": "é 😀"
+          }
+        },
+        "answers": [
+          {
+            "status": 403,
+            "json": {
+              "success": false,
+              "code": "QUOTA_EXCEEDED",
+              "feature": "scheduledPosts",
+              "error": "You have 3 of 3"
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "text": "é 😀"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 403,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"QUOTA_EXCEEDED\",\"feature\":\"scheduledPosts\",\"error\":\"You have 3 of 3\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "You have 3 of 3",
+            "status": 403,
+            "code": "QUOTA_EXCEEDED",
+            "detail": "You have 3 of 3",
+            "payload": {
+              "success": false,
+              "code": "QUOTA_EXCEEDED",
+              "feature": "scheduledPosts",
+              "error": "You have 3 of 3"
+            }
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "success-false-200",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": false,
+              "error": "nope"
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"nope\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "nope",
+            "status": 200,
+            "code": "nope",
+            "detail": "nope",
+            "payload": {
+              "success": false,
+              "error": "nope"
+            }
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "unauthorized",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/list",
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "error": "Unauthorized"
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/list",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Unauthorized\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Unauthorized",
+            "status": 401,
+            "code": null,
+            "detail": "Unauthorized",
+            "payload": {
+              "error": "Unauthorized"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "unauthorized-code",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/list",
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID",
+              "error": "gone"
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/list",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"FRONTEND_SESSION_INVALID\",\"error\":\"gone\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "gone",
+            "status": 401,
+            "code": "FRONTEND_SESSION_INVALID",
+            "detail": "gone",
+            "payload": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID",
+              "error": "gone"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "answers": [
+          "offline"
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "status": 0,
+            "code": "NETWORK_ERROR",
+            "detail": null,
+            "payload": null
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "html",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!doctype html>"
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!doctype html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": null,
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "html-404",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "answers": [
+          {
+            "status": 404,
+            "text": "Not here"
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "Not here"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Virga’s server answered 404",
+            "status": 404,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "null-body",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "options": {
+          "method": "POST",
+          "body": null
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": null
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": null
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": null,
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "no-token",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/list",
+        "token": null,
+        "answers": [],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Not signed in through Virga’s server",
+            "status": 401,
+            "code": "FRONTEND_SESSION_INVALID",
+            "detail": "Not signed in through Virga’s server",
+            "payload": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID",
+              "error": "Not signed in through Virga’s server"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-token",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/list",
+        "token": "",
+        "answers": [],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Not signed in through Virga’s server",
+            "status": 401,
+            "code": "FRONTEND_SESSION_INVALID",
+            "detail": "Not signed in through Virga’s server",
+            "payload": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID",
+              "error": "Not signed in through Virga’s server"
+            }
+          },
+          "unauthorized": [
+            {
+              "did": "did:plc:virgaharnessmira2zq4x",
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "other-token",
+      "fn": "request",
+      "input": {
+        "path": "/api/schedule/list",
+        "token": "vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "data": []
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/schedule/list",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true,
+            "data": []
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "no-address",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "backendUrl": "",
+        "answers": [],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "TypeError",
+            "message": "Virga’s server has no address here (pass backendUrl)",
+            "status": null,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "prefix",
+      "fn": "request",
+      "input": {
+        "path": "api/terms/status",
+        "backendUrl": "https://other.example/v/",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "accepted": true
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://other.example/v/api/terms/status",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"accepted\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "accepted": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "no-deadline",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "options": {
+          "timeoutMs": 0
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "own-deadline",
+      "fn": "request",
+      "input": {
+        "path": "/api/x",
+        "options": {
+          "method": "POST",
+          "body": {},
+          "timeoutMs": 60000
+        },
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ],
+        "queryKeys": []
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/x",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 60000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "body": {
+            "success": true
+          },
+          "unauthorized": []
+        }
+      }
+    },
+    {
+      "id": "lite",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authenticated": true,
+              "lite": true,
+              "oauthSessionMissing": false,
+              "user": {
+                "did": "did:plc:virgaharnessmira2zq4x"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session?lite=1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authenticated\":true,\"lite\":true,\"oauthSessionMissing\":false,\"user\":{\"did\":\"did:plc:virgaharnessmira2zq4x\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true,
+            "authenticated": true,
+            "lite": true,
+            "oauthSessionMissing": false,
+            "user": {
+              "did": "did:plc:virgaharnessmira2zq4x"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "full",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": false,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authenticated": true,
+              "scope": "atproto",
+              "client": "virga",
+              "pds": "https://pds.example"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authenticated\":true,\"scope\":\"atproto\",\"client\":\"virga\",\"pds\":\"https://pds.example\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true,
+            "authenticated": true,
+            "scope": "atproto",
+            "client": "virga",
+            "pds": "https://pds.example"
+          }
+        }
+      }
+    },
+    {
+      "id": "expired",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session?lite=1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"FRONTEND_SESSION_INVALID\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": false,
+          "status": 401,
+          "data": {
+            "success": false,
+            "code": "FRONTEND_SESSION_INVALID"
+          }
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": false,
+        "answers": [
+          {
+            "status": 502,
+            "text": "Bad Gateway"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "Bad Gateway"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": false,
+          "status": 502,
+          "data": null
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session?lite=1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": false,
+          "status": 0,
+          "data": null
+        }
+      }
+    },
+    {
+      "id": "no-address",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "backendUrl": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "ok": false,
+          "status": 0,
+          "data": null
+        }
+      }
+    },
+    {
+      "id": "prefix",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": false,
+        "backendUrl": "https://other.example/prefix/",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://other.example/prefix/api/oauth/session",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true
+          }
+        }
+      }
+    },
+    {
+      "id": "no-deadline",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": true,
+        "timeoutMs": 0,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session?lite=1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true
+          }
+        }
+      }
+    },
+    {
+      "id": "own-deadline",
+      "fn": "sessionCheck",
+      "input": {
+        "lite": false,
+        "timeoutMs": 1234,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/session",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 1234
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "ok": true,
+          "status": 200,
+          "data": {
+            "success": true
+          }
+        }
+      }
+    },
+    {
+      "id": "done",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": true
+      }
+    },
+    {
+      "id": "keep-grant",
+      "fn": "backendSignOut",
+      "input": {
+        "keepGrant": true,
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "keepGrant": true
+                }
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": true
+      }
+    },
+    {
+      "id": "transient-then-done",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "LOGOUT_TRANSIENT_ERROR"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"LOGOUT_TRANSIENT_ERROR\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1500
+        ],
+        "result": true
+      }
+    },
+    {
+      "id": "transient-twice",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "VALIDATION_TRANSIENT_ERROR"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"VALIDATION_TRANSIENT_ERROR\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"VALIDATION_TRANSIENT_ERROR\"}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          1500
+        ],
+        "result": false
+      }
+    },
+    {
+      "id": "transient-then-offline",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "LOGOUT_TRANSIENT_ERROR"
+            }
+          },
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"LOGOUT_TRANSIENT_ERROR\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [
+          1500
+        ],
+        "result": false
+      }
+    },
+    {
+      "id": "other-503",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "SOMETHING"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"SOMETHING\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "503-not-json",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 503,
+            "text": "busy"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "busy"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          {
+            "status": 401,
+            "json": {
+              "success": false,
+              "code": "FRONTEND_SESSION_INVALID"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"FRONTEND_SESSION_INVALID\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "backendSignOut",
+      "input": {
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "no-token",
+      "fn": "backendSignOut",
+      "input": {
+        "token": null,
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "empty-token",
+      "fn": "backendSignOut",
+      "input": {
+        "token": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "retry-delay",
+      "fn": "backendSignOut",
+      "input": {
+        "retryDelayMs": 250,
+        "answers": [
+          {
+            "status": 503,
+            "json": {
+              "success": false,
+              "code": "LOGOUT_TRANSIENT_ERROR"
+            }
+          },
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"LOGOUT_TRANSIENT_ERROR\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/logout",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          250
+        ],
+        "result": true
+      }
+    },
+    {
+      "id": "no-address",
+      "fn": "backendSignOut",
+      "input": {
+        "backendUrl": "",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": false
+      }
+    },
+    {
+      "id": "goes",
+      "fn": "startBackendSignIn",
+      "input": {
+        "intent": "reauth",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authUrl": "https://bsky.social/oauth/authorize?request_uri=x"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authUrl\":\"https://bsky.social/oauth/authorize?request_uri=x\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "assigned": "https://bsky.social/oauth/authorize?request_uri=x",
+          "stored": {
+            "nonce": "0b30557a9fc4e90e33587da2c7ec1136",
+            "mode": "backend",
+            "intent": "reauth",
+            "did": null,
+            "at": 1773576000000
+          }
+        }
+      }
+    },
+    {
+      "id": "create",
+      "fn": "startBackendSignIn",
+      "input": {
+        "handle": "https://bsky.social",
+        "prompt": "create",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authUrl": "https://bsky.social/oauth/authorize?request_uri=y"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=https%3A%2F%2Fbsky.social&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136&prompt=create",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authUrl\":\"https://bsky.social/oauth/authorize?request_uri=y\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "assigned": "https://bsky.social/oauth/authorize?request_uri=y",
+          "stored": {
+            "nonce": "0b30557a9fc4e90e33587da2c7ec1136",
+            "mode": "backend",
+            "intent": "add",
+            "did": null,
+            "at": 1773576000000
+          }
+        }
+      }
+    },
+    {
+      "id": "defense-lists",
+      "fn": "startBackendSignIn",
+      "input": {
+        "did": "did:plc:virgaharnessmira2zq4x",
+        "defense": "lists",
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authUrl": "https://pds.example/authorize"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136&defense=lists",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authUrl\":\"https://pds.example/authorize\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "assigned": "https://pds.example/authorize",
+          "stored": {
+            "nonce": "0b30557a9fc4e90e33587da2c7ec1136",
+            "mode": "backend",
+            "intent": "add",
+            "did": "did:plc:virgaharnessmira2zq4x",
+            "at": 1773576000000
+          }
+        }
+      }
+    },
+    {
+      "id": "handle-not-found",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "success": false,
+              "code": "HANDLE_NOT_FOUND",
+              "error": "Could not resolve handle"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"HANDLE_NOT_FOUND\",\"error\":\"Could not resolve handle\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Could not resolve handle",
+            "status": 400,
+            "code": "HANDLE_NOT_FOUND",
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "no-auth-url",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Sign-in couldn’t start (HTTP 200)",
+            "status": 200,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "auth-url-not-string",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "success": true,
+              "authUrl": 5
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"authUrl\":5}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Sign-in couldn’t start (HTTP 200)",
+            "status": 200,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "server-page",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          {
+            "status": 500,
+            "text": "<html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Sign-in couldn’t start (HTTP 500)",
+            "status": 500,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "error-not-string",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "success": false,
+              "error": {
+                "a": 1
+              },
+              "code": ""
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":{\"a\":1},\"code\":\"\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "Error",
+            "message": "Sign-in couldn’t start (HTTP 400)",
+            "status": 400,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "startBackendSignIn",
+      "input": {
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/oauth/login?handle=mira.example.com&redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Freturn%3Fn%3D0b30557a9fc4e90e33587da2c7ec1136",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 20000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "TypeError",
+            "message": "Failed to fetch",
+            "status": null,
+            "code": "NETWORK_ERROR",
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    },
+    {
+      "id": "bad-origin",
+      "fn": "startBackendSignIn",
+      "input": {
+        "origin": "not a url",
+        "answers": []
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "TypeError",
+            "message": "Invalid URL",
+            "status": null,
+            "code": null,
+            "detail": null,
+            "payload": null
+          },
+          "assigned": null,
+          "stored": null
+        }
+      }
+    }
+  ]
+}

@@ -104,6 +104,12 @@ const TAGS = [
   'root',
   'en-US-u-ca-gregory',
   'en-GB-x-private',
+  // Languages Intl can't format in but can maximize (dv → MV, which starts
+  // its week on Friday), and one it only reads through an alias.
+  'dv',
+  'la',
+  'tw',
+  'cnr',
 ];
 
 const LANGUAGE_LISTS = [
@@ -146,6 +152,13 @@ const LANGUAGE_LISTS = [
   ['sr-Latn'],
   ['uz-Arab'],
   ['de-CH-1996'],
+  ['dv'],
+  ['la'],
+  ['ny', 'en'],
+  ['gn'],
+  ['tw'],
+  ['cnr'],
+  ['aar'],
 ];
 
 const NUMBERS = [
@@ -207,6 +220,8 @@ const INSTANTS = [
   Date.UTC(2026, 8, 1, 0, 30, 0),
   Date.UTC(2025, 11, 31, 23, 59, 59),
   Date.UTC(1999, 0, 9, 12, 0, 0),
+  Date.UTC(2026, 5, 17, 6, 6, 6),
+  Date.UTC(2026, 6, 4, 18, 45, 0),
 ];
 
 export default async function cases() {
@@ -351,12 +366,15 @@ export default async function cases() {
     )),
   );
 
-  // The engines, over one region of every format the table has.
+  // The engines, over one region of every format and set of names the
+  // table has (en-AU's names are its own: "17 June", "Jun" alone).
   const table = localeTable();
-  const representatives = table.formats.map(
-    (_, index) =>
-      Object.entries(table.regions).find(([, r]) => r.format === index)[0],
-  );
+  const firstOf = new Map();
+  for (const [region, r] of Object.entries(table.regions)) {
+    const kind = `${r.format}/${r.names}`;
+    if (!firstOf.has(kind)) firstOf.set(kind, region);
+  }
+  const representatives = [...firstOf.values()];
   out.push(
     ...(await each(
       'formatNumber',
@@ -401,10 +419,12 @@ export default async function cases() {
       'toLocaleStrings',
       ['America/New_York', 'Asia/Kolkata', 'Australia/Lord_Howe'].flatMap(
         (zone) =>
-          ['en-US', 'en-GB', 'en-CA', 'en-IN', 'en-DK'].map((locale) => ({
-            zone,
-            locale,
-          })),
+          ['en-US', 'en-GB', 'en-CA', 'en-IN', 'en-DK', 'en-AU'].map(
+            (locale) => ({
+              zone,
+              locale,
+            }),
+          ),
       ),
       ({ zone, locale }) =>
         inZone(zone, () =>

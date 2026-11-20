@@ -1107,6 +1107,66 @@
       ]
     },
     {
+      "id": "URLSearchParams.parse#13",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "?́a=1"
+      },
+      "output": [
+        [
+          "́a",
+          "1"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#14",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "a=1&́b=2"
+      },
+      "output": [
+        [
+          "a",
+          "1"
+        ],
+        [
+          "́b",
+          "2"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#15",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "á=́b"
+      },
+      "output": [
+        [
+          "á",
+          "́b"
+        ]
+      ]
+    },
+    {
+      "id": "URLSearchParams.parse#16",
+      "fn": "URLSearchParams.parse",
+      "input": {
+        "query": "a=́&́"
+      },
+      "output": [
+        [
+          "a",
+          "́"
+        ],
+        [
+          "́",
+          ""
+        ]
+      ]
+    },
+    {
       "id": "Number#1",
       "fn": "Number",
       "input": {

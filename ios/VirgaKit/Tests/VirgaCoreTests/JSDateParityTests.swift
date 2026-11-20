@@ -108,6 +108,16 @@ func zone(_ c: ParityCase) -> TimeZone {
     #expect(JSURI.searchParams(["b": "2", "a": "1"]) == "a=1&b=2")
   }
 
+  /// The WHATWG parser, which browsers run: a malformed escape becomes
+  /// U+FFFD and the text around it stays. (Node's `new URLSearchParams(s)`
+  /// loses non-ASCII text next to a malformed escape, giving "\u{FFFD}" for
+  /// "é%BF", where `new URL('http://a/?x=é%BF').searchParams` and browsers
+  /// give "é\u{FFFD}", so the fixture keeps the two apart.)
+  @Test func malformedEscapesBesideTextFollowTheSpec() {
+    #expect(JSURI.searchParam("x=é%BF", "x") == "é\u{FFFD}")
+    #expect(JSURI.searchParam("x=%9C👍", "x") == "\u{FFFD}👍")
+  }
+
   @Test func encodeURIComponent() throws { try check("encodeURIComponent", JSURI.encodeURIComponent) }
   @Test func encodeURI() throws { try check("encodeURI", JSURI.encodeURI) }
   @Test func decodeURIComponent() throws { try check("decodeURIComponent", JSURI.decodeURIComponent) }
