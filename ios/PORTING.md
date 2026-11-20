@@ -144,6 +144,10 @@ means porting the code, not reimagining it.
   `inZone(tz, fn)` (synchronous) or `withTimeZone(tz, fn)` (async) over
   `ZONES` (`cases/_zones.js`, re-exported by `_helpers.js`), across DST
   changes, and passes the zone in the case input.
+- **Fixture size.** Keep each fixture under about 1 MB: choose inputs that
+  cover every branch rather than exhaustive grids, and for big generated
+  data (worlds, crowds) record counts, hashes of a canonical form and a few
+  samples, as VirgaDemo's fixtures do. The fixtures are in the repository.
 - **Recorded-fetch parity** for code that talks to the network: in the
   generator, wrap the web call in `withFakeFetch(responder, fn)`
   (`cases/_helpers.js`); the fixture records every request the web code made

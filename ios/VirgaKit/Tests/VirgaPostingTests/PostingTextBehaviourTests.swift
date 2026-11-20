@@ -9,7 +9,10 @@ import VirgaCore
 import VirgaTestSupport
 @testable import VirgaPosting
 
-@Suite struct MentionResolverBehaviour {
+// Serialized: two of these tests set Mentions.defaultFetch, a process-wide
+// value, and raced when the suite ran in parallel (one full run in four
+// failed). No other suite touches it.
+@Suite(.serialized) struct MentionResolverBehaviour {
   static func ok(_ did: String) -> MentionFetchResponse {
     MentionFetchResponse(status: 200, body: Data(#"{"did":"\#(did)"}"#.utf8))
   }

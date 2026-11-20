@@ -70,6 +70,7 @@ var targets: [Target] = [
       "VirgaCore", "VirgaNetwork", "VirgaRepo", "VirgaSession", "VirgaArchive",
       "VirgaPosting", "VirgaInsights", "VirgaDefense",
     ],
+    exclude: ["README.md"],
     swiftSettings: strict
   ),
 
