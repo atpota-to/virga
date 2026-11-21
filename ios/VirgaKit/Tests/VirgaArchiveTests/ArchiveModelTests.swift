@@ -303,7 +303,9 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(m.isBuilt == false)
     #expect(m.data.loaded)
     #expect(m.syncError == nil)
-    #expect(m.data.posts.isEmpty && m.data.followers.isEmpty && m.data.meta.posts == nil)
+    #expect(m.data.posts.isEmpty)
+    #expect(m.data.followers.isEmpty)
+    #expect(m.data.meta.posts == nil)
   }
 
   @Test func theResetForTheSessionIsAPlainFunction() {

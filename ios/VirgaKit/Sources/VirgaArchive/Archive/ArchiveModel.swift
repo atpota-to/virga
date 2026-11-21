@@ -124,16 +124,14 @@ public final class ArchiveModel {
   public let handle: String?
   /// The account's signed-in agent (nil: nothing to sync with).
   public let agent: XRPCAgent?
-  @ObservationIgnored let env: ArchiveEnvironment
+  let env: ArchiveEnvironment
 
   /// The archive as read from the store (EMPTY until then).
   public private(set) var data = ArchiveData.empty
   /// Profile cards for the People lists, in the order first read.
   public private(set) var actors = ActorCards()
   /// While a sync runs, the bar; nil otherwise.
-  public private(set) var sync: SyncState? {
-    didSet { syncObserver?(sync) }
-  }
+  public private(set) var sync: SyncState?
   /// What the last sync couldn't do, step by step, or nil.
   public private(set) var syncError: String?
   /// "Now" for the charts, one per change of data (ArchiveContext's
@@ -289,6 +287,7 @@ public final class ArchiveModel {
 
   func setSync(_ next: SyncState?) {
     sync = next
+    syncObserver?(next)
   }
 
   func setSyncError(_ message: String?) {
