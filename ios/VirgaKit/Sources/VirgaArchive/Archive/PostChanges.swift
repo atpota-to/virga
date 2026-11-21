@@ -55,7 +55,8 @@ public enum PostChanges {
   /// `posts` with `rows` added (a row already held replaces it in place,
   /// keeping the counts the archive has) and the `removed` URIs gone. Nil
   /// when nothing changed, so a caller can skip the write (the web returns
-  /// the same array).
+  /// the same array). `rows` are taken to be new objects, as the web's
+  /// callers pass them (see strictEqual).
   public static func applyPostChanges(_ posts: [PostRow]?, rows: [PostRow] = [], removed: [String] = []) -> [PostRow]? {
     let list = posts ?? []
     let gone = Set(removed.map(JSKey.init))
@@ -110,41 +111,21 @@ public enum PostChanges {
     return true
   }
 
-  /// `a === b` for the values a row holds. The web compares a row's lists
-  /// by reference, so a held row noted again with equal but separate lists
-  /// reads as changed there; values have no identity here, so lists compare
-  /// by value. The rows that come back are the same either way.
+  /// `a === b` for the values a row holds: scalars by value (strings by
+  /// code unit), and a list or object never, because on the web it is
+  /// compared by reference and the rows a post is noted with are always
+  /// new objects (postRowsFor makes them), never the held row's own. So a
+  /// held row noted again with its lists (every row postRowsFor makes has
+  /// tags, links, mentions and langs) reads as changed, as on the web, and
+  /// is written again.
   static func strictEqual(_ a: JSONValue?, _ b: JSONValue?) -> Bool {
     switch (a, b) {
     case (.none, .none): return true
-    case (.some(let x), .some(let y)): return JSONSameValue.same(x, y)
+    case (.some(.null), .some(.null)): return true
+    case (.some(.bool(let x)), .some(.bool(let y))): return x == y
+    case (.some(.number(let x)), .some(.number(let y))): return x == y
+    case (.some(.string(let x)), .some(.string(let y))): return x.jsEquals(y)
     default: return false
     }
-  }
-}
-
-/// Deep equality of JSON values, strings by code unit.
-enum JSONSameValue {
-  static func same(_ a: JSONValue, _ b: JSONValue) -> Bool {
-    var stack: [(JSONValue, JSONValue)] = [(a, b)]
-    while let (x, y) = stack.popLast() {
-      switch (x, y) {
-      case (.null, .null): continue
-      case (.bool(let p), .bool(let q)): if p != q { return false }
-      case (.number(let p), .number(let q)): if p != q { return false }
-      case (.string(let p), .string(let q)): if !p.jsEquals(q) { return false }
-      case (.array(let p), .array(let q)):
-        guard p.count == q.count else { return false }
-        stack.append(contentsOf: zip(p, q).map { ($0, $1) })
-      case (.object(let p), .object(let q)):
-        guard p.count == q.count else { return false }
-        for (key, value) in p {
-          guard let other = q.jsValue(key) else { return false }
-          stack.append((value, other))
-        }
-      default: return false
-      }
-    }
-    return true
   }
 }

@@ -450,7 +450,8 @@ public enum Analytics {
     let series = series ?? []
     let n = series.count
     if n == 0 { return [] }
-    let half = halfWindow(window)
+    // A NaN window makes every bound NaN: the sum stays 0 and is divided by NaN.
+    guard let half = halfWindow(window) else { return series.map { SeriesPoint(t: $0.t, v: .nan) } }
     return series.indices.map { i in
       let lo = Swift.max(0, i - half)
       let hi = Swift.min(n - 1, i + half)
@@ -460,10 +461,12 @@ public enum Analytics {
     }
   }
 
-  /// `Math.floor(Math.max(1, window) / 2)`, as an index offset.
-  static func halfWindow(_ window: Double) -> Int {
-    let w = window.isNaN ? Double.nan : Swift.max(1, window)
-    guard w.isFinite else { return w.isNaN ? 0 : Int.max / 4 }
+  /// `Math.floor(Math.max(1, window) / 2)`, as an index offset; nil for a
+  /// NaN window (NaN on the web, which no loop over it runs for).
+  static func halfWindow(_ window: Double) -> Int? {
+    if window.isNaN { return nil }
+    let w = Swift.max(1, window)
+    guard w.isFinite else { return Int.max / 4 }
     return Int((w / 2).rounded(.down))
   }
 
@@ -550,7 +553,8 @@ public enum Analytics {
   public static func rollingRate(_ series: [RatePoint]?, _ window: Double = 7) -> [TrendPoint] {
     let series = series ?? []
     let n = series.count
-    let half = halfWindow(window)
+    // A NaN window runs no loop: no posts, no rate.
+    guard let half = halfWindow(window) else { return series.map { TrendPoint(t: $0.t, v: nil) } }
     return series.indices.map { i in
       var total: Double = 0
       var posts: Double = 0

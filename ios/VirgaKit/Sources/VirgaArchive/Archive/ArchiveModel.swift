@@ -135,8 +135,10 @@ public final class ArchiveModel {
   /// What the last sync couldn't do, step by step, or nil.
   public private(set) var syncError: String?
   /// "Now" for the charts, one per change of data (ArchiveContext's
-  /// `nowMs`), so every chart on a screen agrees where its window ends.
-  public private(set) var nowMs: Double = 0
+  /// `nowMs`, `useMemo(() => Date.now(), [archive.rev])`), so every chart
+  /// on a screen agrees where its window ends: the time the model was made,
+  /// then the time of each change of `data.rev`.
+  public private(set) var nowMs: Double
 
   @ObservationIgnored var store: (any AnalyticsStoreHandle)?
   @ObservationIgnored var syncTask: Task<Void, Never>?
@@ -151,6 +153,7 @@ public final class ArchiveModel {
     self.did = did
     self.handle = handle
     env = environment
+    nowMs = environment.clock.now()
   }
 
   // MARK: - Reading

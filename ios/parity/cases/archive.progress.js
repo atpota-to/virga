@@ -470,7 +470,20 @@ export default async function cases() {
     { $id: 'noted-again', posts: held, rows: [edited1] },
     { $id: 'nothing', posts: held },
     { $id: 'remove-unknown', posts: held, removed: [uri('9')] },
-    { $id: 'same-row', posts: [held[0], same], rows: [same] },
+    // Rows noted again are new objects, as postRowsFor makes them: their
+    // lists are never the held row's own, so `!==` reads them as changed.
+    { $id: 'same-row', posts: [held[0], same], rows: [structuredClone(same)] },
+    // A row without lists (none postRowsFor makes) compares member by member.
+    {
+      $id: 'same-row-without-lists',
+      posts: held,
+      rows: [{ ...held[1] }],
+    },
+    {
+      $id: 'row-without-lists-edited',
+      posts: held,
+      rows: [{ ...held[1], text: 'older, edited', likes: 9 }],
+    },
     {
       $id: 'added-and-removed',
       posts: held,
@@ -483,11 +496,13 @@ export default async function cases() {
       rows: [fresh3, { ...fresh3, text: 'second' }],
     },
     { $id: 'not-an-array', posts: null, rows: [fresh3] },
-    { $id: 'counts-differ', posts: [{ ...same, likes: 3 }], rows: [same] },
+    {
+      $id: 'counts-differ',
+      posts: [{ ...structuredClone(same), likes: 3 }],
+      rows: [structuredClone(same)],
+    },
   ];
   out.push(
-    // Plain `each`: it hands the case's own objects over, so a row held and
-    // noted again can be the same object, as it can on the web.
     ...(await each(
       'applyPostChanges',
       changeCases,

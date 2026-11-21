@@ -31,7 +31,7 @@
       "fixtures": [
         "archive.progress"
       ],
-      "note": "Ported in full. applyPostChanges compares a row's lists (tags, links, mentions, langs) by value where the web's !== compares them by reference, so a held row noted again with equal but separate lists reads as unchanged here and changed on the web; the rows that come back are the same either way. Swift returns nil for 'unchanged' (the web returns the same array).",
+      "note": "Ported in full. applyPostChanges' sameRow compares scalars by value (strings by code unit) and a list or object never as equal, which is what the web's !== gives for the rows its callers pass (postRowsFor always makes new objects): a held row noted again reads as changed and is written again, as on the web. Swift returns nil for 'unchanged' (the web returns the same array).",
       "synced": "f82e59502b83"
     },
     "src/archive/useAnalyticsArchive.js": {

@@ -105,11 +105,13 @@ export default async function cases() {
     ...(await eachN(
       'movingAverage',
       [
-        ...[7, 3, 1, 0, 2, 5.5, 8, 30, -4, '$Infinity'].map((window) => ({
-          $id: `window ${window}`,
-          series: bumpy,
-          window,
-        })),
+        ...[7, 3, 1, 0, 2, 5.5, 8, 30, -4, '$Infinity', '$NaN'].map(
+          (window) => ({
+            $id: `window ${window}`,
+            series: bumpy,
+            window,
+          }),
+        ),
         { $id: 'default', series: bumpy },
         {
           $id: 'flat',
@@ -249,7 +251,7 @@ export default async function cases() {
     ...(await eachN(
       'rollingRate',
       [
-        ...[7, 3, 1, 0, 2.5, '$Infinity'].map((window) => ({
+        ...[7, 3, 1, 0, 2.5, '$Infinity', '$NaN'].map((window) => ({
           $id: `window ${window}`,
           series: rated,
           window,

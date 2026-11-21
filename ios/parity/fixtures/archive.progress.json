@@ -3271,7 +3271,137 @@
             "quotes": 0
           }
         ],
+        "same": false
+      }
+    },
+    {
+      "id": "same-row-without-lists",
+      "fn": "applyPostChanges",
+      "input": {
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/1",
+            "rkey": "1",
+            "at": "2026-01-01T00:00:00.000Z",
+            "text": "old",
+            "likes": 4,
+            "reposts": 1,
+            "replies": 2,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older",
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
+        "rows": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older",
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ]
+      },
+      "output": {
+        "rows": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/1",
+            "rkey": "1",
+            "at": "2026-01-01T00:00:00.000Z",
+            "text": "old",
+            "likes": 4,
+            "reposts": 1,
+            "replies": 2,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older",
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
         "same": true
+      }
+    },
+    {
+      "id": "row-without-lists-edited",
+      "fn": "applyPostChanges",
+      "input": {
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/1",
+            "rkey": "1",
+            "at": "2026-01-01T00:00:00.000Z",
+            "text": "old",
+            "likes": 4,
+            "reposts": 1,
+            "replies": 2,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older",
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
+        "rows": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older, edited",
+            "likes": 9,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ]
+      },
+      "output": {
+        "rows": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/1",
+            "rkey": "1",
+            "at": "2026-01-01T00:00:00.000Z",
+            "text": "old",
+            "likes": 4,
+            "reposts": 1,
+            "replies": 2,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/2",
+            "rkey": "2",
+            "at": "2026-02-01T00:00:00.000Z",
+            "text": "older, edited",
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
+        "same": false
       }
     },
     {
@@ -3620,7 +3750,7 @@
             "quotes": 0
           }
         ],
-        "same": true
+        "same": false
       }
     }
   ]

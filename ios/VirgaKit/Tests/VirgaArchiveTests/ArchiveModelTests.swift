@@ -98,6 +98,8 @@ final class FakePostingEvents: @unchecked Sendable {
     let transport = MockTransport()
     smallWorld(transport)
     let m = model(transport)
+    // The context's "now" is there from the first render, before the store is read.
+    #expect(m.nowMs == now)
     await m.start()
     #expect(m.data.loaded)
     #expect(m.isBuilt == false)
@@ -238,6 +240,17 @@ final class FakePostingEvents: @unchecked Sendable {
     // Another account's post isn't this archive's.
     await m.noteDeleted(["at://did:plc:other/app.bsky.feed.post/3b"])
     #expect(m.data.rev == rev + 1)
+    // A post noted again is written again with the counts the archive
+    // has: its row's lists are new ones, which the web's `!==` reads as a
+    // change, so the data moves on as it does there.
+    let held = try #require(m.data.posts.first { $0.uri.hasSuffix("/3b") })
+    await m.notePosted([
+      PostedItem(
+        uri: "at://\(me)/app.bsky.feed.post/3b",
+        record: ["$type": "app.bsky.feed.post", "text": "post 3b", "createdAt": "2026-11-12T12:00:00.000Z"])
+    ])
+    #expect(m.data.rev == rev + 2)
+    #expect(m.data.posts.first { $0.uri.hasSuffix("/3b") } == held)
     m.stop()
     #expect(events.listening == false)
   }
