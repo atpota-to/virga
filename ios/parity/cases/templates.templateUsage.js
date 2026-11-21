@@ -156,7 +156,7 @@ const SCRIPTS = {
     store: {},
     steps: [
       ['record', 'é', ALICE, '2026-10-01T00:00:00.000Z'],
-      ['record', 'é', ALICE, '2026-10-02T00:00:00.000Z'],
+      ['record', 'e\u0301', ALICE, '2026-10-02T00:00:00.000Z'],
       ['record', 'K', ALICE, '2026-10-03T00:00:00.000Z'],
       ['record', 'K', ALICE, '2026-10-04T00:00:00.000Z'],
       ['record', 'quote"back\\slash\n', ALICE, '2026-10-05T00:00:00.000Z'],
@@ -269,7 +269,7 @@ const SORTS = {
       t('g', 'Strasse', 'German'),
       t('h', '', ''),
       t('i', '  ', '  '),
-      t('j', 'a​b', 'Z'),
+      t('j', 'a\u200Bb', 'Z'),
       t('k', 'ab', 'Z'),
     ],
     { c: { count: 2 } },

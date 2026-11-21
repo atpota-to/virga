@@ -64,7 +64,7 @@ export default async function cases() {
     'tomorrow',
     'idea',
     '',
-    'theiŕ.x',
+    'their\u0301.x',
   ];
   out.push(
     ...(await each(
@@ -85,13 +85,13 @@ export default async function cases() {
     '{a}}',
     '{{ a  }}',
     '{{\na\n}}',
-    '{{ a }}',
-    '{{ a }}',
+    '{{\u2028a\u2029}}',
+    '{{\u00A0a\u00A0}}',
     '{{a b}}',
     `{{${'z'.repeat(32)}}}`,
     `{{${'z'.repeat(33)}}}`,
     '{{a.b.c}} {{a-b}} {{a_b}} {{_a}} {{-a}} {{.a}}',
-    '{{é}} {{é}} {{K}} {{K}}',
+    '{{é}} {{e\u0301}} {{K}} {{K}}',
     '{{{a}}} {{{{b}}}}',
     '🌿{{plant}}🌿 {{their.firstName}}!',
     `${FAMILY}{{x}}${FAMILY}`,
@@ -365,7 +365,7 @@ export default async function cases() {
     [{ keywords: ['ΣΑΣ', 'οδος'] }, 'σας ΟΔΟΣ'],
     [{ keywords: ['istanbul', 'İstanbul'] }, 'İSTANBUL is big'],
     [{ keywords: ['café'] }, 'CAFÉ au lait'],
-    [{ keywords: ['café'] }, 'café au lait'],
+    [{ keywords: ['café'] }, 'cafe\u0301 au lait'],
     [{ keywords: ['naïve'] }, 'naïveté'],
     [{ keywords: ['日本'] }, '日本語を話す'],
     [{ keywords: ['🌿', 'plant'] }, '🌿 plants 🌿'],
@@ -382,7 +382,7 @@ export default async function cases() {
     [null, 'x'],
     [{ keywords: ['mod'] }, 'MODE modular'],
     [{ keywords: ['mode'] }, 'MODE modular'],
-    [{ keywords: ['İ'] }, 'i̇'],
+    [{ keywords: ['İ'] }, 'i\u0307'],
     [{ keywords: ['ﬁle'] }, 'file'],
   ];
   out.push(
@@ -404,8 +404,8 @@ export default async function cases() {
     '',
     null,
     undefined,
-    'x ',
-    '　/y',
+    'x\u00A0',
+    '\u3000/y',
     5,
     0,
     true,

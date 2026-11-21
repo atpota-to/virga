@@ -5,7 +5,7 @@
 import * as PT from '../../../src/posting/templates/postTemplates.js';
 
 export const NOW = '2026-10-14T12:00:00.000Z';
-export const FAMILY = '\u{1F468}‍\u{1F469}‍\u{1F467}‍\u{1F466}';
+export const FAMILY = '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}';
 
 export const ada = {
   author: { handle: 'ada.example', displayName: 'Ada Ferreira' },
@@ -50,7 +50,7 @@ export const REPLIES = {
   },
   curly: { author: { handle: 'd.example', displayName: 'D’Angelo' } },
   digits: { author: { handle: 'n.example', displayName: '123 456' } },
-  marks: { author: { handle: 'm.example', displayName: 'élise' } },
+  marks: { author: { handle: 'm.example', displayName: 'e\u0301lise' } },
   arabic: { author: { handle: 'ar.example', displayName: 'مريم أحمد' } },
   cjk: { author: { handle: 'cjk.example', displayName: '山田 太郎' } },
   family: { author: { handle: 'f.example', displayName: `${FAMILY} Sam` } },
@@ -169,7 +169,7 @@ export const TEMPLATES = {
       { key: 'd', optional: false },
     ],
   },
-  spacing: { text: '{{ spaced }} {{\ttab\t}} {{ nbsp }} {{　ideo　}}' },
+  spacing: { text: '{{ spaced }} {{\ttab\t}} {{\u00A0nbsp\u00A0}} {{\u3000ideo\u3000}}' },
   badKeys: { text: '{{1bad}} {{}} {{_x}} {{a-b.c_d}} {{a b}} {{{x}}} {{y}}}' },
   longKey: {
     text: `{{${'k'.repeat(32)}}} {{${'k'.repeat(33)}}}`,
@@ -269,9 +269,9 @@ export const TIDY = {
   punctuationRight: [T('Hi '), E(), T('?')],
   noSpaces: [T('a'), E(), T('b')],
   tabs: [T('a\t'), E(), T('\tb')],
-  nbsp: [T('a '), E(), T(' b')],
-  ideographic: [T('a　'), E(), T('.')],
-  whitespaceEnds: [T('    x ﻿\n')],
+  nbsp: [T('a\u00A0'), E(), T('\u00A0b')],
+  ideographic: [T('a\u3000'), E(), T('.')],
+  whitespaceEnds: [T('\u2028 \u00A0 x \uFEFF\n')],
   keepsFields: [
     { text: 'A', kind: 'answer', key: 'a', extra: 1 },
     { text: ' ', kind: 'text' },
@@ -384,7 +384,7 @@ export const RECORDS = {
   usesCase: { uri: URI, value: { use: 'Reply' } },
   unicodeShortcut: {
     uri: URI,
-    value: { shortcut: ' /İSTANBUL ', keywords: [' ', 'ΣΑΣ'] },
+    value: { shortcut: ' /İSTANBUL ', keywords: ['\u00A0', 'ΣΑΣ'] },
   },
 };
 
@@ -434,9 +434,9 @@ export const TO_RECORD = {
       'ΣΑΣ',
       'σας',
       'İstanbul',
-      'i̇stanbul',
+      'i\u0307stanbul',
       'é',
-      'é',
+      'e\u0301',
       'STRASSE',
       'straße',
     ],
@@ -459,7 +459,7 @@ export const TO_RECORD = {
     ],
   },
   rawCreated: { name: 'R', text: 'x', createdAt: 12345 },
-  unicodeName: { name: `  ${FAMILY} Names  `, text: 'x', group: '　Gruppe　' },
+  unicodeName: { name: `  ${FAMILY} Names \u00A0`, text: 'x', group: '\u3000Gruppe\u3000' },
 };
 
 export const VALIDATE = {
@@ -582,13 +582,13 @@ export const VALIDATE = {
       keywords: ['#'],
     },
   ],
-  whitespaceText: [{ name: 'Ok', text: ' \n\t ' }],
+  whitespaceText: [{ name: 'Ok', text: ' \n\t\u00A0' }],
   numberName: [{ name: 5, text: 'x' }],
   nullTemplate: [null],
   missing: [{}],
   numberText: [{ name: 'Ok', text: 7 }],
   unicodeShortcutClash: [
     { name: 'Ok', text: 'x', shortcut: 'İ', rkey: 'b' },
-    [{ rkey: 'a', name: 'Other', shortcut: 'i̇' }],
+    [{ rkey: 'a', name: 'Other', shortcut: 'i\u0307' }],
   ],
 };
