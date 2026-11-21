@@ -239,3 +239,28 @@ actor FailingFileStore: FileStore {
     #expect(back[0]["tags"] == .array([]))
   }
 }
+
+@Suite struct AnalyticsStoreScale {
+  /// A big repo's worth of atmosphere rows (the web measured ~190,000 on
+  /// one account) written in the sync's 5,000-row chunks and read back:
+  /// each write costs what it writes, so this stays well inside a test's time.
+  @Test func aBigRepoWritesInChunksAndReadsBackInOrder() async {
+    let files = InMemoryFileStore()
+    let registry = AnalyticsStoreRegistry()
+    let store = await AnalyticsStore.openAnalyticsStore("did:plc:big", files: files, registry: registry)
+    let total = 60_000
+    let started = Date()
+    for start in stride(from: 0, to: total, by: 5000) {
+      let rows: [JSONValue] = (start..<min(start + 5000, total)).map { i in
+        ["uri": .string("at://did:plc:big/c/\(String(format: "%06d", total - i))"), "collection": "c", "at": .number(Double(i))]
+      }
+      await store.putAll("atmosphere", rows)
+    }
+    registry.reset()
+    let again = await AnalyticsStore.openAnalyticsStore("did:plc:big", files: files, registry: registry)
+    let rows = await again.all("atmosphere")
+    #expect(rows.count == total)
+    #expect(rows.first?["uri"] == .string("at://did:plc:big/c/000001"))
+    #expect(Date().timeIntervalSince(started) < 60)
+  }
+}

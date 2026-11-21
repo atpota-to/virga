@@ -70,6 +70,11 @@ func replaySweep(
   let result = await Task { await run(agent, transport, networkClock, log) }.value
   let d = recording.check(sent: mock.requests, result: recorded(result), waits: clock.waits, ordered: ordered)
   #expect(d == nil, "\(c): \(d ?? "")", sourceLocation: sourceLocation)
+  // Times are epoch milliseconds: compared exactly, not within check's 1e-9.
+  let exact = exactDiff(recorded(result), recording.expected)
+  #expect(exact == nil, "\(c): \(exact ?? "")", sourceLocation: sourceLocation)
+  let exactProgress = exactDiff(log.progressJSON, c.output["progress"] ?? .array([]))
+  #expect(exactProgress == nil, "\(c) progress: \(exactProgress ?? "")", sourceLocation: sourceLocation)
   let pages = Parity.diff(log.pagesJSON, c.output["pages"] ?? .array([]))
   #expect(pages == nil, "\(c) pages: \(pages ?? "")", sourceLocation: sourceLocation)
   let progress = Parity.diff(log.progressJSON, c.output["progress"] ?? .array([]))
@@ -181,5 +186,92 @@ private let utc = TimeZone(identifier: "UTC")!
         json(await AnalyticsSync.hydrateActors(dids, cache: held, now: syncNow, transport: transport, clock: clock))
       }
     }
+  }
+}
+
+/// The page caps: past them a sweep says it didn't read everything, never
+/// that it did (the fixtures can't hold a thousand pages).
+@Suite struct SyncCaps {
+  private func endless(_ path: String, _ body: JSONValue) -> MockTransport {
+    let transport = MockTransport()
+    transport.on(.path(path), respond: .json(body))
+    return transport
+  }
+
+  @Test func followersPastTheCap() async {
+    let page: JSONValue = [
+      "subject": ["did": .string(syncOwner), "handle": "owner.test"],
+      "followers": [["did": "did:plc:ana", "handle": "ana.test"]], "cursor": "more",
+    ]
+    let transport = endless("/xrpc/app.bsky.graph.getFollowers", page)
+    let agent = XRPCAgent(service: "https://pds.example", transport: transport)
+    let result = await AnalyticsSync.sweepFollowers(agent: agent, did: syncOwner, clock: .instant(now: syncNow))
+    #expect(transport.requests.count == AnalyticsSync.caps.followers)
+    #expect(result.complete == false)
+    #expect(result.error == "more followers than the sweep reads")
+    #expect(result.followers.count == AnalyticsSync.caps.followers)
+  }
+
+  @Test func followsPastTheCap() async {
+    let page: JSONValue = [
+      "records": [["uri": .string("at://\(syncOwner)/app.bsky.graph.follow/x"), "cid": "c", "value": ["subject": "did:plc:a"]]],
+      "cursor": "more",
+    ]
+    let transport = endless("/xrpc/com.atproto.repo.listRecords", page)
+    let agent = XRPCAgent(service: "https://pds.example", transport: transport)
+    let result = await AnalyticsSync.sweepFollowing(agent: agent, did: syncOwner, clock: .instant(now: syncNow))
+    #expect(transport.requests.count == AnalyticsSync.caps.following)
+    #expect(result.error == "more follows than the sweep reads")
+  }
+
+  @Test func blocksPastTheCap() async {
+    let transport = MockTransport()
+    let counter = Locked(0)
+    transport.on(.path("/xrpc/blue.microcosm.links.getBacklinks")) { _ in
+      let n = counter.withLock { n -> Int in
+        n += 1
+        return n
+      }
+      return .json(["records": [["did": "did:plc:b", "rkey": .string("k\(n)")]], "cursor": .string("c\(n)")])
+    }
+    let result = await AnalyticsSync.sweepBlocks(did: syncOwner, transport: transport, clock: .instant(now: syncNow))
+    #expect(transport.requests.count == AnalyticsSync.caps.blocks)
+    #expect(result.truncated)
+    #expect(result.error == "more block records than the sweep reads")
+    #expect(result.blocks.isEmpty)
+  }
+
+  @Test func postsPastTheCapHandBackTheirCursor() async {
+    let transport = MockTransport()
+    // An empty page ends a walk, so the cap is reached only by pages that
+    // carry posts: the same one, over and over, never known.
+    let item: JSONValue = [
+      "post": ["uri": .string("at://\(syncOwner)/app.bsky.feed.post/3a"), "record": ["createdAt": "2026-11-01T00:00:00.000Z"]]
+    ]
+    transport.on(.path("/xrpc/app.bsky.feed.getAuthorFeed"), respond: .json(["feed": [item], "cursor": "next"]))
+    let result = await AnalyticsSync.sweepPosts(did: syncOwner, transport: transport, clock: .instant(now: syncNow))
+    #expect(transport.requests.count == AnalyticsSync.caps.posts)
+    #expect(result.complete == false)
+    #expect(result.error == nil)
+    #expect(result.cursor == "next")
+    #expect(result.fetched == AnalyticsSync.caps.posts)
+  }
+
+  @Test func notificationsPastTheCapAreTruncated() async {
+    let page: JSONValue = [
+      "notifications": [
+        [
+          "uri": "at://did:plc:f/app.bsky.feed.like/1", "cid": "c", "author": ["did": "did:plc:f", "handle": "f.test"],
+          "reason": "like", "record": [:], "isRead": false, "indexedAt": "2026-11-13T00:00:00.000Z",
+        ]
+      ],
+      "cursor": "more",
+    ]
+    let transport = endless("/xrpc/app.bsky.notification.listNotifications", page)
+    let agent = XRPCAgent(service: "https://pds.example", transport: transport)
+    let result = await AnalyticsSync.sweepInbound(agent: agent, cutoffMs: syncNow - 365 * 86_400_000, clock: .instant(now: syncNow))
+    #expect(transport.requests.count == AnalyticsSync.caps.inbound)
+    #expect(result.truncated)
+    #expect(result.complete == false)
   }
 }

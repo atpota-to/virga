@@ -76,7 +76,7 @@ enum AnalyticsStoreKey: Hashable, Comparable {
     case (.number(let x), .number(let y)): return x < y
     case (.number, .string): return true
     case (.string, .number): return false
-    case (.string(let x), .string(let y)): return Array(x.value.utf16).lexicographicallyPrecedes(Array(y.value.utf16))
+    case (.string(let x), .string(let y)): return x.value.utf16.lexicographicallyPrecedes(y.value.utf16)
     }
   }
 }

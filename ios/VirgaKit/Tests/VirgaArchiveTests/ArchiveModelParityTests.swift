@@ -160,8 +160,13 @@ private func replay(_ c: ParityCase) async throws {
     if let result { outcome["result"] = result }
 
     let where_ = "\(c) step \(name)"
-    let d = recording.check(sent: mock.requests, result: recorded(.object(outcome)), waits: clock.waits, ordered: true)
+    // checkActivity reads six accounts at a time, so the People step's
+    // requests can go in any order; every sync's go in the web's.
+    let d = recording.check(
+      sent: mock.requests, result: recorded(.object(outcome)), waits: clock.waits, ordered: name != "people")
     #expect(d == nil, "\(where_): \(d ?? "")")
+    let exact = exactDiff(recorded(.object(outcome)), recording.expected)
+    #expect(exact == nil, "\(where_): \(exact ?? "")")
     let h = exactDiff(.array(history), step["history"] ?? .array([]))
     #expect(h == nil, "\(where_) history (\(history.count) states, the web's \(step["history"]?.arrayValue?.count ?? 0)): \(h ?? "")")
   }
