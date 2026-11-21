@@ -51,8 +51,23 @@
       "swift": []
     },
     "src/reports/models.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Time.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Content.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportModels+Types.swift",
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/ReportArchive.swift"
+      ],
+      "fixtures": [
+        "insights.archives",
+        "insights.models",
+        "insights.modelsZones",
+        "insights.modelsEdges",
+        "insights.collation"
+      ],
+      "note": "All of it. The archive the models read is ReportArchive (did, handle, the context's nowMs and VirgaArchive's ArchiveData); local time, the locale, the first day of the week and the clock are ReportFormats, the active ones by default. localeCompare (the ties in the Content report and Lists you're on) is Support/JSCollation.swift, ICU's root order over a table read from Node's own collator (ios/scripts/generate-collation-table.mjs, held to Node by insights.collation); scripts the table doesn't cover sort after it by code point. The cache keeps the web's key and limit, plus the zone and the clock (the web never keys on the zone). Two deliberate differences, in input the app never has: a list whose purpose is a name Object.prototype carries ('constructor') ranks as an unknown purpose (3) where the web's plain-object lookup gives NaN; and rows are typed (VirgaArchive's rows), so a field of the wrong type reads as absent.",
+      "synced": "b6dbc591206f"
     },
     "src/reports/registry.js": {
       "status": "ported",
