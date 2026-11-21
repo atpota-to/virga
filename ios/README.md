@@ -7,6 +7,10 @@ any atproto account, with several accounts signed in at once.
 It is a port of the web app in `src/`, not a separate design, and it is kept
 in step with it by tests: see [parity/README.md](parity/README.md).
 
+**The port is in progress.** [STATUS.md](STATUS.md) says what is done, what is
+left and in what order, and [porting/](porting/) holds the tooling and notes
+it was written with.
+
 ## Layout
 
 ```
