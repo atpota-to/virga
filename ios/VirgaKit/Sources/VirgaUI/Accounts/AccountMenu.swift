@@ -221,15 +221,35 @@ struct AddAccountDialog: ViewModifier {
   }
 }
 
+/// The account menu's dialogs, held by the shell rather than by the menu's
+/// button (which may sit in a navigation bar), so they are presented from
+/// the page.
+@MainActor
+@Observable
+public final class AccountDialogs {
+  var adding = false
+  var signingOutAll = false
+  let signOutGuard = SignOutGuard()
+
+  public init() {}
+}
+
+extension View {
+  /// The account menu's dialogs over this view.
+  func accountDialogs(_ dialogs: AccountDialogs) -> some View {
+    modifier(AddAccountDialog(isPresented: Binding(get: { dialogs.adding }, set: { dialogs.adding = $0 })))
+      .modifier(SignOutAllDialog(isPresented: Binding(get: { dialogs.signingOutAll }, set: { dialogs.signingOutAll = $0 })))
+      .modifier(SignOutWarning(signOutGuard: dialogs.signOutGuard))
+  }
+}
+
 public struct AccountMenu: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.navigate) private var navigate
   @Environment(\.openURL) private var openURL
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
-  @State private var adding = false
-  @State private var signingOutAll = false
-  @State private var signOutGuard = SignOutGuard()
+  @Environment(AccountDialogs.self) private var dialogs
   private let compact: Bool
 
   public init(compact: Bool) {
@@ -248,9 +268,6 @@ public struct AccountMenu: View {
       label(profile: profile, name: name, handle: handle)
     }
     .accessibilityIdentifier("account-menu")
-    .modifier(AddAccountDialog(isPresented: $adding))
-    .modifier(SignOutAllDialog(isPresented: $signingOutAll))
-    .modifier(SignOutWarning(signOutGuard: signOutGuard))
   }
 
   @ViewBuilder
@@ -285,7 +302,8 @@ public struct AccountMenu: View {
   private func entries(name: String, handle: String?) -> [MenuEntry] {
     let model = session
     let shell = app
-    let guarding = signOutGuard
+    let held = dialogs
+    let guarding = dialogs.signOutGuard
     let did = session.did
     let accounts = session.accounts
     let active = accounts.first { Optional($0.did).jsEquals(did) }
@@ -313,7 +331,7 @@ public struct AccountMenu: View {
       }
       out.append(.separator)
     }
-    out.append(.item(MenuItem("Add an account", key: "add", systemImage: Glyph.userPlus) { adding = true }))
+    out.append(.item(MenuItem("Add an account", key: "add", systemImage: Glyph.userPlus) { held.adding = true }))
     if let active, AccountCopy.offersLongerSession(accountMode: active.mode, session.authMode) {
       out.append(
         .item(
@@ -347,7 +365,7 @@ public struct AccountMenu: View {
       out.append(
         .item(
           MenuItem("Sign out of all \(signedIn.count) accounts", key: "sign-out-all", systemImage: Glyph.users, destructive: true) {
-            signingOutAll = true
+            held.signingOutAll = true
           }))
     }
     return out

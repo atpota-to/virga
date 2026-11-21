@@ -28,6 +28,7 @@ public struct ShellView: View {
   @Environment(ShellNavigator.self) private var navigator
   @Environment(PreferencesModel.self) private var preferences
   @State private var dashboards: ShellDashboards
+  @State private var accountDialogs = AccountDialogs()
 
   /// - Parameters:
   ///   - store: where the account's dashboards are kept.
@@ -47,6 +48,8 @@ public struct ShellView: View {
       if desk { split } else { stack }
     }
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))
+    .accountDialogs(accountDialogs)
+    .environment(accountDialogs)
     .environment(dashboards)
     .onChange(of: navigator.path, initial: true) { _, _ in followDashboard() }
   }
@@ -55,7 +58,9 @@ public struct ShellView: View {
 
   private var stack: some View {
     NavigationStack(path: Binding(get: { navigator.stack }, set: { navigator.stack = $0 })) {
+      // Each page its own (its scroll, its state), not the last one's.
       RoutedPage(path: navigator.stackRoot)
+        .id(navigator.stackRoot)
         .navigationDestination(for: String.self) { path in
           RoutedPage(path: path)
         }
@@ -77,6 +82,7 @@ public struct ShellView: View {
     } detail: {
       NavigationStack {
         RoutedPage(path: navigator.path)
+          .id(navigator.path)
       }
     }
     .navigationSplitViewStyle(.balanced)

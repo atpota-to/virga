@@ -337,10 +337,11 @@ public struct VirgaThemeRoot<Content: View>: View {
     // otherwise SwiftUI's colorScheme stays the device's, and a change to it
     // reaches lookAtDevice() at once.
     let override: ColorScheme? = theme.colorScheme == system ? nil : theme.colorScheme
+    // The theme goes in last, so the ground behind the page has it too.
     return content
-      .environment(\.virgaTheme, theme)
       .tint(theme.accent)
       .background(PageGround().ignoresSafeArea())
+      .environment(\.virgaTheme, theme)
       .preferredColorScheme(override)
   }
 
