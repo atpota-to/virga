@@ -16,7 +16,9 @@
 // fakeServer.js, a later step), the demo's network is a stub that answers
 // the agreement's two calls and the sign-out, and turns everything else
 // away; that port will replace it. `-VirgaDemoTerms YES` leaves the
-// agreement unrecorded, so the agreement screen shows first.
+// agreement unrecorded, so the agreement screen shows first;
+// `-VirgaDemoSignedOut YES` starts with both accounts remembered but signed
+// out, on the front page.
 
 #if canImport(UIKit)
 import Foundation
@@ -152,7 +154,7 @@ public final class AppModel {
     let defaults = UserDefaults.standard
     let flags = AppConfig.Flags(infoDictionary: Bundle.main.infoDictionary ?? [:])
     if defaults.bool(forKey: "VirgaDemo") {
-      return demo(flags: flags, askTerms: defaults.bool(forKey: "VirgaDemoTerms"))
+      return demo(flags: flags, askTerms: defaults.bool(forKey: "VirgaDemoTerms"), signedOut: defaults.bool(forKey: "VirgaDemoSignedOut"))
     }
     return device(flags: flags)
   }()
@@ -169,7 +171,7 @@ public final class AppModel {
   }
 
   /// The made-up world (VirgaDemo), signed in, nothing persisted.
-  static func demo(flags: AppConfig.Flags, askTerms: Bool) -> AppModel {
+  static func demo(flags: AppConfig.Flags, askTerms: Bool, signedOut: Bool = false) -> AppModel {
     let world = DemoWorld(now: Date())
     let now = world.now
     let stores = AppStores.inMemory()
@@ -178,14 +180,20 @@ public final class AppModel {
       Accounts.recordSignIn(
         stores.keyValue, did: account.did, mode: "backend", handle: account.handle, displayName: account.displayName,
         avatar: account.avatar, scope: .granted(AppConfig.oauthScope), now: now)
-      _ = Accounts.writeBackendToken(stores.secrets, account.did, DemoNetwork.token(for: account.did))
+      if signedOut {
+        Accounts.markSignedOut(stores.keyValue, account.did)
+      } else {
+        _ = Accounts.writeBackendToken(stores.secrets, account.did, DemoNetwork.token(for: account.did))
+      }
       if !askTerms || account.did != World.me.did {
         Acceptance.writeAcceptance(
           stores.keyValue, account.did, at: .string(JSDate.toISOString(now) ?? ""), recorded: true, identity: "session")
       }
     }
-    Accounts.writeActiveDid(stores.keyValue, World.me.did)
-    SessionHint.writeSessionHint(stores.keyValue)
+    if !signedOut {
+      Accounts.writeActiveDid(stores.keyValue, World.me.did)
+      SessionHint.writeSessionHint(stores.keyValue)
+    }
     let transport = DemoNetwork.transport(now: now)
     let environment = SessionEnvironment(
       storage: stores.keyValue, tabStorage: stores.tab, secrets: stores.secrets, backendUrl: DemoNetwork.server,
