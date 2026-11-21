@@ -65,6 +65,9 @@ public enum Glyph {
   /// A remembered account, in a menu: an account's picture can't be a
   /// native menu item's image, so every account row carries this one.
   public static let account = "person.crop.circle"
+  /// Download and RotateCcw: Settings › Data's exports and Rebuild posts.
+  public static let download = "arrow.down.to.line"
+  public static let rebuild = "arrow.counterclockwise"
   /// CalendarRange: the period picker's Custom.
   public static let calendarRange = Icons.sfSymbol(lucide: "CalendarRange")
   /// The first build's list: Database, UsersRound, ShieldCheck, Heart, Cloud.

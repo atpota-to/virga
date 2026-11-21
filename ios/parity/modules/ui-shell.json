@@ -257,9 +257,10 @@
     "src/settings/SettingsPage.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DataSection.swift"
       ],
-      "note": "The index (a phone's), Account, Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy and the agreement's date). Not yet: Data and sync (the archive), Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside); About's line on when the repo was last read (the archive).",
+      "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete this archive with its dialog, the toast and the way home), Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Not yet: Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
       "synced": "f20273b17b6a"
     },
     "src/settings/settings.css": {
