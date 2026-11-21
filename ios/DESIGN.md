@@ -97,8 +97,9 @@ Settings picks violet, teal, amber, rose or graphite; each is a full set of
 steps for the light pages, night and high contrast (`ThemeTokens.accentTokens`).
 The second colour (`--second*`) is the second series on a chart and a change
 downward; coral beside a cool accent, blue beside amber and rose. A change
-(`--up`, `--down`) says which way it went with its sign, not whether that is
-good. States (`--ok`, `--warn`, `--danger`, each with a `-wash`) always ship
+says which way it went with its sign, not whether that is good: the kit's
+own (Delta) is ink, and `--up` and `--down` (the accent's ink and the second
+colour's, with their washes) are set but drawn by no rule yet. States (`--ok`, `--warn`, `--danger`, each with a `-wash`) always ship
 with a word or an icon beside them.
 
 ## Type
