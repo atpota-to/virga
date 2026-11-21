@@ -159,6 +159,34 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(!transport.requests.contains { $0.url.contains("listNotifications") })
   }
 
+  /// The web asks for followers without the sync's AbortSignal, so a sync
+  /// called off while the page is out still banks it and says nothing went
+  /// wrong. Here the request fails if its task is cancelled, as
+  /// URLSessionTransport's does.
+  @Test func callingASyncOffWhileFollowersAreAskedForBanksThemWithoutAnError() async {
+    let transport = MockTransport()
+    let holder = Locked<ArchiveModel?>(nil)
+    transport.on(.path("/xrpc/app.bsky.graph.getFollowers")) { _ in
+      let m = holder.wrappedValue
+      await MainActor.run { m?.cancelSync() }
+      try Task.checkCancellation()
+      return .json([
+        "subject": ["did": .string(me), "handle": "owner.test"],
+        "followers": [["did": "did:plc:ana", "handle": "ana.test"], ["did": "did:plc:bo", "handle": "bo.test"]],
+      ])
+    }
+    smallWorld(transport)
+    let m = model(transport)
+    holder.set(m)
+    await m.start()
+    await m.runSync()
+    #expect(m.syncError == nil)
+    #expect(m.sync == nil)
+    #expect(m.data.followers.count == 2)
+    #expect(m.data.meta.followers?.complete == true)
+    #expect(!transport.requests.contains { $0.url.contains("listRecords") })
+  }
+
   @Test func cancellingTheMountCallsOffItsSync() async {
     let transport = MockTransport()
     smallWorld(transport)

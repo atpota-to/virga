@@ -112,6 +112,16 @@ public enum AnalyticsSync {
     }
   }
 
+  /// A request through the account's agent, which the web makes without
+  /// the sweep's AbortSignal (only fetch and Constellation are handed it):
+  /// calling the sweep off doesn't stop a request already out, which is
+  /// answered and its page kept, and the sweep stops before the next one.
+  /// A Swift request would be cancelled with its task and fail, so it runs
+  /// in a task of its own.
+  static func unaborted<T: Sendable>(_ fn: @escaping @Sendable () async throws -> T) async throws -> T {
+    try await Task { try await fn() }.value
+  }
+
   /// `err?.message || String(err)`.
   static func message(_ error: any Error) -> String {
     jsMessage(error)
@@ -142,9 +152,12 @@ public enum AnalyticsSync {
       if Task.isCancelled { return SweepFollowersResult(followers: followers, complete: false, aborted: true, error: nil) }
       let res: XRPCResponse
       do {
+        let asked = cursor
         res = try await withRetry(clock: clock) {
-          try await agent.query(
-            "app.bsky.graph.getFollowers", ["actor": .string(did), "limit": .integer(page), "cursor": cursor.map(XRPCParamValue.string)])
+          try await unaborted {
+            try await agent.query(
+              "app.bsky.graph.getFollowers", ["actor": .string(did), "limit": .integer(page), "cursor": asked.map(XRPCParamValue.string)])
+          }
         }
       } catch let err {
         error = message(err)
@@ -202,10 +215,13 @@ public enum AnalyticsSync {
       if Task.isCancelled { return SweepFollowingResult(following: following, complete: false, aborted: true, error: nil) }
       let res: XRPCResponse
       do {
+        let asked = cursor
         res = try await withRetry(clock: clock) {
-          try await agent.query(
-            "com.atproto.repo.listRecords",
-            ["repo": .string(did), "collection": .string(follow), "limit": .integer(page), "cursor": cursor.map(XRPCParamValue.string)])
+          try await unaborted {
+            try await agent.query(
+              "com.atproto.repo.listRecords",
+              ["repo": .string(did), "collection": .string(follow), "limit": .integer(page), "cursor": asked.map(XRPCParamValue.string)])
+          }
         }
       } catch let err {
         if Task.isCancelled { return SweepFollowingResult(following: following, complete: false, aborted: true, error: nil) }
@@ -571,9 +587,12 @@ public enum AnalyticsSync {
       if Task.isCancelled { return result(aborted: true) }
       let res: XRPCResponse
       do {
+        let asked = cursor
         res = try await withRetry(clock: clock) {
-          try await agent.query(
-            "app.bsky.notification.listNotifications", ["limit": .integer(page), "cursor": cursor.map(XRPCParamValue.string)])
+          try await unaborted {
+            try await agent.query(
+              "app.bsky.notification.listNotifications", ["limit": .integer(page), "cursor": asked.map(XRPCParamValue.string)])
+          }
         }
       } catch {
         return result(error: message(error))
@@ -640,10 +659,13 @@ public enum AnalyticsSync {
         }
         let res: XRPCResponse
         do {
+          let asked = cursor
           res = try await withRetry(clock: clock) {
-            try await agent.query(
-              "com.atproto.repo.listRecords",
-              ["repo": .string(did), "collection": .string(collection), "limit": .integer(page), "cursor": cursor.map(XRPCParamValue.string)])
+            try await unaborted {
+              try await agent.query(
+                "com.atproto.repo.listRecords",
+                ["repo": .string(did), "collection": .string(collection), "limit": .integer(page), "cursor": asked.map(XRPCParamValue.string)])
+            }
           }
         } catch let err {
           // A missing collection is an empty archive, not a failure.

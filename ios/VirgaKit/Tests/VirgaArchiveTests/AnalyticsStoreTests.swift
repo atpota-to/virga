@@ -240,6 +240,75 @@ actor FailingFileStore: FileStore {
   }
 }
 
+/// An in-memory file store whose every call stops for a moment first, so
+/// calls made at the same time interleave as they do over a real disk.
+actor SlowFileStore: FileStore {
+  let base = InMemoryFileStore()
+  func pause() async {
+    for _ in 0..<5 { await Task.yield() }
+  }
+  func read(_ path: String) async throws -> Data? {
+    await pause()
+    return try await base.read(path)
+  }
+  func write(_ data: Data, to path: String) async throws {
+    await pause()
+    try await base.write(data, to: path)
+  }
+  func delete(_ path: String) async throws {
+    await pause()
+    try await base.delete(path)
+  }
+  func list(_ directory: String) async throws -> [String] {
+    await pause()
+    return try await base.list(directory)
+  }
+}
+
+@Suite struct AnalyticsStoreConcurrency {
+  let alice = "did:plc:alice"
+
+  /// The web's IndexedDB runs one connection's transactions on a store in
+  /// the order they were made, so writes made at the same time (a page of
+  /// the sync and a post just made, or two People lists' cards) all land.
+  @Test func writesMadeAtOnceAllLandAndSurviveARestart() async {
+    let files = SlowFileStore()
+    let registry = AnalyticsStoreRegistry()
+    let store = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    await withTaskGroup(of: Void.self) { group in
+      for i in 0..<12 {
+        group.addTask { await store.putAll("posts", [["uri": .string("at://alice/p/\(i)"), "n": .number(Double(i))]]) }
+      }
+      group.addTask { await store.setMeta("posts", ["syncedAt": 1]) }
+      group.addTask { _ = await store.all("posts") }
+    }
+    #expect(await store.all("posts").count == 12)
+    registry.reset()
+    let again = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    #expect(await again.all("posts").count == 12)
+    #expect(await again.getMeta("posts")?["syncedAt"] == .number(1))
+  }
+
+  /// A write made while the store is first being read is not lost to the
+  /// read's older picture of it.
+  @Test func aWriteDuringTheFirstReadIsKept() async {
+    let files = SlowFileStore()
+    let registry = AnalyticsStoreRegistry()
+    let first = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    await first.putAll("posts", [["uri": "at://alice/p/held"]])
+    registry.reset()
+    let store = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    async let read = store.all("posts")
+    async let write: Void = store.putAll("posts", [["uri": "at://alice/p/new"]])
+    _ = await (read, write)
+    #expect(await store.all("posts").count == 2)
+    await store.putAll("posts", [["uri": "at://alice/p/later"]])
+    registry.reset()
+    let again = await AnalyticsStore.openAnalyticsStore(alice, files: files, registry: registry)
+    #expect(await again.all("posts").count == 3)
+  }
+}
+
 @Suite struct AnalyticsStoreScale {
   /// A big repo's worth of atmosphere rows (the web measured ~190,000 on
   /// one account) written in the sync's 5,000-row chunks and read back:

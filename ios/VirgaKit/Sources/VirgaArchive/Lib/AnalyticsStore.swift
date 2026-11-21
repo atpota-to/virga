@@ -272,6 +272,12 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
   let root: String
   private var loaded: [String: StoreState] = [:]
   private var closed = false
+  /// One call at a time, in the order they came, as IndexedDB runs one
+  /// connection's transactions: a call waiting on the file store would
+  /// otherwise let the next one in on the same picture of the store (and
+  /// the same segment number), and one of the two writes would be lost.
+  private var busy = false
+  private var waiting: [CheckedContinuation<Void, Never>] = []
 
   /// A store's rows and where its next segment goes.
   struct StoreState {
@@ -316,6 +322,18 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
     } catch {
       return nil
     }
+  }
+
+  private func enter() async {
+    if !busy {
+      busy = true
+      return
+    }
+    await withCheckedContinuation { waiting.append($0) }
+  }
+
+  private func leave() {
+    if waiting.isEmpty { busy = false } else { waiting.removeFirst().resume() }
   }
 
   /// Step aside (the database was deleted): every later call falls back as
@@ -389,12 +407,17 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
   }
 
   public func all(_ store: String) async -> [JSONValue] {
+    await enter()
+    defer { leave() }
     guard !closed, let state = try? await state(store) else { return [] }
     return state.rows.keys.sorted().compactMap { state.rows[$0] }
   }
 
   public func putAll(_ store: String, _ rows: [JSONValue]) async {
     guard !closed, !rows.isEmpty, let keyPath = AnalyticsStore.keyPath(store) else { return }
+    await enter()
+    defer { leave() }
+    if closed { return }
     let keyed = rows.compactMap { row in AnalyticsStoreKey(row[keyPath]).map { ($0, row) } }
     guard !keyed.isEmpty else { return }
     // Dropped on failure: the next sync rebuilds what this write lost.
@@ -405,6 +428,9 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
 
   public func remove(_ store: String, _ keys: [JSONValue]) async {
     guard !closed, !keys.isEmpty, AnalyticsStore.keyPath(store) != nil else { return }
+    await enter()
+    defer { leave() }
+    if closed { return }
     let gone = keys.compactMap { AnalyticsStoreKey($0) }
     guard !gone.isEmpty else { return }
     try? await append(store, ["op": "remove", "keys": .array(gone.map(\.json))]) { state in
@@ -414,6 +440,9 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
 
   public func clear(_ store: String) async {
     guard !closed, AnalyticsStore.keyPath(store) != nil else { return }
+    await enter()
+    defer { leave() }
+    if closed { return }
     do {
       try await files.delete("\(root)/\(store)")
       var state = (try? await self.state(store)) ?? StoreState()
@@ -426,6 +455,8 @@ public actor FileAnalyticsStore: AnalyticsStoreHandle {
   }
 
   public func getMeta(_ key: String) async -> JSONValue? {
+    await enter()
+    defer { leave() }
     guard !closed, let state = try? await state("meta"), let row = state.rows[.string(JSKey(key))], row.isTruthy else {
       return nil
     }

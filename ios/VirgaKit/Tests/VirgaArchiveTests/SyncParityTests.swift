@@ -14,12 +14,14 @@ import VirgaTestSupport
 let syncOwner = "did:plc:archiveowner234567abcd"
 let syncNow: Double = 1_794_657_600_000  // 2026-11-14T12:00:00Z
 
-/// A transport that cancels the calling task once request `abortAt` has
-/// been answered (the answer still arrives, as the web's fake fetch hands
-/// it back after the abort).
+/// A transport that calls the sweep off once request `abortAt` has been
+/// answered (the answer still arrives, as the web's fake fetch hands it
+/// back after the abort). `callOff` cancels the task running the sweep;
+/// without one, the task that sent the request is cancelled.
 final class AbortingTransport: HTTPTransport, @unchecked Sendable {
   let base: any HTTPTransport
   let abortAt: Int?
+  let callOff = Locked<(@Sendable () -> Void)?>(nil)
   private let count = Locked(0)
 
   init(_ base: any HTTPTransport, abortAt: Int?) {
@@ -33,7 +35,9 @@ final class AbortingTransport: HTTPTransport, @unchecked Sendable {
       return n
     }
     let response = try await base.send(request)
-    if index == abortAt { withUnsafeCurrentTask { $0?.cancel() } }
+    if index == abortAt {
+      if let callOff = callOff.wrappedValue { callOff() } else { withUnsafeCurrentTask { $0?.cancel() } }
+    }
     return response
   }
 }
@@ -67,7 +71,9 @@ func replaySweep(
   let agent = XRPCAgent(service: "https://pds.example", transport: transport)
   let log = SweepLog()
   let networkClock = clock.clock
-  let result = await Task { await run(agent, transport, networkClock, log) }.value
+  let task = Task { await run(agent, transport, networkClock, log) }
+  transport.callOff.set({ task.cancel() })
+  let result = await task.value
   let d = recording.check(sent: mock.requests, result: recorded(result), waits: clock.waits, ordered: ordered)
   #expect(d == nil, "\(c): \(d ?? "")", sourceLocation: sourceLocation)
   // Times are epoch milliseconds: compared exactly, not within check's 1e-9.

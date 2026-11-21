@@ -13,10 +13,12 @@ import VirgaTestSupport
 @testable import VirgaArchive
 
 /// A transport whose recording changes step by step (the web's agent reads
-/// the global fetch of the moment), cancelling the calling task once the
-/// step's request `abortAt` is answered.
+/// the global fetch of the moment), calling the sync off (`callOff`, the
+/// model's cancelSync, as the generator does) once the step's request
+/// `abortAt` is answered.
 final class StepTransport: HTTPTransport, @unchecked Sendable {
   private let state = Locked<(base: (any HTTPTransport)?, abortAt: Int?, count: Int)>((nil, nil, 0))
+  let callOff = Locked<(@Sendable () async -> Void)?>(nil)
 
   func use(_ base: any HTTPTransport, abortAt: Int?) {
     state.set((base, abortAt, 0))
@@ -29,7 +31,7 @@ final class StepTransport: HTTPTransport, @unchecked Sendable {
     }
     guard let base else { throw HTTPTransportError.network("no step") }
     let response = try await base.send(request)
-    if index == abortAt { withUnsafeCurrentTask { $0?.cancel() } }
+    if index == abortAt, let callOff = callOff.wrappedValue { await callOff() }
     return response
   }
 }
@@ -153,6 +155,7 @@ private func replay(_ c: ParityCase) async throws {
       model = ArchiveModel(agent: agent, did: did, handle: owner, environment: env)
     }
     let m = model!
+    transport.callOff.set({ await MainActor.run { m.cancelSync() } })
     m.syncObserver = { history.append($0.map(encoded) ?? .null) }
     await m.start()
     let result = await act(scenario, name, m)
