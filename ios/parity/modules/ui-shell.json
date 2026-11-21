@@ -287,7 +287,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
       ],
-      "note": "The tab bar and the app bar (the mark, or the system's back button with the page above's name, and the account). Not yet: Search (the command palette) and the account menu's Sync now (the archive).",
+      "note": "The tab bar and the app bar: on a part's front page the mark and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, and the account, in the navigation bar. Not yet: Search (the command palette) and the account menu's Sync now (the archive).",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {

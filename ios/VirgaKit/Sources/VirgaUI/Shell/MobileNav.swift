@@ -2,14 +2,26 @@
 // Ports src/shell/shell.css (.appbar, .tabbar)
 // Ports src/styles/theme.css
 //
-// On a phone (and a window under 900 wide): the mark (or the way back up to
-// the page above, the system's back button: "‹ Reports") and the account
-// across the top, in the navigation bar, clear over the sky; and the parts
-// of Virga along the bottom edge where a thumb reaches them. The bottom bar
-// is icons; the part you are in also says its name on an --accent-tint pill
-// (a tinted disc on a phone under 430, its name read out but not shown; in
-// high contrast under 375, the disc has an ink ring), and New post is the
-// round ink button at its end. Settings is behind the account, in its menu.
+// On a phone (and a window under 900 wide): the mark and the account across
+// the top, and the parts of Virga along the bottom edge where a thumb
+// reaches them.
+//
+// On a part's front page the top row is part of the page, as the web's is:
+// the mark at the page's margin and the account at the right, 56 tall, in
+// the page's scroll content over the sky, so it scrolls away with it
+// (AppBarRow; VirgaPage draws it, and the navigation bar is hidden). The top
+// of the sky is held still under the status bar, so the page scrolls under
+// it and not under the clock. On a page inside a part the mark gives way to
+// the way back up, and that is the system's back button ("‹ Reports", with
+// its swipe back), in the navigation bar, clear over the sky, with the
+// account at its right. Where an item in the bar is Virga's own drawing (the
+// account's avatar) it goes without iOS 26's glass capsule.
+//
+// The bottom bar is icons; the part you are in also says its name on an
+// --accent-tint pill (a tinted disc on a phone under 430, its name read out
+// but not shown; in high contrast under 375, the disc has an ink ring), and
+// New post is the round ink button at its end. Settings is behind the
+// account, in its menu.
 //
 // Search (the command palette, which has no shortcut on a phone) and the
 // menu's Sync now come with the palette and the archive.
@@ -130,25 +142,69 @@ struct TabButton: View {
   }
 }
 
-/// The app bar's parts, in the navigation bar: the mark on a part's front
-/// page (the system's back button takes its place on a page inside one),
-/// and the account.
-struct AppBarToolbar: ToolbarContent {
-  let showsBrand: Bool
+/// `.appbar`, on a part's front page: the mark at the page's margin, the
+/// account at the right, 56 tall, in the page's content (VirgaPage draws it
+/// when `showsAppBar` is set), so it scrolls away with the sky.
+struct AppBarRow: View {
+  @Environment(\.virgaTheme) private var theme
 
-  @ToolbarContentBuilder var body: some ToolbarContent {
-    if showsBrand {
-      ToolbarItem(placement: .topBarLeading) {
-        Brand()
-      }
+  var body: some View {
+    HStack(spacing: Measure.AppBar.gap) {
+      Brand()
+        .frame(minHeight: Measure.AppBar.iconButton)
+      Spacer(minLength: 0)
+      AccountMenu(compact: true)
     }
-    // The page's own header has the title; the bar keeps it for the back
-    // button and VoiceOver, without drawing it.
+    .padding(.leading, theme.pagePad)
+    .padding(.trailing, Measure.AppBar.paddingTrailing)
+    .frame(maxWidth: .infinity, minHeight: theme.appbarH)
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier("app-bar")
+  }
+}
+
+/// The top of the sky, held still over the status bar of a page with no
+/// navigation bar: at rest it is the page's own sky there, and the page
+/// scrolls under it rather than under the clock. Laid out with no height at
+/// the top of the safe area, it reaches up over the status bar alone.
+struct StatusBarSky: View {
+  var body: some View {
+    Color.clear
+      .overlay(alignment: .top) { SkyWash() }
+      .clipped()
+      .ignoresSafeArea(edges: .top)
+      .frame(height: 0)
+      .allowsHitTesting(false)
+      .accessibilityHidden(true)
+  }
+}
+
+/// The navigation bar's parts on a page inside a part: the system's back
+/// button is the way back up; the bar draws no title (the page's header has
+/// it, and the bar keeps it for the back button and VoiceOver), and the
+/// account is at the right.
+struct AppBarToolbar: ToolbarContent {
+  @ToolbarContentBuilder var body: some ToolbarContent {
     ToolbarItem(placement: .principal) {
       Color.clear.frame(width: 1, height: 1).accessibilityHidden(true)
     }
+    .withoutSharedGlass()
     ToolbarItem(placement: .topBarTrailing) {
       AccountMenu(compact: true)
+    }
+    .withoutSharedGlass()
+  }
+}
+
+extension ToolbarContent {
+  /// iOS 26 sets each item in a bar on a shared Liquid Glass capsule; an
+  /// item that is Virga's own drawing (the account's 30-point avatar, the
+  /// empty title) goes without one. Earlier systems have no capsule.
+  func withoutSharedGlass() -> some ToolbarContent {
+    if #available(iOS 26.0, *) {
+      return sharedBackgroundVisibility(.hidden)
+    } else {
+      return self
     }
   }
 }

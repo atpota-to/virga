@@ -14,8 +14,10 @@
 //   case .reports where route.page == "followers":
 //     FollowersReport()
 //
-// The navigation bar (a phone's) and the page's title for VoiceOver and the
-// back button are put on here, so a page draws only itself.
+// The navigation bar (a phone's, on a page inside a part), the app bar in
+// the page (a phone's, on a part's front page), and the page's title for
+// VoiceOver and the back button are put on here, so a page draws only
+// itself.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -151,16 +153,22 @@ public struct RoutedPage: View {
   }
 }
 
-/// The navigation bar a page has: on a phone, clear over the sky with the
-/// mark (or the back button) and the account; beside the sidebar, none.
+/// The navigation bar a page has. On a phone's front page of a part, none:
+/// the app bar is the top of the page's content (VirgaPage draws it). On a
+/// page inside a part, the system's back button and the account, clear over
+/// the sky. Beside the sidebar, none.
 struct PageChrome: ViewModifier {
   let showsBrand: Bool
   let phone: Bool
 
   func body(content: Content) -> some View {
-    if phone {
+    if phone && showsBrand {
       content
-        .toolbar { AppBarToolbar(showsBrand: showsBrand) }
+        .environment(\.showsAppBar, true)
+        .toolbar(.hidden, for: .navigationBar)
+    } else if phone {
+      content
+        .toolbar { AppBarToolbar() }
         .skyNavigationBar()
     } else {
       content

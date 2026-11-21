@@ -178,10 +178,12 @@ public enum Measure {
   public enum AppBar {
     /// `.appbar { padding: 0 8px 0 var(--page-pad); gap: 8px }`
     public static let paddingTrailing: CGFloat = 8
+    public static let gap: CGFloat = 8
     /// `.appbar-back { gap: 2px; margin-left: -6px }`, its chevron 18.
     public static let backGap: CGFloat = 2
     public static let backChevron: CGFloat = 18
-    /// `.appbar .btn--icon { width: 44px }`, its glyph 20.
+    /// `.appbar .btn--icon { width: 44px }`, its glyph 20; `.appbar .brand`
+    /// is as tall.
     public static let iconButton: CGFloat = 44
     public static let icon: CGFloat = 20
   }

@@ -15,7 +15,9 @@
 //
 // VirgaPage is the page itself: a plain ScrollView with the sky behind its
 // content, the header, then the page's bands, `--section-gap` apart, in a
-// column at most --content-max wide plus its margins, centred.
+// column at most --content-max wide plus its margins, centred. On a phone's
+// front page of a part the app bar (the mark and the account) comes first,
+// in the content (Shell/MobileNav.swift).
 //
 //   VirgaPage(header: PageHeaderModel(title: "Reports", sub: "Every number Virga works out, one page each.")) {
 //     VirgaSection(title: "Followers") { … }
@@ -35,11 +37,22 @@ private struct ShellChromeKey: EnvironmentKey {
   static let defaultValue = ShellChrome.none
 }
 
+private struct ShowsAppBarKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
 extension EnvironmentValues {
   /// The shell around the page (Shell sets it).
   public var shellChrome: ShellChrome {
     get { self[ShellChromeKey.self] }
     set { self[ShellChromeKey.self] = newValue }
+  }
+
+  /// Whether the page draws the phone's app bar at the top of its content
+  /// (a part's front page, where the navigation bar is hidden; Shell sets it).
+  public var showsAppBar: Bool {
+    get { self[ShowsAppBarKey.self] }
+    set { self[ShowsAppBarKey.self] = newValue }
   }
 }
 
@@ -183,6 +196,7 @@ public struct PageHeader: View {
 /// the page's column.
 public struct VirgaPage<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
+  @Environment(\.showsAppBar) private var showsAppBar
   private let header: PageHeader?
   private let content: Content
 
@@ -198,19 +212,25 @@ public struct VirgaPage<Content: View>: View {
 
   public var body: some View {
     ScrollView {
-      PageColumn {
-        VStack(alignment: .leading, spacing: 0) {
-          if let header { header }
-          VStack(alignment: .leading, spacing: theme.sectionGap) {
-            content
+      VStack(spacing: 0) {
+        if showsAppBar { AppBarRow() }
+        PageColumn {
+          VStack(alignment: .leading, spacing: 0) {
+            if let header { header }
+            VStack(alignment: .leading, spacing: theme.sectionGap) {
+              content
+            }
+            .padding(.top, theme.sectionGap)
+            .padding(.bottom, theme.hasSidebar ? Measure.Page.bodySpaceBelow : Measure.Page.phoneBodySpaceBelow)
           }
-          .padding(.top, theme.sectionGap)
-          .padding(.bottom, theme.hasSidebar ? Measure.Page.bodySpaceBelow : Measure.Page.phoneBodySpaceBelow)
         }
       }
       .skyBackground()
     }
     .scrollDismissesKeyboard(.interactively)
+    .overlay(alignment: .top) {
+      if showsAppBar { StatusBarSky() }
+    }
     // Behind the content: sky above the middle, ground below, so a short
     // page, or one pulled past its ends, shows no other colour.
     .background(PageGround().ignoresSafeArea())
