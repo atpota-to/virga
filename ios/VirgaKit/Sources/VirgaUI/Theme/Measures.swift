@@ -188,6 +188,12 @@ public enum Measure {
     public static let tick: CGFloat = 13
   }
 
+  /// shell.css's `.range-fields`: `repeat(auto-fit, minmax(180px, 1fr))`, 16 apart.
+  public enum Period {
+    public static let fieldMinWidth: CGFloat = 180
+    public static let fieldsGap: CGFloat = 16
+  }
+
   /// shell.css's `.first-run`.
   public enum FirstRun {
     /// `.first-run-card { gap: 20px; max-width: 640px }`

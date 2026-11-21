@@ -89,11 +89,11 @@
       "synced": "9ac3b99eb983"
     },
     "src/components/Delta.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
       ],
-      "note": "DeltaView draws the change; its words are charts/format.js's deltaText(pct), which comes with VirgaArchive's port of that module, so a caller passes the text until then.",
+      "note": "DeltaView(pct:title:plain:) draws ChartFormat.deltaText(pct) (charts/format.js, VirgaArchive): nil is \"new\"; a caller with no comparison at all (the web's undefined) draws none. The title is read by VoiceOver as a hint.",
       "synced": "1b9ce44616e4"
     },
     "src/components/Dialog.jsx": {
@@ -326,9 +326,10 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The mark, the page header, toasts, and useIsNarrow (the theme's hasSidebar). Not yet: the period picker, its range dialog and usePeriod (they need src/lib/periods.js and analytics.js, VirgaArchive's), and useSkyTaps (the live sky).",
+      "note": "The mark, the page header, toasts (ToastCenter and ToastStack; nothing pushes one yet), useIsNarrow (the theme's hasSidebar), usePeriod (PreferencesModel.period(), setPeriod, setCustomPeriod over VirgaArchive's Periods), PeriodPicker (the presets and Custom; on a phone Custom is its calendar alone) and RangeDialog (two days on the system's date picker in the active time zone, checked as they are picked, with the web's three problems and its line on what the range covers). Not yet: useSkyTaps (the live sky).",
       "synced": "a49f9d2a00e7"
     },
     "src/shell/commandPalette.css": {
@@ -346,9 +347,10 @@
         "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places and the first run. Not yet: the range dialog's fields (the period picker).",
+      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. Not yet: .sidebar-search and the app bar's Search button (the command palette), and the sidebar list's overflow fades.",
       "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {

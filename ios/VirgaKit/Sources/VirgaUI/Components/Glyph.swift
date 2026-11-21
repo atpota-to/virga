@@ -65,6 +65,8 @@ public enum Glyph {
   /// A remembered account, in a menu: an account's picture can't be a
   /// native menu item's image, so every account row carries this one.
   public static let account = "person.crop.circle"
+  /// CalendarRange: the period picker's Custom.
+  public static let calendarRange = Icons.sfSymbol(lucide: "CalendarRange")
   /// The first build's list: Database, UsersRound, ShieldCheck, Heart, Cloud.
   public static let database = Icons.sfSymbol(lucide: "Database")
   public static let followers = Icons.sfSymbol(lucide: "UsersRound")

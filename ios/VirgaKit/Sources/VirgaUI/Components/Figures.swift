@@ -11,12 +11,14 @@
 // anything else prints as given, and a missing value is skipped.
 //
 // DeltaView is a change against the window before: the figure in ink, 600,
-// with its sign, no colour. Its words are charts/format.js's deltaText(pct),
-// which comes with VirgaArchive's port of that module; until then a caller
-// passes the text it has.
+// with its sign, no colour (which way it went, not whether that is good:
+// more blocks is "up" too). Its words are VirgaArchive's ChartFormat.deltaText
+// (charts/format.js): "+8.6%", "−12%", "0%", or "new" with nothing to
+// compare against. A caller with no comparison at all draws none.
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 
 /// One figure: `{ key, value, label, note? }`.
@@ -169,21 +171,21 @@ struct FigureCell: View {
 /// of the words around it.
 public struct DeltaView: View {
   @Environment(\.virgaTheme) private var theme
-  private let text: String
+  private let pct: Double?
   private let title: String?
   private let plain: Bool
 
   /// - Parameters:
-  ///   - text: deltaText(pct) (charts/format.js).
+  ///   - pct: the change in percent, or nil for "new" (nothing before).
   ///   - title: what it was compared with, read by VoiceOver as a hint.
-  public init(_ text: String, title: String? = nil, plain: Bool = false) {
-    self.text = text
+  public init(pct: Double?, title: String? = nil, plain: Bool = false) {
+    self.pct = pct
     self.title = title
     self.plain = plain
   }
 
   public var body: some View {
-    let label = Text(text).foregroundStyle(theme.ink).lineLimit(1)
+    let label = Text(ChartFormat.deltaText(pct)).foregroundStyle(theme.ink).lineLimit(1)
     if plain {
       label.fontWeight(.semibold)
         .accessibilityHint(title ?? "")
@@ -199,7 +201,7 @@ public struct DeltaView: View {
   VirgaPreviewHost {
     FiguresView(
       [
-        FigureItem(label: "Followers", value: .number(4810), note: AnyView(DeltaView("+8.6%"))),
+        FigureItem(label: "Followers", value: .number(4810), note: AnyView(DeltaView(pct: 8.6))),
         FigureItem(label: "Posts", value: .number(1031)),
         FigureItem(label: "Engagement rate", value: .text("3.2%")),
       ], label: "This period")
