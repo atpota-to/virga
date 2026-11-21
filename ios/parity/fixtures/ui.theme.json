@@ -31642,6 +31642,818 @@
           }
         }
       }
+    },
+    {
+      "id": "a list is as specific as its strongest match",
+      "fn": "cascade",
+      "input": {
+        "css": ":root, :root[data-sky='day'][data-theme='light'] { --bg: #111111; --ink: #121212; } :root[data-sky='day'] { --bg: #222222; } [data-accent='violet'], :root { --ink: #333333; }",
+        "blocks": [
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root",
+              ":root[data-sky='day'][data-theme='light']"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--bg",
+                "css": "#111111",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.06666666666666667,
+                    "green": 0.06666666666666667,
+                    "blue": 0.06666666666666667,
+                    "alpha": 1
+                  }
+                }
+              },
+              {
+                "name": "--ink",
+                "css": "#121212",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.07058823529411765,
+                    "green": 0.07058823529411765,
+                    "blue": 0.07058823529411765,
+                    "alpha": 1
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root[data-sky='day']"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--bg",
+                "css": "#222222",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.13333333333333333,
+                    "green": 0.13333333333333333,
+                    "blue": 0.13333333333333333,
+                    "alpha": 1
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              "[data-accent='violet']",
+              ":root"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--ink",
+                "css": "#333333",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.2,
+                    "green": 0.2,
+                    "blue": 0.2,
+                    "alpha": 1
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "attrs": {
+          "sky": "day",
+          "theme": "light",
+          "accent": "blue",
+          "contrast": "normal",
+          "density": "comfortable"
+        },
+        "width": 1280
+      },
+      "output": {
+        "--bg": {
+          "color": {
+            "red": 0.06666666666666667,
+            "green": 0.06666666666666667,
+            "blue": 0.06666666666666667,
+            "alpha": 1
+          }
+        },
+        "--ink": {
+          "color": {
+            "red": 0.07058823529411765,
+            "green": 0.07058823529411765,
+            "blue": 0.07058823529411765,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "a property that refers to itself",
+      "fn": "cascade",
+      "input": {
+        "css": ":root { --ink: var(--ink); --ink-2: var(--ink); --muted: #46536b; --rule: var(--muted); }",
+        "blocks": [
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--ink",
+                "css": "var(--ink)",
+                "important": false,
+                "value": {
+                  "var": "--ink"
+                }
+              },
+              {
+                "name": "--ink-2",
+                "css": "var(--ink)",
+                "important": false,
+                "value": {
+                  "var": "--ink"
+                }
+              },
+              {
+                "name": "--muted",
+                "css": "#46536b",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.27450980392156865,
+                    "green": 0.3254901960784314,
+                    "blue": 0.4196078431372549,
+                    "alpha": 1
+                  }
+                }
+              },
+              {
+                "name": "--rule",
+                "css": "var(--muted)",
+                "important": false,
+                "value": {
+                  "var": "--muted"
+                }
+              }
+            ]
+          }
+        ],
+        "attrs": {
+          "sky": "day",
+          "theme": "light",
+          "accent": "blue",
+          "contrast": "normal",
+          "density": "comfortable"
+        },
+        "width": 1280
+      },
+      "output": {
+        "--ink": null,
+        "--ink-2": null,
+        "--muted": {
+          "color": {
+            "red": 0.27450980392156865,
+            "green": 0.3254901960784314,
+            "blue": 0.4196078431372549,
+            "alpha": 1
+          }
+        },
+        "--rule": {
+          "color": {
+            "red": 0.27450980392156865,
+            "green": 0.3254901960784314,
+            "blue": 0.4196078431372549,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "a cycle through a shadow and a mix",
+      "fn": "cascade",
+      "input": {
+        "css": ":root { --focus: 0 0 0 1px var(--focus-ring); --focus-ring: color-mix(in srgb, var(--accent) 50%, transparent); --accent: var(--accent-ink); --accent-ink: var(--focus-ring); --shadow-sm: var(--focus); --ink: #0f1b33; }",
+        "blocks": [
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--focus",
+                "css": "0 0 0 1px var(--focus-ring)",
+                "important": false,
+                "value": {
+                  "shadow": [
+                    {
+                      "inset": false,
+                      "x": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "y": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "blur": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "spread": {
+                        "value": 1,
+                        "unit": "px"
+                      },
+                      "color": {
+                        "var": "--focus-ring"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "--focus-ring",
+                "css": "color-mix(in srgb, var(--accent) 50%, transparent)",
+                "important": false,
+                "value": {
+                  "colorMix": {
+                    "space": "srgb",
+                    "first": {
+                      "var": "--accent"
+                    },
+                    "firstPercent": 50,
+                    "second": {
+                      "color": {
+                        "red": 0,
+                        "green": 0,
+                        "blue": 0,
+                        "alpha": 0
+                      }
+                    },
+                    "secondPercent": null
+                  }
+                }
+              },
+              {
+                "name": "--accent",
+                "css": "var(--accent-ink)",
+                "important": false,
+                "value": {
+                  "var": "--accent-ink"
+                }
+              },
+              {
+                "name": "--accent-ink",
+                "css": "var(--focus-ring)",
+                "important": false,
+                "value": {
+                  "var": "--focus-ring"
+                }
+              },
+              {
+                "name": "--shadow-sm",
+                "css": "var(--focus)",
+                "important": false,
+                "value": {
+                  "var": "--focus"
+                }
+              },
+              {
+                "name": "--ink",
+                "css": "#0f1b33",
+                "important": false,
+                "value": {
+                  "color": {
+                    "red": 0.058823529411764705,
+                    "green": 0.10588235294117647,
+                    "blue": 0.2,
+                    "alpha": 1
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "attrs": {
+          "sky": "day",
+          "theme": "light",
+          "accent": "blue",
+          "contrast": "normal",
+          "density": "comfortable"
+        },
+        "width": 1280
+      },
+      "output": {
+        "--focus": null,
+        "--focus-ring": null,
+        "--accent": null,
+        "--accent-ink": null,
+        "--shadow-sm": null,
+        "--ink": {
+          "color": {
+            "red": 0.058823529411764705,
+            "green": 0.10588235294117647,
+            "blue": 0.2,
+            "alpha": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "system colours are kept as they are",
+      "fn": "cascade",
+      "input": {
+        "css": ":root { --chart-1: CanvasText; --chart-2: highlight; --heat-1: color-mix(in srgb, CanvasText 15%, Canvas); --heat-2: color-mix(in srgb, var(--chart-1) 30%, #ffffff); --focus-ring: var(--chart-2); --focus: 0 0 0 1px var(--focus-ring); --heat-3: color-mix(in srgb, #ff0000, var(--chart-1) 40%); }",
+        "blocks": [
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--chart-1",
+                "css": "CanvasText",
+                "important": false,
+                "value": {
+                  "system": "CanvasText"
+                }
+              },
+              {
+                "name": "--chart-2",
+                "css": "highlight",
+                "important": false,
+                "value": {
+                  "system": "Highlight"
+                }
+              },
+              {
+                "name": "--heat-1",
+                "css": "color-mix(in srgb, CanvasText 15%, Canvas)",
+                "important": false,
+                "value": {
+                  "colorMix": {
+                    "space": "srgb",
+                    "first": {
+                      "system": "CanvasText"
+                    },
+                    "firstPercent": 15,
+                    "second": {
+                      "system": "Canvas"
+                    },
+                    "secondPercent": null
+                  }
+                }
+              },
+              {
+                "name": "--heat-2",
+                "css": "color-mix(in srgb, var(--chart-1) 30%, #ffffff)",
+                "important": false,
+                "value": {
+                  "colorMix": {
+                    "space": "srgb",
+                    "first": {
+                      "var": "--chart-1"
+                    },
+                    "firstPercent": 30,
+                    "second": {
+                      "color": {
+                        "red": 1,
+                        "green": 1,
+                        "blue": 1,
+                        "alpha": 1
+                      }
+                    },
+                    "secondPercent": null
+                  }
+                }
+              },
+              {
+                "name": "--focus-ring",
+                "css": "var(--chart-2)",
+                "important": false,
+                "value": {
+                  "var": "--chart-2"
+                }
+              },
+              {
+                "name": "--focus",
+                "css": "0 0 0 1px var(--focus-ring)",
+                "important": false,
+                "value": {
+                  "shadow": [
+                    {
+                      "inset": false,
+                      "x": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "y": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "blur": {
+                        "value": 0,
+                        "unit": "px"
+                      },
+                      "spread": {
+                        "value": 1,
+                        "unit": "px"
+                      },
+                      "color": {
+                        "var": "--focus-ring"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "--heat-3",
+                "css": "color-mix(in srgb, #ff0000, var(--chart-1) 40%)",
+                "important": false,
+                "value": {
+                  "colorMix": {
+                    "space": "srgb",
+                    "first": {
+                      "color": {
+                        "red": 1,
+                        "green": 0,
+                        "blue": 0,
+                        "alpha": 1
+                      }
+                    },
+                    "firstPercent": null,
+                    "second": {
+                      "var": "--chart-1"
+                    },
+                    "secondPercent": 40
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "attrs": {
+          "sky": "day",
+          "theme": "light",
+          "accent": "blue",
+          "contrast": "normal",
+          "density": "comfortable"
+        },
+        "width": 1280
+      },
+      "output": {
+        "--chart-1": {
+          "system": "CanvasText"
+        },
+        "--chart-2": {
+          "system": "Highlight"
+        },
+        "--heat-1": {
+          "colorMix": {
+            "space": "srgb",
+            "first": {
+              "system": "CanvasText"
+            },
+            "firstPercent": 15,
+            "second": {
+              "system": "Canvas"
+            },
+            "secondPercent": null
+          }
+        },
+        "--heat-2": {
+          "colorMix": {
+            "space": "srgb",
+            "first": {
+              "system": "CanvasText"
+            },
+            "firstPercent": 30,
+            "second": {
+              "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+              }
+            },
+            "secondPercent": null
+          }
+        },
+        "--focus-ring": {
+          "system": "Highlight"
+        },
+        "--focus": {
+          "shadow": [
+            {
+              "inset": false,
+              "x": {
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "value": 0,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 0,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 1,
+                "unit": "px"
+              },
+              "color": {
+                "system": "Highlight"
+              }
+            }
+          ]
+        },
+        "--heat-3": {
+          "colorMix": {
+            "space": "srgb",
+            "first": {
+              "color": {
+                "red": 1,
+                "green": 0,
+                "blue": 0,
+                "alpha": 1
+              }
+            },
+            "firstPercent": null,
+            "second": {
+              "system": "CanvasText"
+            },
+            "secondPercent": 40
+          }
+        }
+      }
+    },
+    {
+      "id": "media between whole pixels, and joined",
+      "fn": "cascade",
+      "input": {
+        "css": ":root { --page-pad: 1px; --page-top: 1px; --grid-gap: 1px; --section-gap: 1px; --row-pad: 1px; --row-pad-lg: 1px; } @media (max-width: 899px) { :root { --page-pad: 2px; } } @media (min-width: 900px) { :root { --page-top: 2px; } } @media (max-width:899.5px) { :root { --grid-gap: 2px; } } @media (min-width: 561px) and (max-width: 900px) { :root { --section-gap: 2px; } } @media (min-width: 561px) { @media (max-width: 899px) { :root { --row-pad: 2px; } } } @media (min-width: 561px) { @media (max-width: 900px) { :root { --row-pad-lg: 2px; } } }",
+        "blocks": [
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": null,
+            "declarations": [
+              {
+                "name": "--page-pad",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              },
+              {
+                "name": "--page-top",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              },
+              {
+                "name": "--grid-gap",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              },
+              {
+                "name": "--section-gap",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              },
+              {
+                "name": "--row-pad",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              },
+              {
+                "name": "--row-pad-lg",
+                "css": "1px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 1,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(max-width: 899px)",
+            "declarations": [
+              {
+                "name": "--page-pad",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(min-width: 900px)",
+            "declarations": [
+              {
+                "name": "--page-top",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(max-width:899.5px)",
+            "declarations": [
+              {
+                "name": "--grid-gap",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(min-width: 561px) and (max-width: 900px)",
+            "declarations": [
+              {
+                "name": "--section-gap",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(min-width: 561px) and (max-width: 899px)",
+            "declarations": [
+              {
+                "name": "--row-pad",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "file": "made-up.css",
+            "selectors": [
+              ":root"
+            ],
+            "media": "(min-width: 561px) and (max-width: 900px)",
+            "declarations": [
+              {
+                "name": "--row-pad-lg",
+                "css": "2px",
+                "important": false,
+                "value": {
+                  "length": {
+                    "value": 2,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "attrs": {
+          "sky": "day",
+          "theme": "light",
+          "accent": "blue",
+          "contrast": "normal",
+          "density": "comfortable"
+        },
+        "width": 899.5
+      },
+      "output": {
+        "--page-pad": {
+          "length": {
+            "value": 1,
+            "unit": "px"
+          }
+        },
+        "--page-top": {
+          "length": {
+            "value": 1,
+            "unit": "px"
+          }
+        },
+        "--grid-gap": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        },
+        "--section-gap": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        },
+        "--row-pad": {
+          "length": {
+            "value": 1,
+            "unit": "px"
+          }
+        },
+        "--row-pad-lg": {
+          "length": {
+            "value": 2,
+            "unit": "px"
+          }
+        }
+      }
     }
   ]
 }

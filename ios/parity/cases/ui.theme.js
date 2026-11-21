@@ -387,6 +387,48 @@ const SHEETS = [
         --warn: #FFF0; --danger: hsl(-30 120% 50%); --chart-1: rgb(12.5 300 -1 / 2); --chart-2: HSL(90DEG 100% 25% / 0.5);
         --chart-3: rgb(10% 20.5% 30% / .25); --chart-4: #1D5EE0CC; }`,
   },
+  {
+    // A rule's specificity is that of its most specific selector that
+    // matches, not its first: the first rule's three-part selector beats
+    // the later two-part one, though its `:root` alone would lose.
+    $id: 'a list is as specific as its strongest match',
+    css: `:root, :root[data-sky='day'][data-theme='light'] { --bg: #111111; --ink: #121212; }
+      :root[data-sky='day'] { --bg: #222222; }
+      [data-accent='violet'], :root { --ink: #333333; }`,
+  },
+  {
+    $id: 'a property that refers to itself',
+    css: `:root { --ink: var(--ink); --ink-2: var(--ink); --muted: #46536b; --rule: var(--muted); }`,
+  },
+  {
+    // A cycle that runs through a shadow's colour and a color-mix() takes
+    // every property in it, and what refers to them, with it.
+    $id: 'a cycle through a shadow and a mix',
+    css: `:root { --focus: 0 0 0 1px var(--focus-ring); --focus-ring: color-mix(in srgb, var(--accent) 50%, transparent);
+        --accent: var(--accent-ink); --accent-ink: var(--focus-ring); --shadow-sm: var(--focus); --ink: #0f1b33; }`,
+  },
+  {
+    // Outside forced colours too: a system colour is kept as it is, and a
+    // color-mix() or a shadow holding one is kept unmixed.
+    $id: 'system colours are kept as they are',
+    css: `:root { --chart-1: CanvasText; --chart-2: highlight; --heat-1: color-mix(in srgb, CanvasText 15%, Canvas);
+        --heat-2: color-mix(in srgb, var(--chart-1) 30%, #ffffff); --focus-ring: var(--chart-2); --focus: 0 0 0 1px var(--focus-ring);
+        --heat-3: color-mix(in srgb, #ff0000, var(--chart-1) 40%); }`,
+  },
+  {
+    // A viewport between whole pixels is under neither (max-width: 899px)
+    // nor (min-width: 900px), as in a browser; queries joined by "and",
+    // one inside another, and with no space after the colon.
+    $id: 'media between whole pixels, and joined',
+    width: 899.5,
+    css: `:root { --page-pad: 1px; --page-top: 1px; --grid-gap: 1px; --section-gap: 1px; --row-pad: 1px; --row-pad-lg: 1px; }
+      @media (max-width: 899px) { :root { --page-pad: 2px; } }
+      @media (min-width: 900px) { :root { --page-top: 2px; } }
+      @media (max-width:899.5px) { :root { --grid-gap: 2px; } }
+      @media (min-width: 561px) and (max-width: 900px) { :root { --section-gap: 2px; } }
+      @media (min-width: 561px) { @media (max-width: 899px) { :root { --row-pad: 2px; } } }
+      @media (min-width: 561px) { @media (max-width: 900px) { :root { --row-pad-lg: 2px; } } }`,
+  },
 ];
 
 export default async function cases() {
