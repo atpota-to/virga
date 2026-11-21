@@ -1306,6 +1306,60 @@ private func deadGrant(_ url: String) -> MockTransport.Response {
     #expect(await eventually { w.state.rows.first { $0.did == lab }?.handle == "lab.example.org" })
   }
 
+  @Test func leavesTheOpenAccountAsItWasWhenASignInComesBackDeclined() async throws {
+    let s = Stores()
+    s.remember(mira, "backend", token: token)
+    var sheet = Sheet(tabStorage: s.tabStorage, did: lab, token: token2)
+    sheet.outcome = .declines
+    let w = World(storage: s.storage, tabStorage: s.tabStorage, secrets: s.secrets, authMode: "backend", authenticator: sheet, answer: authorize)
+    await w.ctrl.startOnce()
+    try await w.ctrl.signIn("lab.example.org")
+    #expect(w.state.active.did == mira)
+    #expect(w.state.activeLog == [mira])
+    #expect(Accounts.readActiveDid(s.storage) == mira)
+    #expect(Accounts.readAccounts(s.storage).map(\.did) == [mira])
+    #expect(OAuthClient.callbackErrorMessage(w.state.error) == "Access wasn’t granted, so you’re not signed in.")
+    #expect(w.state.finishingLog == [true, false])
+  }
+
+  /// A sheet that couldn't be shown, or that waits until its task is cancelled.
+  struct Broken: WebAuthenticator {
+    var waits = false
+
+    func authenticate(url: String, callbackHost: String, callbackPath: String) async throws -> String {
+      if waits {
+        while !Task.isCancelled { await Task.yield() }
+        throw CancellationError()
+      }
+      throw WebAuthenticationError.failed("The sign-in sheet couldn’t be shown.")
+    }
+  }
+
+  @Test func passesOnASheetThatCouldntBeShown() async {
+    let tab = InMemoryKeyValueStore()
+    let w = World(tabStorage: tab, authMode: "backend", authenticator: Broken(), answer: authorize)
+    let error = await thrown { try await w.ctrl.signIn("mira.example.com") }
+    #expect(error as? WebAuthenticationError == .failed("The sign-in sheet couldn’t be shown."))
+    #expect(SignInFlow.tripFailureNotice(error, nil)?.text == "Sign-in couldn’t start. Check the handle and try again.")
+    #expect(BackendClient.readSigninPending(tab) == nil)
+    #expect(w.state.error == nil)
+    #expect(w.state.finishingLog.isEmpty)
+  }
+
+  @Test func callsTheSignInOffWhenItsTaskIsCancelledWithTheSheetUp() async {
+    let tab = InMemoryKeyValueStore()
+    let w = World(tabStorage: tab, authMode: "backend", authenticator: Broken(waits: true), answer: authorize)
+    let task = Task { @MainActor in try await w.ctrl.signIn("mira.example.com") }
+    #expect(await eventually { BackendClient.readSigninPending(tab) != nil })
+    task.cancel()
+    let error = await thrown { try await task.value }
+    #expect(JSErrorFields(error)?.name == "AbortError")
+    #expect(JSErrorFields(error)?.codeString == "CANCELLED")
+    #expect(jsMessage(error!) == "The sign-in was called off")
+    #expect(BackendClient.readSigninPending(tab) == nil)
+    #expect(w.state.active.did == nil)
+  }
+
   @Test func waitsForAStartUnderWayBeforeTakingAReturn() async {
     let s = Stores()
     s.remember(mira, "browser", at: 2)
