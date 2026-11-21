@@ -1169,6 +1169,19 @@ function substitute(value, lookup) {
 }
 
 /**
+ * A value of the kit (or any typed value) as it computes on an element
+ * whose custom properties are `computed` (resolveRoot's map, say): var()
+ * followed, color-mix() worked out. Null where a var() leads nowhere or to
+ * a value of the wrong kind.
+ */
+export function resolveIn(value, computed) {
+  const out = substitute(value, (name) =>
+    computed.has(name) ? computed.get(name) : INVALID,
+  );
+  return out === INVALID ? null : out;
+}
+
+/**
  * The computed value of every custom property on an element: its own
  * declarations with var() followed (in its own values, which for a property
  * it doesn't declare are the ones it inherits), and the rest inherited.
