@@ -1,0 +1,3671 @@
+{
+  "name": "archive.exports",
+  "sources": [
+    "src/lib/analyticsExport.js",
+    "src/archive/exports.js"
+  ],
+  "cases": [
+    {
+      "id": "constants",
+      "fn": "constants",
+      "input": {},
+      "output": {
+        "EXPORT_FORMAT": "virga-analytics-export",
+        "EXPORT_VERSION": 1
+      }
+    },
+    {
+      "id": "whole",
+      "fn": "archiveJson",
+      "input": {
+        "archive": {
+          "posts": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+              "rkey": "a",
+              "at": "2026-06-03T00:00:00Z",
+              "text": "one, \"two\"\nthree\r\nfour",
+              "replyTo": null,
+              "quoteOf": null,
+              "hasMedia": true,
+              "likes": 10,
+              "reposts": 2,
+              "replies": 3,
+              "quotes": 1,
+              "len": 5,
+              "media": "image",
+              "mediaCount": 2,
+              "altCount": 1,
+              "tags": [
+                "Gardens",
+                "allotment"
+              ],
+              "links": [
+                "example.com"
+              ],
+              "mentions": [],
+              "langs": [
+                "en",
+                "fr"
+              ],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+              "rkey": "b",
+              "at": "2026-06-02T00:00:00Z",
+              "text": "=SUM(A1) @mention",
+              "replyTo": "did:plc:someone",
+              "quoteOf": null,
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+              "rkey": "c",
+              "at": "2026-06-01T00:00:00Z",
+              "text": "emoji 👨‍👩‍👧 and é́",
+              "replyTo": "did:plc:owner",
+              "quoteOf": "did:plc:someone",
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            }
+          ],
+          "followers": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "",
+              "followedAt": "2026-01-01T00:00:00Z"
+            }
+          ],
+          "following": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+              "did": "did:plc:someone",
+              "followedAt": "2026-02-01T00:00:00.000Z"
+            }
+          ],
+          "blocks": [
+            {
+              "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+              "did": "did:plc:b",
+              "source": "direct",
+              "blockedAt": "2026-03-01T00:00:00.000Z"
+            },
+            {
+              "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+              "did": "did:plc:c",
+              "source": "list",
+              "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+              "blockedAt": null
+            }
+          ],
+          "inbound": [
+            {
+              "uri": "at://x/app.bsky.feed.like/1",
+              "did": "did:plc:someone",
+              "kind": "like",
+              "at": "2026-06-11T00:00:00Z",
+              "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+            }
+          ],
+          "outbound": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+              "kind": "like",
+              "did": "did:plc:someone",
+              "at": "2026-06-12T00:00:00Z"
+            }
+          ],
+          "atmosphere": [
+            {
+              "uri": "at://x/c/1",
+              "collection": "c",
+              "at": 1780272000000
+            }
+          ],
+          "meta": {
+            "posts": {
+              "key": "posts",
+              "syncedAt": 1,
+              "complete": true,
+              "cursor": null,
+              "shape": 2
+            },
+            "followers": {
+              "key": "followers",
+              "syncedAt": 1,
+              "count": 1,
+              "complete": true,
+              "profileCount": 3
+            },
+            "following": null,
+            "blocks": null,
+            "inbound": {
+              "key": "inbound",
+              "syncedAt": 1,
+              "coverageMs": 0,
+              "truncated": false
+            },
+            "outbound": null,
+            "repo": {
+              "key": "repo",
+              "syncedAt": 1,
+              "rev": "3abc",
+              "bytes": 1024
+            },
+            "followerLog": null,
+            "lists": null
+          },
+          "loaded": true,
+          "rev": 7
+        },
+        "did": "did:plc:owner",
+        "handle": "alice.example",
+        "actors": [
+          {
+            "did": "did:plc:someone",
+            "handle": "x.test",
+            "displayName": "X",
+            "avatar": "https://cdn.example/x.jpg",
+            "at": 5
+          }
+        ],
+        "now": 1793275200000
+      },
+      "output": {
+        "document": {
+          "format": "virga-analytics-export",
+          "version": 1,
+          "exportedAt": "2026-10-29T12:00:00.000Z",
+          "did": "did:plc:owner",
+          "handle": "alice.example",
+          "notes": {
+            "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+            "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+            "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+            "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+            "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+            "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+            "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+            "actors": "Profile cards for accounts the People lists have shown."
+          },
+          "counts": {
+            "posts": 3,
+            "followers": 1,
+            "following": 1,
+            "blocks": 2,
+            "inbound": 1,
+            "outbound": 1,
+            "atmosphere": 1,
+            "actors": 1
+          },
+          "meta": {
+            "posts": {
+              "key": "posts",
+              "syncedAt": 1,
+              "complete": true,
+              "cursor": null,
+              "shape": 2
+            },
+            "followers": {
+              "key": "followers",
+              "syncedAt": 1,
+              "count": 1,
+              "complete": true,
+              "profileCount": 3
+            },
+            "following": null,
+            "blocks": null,
+            "inbound": {
+              "key": "inbound",
+              "syncedAt": 1,
+              "coverageMs": 0,
+              "truncated": false
+            },
+            "outbound": null,
+            "repo": {
+              "key": "repo",
+              "syncedAt": 1,
+              "rev": "3abc",
+              "bytes": 1024
+            },
+            "followerLog": null,
+            "lists": null
+          },
+          "posts": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+              "rkey": "a",
+              "at": "2026-06-03T00:00:00Z",
+              "text": "one, \"two\"\nthree\r\nfour",
+              "replyTo": null,
+              "quoteOf": null,
+              "hasMedia": true,
+              "likes": 10,
+              "reposts": 2,
+              "replies": 3,
+              "quotes": 1,
+              "len": 5,
+              "media": "image",
+              "mediaCount": 2,
+              "altCount": 1,
+              "tags": [
+                "Gardens",
+                "allotment"
+              ],
+              "links": [
+                "example.com"
+              ],
+              "mentions": [],
+              "langs": [
+                "en",
+                "fr"
+              ],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+              "rkey": "b",
+              "at": "2026-06-02T00:00:00Z",
+              "text": "=SUM(A1) @mention",
+              "replyTo": "did:plc:someone",
+              "quoteOf": null,
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+              "rkey": "c",
+              "at": "2026-06-01T00:00:00Z",
+              "text": "emoji 👨‍👩‍👧 and é́",
+              "replyTo": "did:plc:owner",
+              "quoteOf": "did:plc:someone",
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            }
+          ],
+          "followers": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "",
+              "followedAt": "2026-01-01T00:00:00Z"
+            }
+          ],
+          "following": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+              "did": "did:plc:someone",
+              "followedAt": "2026-02-01T00:00:00.000Z"
+            }
+          ],
+          "blocks": [
+            {
+              "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+              "did": "did:plc:b",
+              "source": "direct",
+              "blockedAt": "2026-03-01T00:00:00.000Z"
+            },
+            {
+              "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+              "did": "did:plc:c",
+              "source": "list",
+              "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+              "blockedAt": null
+            }
+          ],
+          "inbound": [
+            {
+              "uri": "at://x/app.bsky.feed.like/1",
+              "did": "did:plc:someone",
+              "kind": "like",
+              "at": "2026-06-11T00:00:00Z",
+              "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+            }
+          ],
+          "outbound": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+              "kind": "like",
+              "did": "did:plc:someone",
+              "at": "2026-06-12T00:00:00Z"
+            }
+          ],
+          "atmosphere": [
+            {
+              "uri": "at://x/c/1",
+              "collection": "c",
+              "at": 1780272000000
+            }
+          ],
+          "actors": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "https://cdn.example/x.jpg",
+              "at": 5
+            }
+          ]
+        },
+        "keys": [
+          "format",
+          "version",
+          "exportedAt",
+          "did",
+          "handle",
+          "notes",
+          "counts",
+          "meta",
+          "posts",
+          "followers",
+          "following",
+          "blocks",
+          "inbound",
+          "outbound",
+          "atmosphere",
+          "actors"
+        ]
+      }
+    },
+    {
+      "id": "no-options",
+      "fn": "archiveJson",
+      "input": {
+        "archive": {
+          "posts": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+              "rkey": "a",
+              "at": "2026-06-03T00:00:00Z",
+              "text": "one, \"two\"\nthree\r\nfour",
+              "replyTo": null,
+              "quoteOf": null,
+              "hasMedia": true,
+              "likes": 10,
+              "reposts": 2,
+              "replies": 3,
+              "quotes": 1,
+              "len": 5,
+              "media": "image",
+              "mediaCount": 2,
+              "altCount": 1,
+              "tags": [
+                "Gardens",
+                "allotment"
+              ],
+              "links": [
+                "example.com"
+              ],
+              "mentions": [],
+              "langs": [
+                "en",
+                "fr"
+              ],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+              "rkey": "b",
+              "at": "2026-06-02T00:00:00Z",
+              "text": "=SUM(A1) @mention",
+              "replyTo": "did:plc:someone",
+              "quoteOf": null,
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+              "rkey": "c",
+              "at": "2026-06-01T00:00:00Z",
+              "text": "emoji 👨‍👩‍👧 and é́",
+              "replyTo": "did:plc:owner",
+              "quoteOf": "did:plc:someone",
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            }
+          ],
+          "followers": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "",
+              "followedAt": "2026-01-01T00:00:00Z"
+            }
+          ],
+          "following": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+              "did": "did:plc:someone",
+              "followedAt": "2026-02-01T00:00:00.000Z"
+            }
+          ],
+          "blocks": [
+            {
+              "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+              "did": "did:plc:b",
+              "source": "direct",
+              "blockedAt": "2026-03-01T00:00:00.000Z"
+            },
+            {
+              "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+              "did": "did:plc:c",
+              "source": "list",
+              "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+              "blockedAt": null
+            }
+          ],
+          "inbound": [
+            {
+              "uri": "at://x/app.bsky.feed.like/1",
+              "did": "did:plc:someone",
+              "kind": "like",
+              "at": "2026-06-11T00:00:00Z",
+              "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+            }
+          ],
+          "outbound": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+              "kind": "like",
+              "did": "did:plc:someone",
+              "at": "2026-06-12T00:00:00Z"
+            }
+          ],
+          "atmosphere": [
+            {
+              "uri": "at://x/c/1",
+              "collection": "c",
+              "at": 1780272000000
+            }
+          ],
+          "meta": {
+            "posts": {
+              "key": "posts",
+              "syncedAt": 1,
+              "complete": true,
+              "cursor": null,
+              "shape": 2
+            },
+            "followers": {
+              "key": "followers",
+              "syncedAt": 1,
+              "count": 1,
+              "complete": true,
+              "profileCount": 3
+            },
+            "following": null,
+            "blocks": null,
+            "inbound": {
+              "key": "inbound",
+              "syncedAt": 1,
+              "coverageMs": 0,
+              "truncated": false
+            },
+            "outbound": null,
+            "repo": {
+              "key": "repo",
+              "syncedAt": 1,
+              "rev": "3abc",
+              "bytes": 1024
+            },
+            "followerLog": null,
+            "lists": null
+          },
+          "loaded": true,
+          "rev": 7
+        },
+        "now": 1793275200000
+      },
+      "output": {
+        "document": {
+          "format": "virga-analytics-export",
+          "version": 1,
+          "exportedAt": "2026-10-29T12:00:00.000Z",
+          "did": null,
+          "handle": null,
+          "notes": {
+            "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+            "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+            "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+            "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+            "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+            "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+            "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+            "actors": "Profile cards for accounts the People lists have shown."
+          },
+          "counts": {
+            "posts": 3,
+            "followers": 1,
+            "following": 1,
+            "blocks": 2,
+            "inbound": 1,
+            "outbound": 1,
+            "atmosphere": 1,
+            "actors": 0
+          },
+          "meta": {
+            "posts": {
+              "key": "posts",
+              "syncedAt": 1,
+              "complete": true,
+              "cursor": null,
+              "shape": 2
+            },
+            "followers": {
+              "key": "followers",
+              "syncedAt": 1,
+              "count": 1,
+              "complete": true,
+              "profileCount": 3
+            },
+            "following": null,
+            "blocks": null,
+            "inbound": {
+              "key": "inbound",
+              "syncedAt": 1,
+              "coverageMs": 0,
+              "truncated": false
+            },
+            "outbound": null,
+            "repo": {
+              "key": "repo",
+              "syncedAt": 1,
+              "rev": "3abc",
+              "bytes": 1024
+            },
+            "followerLog": null,
+            "lists": null
+          },
+          "posts": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+              "rkey": "a",
+              "at": "2026-06-03T00:00:00Z",
+              "text": "one, \"two\"\nthree\r\nfour",
+              "replyTo": null,
+              "quoteOf": null,
+              "hasMedia": true,
+              "likes": 10,
+              "reposts": 2,
+              "replies": 3,
+              "quotes": 1,
+              "len": 5,
+              "media": "image",
+              "mediaCount": 2,
+              "altCount": 1,
+              "tags": [
+                "Gardens",
+                "allotment"
+              ],
+              "links": [
+                "example.com"
+              ],
+              "mentions": [],
+              "langs": [
+                "en",
+                "fr"
+              ],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+              "rkey": "b",
+              "at": "2026-06-02T00:00:00Z",
+              "text": "=SUM(A1) @mention",
+              "replyTo": "did:plc:someone",
+              "quoteOf": null,
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+              "rkey": "c",
+              "at": "2026-06-01T00:00:00Z",
+              "text": "emoji 👨‍👩‍👧 and é́",
+              "replyTo": "did:plc:owner",
+              "quoteOf": "did:plc:someone",
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            }
+          ],
+          "followers": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "",
+              "followedAt": "2026-01-01T00:00:00Z"
+            }
+          ],
+          "following": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+              "did": "did:plc:someone",
+              "followedAt": "2026-02-01T00:00:00.000Z"
+            }
+          ],
+          "blocks": [
+            {
+              "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+              "did": "did:plc:b",
+              "source": "direct",
+              "blockedAt": "2026-03-01T00:00:00.000Z"
+            },
+            {
+              "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+              "did": "did:plc:c",
+              "source": "list",
+              "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+              "blockedAt": null
+            }
+          ],
+          "inbound": [
+            {
+              "uri": "at://x/app.bsky.feed.like/1",
+              "did": "did:plc:someone",
+              "kind": "like",
+              "at": "2026-06-11T00:00:00Z",
+              "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+            }
+          ],
+          "outbound": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+              "kind": "like",
+              "did": "did:plc:someone",
+              "at": "2026-06-12T00:00:00Z"
+            }
+          ],
+          "atmosphere": [
+            {
+              "uri": "at://x/c/1",
+              "collection": "c",
+              "at": 1780272000000
+            }
+          ],
+          "actors": []
+        },
+        "keys": [
+          "format",
+          "version",
+          "exportedAt",
+          "did",
+          "handle",
+          "notes",
+          "counts",
+          "meta",
+          "posts",
+          "followers",
+          "following",
+          "blocks",
+          "inbound",
+          "outbound",
+          "atmosphere",
+          "actors"
+        ]
+      }
+    },
+    {
+      "id": "bare",
+      "fn": "archiveJson",
+      "input": {
+        "archive": {
+          "posts": [],
+          "followers": [],
+          "following": [],
+          "blocks": [],
+          "inbound": [],
+          "outbound": [],
+          "atmosphere": [],
+          "meta": {}
+        },
+        "actors": [],
+        "now": 0
+      },
+      "output": {
+        "document": {
+          "format": "virga-analytics-export",
+          "version": 1,
+          "exportedAt": "1970-01-01T00:00:00.000Z",
+          "did": null,
+          "handle": null,
+          "notes": {
+            "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+            "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+            "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+            "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+            "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+            "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+            "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+            "actors": "Profile cards for accounts the People lists have shown."
+          },
+          "counts": {
+            "posts": 0,
+            "followers": 0,
+            "following": 0,
+            "blocks": 0,
+            "inbound": 0,
+            "outbound": 0,
+            "atmosphere": 0,
+            "actors": 0
+          },
+          "meta": {},
+          "posts": [],
+          "followers": [],
+          "following": [],
+          "blocks": [],
+          "inbound": [],
+          "outbound": [],
+          "atmosphere": [],
+          "actors": []
+        },
+        "keys": [
+          "format",
+          "version",
+          "exportedAt",
+          "did",
+          "handle",
+          "notes",
+          "counts",
+          "meta",
+          "posts",
+          "followers",
+          "following",
+          "blocks",
+          "inbound",
+          "outbound",
+          "atmosphere",
+          "actors"
+        ]
+      }
+    },
+    {
+      "id": "invalid-now",
+      "fn": "archiveJson",
+      "input": {
+        "archive": {
+          "posts": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+              "rkey": "a",
+              "at": "2026-06-03T00:00:00Z",
+              "text": "one, \"two\"\nthree\r\nfour",
+              "replyTo": null,
+              "quoteOf": null,
+              "hasMedia": true,
+              "likes": 10,
+              "reposts": 2,
+              "replies": 3,
+              "quotes": 1,
+              "len": 5,
+              "media": "image",
+              "mediaCount": 2,
+              "altCount": 1,
+              "tags": [
+                "Gardens",
+                "allotment"
+              ],
+              "links": [
+                "example.com"
+              ],
+              "mentions": [],
+              "langs": [
+                "en",
+                "fr"
+              ],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+              "rkey": "b",
+              "at": "2026-06-02T00:00:00Z",
+              "text": "=SUM(A1) @mention",
+              "replyTo": "did:plc:someone",
+              "quoteOf": null,
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            },
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+              "rkey": "c",
+              "at": "2026-06-01T00:00:00Z",
+              "text": "emoji 👨‍👩‍👧 and é́",
+              "replyTo": "did:plc:owner",
+              "quoteOf": "did:plc:someone",
+              "hasMedia": false,
+              "likes": 0,
+              "reposts": 0,
+              "replies": 0,
+              "quotes": 0,
+              "len": 5,
+              "media": null,
+              "mediaCount": 0,
+              "altCount": 0,
+              "tags": [],
+              "links": [],
+              "mentions": [],
+              "langs": [],
+              "threadOf": null,
+              "threadKey": null
+            }
+          ],
+          "followers": [
+            {
+              "did": "did:plc:someone",
+              "handle": "x.test",
+              "displayName": "X",
+              "avatar": "",
+              "followedAt": "2026-01-01T00:00:00Z"
+            }
+          ],
+          "following": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+              "did": "did:plc:someone",
+              "followedAt": "2026-02-01T00:00:00.000Z"
+            }
+          ],
+          "blocks": [
+            {
+              "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+              "did": "did:plc:b",
+              "source": "direct",
+              "blockedAt": "2026-03-01T00:00:00.000Z"
+            },
+            {
+              "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+              "did": "did:plc:c",
+              "source": "list",
+              "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+              "blockedAt": null
+            }
+          ],
+          "inbound": [
+            {
+              "uri": "at://x/app.bsky.feed.like/1",
+              "did": "did:plc:someone",
+              "kind": "like",
+              "at": "2026-06-11T00:00:00Z",
+              "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+            }
+          ],
+          "outbound": [
+            {
+              "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+              "kind": "like",
+              "did": "did:plc:someone",
+              "at": "2026-06-12T00:00:00Z"
+            }
+          ],
+          "atmosphere": [
+            {
+              "uri": "at://x/c/1",
+              "collection": "c",
+              "at": 1780272000000
+            }
+          ],
+          "meta": {
+            "posts": {
+              "key": "posts",
+              "syncedAt": 1,
+              "complete": true,
+              "cursor": null,
+              "shape": 2
+            },
+            "followers": {
+              "key": "followers",
+              "syncedAt": 1,
+              "count": 1,
+              "complete": true,
+              "profileCount": 3
+            },
+            "following": null,
+            "blocks": null,
+            "inbound": {
+              "key": "inbound",
+              "syncedAt": 1,
+              "coverageMs": 0,
+              "truncated": false
+            },
+            "outbound": null,
+            "repo": {
+              "key": "repo",
+              "syncedAt": 1,
+              "rev": "3abc",
+              "bytes": 1024
+            },
+            "followerLog": null,
+            "lists": null
+          },
+          "loaded": true,
+          "rev": 7
+        },
+        "now": "$NaN"
+      },
+      "output": {
+        "$throws": "Invalid time value"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "postsCsv",
+      "input": {
+        "posts": []
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n"
+    },
+    {
+      "id": "null",
+      "fn": "postsCsv",
+      "input": {
+        "posts": null
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n"
+    },
+    {
+      "id": "all",
+      "fn": "postsCsv",
+      "input": {
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+            "rkey": "a",
+            "at": "2026-06-03T00:00:00Z",
+            "text": "one, \"two\"\nthree\r\nfour",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": true,
+            "likes": 10,
+            "reposts": 2,
+            "replies": 3,
+            "quotes": 1,
+            "len": 5,
+            "media": "image",
+            "mediaCount": 2,
+            "altCount": 1,
+            "tags": [
+              "Gardens",
+              "allotment"
+            ],
+            "links": [
+              "example.com"
+            ],
+            "mentions": [],
+            "langs": [
+              "en",
+              "fr"
+            ],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+            "rkey": "b",
+            "at": "2026-06-02T00:00:00Z",
+            "text": "=SUM(A1) @mention",
+            "replyTo": "did:plc:someone",
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+            "rkey": "c",
+            "at": "2026-06-01T00:00:00Z",
+            "text": "emoji 👨‍👩‍👧 and é́",
+            "replyTo": "did:plc:owner",
+            "quoteOf": "did:plc:someone",
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/old",
+            "rkey": "old",
+            "at": "2026-01-01T00:00:00Z",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/none",
+            "rkey": "none",
+            "at": "not a date",
+            "text": "",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/new",
+            "rkey": "new",
+            "at": "2026-09-01T00:00:00Z",
+            "text": "plain",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/local",
+            "rkey": "local",
+            "at": "2026-06-02T00:00:00",
+            "text": "zone-less",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/also-none",
+            "rkey": "also-none",
+            "at": "still not",
+            "text": "sinks too",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
+        "did": "did:plc:owner",
+        "handle": "alice.example"
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/new,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/did:plc:owner/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/did:plc:owner/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/local,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-06-01T00:00:00Z,thread,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,https://bsky.app/profile/did:plc:owner/post/c,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/old,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/none,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/also-none,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n"
+    },
+    {
+      "id": "handle-only",
+      "fn": "postsCsv",
+      "input": {
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+            "rkey": "a",
+            "at": "2026-06-03T00:00:00Z",
+            "text": "one, \"two\"\nthree\r\nfour",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": true,
+            "likes": 10,
+            "reposts": 2,
+            "replies": 3,
+            "quotes": 1,
+            "len": 5,
+            "media": "image",
+            "mediaCount": 2,
+            "altCount": 1,
+            "tags": [
+              "Gardens",
+              "allotment"
+            ],
+            "links": [
+              "example.com"
+            ],
+            "mentions": [],
+            "langs": [
+              "en",
+              "fr"
+            ],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+            "rkey": "b",
+            "at": "2026-06-02T00:00:00Z",
+            "text": "=SUM(A1) @mention",
+            "replyTo": "did:plc:someone",
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          }
+        ],
+        "handle": "alice.example"
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/alice.example/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/alice.example/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n"
+    },
+    {
+      "id": "nobody",
+      "fn": "postsCsv",
+      "input": {
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+            "rkey": "a",
+            "at": "2026-06-03T00:00:00Z",
+            "text": "one, \"two\"\nthree\r\nfour",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": true,
+            "likes": 10,
+            "reposts": 2,
+            "replies": 3,
+            "quotes": 1,
+            "len": 5,
+            "media": "image",
+            "mediaCount": 2,
+            "altCount": 1,
+            "tags": [
+              "Gardens",
+              "allotment"
+            ],
+            "links": [
+              "example.com"
+            ],
+            "mentions": [],
+            "langs": [
+              "en",
+              "fr"
+            ],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+            "rkey": "b",
+            "at": "2026-06-02T00:00:00Z",
+            "text": "=SUM(A1) @mention",
+            "replyTo": "did:plc:someone",
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          }
+        ]
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n"
+    },
+    {
+      "id": "zone",
+      "fn": "postsCsv",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "posts": [
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+            "rkey": "a",
+            "at": "2026-06-03T00:00:00Z",
+            "text": "one, \"two\"\nthree\r\nfour",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": true,
+            "likes": 10,
+            "reposts": 2,
+            "replies": 3,
+            "quotes": 1,
+            "len": 5,
+            "media": "image",
+            "mediaCount": 2,
+            "altCount": 1,
+            "tags": [
+              "Gardens",
+              "allotment"
+            ],
+            "links": [
+              "example.com"
+            ],
+            "mentions": [],
+            "langs": [
+              "en",
+              "fr"
+            ],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+            "rkey": "b",
+            "at": "2026-06-02T00:00:00Z",
+            "text": "=SUM(A1) @mention",
+            "replyTo": "did:plc:someone",
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+            "rkey": "c",
+            "at": "2026-06-01T00:00:00Z",
+            "text": "emoji 👨‍👩‍👧 and é́",
+            "replyTo": "did:plc:owner",
+            "quoteOf": "did:plc:someone",
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0,
+            "len": 5,
+            "media": null,
+            "mediaCount": 0,
+            "altCount": 0,
+            "tags": [],
+            "links": [],
+            "mentions": [],
+            "langs": [],
+            "threadOf": null,
+            "threadKey": null
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/old",
+            "rkey": "old",
+            "at": "2026-01-01T00:00:00Z",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/none",
+            "rkey": "none",
+            "at": "not a date",
+            "text": "",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/new",
+            "rkey": "new",
+            "at": "2026-09-01T00:00:00Z",
+            "text": "plain",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/local",
+            "rkey": "local",
+            "at": "2026-06-02T00:00:00",
+            "text": "zone-less",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          },
+          {
+            "uri": "at://did:plc:owner/app.bsky.feed.post/also-none",
+            "rkey": "also-none",
+            "at": "still not",
+            "text": "sinks too",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "likes": 0,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ],
+        "did": "did:plc:owner"
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/new,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/did:plc:owner/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/did:plc:owner/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/local,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-06-01T00:00:00Z,thread,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,https://bsky.app/profile/did:plc:owner/post/c,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/old,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/none,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/also-none,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n"
+    },
+    {
+      "id": "holes",
+      "fn": "postsCsv",
+      "input": {
+        "posts": [
+          null,
+          {
+            "rkey": "",
+            "replyTo": null,
+            "quoteOf": null,
+            "hasMedia": false,
+            "reposts": 0,
+            "replies": 0,
+            "quotes": 0
+          }
+        ]
+      },
+      "output": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n,post,,0,0,0,0,0,false,,,,,,0,0,,,,\r\n"
+    },
+    {
+      "id": "UTC late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "UTC late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "UTC late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "UTC utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "UTC utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "UTC utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "UTC early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051092800000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "UTC early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051092800000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "UTC early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051092800000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "UTC invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "UTC invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "UTC invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "UTC",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "America/New_York late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791084600000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "America/New_York late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791084600000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "America/New_York late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791084600000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "America/New_York utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "America/New_York utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "America/New_York utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "America/New_York early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051074800000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "America/New_York early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051074800000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "America/New_York early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051074800000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "America/New_York invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "America/New_York invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "America/New_York invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/New_York",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Europe/London late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791066600000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "Europe/London late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791066600000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "Europe/London late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791066600000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "Europe/London utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-04.csv"
+    },
+    {
+      "id": "Europe/London utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-04.json"
+    },
+    {
+      "id": "Europe/London utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-04.csv"
+    },
+    {
+      "id": "Europe/London early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051092800000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "Europe/London early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051092800000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "Europe/London early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051092800000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "Europe/London invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Europe/London invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "Europe/London invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Europe/London",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Asia/Kolkata late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791050400000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "Asia/Kolkata late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791050400000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "Asia/Kolkata late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791050400000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "Asia/Kolkata utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-04.csv"
+    },
+    {
+      "id": "Asia/Kolkata utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-04.json"
+    },
+    {
+      "id": "Asia/Kolkata utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-04.csv"
+    },
+    {
+      "id": "Asia/Kolkata early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051112070000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "Asia/Kolkata early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051112070000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "Asia/Kolkata early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051112070000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "Asia/Kolkata invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Asia/Kolkata invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "Asia/Kolkata invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Asia/Kolkata",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791032400000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791032400000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "Australia/Lord_Howe late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791032400000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-04.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-04.json"
+    },
+    {
+      "id": "Australia/Lord_Howe utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-04.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051128800000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051128800000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "Australia/Lord_Howe early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051128800000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Australia/Lord_Howe invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "Australia/Lord_Howe invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Australia/Lord_Howe",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Pacific/Chatham late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791020700000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "Pacific/Chatham late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791020700000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "Pacific/Chatham late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791020700000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "Pacific/Chatham utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-04.csv"
+    },
+    {
+      "id": "Pacific/Chatham utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-04.json"
+    },
+    {
+      "id": "Pacific/Chatham utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-04.csv"
+    },
+    {
+      "id": "Pacific/Chatham early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051136900000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "Pacific/Chatham early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051136900000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "Pacific/Chatham early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051136900000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "Pacific/Chatham invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "Pacific/Chatham invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "Pacific/Chatham invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "Pacific/Chatham",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "America/Sao_Paulo late posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791081000000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "America/Sao_Paulo late analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791081000000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "America/Sao_Paulo late followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791081000000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "America/Sao_Paulo utc-midnight posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "alice.example-posts-2026-10-03.csv"
+    },
+    {
+      "id": "America/Sao_Paulo utc-midnight analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": 1791070200000
+      },
+      "output": "archive-analytics-2026-10-03.json"
+    },
+    {
+      "id": "America/Sao_Paulo utc-midnight followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": 1791070200000
+      },
+      "output": "archive-followers-2026-10-03.csv"
+    },
+    {
+      "id": "America/Sao_Paulo early-year posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": -2051081612000
+      },
+      "output": "alice.example-posts-1905-01-02.csv"
+    },
+    {
+      "id": "America/Sao_Paulo early-year analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": -2051081612000
+      },
+      "output": "archive-analytics-1905-01-02.json"
+    },
+    {
+      "id": "America/Sao_Paulo early-year followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": -2051081612000
+      },
+      "output": "archive-followers-1905-01-02.csv"
+    },
+    {
+      "id": "America/Sao_Paulo invalid posts",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "alice.example",
+        "what": "posts",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "alice.example-posts-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "America/Sao_Paulo invalid analytics",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": null,
+        "what": "analytics",
+        "ext": "json",
+        "now": "$NaN"
+      },
+      "output": "archive-analytics-NaN-NaN-NaN.json"
+    },
+    {
+      "id": "America/Sao_Paulo invalid followers",
+      "fn": "exportFilename",
+      "input": {
+        "zone": "America/Sao_Paulo",
+        "handle": "",
+        "what": "followers",
+        "ext": "csv",
+        "now": "$NaN"
+      },
+      "output": "archive-followers-NaN-NaN-NaN.csv"
+    },
+    {
+      "id": "handle",
+      "fn": "exportArchive",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "alice.example",
+        "now": 1793275200000
+      },
+      "output": {
+        "text": {
+          "document": {
+            "format": "virga-analytics-export",
+            "version": 1,
+            "exportedAt": "2026-10-29T12:00:00.000Z",
+            "did": "did:plc:owner",
+            "handle": "alice.example",
+            "notes": {
+              "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+              "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+              "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+              "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+              "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+              "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+              "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+              "actors": "Profile cards for accounts the People lists have shown."
+            },
+            "counts": {
+              "posts": 3,
+              "followers": 1,
+              "following": 1,
+              "blocks": 2,
+              "inbound": 1,
+              "outbound": 1,
+              "atmosphere": 1,
+              "actors": 1
+            },
+            "meta": {
+              "posts": {
+                "key": "posts",
+                "syncedAt": 1,
+                "complete": true,
+                "cursor": null,
+                "shape": 2
+              },
+              "followers": {
+                "key": "followers",
+                "syncedAt": 1,
+                "count": 1,
+                "complete": true,
+                "profileCount": 3
+              },
+              "following": null,
+              "blocks": null,
+              "inbound": {
+                "key": "inbound",
+                "syncedAt": 1,
+                "coverageMs": 0,
+                "truncated": false
+              },
+              "outbound": null,
+              "repo": {
+                "key": "repo",
+                "syncedAt": 1,
+                "rev": "3abc",
+                "bytes": 1024
+              },
+              "followerLog": null,
+              "lists": null
+            },
+            "posts": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+                "rkey": "a",
+                "at": "2026-06-03T00:00:00Z",
+                "text": "one, \"two\"\nthree\r\nfour",
+                "replyTo": null,
+                "quoteOf": null,
+                "hasMedia": true,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 3,
+                "quotes": 1,
+                "len": 5,
+                "media": "image",
+                "mediaCount": 2,
+                "altCount": 1,
+                "tags": [
+                  "Gardens",
+                  "allotment"
+                ],
+                "links": [
+                  "example.com"
+                ],
+                "mentions": [],
+                "langs": [
+                  "en",
+                  "fr"
+                ],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+                "rkey": "b",
+                "at": "2026-06-02T00:00:00Z",
+                "text": "=SUM(A1) @mention",
+                "replyTo": "did:plc:someone",
+                "quoteOf": null,
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+                "rkey": "c",
+                "at": "2026-06-01T00:00:00Z",
+                "text": "emoji 👨‍👩‍👧 and é́",
+                "replyTo": "did:plc:owner",
+                "quoteOf": "did:plc:someone",
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              }
+            ],
+            "followers": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "",
+                "followedAt": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "following": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+                "did": "did:plc:someone",
+                "followedAt": "2026-02-01T00:00:00.000Z"
+              }
+            ],
+            "blocks": [
+              {
+                "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+                "did": "did:plc:b",
+                "source": "direct",
+                "blockedAt": "2026-03-01T00:00:00.000Z"
+              },
+              {
+                "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+                "did": "did:plc:c",
+                "source": "list",
+                "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+                "blockedAt": null
+              }
+            ],
+            "inbound": [
+              {
+                "uri": "at://x/app.bsky.feed.like/1",
+                "did": "did:plc:someone",
+                "kind": "like",
+                "at": "2026-06-11T00:00:00Z",
+                "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+              }
+            ],
+            "outbound": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+                "kind": "like",
+                "did": "did:plc:someone",
+                "at": "2026-06-12T00:00:00Z"
+              }
+            ],
+            "atmosphere": [
+              {
+                "uri": "at://x/c/1",
+                "collection": "c",
+                "at": 1780272000000
+              }
+            ],
+            "actors": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "https://cdn.example/x.jpg",
+                "at": 5
+              }
+            ]
+          },
+          "keys": [
+            "format",
+            "version",
+            "exportedAt",
+            "did",
+            "handle",
+            "notes",
+            "counts",
+            "meta",
+            "posts",
+            "followers",
+            "following",
+            "blocks",
+            "inbound",
+            "outbound",
+            "atmosphere",
+            "actors"
+          ]
+        },
+        "filename": "alice.example-analytics-2026-10-29.json",
+        "type": "application/json"
+      }
+    },
+    {
+      "id": "did-only",
+      "fn": "exportArchive",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": null,
+        "now": 1793275200000
+      },
+      "output": {
+        "text": {
+          "document": {
+            "format": "virga-analytics-export",
+            "version": 1,
+            "exportedAt": "2026-10-29T12:00:00.000Z",
+            "did": "did:plc:owner",
+            "handle": null,
+            "notes": {
+              "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+              "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+              "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+              "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+              "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+              "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+              "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+              "actors": "Profile cards for accounts the People lists have shown."
+            },
+            "counts": {
+              "posts": 3,
+              "followers": 1,
+              "following": 1,
+              "blocks": 2,
+              "inbound": 1,
+              "outbound": 1,
+              "atmosphere": 1,
+              "actors": 1
+            },
+            "meta": {
+              "posts": {
+                "key": "posts",
+                "syncedAt": 1,
+                "complete": true,
+                "cursor": null,
+                "shape": 2
+              },
+              "followers": {
+                "key": "followers",
+                "syncedAt": 1,
+                "count": 1,
+                "complete": true,
+                "profileCount": 3
+              },
+              "following": null,
+              "blocks": null,
+              "inbound": {
+                "key": "inbound",
+                "syncedAt": 1,
+                "coverageMs": 0,
+                "truncated": false
+              },
+              "outbound": null,
+              "repo": {
+                "key": "repo",
+                "syncedAt": 1,
+                "rev": "3abc",
+                "bytes": 1024
+              },
+              "followerLog": null,
+              "lists": null
+            },
+            "posts": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+                "rkey": "a",
+                "at": "2026-06-03T00:00:00Z",
+                "text": "one, \"two\"\nthree\r\nfour",
+                "replyTo": null,
+                "quoteOf": null,
+                "hasMedia": true,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 3,
+                "quotes": 1,
+                "len": 5,
+                "media": "image",
+                "mediaCount": 2,
+                "altCount": 1,
+                "tags": [
+                  "Gardens",
+                  "allotment"
+                ],
+                "links": [
+                  "example.com"
+                ],
+                "mentions": [],
+                "langs": [
+                  "en",
+                  "fr"
+                ],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+                "rkey": "b",
+                "at": "2026-06-02T00:00:00Z",
+                "text": "=SUM(A1) @mention",
+                "replyTo": "did:plc:someone",
+                "quoteOf": null,
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+                "rkey": "c",
+                "at": "2026-06-01T00:00:00Z",
+                "text": "emoji 👨‍👩‍👧 and é́",
+                "replyTo": "did:plc:owner",
+                "quoteOf": "did:plc:someone",
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              }
+            ],
+            "followers": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "",
+                "followedAt": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "following": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+                "did": "did:plc:someone",
+                "followedAt": "2026-02-01T00:00:00.000Z"
+              }
+            ],
+            "blocks": [
+              {
+                "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+                "did": "did:plc:b",
+                "source": "direct",
+                "blockedAt": "2026-03-01T00:00:00.000Z"
+              },
+              {
+                "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+                "did": "did:plc:c",
+                "source": "list",
+                "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+                "blockedAt": null
+              }
+            ],
+            "inbound": [
+              {
+                "uri": "at://x/app.bsky.feed.like/1",
+                "did": "did:plc:someone",
+                "kind": "like",
+                "at": "2026-06-11T00:00:00Z",
+                "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+              }
+            ],
+            "outbound": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+                "kind": "like",
+                "did": "did:plc:someone",
+                "at": "2026-06-12T00:00:00Z"
+              }
+            ],
+            "atmosphere": [
+              {
+                "uri": "at://x/c/1",
+                "collection": "c",
+                "at": 1780272000000
+              }
+            ],
+            "actors": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "https://cdn.example/x.jpg",
+                "at": 5
+              }
+            ]
+          },
+          "keys": [
+            "format",
+            "version",
+            "exportedAt",
+            "did",
+            "handle",
+            "notes",
+            "counts",
+            "meta",
+            "posts",
+            "followers",
+            "following",
+            "blocks",
+            "inbound",
+            "outbound",
+            "atmosphere",
+            "actors"
+          ]
+        },
+        "filename": "did-plc-owner-analytics-2026-10-29.json",
+        "type": "application/json"
+      }
+    },
+    {
+      "id": "odd-handle",
+      "fn": "exportArchive",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "Ünïcode_näme 👋.test",
+        "now": 1793275200000
+      },
+      "output": {
+        "text": {
+          "document": {
+            "format": "virga-analytics-export",
+            "version": 1,
+            "exportedAt": "2026-10-29T12:00:00.000Z",
+            "did": "did:plc:owner",
+            "handle": "Ünïcode_näme 👋.test",
+            "notes": {
+              "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+              "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+              "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+              "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+              "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+              "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+              "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+              "actors": "Profile cards for accounts the People lists have shown."
+            },
+            "counts": {
+              "posts": 3,
+              "followers": 1,
+              "following": 1,
+              "blocks": 2,
+              "inbound": 1,
+              "outbound": 1,
+              "atmosphere": 1,
+              "actors": 1
+            },
+            "meta": {
+              "posts": {
+                "key": "posts",
+                "syncedAt": 1,
+                "complete": true,
+                "cursor": null,
+                "shape": 2
+              },
+              "followers": {
+                "key": "followers",
+                "syncedAt": 1,
+                "count": 1,
+                "complete": true,
+                "profileCount": 3
+              },
+              "following": null,
+              "blocks": null,
+              "inbound": {
+                "key": "inbound",
+                "syncedAt": 1,
+                "coverageMs": 0,
+                "truncated": false
+              },
+              "outbound": null,
+              "repo": {
+                "key": "repo",
+                "syncedAt": 1,
+                "rev": "3abc",
+                "bytes": 1024
+              },
+              "followerLog": null,
+              "lists": null
+            },
+            "posts": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+                "rkey": "a",
+                "at": "2026-06-03T00:00:00Z",
+                "text": "one, \"two\"\nthree\r\nfour",
+                "replyTo": null,
+                "quoteOf": null,
+                "hasMedia": true,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 3,
+                "quotes": 1,
+                "len": 5,
+                "media": "image",
+                "mediaCount": 2,
+                "altCount": 1,
+                "tags": [
+                  "Gardens",
+                  "allotment"
+                ],
+                "links": [
+                  "example.com"
+                ],
+                "mentions": [],
+                "langs": [
+                  "en",
+                  "fr"
+                ],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+                "rkey": "b",
+                "at": "2026-06-02T00:00:00Z",
+                "text": "=SUM(A1) @mention",
+                "replyTo": "did:plc:someone",
+                "quoteOf": null,
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+                "rkey": "c",
+                "at": "2026-06-01T00:00:00Z",
+                "text": "emoji 👨‍👩‍👧 and é́",
+                "replyTo": "did:plc:owner",
+                "quoteOf": "did:plc:someone",
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              }
+            ],
+            "followers": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "",
+                "followedAt": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "following": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+                "did": "did:plc:someone",
+                "followedAt": "2026-02-01T00:00:00.000Z"
+              }
+            ],
+            "blocks": [
+              {
+                "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+                "did": "did:plc:b",
+                "source": "direct",
+                "blockedAt": "2026-03-01T00:00:00.000Z"
+              },
+              {
+                "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+                "did": "did:plc:c",
+                "source": "list",
+                "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+                "blockedAt": null
+              }
+            ],
+            "inbound": [
+              {
+                "uri": "at://x/app.bsky.feed.like/1",
+                "did": "did:plc:someone",
+                "kind": "like",
+                "at": "2026-06-11T00:00:00Z",
+                "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+              }
+            ],
+            "outbound": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+                "kind": "like",
+                "did": "did:plc:someone",
+                "at": "2026-06-12T00:00:00Z"
+              }
+            ],
+            "atmosphere": [
+              {
+                "uri": "at://x/c/1",
+                "collection": "c",
+                "at": 1780272000000
+              }
+            ],
+            "actors": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "https://cdn.example/x.jpg",
+                "at": 5
+              }
+            ]
+          },
+          "keys": [
+            "format",
+            "version",
+            "exportedAt",
+            "did",
+            "handle",
+            "notes",
+            "counts",
+            "meta",
+            "posts",
+            "followers",
+            "following",
+            "blocks",
+            "inbound",
+            "outbound",
+            "atmosphere",
+            "actors"
+          ]
+        },
+        "filename": "-n-code-n-me-.test-analytics-2026-10-29.json",
+        "type": "application/json"
+      }
+    },
+    {
+      "id": "nobody",
+      "fn": "exportArchive",
+      "input": {
+        "did": null,
+        "handle": null,
+        "now": 1793275200000
+      },
+      "output": {
+        "text": {
+          "document": {
+            "format": "virga-analytics-export",
+            "version": 1,
+            "exportedAt": "2026-10-29T12:00:00.000Z",
+            "did": null,
+            "handle": null,
+            "notes": {
+              "posts": "Your own posts and replies; reposts are not included. text is the whole post. len is its length as Bluesky counts it; media is image, video, gif or link (a link card), with mediaCount items of which altCount are described; tags, links (hosts) and mentions (DIDs) come from the post’s facets; threadOf and threadKey name the thread a reply belongs to. Rows archived before these were kept (meta.posts.shape below 2) have a 200-character text and none of them until the next sync. Engagement counts are as of the sync that last fetched each post: ordinary syncs refresh recent posts only, a Rebuild refreshes all of them. Posts deleted since the last Rebuild may still be listed.",
+              "followers": "Current followers, each dated by their follow record. Anyone who has since unfollowed, or whose account is gone, is not listed.",
+              "following": "Your own follow records, one row per record (a repo can hold two for one account), each dated by its record key. Read in full at every sync.",
+              "blocks": "Block records in other repos that currently point at you, directly or through a moderation list, each dated by its record key.",
+              "inbound": "Likes, reposts, replies, quotes and mentions from your notifications. Coverage reaches back only as far as the notification history did when Virga first synced (meta.inbound.coverageMs). subject is the post an event was about, on events archived since that was kept.",
+              "outbound": "Your own likes and reposts. Your replies and quotes are in posts, under replyTo and quoteOf.",
+              "atmosphere": "Every record in every collection of your repo: its URI, collection and date. Record contents are not included.",
+              "actors": "Profile cards for accounts the People lists have shown."
+            },
+            "counts": {
+              "posts": 3,
+              "followers": 1,
+              "following": 1,
+              "blocks": 2,
+              "inbound": 1,
+              "outbound": 1,
+              "atmosphere": 1,
+              "actors": 1
+            },
+            "meta": {
+              "posts": {
+                "key": "posts",
+                "syncedAt": 1,
+                "complete": true,
+                "cursor": null,
+                "shape": 2
+              },
+              "followers": {
+                "key": "followers",
+                "syncedAt": 1,
+                "count": 1,
+                "complete": true,
+                "profileCount": 3
+              },
+              "following": null,
+              "blocks": null,
+              "inbound": {
+                "key": "inbound",
+                "syncedAt": 1,
+                "coverageMs": 0,
+                "truncated": false
+              },
+              "outbound": null,
+              "repo": {
+                "key": "repo",
+                "syncedAt": 1,
+                "rev": "3abc",
+                "bytes": 1024
+              },
+              "followerLog": null,
+              "lists": null
+            },
+            "posts": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/a",
+                "rkey": "a",
+                "at": "2026-06-03T00:00:00Z",
+                "text": "one, \"two\"\nthree\r\nfour",
+                "replyTo": null,
+                "quoteOf": null,
+                "hasMedia": true,
+                "likes": 10,
+                "reposts": 2,
+                "replies": 3,
+                "quotes": 1,
+                "len": 5,
+                "media": "image",
+                "mediaCount": 2,
+                "altCount": 1,
+                "tags": [
+                  "Gardens",
+                  "allotment"
+                ],
+                "links": [
+                  "example.com"
+                ],
+                "mentions": [],
+                "langs": [
+                  "en",
+                  "fr"
+                ],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/b",
+                "rkey": "b",
+                "at": "2026-06-02T00:00:00Z",
+                "text": "=SUM(A1) @mention",
+                "replyTo": "did:plc:someone",
+                "quoteOf": null,
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              },
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.post/c",
+                "rkey": "c",
+                "at": "2026-06-01T00:00:00Z",
+                "text": "emoji 👨‍👩‍👧 and é́",
+                "replyTo": "did:plc:owner",
+                "quoteOf": "did:plc:someone",
+                "hasMedia": false,
+                "likes": 0,
+                "reposts": 0,
+                "replies": 0,
+                "quotes": 0,
+                "len": 5,
+                "media": null,
+                "mediaCount": 0,
+                "altCount": 0,
+                "tags": [],
+                "links": [],
+                "mentions": [],
+                "langs": [],
+                "threadOf": null,
+                "threadKey": null
+              }
+            ],
+            "followers": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "",
+                "followedAt": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "following": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.graph.follow/3f",
+                "did": "did:plc:someone",
+                "followedAt": "2026-02-01T00:00:00.000Z"
+              }
+            ],
+            "blocks": [
+              {
+                "uri": "at://did:plc:b/app.bsky.graph.block/3b",
+                "did": "did:plc:b",
+                "source": "direct",
+                "blockedAt": "2026-03-01T00:00:00.000Z"
+              },
+              {
+                "uri": "list:at://did:plc:l/app.bsky.graph.list/1:at://did:plc:c/app.bsky.graph.listblock/2",
+                "did": "did:plc:c",
+                "source": "list",
+                "listUri": "at://did:plc:l/app.bsky.graph.list/1",
+                "blockedAt": null
+              }
+            ],
+            "inbound": [
+              {
+                "uri": "at://x/app.bsky.feed.like/1",
+                "did": "did:plc:someone",
+                "kind": "like",
+                "at": "2026-06-11T00:00:00Z",
+                "subject": "at://did:plc:owner/app.bsky.feed.post/a"
+              }
+            ],
+            "outbound": [
+              {
+                "uri": "at://did:plc:owner/app.bsky.feed.like/2",
+                "kind": "like",
+                "did": "did:plc:someone",
+                "at": "2026-06-12T00:00:00Z"
+              }
+            ],
+            "atmosphere": [
+              {
+                "uri": "at://x/c/1",
+                "collection": "c",
+                "at": 1780272000000
+              }
+            ],
+            "actors": [
+              {
+                "did": "did:plc:someone",
+                "handle": "x.test",
+                "displayName": "X",
+                "avatar": "https://cdn.example/x.jpg",
+                "at": 5
+              }
+            ]
+          },
+          "keys": [
+            "format",
+            "version",
+            "exportedAt",
+            "did",
+            "handle",
+            "notes",
+            "counts",
+            "meta",
+            "posts",
+            "followers",
+            "following",
+            "blocks",
+            "inbound",
+            "outbound",
+            "atmosphere",
+            "actors"
+          ]
+        },
+        "filename": "archive-analytics-2026-10-29.json",
+        "type": "application/json"
+      }
+    },
+    {
+      "id": "handle",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "alice.example",
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/did:plc:owner/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/did:plc:owner/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-01T00:00:00Z,thread,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,https://bsky.app/profile/did:plc:owner/post/c,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n",
+        "filename": "alice.example-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "handle some",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "alice.example",
+        "now": 1793275200000,
+        "some": true
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/new,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/local,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/old,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/none,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/also-none,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n",
+        "filename": "alice.example-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "did-only",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": null,
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/did:plc:owner/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/did:plc:owner/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-01T00:00:00Z,thread,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,https://bsky.app/profile/did:plc:owner/post/c,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n",
+        "filename": "did-plc-owner-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "did-only some",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": null,
+        "now": 1793275200000,
+        "some": true
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/new,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/local,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/old,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/none,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/also-none,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n",
+        "filename": "did-plc-owner-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "odd-handle",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "Ünïcode_näme 👋.test",
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,https://bsky.app/profile/did:plc:owner/post/a,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,https://bsky.app/profile/did:plc:owner/post/b,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-01T00:00:00Z,thread,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,https://bsky.app/profile/did:plc:owner/post/c,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n",
+        "filename": "-n-code-n-me-.test-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "odd-handle some",
+      "fn": "exportPosts",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "Ünïcode_näme 👋.test",
+        "now": 1793275200000,
+        "some": true
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/new,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/local,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/old,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/none,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,https://bsky.app/profile/did:plc:owner/post/also-none,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n",
+        "filename": "-n-code-n-me-.test-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "nobody",
+      "fn": "exportPosts",
+      "input": {
+        "did": null,
+        "handle": null,
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-06-03T00:00:00Z,post,\"one, \"\"two\"\"\nthree\r\nfour\",10,2,3,1,16,true,,,,at://did:plc:owner/app.bsky.feed.post/a,image,2,1,5,Gardens allotment,example.com,en fr\r\n2026-06-02T00:00:00Z,reply,=SUM(A1) @mention,0,0,0,0,0,false,did:plc:someone,,,at://did:plc:owner/app.bsky.feed.post/b,,0,0,5,,,\r\n2026-06-01T00:00:00Z,reply,emoji 👨‍👩‍👧 and é́,0,0,0,0,0,false,did:plc:owner,did:plc:someone,,at://did:plc:owner/app.bsky.feed.post/c,,0,0,5,,,\r\n",
+        "filename": "archive-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "nobody some",
+      "fn": "exportPosts",
+      "input": {
+        "did": null,
+        "handle": null,
+        "now": 1793275200000,
+        "some": true
+      },
+      "output": {
+        "text": "﻿created_at,kind,text,likes,reposts,replies,quotes,engagement,has_media,reply_to,quote_of,url,uri,media,media_count,alt_text_count,length,tags,links,langs\r\n2026-09-01T00:00:00Z,post,plain,0,0,0,0,0,false,,,,at://did:plc:owner/app.bsky.feed.post/new,,0,0,,,,\r\n2026-06-02T00:00:00,post,zone-less,0,0,0,0,0,false,,,,at://did:plc:owner/app.bsky.feed.post/local,,0,0,,,,\r\n2026-01-01T00:00:00Z,post,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,0,0,0,0,0,false,,,,at://did:plc:owner/app.bsky.feed.post/old,,0,0,,,,\r\nnot a date,post,,0,0,0,0,0,false,,,,at://did:plc:owner/app.bsky.feed.post/none,,0,0,,,,\r\nstill not,post,sinks too,0,0,0,0,0,false,,,,at://did:plc:owner/app.bsky.feed.post/also-none,,0,0,,,,\r\n",
+        "filename": "archive-posts-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "table",
+      "fn": "exportRows",
+      "input": {
+        "did": "did:plc:owner",
+        "handle": "alice.example",
+        "what": "followers",
+        "rows": [
+          [
+            "did",
+            "handle",
+            "count",
+            "note"
+          ],
+          [
+            "did:plc:someone",
+            "x.test",
+            3,
+            "says \"hi\", then\nleaves"
+          ],
+          [
+            "did:plc:b",
+            null,
+            0.5,
+            true
+          ],
+          [
+            "did:plc:c",
+            "c\r",
+            0,
+            ""
+          ]
+        ],
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿did,handle,count,note\r\ndid:plc:someone,x.test,3,\"says \"\"hi\"\", then\nleaves\"\r\ndid:plc:b,,0.5,true\r\ndid:plc:c,\"c\r\",0,\r\n",
+        "filename": "alice.example-followers-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "exportRows",
+      "input": {
+        "did": null,
+        "handle": null,
+        "what": "nothing",
+        "rows": [],
+        "now": 1793275200000
+      },
+      "output": {
+        "text": "﻿\r\n",
+        "filename": "archive-nothing-2026-10-29.csv",
+        "type": "text/csv;charset=utf-8"
+      }
+    }
+  ]
+}

@@ -9,8 +9,15 @@
       "swift": []
     },
     "src/archive/exports.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveExports.swift"
+      ],
+      "fixtures": [
+        "archive.exports"
+      ],
+      "note": "fileStem, exportArchive, exportPosts and exportRows are ported and held to the fixture (the text, name and type each download hands over). downloadText's browser plumbing (a Blob URL, an anchor's click, the revoke timer) is the UI's: here it returns an ExportFile, which VirgaUI saves or shares with fileExporter or ShareLink.",
+      "synced": "ddf4f392496c"
     },
     "src/archive/postChanges.js": {
       "status": "ported",
@@ -50,8 +57,15 @@
       "synced": "1027cacc5a50"
     },
     "src/lib/analyticsExport.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsExport.swift"
+      ],
+      "fixtures": [
+        "archive.exports"
+      ],
+      "note": "Ported in full. archiveJson writes the document's own members in the web's order (held by the fixture's key list); inside a row or the meta, members are written sorted, where the web keeps each object's insertion order. A reader can't tell the difference.",
+      "synced": "20f4879fa0b0"
     },
     "src/lib/analyticsStore.js": {
       "status": "pending",
