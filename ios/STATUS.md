@@ -28,7 +28,7 @@ when the port is complete.
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
 | insights (tables) | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette, lucide → SF Symbol mapping |
 | defense (engine) | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits |
-| session | VirgaSession | ported, **not audited** | accounts, scopes, health, the Terms and their agreement, sign-in, the session controller and model, all from a run cut off by a billing error. Every test passes, but no auditor has checked it, and `sessionController.js` and `useAtprotoSession.jsx` are still `pending` in the map |
+| session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession); the app still has to hand it a WebAuthenticator, the archive's reset and a FileStore delete (notes/session.md) |
 | theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
 | demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images, for previews, demo mode and UI tests |
 
@@ -39,8 +39,8 @@ Per-domain notes (API, gaps, deliberate differences): `ios/porting/notes/`.
 Each step is a port and then an independent audit (see ios/porting/README.md).
 The order follows the dependencies between the web modules.
 
-1. **Finish what was cut off.**
-   - Session: finish the port of `sessionController.js` and `useAtprotoSession.jsx`, then audit the whole domain.
+1. ~~**Finish what was cut off.**~~ Done on 2026-11-21: session finished and
+   audited, theme audited.
 
    The briefs are in `ios/porting/port-wave.workflow.js`; the last arguments
    used are described in ios/porting/README.md.
@@ -88,8 +88,8 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 39 bugs in the web app the
-  porters found and reproduced rather than fixed. Six are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 41 bugs in the web app the
+  porters found and reproduced rather than fixed. Seven are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about
