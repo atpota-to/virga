@@ -13,12 +13,17 @@
 // page's column (shell.css), so the same number is the same size on every
 // page.
 //
-// Not here yet: the first run and the sync's places (the archive), the
-// command palette and its shortcut, New dashboard, the composer (New post
-// goes to its address, whose page says it isn't here yet), and the live sky.
+// The first build's own page shows every step of the sync, so while it is
+// up the sidebar's card keeps to its first line and the strip at the top
+// of the page (a phone's, and beside the folded rail) isn't drawn.
+//
+// Not here yet: the command palette and its shortcut, New dashboard, the
+// composer (New post goes to its address, whose page says it isn't here
+// yet), and the live sky.
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaInsights
 
@@ -27,6 +32,7 @@ public struct ShellView: View {
   @Environment(\.horizontalSizeClass) private var sizeClass
   @Environment(ShellNavigator.self) private var navigator
   @Environment(PreferencesModel.self) private var preferences
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @State private var dashboards: ShellDashboards
   @State private var accountDialogs = AccountDialogs()
 
@@ -43,10 +49,18 @@ public struct ShellView: View {
 
   private var collapsed: Bool { preferences.prefs.sidebar == .collapsed }
 
+  /// Whether the page is the first build's (`archive.loaded && needsArchive && !built`).
+  private var firstRun: Bool {
+    guard let archive else { return false }
+    let route = navigator.route
+    return archive.data.loaded && !ShellRoutes.opensBeforeArchive(route) && ShellRoutes.needsArchive(route) && !archive.isBuilt
+  }
+
   public var body: some View {
     Group {
       if desk { split } else { stack }
     }
+    .environment(\.showsSyncBanner, (!desk || collapsed) && !firstRun)
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))
     .accountDialogs(accountDialogs)
     .environment(accountDialogs)
@@ -75,7 +89,7 @@ public struct ShellView: View {
 
   private var split: some View {
     NavigationSplitView(columnVisibility: .constant(.all)) {
-      Sidebar()
+      Sidebar(firstRun: firstRun)
         .navigationSplitViewColumnWidth(collapsed ? theme.railW : theme.sidebarW)
         .toolbar(removing: .sidebarToggle)
         .toolbar(.hidden, for: .navigationBar)

@@ -58,6 +58,13 @@ final class VirgaUITests: XCTestCase {
     XCTAssertTrue(heading.waitForExistence(timeout: 15), "no page titled \(title)", file: file, line: line)
   }
 
+  /// The first dashboard, which in the demo is the first build's page: the
+  /// demo's network turns the archive's reads away until the made-up
+  /// world's network is ported, so there is nothing to chart yet.
+  private func waitForHome(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+    XCTAssertTrue(element(app, "first-run-title").waitForExistence(timeout: 15), "no first build's page", file: file, line: line)
+  }
+
   /// A part of Virga: the sidebar's link to it, or the tab bar's button.
   private func part(_ app: XCUIApplication, _ key: String) -> XCUIElement {
     element(app, isDesk(app) ? "nav-\(key)" : "tab-\(key)")
@@ -79,8 +86,8 @@ final class VirgaUITests: XCTestCase {
 
   func testOpensOnTheFirstDashboard() {
     let app = launch()
-    waitForTitle(app, "Overview")
-    XCTAssertTrue(element(app, "unported").exists)
+    waitForHome(app)
+    XCTAssertTrue(element(app, "first-run-build").exists, "no Build your archive")
     if isDesk(app) {
       XCTAssertTrue(element(app, "sidebar").exists, "no sidebar from 900 wide")
     } else {
@@ -92,19 +99,20 @@ final class VirgaUITests: XCTestCase {
 
   func testTheShellReachesEveryPart() {
     let app = launch()
-    waitForTitle(app, "Overview")
+    waitForHome(app)
     let desk = isDesk(app)
     // The tab bar marks the part you are in; the sidebar marks a part's
     // front page when you are on it (on a dashboard or in Posting, the page
-    // under the part is the one marked).
-    let parts: [(key: String, title: String, marked: Bool)] = [
-      ("reports", "Reports", true), ("posting", "Posting", !desk), ("tools", "Tools", true), ("dashboard", "Overview", !desk),
+    // under the part is the one marked). Reports and the dashboard need the
+    // archive, so in the demo they show the first build's page (no title).
+    let parts: [(key: String, title: String?, marked: Bool)] = [
+      ("reports", nil, true), ("posting", "Posting", !desk), ("tools", "Tools", true), ("dashboard", nil, !desk),
     ]
     for (key, title, marked) in parts {
       let link = part(app, key)
       XCTAssertTrue(link.waitForExistence(timeout: 5), "no way to \(key)")
       link.tap()
-      waitForTitle(app, title)
+      if let title { waitForTitle(app, title) } else { waitForHome(app) }
       if marked {
         XCTAssertTrue(link.isSelected, "\(key) isn't marked as where you are")
       }
@@ -114,14 +122,14 @@ final class VirgaUITests: XCTestCase {
 
   func testNewPostGoesToPosting() {
     let app = launch()
-    waitForTitle(app, "Overview")
+    waitForHome(app)
     element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post").tap()
     waitForTitle(app, "Posting")
   }
 
   func testTheAccountMenuOpens() {
     let app = launch()
-    waitForTitle(app, "Overview")
+    waitForHome(app)
     let menu = element(app, "account-menu")
     XCTAssertTrue(menu.waitForExistence(timeout: 5))
     menu.tap()
@@ -134,7 +142,7 @@ final class VirgaUITests: XCTestCase {
   /// the list of sections, beside the sidebar from its link under Settings
   /// (the bare address opens Account there).
   private func openAppearance(_ app: XCUIApplication) {
-    waitForTitle(app, "Overview")
+    waitForHome(app)
     element(app, "account-menu").tap()
     let settings = button(app, "Accounts and settings")
     XCTAssertTrue(settings.waitForExistence(timeout: 5))
@@ -193,7 +201,7 @@ final class VirgaUITests: XCTestCase {
     day.tap()
     XCTAssertTrue(day.isSelected)
     part(app, "dashboard").tap()
-    waitForTitle(app, "Overview")
+    waitForHome(app)
     snapshot("dashboard-day")
   }
 
@@ -252,6 +260,6 @@ final class VirgaUITests: XCTestCase {
     XCTAssertTrue(nudge.waitForExistence(timeout: 5))
     element(app, "terms-check").tap()
     element(app, "terms-agree").tap()
-    waitForTitle(app, "Overview")
+    waitForHome(app)
   }
 }

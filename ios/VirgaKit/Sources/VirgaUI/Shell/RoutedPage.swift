@@ -7,6 +7,11 @@
 // the line saying what the page is, with what it can touch) and one sentence
 // that it isn't in the iOS app yet, with no made-up numbers.
 //
+// Before the archive has been read, a page that waits for it says it is
+// opening; a page that needs a built archive shows the first build's page
+// until there is one (Shell.jsx; ShellRoutes.needsArchive). Posting and
+// compose links open before the archive does.
+//
 // To plug a new page in, give its route a case in `page` below, and draw it
 // with VirgaPage (Components/PageHeader.swift) so it has the sky, the header
 // and the page's column:
@@ -21,6 +26,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaInsights
 
@@ -55,6 +61,7 @@ public struct RoutedPage: View {
   @Environment(\.shellChrome) private var chrome
   @Environment(ShellDashboards.self) private var dashboards
   @Environment(AppModel.self) private var app
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   private let path: String
 
   public init(path: String) {
@@ -65,10 +72,27 @@ public struct RoutedPage: View {
     let route = ShellNavigator.route(path)
     let dashboard = route.section == .dashboard ? dashboards.dashboard(route.dashboard) : nil
     let title = ShellNavigator.title(route, dashboardName: dashboard?.name, defenseEnabled: app.flags.defenseEnabled)
-    page(route, dashboard: dashboard)
+    content(route, dashboard: dashboard)
       .navigationTitle(title)
       .navigationBarTitleDisplayMode(.inline)
       .modifier(PageChrome(showsBrand: ShellRoutes.parentOf(route) == nil, phone: chrome == .phone))
+  }
+
+  /// The archive's say first: opening, or the first build; then the page.
+  @ViewBuilder
+  private func content(_ route: AppRoute, dashboard: Dashboard?) -> some View {
+    if let archive, !ShellRoutes.opensBeforeArchive(route), !archive.data.loaded {
+      VirgaPage(header: nil, contentTop: theme.space7) {
+        Text("Opening your archive…")
+          .virgaText(.textMd)
+          .foregroundStyle(theme.muted)
+          .accessibilityIdentifier("archive-opening")
+      }
+    } else if let archive, !ShellRoutes.opensBeforeArchive(route), ShellRoutes.needsArchive(route), !archive.isBuilt {
+      FirstRunPage(archive: archive)
+    } else {
+      page(route, dashboard: dashboard)
+    }
   }
 
   @ViewBuilder

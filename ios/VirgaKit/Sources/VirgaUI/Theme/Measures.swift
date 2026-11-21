@@ -152,6 +152,54 @@ public enum Measure {
     public static let railDisc: CGFloat = 44
   }
 
+  /// shell.css's sync places (.sync-card, .sync-banner, .sync-steps).
+  public enum Sync {
+    /// `.sync-card { gap: 4px }`; `.sync-card-row, .sync-card-title { gap: 8px }`.
+    public static let cardGap: CGFloat = 4
+    public static let rowGap: CGFloat = 8
+    /// `.sync-card-sub { line-height: 1.4 }`
+    public static let subLineHeight: Double = 1.4
+    /// `.sync-card .progress { margin: 4px 0 }`
+    public static let cardProgressSpace: CGFloat = 4
+    /// `.sync-card > .btn { gap: 6px; min-height: 24px; margin-top: 2px }`, 44 to touch.
+    public static let linkGap: CGFloat = 6
+    public static let linkHeight: CGFloat = 24
+    public static let linkSpaceAbove: CGFloat = 2
+    public static let linkIcon: CGFloat = 14
+    /// `.sidebar .sync-card-counts` is hidden on a window this short or
+    /// shorter (`max-height: 860px`).
+    public static let countsHiddenAtHeight: CGFloat = 860
+    /// `.sync-banner { min-height: 36px; gap: 16px; margin-bottom: 4px }`,
+    /// its progress a 2px line along its foot.
+    public static let bannerHeight: CGFloat = 36
+    public static let bannerGap: CGFloat = 16
+    public static let bannerSpaceBelow: CGFloat = 4
+    public static let bannerProgress: CGFloat = 2
+    /// `.sync-banner-step::before { margin: 0 6px }`
+    public static let bannerDotSpace: CGFloat = 6
+    /// `.sync-steps-wrap { gap: 12px }`, `.sync-steps { gap: 12px }` in
+    /// three columns (two from 479 down), `.sync-step { gap: 6px }`,
+    /// `.sync-step-name { gap: 6px }`, its tick 13.
+    public static let stepsGap: CGFloat = 12
+    public static let stepColumns = 3
+    public static let narrowStepColumns = 2
+    public static let narrowStepsAt: CGFloat = 479
+    public static let stepGap: CGFloat = 6
+    public static let tick: CGFloat = 13
+  }
+
+  /// shell.css's `.first-run`.
+  public enum FirstRun {
+    /// `.first-run-card { gap: 20px; max-width: 640px }`
+    public static let cardGap: CGFloat = 20
+    public static let cardMaxWidth: CGFloat = 640
+    /// `.first-run-list li { gap: 12px; padding: 12px 0 }`, its icon 16, 3 down.
+    public static let itemGap: CGFloat = 12
+    public static let itemPadding: CGFloat = 12
+    public static let icon: CGFloat = 16
+    public static let iconSpaceAbove: CGFloat = 3
+  }
+
   public enum Brand {
     /// `.brand { gap: 10px }`
     public static let gap: CGFloat = 10

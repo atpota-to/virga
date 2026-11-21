@@ -9,11 +9,14 @@
 // waiting on Virga's server asks first (SignOutGuard). Add an account is the
 // front page's sign-in, a step at a time, in a dialog.
 //
-// Not here yet: the compact menu's Sync now (the archive's).
+// The compact forms (a phone's app bar, the folded rail), where there is no
+// sync card beside them, also hold Sync now, once there is an archive to
+// sync (the first build has its own page).
 
 #if canImport(UIKit)
 import Observation
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaSession
 
@@ -250,6 +253,7 @@ public struct AccountMenu: View {
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
   @Environment(AccountDialogs.self) private var dialogs
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   private let compact: Bool
 
   public init(compact: Bool) {
@@ -329,6 +333,16 @@ public struct AccountMenu: View {
               rowName(account), key: "account:\(account.did)", hint: words.joined(separator: " · "), systemImage: Glyph.account,
               action: opens ? { AccountActions.open(account, session: model) } : nil)))
       }
+      out.append(.separator)
+    }
+    if compact, let archive, archive.data.meta.posts != nil {
+      let syncing = archive.sync != nil
+      let mode = SyncStatus.mode(archive)
+      out.append(
+        .item(
+          MenuItem(
+            syncing ? "Syncing…" : "Sync now", key: "sync", hint: syncing ? nil : SyncStatus.when(archive), systemImage: Glyph.refresh,
+            action: syncing ? nil : { Task { await archive.runSync(mode) } })))
       out.append(.separator)
     }
     out.append(.item(MenuItem("Add an account", key: "add", systemImage: Glyph.userPlus) { held.adding = true }))

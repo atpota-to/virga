@@ -17,7 +17,8 @@
 // content, the header, then the page's bands, `--section-gap` apart, in a
 // column at most --content-max wide plus its margins, centred. On a phone's
 // front page of a part the app bar (the mark and the account) comes first,
-// in the content (Shell/MobileNav.swift).
+// in the content (Shell/MobileNav.swift); then, where there is no sidebar
+// to say it, the sync's strip (Shell/SyncStatus.swift).
 //
 //   VirgaPage(header: PageHeaderModel(title: "Reports", sub: "Every number Virga works out, one page each.")) {
 //     VirgaSection(title: "Followers") { … }
@@ -25,6 +26,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 
 /// Where a page is drawn: outside the shell, in a phone's stack, beside the
@@ -41,6 +43,10 @@ private struct ShowsAppBarKey: EnvironmentKey {
   static let defaultValue = false
 }
 
+private struct ShowsSyncBannerKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
 extension EnvironmentValues {
   /// The shell around the page (Shell sets it).
   public var shellChrome: ShellChrome {
@@ -53,6 +59,13 @@ extension EnvironmentValues {
   public var showsAppBar: Bool {
     get { self[ShowsAppBarKey.self] }
     set { self[ShowsAppBarKey.self] = newValue }
+  }
+
+  /// Whether the page draws the sync's strip at its top (on a phone and
+  /// beside the folded rail, where no sidebar says it; Shell sets it).
+  public var showsSyncBanner: Bool {
+    get { self[ShowsSyncBannerKey.self] }
+    set { self[ShowsSyncBannerKey.self] = newValue }
   }
 }
 
@@ -197,16 +210,29 @@ public struct PageHeader: View {
 public struct VirgaPage<Content: View>: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(\.showsAppBar) private var showsAppBar
+  @Environment(\.showsSyncBanner) private var showsSyncBanner
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   private let header: PageHeader?
+  private let contentTop: CGFloat?
   private let content: Content
 
   public init(header: PageHeader?, @ViewBuilder content: () -> Content) {
     self.header = header
+    self.contentTop = nil
     self.content = content()
   }
 
   public init(_ model: PageHeaderModel, @ViewBuilder content: () -> Content) {
     self.header = PageHeader(model)
+    self.contentTop = nil
+    self.content = content()
+  }
+
+  /// A page with no header whose content starts `contentTop` down (the
+  /// first build's, a loading line).
+  init(header: PageHeader?, contentTop: CGFloat, @ViewBuilder content: () -> Content) {
+    self.header = header
+    self.contentTop = contentTop
     self.content = content()
   }
 
@@ -214,13 +240,14 @@ public struct VirgaPage<Content: View>: View {
     ScrollView {
       VStack(spacing: 0) {
         if showsAppBar { AppBarRow() }
+        if showsSyncBanner, let archive { SyncBanner(archive: archive) }
         PageColumn {
           VStack(alignment: .leading, spacing: 0) {
             if let header { header }
             VStack(alignment: .leading, spacing: theme.sectionGap) {
               content
             }
-            .padding(.top, theme.sectionGap)
+            .padding(.top, contentTop ?? theme.sectionGap)
             .padding(.bottom, theme.hasSidebar ? Measure.Page.bodySpaceBelow : Measure.Page.phoneBodySpaceBelow)
           }
         }

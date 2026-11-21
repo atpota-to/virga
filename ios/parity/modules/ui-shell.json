@@ -19,7 +19,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
       ],
-      "note": "All of it but the compact menu's Sync now (the archive's, VirgaArchive). A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out goes through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired to Virga's server; until then the sign-out says it couldn't check, as the web does when the read fails.",
+      "note": "All of it, with the compact menu's Sync now once there is an archive to sync. A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out goes through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired to Virga's server; until then the sign-out says it couldn't check, as the web does when the read fails.",
       "synced": "4612f9ce83da"
     },
     "src/accounts/AccountsSettings.jsx": {
@@ -280,15 +280,19 @@
       "swift": []
     },
     "src/shell/FirstRun.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
+      ],
+      "note": "The first build's page, word for word: what a build reads and where it goes, the store's warning when the archive would only last the session, Build your archive (a full sync), the steps while it runs (SyncSteps), and what failed. Shown by RoutedPage where a route needs the archive and it isn't built.",
+      "synced": "4a80158934c6"
     },
     "src/shell/MobileNav.jsx": {
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
       ],
-      "note": "The tab bar and the app bar: on a part's front page the mark and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, and the account, in the navigation bar. Not yet: Search (the command palette) and the account menu's Sync now (the archive).",
+      "note": "The tab bar and the app bar: on a part's front page the mark and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, and the account, in the navigation bar; the account's menu holds Sync now once there is an archive. Not yet: Search (the command palette).",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
@@ -299,7 +303,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
       ],
-      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, and the titles. Not yet: the first run and the sync's places (the archive), the command palette and its shortcut, New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). Not yet: the command palette and its shortcut, New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
       "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
@@ -307,12 +311,16 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
       ],
-      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail. Not yet: Search or jump to… (the command palette), New dashboard, the archive's lines at the foot (SyncCard), and the mark's five taps (the live sky).",
+      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail, and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Not yet: Search or jump to… (the command palette), New dashboard, and the mark's five taps (the live sky).",
       "synced": "908f8b702854"
     },
     "src/shell/SyncStatus.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift"
+      ],
+      "note": "overallFraction, syncHeadline, syncStepText, syncWhen, useArchiveCounts and runFor (SyncStatus), SyncCard at the sidebar's foot, SyncBanner at the top of a phone's page and beside the folded rail (drawn by VirgaPage), and SyncSteps on the first build's page. The steps' names and lines are VirgaArchive's SyncProgress. The role=status lines are read as updating frequently.",
+      "synced": "9359b4bab20c"
     },
     "src/shell/bits.jsx": {
       "status": "partial",
@@ -336,9 +344,11 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
         "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
         "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
       ],
-      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts. Not yet: the sync's places and the first run (the archive), and the range dialog's fields (the period picker).",
+      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places and the first run. Not yet: the range dialog's fields (the period picker).",
       "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {

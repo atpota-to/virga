@@ -65,5 +65,11 @@ public enum Glyph {
   /// A remembered account, in a menu: an account's picture can't be a
   /// native menu item's image, so every account row carries this one.
   public static let account = "person.crop.circle"
+  /// The first build's list: Database, UsersRound, ShieldCheck, Heart, Cloud.
+  public static let database = Icons.sfSymbol(lucide: "Database")
+  public static let followers = Icons.sfSymbol(lucide: "UsersRound")
+  public static let shieldCheck = "checkmark.shield"
+  public static let heart = Icons.sfSymbol(lucide: "Heart")
+  public static let cloud = Icons.sfSymbol(lucide: "Cloud")
 }
 #endif

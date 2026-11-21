@@ -23,8 +23,9 @@
 // New post is the round ink button at its end. Settings is behind the
 // account, in its menu.
 //
-// Search (the command palette, which has no shortcut on a phone) and the
-// menu's Sync now come with the palette and the archive.
+// The account's menu holds Sync now here, once there is an archive (there
+// is no sync card beside it). Search (the command palette, which has no
+// shortcut on a phone) comes with the palette.
 
 #if canImport(UIKit)
 import SwiftUI

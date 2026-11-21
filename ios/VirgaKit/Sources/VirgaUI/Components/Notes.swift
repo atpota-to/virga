@@ -137,30 +137,37 @@ public struct ProgressLine: View {
   @State private var sliding = false
   /// 0…1, or nil for a line that doesn't know how far it has got.
   private let value: Double?
+  /// The fill, when it isn't the accent (a sync step's done or failed).
+  private let fill: Color?
+  /// The line's thickness, when it isn't 3 (the sync strip's hairline).
+  private let height: CGFloat?
 
-  public init(value: Double?) {
+  public init(value: Double?, fill: Color? = nil, height: CGFloat? = nil) {
     self.value = value
+    self.fill = fill
+    self.height = height
   }
 
   public var body: some View {
-    let height = theme.points(ThemeKit.progressHeight)
+    let height = self.height ?? theme.points(ThemeKit.progressHeight)
+    let fill = self.fill ?? theme.color(ThemeKit.progressFill)
     GeometryReader { geometry in
       let width = geometry.size.width
       ZStack(alignment: .leading) {
         Capsule().fill(theme.color(ThemeKit.progressTrack))
         if let value {
           Capsule()
-            .fill(theme.color(ThemeKit.progressFill))
+            .fill(fill)
             .frame(width: width * CGFloat(min(1, max(0, value))))
             .animation(theme.motion.progressFill, value: value)
         } else {
           // `progress-slide`: from one of its widths left of the track to
           // three to the right of it.
-          let fill = width * Self.indeterminateShare
+          let share = width * Self.indeterminateShare
           Capsule()
-            .fill(theme.color(ThemeKit.progressFill))
-            .frame(width: fill)
-            .offset(x: sliding ? fill * 3 : -fill)
+            .fill(fill)
+            .frame(width: share)
+            .offset(x: sliding ? share * 3 : -share)
             .onAppear {
               guard let animation = theme.motion.indeterminate else { return }
               withAnimation(animation) { sliding = true }
