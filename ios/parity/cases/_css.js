@@ -254,6 +254,24 @@ export function parseRootSelector(selector) {
   return { compounds, specificity: compounds.flat().length };
 }
 
+/**
+ * Whether a selector this reader can't read (parseRootSelector gives null)
+ * might still pick out <html>: the compound it ends in names nothing <html>
+ * can't be (no class, id or pseudo-element, and no element but `html` or
+ * `*`), once its attribute selectors and :not() are set aside. `html`,
+ * `:ROOT`, `[data-accent]`, `:root > x` and `:where(:root)` might; `.shell`
+ * and `:root .input` can't.
+ */
+export function mightPickRoot(selector) {
+  const plain = collapse(selector)
+    .replace(/\[[^\]]*\]/g, '[]')
+    .replace(/:not\([^)]*\)/gi, '');
+  const last = plain.split(/\s*[\s>+~]\s*/).pop();
+  if (/[.#]|::/.test(last)) return false;
+  const type = /^-?[A-Za-z][\w-]*/.exec(last);
+  return !type || type[0].toLowerCase() === 'html';
+}
+
 /** A selector as theme.css writes it, from its parts. */
 export function selectorText(sel) {
   return sel.compounds
@@ -969,7 +987,10 @@ export function parseValue(css) {
  * `{ file, selectors: [text], media, declarations: [{ name, css, important,
  * value }] }`. A rule that sets one but isn't written for <html> (a class,
  * say) is a component's own token, not the theme's, and is left out; one
- * written for <html> under a media query this reader can't evaluate throws.
+ * written for <html> under a media query this reader can't evaluate throws,
+ * and so does one whose selector might pick out <html> in a way this reader
+ * doesn't follow (`html`, `[data-x]`, a child combinator), rather than
+ * being left out without a word.
  */
 export function tokenBlocks(rules) {
   const blocks = [];
@@ -979,7 +1000,21 @@ export function tokenBlocks(rules) {
     );
     if (decls.length === 0) continue;
     const selectors = rule.selectors.map(parseRootSelector);
-    if (selectors.some((s) => s === null)) continue;
+    const unread = rule.selectors.filter((_, i) => selectors[i] === null);
+    const doubtful = unread.find(mightPickRoot);
+    if (doubtful !== undefined) {
+      throw new Error(
+        `${rule.file}: theme tokens for a selector this reader can't follow: ${doubtful}`,
+      );
+    }
+    if (unread.length > 0) {
+      if (unread.length < selectors.length) {
+        throw new Error(
+          `${rule.file} ${rule.selectors.join(', ')}: tokens for <html> and for a component in one rule`,
+        );
+      }
+      continue;
+    }
     if (rule.supports)
       throw new Error(
         `${rule.file}: theme tokens inside @supports (${rule.supports})`,
@@ -1131,6 +1166,19 @@ function substitute(value, lookup) {
     return { shadow: layers };
   }
   return value;
+}
+
+/**
+ * A value of the kit (or any typed value) as it computes on an element
+ * whose custom properties are `computed` (resolveRoot's map, say): var()
+ * followed, color-mix() worked out. Null where a var() leads nowhere or to
+ * a value of the wrong kind.
+ */
+export function resolveIn(value, computed) {
+  const out = substitute(value, (name) =>
+    computed.has(name) ? computed.get(name) : INVALID,
+  );
+  return out === INVALID ? null : out;
 }
 
 /**

@@ -1,9 +1,12 @@
 // What src/styles/theme.test.js checks about the tokens, held against the
 // Swift tables and resolver: the values known by heart, the skies sharing a
 // page, every accent giving the same tokens, the contrast every word and
-// mark needs on every ground (WCAG 2), the swatches, high contrast's flat
-// sky. Plus what the SwiftUI layer leans on: every token resolving to its
-// kind in every state, the phone's measures, and the kit going through the
+// mark needs on every ground (WCAG 2), the two series apart in OKLab for
+// ordinary and colour-blind eyes, the heatmap's ramp, the swatches, high
+// contrast's flat sky. (Its one check against charts.css, the second
+// series on the chart's tooltip, is the web's: charts.css isn't read here.)
+// Plus what the SwiftUI layer leans on: every token resolving to its kind
+// in every state, the phone's measures, and the kit going through the
 // theme.
 
 import Foundation
@@ -54,6 +57,45 @@ private func ratio(_ t: ResolvedTheme, _ ink: ThemeToken, on ground: ThemeToken)
 private extension ResolvedTheme {
   subscript(ink token: ThemeToken) -> ThemeColor { color(token) ?? .transparent }
 }
+
+// MARK: OKLab, and colour blindness (theme.test.js's own arithmetic)
+
+private func linear(_ c: Double) -> Double { c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) }
+
+/// OKLab from linear sRGB.
+private func oklab(_ rgb: [Double]) -> [Double] {
+  let (r, g, b) = (rgb[0], rgb[1], rgb[2])
+  let l = cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  let m = cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  let s = cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ]
+}
+
+/// Machado, Oliveira and Fernandes (2009), severity 1.0, on linear RGB.
+private let colourBlind: [(String, [[Double]])] = [
+  ("protanopia", [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]]),
+  ("deuteranopia", [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.01182, 0.04294, 0.968881]]),
+  ("tritanopia", [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.3039]]),
+]
+
+/// How far apart two solid colours are (OKLab, × 100), as they are or as
+/// one kind of colour blindness sees them.
+private func apart(_ a: ThemeColor, _ b: ThemeColor, _ matrix: [[Double]]? = nil) -> Double {
+  func seen(_ c: ThemeColor) -> [Double] {
+    let lin = [c.red, c.green, c.blue].map(linear)
+    guard let matrix else { return oklab(lin) }
+    return oklab(matrix.map { row in Swift.max(0, Swift.min(1, row[0] * lin[0] + row[1] * lin[1] + row[2] * lin[2])) })
+  }
+  let (p, q) = (seen(a), seen(b))
+  let (dl, da, db) = (p[0] - q[0], p[1] - q[1], p[2] - q[2])
+  return 100 * (dl * dl + da * da + db * db).squareRoot()
+}
+
+private func lightness(_ c: ThemeColor) -> Double { oklab([c.red, c.green, c.blue].map(linear))[0] }
 
 @Suite struct ThemeTokensBehaviour {
   @Test func readTheWayABrowserReadsIt() {
@@ -228,6 +270,37 @@ private extension ResolvedTheme {
         for mark in [ThemeToken.chart1, .chart2, .chartGhost] {
           need("\(mark.rawValue) on \(ground.rawValue)", ratio(t, mark, on: ground), marks[c]!)
         }
+      }
+    }
+  }
+
+  @Test func theTwoSeriesStayApartForOrdinaryAndColourBlindEyes() {
+    everyState { t, _, need in
+      let (one, two) = (t.chart1, t.chart2)
+      need("--chart-1 from --chart-2", apart(one, two), 20)
+      for (kind, matrix) in colourBlind {
+        need("--chart-1 from --chart-2 under \(kind)", apart(one, two, matrix), 15)
+      }
+    }
+  }
+
+  @Test func aHeatmapRunsOneWayInStepsThatCanBeToldApart() {
+    for s in states {
+      let t = page(s.sky, s.contrast, s.accent)
+      #expect(t.heat0.alpha == 1, "\(name(s)): the ramp is solid")
+    }
+    everyState { t, _, need in
+      let ramp = [t.heat0, t.heat1, t.heat2, t.heat3, t.heat4, t.heat5, t.heat6]
+      let toward: Double = t.colorScheme == .light ? -1 : 1
+      for i in 1..<ramp.count {
+        need("--heat-\(i) past --heat-\(i - 1)", (lightness(ramp[i]) - lightness(ramp[i - 1])) * toward, 0.03)
+      }
+      // "Nothing" sits next to the page; the two fullest steps are marks in their own right.
+      for ground in [ThemeToken.bg, .surface] {
+        let g = t[ink: ground]
+        need("--heat-0 beside \(ground.rawValue) (1 / contrast)", 1 / ramp[0].contrastRatio(on: g), 1 / 1.3)
+        need("--heat-5 on \(ground.rawValue)", ramp[5].contrastRatio(on: g), 3)
+        need("--heat-6 on \(ground.rawValue)", ramp[6].contrastRatio(on: g), 3)
       }
     }
   }
