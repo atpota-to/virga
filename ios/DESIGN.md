@@ -29,9 +29,17 @@ window's width change (it is cheap; cache by `(attrs, width)` if you like).
   `theme.bg`, `theme.ink`, `theme.accent`, `theme.chart1`, … (every token has
   a named accessor).
 - **Lengths** are points: `theme.space4`, `theme.pagePad`, `theme.textBase`.
-  `--measure` (54ch) is the one in the font's own unit: measure "0" in the
-  font and use `theme.points(.measure, in: ThemeLengthContext(viewportWidth:
-  width, chWidth: zeroWidth))`.
+  `--measure` (54ch) is the one in the font's own unit, and a ch is the
+  width of "0" in the font at the size of the text it holds, 13 for every
+  line held to it (a section's sub-line, a caption, a note, a callout): use
+  `theme.points(.measure, in: ThemeLengthContext(viewportWidth: width,
+  chWidth: zeroWidth))`. `theme.figureSize` measures its 26cqi against the
+  viewport, as CSS does with no container; inside the shell the figure size
+  is the shell's own (below).
+- **Lengths in em** (a heading's tracking, `ThemeKit.headingTracking`; a
+  code's 0.92em) are of the text's own size, as a browser has them:
+  `theme.points(of: ThemeKit.headingTracking, in: ThemeLengthContext(viewportWidth:
+  width, fontSize: size))`, and the same for `.tracking()`.
 - **Kit measures** (`ThemeKit`) are as the rule writes them; the ones that say
   `var()` go through the theme: `theme.points(of: ThemeKit.buttonHeight)`,
   `theme.color(of: ThemeKit.primaryButtonFill)`, `theme.resolve(_:)`.
@@ -40,8 +48,11 @@ window's width change (it is cheap; cache by `(attrs, width)` if you like).
   accent in the page's own theme and contrast.
 - **An element that declares tokens again** (a field in trouble declares its
   focus ring in the danger colour; the shell declares `--figure-size` from
-  the page's column, shell.css): `theme.declaring([(.focusRing,
-  ThemeKit.invalidFocusRing), (.focus, ThemeKit.invalidFocus)])`.
+  the page's column, shell.css, whose value is VirgaUI's to write):
+  `theme.declaring([(.focusRing, ThemeKit.invalidFocusRing), (.focus,
+  ThemeKit.invalidFocus)])`, with `ThemeKit.highContrastInvalidFocus` for
+  `.focus` in high contrast. Its own declarations follow var() on it (the
+  ring in `--danger`), the rest it inherits.
 - **A colour another stylesheet writes as a literal** (charts.css's tooltip
   ground, say): `ThemeColor(css: "#0f1b33")` reads hex, rgb(), rgba(),
   hsl(), hsla() and the named colours the sheets use, as a browser does.
@@ -55,7 +66,7 @@ window's width change (it is cheap; cache by `(attrs, width)` if you like).
 one-point rules: a rule in ink (`--rule`) under a section's heading, hairlines
 (`--line`) between its rows. Only what floats (a menu, a dialog, a popover,
 the composer) has an edge and a shadow (`--shadow-md`, `--shadow-lg`) and the
-`--surface` ground. Don't wrap sections in `GroupBox`, `List` insets, cards or
+`--surface` ground (an info tip's ground is ink instead, below). Don't wrap sections in `GroupBox`, `List` insets, cards or
 `Form` sections: those are boxes. A plain `ScrollView` with a `VStack` is the
 page.
 
@@ -75,9 +86,11 @@ the sky. High contrast has no sky: the wash is the flat ground, white or black.
 
 **Ink does the work, sparingly.** Words are `--ink`, `--ink-2` (a label) and
 `--muted` (meta, captions); `--faint` is for marks, never words. The thing to
-do is filled with ink (`--btn` with `--on-btn` on it). The page you are on and
-the pressed key of a control are ink with a line under them; links are ink,
-underlined.
+do is filled with ink (`--btn` with `--on-btn` on it). The pressed key of a
+control is ink, 600, with a line under it. The page you are on is ink, 600,
+too: with a dot in the accent beside it on the sidebar's hairline rail, or
+with its name on an `--accent-tint` pill in the tab bar (it is underlined
+only in high contrast). Links are ink, underlined.
 
 **The accent means one thing:** the data, or what is selected. Blue unless
 Settings picks violet, teal, amber, rose or graphite; each is a full set of
@@ -135,8 +148,10 @@ density), the space between sections (`--grid-gap`, `--section-gap`: 40, 28;
 16 → 12) and a control's height (`--control-h` 36 → 32).
 
 Shape: `--radius-sm` 6, `--radius` 8 (fields, menu items), `--radius-lg` 12
-(a menu), 16 (a dialog, a sheet's top corners); buttons, chips and tokens are
-pills (`--pill`: `Capsule()`).
+(a menu); buttons, chips and tokens are pills (`--pill`: `Capsule()`). A
+dialog's corners and the top ones of a phone's menu sheet are 16, which the
+stylesheets write as a number rather than a token (shell.css's `.dialog`,
+`ThemeKit.menuSheetRadius`).
 
 Layout: the page's column is at most `--content-max` (1040) wide plus its
 margins, centred; the sidebar is `--sidebar-w` (272), the rail `--rail-w`
@@ -154,11 +169,15 @@ One look per job. Use these, in these places, and nothing else.
   sheet, the composer). *Quiet* (the default) is an outline in `--line-2`.
   *Ghost* has no edge until pressed: an icon alone (⋯, ✕) or the few quiet
   words that keep a button's shape (Show 10 more, Save as draft). *Danger* is a
-  confirm dialog's red. Sizes: medium (`--control-h`), small 30 (the one
+  confirm dialog's red: `--danger` with white words by day, but at night the
+  fill stays the deep red (`ThemeKit.dangerButtonFillAtNight`, `#b42318`;
+  pointed at, `dangerButtonHoverFillAtNight`), since night's `--danger` is a
+  light coral meant for words. Sizes: medium (`--control-h`), small 30 (the one
   labelled action of a row or a callout, words alone), large 46. An icon alone
   is a circle (`ThemeKit.iconButtonWidth`). A button that is a state
   (Following) is its word alone, quiet. Disabled is 45% opacity. SwiftUI: a
-  `ButtonStyle` per tier and size, `Capsule()`, weight 500 (600 primary).
+  `ButtonStyle` per tier and size, `Capsule()`, weight 500 (600 primary and
+  danger).
 - **Link action** (`.link-action`): every other verb, as words in ink with a
   line under them, led by a 14-point icon: Export, Show as table, Add to
   queue, Customize. It sits beside what it acts on: Export over the list it
@@ -202,17 +221,21 @@ One look per job. Use these, in these places, and nothing else.
   actions, anything that deletes last and in red; within one menu every item
   has an icon or none does; an item may have a hint under it. A native
   `Menu` with the destructive item last (`role: .destructive`) is right on
-  iOS: the web's own phone menu rises as a sheet, which is what a native menu
-  does.
-- **Dialog** (`Dialog.jsx`): a title (`--text-lg`, 600), a Close, the content,
-  actions at the foot on the right, the confirm in ink. On a phone it is a
-  sheet; the composer is a full-height one with the main button under the
-  thumb.
+  iOS: the web's own phone menu rises as a sheet when it has no room beside
+  its button, which is what a native menu does.
+- **Dialog** (`Dialog.jsx`, shell.css `.dialog`): a title (`--text-lg`,
+  600), a Close, the content, actions at the foot on the right, the confirm
+  in ink. The web draws it as a modal at every width: at most 520 wide, on
+  `--surface` with a `--line` edge, corners of 16 and `--shadow-lg`, over
+  `--scrim`; from 560 down its buttons share the foot in equal halves, 44
+  tall. On iPhone present it as a sheet. The composer fills the screen from
+  640 down, with the main button under the thumb.
 - **Info tip** (`InfoTip.jsx`): a small (i) beside a number that explains it:
   a popover in ink (`--btn`) with the page's colour written on it, up to 280
   wide.
-- **Callout** (`.callout`): something to know before going on, with a
-  hairline down its side; a warning or a failure has its colour and wash as
+- **Callout** (`.callout`): something to know before going on, with a rule
+  down its side (2 points of `--line-2`, `ThemeKit.calloutEdge`); a warning
+  or a failure has its colour for the rule and the words, and its wash, as
   well, since it has to be found.
 - **Empty state** (`.empty-block`): one sentence, and at most one way to change
   that, a quiet button (New post, Sync now). No heading and no ink.
@@ -309,19 +332,30 @@ tall. Give every control at least a 44-point hit area with
 
 ## Focus and high contrast
 
-Focus is a solid line in `--focus-ring` (the accent; its lighter ink at night)
-with a soft halo (`--focus`): use it for keyboard focus on iPad
-(`.focusEffectDisabled()` and draw `theme.focus`). High contrast
-(`data-contrast='high'`: Settings, or the system's Increase Contrast) gives
-words at 7:1 or better on every ground, solid lines and borders at 3:1, chart
-colours at 4.5:1, no sky, and a thicker ring with a gap inside it (2 points of
-`--surface`, then 3 of the ring). It also says what tokens can't
-(`ThemeKit.highContrast…`): a 3-point focus outline, a 3-point line under a
-pressed key, a switch drawn as an outline with the knob in `--muted` (filled
-with the accent when on), heat cells and bar tracks outlined in `--line-soft`,
-the current page underlined (2 points, 4 below) and a 2-point ink ring round
-the narrow tab bar's disc. The forced-colours rules in theme.css are Windows'
-and don't apply.
+Keyboard focus (an iPad with a keyboard) is an outline: 2 points of
+`--focus-ring` (the accent; its lighter ink at night), 2 points outside the
+control (`ThemeKit.focusOutline`, `ThemeKit.focusOutlineOffset`). A
+Segmented's key, and anything in a row that scrolls sideways, draws it 2
+points inside instead, so the row's clipping can't cut it off. A field draws
+its focus as a shadow rather than an outline: its edge turns `--focus-ring`
+and `--focus` rings it, a 1-point line in `--focus-ring` with a halo of the
+same at 32% out to 4 points (`theme.focus`); a field in trouble declares both
+again in `--danger` (`theme.declaring`, above). Use `.focusEffectDisabled()`
+and draw these.
+
+High contrast (`data-contrast='high'`: Settings, or the system's Increase
+Contrast) gives words at 7:1 or better on every ground, solid lines and
+borders at 3:1, chart colours at 4.5:1, no sky, a 3-point focus outline
+(`ThemeKit.highContrastFocusOutlineWidth`), and a field's ring with a gap
+inside it (`--focus`: 2 points of `--surface`, then 3 of the ring). It also
+says what tokens can't (`ThemeKit.highContrast…`): a 3-point line under a
+pressed key; a switch drawn as an outline (an inset 2-point edge in
+`--muted`, no fill) with its knob in `--muted` at 70% of its size, and when
+on, the accent's fill with the knob in `--on-accent`, still at 70% (the
+`scale(0.7)` is a transform, not in ThemeKit); heat cells and bar tracks
+outlined in `--line-soft`; the current page underlined (2 points, 4 below);
+and a 2-point ink ring round the narrow tab bar's disc. The forced-colours
+rules in theme.css are Windows' and don't apply.
 
 ## Motion
 
@@ -343,10 +377,13 @@ moves (the web cuts every transition to 0.01 ms).
 
 The chart colours come with the accent: `--chart-1` (the accent's line) and
 `--chart-2` (the second colour) are the only two series a chart has, held
-apart for colour-blind eyes; `--chart-3` and `--chart-4` are for breakdowns;
-`--chart-area` is the tint under a line; `--chart-grid`, `--chart-axis` and
-`--chart-ghost` (the window before) are the chrome; `--heat-0` (nothing) to
-`--heat-6` is a heatmap's ramp. Every chart has a table, and hover (a press on
+apart for colour-blind eyes; `--chart-3` and `--chart-4` are the third and
+fourth slots, which no chart uses yet; `--chart-area` is the tint under a
+line; `--chart-grid` and `--chart-axis` are the chrome; `--chart-ghost` is
+what must never pass for data: the dashed reach from a line's end to a value
+it can't arrive at itself (the followers chart's reach to the profile's own
+count) and the Defense radar's dust; `--heat-0` (nothing) to `--heat-6` is a
+heatmap's ramp. Every chart has a table, and hover (a press on
 iOS) shows a value. The tooltip's own ground is charts.css's (dark by day,
 light at night); `--second-tip` is the second series' colour on it.
 
