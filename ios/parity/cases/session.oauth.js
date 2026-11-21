@@ -1,8 +1,12 @@
 // The words for a sign-in that couldn't start or didn't finish
 // (src/lib/oauthClient.js's signInErrorMessage and callbackErrorMessage),
-// over every code and message they read. Swift: VirgaSession/Lib/OAuthClient.swift.
+// over every code and message they read, and how the web's OAuth client
+// describes itself (buildLoopbackClientId, buildClientMetadata). Swift:
+// VirgaSession/Lib/OAuthClient.swift.
 
 import {
+  buildClientMetadata,
+  buildLoopbackClientId,
   callbackErrorMessage,
   signInErrorMessage,
 } from '../../../src/lib/oauthClient.js';
@@ -96,6 +100,39 @@ export default async function cases() {
       'callbackErrorMessage',
       CALLBACK.map((error) => ({ error })),
       ({ error }) => callbackErrorMessage(errorOf(error)),
+    )),
+    ...(await each(
+      'buildLoopbackClientId',
+      [
+        ['http://localhost:5173', '/oauth/callback'],
+        ['http://127.0.0.1:5173', '/oauth/callback'],
+        ['http://[::1]:5173', '/oauth/callback'],
+        ['http://LOCALHOST:3000', '/oauth/callback'],
+        ['http://localhost', '/oauth/callback'],
+        ['http://user:pw@localhost:8080', '/oauth/callback'],
+        ['http://localhost:80', '/oauth/callback'],
+        ['http://localhost.:5173', '/oauth/callback'],
+        ['https://virga.example', '/oauth/callback'],
+        ['http://localhost:5173/deep/page', 'oauth/callback'],
+        ['http://localhost:5173', '/oauth/callback?x=1 2#frag'],
+        ['http://localhost:5173', '//elsewhere.example/cb'],
+        ['http://localhost:5173', 'https://other.example/cb'],
+        ['http://localhost:5173', '/ünïcode path'],
+        ['not a url', '/oauth/callback'],
+        ['', '/oauth/callback'],
+      ].map(([origin, redirectPath]) => ({ origin, redirectPath })),
+      ({ origin, redirectPath }) => buildLoopbackClientId(origin, redirectPath),
+    )),
+    ...(await each(
+      'buildClientMetadata',
+      [
+        'https://virga.example',
+        'https://preview-123.vercel.app',
+        'http://localhost:5173',
+        'https://virga.example/',
+        '',
+      ].map((origin) => ({ origin })),
+      ({ origin }) => buildClientMetadata(origin),
     )),
   ];
 }

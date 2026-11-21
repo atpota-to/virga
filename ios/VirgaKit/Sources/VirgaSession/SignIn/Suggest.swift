@@ -16,6 +16,13 @@ public struct SignInSuggestion: Sendable, Hashable, Codable, AccountLike {
   public var displayName: String?
   public var avatar: String?
 
+  public init(did: String, handle: String? = nil, displayName: String? = nil, avatar: String? = nil) {
+    self.did = did
+    self.handle = handle
+    self.displayName = displayName
+    self.avatar = avatar
+  }
+
   enum CodingKeys: String, CodingKey { case did, handle, displayName, avatar }
 
   public func encode(to encoder: Encoder) throws {
@@ -73,7 +80,9 @@ public enum SignInSuggest {
       }
       return SignInSuggestion(did: did, handle: handle, displayName: displayName, avatar: actor["avatar"].truthy?.stringValue)
     }
-    return Array(usable.prefix(max(0, limit)))
+    // `.slice(0, limit)`: a negative limit counts back from the end.
+    let end = limit < 0 ? max(usable.count + limit, 0) : min(limit, usable.count)
+    return Array(usable[..<end])
   }
 
   /// `moveActive(index, count, key)`: which suggestion a key moves to.

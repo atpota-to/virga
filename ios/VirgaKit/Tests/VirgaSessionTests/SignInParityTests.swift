@@ -246,6 +246,63 @@ private func leaving(_ value: JSONValue?) -> SignInLeaving? {
     let resolver = SignInIdentity.Resolver(transport: transport, cache: PromiseCache(), appview: appview)
     await #expect(throws: CancellationError.self) { try await resolver.resolveSignInIdentity("mira.example.com") }
   }
+
+  /// identity.test.js: the host lookup stops when it is called off while the
+  /// PDS is asked who signs its accounts in.
+  @Test func cancellingTheHostLookup() async {
+    let transport = MockTransport()
+    let document: JSONValue = [
+      "id": "did:plc:abcdefghijklmnopqrstuvwx",
+      "service": [["id": "#atproto_pds", "type": "AtprotoPersonalDataServer", "serviceEndpoint": "https://pds.example.com"]],
+    ]
+    transport.on(.urlPrefix("https://pds.example.com/.well-known/oauth-protected-resource")) { _ in
+      withUnsafeCurrentTask { $0?.cancel() }
+      throw HTTPTransportError.network("aborted")
+    }
+    let resolver = SignInIdentity.Resolver(transport: transport, cache: PromiseCache(), appview: appview)
+    await #expect(throws: CancellationError.self) {
+      try await resolver.resolveSignInHost("did:plc:abcdefghijklmnopqrstuvwx", document: document)
+    }
+  }
+}
+
+@Suite struct SignUpBehaviour {
+  /// hosts.test.js: once the reader has called it off, the first try's
+  /// failure (any failure, coded or not) is the last: a second try would
+  /// send them to the host they just turned back from.
+  @Test func neverTriesAgainOnceCalledOff() async {
+    let calls = Locked(0)
+    let task = Task {
+      try await SignInHosts.signUpAt({ _, _ in
+        calls.withLock { $0 += 1 }
+        withUnsafeCurrentTask { $0?.cancel() }
+        throw JSError(message: "some failure with no code")
+      }, "https://bsky.social", options: SignInOptions(mode: "browser"))
+    }
+    do {
+      try await task.value
+      Issue.record("it went on")
+    } catch {
+      #expect(jsMessage(error) == "some failure with no code")
+    }
+    #expect(calls.wrappedValue == 1)
+  }
+
+  /// The session's own signIn, called off before it went anywhere: no
+  /// second try, and the CANCELLED code the trip's notice says nothing for.
+  @Test func aCancelledSignInIsntTriedAgain() async {
+    let calls = Locked<[SignInOptions]>([])
+    do {
+      try await SignInHosts.signUpAt({ _, options in
+        calls.withLock { $0.append(options) }
+        throw BackendError(name: "AbortError", message: "The sign-in was called off", code: "CANCELLED")
+      }, "https://bsky.social")
+      Issue.record("it went on")
+    } catch {
+      #expect(SignInFlow.tripFailureNotice(error, SignInLeaving(trip: 1, host: "bsky.social", purpose: "signup", from: .hosts, phase: "sent")) == nil)
+    }
+    #expect(calls.wrappedValue.map(\.prompt) == ["create"])
+  }
 }
 
 @Suite struct OAuthClientParity {
@@ -256,6 +313,22 @@ private func leaving(_ value: JSONValue?) -> SignInLeaving? {
     // The client's own errors read as the web's do.
     #expect(OAuthClient.signInErrorMessage(BackendError(name: "TypeError", message: "Failed to fetch", code: "NETWORK_ERROR")).hasPrefix("Couldn’t reach Virga’s server."))
     #expect(OAuthClient.signInErrorMessage(nil as (any Error)?) == "Sign-in couldn’t start. Check the handle and try again.")
+  }
+
+  @Test func clientMetadata() throws {
+    for c in try Parity.cases("session.oauth", fn: "buildLoopbackClientId") {
+      let actual: JSONValue
+      do {
+        actual = .string(try OAuthClient.buildLoopbackClientId(c["origin"].stringValue ?? "", c["redirectPath"].stringValue ?? ""))
+      } catch {
+        actual = ["$throws": .string(jsMessage(error))]
+      }
+      expectParity(actual, c)
+    }
+    for c in try Parity.cases("session.oauth", fn: "buildClientMetadata") {
+      let d = Parity.diff(.of(OAuthClient.buildClientMetadata(c["origin"].stringValue ?? "")), c.output, strictNulls: true)
+      #expect(d == nil, "\(c): \(d ?? "")")
+    }
   }
 
   @Test func callbackErrorMessage() throws {

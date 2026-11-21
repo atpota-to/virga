@@ -448,6 +448,299 @@
         "error": null
       },
       "output": "Sign-in didn’t finish, so you’re not signed in. Nothing was changed."
+    },
+    {
+      "id": "buildLoopbackClientId#1",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#2",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://127.0.0.1:5173",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#3",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://[::1]:5173",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F%5B%3A%3A1%5D%3A5173%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#4",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://LOCALHOST:3000",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A3000%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#5",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#6",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://user:pw@localhost:8080",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2Fuser%3Apw%40127.0.0.1%3A8080%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#7",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:80",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#8",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost.:5173",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2Flocalhost.%3A5173%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#9",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "https://virga.example",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=https%3A%2F%2Fvirga.example%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#10",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173/deep/page",
+        "redirectPath": "oauth/callback"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Fdeep%2Foauth%2Fcallback&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#11",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173",
+        "redirectPath": "/oauth/callback?x=1 2#frag"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Foauth%2Fcallback%3Fx%3D1%25202%23frag&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#12",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173",
+        "redirectPath": "//elsewhere.example/cb"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2Felsewhere.example%2Fcb&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#13",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173",
+        "redirectPath": "https://other.example/cb"
+      },
+      "output": "http://localhost?redirect_uri=https%3A%2F%2Fother.example%2Fcb&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#14",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "http://localhost:5173",
+        "redirectPath": "/ünïcode path"
+      },
+      "output": "http://localhost?redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2F%25C3%25BCn%25C3%25AFcode%2520path&scope=atproto+rpc%3Aapp.bsky.graph.getFollowers%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.notification.listNotifications%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.follow%3Faction%3Dcreate%26action%3Ddelete+repo%3Aapp.bsky.feed.post+repo%3Aapp.bsky.feed.threadgate+repo%3Aapp.bsky.feed.postgate+repo%3Anet.anisota.feed.template+blob%3Aimage%2F*+blob%3Avideo%2F*+rpc%3Aapp.bsky.draft.getDrafts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.createDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.updateDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.draft.deleteDraft%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.actor.getPreferences%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.bookmark.getBookmarks%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Aapp.bsky.feed.searchPosts%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+rpc%3Acom.atproto.repo.uploadBlob%3Faud%3D*+rpc%3Aapp.bsky.video.getUploadLimits%3Faud%3D*+rpc%3Aapp.bsky.video.getJobStatus%3Faud%3D*+rpc%3Aapp.bsky.actor.getProfiles%3Faud%3Ddid%3Aweb%3Aapi.bsky.app%2523bsky_appview+repo%3Aapp.bsky.graph.list%3Faction%3Dcreate+repo%3Aapp.bsky.graph.listitem%3Faction%3Dcreate%26action%3Ddelete"
+    },
+    {
+      "id": "buildLoopbackClientId#15",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "not a url",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "buildLoopbackClientId#16",
+      "fn": "buildLoopbackClientId",
+      "input": {
+        "origin": "",
+        "redirectPath": "/oauth/callback"
+      },
+      "output": {
+        "$throws": "Invalid URL"
+      }
+    },
+    {
+      "id": "buildClientMetadata#1",
+      "fn": "buildClientMetadata",
+      "input": {
+        "origin": "https://virga.example"
+      },
+      "output": {
+        "client_id": "https://virga.example/oauth-client-metadata.json",
+        "client_name": "Virga",
+        "client_uri": "https://virga.example",
+        "logo_uri": "https://virga.example/icon.svg",
+        "tos_uri": "https://virga.example/terms",
+        "policy_uri": "https://virga.example/privacy",
+        "redirect_uris": [
+          "https://virga.example/oauth/callback"
+        ],
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "application_type": "web",
+        "dpop_bound_access_tokens": true
+      }
+    },
+    {
+      "id": "buildClientMetadata#2",
+      "fn": "buildClientMetadata",
+      "input": {
+        "origin": "https://preview-123.vercel.app"
+      },
+      "output": {
+        "client_id": "https://preview-123.vercel.app/oauth-client-metadata.json",
+        "client_name": "Virga",
+        "client_uri": "https://preview-123.vercel.app",
+        "logo_uri": "https://preview-123.vercel.app/icon.svg",
+        "tos_uri": "https://preview-123.vercel.app/terms",
+        "policy_uri": "https://preview-123.vercel.app/privacy",
+        "redirect_uris": [
+          "https://preview-123.vercel.app/oauth/callback"
+        ],
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "application_type": "web",
+        "dpop_bound_access_tokens": true
+      }
+    },
+    {
+      "id": "buildClientMetadata#3",
+      "fn": "buildClientMetadata",
+      "input": {
+        "origin": "http://localhost:5173"
+      },
+      "output": {
+        "client_id": "http://localhost:5173/oauth-client-metadata.json",
+        "client_name": "Virga",
+        "client_uri": "http://localhost:5173",
+        "logo_uri": "http://localhost:5173/icon.svg",
+        "tos_uri": "http://localhost:5173/terms",
+        "policy_uri": "http://localhost:5173/privacy",
+        "redirect_uris": [
+          "http://localhost:5173/oauth/callback"
+        ],
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "application_type": "web",
+        "dpop_bound_access_tokens": true
+      }
+    },
+    {
+      "id": "buildClientMetadata#4",
+      "fn": "buildClientMetadata",
+      "input": {
+        "origin": "https://virga.example/"
+      },
+      "output": {
+        "client_id": "https://virga.example//oauth-client-metadata.json",
+        "client_name": "Virga",
+        "client_uri": "https://virga.example/",
+        "logo_uri": "https://virga.example//icon.svg",
+        "tos_uri": "https://virga.example//terms",
+        "policy_uri": "https://virga.example//privacy",
+        "redirect_uris": [
+          "https://virga.example//oauth/callback"
+        ],
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "application_type": "web",
+        "dpop_bound_access_tokens": true
+      }
+    },
+    {
+      "id": "buildClientMetadata#5",
+      "fn": "buildClientMetadata",
+      "input": {
+        "origin": ""
+      },
+      "output": {
+        "client_id": "/oauth-client-metadata.json",
+        "client_name": "Virga",
+        "client_uri": "",
+        "logo_uri": "/icon.svg",
+        "tos_uri": "/terms",
+        "policy_uri": "/privacy",
+        "redirect_uris": [
+          "/oauth/callback"
+        ],
+        "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete",
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "application_type": "web",
+        "dpop_bound_access_tokens": true
+      }
     }
   ]
 }

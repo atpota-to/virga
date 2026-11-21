@@ -1,15 +1,79 @@
 // Ports src/lib/oauthClient.js
 //
-// The words for a sign-in that couldn't start or didn't finish. The rest of
-// the web module is the browser's own OAuth client (@atproto/oauth-client-
-// browser, built lazily, with its loopback client id and its metadata), which
-// the iOS app has no use for: it signs in only through Virga's server.
-// session.oauth holds both functions to the web's, word for word.
+// The words for a sign-in that couldn't start or didn't finish, and how the
+// web's own OAuth client describes itself (its loopback client id for local
+// development, and the metadata api/client-metadata.js serves). The client
+// itself (getOauthClient, @atproto/oauth-client-browser built lazily, and
+// getOauthEvents, its event bus) isn't here: the iOS app has no browser
+// OAuth client and signs in only through Virga's server (SessionController,
+// with a WebAuthenticator). The metadata is ported all the same, as what
+// Virga's server tells an account's host the web client is; session.oauth
+// holds every function here to the web's, word for word.
 
 import Foundation
 import VirgaCore
+import VirgaNetwork
+
+/// `buildClientMetadata(origin)`: the web client's OAuth metadata, under the
+/// spec's field names, in the web object's order.
+public struct OAuthClientMetadata: Sendable, Hashable, Codable {
+  public var client_id: String
+  public var client_name: String
+  public var client_uri: String
+  public var logo_uri: String
+  public var tos_uri: String
+  public var policy_uri: String
+  public var redirect_uris: [String]
+  public var scope: String
+  public var grant_types: [String]
+  public var response_types: [String]
+  public var token_endpoint_auth_method: String
+  public var application_type: String
+  public var dpop_bound_access_tokens: Bool
+}
 
 public enum OAuthClient {
+  /// `buildLoopbackClientId(origin, redirectPath)`: a loopback client's
+  /// `client_id`, which is its metadata: `http://localhost` plus the redirect
+  /// URI (on 127.0.0.1, which RFC 8252 asks for in place of `localhost`) and
+  /// every scope any sign-in may ask for. Throws "Invalid URL" where `new URL`
+  /// does.
+  public static func buildLoopbackClientId(_ origin: String, _ redirectPath: String) throws -> String {
+    var redirect = try WebURL(redirectPath, base: origin)
+    if redirect.hostname == "localhost" {
+      // `redirect.hostname = '127.0.0.1'`.
+      var userinfo = ""
+      if !redirect.username.isEmpty || !redirect.password.isEmpty {
+        userinfo = redirect.username + (redirect.password.isEmpty ? "" : ":\(redirect.password)") + "@"
+      }
+      let port = redirect.portString.isEmpty ? "" : ":\(redirect.portString)"
+      redirect = try WebURL("\(redirect.protocol)//\(userinfo)127.0.0.1\(port)\(redirect.pathname)\(redirect.search)\(redirect.hash)")
+    }
+    let params = JSURI.searchParams([("redirect_uri", redirect.href), ("scope", AppConfig.declaredScope)])
+    return "http://localhost?\(params)"
+  }
+
+  /// `buildClientMetadata(origin)`: the metadata for a hosted origin, which
+  /// api/client-metadata.js serves from the same origin.
+  public static func buildClientMetadata(_ origin: String) -> OAuthClientMetadata {
+    OAuthClientMetadata(
+      client_id: "\(origin)/oauth-client-metadata.json",
+      client_name: AppConfig.appName,
+      client_uri: origin,
+      logo_uri: "\(origin)/icon.svg",
+      // Shown on the host's consent screen, beside what Virga asks for.
+      tos_uri: "\(origin)\(LegalVersion.termsPath)",
+      policy_uri: "\(origin)\(LegalVersion.privacyPath)",
+      redirect_uris: ["\(origin)\(AppConfig.oauthCallbackPath)"],
+      // Every token any sign-in may ask for.
+      scope: AppConfig.declaredScope,
+      grant_types: ["authorization_code", "refresh_token"],
+      response_types: ["code"],
+      token_endpoint_auth_method: "none",
+      application_type: "web",
+      dpop_bound_access_tokens: true)
+  }
+
   /// `signInErrorMessage(err)`: a sign-in that couldn't start (the handle
   /// didn't resolve, the host didn't answer), in words a visitor can act on.
   /// A sign-in through Virga's server fails with the server's `code`, which

@@ -103,7 +103,7 @@
       "fixtures": [
         "session.oauth"
       ],
-      "note": "signInErrorMessage and callbackErrorMessage, word for word. Not ported: getOauthClient, getOauthEvents, buildLoopbackClientId and buildClientMetadata, the browser's own OAuth client (@atproto/oauth-client-browser) and its metadata (which api/client-metadata.js serves for the web): the iOS app signs in only through Virga's server, through VirgaSession's SessionController and a WebAuthenticator (ASWebAuthenticationSession in VirgaUI).",
+      "note": "signInErrorMessage and callbackErrorMessage word for word, buildLoopbackClientId and buildClientMetadata (OAuthClientMetadata). Not ported: getOauthClient and getOauthEvents, the browser's own OAuth client (@atproto/oauth-client-browser, built lazily) and its event bus: the iOS app has no browser OAuth client and signs in only through Virga's server (SessionController with a WebAuthenticator, ASWebAuthenticationSession in VirgaUI).",
       "synced": "cfada69b84e4"
     },
     "src/lib/sessionHint.js": {
@@ -133,7 +133,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaSession/Session/BrowserDriver.swift"
       ],
-      "note": "Only the driver's interface, as BrowserSessionDriver (with BrowserOAuthSession and BrowserRestoreError), which SessionController takes so its browser branches are the web's; the app passes NoBrowserSessions. Not ported: createBrowserDriver and its helpers (classifyRestoreError, isRevokedCause, grantedScopeOf, isCallbackResult), which wrap @atproto/oauth-client-browser: there are no browser sessions on iOS, which signs in only through Virga's server.",
+      "note": "The driver's interface, as BrowserSessionDriver (with BrowserOAuthSession and BrowserRestoreError, whose restoreFailure is the web's 'expired' or 'unknown'), which SessionController takes so its browser branches are the web's; the app passes NoBrowserSessions, and the tests a fake. Not ported: createBrowserDriver and its helpers classifyRestoreError, isRevokedCause, grantedScopeOf and isCallbackResult, which read @atproto/oauth-client-browser's sessions and error classes: there are no browser sessions on iOS, which signs in only through Virga's server.",
       "synced": "17608a4bf954"
     },
     "src/session/scopes.js": {
@@ -147,8 +147,17 @@
       "synced": "12a957b53583"
     },
     "src/session/sessionController.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionController.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionController+Actions.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/WebAuthenticator.swift"
+      ],
+      "fixtures": [
+        "session.controller"
+      ],
+      "note": "All of it. createSessionController(set, env) is SessionController(set: SessionControllerSink, env: SessionEnvironment), a @MainActor class; capabilitiesFrom, holdsDefense, grantedDefenseLevel and NO_ACTIVE are its statics. The browser branches are the web's, over BrowserSessionDriver (the app passes NoBrowserSessions). env.fetch is a transport, env.sleep and Date.now() a NetworkClock, env.loadAgent goes (agents are XRPCAgent), the token lives in a SecretStore, resetAnalyticsStore is an injected async closure told which account's data went (VirgaArchive supplies it). The page load a sign-in's return makes on the web is completeSignIn(_:) in the running app (it waits for a start under way, and a sink setter, finishing, brackets it as loading does); completeSignIn(callbackURL:) reads an address as BACKEND_RETURN reads window.location; taking a return starts as that page load does, so the error an earlier sign-in left goes (this return's, if it carries one, takes its place) and the names and pictures are read again for the rows that lack them and the open account; with a WebAuthenticator (ASWebAuthenticationSession in VirgaUI) signIn opens the server's address and finishes the return itself, a sheet that comes back empty being worded as readBackendReturn's callback_failed, and without one it stops after assign as the web's leaves (its promise returns rather than never settling). An account's databases are deleted one after the other in the web's order (the web asks for both at once). The 401s a requester (VirgaBackend) hears reach the controller a moment after the call fails, where the web's arrive before it does; the agent's (SessionFetchHandler) arrive before, as on the web. sessionController.test.js is ported whole as SessionControllerTests.swift, with the app's sign-in sheet beside it.",
+      "synced": "2f8f25b56ee6"
     },
     "src/session/sessionHealth.js": {
       "status": "ported",
@@ -162,8 +171,13 @@
       "synced": "1d1f9e911cf5"
     },
     "src/session/useAtprotoSession.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionModel.swift",
+        "ios/VirgaKit/Sources/VirgaSession/Session/SessionAccount.swift"
+      ],
+      "note": "AtprotoSessionProvider's value as SessionModel (@MainActor @Observable): rows, statuses, active (session, agent, did, mode), loading, switching, error, accounts (SessionAccount), authMode and the actions. browserEnv() is the SessionEnvironment the app builds: localStorage and sessionStorage are KeyValueStores, the token a SecretStore, deleteDatabase and resetAnalyticsStore injected (the archive's FileStore folders and VirgaArchive's reset), the browser driver NoBrowserSessions. The provider's first effect is start(); BACKEND_RETURN is env.backendReturn at launch or completeSignIn(callbackURL:) for a link; the window's storage event is storageChanged(key:). loading also covers a sign-in being taken in the running app (the web's page load on the return path). clearError() is the app's: the web's error stays until the next page load, which here is the next sign-in that comes back (completeSignIn) or the next launch. Not ported: useAtprotoSession's throw outside the provider and the React context (SwiftUI's environment carries the model in VirgaUI). Behaviour tests in SessionModelTests.",
+      "synced": "7053c87cc1f7"
     },
     "src/signin/flow.js": {
       "status": "ported",
@@ -195,7 +209,7 @@
       "fixtures": [
         "session.signin"
       ],
-      "note": "All of it. createIdentityResolver is SignInIdentity.Resolver (transport, clock, DID-document cache, appview), the module's shared resolveSignInHost/resolveSignInIdentity its statics. Cancelling the task stands for the signal: the lookup throws CancellationError where the web throws an AbortError DOMException. A profile's handle or avatar that isn't a string is dropped (the web keeps any truthy value).",
+      "note": "All of it. createIdentityResolver is SignInIdentity.Resolver (transport, clock, DID-document cache, appview), the module's shared resolveSignInHost/resolveSignInIdentity its statics. Cancelling the task stands for the signal: the lookup throws CancellationError where the web throws an AbortError DOMException. A profile's truthy handle or avatar that isn't a string isn't kept (the web keeps the value), as SignInIdentityAnswer's fields are strings: a handle falls back to what was typed.",
       "synced": "7b24ac6fc866"
     },
     "src/signin/suggest.js": {
@@ -206,7 +220,7 @@
       "fixtures": [
         "session.signin"
       ],
-      "note": "All of it. searchAccounts' error is SuggestError (message HTTP <status>, status). A negative limit takes none (the web's slice(0, -n) takes all but the last n).",
+      "note": "All of it. searchAccounts' error is SuggestError (message HTTP <status>, status); cancelling the task is the web's signal. A truthy avatar that isn't a string is dropped (the web keeps it), as SignInSuggestion's fields are strings.",
       "synced": "94b89e05a9a3"
     }
   }
