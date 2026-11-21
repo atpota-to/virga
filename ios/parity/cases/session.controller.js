@@ -427,6 +427,21 @@ export default async function cases() {
             row: null,
             status,
           })),
+        )
+        // Rows as nothing writes them (readAccounts cleans the mode), held
+        // all the same: an empty or unknown mode, none, a scope that isn't
+        // a string.
+        .concat(
+          [
+            { did: MIRA, mode: '' },
+            { did: MIRA, mode: 'other', scope: OAUTH_SCOPE },
+            { did: MIRA, mode: 'BACKEND', scope: LISTS_SCOPE },
+            { did: MIRA },
+            { did: MIRA, mode: 'backend', scope: 42 },
+            { did: MIRA, mode: 'backend', scope: null },
+          ].flatMap((row) =>
+            ['ready', 'needsSignIn'].map((status) => ({ row, status })),
+          ),
         ),
       ({ row, status }) => capabilitiesFrom(row, status),
     )),

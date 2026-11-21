@@ -4101,6 +4101,264 @@
       }
     },
     {
+      "id": "capabilitiesFrom#132",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": ""
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": null,
+        "canPost": true,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#133",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": ""
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": null,
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#134",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "other",
+          "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": "other",
+        "canPost": true,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "missing",
+        "lists": "missing",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#135",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "other",
+          "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=*"
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": "other",
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "missing",
+        "lists": "missing",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#136",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "BACKEND",
+          "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": "BACKEND",
+        "canPost": true,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "granted",
+        "lists": "granted",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#137",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "BACKEND",
+          "scope": "atproto rpc:app.bsky.graph.getFollowers?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.notification.listNotifications?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.follow?action=create&action=delete repo:app.bsky.feed.post repo:app.bsky.feed.threadgate repo:app.bsky.feed.postgate repo:net.anisota.feed.template blob:image/* blob:video/* rpc:app.bsky.draft.getDrafts?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.actor.getPreferences?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.bookmark.getBookmarks?aud=did:web:api.bsky.app%23bsky_appview rpc:app.bsky.feed.searchPosts?aud=did:web:api.bsky.app%23bsky_appview rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:app.bsky.video.getJobStatus?aud=* rpc:app.bsky.actor.getProfiles?aud=did:web:api.bsky.app%23bsky_appview repo:app.bsky.graph.list?action=create repo:app.bsky.graph.listitem?action=create&action=delete"
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": "BACKEND",
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "granted",
+        "lists": "granted",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#138",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": null,
+        "canPost": true,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#139",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x"
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": null,
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#140",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "backend",
+          "scope": 42
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": "backend",
+        "canPost": true,
+        "canSchedule": true,
+        "canUseAi": true,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": true,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#141",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "backend",
+          "scope": 42
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": "backend",
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#142",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "backend",
+          "scope": null
+        },
+        "status": "ready"
+      },
+      "output": {
+        "mode": "backend",
+        "canPost": true,
+        "canSchedule": true,
+        "canUseAi": true,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": true,
+        "missing": []
+      }
+    },
+    {
+      "id": "capabilitiesFrom#143",
+      "fn": "capabilitiesFrom",
+      "input": {
+        "row": {
+          "did": "did:plc:virgaharnessmira2zq4x",
+          "mode": "backend",
+          "scope": null
+        },
+        "status": "needsSignIn"
+      },
+      "output": {
+        "mode": "backend",
+        "canPost": false,
+        "canSchedule": false,
+        "canUseAi": false,
+        "defense": "unknown",
+        "lists": "unknown",
+        "canWriteLists": false,
+        "missing": []
+      }
+    },
+    {
       "id": "grantedDefenseLevel#1",
       "fn": "grantedDefenseLevel",
       "input": {},

@@ -665,6 +665,47 @@ export default async function cases() {
           },
         },
         {
+          $id: 'empty-list',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json({ authorization_servers: [] }),
+          },
+        },
+        {
+          $id: 'refused-with-list',
+          routes: {
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED, 500),
+          },
+        },
+        {
+          $id: 'server-with-port',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json({
+              authorization_servers: [
+                'https://Auth.Example:8443/x',
+                'https://second.example',
+              ],
+            }),
+          },
+        },
+        {
+          $id: 'server-not-json',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': { status: 200, text: '<html>' },
+          },
+        },
+        {
+          $id: 'document-not-truthy',
+          document: '',
+          routes: {
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
           $id: 'did-web',
           did: 'did:web:mira.example.com',
           routes: {
@@ -814,6 +855,54 @@ export default async function cases() {
           $id: 'encoded',
           input: 'a&b=c.example',
           routes: { getProfile: json({}, 400), resolveHandle: json({}, 400) },
+        },
+        {
+          $id: 'empty-fields',
+          input: 'mira.example.com',
+          routes: {
+            getProfile: json({
+              did: DID,
+              handle: '',
+              displayName: '   ',
+              avatar: '',
+            }),
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'did-with-profile',
+          input: DID,
+          routes: {
+            getProfile: json(PROFILE),
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'profile-did-not-a-string',
+          input: 'mira.example.com',
+          routes: {
+            getProfile: json({ did: 42, handle: 'mira.example.com' }),
+            resolveHandle: json({ did: DID }),
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'handle-refused-404',
+          input: 'mira.example.com',
+          routes: { getProfile: json({}, 404), resolveHandle: json({}, 404) },
+        },
+        {
+          $id: 'handle-answer-500-after-profile-400',
+          input: 'mira.example.com',
+          routes: { getProfile: json({}, 400), resolveHandle: json({}, 500) },
+        },
+        {
+          $id: 'did-directory-offline',
+          input: DID,
+          routes: { getProfile: 'offline', 'plc.directory': 'offline' },
         },
         {
           $id: 'not-json',

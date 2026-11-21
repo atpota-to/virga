@@ -8097,6 +8097,389 @@
       }
     },
     {
+      "id": "empty-list",
+      "fn": "resolveSignInHost",
+      "input": {
+        "routes": {
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://puffball.us-east.host.bsky.network"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "authorization_servers": []
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://puffball.us-east.host.bsky.network\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://puffball.us-east.host.bsky.network/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"authorization_servers\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "host": "bsky.social",
+          "pds": "https://puffball.us-east.host.bsky.network"
+        }
+      }
+    },
+    {
+      "id": "refused-with-list",
+      "fn": "resolveSignInHost",
+      "input": {
+        "routes": {
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example.com"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 500,
+            "json": {
+              "resource": "https://puffball.us-east.host.bsky.network",
+              "authorization_servers": [
+                "https://bsky.social"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example.com\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example.com/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"resource\":\"https://puffball.us-east.host.bsky.network\",\"authorization_servers\":[\"https://bsky.social\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "host": "pds.example.com",
+          "pds": "https://pds.example.com"
+        }
+      }
+    },
+    {
+      "id": "server-with-port",
+      "fn": "resolveSignInHost",
+      "input": {
+        "routes": {
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://puffball.us-east.host.bsky.network"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "authorization_servers": [
+                "https://Auth.Example:8443/x",
+                "https://second.example"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://puffball.us-east.host.bsky.network\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://puffball.us-east.host.bsky.network/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"authorization_servers\":[\"https://Auth.Example:8443/x\",\"https://second.example\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "host": "auth.example",
+          "pds": "https://puffball.us-east.host.bsky.network"
+        }
+      }
+    },
+    {
+      "id": "server-not-json",
+      "fn": "resolveSignInHost",
+      "input": {
+        "routes": {
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://puffball.us-east.host.bsky.network"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "text": "<html>"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://puffball.us-east.host.bsky.network\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://puffball.us-east.host.bsky.network/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "host": "bsky.social",
+          "pds": "https://puffball.us-east.host.bsky.network"
+        }
+      }
+    },
+    {
+      "id": "document-not-truthy",
+      "fn": "resolveSignInHost",
+      "input": {
+        "document": "",
+        "routes": {
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example.com"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "resource": "https://puffball.us-east.host.bsky.network",
+              "authorization_servers": [
+                "https://bsky.social"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example.com\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example.com/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"resource\":\"https://puffball.us-east.host.bsky.network\",\"authorization_servers\":[\"https://bsky.social\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "host": "bsky.social",
+          "pds": "https://pds.example.com"
+        }
+      }
+    },
+    {
       "id": "did-web",
       "fn": "resolveSignInHost",
       "input": {
@@ -9437,6 +9820,535 @@
             "name": "IdentityNotFoundError",
             "message": "No account found for a&b=c.example",
             "input": "a&b=c.example"
+          }
+        }
+      }
+    },
+    {
+      "id": "empty-fields",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "mira.example.com",
+        "routes": {
+          "getProfile": {
+            "status": 200,
+            "json": {
+              "did": "did:plc:abcdefghijklmnopqrstuvwx",
+              "handle": "",
+              "displayName": "   ",
+              "avatar": ""
+            }
+          },
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://puffball.us-east.host.bsky.network"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "resource": "https://puffball.us-east.host.bsky.network",
+              "authorization_servers": [
+                "https://bsky.social"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"handle\":\"\",\"displayName\":\"   \",\"avatar\":\"\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://puffball.us-east.host.bsky.network\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://puffball.us-east.host.bsky.network/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"resource\":\"https://puffball.us-east.host.bsky.network\",\"authorization_servers\":[\"https://bsky.social\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:abcdefghijklmnopqrstuvwx",
+          "handle": "mira.example.com",
+          "displayName": null,
+          "avatar": null,
+          "host": "bsky.social",
+          "pds": "https://puffball.us-east.host.bsky.network"
+        }
+      }
+    },
+    {
+      "id": "did-with-profile",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "did:plc:abcdefghijklmnopqrstuvwx",
+        "routes": {
+          "getProfile": {
+            "status": 200,
+            "json": {
+              "did": "did:plc:abcdefghijklmnopqrstuvwx",
+              "handle": "mira.example.com",
+              "displayName": "  Mira Okafor ",
+              "avatar": "https://cdn.test/a.jpg"
+            }
+          },
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://pds.example.com"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "resource": "https://puffball.us-east.host.bsky.network",
+              "authorization_servers": [
+                "https://bsky.social"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"handle\":\"mira.example.com\",\"displayName\":\"  Mira Okafor \",\"avatar\":\"https://cdn.test/a.jpg\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://pds.example.com\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://pds.example.com/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"resource\":\"https://puffball.us-east.host.bsky.network\",\"authorization_servers\":[\"https://bsky.social\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:abcdefghijklmnopqrstuvwx",
+          "handle": "mira.example.com",
+          "displayName": "Mira Okafor",
+          "avatar": "https://cdn.test/a.jpg",
+          "host": "bsky.social",
+          "pds": "https://pds.example.com"
+        }
+      }
+    },
+    {
+      "id": "profile-did-not-a-string",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "mira.example.com",
+        "routes": {
+          "getProfile": {
+            "status": 200,
+            "json": {
+              "did": 42,
+              "handle": "mira.example.com"
+            }
+          },
+          "resolveHandle": {
+            "status": 200,
+            "json": {
+              "did": "did:plc:abcdefghijklmnopqrstuvwx"
+            }
+          },
+          "plc.directory": {
+            "status": 200,
+            "json": {
+              "id": "did:plc:abcdefghijklmnopqrstuvwx",
+              "alsoKnownAs": [
+                "at://mira.example.com"
+              ],
+              "service": [
+                {
+                  "id": "#atproto_pds",
+                  "type": "AtprotoPersonalDataServer",
+                  "serviceEndpoint": "https://puffball.us-east.host.bsky.network"
+                }
+              ]
+            }
+          },
+          "oauth-protected-resource": {
+            "status": 200,
+            "json": {
+              "resource": "https://puffball.us-east.host.bsky.network",
+              "authorization_servers": [
+                "https://bsky.social"
+              ]
+            }
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":42,\"handle\":\"mira.example.com\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/com.atproto.identity.resolveHandle?handle=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"did\":\"did:plc:abcdefghijklmnopqrstuvwx\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"id\":\"did:plc:abcdefghijklmnopqrstuvwx\",\"alsoKnownAs\":[\"at://mira.example.com\"],\"service\":[{\"id\":\"#atproto_pds\",\"type\":\"AtprotoPersonalDataServer\",\"serviceEndpoint\":\"https://puffball.us-east.host.bsky.network\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://puffball.us-east.host.bsky.network/.well-known/oauth-protected-resource",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 3000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"resource\":\"https://puffball.us-east.host.bsky.network\",\"authorization_servers\":[\"https://bsky.social\"]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "did": "did:plc:abcdefghijklmnopqrstuvwx",
+          "handle": "mira.example.com",
+          "displayName": null,
+          "avatar": null,
+          "host": "bsky.social",
+          "pds": "https://puffball.us-east.host.bsky.network"
+        }
+      }
+    },
+    {
+      "id": "handle-refused-404",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "mira.example.com",
+        "routes": {
+          "getProfile": {
+            "status": 404,
+            "json": {}
+          },
+          "resolveHandle": {
+            "status": 404,
+            "json": {}
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/com.atproto.identity.resolveHandle?handle=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "IdentityNotFoundError",
+            "message": "No account found for mira.example.com",
+            "input": "mira.example.com"
+          }
+        }
+      }
+    },
+    {
+      "id": "handle-answer-500-after-profile-400",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "mira.example.com",
+        "routes": {
+          "getProfile": {
+            "status": 400,
+            "json": {}
+          },
+          "resolveHandle": {
+            "status": 500,
+            "json": {}
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/com.atproto.identity.resolveHandle?handle=mira.example.com",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "IdentityLookupError",
+            "message": "Could not look up mira.example.com",
+            "input": "mira.example.com"
+          }
+        }
+      }
+    },
+    {
+      "id": "did-directory-offline",
+      "fn": "resolveSignInIdentity",
+      "input": {
+        "input": "did:plc:abcdefghijklmnopqrstuvwx",
+        "routes": {
+          "getProfile": "offline",
+          "plc.directory": "offline"
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.getProfile?actor=did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 8000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://plc.directory/did%3Aplc%3Aabcdefghijklmnopqrstuvwx",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "error": {
+            "name": "IdentityLookupError",
+            "message": "Could not look up did:plc:abcdefghijklmnopqrstuvwx",
+            "input": "did:plc:abcdefghijklmnopqrstuvwx"
           }
         }
       }
