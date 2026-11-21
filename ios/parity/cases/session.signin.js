@@ -229,6 +229,26 @@ const SEQUENCES = [
     { type: 'hosts-back' },
   ],
   [
+    { type: 'host-known', trip: 1, host: 'bsky.social' },
+    { type: 'leave', host: 'bsky.social' },
+    { type: 'notice', notice: notFoundNotice('x') },
+    { type: 'typed' },
+    { type: 'hosts' },
+    { type: 'not-me' },
+    { type: 'cancel' },
+  ],
+  [
+    { type: 'hosts' },
+    { type: 'find' },
+    { type: 'hosts-back' },
+    { type: 'find' },
+    { type: 'lookup-failed', notice: lookupFailedNotice('mira.example.com') },
+    { type: 'leave', host: 'bsky.social', purpose: 'signup' },
+    { type: 'stalled', trip: 1 },
+    { type: 'host-known', trip: 1, host: 'later.example' },
+    { type: 'trip-failed', trip: 1, notice: lookupFailedNotice('again') },
+  ],
+  [
     { type: 'find' },
     { type: 'find' },
     { type: 'found', identity: MIRA },
@@ -390,6 +410,31 @@ export default async function cases() {
           options: {},
         },
         {
+          $id: 'unavailable',
+          failures: [{ code: 'VIRGA_CLIENT_UNAVAILABLE', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'not-allowed',
+          failures: [{ code: 'REDIRECT_NOT_ALLOWED', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'internal',
+          failures: [{ code: 'INTERNAL', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'aborted-message',
+          failures: [{ message: 'The request was Aborted' }],
+          options: {},
+        },
+        {
+          $id: 'code-not-a-string',
+          failures: [{ code: 7, message: 'x' }],
+          options: { mode: 'backend' },
+        },
+        {
           $id: 'keeps-options',
           failures: [{ code: 'AUTHORIZE_FAILED', message: 'x' }],
           options: {
@@ -455,6 +500,14 @@ export default async function cases() {
         'did:PLC:abc',
         '@did:plc:abc',
         '​',
+        'm',
+        '@m',
+        ' @Mir',
+        'mi',
+        'mira.example',
+        '@@',
+        '😀',
+        'é',
       ].map((raw) => ({ raw })),
       ({ raw }) => {
         const normalized = normalizeSignInInput(raw);
@@ -612,6 +665,47 @@ export default async function cases() {
           },
         },
         {
+          $id: 'empty-list',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json({ authorization_servers: [] }),
+          },
+        },
+        {
+          $id: 'refused-with-list',
+          routes: {
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED, 500),
+          },
+        },
+        {
+          $id: 'server-with-port',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json({
+              authorization_servers: [
+                'https://Auth.Example:8443/x',
+                'https://second.example',
+              ],
+            }),
+          },
+        },
+        {
+          $id: 'server-not-json',
+          routes: {
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': { status: 200, text: '<html>' },
+          },
+        },
+        {
+          $id: 'document-not-truthy',
+          document: '',
+          routes: {
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
           $id: 'did-web',
           did: 'did:web:mira.example.com',
           routes: {
@@ -763,6 +857,54 @@ export default async function cases() {
           routes: { getProfile: json({}, 400), resolveHandle: json({}, 400) },
         },
         {
+          $id: 'empty-fields',
+          input: 'mira.example.com',
+          routes: {
+            getProfile: json({
+              did: DID,
+              handle: '',
+              displayName: '   ',
+              avatar: '',
+            }),
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'did-with-profile',
+          input: DID,
+          routes: {
+            getProfile: json(PROFILE),
+            'plc.directory': json(didDocument('https://pds.example.com')),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'profile-did-not-a-string',
+          input: 'mira.example.com',
+          routes: {
+            getProfile: json({ did: 42, handle: 'mira.example.com' }),
+            resolveHandle: json({ did: DID }),
+            'plc.directory': json(didDocument()),
+            'oauth-protected-resource': json(PROTECTED),
+          },
+        },
+        {
+          $id: 'handle-refused-404',
+          input: 'mira.example.com',
+          routes: { getProfile: json({}, 404), resolveHandle: json({}, 404) },
+        },
+        {
+          $id: 'handle-answer-500-after-profile-400',
+          input: 'mira.example.com',
+          routes: { getProfile: json({}, 400), resolveHandle: json({}, 500) },
+        },
+        {
+          $id: 'did-directory-offline',
+          input: DID,
+          routes: { getProfile: 'offline', 'plc.directory': 'offline' },
+        },
+        {
           $id: 'not-json',
           input: 'mira.example.com',
           routes: {
@@ -830,7 +972,33 @@ export default async function cases() {
             })),
           }),
         },
+        {
+          $id: 'limit-negative',
+          term: 'a',
+          limit: -2,
+          answer: json({
+            actors: Array.from({ length: 4 }, (_, i) => ({
+              did: `did:plc:${i}`,
+              handle: `a${i}.example`,
+            })),
+          }),
+        },
+        {
+          $id: 'limit-past-the-list',
+          term: 'a',
+          limit: 50,
+          answer: json({
+            actors: [
+              { did: 'did:plc:a', handle: 'a.example', displayName: 42 },
+            ],
+          }),
+        },
         { $id: 'no-list', term: 'mir', answer: json({}) },
+        {
+          $id: 'list-not-a-list',
+          term: 'mir',
+          answer: json({ actors: 'did:plc:a' }),
+        },
         {
           $id: 'not-json',
           term: 'mir',

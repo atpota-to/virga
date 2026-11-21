@@ -1,3 +1,5 @@
+// Ports src/session/sessionController.js (the sign-in's trip, as the app makes it)
+//
 // The sign-in's trip to the account's host, on iOS.
 //
 // On the web a sign-in through Virga's server sends the browser to the

@@ -231,4 +231,7 @@ public final class SessionChecker {
   public func peek(_ did: String) -> SessionCheckResult? {
     cache[JSKey(did)]?.result
   }
+
+  /// Whether a check is under way for any account.
+  public var checking: Bool { !inflight.isEmpty }
 }

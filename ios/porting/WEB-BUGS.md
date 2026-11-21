@@ -63,6 +63,11 @@ visible to people: they are marked **visible**.
 - src/defense/scanStore.js startScan: the `if (controller.signal.aborted) set(did, IDLE)` branch can never run, because stopScan, a new startScan and resetScansForTests all remove the controller before aborting it, so current() is already false. It is harmless dead code.
 - src/defense/command.js parseActor's DID pattern (/^did:[a-z]+:[a-zA-Z0-9._%-]+$/) rejects colons in the identifier, so a did:web with a path (did:web:example.com:user) is not read as an account. harvest.js's DID_SYNTAX accepts it.
 
+## Session and sign-in (src/session, src/signin)
+
+- **visible** src/signin/identity.js normalizeSignInInput decodes a pasted bsky.app profile link before it checks whether the result is an address, so `https://bsky.app/profile/https%3A%2F%2Fevil.example` becomes `https://evil.example` and is read as a host address: a link that looks like a Bluesky profile starts a sign-in at another host. The card shown before leaving does name that host. Reproduced in Node (fixture session.signin).
+- src/session/sessionHealth.js createSessionChecker always waits CONFIRM_GAP_MS (2.5 s) after a definitive first answer, even with `rounds: 1`, so a browser session the library can't restore is reported as expired 2.5 s late, with no further probe in between.
+
 ## Stylesheets and components
 
 - **visible** src/styles/theme.css draws the high-contrast ink ring round the narrow tab bar's current-tab disc only under @media (max-width: 374px). Its own comment says the ring is for when the current tab is a disc with its name hidden. src/shell/shell.css hides the name and makes the disc from (max-width: 429px), and README says 'from 430px wide; narrower, it is a tinted disc'. So in high contrast, between 375 and 429 px the current tab is a pale disc with no ring and no word to underline, which is the case the rule was written to fix. The query should probably be (max-width: 429px). DESIGN.md tells the app to follow the stylesheet until this is settled.
