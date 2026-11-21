@@ -95,7 +95,7 @@ The order follows the dependencies between the web modules.
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about
   2,000 deep reads as a thrown error; that is left as it is, since Swift's
-  JSON reading has a nesting limit well below that anyway.
+  JSONDecoder, which reads the fixtures, refuses anything nested past 512.
 - **Placeholder settings.** The app's bundle identifier, team and server are
   placeholders in `ios/Config/Base.xcconfig`, and
   `public/.well-known/apple-app-site-association` names a placeholder team ID
