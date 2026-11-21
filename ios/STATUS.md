@@ -29,7 +29,7 @@ when the port is complete.
 | insights (tables) | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette, lucide → SF Symbol mapping |
 | defense (engine) | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits |
 | session | VirgaSession | ported, **not audited** | accounts, scopes, health, the Terms and their agreement, sign-in, the session controller and model, all from a run cut off by a billing error. Every test passes, but no auditor has checked it, and `sessionController.js` and `useAtprotoSession.jsx` are still `pending` in the map |
-| theme | VirgaCore/Theme | ported, **not audited** | the tokens from the CSS and a resolver; `ios/DESIGN.md` for the screens |
+| theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
 | demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images, for previews, demo mode and UI tests |
 
 Per-domain notes (API, gaps, deliberate differences): `ios/porting/notes/`.
@@ -41,7 +41,6 @@ The order follows the dependencies between the web modules.
 
 1. **Finish what was cut off.**
    - Session: finish the port of `sessionController.js` and `useAtprotoSession.jsx`, then audit the whole domain.
-   - Theme: audit the tokens and `ios/DESIGN.md`.
 
    The briefs are in `ios/porting/port-wave.workflow.js`; the last arguments
    used are described in ios/porting/README.md.
