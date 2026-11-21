@@ -86,8 +86,14 @@
       "synced": "ac391cadf6a9"
     },
     "src/defense/pageModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/PageModel.swift"
+      ],
+      "fixtures": [
+        "defense.pageModel"
+      ],
+      "synced": "4e29a9bf5b17"
     },
     "src/defense/plan.js": {
       "status": "ported",
