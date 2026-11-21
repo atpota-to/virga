@@ -1,10 +1,11 @@
 // End-to-end checks of the app in its demo mode (a made-up world, no
 // network), like the web app's harness, on an iPhone and on an iPad: the
 // shell reaches every part and each page has its header; Settings changes
-// the sky and the accent; the account menu opens; the front page and the
-// agreement. Each screen worth looking at is kept as a screenshot (an
-// XCTAttachment kept always, a name per screen), which CI exports from each
-// result bundle into the `screenshots` artifact, a folder per device.
+// the sky and the accent; the account menu opens; the sign-in finds a
+// handle; the front page, the Terms and the agreement. Each screen worth
+// looking at is kept as a screenshot (an XCTAttachment kept always, a name
+// per screen), which CI exports from each result bundle into the
+// `screenshots` artifact, a folder per device.
 //
 // The shell differs by the window: from 900 points wide (an iPad, held on
 // its side here so any iPad is that wide) the parts are links down the
@@ -107,6 +108,7 @@ final class VirgaUITests: XCTestCase {
       if marked {
         XCTAssertTrue(link.isSelected, "\(key) isn't marked as where you are")
       }
+      if key == "reports" || key == "tools" { snapshot(key) }
     }
   }
 
@@ -182,12 +184,61 @@ final class VirgaUITests: XCTestCase {
     snapshot("settings-night-high-contrast")
   }
 
+  /// The first dashboard under the day sky, whatever the clock says.
+  func testTheDashboardByDay() {
+    let app = launch()
+    openAppearance(app)
+    let day = element(app, "sky-day")
+    XCTAssertTrue(day.waitForExistence(timeout: 5))
+    day.tap()
+    XCTAssertTrue(day.isSelected)
+    part(app, "dashboard").tap()
+    waitForTitle(app, "Overview")
+    snapshot("dashboard-day")
+  }
+
   func testTheFrontPageForSomeoneSignedOut() {
     let app = launch(["-VirgaDemoSignedOut", "YES"])
     XCTAssertTrue(element(app, "landing-title").waitForExistence(timeout: 15))
     XCTAssertTrue(element(app, "handle-field").exists)
     XCTAssertTrue(button(app, "Continue as Mira Okafor").exists)
     snapshot("front-page")
+  }
+
+  /// A handle typed on the front page: the accounts that match come up
+  /// under the field (the demo's two, by handle), and once it is sent, "Is
+  /// this you?" with the account found.
+  func testSigningInFindsTheHandle() {
+    let app = launch(["-VirgaDemoSignedOut", "YES"])
+    let field = element(app, "handle-field")
+    XCTAssertTrue(field.waitForExistence(timeout: 15))
+    field.tap()
+    field.typeText("mira")
+    let suggestion = element(app, "suggestion-mira.example.com")
+    let suggested = suggestion.waitForExistence(timeout: 5)
+    snapshot("signin-suggestions")
+    XCTAssertTrue(suggested, "no account suggested for “mira”")
+    field.typeText(".example.com\n")
+    let found = app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier == 'signin-continue' AND NOT (label BEGINSWITH %@)", "Looking you up"))
+      .firstMatch
+    let reached = found.waitForExistence(timeout: 10)
+    snapshot("signin-is-this-you")
+    XCTAssertTrue(element(app, "signin-title").exists)
+    XCTAssertTrue(reached, "the handle wasn't found")
+  }
+
+  /// The Terms, from the front page's foot.
+  func testTheTermsFromTheFrontPage() {
+    let app = launch(["-VirgaDemoSignedOut", "YES"])
+    XCTAssertTrue(element(app, "landing-title").waitForExistence(timeout: 15))
+    let terms = button(app, "Terms")
+    scrollTo(app, terms)
+    terms.tap()
+    let title = app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier == 'legal-title' AND label == %@", "Terms of Service")).firstMatch
+    XCTAssertTrue(title.waitForExistence(timeout: 10), "no Terms of Service")
+    snapshot("terms")
   }
 
   func testTheAgreementScreenComesFirstAndLetsYouIn() {

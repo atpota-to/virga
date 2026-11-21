@@ -137,6 +137,7 @@ struct HandleField: View {
           .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("suggestion-\(item.handle ?? item.did)")
       }
     }
     .accessibilityElement(children: .contain)

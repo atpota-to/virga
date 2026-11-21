@@ -218,6 +218,7 @@ struct LegalBlockView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.bottom, Measure.Legal.h1SpaceBelow)
         .accessibilityAddTraits(.isHeader)
+        .accessibilityIdentifier("legal-title")
         .id(id)
     case 2:
       let space = inDialog ? Measure.Legal.dialogH2SpaceAbove : Measure.Legal.h2SpaceAbove
