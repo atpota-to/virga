@@ -29,18 +29,18 @@ public enum ButtonTier: Sendable {
   case quiet, primary, ghost, danger
 }
 
-public enum ControlSize: Sendable {
+public enum KitSize: Sendable {
   case small, medium, large
 }
 
 public struct VirgaButtonStyle: ButtonStyle {
   public var tier: ButtonTier
-  public var size: ControlSize
+  public var size: KitSize
   public var icon: Bool
   public var isOn: Bool
   public var destructive: Bool
 
-  public init(_ tier: ButtonTier = .quiet, size: ControlSize = .medium, icon: Bool = false, isOn: Bool = false, destructive: Bool = false) {
+  public init(_ tier: ButtonTier = .quiet, size: KitSize = .medium, icon: Bool = false, isOn: Bool = false, destructive: Bool = false) {
     self.tier = tier
     self.size = size
     self.icon = icon
@@ -58,7 +58,7 @@ extension ButtonStyle where Self == VirgaButtonStyle {
   public static var virga: VirgaButtonStyle { VirgaButtonStyle() }
 
   public static func virga(
-    _ tier: ButtonTier = .quiet, size: ControlSize = .medium, icon: Bool = false, isOn: Bool = false, destructive: Bool = false
+    _ tier: ButtonTier = .quiet, size: KitSize = .medium, icon: Bool = false, isOn: Bool = false, destructive: Bool = false
   ) -> VirgaButtonStyle {
     VirgaButtonStyle(tier, size: size, icon: icon, isOn: isOn, destructive: destructive)
   }

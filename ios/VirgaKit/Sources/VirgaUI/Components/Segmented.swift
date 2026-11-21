@@ -42,14 +42,14 @@ public struct Segmented<Value: Hashable>: View {
   private let label: String
   private let options: [SegmentedOption<Value>]
   private let selection: Value
-  private let size: ControlSize
+  private let size: KitSize
   private let onChange: (Value) -> Void
 
   /// - Parameters:
   ///   - label: the group's name, for VoiceOver.
   ///   - size: `.medium` (the page's window) or `.small` (one list or chart).
   public init(
-    label: String, options: [SegmentedOption<Value>], selection: Value, size: ControlSize = .medium,
+    label: String, options: [SegmentedOption<Value>], selection: Value, size: KitSize = .medium,
     onChange: @escaping (Value) -> Void
   ) {
     self.label = label
@@ -60,7 +60,7 @@ public struct Segmented<Value: Hashable>: View {
   }
 
   /// With a binding: pressing a key sets it.
-  public init(label: String, options: [SegmentedOption<Value>], selection: Binding<Value>, size: ControlSize = .medium) {
+  public init(label: String, options: [SegmentedOption<Value>], selection: Binding<Value>, size: KitSize = .medium) {
     self.init(label: label, options: options, selection: selection.wrappedValue, size: size) { selection.wrappedValue = $0 }
   }
 
@@ -92,7 +92,7 @@ struct SegmentedKey<Value: Hashable>: View {
   @Environment(\.virgaTheme) private var theme
   let option: SegmentedOption<Value>
   let isOn: Bool
-  let size: ControlSize
+  let size: KitSize
   let action: () -> Void
 
   var body: some View {

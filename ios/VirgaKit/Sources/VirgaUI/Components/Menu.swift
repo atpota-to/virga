@@ -132,9 +132,9 @@ public struct MoreMenu: View {
   @Environment(\.virgaTheme) private var theme
   private let label: String
   private let entries: [MenuEntry]
-  private let size: ControlSize
+  private let size: KitSize
 
-  public init(label: String, entries: [MenuEntry], size: ControlSize = .small) {
+  public init(label: String, entries: [MenuEntry], size: KitSize = .small) {
     self.label = label
     self.entries = entries
     self.size = size

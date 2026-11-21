@@ -10,7 +10,7 @@
 import SwiftUI
 import VirgaCore
 
-public struct TableColumn: Identifiable {
+public struct DataTableColumn: Identifiable {
   public var id: String { title }
   public var title: String
   /// `.is-num`: right-aligned.
@@ -24,11 +24,11 @@ public struct TableColumn: Identifiable {
 
 public struct DataTable: View {
   @Environment(\.virgaTheme) private var theme
-  private let columns: [TableColumn]
+  private let columns: [DataTableColumn]
   private let rows: [[String]]
   private let selected: Int?
 
-  public init(columns: [TableColumn], rows: [[String]], selected: Int? = nil) {
+  public init(columns: [DataTableColumn], rows: [[String]], selected: Int? = nil) {
     self.columns = columns
     self.rows = rows
     self.selected = selected
@@ -97,7 +97,7 @@ public struct DataTable: View {
 #Preview("Table") {
   VirgaPreviewHost {
     DataTable(
-      columns: [TableColumn("Day"), TableColumn("Followers", numeric: true), TableColumn("Change", numeric: true)],
+      columns: [DataTableColumn("Day"), DataTableColumn("Followers", numeric: true), DataTableColumn("Change", numeric: true)],
       rows: [["Nov 18", "4,802", "+3"], ["Nov 19", "4,807", "+5"], ["Nov 20", "4,810", "+3"]],
       selected: 1)
     .padding()
