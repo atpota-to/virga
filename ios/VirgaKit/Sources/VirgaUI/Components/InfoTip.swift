@@ -53,6 +53,25 @@ public struct InfoTip: View {
   }
 }
 
+/// `FollowerCountTip({ profileCount, listed })`: why the profile's follower
+/// counter and the listable count differ.
+public struct FollowerCountTip: View {
+  private let profileCount: Double
+  private let listed: Double
+
+  public init(profileCount: Double, listed: Double) {
+    self.profileCount = profileCount
+    self.listed = listed
+  }
+
+  public var body: some View {
+    InfoTip(
+      label: "Why there are two follower counts",
+      "\(AppLocale.formatNumber(profileCount)) is Bluesky’s own counter, the number on your profile. It still counts accounts that were deactivated, suspended or deleted, and it can lag. \(AppLocale.formatNumber(listed)) is everyone who can be listed right now, which is what the charts and reports count."
+    )
+  }
+}
+
 #Preview("Info tip") {
   VirgaPreviewHost {
     HStack {

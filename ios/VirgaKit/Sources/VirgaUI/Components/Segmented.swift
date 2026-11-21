@@ -1,5 +1,6 @@
 // Ports src/components/Segmented.jsx
 // Ports src/styles/controls.css (.segmented, .scroll-row and their touch sizes)
+// Ports src/styles/theme.css
 //
 // A row of words, one pressed: the pressed one is ink, 600, with a 2-point
 // line under it (3 in high contrast); no track and no chip (not

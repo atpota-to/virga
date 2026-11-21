@@ -1,4 +1,5 @@
 // Ports src/dashboards/DashboardsContext.jsx (reading the layout)
+// Ports src/shell/Shell.jsx
 //
 // The open account's dashboards, as the shell lists them: read from the
 // key-value store under the web's key once per account, checked against

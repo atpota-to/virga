@@ -221,31 +221,31 @@ struct AccountSettingsRow: View {
   }
 
   private var entries: [MenuEntry] {
-    let needsSignIn = account.status == .needsSignIn
-    let session = self.session
-    let account = self.account
+    let needsSignIn = self.account.status == .needsSignIn
+    let model = self.session
+    let row = self.account
     var out: [MenuEntry] = []
-    if !needsSignIn && AccountCopy.offersLongerSession(accountMode: account.mode, session.authMode) {
+    if !needsSignIn && AccountCopy.offersLongerSession(accountMode: row.mode, model.authMode) {
       out.append(
         .item(
           MenuItem("Reconnect for a longer session", key: "lengthen", hint: "Sign in again through Virga’s server", systemImage: Glyph.timer) {
-            AccountActions.lengthen(account, session: session)
+            AccountActions.lengthen(row, session: model)
           }))
     }
     let url = profileURL
-    let openURL = self.openURL
-    out.append(.item(MenuItem("Open on Bluesky", key: "bluesky", systemImage: Glyph.externalLink) { if let url { openURL(url) } }))
+    let opener = self.openURL
+    out.append(.item(MenuItem("Open on Bluesky", key: "bluesky", systemImage: Glyph.externalLink) { if let url { opener(url) } }))
     if !needsSignIn {
-      let app = self.app
-      let signOutGuard = self.signOutGuard
+      let shell = self.app
+      let guarding = self.signOutGuard
       let busy = $busy
       out.append(
         .item(
           MenuItem("Sign out", key: "sign-out", systemImage: Glyph.signOut) {
-            guard !busy.wrappedValue, signOutGuard.checking == nil else { return }
-            signOutGuard.guardSignOut(account, app: app) {
+            guard !busy.wrappedValue, guarding.checking == nil else { return }
+            guarding.guardSignOut(row, app: shell) {
               busy.wrappedValue = true
-              await session.signOutAccount(account.did)
+              await model.signOutAccount(row.did)
               busy.wrappedValue = false
             }
           }))

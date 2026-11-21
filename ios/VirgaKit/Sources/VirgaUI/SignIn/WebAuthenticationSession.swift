@@ -1,3 +1,5 @@
+// Ports src/signin/SignInFlow.jsx (the trip to the host, as iOS makes it)
+//
 // The sign-in's trip to the account's host, on iOS: VirgaSession's
 // WebAuthenticator over ASWebAuthenticationSession.
 //

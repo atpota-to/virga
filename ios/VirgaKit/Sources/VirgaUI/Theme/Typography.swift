@@ -54,11 +54,11 @@ public enum VirgaTypeface {
   }
 
   private static let lock = NSLock()
-  private static var made: [String: UIFont] = [:]
+  private static var made: [String: CTFont] = [:]
 
   /// The face at `size` points and `weight` (400–600), with tabular figures.
   /// Nil when the font isn't registered.
-  public static func uiFont(size: CGFloat, weight: Double) -> UIFont? {
+  public static func face(size: CGFloat, weight: Double) -> CTFont? {
     guard isRegistered else { return nil }
     let key = "\(size)|\(weight)"
     lock.lock()
@@ -76,7 +76,7 @@ public enum VirgaTypeface {
       kCTFontFeatureSettingsAttribute as String: features,
     ]
     let descriptor = CTFontDescriptorCreateWithAttributes(attributes as CFDictionary)
-    let font = CTFontCreateWithFontDescriptor(descriptor, size, nil) as UIFont
+    let font = CTFontCreateWithFontDescriptor(descriptor, size, nil)
     made[key] = font
     return font
   }
@@ -118,8 +118,8 @@ extension VirgaTheme {
   @MainActor
   public func font(size: CGFloat, weight: Double = VirgaWeight.regular, relativeTo style: UIFont.TextStyle? = nil) -> Font {
     let points = scaled(size, relativeTo: style)
-    if hasTypeface, let face = VirgaTypeface.uiFont(size: points, weight: weight) {
-      return Font(face as CTFont)
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
+      return Font(face)
     }
     return Font.system(size: points, weight: Self.systemWeight(weight)).monospacedDigit()
   }
@@ -150,7 +150,10 @@ extension VirgaTheme {
   @MainActor
   public func lineSpacing(size: CGFloat, lineHeight: Double, weight: Double = VirgaWeight.regular) -> CGFloat {
     let points = scaled(size)
-    let natural = (hasTypeface ? VirgaTypeface.uiFont(size: points, weight: weight) : nil)?.lineHeight ?? points * 1.2
+    var natural = points * 1.2
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: weight) {
+      natural = CTFontGetAscent(face) + CTFontGetDescent(face) + CTFontGetLeading(face)
+    }
     return max(0, points * CGFloat(lineHeight) - natural)
   }
 
@@ -165,9 +168,17 @@ extension VirgaTheme {
   @MainActor
   func zeroWidth(size: CGFloat) -> CGFloat {
     let points = scaled(size)
-    let face = (hasTypeface ? VirgaTypeface.uiFont(size: points, weight: VirgaWeight.regular) : nil)
-      ?? UIFont.systemFont(ofSize: points)
-    return ("0" as NSString).size(withAttributes: [.font: face]).width
+    if hasTypeface, let face = VirgaTypeface.face(size: points, weight: VirgaWeight.regular) {
+      // The advance of "0" in the face itself.
+      var glyph = CGGlyph(0)
+      var zero = UniChar(0x30)
+      if CTFontGetGlyphsForCharacters(face, &zero, &glyph, 1) {
+        var advance = CGSize.zero
+        CTFontGetAdvancesForGlyphs(face, .horizontal, &glyph, &advance, 1)
+        return advance.width
+      }
+    }
+    return ("0" as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: points)]).width
   }
 
   static func systemWeight(_ weight: Double) -> Font.Weight {

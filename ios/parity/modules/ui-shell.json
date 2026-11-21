@@ -5,72 +5,131 @@
   "summary": "The SwiftUI shell: the sky and theme, components, navigation, sign-in, the agreement, legal pages, accounts and settings.",
   "files": {
     "src/App.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/App/AppRoot.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift"
+      ],
+      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account) and useProfile. Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the archive's and the dashboards' providers (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
+      "synced": "cb6343e81939"
     },
     "src/accounts/AccountMenu.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
+      ],
+      "note": "All of it but the compact menu's Sync now (the archive's, VirgaArchive). A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out goes through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired to Virga's server; until then the sign-out says it couldn't check, as the web does when the read fails.",
+      "synced": "4612f9ce83da"
     },
     "src/accounts/AccountsSettings.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
+      ],
+      "note": "All of it; the pending-work warnings read through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired, so a long session reads as one that couldn't be checked. Refocusing the next row's ⋯ after a removal is the system's.",
+      "synced": "b301e04cd6f1"
     },
     "src/accounts/AddAccountDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
+      ],
+      "synced": "0ada88bd6be9"
     },
     "src/accounts/PostingPermissionNotice.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift"
+      ],
+      "synced": "b7aa0ed9314e"
     },
     "src/accounts/SessionNotices.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/SessionNotices.swift"
+      ],
+      "note": "The hand-off before a sign-in again (with Cancel), the stuck account's button and the sign-in's notices. Deliberately not: 'another tab switched accounts', since every window of the app shares one session (AppModel).",
+      "synced": "476cf8c14316"
     },
     "src/accounts/accounts.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountsSettings.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Accounts/SessionNotices.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift"
+      ],
+      "note": "The rows of Settings › Account, the front page's remembered accounts and the session notices. The account menu's list styles are the native Menu's on iOS.",
+      "synced": "7ca79d039daf"
     },
     "src/charts/charts.css": {
       "status": "pending",
       "swift": []
     },
     "src/components/AccessBadge.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/AccessLine.swift"
+      ],
+      "synced": "d7ece2c4fe32"
     },
     "src/components/Avatar.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Avatar.swift"
+      ],
+      "synced": "a68860ddcd81"
     },
     "src/components/Button.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Buttons.swift"
+      ],
+      "synced": "9ac3b99eb983"
     },
     "src/components/Delta.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
+      ],
+      "note": "DeltaView draws the change; its words are charts/format.js's deltaText(pct), which comes with VirgaArchive's port of that module, so a caller passes the text until then.",
+      "synced": "1b9ce44616e4"
     },
     "src/components/Dialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift"
+      ],
+      "synced": "f4405d5f2771"
     },
     "src/components/Figures.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
+      ],
+      "synced": "8a7899d53770"
     },
     "src/components/InfoTip.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/InfoTip.swift"
+      ],
+      "synced": "4a762c518957"
     },
     "src/components/Menu.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Menu.swift"
+      ],
+      "synced": "63739bdce0e1"
     },
     "src/components/Segmented.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Layouts.swift"
+      ],
+      "synced": "687b1614c445"
     },
     "src/dashboards/dashboards.css": {
       "status": "pending",
@@ -105,36 +164,66 @@
       "swift": []
     },
     "src/legal/LegalDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift"
+      ],
+      "synced": "a8ca52842713"
     },
     "src/legal/LegalDocument.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalDocumentView.swift"
+      ],
+      "synced": "7ca0c1aac250"
     },
     "src/legal/LegalPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift"
+      ],
+      "synced": "a413b760d9c8"
     },
     "src/legal/TermsGate.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Legal/TermsGateView.swift"
+      ],
+      "note": "All of it but the Reload link after TERMS_VERSION_MISMATCH: the app's documents are bundled, so loading them again can't bring newer ones; the words still say so.",
+      "synced": "403b7da844ac"
     },
     "src/legal/legal.css": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalDocumentView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/LegalPageView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Legal/TermsGateView.swift"
+      ],
+      "synced": "a3bbe4b9044d"
     },
     "src/main.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/VirgaUI.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift"
+      ],
+      "synced": "f49094544f98"
     },
     "src/pages/Landing.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift"
+      ],
+      "note": "All of it but the live sky and the five taps on the mark (src/hillside), and the compose link's callout (composing), which waits for pendingCompose.js.",
+      "synced": "a34c5deb6fb9"
     },
     "src/pages/SignInReturn.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Pages/SignInReturnView.swift"
+      ],
+      "synced": "3cc815112e2b"
     },
     "src/posting/composer/composer.css": {
       "status": "pending",
@@ -165,12 +254,21 @@
       "swift": []
     },
     "src/settings/SettingsPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+      ],
+      "note": "The index (a phone's), Account, Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy and the agreement's date). Not yet: Data and sync (the archive), Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside); About's line on when the repo was last read (the archive).",
+      "synced": "f20273b17b6a"
     },
     "src/settings/settings.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+      ],
+      "note": "The index, the section, the row, the permissions and sources lists, the sky's tiles and the accent's choices. The dashboards' list, the sync and the default timer's editor come with their sections.",
+      "synced": "849c73e6565e"
     },
     "src/share/share.css": {
       "status": "pending",
@@ -185,64 +283,118 @@
       "swift": []
     },
     "src/shell/MobileNav.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
+      ],
+      "note": "The tab bar and the app bar (the mark, or the system's back button with the page above's name, and the account). Not yet: Search (the command palette) and the account menu's Sync now (the archive).",
+      "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
+      ],
+      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, and the titles. Not yet: the first run and the sync's places (the archive), the command palette and its shortcut, New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
+      ],
+      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail. Not yet: Search or jump to… (the command palette), New dashboard, the archive's lines at the foot (SyncCard), and the mark's five taps (the live sky).",
+      "synced": "908f8b702854"
     },
     "src/shell/SyncStatus.jsx": {
       "status": "pending",
       "swift": []
     },
     "src/shell/bits.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift"
+      ],
+      "note": "The mark, the page header, toasts, and useIsNarrow (the theme's hasSidebar). Not yet: the period picker, its range dialog and usePeriod (they need src/lib/periods.js and analytics.js, VirgaArchive's), and useSkyTaps (the live sky).",
+      "synced": "a49f9d2a00e7"
     },
     "src/shell/commandPalette.css": {
       "status": "pending",
       "swift": []
     },
     "src/shell/shell.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Shell.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift"
+      ],
+      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts. Not yet: the sync's places and the first run (the archive), and the range dialog's fields (the period picker).",
+      "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift"
+      ],
+      "note": "All of it but moving through the suggestions with a hardware keyboard's arrows (moveActive): a press picks one.",
+      "synced": "1a818727b82b"
     },
     "src/signin/HowSigningInWorks.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HowSigningInWorks.swift"
+      ],
+      "synced": "2f9a631f258a"
     },
     "src/signin/SignInFlow.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/WebAuthenticationSession.swift"
+      ],
+      "synced": "6271897a4e36"
     },
     "src/signin/parts.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/IdentityParts.swift"
+      ],
+      "synced": "dead86f68368"
     },
     "src/signin/signin.css": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/SignInFlowView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HandleField.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/IdentityParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/SignIn/HowSigningInWorks.swift"
+      ],
+      "synced": "71ee45fb816d"
     },
     "src/styles/app.css": {
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
-        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Pages/LandingView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Pages/SignInReturnView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
       ],
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "a few of its measures (the landing page's bar, title, lede and points, the return screen's title, the restoring message and its animation) are in ThemeKit (VirgaCore/Theme, from ios/parity/cases/_themeKit.js); it sets no theme tokens, and the pages' layout (the landing hero and sketch, the narrow column) comes with VirgaUI (wave 4)",
+      "note": "a few of its measures (the landing page's bar, title, lede and points, the return screen's title, the restoring message and its animation) are in ThemeKit (VirgaCore/Theme, from ios/parity/cases/_themeKit.js); it sets no theme tokens. The pages are VirgaUI's: the front page, its hero, points, foot and sketch (Pages/LandingView.swift), the narrow column and the restoring line (Pages/SignInReturnView.swift), with the measures ThemeKit doesn't read named in Theme/Measures.swift until _themeKit.js reads them; the live sky's frame waits for the hillside",
       "synced": "989bc46fd9c1"
     },
     "src/styles/base.css": {
@@ -250,12 +402,17 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
-        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Typography.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/SkyWash.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Motion.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift"
       ],
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash (body's gradient) are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens, and the element resets and helper classes (.visually-hidden, .skip-link) come with VirgaUI (wave 4)",
+      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens. VirgaUI draws them: the type in Instrument Sans with tabular figures (Theme/Typography.swift), the sky as the scroll content's background (Theme/SkyWash.swift), the focus outline (Components/Focus.swift), Reduce Motion (Theme/Motion.swift). The element resets, ::selection and the helper classes (.visually-hidden, .skip-link) have no counterpart on iOS",
       "synced": "25a6fa774758"
     },
     "src/styles/controls.css": {
@@ -263,12 +420,27 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens.swift",
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeKit+Values.swift",
-        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Buttons.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Marks.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Switch.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Field.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Menu.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Notes.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Table.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Section.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Avatar.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/InfoTip.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/AccessLine.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Layouts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Touch.swift"
       ],
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "246 of its declarations, the kit's measures (sizes, paddings, gaps, radii, weights, colours, borders, shadows, transitions, the coarse pointer's sizes and the invalid field's own focus tokens), are in ThemeKit (VirgaCore/Theme, listed in ios/parity/cases/_themeKit.js); how each control is laid out (the components themselves) comes with VirgaUI (wave 4)",
+      "note": "246 of its declarations, the kit's measures, are in ThemeKit (VirgaCore/Theme, listed in ios/parity/cases/_themeKit.js). The components are VirgaUI's (Components/): the button's tiers and sizes, the link action and the more link, Segmented and the sideways row, the section and its head, foot and caption, the row and its actions, figures and the delta, the menu (native), fields and the text area, the check and the switch, badges, the meta line, chips, tokens, avatars, the dot, the table, the empty state, the note, the callout, the disclosure, progress, the info tip, and the touch block's sizes. Not yet: the list toolbar (.list-toolbar), the chart foot (.chart-foot) and select.input's own chevron (a native Picker), which come with the pages that use them; a few touch reaches ThemeKit doesn't read are in Theme/Measures.swift",
       "synced": "68853fcaa0a5"
     },
     "src/styles/theme.css": {
@@ -278,13 +450,19 @@
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Values.swift",
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Cascade.swift",
         "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Blocks.swift",
-        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift"
+        "ios/VirgaKit/Sources/VirgaCore/Theme/ThemeTokens+Kit.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/VirgaTheme+Tokens.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Switch.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Segmented.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Components/Focus.swift"
       ],
       "fixtures": [
         "ui.theme",
         "ui.themeKit"
       ],
-      "note": "every token it sets on <html> and the cascade that picks them, in VirgaCore/Theme; the measures of its high-contrast rules for components (focus outline, a pressed key's line, the switch, heat cells, bar tracks, the current page, the image labels) are in ThemeKit, and drawing them comes with VirgaUI (wave 4), the switch knob's scale(0.7) among them. Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
+      "note": "every token it sets on <html> and the cascade that picks them, in VirgaCore/Theme, resolved at a window's root and read as @Environment(\\.virgaTheme) (Theme/VirgaTheme.swift). Its high-contrast rules for components are drawn in VirgaUI: the focus outline (Components/Focus.swift), a pressed key's line (Components/Segmented.swift), the switch, its knob at 70% (Components/Switch.swift), the narrow tab bar's disc's ring (Shell/MobileNav.swift); not yet heat cells and bar tracks (the charts), the current page's underline and the image labels. Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
       "synced": "6fa7f1283fe1"
     },
     "src/tools/tools.css": {

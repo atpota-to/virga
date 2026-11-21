@@ -283,6 +283,9 @@ public struct AccountMenu: View {
   }
 
   private func entries(name: String, handle: String?) -> [MenuEntry] {
+    let model = session
+    let shell = app
+    let guarding = signOutGuard
     let did = session.did
     let accounts = session.accounts
     let active = accounts.first { Optional($0.did).jsEquals(did) }
@@ -302,24 +305,22 @@ public struct AccountMenu: View {
         }
         if account.status == .needsSignIn { words.append("Sign back in") }
         let opens = !(isActive && account.status != .needsSignIn)
-        let session = self.session
         out.append(
           .item(
             MenuItem(
               rowName(account), key: "account:\(account.did)", hint: words.joined(separator: " · "), systemImage: Glyph.account,
-              action: opens ? { AccountActions.open(account, session: session) } : nil)))
+              action: opens ? { AccountActions.open(account, session: model) } : nil)))
       }
       out.append(.separator)
     }
     out.append(.item(MenuItem("Add an account", key: "add", systemImage: Glyph.userPlus) { adding = true }))
     if let active, AccountCopy.offersLongerSession(accountMode: active.mode, session.authMode) {
-      let session = self.session
       out.append(
         .item(
           MenuItem(
             "Reconnect for a longer session", key: "lengthen",
             hint: "Sign in again through Virga’s server, so you stay signed in and can schedule posts.", systemImage: Glyph.timer
-          ) { AccountActions.lengthen(active, session: session) }))
+          ) { AccountActions.lengthen(active, session: model) }))
     }
     if active?.status == .needsSignIn {
       out.append(
@@ -337,12 +338,10 @@ public struct AccountMenu: View {
     // No hint: when signing out would stop scheduled posts or timers, the
     // guard asks first and says so.
     let me = active ?? SessionAccount(did: did ?? "", mode: session.mode ?? "backend")
-    let app = self.app
-    let signOutGuard = self.signOutGuard
     out.append(
       .item(
         MenuItem(signedIn.count > 1 ? "Sign out of \(name)" : "Sign out", key: "sign-out", systemImage: Glyph.signOut) {
-          signOutGuard.guardSignOut(me, app: app) { await app.session.signOut() }
+          guarding.guardSignOut(me, app: shell) { await shell.session.signOut() }
         }))
     if signedIn.count > 1 {
       out.append(
