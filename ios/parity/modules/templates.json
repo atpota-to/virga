@@ -13,16 +13,33 @@
       "swift": []
     },
     "src/posting/templates/postTemplates.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "Templates are read loosely through TemplateFields (JSONValue, PostTemplate, TemplateDraft), member by member as the web reads its objects. Two deliberate differences, kept out of the fixtures: where the web throws a TypeError on a malformed shape (a null in variables, variables or keywords that aren't arrays, a null template in a list) the port reads the value as absent; and a label, hint, choice, keyword, handle, URI or CID that isn't a string, which the web passes through raw, comes out as its String form. buildTemplateContext's `today` is formatted in the given (or active) locale and zone, where the web uses the runtime's.",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/PostTemplates.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/PostTemplates+Types.swift",
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateJS.swift"
+      ],
+      "fixtures": [
+        "templates.postTemplates",
+        "templates.fill"
+      ],
+      "synced": "87238481a9e9"
     },
     "src/posting/templates/templateService.js": {
       "status": "pending",
       "swift": []
     },
     "src/posting/templates/templateUsage.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "note": "The store is passed in (`store:`), as the web's optional `{ store }`; nil is no localStorage. localeCompare is Foundation's ICU collation in the given (or active) locale, where the web uses the runtime's (VirgaPosting/Support/LocaleCompare.swift).",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Templates/TemplateUsage.swift"
+      ],
+      "fixtures": [
+        "templates.templateUsage"
+      ],
+      "synced": "0004a0a028e3"
     },
     "src/posting/templates/useTemplates.js": {
       "status": "pending",
