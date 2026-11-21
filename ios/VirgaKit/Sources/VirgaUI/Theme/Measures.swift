@@ -23,6 +23,65 @@ import SwiftUI
 import VirgaCore
 
 public enum Measure {
+  // MARK: controls.css (the touch block's reaches, which ThemeKit doesn't read)
+
+  public enum LinkAction {
+    /// `.link-action::after, .more-link::after { inset: -13px -6px }`
+    public static let reachAbove: CGFloat = 13
+    public static let reachSides: CGFloat = 6
+  }
+
+  public enum Touch {
+    /// The least a finger is given anywhere: 44 points (the touch block's
+    /// reach for a small button, a ghost icon, a Segmented's key, a menu's item).
+    public static let target: CGFloat = 44
+    /// `.token-remove::after { inset: -10px }`
+    public static let tokenRemoveReach: CGFloat = 10
+    /// `.segmented-key::before { inset: 0 -11px }`, `.segmented { padding-inline: 11px }`
+    public static let segmentedReach: CGFloat = 11
+  }
+
+  public enum Field {
+    /// `.search > svg { width: 16px }`
+    public static let searchIcon: CGFloat = 16
+  }
+
+  public enum Disclosure {
+    /// `.disclosure > summary::before`: a 6px chevron of 1.5px strokes,
+    /// drawn as the system's chevron at about its height.
+    public static let chevron: CGFloat = 8
+  }
+
+  public enum Switch {
+    /// theme.css, high contrast: `.switch::after { transform: scale(0.7) }`.
+    public static let highContrastKnobScale: CGFloat = 0.7
+  }
+
+  public enum Figures {
+    /// `.figures { grid-template-columns: repeat(auto-fit, minmax(min(168px, 100%), 1fr)) }`,
+    /// 128 when there are exactly five.
+    public static let minWidth: CGFloat = 168
+    public static let fiveMinWidth: CGFloat = 128
+  }
+
+  public enum Section {
+    /// `.card-head > :first-child { min-width: min(100%, 16rem) }`: the title's
+    /// least room before its group wraps under it.
+    public static let titleMinWidth: CGFloat = 256
+    /// `.empty-block .empty { max-width: 56ch }`
+    public static let emptyMeasure: CGFloat = 56
+    /// `.card-head .btn--icon { margin-top: -12px }` on touch: a 44 icon over the title's line.
+    public static let iconToolLift: CGFloat = 12
+    /// `.row-actions { margin-top: -6px }` on touch.
+    public static let rowActionsLift: CGFloat = 6
+    /// `.table tr.is-selected`: let out 10 past the table's sides.
+    public static let selectedRowBleed: CGFloat = 10
+    /// `.callout svg { width: 16px; margin-top: 2px }`
+    public static let calloutIcon: CGFloat = 16
+    /// `.info-tip-pop { top: calc(100% + 6px) }`, an info tip's glyph 13.
+    public static let infoTipIcon: CGFloat = 13
+  }
+
   // MARK: shell.css
 
   public enum Sidebar {
@@ -283,6 +342,8 @@ public enum Measure {
     public static let checkGap: CGFloat = 12
     public static let checkLineHeight: Double = 1.4
     public static let checkBox: CGFloat = 18
+    /// `.terms-check input { margin-top: 1px }`
+    public static let checkSpaceAbove: CGFloat = 1
   }
 
   // MARK: signin.css

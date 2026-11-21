@@ -157,10 +157,12 @@ public struct VirgaTheme: Sendable {
     border.width.map { points($0) } ?? 0
   }
 
-  /// `--measure` (54ch): the width of "0" in the body's font, 54 times over.
+  /// `--measure` (54ch). A ch is the width of "0" at the size of the text
+  /// held to it, which is `--text-sm` for every line that is (a section's
+  /// sub-line, a caption, a note, a callout).
   @MainActor
   public var measure: CGFloat {
-    let zero = zeroWidth(size: textBase)
+    let zero = zeroWidth(size: textSm)
     let context = ThemeLengthContext(viewportWidth: Double(windowWidth), chWidth: Double(zero))
     return CGFloat(tokens.points(.measure, in: context) ?? Double(zero) * 54)
   }
