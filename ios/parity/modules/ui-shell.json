@@ -276,8 +276,12 @@
       "swift": []
     },
     "src/shell/CommandPalette.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift"
+      ],
+      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account; New post goes to the composer's address. Not yet: Customize this dashboard and New dashboard, left out of the list until the dashboards' editing is ported, and the composer itself.",
+      "synced": "5138c6649f81"
     },
     "src/shell/FirstRun.jsx": {
       "status": "ported",
@@ -292,7 +296,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
       ],
-      "note": "The tab bar and the app bar: on a part's front page the mark and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, and the account, in the navigation bar; the account's menu holds Sync now once there is an archive. Not yet: Search (the command palette).",
+      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive.",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
@@ -303,7 +307,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
       ],
-      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). Not yet: the command palette and its shortcut, New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard) and the toasts are mounted here. Not yet: New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
       "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
@@ -311,7 +315,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
       ],
-      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail, and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Not yet: Search or jump to… (the command palette), New dashboard, and the mark's five taps (the live sky).",
+      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail, and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Search or jump to… with its shortcut (a search glyph on the rail) opens the command palette. Not yet: New dashboard, and the mark's five taps (the live sky).",
       "synced": "908f8b702854"
     },
     "src/shell/SyncStatus.jsx": {
@@ -333,8 +337,13 @@
       "synced": "a49f9d2a00e7"
     },
     "src/shell/commandPalette.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The field (no box, a 2-point rule in ink, 52 tall, --text-lg and 16 from 374 down), Close on its line, the list's groups and options (40 tall, 48 on a phone, the highlighted one on --hover), the tick, the empty line, the foot and the keys (.kbd), a phone's hints under the titles and waiting for a search. The sheet is the system's at every width: the web's dialog near the top of a wide screen (620 wide, 12vh down) has no counterpart.",
+      "synced": "68cfeed12a57"
     },
     "src/shell/shell.css": {
       "status": "partial",
@@ -350,7 +359,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. Not yet: .sidebar-search and the app bar's Search button (the command palette), and the sidebar list's overflow fades.",
+      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button too. Not yet: the sidebar list's overflow fades.",
       "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {

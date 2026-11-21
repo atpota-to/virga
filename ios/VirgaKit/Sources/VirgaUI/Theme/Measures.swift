@@ -4,6 +4,7 @@
 // Ports src/signin/signin.css (its measures)
 // Ports src/accounts/accounts.css (its measures)
 // Ports src/settings/settings.css (its measures)
+// Ports src/shell/commandPalette.css (its measures)
 //
 // The measures of the stylesheets ThemeKit doesn't read yet (ThemeKit holds
 // theme.css, base.css, controls.css and app.css; ios/parity/cases/
@@ -186,6 +187,48 @@ public enum Measure {
     public static let narrowStepsAt: CGFloat = 479
     public static let stepGap: CGFloat = 6
     public static let tick: CGFloat = 13
+  }
+
+  /// commandPalette.css.
+  public enum Palette {
+    /// `.palette-search { margin: 0 56px 0 20px; border-bottom: 2px }`, its
+    /// input 52 tall, 30 in for the 18-point glyph, its words --text-lg (16
+    /// from 374 down).
+    public static let fieldLeading: CGFloat = 20
+    public static let fieldTrailing: CGFloat = 56
+    public static let fieldRule: CGFloat = 2
+    public static let fieldHeight: CGFloat = 52
+    public static let fieldIcon: CGFloat = 18
+    public static let fieldIconGap: CGFloat = 12
+    public static let narrowFieldSize: CGFloat = 16
+    public static let fieldSpaceAbove: CGFloat = 4
+    /// `.palette-list { padding: 8px 10px 10px }`, `.palette-group + .palette-group { margin-top: 8px }`,
+    /// `.palette-group-head { padding: 8px 10px 4px }`.
+    public static let list = EdgeInsets(top: 8, leading: 10, bottom: 10, trailing: 10)
+    public static let groupGap: CGFloat = 8
+    public static let groupHead = EdgeInsets(top: 8, leading: 10, bottom: 4, trailing: 10)
+    /// `.palette-option { gap: 10px; min-height: 40px; padding: 5px 10px }`, 48 on a phone;
+    /// its icon 24 wide (a 16 glyph), the tick 15, a phone's hint 1 under its title.
+    public static let optionGap: CGFloat = 10
+    public static let optionHeight: CGFloat = 40
+    public static let phoneOptionHeight: CGFloat = 48
+    public static let optionPadding = EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+    public static let optionIcon: CGFloat = 24
+    public static let optionGlyph: CGFloat = 16
+    public static let mark: CGFloat = 15
+    public static let phoneHintGap: CGFloat = 1
+    /// `.palette-empty { padding: 28px 12px 32px }`
+    public static let empty = EdgeInsets(top: 28, leading: 12, bottom: 32, trailing: 12)
+    /// `.palette-foot { gap: 18px; padding: 9px 20px 11px }`, its keys 4 from their words.
+    public static let foot = EdgeInsets(top: 9, leading: 20, bottom: 11, trailing: 20)
+    public static let footGap: CGFloat = 18
+    public static let footKeyGap: CGFloat = 4
+    /// `.kbd { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 5px }`
+    public static let keySize: CGFloat = 20
+    public static let keyPadding: CGFloat = 5
+    public static let keyRadius: CGFloat = 5
+    /// The sidebar's row: its glyph 15 (`.sidebar-search > svg`).
+    public static let sidebarIcon: CGFloat = 15
   }
 
   /// shell.css's `.range-fields`: `repeat(auto-fit, minmax(180px, 1fr))`, 16 apart.

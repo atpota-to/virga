@@ -7,7 +7,8 @@
 // reaches them.
 //
 // On a part's front page the top row is part of the page, as the web's is:
-// the mark at the page's margin and the account at the right, 56 tall, in
+// the mark at the page's margin, Search and the account at the right, 56
+// tall, in
 // the page's scroll content over the sky, so it scrolls away with it
 // (AppBarRow; VirgaPage draws it, and the navigation bar is hidden). The top
 // of the sky is held still under the status bar, so the page scrolls under
@@ -23,9 +24,9 @@
 // New post is the round ink button at its end. Settings is behind the
 // account, in its menu.
 //
-// The account's menu holds Sync now here, once there is an archive (there
-// is no sync card beside it). Search (the command palette, which has no
-// shortcut on a phone) comes with the palette.
+// Search opens the command palette (CommandPalette.swift), which has no
+// shortcut to be found by here. The account's menu holds Sync now, once
+// there is an archive (there is no sync card beside it).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -143,8 +144,8 @@ struct TabButton: View {
   }
 }
 
-/// `.appbar`, on a part's front page: the mark at the page's margin, the
-/// account at the right, 56 tall, in the page's content (VirgaPage draws it
+/// `.appbar`, on a part's front page: the mark at the page's margin, Search
+/// and the account at the right, 56 tall, in the page's content (VirgaPage draws it
 /// when `showsAppBar` is set), so it scrolls away with the sky.
 struct AppBarRow: View {
   @Environment(\.virgaTheme) private var theme
@@ -154,7 +155,10 @@ struct AppBarRow: View {
       Brand()
         .frame(minHeight: Measure.AppBar.iconButton)
       Spacer(minLength: 0)
-      AccountMenu(compact: true)
+      HStack(spacing: 0) {
+        PaletteButton()
+        AccountMenu(compact: true)
+      }
     }
     .padding(.leading, theme.pagePad)
     .padding(.trailing, Measure.AppBar.paddingTrailing)
@@ -182,8 +186,8 @@ struct StatusBarSky: View {
 
 /// The navigation bar's parts on a page inside a part: the system's back
 /// button is the way back up; the bar draws no title (the page's header has
-/// it, and the bar keeps it for the back button and VoiceOver), and the
-/// account is at the right.
+/// it, and the bar keeps it for the back button and VoiceOver), and Search
+/// and the account are at the right.
 struct AppBarToolbar: ToolbarContent {
   @ToolbarContentBuilder var body: some ToolbarContent {
     ToolbarItem(placement: .principal) {
@@ -191,7 +195,10 @@ struct AppBarToolbar: ToolbarContent {
     }
     .withoutSharedGlass()
     ToolbarItem(placement: .topBarTrailing) {
-      AccountMenu(compact: true)
+      HStack(spacing: 0) {
+        PaletteButton()
+        AccountMenu(compact: true)
+      }
     }
     .withoutSharedGlass()
   }

@@ -17,9 +17,11 @@
 // up the sidebar's card keeps to its first line and the strip at the top
 // of the page (a phone's, and beside the folded rail) isn't drawn.
 //
-// Not here yet: the command palette and its shortcut, New dashboard, the
-// composer (New post goes to its address, whose page says it isn't here
-// yet), and the live sky.
+// The command palette opens from Search (the sidebar's, the app bar's) and
+// from ⌘K on a hardware keyboard; toasts show at the foot of the window.
+//
+// Not here yet: New dashboard, the composer (New post goes to its address,
+// whose page says it isn't here yet), and the live sky.
 
 #if canImport(UIKit)
 import SwiftUI
@@ -35,6 +37,8 @@ public struct ShellView: View {
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @State private var dashboards: ShellDashboards
   @State private var accountDialogs = AccountDialogs()
+  @State private var palette = PaletteState()
+  @State private var toasts = ToastCenter()
 
   /// - Parameters:
   ///   - store: where the account's dashboards are kept.
@@ -60,6 +64,18 @@ public struct ShellView: View {
     Group {
       if desk { split } else { stack }
     }
+    .overlay { ToastStack(center: toasts).padding(.bottom, desk ? 0 : theme.tabbarH) }
+    .commandPalette(palette)
+    .background {
+      // ⌘K, from anywhere (a hardware keyboard), as the web's shortcut.
+      Button("Search or jump to") { palette.isOpen.toggle() }
+        .keyboardShortcut("k", modifiers: .command)
+        .opacity(0)
+        .frame(width: 0, height: 0)
+        .accessibilityHidden(true)
+    }
+    .environment(palette)
+    .environment(toasts)
     .environment(\.showsSyncBanner, (!desk || collapsed) && !firstRun)
     .environment(\.virgaTheme, ShellFigureSize.declared(in: theme, sidebar: desk ? (collapsed ? .rail : .sidebar) : .phone))
     .accountDialogs(accountDialogs)

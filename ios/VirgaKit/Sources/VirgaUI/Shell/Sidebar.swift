@@ -15,8 +15,10 @@
 // page, which shows the steps itself. Folded, the rail has the fold button
 // and the account there instead, and Sync now is in the account's menu.
 //
-// Not here yet: Search or jump to… (the command palette), New dashboard
-// (its dialog comes with the dashboards).
+// Under New post, "Search or jump to…" with its shortcut opens the command
+// palette (a search glyph on the rail).
+//
+// Not here yet: New dashboard (its dialog comes with the dashboards).
 
 #if canImport(UIKit)
 import SwiftUI
@@ -79,6 +81,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary))
       .environment(\.virgaFillsWidth, true)
       .accessibilityIdentifier("sidebar-new-post")
+      SidebarSearch()
       ScrollView(.vertical, showsIndicators: false) {
         VStack(alignment: .leading, spacing: Measure.Sidebar.navGap) {
           ForEach(sections) { section in
@@ -111,6 +114,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary, icon: true))
       .accessibilityLabel("New post")
       .accessibilityIdentifier("sidebar-new-post")
+      PaletteButton()
       ScrollView(.vertical, showsIndicators: false) {
         VStack(spacing: Measure.Sidebar.railNavGap) {
           ForEach(sections) { section in
