@@ -104,7 +104,8 @@ private func attributes(_ c: ParityCase) throws -> RootAttributes {
         mismatches.check(table.json(theme[token]), table.expected(index), "\(c) \(token.rawValue)")
       }
     }
-    #expect(cases.count >= 192 * 3)
+    let leastCases: Int = 192 * 3
+    #expect(cases.count >= leastCases)
     #expect(mismatches.list.isEmpty, "\(mismatches.report)")
   }
 

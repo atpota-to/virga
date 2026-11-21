@@ -65,12 +65,17 @@ private extension ResolvedTheme {
     #expect(day.up.hexString == "#1849b5")
     #expect(day.btn.hexString == "#0f1b33")
     let dusk = page(.dusk)
-    #expect(dusk.bg.hexString == "#ffffff" && dusk.skyTop.hexString == "#cbc5f4" && dusk.ink.hexString == "#0f1b33")
+    #expect(dusk.bg.hexString == "#ffffff")
+    #expect(dusk.skyTop.hexString == "#cbc5f4")
+    #expect(dusk.ink.hexString == "#0f1b33")
     let night = page(.night)
-    #expect(night.bg.hexString == "#0d152b" && night.skyTop.hexString == "#0e1a3a")
-    #expect(night.ink.hexString == "#f2f5fc" && night.onBtn.hexString == "#0d152b")
+    #expect(night.bg.hexString == "#0d152b")
+    #expect(night.skyTop.hexString == "#0e1a3a")
+    #expect(night.ink.hexString == "#f2f5fc")
+    #expect(night.onBtn.hexString == "#0d152b")
     #expect(night.focusRing == night.accentInk)
-    #expect(night.colorScheme == .dark && day.colorScheme == .light)
+    #expect(night.colorScheme == .dark)
+    #expect(day.colorScheme == .light)
     let strongest = page(.night, .high, .amber)
     #expect(strongest.bg.hexString == "#000000")
     #expect(strongest.skyTop.hexString == "#000000")
@@ -105,9 +110,10 @@ private extension ResolvedTheme {
       }
     }
     #expect(accentBlocks.count == Preferences.Accent.allCases.count * 4)
+    let expected: [String] = ThemeTokens.accentTokens.map(\.rawValue).sorted()
     for block in accentBlocks {
-      #expect(block.declarations.map(\.token).sorted { $0.rawValue < $1.rawValue }
-        == ThemeTokens.accentTokens.sorted { $0.rawValue < $1.rawValue }, "\(block.selectors)")
+      let declared: [String] = block.declarations.map(\.token.rawValue).sorted()
+      #expect(declared == expected, "\(block.selectors)")
     }
   }
 
@@ -260,7 +266,8 @@ private extension ResolvedTheme {
   @Test func highContrastHasNoSky() {
     for s in states where s.contrast == .high {
       let t = page(s.sky, .high, s.accent)
-      #expect(t.skyTop == t.bg && t.skyMid == t.bg, "\(name(s))")
+      #expect(t.skyTop == t.bg, "\(name(s))")
+      #expect(t.skyMid == t.bg, "\(name(s))")
     }
   }
 
@@ -297,7 +304,8 @@ private extension ResolvedTheme {
     #expect(ThemeTokens.spaceScale.map { t.points($0) ?? 0 } == [4, 8, 12, 16, 24, 32, 48])
     #expect(ThemeTokens.radii.map { t.points($0) ?? 0 } == [6, 8, 12, 999])
     #expect(t.textTitle == 32)
-    #expect(t.sans.first == "Instrument Sans Variable" && t.code.first == "ui-monospace")
+    #expect(t.sans.first == "Instrument Sans Variable")
+    #expect(t.code.first == "ui-monospace")
     #expect(t.ease == ThemeCubicBezier(0.2, 0.8, 0.2, 1))
     #expect(ThemeTokens.fontWeights == [400, 500, 600])
   }
@@ -305,18 +313,30 @@ private extension ResolvedTheme {
   @Test func aPhoneHasLessRoomRoundThePageAndAShorterSky() {
     let deskPage = page(.day)
     let phone = page(.day, width: 390)
-    #expect(deskPage.pagePad == 51.2 && phone.pagePad == 20)
-    #expect(deskPage.pageTop == 40 && phone.pageTop == 8)
-    #expect(phone.textTitle == 28 && phone.skyMidAt == 170 && phone.skyEnd == 420)
-    #expect(phone.textBase == 15 && page(.day, width: 820).textBase == 14)
-    #expect(page(.night, width: 390).skyEnd == 460 && page(.night).skyEnd == 620)
+    #expect(deskPage.pagePad == 51.2)
+    #expect(phone.pagePad == 20)
+    #expect(deskPage.pageTop == 40)
+    #expect(phone.pageTop == 8)
+    #expect(phone.textTitle == 28)
+    #expect(phone.skyMidAt == 170)
+    #expect(phone.skyEnd == 420)
+    #expect(phone.textBase == 15)
+    #expect(page(.day, width: 820).textBase == 14)
+    #expect(page(.night, width: 390).skyEnd == 460)
+    #expect(page(.night).skyEnd == 620)
     let compactPhone = page(.day, density: .compact, width: 390)
-    #expect(compactPhone.pagePad == 16 && compactPhone.pageTop == 8 && compactPhone.gridGap == 22)
+    #expect(compactPhone.pagePad == 16)
+    #expect(compactPhone.pageTop == 8)
+    #expect(compactPhone.gridGap == 22)
     let compactDesk = page(.day, density: .compact)
-    #expect(compactDesk.pagePad == 38.4 && compactDesk.pageTop == 28 && compactDesk.controlH == 32)
-    #expect(page(.day, width: 899).pagePad == 20 && page(.day, width: 900).pagePad == 36)
+    #expect(compactDesk.pagePad == 38.4)
+    #expect(compactDesk.pageTop == 28)
+    #expect(compactDesk.controlH == 32)
+    #expect(page(.day, width: 899).pagePad == 20)
+    #expect(page(.day, width: 900).pagePad == 36)
     // The figure that leads a page grows with the viewport between 40 and 60.
-    #expect(page(.day, width: 390).textFigure == 40 && page(.day, width: 1920).textFigure == 60)
+    #expect(page(.day, width: 390).textFigure == 40)
+    #expect(page(.day, width: 1920).textFigure == 60)
     #expect(deskPage.measure == .value(54, .ch))
     #expect(deskPage.points(.measure, in: ThemeLengthContext(viewportWidth: desk, chWidth: 8)) == 432)
     // Typed first: Xcode's type checker gives up on the mixed literals inline.
@@ -328,7 +348,8 @@ private extension ResolvedTheme {
     let t = page(.day)
     #expect(t.points(of: ThemeKit.buttonHeight) == 36)
     #expect(page(.day, density: .compact).points(of: ThemeKit.buttonHeight) == 32)
-    #expect(ThemeKit.touchButtonHeight == .px(40) && ThemeKit.touchGhostIconButtonSize == .px(44))
+    #expect(ThemeKit.touchButtonHeight == .px(40))
+    #expect(ThemeKit.touchGhostIconButtonSize == .px(44))
     #expect(t.color(of: ThemeKit.primaryButtonFill) == t.btn)
     #expect(page(.night).color(of: ThemeKit.dangerButtonFillAtNight)?.hexString == "#b42318")
     let field = try #require(t.color(of: ThemeKit.inputFill))
@@ -354,9 +375,11 @@ private extension ResolvedTheme {
     prefs.accent = .rose
     prefs.contrast = .system
     let t = ThemeTokens.resolve(Preferences.rootAttributes(prefs, moreContrast: true), viewportWidth: desk)
-    #expect(t.bg.hexString == "#000000" && t.accent.hexString == "#f893ab")
+    #expect(t.bg.hexString == "#000000")
+    #expect(t.accent.hexString == "#f893ab")
     prefs.contrast = .normal
     let night = ThemeTokens.resolve(Preferences.rootAttributes(prefs), viewportWidth: desk)
-    #expect(night.bg.hexString == "#0d152b" && night.accent.hexString == "#f191a7")
+    #expect(night.bg.hexString == "#0d152b")
+    #expect(night.accent.hexString == "#f191a7")
   }
 }
