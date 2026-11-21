@@ -84,6 +84,16 @@ public enum Measure {
 
   // MARK: shell.css
 
+  public enum Shell {
+    /// `.shell { --figure-size: min(var(--text-figure), max(2.5rem,
+    /// calc((column - 96px) / 4 * 0.26))) }`; from 560 down
+    /// `calc((100vw - var(--page-pad) * 2 - 20px) / 2 * 0.26)`.
+    public static let figureFloor: CGFloat = 40
+    public static let figureShare: CGFloat = 0.26
+    public static let figureGaps: CGFloat = 96
+    public static let phoneFigureGaps: CGFloat = 20
+  }
+
   public enum Sidebar {
     /// `.sidebar { padding: var(--page-top) 16px 24px 36px }`
     public static let paddingTrailing: CGFloat = 16

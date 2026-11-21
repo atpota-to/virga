@@ -211,6 +211,9 @@ public struct VirgaPage<Content: View>: View {
       .skyBackground()
     }
     .scrollDismissesKeyboard(.interactively)
+    // Behind the content: sky above the middle, ground below, so a short
+    // page, or one pulled past its ends, shows no other colour.
+    .background(PageGround().ignoresSafeArea())
   }
 }
 
