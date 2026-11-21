@@ -243,6 +243,26 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(!states.contains { $0?.step == "posts" })
   }
 
+  /// Unmounted while its store was still opening: the web's effect sees
+  /// `cancelled` and neither reads the store nor listens; mounted again,
+  /// it does both.
+  @Test func aMountStoppedBeforeItsStoreOpensDoesNothingMore() async {
+    let transport = MockTransport()
+    smallWorld(transport)
+    let events = FakePostingEvents()
+    let m = model(transport, files: SlowFileStore(), postsChanged: events.listener)
+    let mount = Task { await m.start() }
+    await Task.yield()
+    m.stop()
+    await mount.value
+    #expect(m.data.loaded == false)
+    #expect(events.listening == false)
+    await m.start()
+    #expect(m.data.loaded)
+    #expect(events.listening)
+    m.stop()
+  }
+
   @Test func cancellingTheMountCallsOffItsSync() async {
     let transport = MockTransport()
     smallWorld(transport)

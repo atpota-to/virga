@@ -145,6 +145,9 @@ public final class ArchiveModel {
   @ObservationIgnored var autoRan = false
   @ObservationIgnored var attemptedActors = Set<JSKey>()
   @ObservationIgnored var stopListening: (@Sendable () -> Void)?
+  /// Moves on every stop(): a mount whose store opens after it was
+  /// stopped does nothing more (the effect's `cancelled` flag).
+  @ObservationIgnored var mounts = 0
   /// Hears every change of `sync` (tests read the bar's whole history).
   @ObservationIgnored var syncObserver: ((SyncState?) -> Void)?
 
@@ -213,9 +216,10 @@ public final class ArchiveModel {
   /// (the first build is a button, never a surprise). Awaits that sync;
   /// cancelling the call calls it off.
   public func start() async {
+    let mount = mounts
     if store == nil {
       let opened = await AnalyticsStore.openAnalyticsStore(did, files: env.files, registry: env.registry)
-      if Task.isCancelled { return }
+      if Task.isCancelled || mount != mounts { return }
       store = opened
       await reload(opened)
     }
@@ -237,6 +241,7 @@ public final class ArchiveModel {
 
   /// The hook's unmount: call off a sync and stop listening.
   public func stop() {
+    mounts += 1
     cancelSync()
     stopListening?()
     stopListening = nil
