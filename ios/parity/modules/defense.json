@@ -136,8 +136,14 @@
       "swift": []
     },
     "src/defense/veto.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Veto.swift"
+      ],
+      "fixtures": [
+        "defense.veto"
+      ],
+      "synced": "4910b0d3a794"
     }
   }
 }
