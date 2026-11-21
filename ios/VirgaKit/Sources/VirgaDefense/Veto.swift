@@ -77,6 +77,11 @@ public enum Veto {
     return try res.json()
   }
 
+  /// What `body` came to: its value or its error.
+  static func outcome<T: Sendable>(_ body: () async throws -> T) async -> Result<T, any Error> {
+    do { return .success(try await body()) } catch { return .failure(error) }
+  }
+
   /// The error a read stopped by the caller rethrows: the caller's own stop.
   static func stopped(_ error: any Error) -> any Error {
     error is CancellationError ? error : CancellationError()
@@ -245,8 +250,8 @@ public enum Veto {
     var members = ReasonMap()
     var failure: (any Error)?
     await withTaskGroup(of: (Bool, Result<ReasonMap, any Error>).self) { group in
-      group.addTask { (true, await Result { try await readFollows(ownerDid, asked) }) }
-      group.addTask { (false, await Result { try await readCuration() }) }
+      group.addTask { (true, await outcome { try await readFollows(ownerDid, asked) }) }
+      group.addTask { (false, await outcome { try await readCuration() }) }
       for await (isFollows, result) in group {
         switch result {
         case .success(let map):
@@ -266,12 +271,5 @@ public enum Veto {
       }
     }
     return out
-  }
-}
-
-extension Result where Failure == any Error {
-  /// `Result { try await body() }`.
-  init(catching body: () async throws -> Success) async {
-    do { self = .success(try await body()) } catch { self = .failure(error) }
   }
 }
