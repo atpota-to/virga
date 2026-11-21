@@ -1,0 +1,2444 @@
+{
+  "name": "defense.service",
+  "sources": [
+    "src/defense/defenseService.js"
+  ],
+  "cases": [
+    {
+      "id": "lists",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"lists\":[{\"id\":7,\"holderDid\":\"did:plc:virgaharnessmira2zq4x\",\"mode\":\"own\",\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l\",\"name\":\"Pile-on\",\"purpose\":\"app.bsky.graph.defs#modlist\",\"createdAt\":\"2026-11-01T00:00:00.000Z\",\"listed\":12,\"waiting\":3,\"heldUntil\":null,\"lastError\":null}],\"kept\":[{\"did\":\"did:plc:sister\",\"reason\":\"my sister\",\"addedAt\":\"2026-11-02T00:00:00.000Z\"}],\"writes\":true}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "lists": [
+              {
+                "id": 7,
+                "holderDid": "did:plc:virgaharnessmira2zq4x",
+                "mode": "own",
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l",
+                "name": "Pile-on",
+                "purpose": "app.bsky.graph.defs#modlist",
+                "createdAt": "2026-11-01T00:00:00.000Z",
+                "listed": 12,
+                "waiting": 3,
+                "heldUntil": null,
+                "lastError": null
+              }
+            ],
+            "kept": [
+              {
+                "did": "did:plc:sister",
+                "reason": "my sister",
+                "addedAt": "2026-11-02T00:00:00.000Z"
+              }
+            ],
+            "writes": true
+          }
+        }
+      }
+    },
+    {
+      "id": "bare-body",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"lists\":[{\"id\":7,\"holderDid\":\"did:plc:virgaharnessmira2zq4x\",\"mode\":\"own\",\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l\",\"name\":\"Pile-on\",\"purpose\":\"app.bsky.graph.defs#modlist\",\"createdAt\":\"2026-11-01T00:00:00.000Z\",\"listed\":12,\"waiting\":3,\"heldUntil\":null,\"lastError\":null}],\"kept\":[{\"did\":\"did:plc:sister\",\"reason\":\"my sister\",\"addedAt\":\"2026-11-02T00:00:00.000Z\"}],\"writes\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "lists": [
+              {
+                "id": 7,
+                "holderDid": "did:plc:virgaharnessmira2zq4x",
+                "mode": "own",
+                "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l",
+                "name": "Pile-on",
+                "purpose": "app.bsky.graph.defs#modlist",
+                "createdAt": "2026-11-01T00:00:00.000Z",
+                "listed": 12,
+                "waiting": 3,
+                "heldUntil": null,
+                "lastError": null
+              }
+            ],
+            "kept": [
+              {
+                "did": "did:plc:sister",
+                "reason": "my sister",
+                "addedAt": "2026-11-02T00:00:00.000Z"
+              }
+            ],
+            "writes": true
+          }
+        }
+      }
+    },
+    {
+      "id": "data-null",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "success": true,
+            "data": null
+          }
+        }
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "signed-out",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 401,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"SIGNED_OUT\",\"error\":\"Sign in again.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Sign in again.",
+            "code": "SIGNED_OUT",
+            "status": 401
+          }
+        }
+      }
+    },
+    {
+      "id": "unavailable",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"UNAVAILABLE\",\"error\":\"Defense isn’t set up.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Defense isn’t set up.",
+            "code": "UNAVAILABLE",
+            "status": 503
+          }
+        }
+      }
+    },
+    {
+      "id": "refused-in-the-body",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"nope\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "nope",
+            "code": "nope",
+            "status": 200
+          }
+        }
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/lists",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Couldn’t reach Virga’s server.",
+            "code": "NETWORK_ERROR",
+            "status": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "no-backend",
+      "fn": "fetchLists",
+      "input": {
+        "args": {},
+        "noBackend": true
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Defense’s lists need this account signed in through Virga’s server.",
+            "code": "NEEDS_BACKEND",
+            "status": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "made",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "Pile-on",
+          "purpose": "app.bsky.graph.defs#modlist",
+          "description": "From a scan"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "name": "Pile-on",
+                  "purpose": "app.bsky.graph.defs#modlist",
+                  "description": "From a scan"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"list\":{\"id\":7,\"holderDid\":\"did:plc:virgaharnessmira2zq4x\",\"mode\":\"own\",\"uri\":\"at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l\",\"name\":\"Pile-on\",\"purpose\":\"app.bsky.graph.defs#modlist\",\"createdAt\":\"2026-11-01T00:00:00.000Z\",\"listed\":12,\"waiting\":3,\"heldUntil\":null,\"lastError\":null}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": 7,
+            "holderDid": "did:plc:virgaharnessmira2zq4x",
+            "mode": "own",
+            "uri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.graph.list/3l",
+            "name": "Pile-on",
+            "purpose": "app.bsky.graph.defs#modlist",
+            "createdAt": "2026-11-01T00:00:00.000Z",
+            "listed": 12,
+            "waiting": 3,
+            "heldUntil": null,
+            "lastError": null
+          }
+        }
+      }
+    },
+    {
+      "id": "no-description",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "Pile-on",
+          "purpose": "app.bsky.graph.defs#curatelist",
+          "description": ""
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "name": "Pile-on",
+                  "purpose": "app.bsky.graph.defs#curatelist"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"list\":{\"id\":\"l2\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": "l2"
+          }
+        }
+      }
+    },
+    {
+      "id": "nothing-said",
+      "fn": "createList",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"list\":{\"id\":\"l3\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "id": "l3"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-list-in-the-answer",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "x",
+          "purpose": "y"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "name": "x",
+                  "purpose": "y"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"other\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": null
+        }
+      }
+    },
+    {
+      "id": "answer-not-json",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "x",
+          "purpose": "y"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "name": "x",
+                  "purpose": "y"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "ok"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "TypeError",
+            "message": "Cannot read properties of null (reading 'list')",
+            "code": null,
+            "status": null
+          }
+        }
+      }
+    },
+    {
+      "id": "no-scope",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "x",
+          "purpose": "y"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/list-create",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "name": "x",
+                  "purpose": "y"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 403,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"NO_SCOPE\",\"error\":\"No scope.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "No scope.",
+            "code": "NO_SCOPE",
+            "status": 403
+          }
+        }
+      }
+    },
+    {
+      "id": "no-backend",
+      "fn": "createList",
+      "input": {
+        "args": {
+          "name": "x"
+        },
+        "noBackend": true
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Defense’s lists need this account signed in through Virga’s server.",
+            "code": "NEEDS_BACKEND",
+            "status": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "with-a-reason",
+      "fn": "keepAccount",
+      "input": {
+        "args": {
+          "did": "did:plc:sister",
+          "reason": "my sister"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/keep",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "did": "did:plc:sister",
+                  "reason": "my sister"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"kept\":true}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kept": true
+          }
+        }
+      }
+    },
+    {
+      "id": "no-reason",
+      "fn": "keepAccount",
+      "input": {
+        "args": {
+          "did": "did:plc:sister",
+          "reason": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/keep",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "did": "did:plc:sister"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"kept\":true}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kept": true
+          }
+        }
+      }
+    },
+    {
+      "id": "empty-reason",
+      "fn": "keepAccount",
+      "input": {
+        "args": {
+          "did": "did:plc:sister",
+          "reason": ""
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/keep",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "did": "did:plc:sister"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"kept\":true}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "kept": true
+          }
+        }
+      }
+    },
+    {
+      "id": "unkept",
+      "fn": "unkeepAccount",
+      "input": {
+        "args": {
+          "did": "did:plc:sister"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/unkeep",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "did": "did:plc:sister"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"removed\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "removed": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "no-backend",
+      "fn": "unkeepAccount",
+      "input": {
+        "args": {
+          "did": "did:plc:sister"
+        },
+        "noBackend": true
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Defense’s lists need this account signed in through Virga’s server.",
+            "code": "NEEDS_BACKEND",
+            "status": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "planned-and-approved",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3p",
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN",
+            "NOTABLE"
+          ],
+          "note": "pile-on"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": "at://did:plc:virgaharnessmira2zq4x/app.bsky.feed.post/3p",
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"planId\":\"p1\",\"rows\":2}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/defense/approve",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "planId": "p1",
+                  "bands": [
+                    "UNKNOWN",
+                    "NOTABLE"
+                  ],
+                  "note": "pile-on"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"queued\":2,\"kept\":0,\"already\":0}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "planId": "p1",
+            "queued": 2,
+            "kept": 0,
+            "already": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "no-post-no-note",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": "l9",
+          "postUri": null,
+          "rows": [],
+          "totals": {
+            "participants": 0
+          },
+          "bands": [],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": "l9",
+                  "postUri": null,
+                  "rows": [],
+                  "totals": {
+                    "participants": 0
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"planId\":12,\"rows\":0}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/defense/approve",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "planId": 12,
+                  "bands": [],
+                  "note": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"queued\":0,\"kept\":0,\"already\":0,\"planId\":\"from-approve\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "planId": "from-approve",
+            "queued": 0,
+            "kept": 0,
+            "already": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "plan-without-an-id",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": null,
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN"
+          ],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": null,
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"rows\":2}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/defense/approve",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "bands": [
+                    "UNKNOWN"
+                  ],
+                  "note": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"queued\":1}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "queued": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "approve-answers-nothing",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": null,
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN"
+          ],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": null,
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"planId\":\"p1\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/defense/approve",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "planId": "p1",
+                  "bands": [
+                    "UNKNOWN"
+                  ],
+                  "note": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "planId": "p1"
+          }
+        }
+      }
+    },
+    {
+      "id": "plan-answers-nothing",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": null,
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN"
+          ],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": null,
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "TypeError",
+            "message": "Cannot read properties of null (reading 'planId')",
+            "code": null,
+            "status": null
+          }
+        }
+      }
+    },
+    {
+      "id": "approve-fails",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": null,
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN"
+          ],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": null,
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"planId\":\"p1\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://server.example/api/defense/approve",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "planId": "p1",
+                  "bands": [
+                    "UNKNOWN"
+                  ],
+                  "note": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"WRITES_OFF\",\"error\":\"Writes are off.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Writes are off.",
+            "code": "WRITES_OFF",
+            "status": 409
+          }
+        }
+      }
+    },
+    {
+      "id": "plan-fails",
+      "fn": "planAndApprove",
+      "input": {
+        "args": {
+          "listId": 7,
+          "postUri": null,
+          "rows": [
+            {
+              "did": "did:plc:a",
+              "band": "UNKNOWN",
+              "trust": 3
+            },
+            {
+              "did": "did:plc:b",
+              "band": "NOTABLE",
+              "trust": 41
+            }
+          ],
+          "totals": {
+            "participants": 40,
+            "PROTECTED": 1,
+            "CONNECTED": 2,
+            "PERIPHERAL": 3,
+            "NOTABLE": 4,
+            "UNKNOWN": 30
+          },
+          "bands": [
+            "UNKNOWN"
+          ],
+          "note": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/plan",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7,
+                  "postUri": null,
+                  "rows": [
+                    {
+                      "did": "did:plc:a",
+                      "band": "UNKNOWN",
+                      "trust": 3
+                    },
+                    {
+                      "did": "did:plc:b",
+                      "band": "NOTABLE",
+                      "trust": 41
+                    }
+                  ],
+                  "totals": {
+                    "participants": 40,
+                    "PROTECTED": 1,
+                    "CONNECTED": 2,
+                    "PERIPHERAL": 3,
+                    "NOTABLE": 4,
+                    "UNKNOWN": 30
+                  }
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"code\":\"NO_LIST\",\"error\":\"That list isn’t one of yours, or isn’t kept any more.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "That list isn’t one of yours, or isn’t kept any more.",
+            "code": "NO_LIST",
+            "status": 404
+          }
+        }
+      }
+    },
+    {
+      "id": "newest",
+      "fn": "fetchHistory",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/history",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"decisions\":[],\"plans\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "decisions": [],
+            "plans": []
+          }
+        }
+      }
+    },
+    {
+      "id": "before-a-decision",
+      "fn": "fetchHistory",
+      "input": {
+        "args": {
+          "before": 4012
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/history?before=4012",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"decisions\":[],\"plans\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "decisions": [],
+            "plans": []
+          }
+        }
+      }
+    },
+    {
+      "id": "before-and-list",
+      "fn": "fetchHistory",
+      "input": {
+        "args": {
+          "before": "4012",
+          "list": "l 7&x"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/history?before=4012&list=l+7%26x",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"decisions\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "decisions": []
+          }
+        }
+      }
+    },
+    {
+      "id": "falsy",
+      "fn": "fetchHistory",
+      "input": {
+        "args": {
+          "before": 0,
+          "list": ""
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/history",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"decisions\":[]}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "decisions": []
+          }
+        }
+      }
+    },
+    {
+      "id": "a-plan",
+      "fn": "undoAdds",
+      "input": {
+        "args": {
+          "planId": "p1"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/undo",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "planId": "p1"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"jobId\":\"j1\",\"cancelled\":2,\"queued\":3}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "jobId": "j1",
+            "cancelled": 2,
+            "queued": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "some-decisions",
+      "fn": "undoAdds",
+      "input": {
+        "args": {
+          "ids": [
+            4,
+            5
+          ],
+          "note": "mistake"
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/undo",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "ids": [
+                    4,
+                    5
+                  ],
+                  "note": "mistake"
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"jobId\":\"j2\",\"cancelled\":0,\"queued\":2}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "jobId": "j2",
+            "cancelled": 0,
+            "queued": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "no-ids",
+      "fn": "undoAdds",
+      "input": {
+        "args": {
+          "planId": null,
+          "ids": [],
+          "note": ""
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/undo",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "ids": []
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"jobId\":null}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "jobId": null
+          }
+        }
+      }
+    },
+    {
+      "id": "nothing",
+      "fn": "undoAdds",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/undo",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":false,\"error\":\"Say what to undo.\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Say what to undo.",
+            "code": null,
+            "status": 400
+          }
+        }
+      }
+    },
+    {
+      "id": "linked",
+      "fn": "fetchLink",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/link",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+              },
+              "body": null,
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"moderator\":\"did:plc:mod\",\"linked\":true,\"linkedAt\":\"2026-11-03T00:00:00.000Z\",\"codeExpiresAt\":null,\"listId\":7}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "moderator": "did:plc:mod",
+            "linked": true,
+            "linkedAt": "2026-11-03T00:00:00.000Z",
+            "codeExpiresAt": null,
+            "listId": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "code",
+      "fn": "makeLinkCode",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/link-code",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"code\":\"ABCD-1234\",\"expiresAt\":\"2026-11-03T00:10:00.000Z\",\"moderator\":\"did:plc:mod\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "code": "ABCD-1234",
+            "expiresAt": "2026-11-03T00:10:00.000Z",
+            "moderator": "did:plc:mod"
+          }
+        }
+      }
+    },
+    {
+      "id": "unlinked",
+      "fn": "unlinkModerator",
+      "input": {
+        "args": {},
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/unlink",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {}
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"unlinked\":true}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "unlinked": true
+          }
+        }
+      }
+    },
+    {
+      "id": "a-list",
+      "fn": "chooseLinkList",
+      "input": {
+        "args": {
+          "listId": 7
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/link-list",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": 7
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"listId\":7}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "listId": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "the-only-one",
+      "fn": "chooseLinkList",
+      "input": {
+        "args": {
+          "listId": ""
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/link-list",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"listId\":null}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "listId": null
+          }
+        }
+      }
+    },
+    {
+      "id": "none",
+      "fn": "chooseLinkList",
+      "input": {
+        "args": {
+          "listId": null
+        },
+        "noBackend": false
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://server.example/api/defense/link-list",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer vg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+                "content-type": "application/json"
+              },
+              "body": {
+                "$json": {
+                  "listId": null
+                }
+              },
+              "timeoutMs": 30000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"success\":true,\"data\":{\"listId\":null}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "value": {
+            "listId": null
+          }
+        }
+      }
+    },
+    {
+      "id": "no-backend",
+      "fn": "chooseLinkList",
+      "input": {
+        "args": {
+          "listId": 7
+        },
+        "noBackend": true
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "result": {
+          "$error": {
+            "name": "Error",
+            "message": "Defense’s lists need this account signed in through Virga’s server.",
+            "code": "NEEDS_BACKEND",
+            "status": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "defenseErrorMessage#1",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "NEEDS_BACKEND",
+          "message": "x"
+        }
+      },
+      "output": "Defense’s lists need a long session through Virga’s server. Reconnect this account from the account menu."
+    },
+    {
+      "id": "defenseErrorMessage#2",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "WRITES_OFF"
+        }
+      },
+      "output": "Defense’s lists aren’t turned on on Virga’s server yet."
+    },
+    {
+      "id": "defenseErrorMessage#3",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "NO_SCOPE"
+        }
+      },
+      "output": "This sign-in doesn’t let Virga make lists. Let Defense make lists, below, and try again."
+    },
+    {
+      "id": "defenseErrorMessage#4",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "SIGNED_OUT"
+        }
+      },
+      "output": "This account’s session on Virga’s server has ended. Sign in again."
+    },
+    {
+      "id": "defenseErrorMessage#5",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "FRONTEND_SESSION_INVALID"
+        }
+      },
+      "output": "This account’s session on Virga’s server has ended. Sign in again."
+    },
+    {
+      "id": "defenseErrorMessage#6",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "UNAVAILABLE",
+          "message": "ignored"
+        }
+      },
+      "output": "Defense isn’t set up on Virga’s server yet."
+    },
+    {
+      "id": "defenseErrorMessage#7",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "NO_LIST",
+          "message": "That list isn’t one of yours, or isn’t kept any more."
+        }
+      },
+      "output": "That list isn’t one of yours, or isn’t kept any more."
+    },
+    {
+      "id": "defenseErrorMessage#8",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "needs_backend",
+          "message": "lower case is another code"
+        }
+      },
+      "output": "lower case is another code"
+    },
+    {
+      "id": "defenseErrorMessage#9",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": "NEEDS_BACKEND",
+          "message": "a Kelvin sign is another code"
+        }
+      },
+      "output": "a Kelvin sign is another code"
+    },
+    {
+      "id": "defenseErrorMessage#10",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "code": 5,
+          "message": "a number"
+        }
+      },
+      "output": "a number"
+    },
+    {
+      "id": "defenseErrorMessage#11",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "message": "Couldn’t reach Virga’s server."
+        }
+      },
+      "output": "Couldn’t reach Virga’s server."
+    },
+    {
+      "id": "defenseErrorMessage#12",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {
+          "message": ""
+        }
+      },
+      "output": "Something went wrong on Virga’s server. Try again in a moment."
+    },
+    {
+      "id": "defenseErrorMessage#13",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": {}
+      },
+      "output": "Something went wrong on Virga’s server. Try again in a moment."
+    },
+    {
+      "id": "defenseErrorMessage#14",
+      "fn": "defenseErrorMessage",
+      "input": {
+        "error": null
+      },
+      "output": "Something went wrong on Virga’s server. Try again in a moment."
+    }
+  ]
+}

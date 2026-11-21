@@ -25,8 +25,14 @@
       "synced": "202b501d6fdb"
     },
     "src/defense/defenseService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/DefenseService.swift"
+      ],
+      "fixtures": [
+        "defense.service"
+      ],
+      "synced": "88352c8d61df"
     },
     "src/defense/dmMessage.js": {
       "status": "ported",
