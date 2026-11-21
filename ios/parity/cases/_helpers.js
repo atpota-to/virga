@@ -42,7 +42,7 @@ export function toJSON(value) {
       const out = {};
       for (const [k, v] of value) {
         const converted = toJSON(v);
-        if (converted !== undefined) out[k.toWellFormed()] = converted;
+        if (converted !== undefined) put(out, k.toWellFormed(), converted);
       }
       return out;
     }
@@ -56,11 +56,23 @@ export function toJSON(value) {
     const out = {};
     for (const [k, v] of Object.entries(value)) {
       const converted = toJSON(v);
-      if (converted !== undefined) out[k.toWellFormed()] = converted;
+      if (converted !== undefined) put(out, k.toWellFormed(), converted);
     }
     return out;
   }
   return undefined;
+}
+
+// `out[key] = value` sets the object's prototype when the key is
+// "__proto__" and records nothing; defining the property keeps it as an own
+// key, which JSON.stringify then writes like any other.
+function put(out, key, value) {
+  Object.defineProperty(out, key, {
+    value,
+    enumerable: true,
+    writable: true,
+    configurable: true,
+  });
 }
 
 /**

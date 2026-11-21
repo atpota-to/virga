@@ -91,11 +91,11 @@ The order follows the dependencies between the web modules.
   about 1 MB each.
 - **Bugs.** `ios/porting/WEB-BUGS.md` lists 39 bugs in the web app the
   porters found and reproduced rather than fixed. Six are visible to people.
-- **Harness flaw.** The fixture writer's `toJSON` in
-  `ios/parity/cases/_helpers.js` assigns keys with `out[k] =`, so a
-  `__proto__` key is lost. It is also recursive, so a value nested about
-  2,000 deep reads as a thrown error. Generators have kept away from both.
-  Worth fixing, then `npm run parity:write`.
+- **Harness limits.** The fixture writer's `toJSON` in
+  `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
+  (no fixture changed). It is still recursive, so a value nested about
+  2,000 deep reads as a thrown error; that is left as it is, since Swift's
+  JSON reading has a nesting limit well below that anyway.
 - **Placeholder settings.** The app's bundle identifier, team and server are
   placeholders in `ios/Config/Base.xcconfig`, and
   `public/.well-known/apple-app-site-association` names a placeholder team ID
