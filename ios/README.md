@@ -63,6 +63,7 @@ From the command line:
 
 ```bash
 ios/scripts/xcodebuild.sh app-test       # the app, its unit and UI tests
+ios/scripts/xcodebuild.sh ipad-test      # the UI tests again, on an iPad
 ```
 
 ```bash

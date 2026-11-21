@@ -1,10 +1,17 @@
 // End-to-end checks of the app in its demo mode (a made-up world, no
-// network), like the web app's harness, on an iPhone: the shell's tab bar
-// reaches every part and each page has its header; Settings changes the sky
-// and the accent; the account menu opens. Each screen worth looking at is
-// kept as a screenshot (an XCTAttachment kept always, a name per screen),
-// which CI exports from the result bundle as the `screenshots` artifact.
+// network), like the web app's harness, on an iPhone and on an iPad: the
+// shell reaches every part and each page has its header; Settings changes
+// the sky and the accent; the account menu opens; the front page and the
+// agreement. Each screen worth looking at is kept as a screenshot (an
+// XCTAttachment kept always, a name per screen), which CI exports from each
+// result bundle into the `screenshots` artifact, a folder per device.
+//
+// The shell differs by the window: from 900 points wide (an iPad, held on
+// its side here so any iPad is that wide) the parts are links down the
+// sidebar, with New post under the account at its top; narrower, they are
+// the tab bar's buttons, with the account at the top of a part's front page.
 
+import UIKit
 import XCTest
 
 final class VirgaUITests: XCTestCase {
@@ -12,11 +19,19 @@ final class VirgaUITests: XCTestCase {
     continueAfterFailure = false
   }
 
+  private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+
   private func launch(_ extra: [String] = []) -> XCUIApplication {
+    if isPad { XCUIDevice.shared.orientation = .landscapeLeft }
     let app = XCUIApplication()
     app.launchArguments += ["-VirgaDemo", "YES"] + extra
     app.launch()
     return app
+  }
+
+  /// Whether the app has its sidebar: an iPad's window from 900 wide.
+  private func isDesk(_ app: XCUIApplication) -> Bool {
+    isPad && app.windows.firstMatch.frame.width >= 900
   }
 
   /// A picture of the whole screen, kept with the results.
@@ -42,6 +57,20 @@ final class VirgaUITests: XCTestCase {
     XCTAssertTrue(heading.waitForExistence(timeout: 15), "no page titled \(title)", file: file, line: line)
   }
 
+  /// A part of Virga: the sidebar's link to it, or the tab bar's button.
+  private func part(_ app: XCUIApplication, _ key: String) -> XCUIElement {
+    element(app, isDesk(app) ? "nav-\(key)" : "tab-\(key)")
+  }
+
+  /// Swipes the page up until `target` can be pressed (a few times at most).
+  private func scrollTo(_ app: XCUIApplication, _ target: XCUIElement) {
+    var tries = 0
+    while !target.isHittable && tries < 6 {
+      app.swipeUp()
+      tries += 1
+    }
+  }
+
   func testLaunches() {
     let app = launch()
     XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
@@ -51,26 +80,40 @@ final class VirgaUITests: XCTestCase {
     let app = launch()
     waitForTitle(app, "Overview")
     XCTAssertTrue(element(app, "unported").exists)
+    if isDesk(app) {
+      XCTAssertTrue(element(app, "sidebar").exists, "no sidebar from 900 wide")
+    } else {
+      XCTAssertTrue(element(app, "tab-bar").exists, "no tab bar under 900 wide")
+      XCTAssertTrue(element(app, "app-bar").exists, "no app bar at the top of the front page")
+    }
     snapshot("dashboard")
   }
 
-  func testTheTabBarReachesEveryPart() {
+  func testTheShellReachesEveryPart() {
     let app = launch()
     waitForTitle(app, "Overview")
-    let parts: [(String, String)] = [("reports", "Reports"), ("posting", "Posting"), ("tools", "Tools"), ("dashboard", "Overview")]
-    for (key, title) in parts {
-      let tab = element(app, "tab-\(key)")
-      XCTAssertTrue(tab.waitForExistence(timeout: 5), "no \(key) tab")
-      tab.tap()
+    let desk = isDesk(app)
+    // The tab bar marks the part you are in; the sidebar marks a part's
+    // front page when you are on it (on a dashboard or in Posting, the page
+    // under the part is the one marked).
+    let parts: [(key: String, title: String, marked: Bool)] = [
+      ("reports", "Reports", true), ("posting", "Posting", !desk), ("tools", "Tools", true), ("dashboard", "Overview", !desk),
+    ]
+    for (key, title, marked) in parts {
+      let link = part(app, key)
+      XCTAssertTrue(link.waitForExistence(timeout: 5), "no way to \(key)")
+      link.tap()
       waitForTitle(app, title)
-      XCTAssertTrue(tab.isSelected, "the \(key) tab isn't marked as the one you are in")
+      if marked {
+        XCTAssertTrue(link.isSelected, "\(key) isn't marked as where you are")
+      }
     }
   }
 
   func testNewPostGoesToPosting() {
     let app = launch()
     waitForTitle(app, "Overview")
-    element(app, "tab-new-post").tap()
+    element(app, isDesk(app) ? "sidebar-new-post" : "tab-new-post").tap()
     waitForTitle(app, "Posting")
   }
 
@@ -85,15 +128,18 @@ final class VirgaUITests: XCTestCase {
     snapshot("account-menu")
   }
 
-  /// Settings by way of the account menu, then Appearance.
+  /// Settings by way of the account menu, then Appearance: on a phone from
+  /// the list of sections, beside the sidebar from its link under Settings
+  /// (the bare address opens Account there).
   private func openAppearance(_ app: XCUIApplication) {
     waitForTitle(app, "Overview")
     element(app, "account-menu").tap()
     let settings = button(app, "Accounts and settings")
     XCTAssertTrue(settings.waitForExistence(timeout: 5))
     settings.tap()
-    waitForTitle(app, "Settings")
-    let appearance = element(app, "settings-appearance")
+    let desk = isDesk(app)
+    waitForTitle(app, desk ? "Account" : "Settings")
+    let appearance = element(app, desk ? "nav-settings-appearance" : "settings-appearance")
     XCTAssertTrue(appearance.waitForExistence(timeout: 5))
     appearance.tap()
     waitForTitle(app, "Appearance")
@@ -116,7 +162,7 @@ final class VirgaUITests: XCTestCase {
     snapshot("settings-night")
 
     let violet = element(app, "accent-violet")
-    if !violet.isHittable { app.swipeUp() }
+    scrollTo(app, violet)
     violet.tap()
     XCTAssertTrue(violet.isSelected)
     XCTAssertFalse(element(app, "accent-blue").isSelected)
@@ -127,7 +173,7 @@ final class VirgaUITests: XCTestCase {
     openAppearance(app)
     element(app, "sky-day").tap()
     let high = button(app, "High")
-    if !high.isHittable { app.swipeUp() }
+    scrollTo(app, high)
     high.tap()
     XCTAssertTrue(high.isSelected)
     app.swipeDown()
