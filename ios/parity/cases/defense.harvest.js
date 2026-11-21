@@ -553,6 +553,8 @@ const inputs = [
   { $id: 'paged' },
   { $id: 'page-cap', maxPages: 2 },
   { $id: 'page-cap-zero', maxPages: 0 },
+  // A cap below zero reads nothing, and says so (truncated, not failed).
+  { $id: 'page-cap-negative', script: 'page-cap-zero', maxPages: -1 },
   { $id: 'fails-part-way' },
   { $id: 'asks-again' },
   { $id: 'asks-again-offline' },
@@ -566,6 +568,12 @@ const inputs = [
   { $id: 'only-quotes-and-replies', only: ['quote', 'reply', 'threadReply'] },
   { $id: 'only-nothing', only: [] },
   { $id: 'only-other', only: ['other'] },
+  // Kinds nobody has, and one named twice, filter as `includes` does.
+  {
+    $id: 'only-unknown-kinds',
+    script: 'every-kind',
+    only: ['nope', 'like', 'like', 'Like', 'gate'],
+  },
   { $id: 'unknown-collection' },
   { $id: 'every-kind' },
   { $id: 'not-dids' },
@@ -591,7 +599,7 @@ const inputs = [
   uri: POST,
   now: FIXED_NOW,
   ...c,
-  script: scripts[c.$id] ?? (() => ({ sources: { links: {} } })),
+  script: scripts[c.script ?? c.$id] ?? (() => ({ sources: { links: {} } })),
 }));
 
 /**

@@ -7716,6 +7716,357 @@
       }
     },
     {
+      "id": "kept-with-no-reason",
+      "fn": "runScan",
+      "input": {
+        "input": "at://did:plc:author/app.bsky.feed.post/3abc",
+        "ownerDid": "did:plc:owner",
+        "candidates": [
+          "did:plc:canary"
+        ],
+        "retryDelaysMs": [
+          0,
+          0
+        ],
+        "now": 1794877200000,
+        "appview": {
+          "profiles": {
+            "did:plc:both": {
+              "did": "did:plc:both",
+              "handle": "both.test",
+              "followersCount": 10,
+              "viewer": {}
+            },
+            "did:plc:followed": {
+              "did": "did:plc:followed",
+              "handle": "followed.test",
+              "followersCount": 10,
+              "viewer": {}
+            },
+            "did:plc:canary": {
+              "did": "did:plc:canary",
+              "handle": "canary.test",
+              "followersCount": 10,
+              "viewer": {
+                "knownFollowers": {
+                  "count": 4,
+                  "followers": []
+                }
+              }
+            },
+            "did:plc:owner": {
+              "did": "did:plc:owner",
+              "handle": "owner.test",
+              "followersCount": 10,
+              "viewer": {}
+            },
+            "did:plc:author": {
+              "did": "did:plc:author",
+              "handle": "author.test",
+              "followersCount": 10,
+              "viewer": {}
+            }
+          },
+          "uncounted": {},
+          "profileErrors": {},
+          "relationships": {
+            "did:plc:followed": {
+              "following": "at://f"
+            }
+          },
+          "relationshipErrors": {}
+        },
+        "harvest": {
+          "uri": "at://did:plc:author/app.bsky.feed.post/3abc",
+          "harvestedAt": "2026-11-17T00:00:00.000Z",
+          "sources": [],
+          "participants": [
+            {
+              "did": "did:plc:both",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r0",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like"
+            },
+            {
+              "did": "did:plc:followed",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r1",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like"
+            },
+            {
+              "did": "did:plc:owner",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r2",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like"
+            },
+            {
+              "did": "did:plc:author",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r3",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like"
+            }
+          ],
+          "totals": {
+            "participants": 4,
+            "engagements": {
+              "like": 4
+            },
+            "records": 4
+          },
+          "truncated": false,
+          "unread": []
+        },
+        "curated": {
+          "did:plc:both": "on your list “A”"
+        },
+        "kept": {
+          "did:plc:both": "",
+          "did:plc:followed": ""
+        }
+      },
+      "output": {
+        "result": {
+          "uri": "at://did:plc:author/app.bsky.feed.post/3abc",
+          "harvestedAt": "2026-11-17T00:00:00.000Z",
+          "truncated": false,
+          "unread": [],
+          "vouchCheck": "canary",
+          "totals": {
+            "participants": 2,
+            "engagements": {
+              "like": 2
+            },
+            "records": 4,
+            "byBand": {
+              "PROTECTED": 1,
+              "CONNECTED": 0,
+              "PERIPHERAL": 0,
+              "NOTABLE": 0,
+              "UNKNOWN": 1
+            },
+            "reviewReach": 10,
+            "alreadyListed": 0,
+            "blocksYou": 0
+          },
+          "rows": [
+            {
+              "did": "did:plc:both",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r0",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like",
+              "handle": "both.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 5,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 10,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            {
+              "did": "did:plc:followed",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r1",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like",
+              "handle": "followed.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "PROTECTED",
+              "trust": 100,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 10,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": true,
+              "protectedReason": "you follow them"
+            }
+          ],
+          "requiresReview": [
+            {
+              "did": "did:plc:followed",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r1",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like",
+              "handle": "followed.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "PROTECTED",
+              "trust": 100,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 10,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": true,
+              "protectedReason": "you follow them"
+            }
+          ],
+          "autoEligible": [
+            {
+              "did": "did:plc:both",
+              "engagements": {
+                "like": 1
+              },
+              "records": [
+                {
+                  "kind": "like",
+                  "rkey": "r0",
+                  "collection": "app.bsky.feed.like"
+                }
+              ],
+              "total": 1,
+              "primary": "like",
+              "handle": "both.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 5,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 10,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            }
+          ],
+          "post": {
+            "uri": "at://did:plc:author/app.bsky.feed.post/3abc",
+            "authorDid": "did:plc:author"
+          },
+          "canary": "did:plc:canary",
+          "startedAt": "2026-11-17T01:00:00.000Z",
+          "finishedAt": "2026-11-17T01:00:00.000Z"
+        },
+        "stages": [
+          {
+            "stage": "post"
+          },
+          {
+            "stage": "harvest",
+            "done": 0,
+            "total": 0
+          },
+          {
+            "stage": "canary"
+          },
+          {
+            "stage": "score",
+            "done": 0,
+            "total": 2
+          },
+          {
+            "stage": "score",
+            "done": 2,
+            "total": 2
+          }
+        ],
+        "asked": [
+          [
+            "did:plc:both",
+            "did:plc:followed",
+            "did:plc:canary"
+          ],
+          [
+            "did:plc:canary"
+          ]
+        ],
+        "relationshipCalls": 1
+      }
+    },
+    {
       "id": "owner-and-canary-among-the-crowd",
       "fn": "runScan",
       "input": {

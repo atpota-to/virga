@@ -373,6 +373,16 @@ const scans = [
     kept: { 'did:plc:both': 'my neighbour' },
   },
   {
+    // A reason kept by hand that is empty still replaces the list's
+    // (`new Map([...curated, ...kept])`), and the score then gives its own.
+    $id: 'kept-with-no-reason',
+    harvestDids: ['did:plc:both', 'did:plc:followed'],
+    known: { [CANARY]: 4 },
+    relationships: { 'did:plc:followed': { following: 'at://f' } },
+    curated: { 'did:plc:both': 'on your list “A”' },
+    kept: { 'did:plc:both': '', 'did:plc:followed': '' },
+  },
+  {
     $id: 'owner-and-canary-among-the-crowd',
     harvestDids: [CANARY, 'did:plc:x', 'did:plc:x'],
     candidates: [OWNER, CANARY, CANARY],

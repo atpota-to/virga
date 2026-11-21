@@ -1190,6 +1190,90 @@
       }
     },
     {
+      "id": "page-cap-negative",
+      "fn": "harvestPost",
+      "input": {
+        "uri": "at://did:plc:author/app.bsky.feed.post/3kpost",
+        "now": 1773576000000,
+        "maxPages": -1
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"links\":{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":900}},\"app.bsky.feed.post\":{\".reply.parent.uri\":{\"records\":3}}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "harvest": {
+            "uri": "at://did:plc:author/app.bsky.feed.post/3kpost",
+            "harvestedAt": "2026-03-15T12:00:00.000Z",
+            "sources": [
+              {
+                "collection": "app.bsky.feed.like",
+                "path": ".subject.uri",
+                "source": "app.bsky.feed.like:subject.uri",
+                "count": 900,
+                "distinctDids": null,
+                "kind": "like",
+                "truncated": true,
+                "failed": false
+              },
+              {
+                "collection": "app.bsky.feed.post",
+                "path": ".reply.parent.uri",
+                "source": "app.bsky.feed.post:reply.parent.uri",
+                "count": 3,
+                "distinctDids": null,
+                "kind": "reply",
+                "truncated": true,
+                "failed": false
+              }
+            ],
+            "participants": [],
+            "totals": {
+              "participants": 0,
+              "engagements": {},
+              "records": 0
+            },
+            "truncated": true,
+            "unread": []
+          },
+          "progress": [
+            {
+              "done": 0,
+              "total": 2
+            },
+            {
+              "done": 1,
+              "total": 2
+            },
+            {
+              "done": 2,
+              "total": 2
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "fails-part-way",
       "fn": "harvestPost",
       "input": {
@@ -4633,6 +4717,229 @@
             {
               "done": 1,
               "total": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "only-unknown-kinds",
+      "fn": "harvestPost",
+      "input": {
+        "uri": "at://did:plc:author/app.bsky.feed.post/3kpost",
+        "now": 1773576000000,
+        "only": [
+          "nope",
+          "like",
+          "like",
+          "Like",
+          "gate"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/links/all?target=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"links\":{\"app.bsky.feed.like\":{\".subject.uri\":{\"records\":5,\"distinct_dids\":4},\"subject.uri\":{\"records\":1}},\"app.bsky.feed.repost\":{\".subject.uri\":{\"records\":4,\"distinct_dids\":4}},\"app.bsky.feed.post\":{\".reply.parent.uri\":{\"records\":3,\"distinct_dids\":2},\".reply.root.uri\":{\"records\":6,\"distinct_dids\":3},\".embed.record.uri\":{\"records\":2,\"distinct_dids\":2},\".embed.record.record.uri\":{\"records\":1,\"distinct_dids\":1},\".reply.parent.uri.x\":{\"records\":1},\".embed.record\":{\"records\":1}},\"app.bsky.feed.threadgate\":{\".post\":{\"records\":1,\"distinct_dids\":1}},\"app.bsky.graph.listitem\":{\".subject\":{\"records\":1}}}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.like%3Asubject.uri&limit=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:nodot\",\"rkey\":\"3r0odot\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.like%3Asubject.uri&limit=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.threadgate%3Apost&limit=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"records\":[{\"did\":\"did:plc:author\",\"rkey\":\"3r0thor\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://constellation.microcosm.blue/xrpc/blue.microcosm.links.getBacklinks?subject=at%3A%2F%2Fdid%3Aplc%3Aauthor%2Fapp.bsky.feed.post%2F3kpost&source=app.bsky.feed.like%3Asubject.uri&limit=100",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 404,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"NotFound\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "harvest": {
+            "uri": "at://did:plc:author/app.bsky.feed.post/3kpost",
+            "harvestedAt": "2026-03-15T12:00:00.000Z",
+            "sources": [
+              {
+                "collection": "app.bsky.feed.like",
+                "path": ".subject.uri",
+                "source": "app.bsky.feed.like:subject.uri",
+                "count": 5,
+                "distinctDids": 4,
+                "kind": "like",
+                "truncated": false,
+                "failed": false
+              },
+              {
+                "collection": "app.bsky.feed.like",
+                "path": "subject.uri",
+                "source": "app.bsky.feed.like:subject.uri",
+                "count": 1,
+                "distinctDids": null,
+                "kind": "like",
+                "truncated": false,
+                "failed": true
+              },
+              {
+                "collection": "app.bsky.feed.threadgate",
+                "path": ".post",
+                "source": "app.bsky.feed.threadgate:post",
+                "count": 1,
+                "distinctDids": 1,
+                "kind": "gate",
+                "truncated": false,
+                "failed": false
+              }
+            ],
+            "participants": [
+              {
+                "did": "did:plc:nodot",
+                "engagements": {
+                  "like": 1
+                },
+                "records": [
+                  {
+                    "kind": "like",
+                    "rkey": "3r0odot",
+                    "collection": "app.bsky.feed.like"
+                  }
+                ],
+                "total": 1,
+                "primary": "like"
+              },
+              {
+                "did": "did:plc:author",
+                "engagements": {
+                  "gate": 1
+                },
+                "records": [
+                  {
+                    "kind": "gate",
+                    "rkey": "3r0thor",
+                    "collection": "app.bsky.feed.threadgate"
+                  }
+                ],
+                "total": 1,
+                "primary": "gate"
+              }
+            ],
+            "totals": {
+              "participants": 2,
+              "engagements": {
+                "like": 1,
+                "gate": 1
+              },
+              "records": 2
+            },
+            "truncated": true,
+            "unread": [
+              {
+                "kind": "like",
+                "count": 1
+              }
+            ]
+          },
+          "progress": [
+            {
+              "done": 0,
+              "total": 3
+            },
+            {
+              "done": 1,
+              "total": 3
+            },
+            {
+              "done": 2,
+              "total": 3
+            },
+            {
+              "done": 3,
+              "total": 3
             }
           ]
         }
