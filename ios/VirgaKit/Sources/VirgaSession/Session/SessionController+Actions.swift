@@ -132,41 +132,54 @@ extension SessionController {
     Task { await self.refreshDisplay() }
   }
 
-  /// A sign-in that came back to the app: what a page load on the return
-  /// path does on the web (start() with BACKEND_RETURN), without reopening
-  /// the account that stays open.
+  /// A sign-in that came back to the app: what the page load on the return
+  /// path does on the web (start() with BACKEND_RETURN), in the running app.
+  /// The account it settles on opens as at a start; one that is already
+  /// open and stays so (another account signed back in for its own sake) is
+  /// left as it is, where the web's new page would build it afresh. A start
+  /// still under way finishes first, so the two never race to open an
+  /// account. `finishing` brackets it, as `loading` covers that page load.
   public func completeSignIn(_ result: BackendClient.BackendReturn) async {
+    set.finishing(true)
+    defer { set.finishing(false) }
+    if let started { await started.value }
     let openBefore = Accounts.takeOpenAtSignIn(env.tabStorage)
     let list = applyBackendReturn(result, openBefore: openBefore, list: rows())
     refreshRows()
-    guard case .session(let did, _, _, _) = result else { return }
+    guard case .session = result else { return }
     guard let first = Accounts.pickActiveAccount(list, Accounts.readActiveDid(env.storage)) else { return }
-    if Optional(first.did).jsEquals(active.did) && !first.did.jsEquals(did) {
-      // Another account signed back in for its own sake: the open one stays as it is.
-      return
-    }
+    // What start() goes on to do, unless the account it would open is the
+    // one open now and wasn't the one that signed in (that one was built
+    // again above, as the page load builds every account again).
+    if Optional(first.did).jsEquals(active.did) && built[JSKey(first.did)] != nil { return }
     await openStarting(first, list: list)
   }
 
-  /// The address a sign-in came back to (`https://<server>/oauth/return?n=…#session=…`):
-  /// read against this run's pending sign-in, which is over whatever came
-  /// back, and finished as `completeSignIn` does. An address that isn't a
-  /// return is a sign-in that came back without a usable session.
-  public func completeSignIn(callbackURL: String) async {
+  /// The address a sign-in came back to
+  /// (`https://<server>/oauth/return?n=…#session=…&did=…`), as the web reads
+  /// `window.location` when its module loads (BACKEND_RETURN): only on the
+  /// return path, against this run's pending sign-in, which is over
+  /// whatever came back. A return is finished as `completeSignIn(_:)` does;
+  /// an address that holds none changes nothing. Returns whether it held one.
+  @discardableResult
+  public func completeSignIn(callbackURL: String) async -> Bool {
+    guard let url = try? WebURL(callbackURL), url.pathname.units.hasPrefix(AppConfig.oauthReturnPath) else { return false }
     let pending = BackendClient.readSigninPending(env.tabStorage)
+    let result = BackendClient.readBackendReturn(BackendClient.ReturnLocation(url), pending, AppConfig.oauthReturnPath)
     BackendClient.clearSigninPending(env.tabStorage)
-    var result: BackendClient.BackendReturn?
-    if let url = try? WebURL(callbackURL) {
-      result = BackendClient.readBackendReturn(BackendClient.ReturnLocation(url), pending, AppConfig.oauthReturnPath)
-    }
-    if result == nil {
-      let description = JSURI.encodeURIComponent("The sign-in came back without a usable session.")
-      result = BackendClient.readBackendReturn(
-        BackendClient.ReturnLocation(pathname: AppConfig.oauthReturnPath, search: "?error=callback_failed&error_description=\(description)"),
-        nil, AppConfig.oauthReturnPath)
-    }
-    if let result { await completeSignIn(result) }
+    guard let result else { return false }
+    await completeSignIn(result)
+    return true
   }
+
+  /// What signIn shows when the sheet came back to the return path without a
+  /// return in the address (the server always sends one): readBackendReturn's
+  /// own words for a return without a usable session.
+  static let cameBackEmpty: BackendClient.BackendReturn? = BackendClient.readBackendReturn(
+    BackendClient.ReturnLocation(
+      pathname: AppConfig.oauthReturnPath,
+      search: "?error=callback_failed&error_description=\(JSURI.encodeURIComponent("The sign-in came back without a usable session."))"),
+    nil, AppConfig.oauthReturnPath)
 
   func onBrowserSessionDropped(_ sub: String?, revoked: Bool) {
     guard let sub, let account = find(sub), account.mode == "browser" else { return }
@@ -320,7 +333,11 @@ extension SessionController {
         }
         throw error
       }
-      await completeSignIn(callbackURL: callback)
+      if await completeSignIn(callbackURL: callback) { return }
+      // Back on the return path with nothing to take: said as a return
+      // without a usable session (on the web the server always sends one).
+      BackendClient.clearSigninPending(env.tabStorage)
+      if let empty = Self.cameBackEmpty { await completeSignIn(empty) }
       return
     }
     // Marked before the trip, so the launch after it restores.
@@ -364,13 +381,13 @@ extension SessionController {
     refreshed.remove(JSKey(did))
     if deleteData {
       Accounts.removeLocalData(store, did)
-      let delete = env.deleteDatabase
-      await withTaskGroup(of: Void.self) { group in
-        for name in Accounts.localDatabases(did) { group.addTask { _ = await delete(name) } }
-      }
+      // `Promise.all(localDatabases(did).map(deleteDatabase))`: asked in
+      // that order (one after the other here, where the web's run side by
+      // side; neither waits on the other's answer).
+      for name in Accounts.localDatabases(did) { _ = await env.deleteDatabase(name) }
       // The archive keeps one connection per account; the deleted one's has
       // gone, so start them all afresh.
-      env.resetAnalyticsStore()
+      await env.resetAnalyticsStore(did)
     }
     refreshRows()
   }

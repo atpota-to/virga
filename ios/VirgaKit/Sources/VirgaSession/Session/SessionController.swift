@@ -106,26 +106,32 @@ public struct AccountCapabilities: Sendable, Hashable, Codable {
 }
 
 /// The provider's state setters: `set.rows`, `set.statuses`, `set.active`,
-/// `set.switching`, `set.error`.
+/// `set.switching`, `set.error`. `finishing` is the app's own: on the web a
+/// sign-in's return is a new page load, which shows `loading` while the
+/// account opens; here the return comes back to the running app, and
+/// `finishing(true)` … `finishing(false)` brackets the same work.
 public struct SessionControllerSink {
   public var rows: @MainActor ([AccountRow]) -> Void
   public var statuses: @MainActor ([String: AccountStatus]) -> Void
   public var active: @MainActor (ActiveSession) -> Void
   public var switching: @MainActor (String?) -> Void
   public var error: @MainActor ((any Error)?) -> Void
+  public var finishing: @MainActor (Bool) -> Void
 
   public init(
     rows: @escaping @MainActor ([AccountRow]) -> Void = { _ in },
     statuses: @escaping @MainActor ([String: AccountStatus]) -> Void = { _ in },
     active: @escaping @MainActor (ActiveSession) -> Void = { _ in },
     switching: @escaping @MainActor (String?) -> Void = { _ in },
-    error: @escaping @MainActor ((any Error)?) -> Void = { _ in }
+    error: @escaping @MainActor ((any Error)?) -> Void = { _ in },
+    finishing: @escaping @MainActor (Bool) -> Void = { _ in }
   ) {
     self.rows = rows
     self.statuses = statuses
     self.active = active
     self.switching = switching
     self.error = error
+    self.finishing = finishing
   }
 }
 
@@ -155,10 +161,16 @@ public struct SessionEnvironment {
   public var getProfile: @Sendable (String) async throws -> JSONValue?
   public var resolvePdsUrl: @Sendable (String) async throws -> String
   public var rememberPdsUrl: @Sendable (String, String) async -> Void
-  /// Starts the archive's stores afresh after an account's data is deleted.
-  public var resetAnalyticsStore: @MainActor () -> Void
+  /// `resetAnalyticsStore()` (src/lib/analyticsStore.js): starts the
+  /// archive's stores afresh after an account's data is deleted, as the web
+  /// drops every open database handle. Called with the account whose data
+  /// went (the web resets them all, and an implementation may too). The
+  /// archive (VirgaArchive) sits above this target, so the app passes its
+  /// reset in; nothing by default.
+  public var resetAnalyticsStore: @Sendable (_ did: String?) async -> Void
   /// Deletes one of an account's databases (`virga-analytics:<did>`,
-  /// `virga-posting:<did>`), answering whether it went.
+  /// `virga-posting:<did>`), answering whether it went. On iOS these are the
+  /// archive's and the posting store's FileStore folders.
   public var deleteDatabase: @Sendable (String) async -> Bool
   /// `window.dispatchEvent(new CustomEvent(name, { detail }))`.
   public var dispatch: @MainActor (String, JSONValue) -> Void
@@ -185,7 +197,7 @@ public struct SessionEnvironment {
     getProfile: @escaping @Sendable (String) async throws -> JSONValue? = { did in try await Atproto.getProfile(did) },
     resolvePdsUrl: @escaping @Sendable (String) async throws -> String = { did in try await PDS.resolvePdsUrl(did) },
     rememberPdsUrl: @escaping @Sendable (String, String) async -> Void = { did, url in await PDS.rememberPdsUrl(did, url) },
-    resetAnalyticsStore: @escaping @MainActor () -> Void = {},
+    resetAnalyticsStore: @escaping @Sendable (_ did: String?) async -> Void = { _ in },
     deleteDatabase: @escaping @Sendable (String) async -> Bool = { _ in false },
     dispatch: @escaping @MainActor (String, JSONValue) -> Void = { name, detail in SessionEvents.shared.dispatch(name, detail) },
     origin: (@Sendable () -> String)? = nil,
@@ -549,8 +561,10 @@ public final class SessionController {
       refreshed.insert(JSKey(account.did))
       do {
         guard let p = try await env.getProfile(account.did), p.isTruthy else { continue }
+        // `p.handle && p.handle !== 'handle.invalid' ? p.handle : account.handle`:
+        // a handle that isn't a string is written, and cleanRow then drops it.
         var handle = account.handle
-        if case .string(let h)? = p["handle"], !h.isEmpty, h != "handle.invalid" { handle = h }
+        if let h = p["handle"].truthy, !(h.stringValue.map { $0.jsEquals("handle.invalid") } ?? false) { handle = h.stringValue }
         var displayName: String?
         if let name = p["displayName"], !name.isNull {
           // `p.displayName?.trim()`: a name that isn't a string can't be trimmed.
