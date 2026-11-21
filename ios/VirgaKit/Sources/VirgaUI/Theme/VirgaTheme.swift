@@ -58,6 +58,8 @@ public struct VirgaTheme: Sendable {
   public var attributes: RootAttributes
   /// The window's width in points: the web's viewport.
   public var windowWidth: CGFloat
+  /// The window's height in points, for the few lengths in `svh`.
+  public var windowHeight: CGFloat
   /// The device's Reduce Motion: nothing moves (Motion.swift).
   public var reduceMotion: Bool
   /// The Dynamic Type size the type scale is scaled by (Typography.swift).
@@ -69,6 +71,7 @@ public struct VirgaTheme: Sendable {
     tokens: ResolvedTheme,
     attributes: RootAttributes,
     windowWidth: CGFloat,
+    windowHeight: CGFloat = 844,
     reduceMotion: Bool = false,
     dynamicTypeSize: DynamicTypeSize = .large,
     hasTypeface: Bool = VirgaTypeface.isRegistered
@@ -76,6 +79,7 @@ public struct VirgaTheme: Sendable {
     self.tokens = tokens
     self.attributes = attributes
     self.windowWidth = windowWidth
+    self.windowHeight = windowHeight
     self.reduceMotion = reduceMotion
     self.dynamicTypeSize = dynamicTypeSize
     self.hasTypeface = hasTypeface
@@ -195,6 +199,13 @@ public struct VirgaTheme: Sendable {
       y: points(layer.y))
   }
 
+  /// A kit length in `ch` (`52ch`), measured in the text it holds.
+  @MainActor
+  public func points(_ length: ThemeLength, inTextOf size: CGFloat) -> CGFloat {
+    let context = ThemeLengthContext(viewportWidth: Double(windowWidth), fontSize: Double(size), chWidth: Double(zeroWidth(size: size)))
+    return CGFloat(tokens.points(of: length, in: context) ?? 0)
+  }
+
   /// The motion table, stopped by Reduce Motion.
   public var motion: VirgaMotion { VirgaMotion(reduced: reduceMotion, ease: tokens.ease) }
 }
@@ -296,7 +307,9 @@ public struct VirgaThemeRoot<Content: View>: View {
 
   public var body: some View {
     GeometryReader { proxy in
-      themed(width: proxy.size.width + proxy.safeAreaInsets.leading + proxy.safeAreaInsets.trailing)
+      themed(
+        width: proxy.size.width + proxy.safeAreaInsets.leading + proxy.safeAreaInsets.trailing,
+        height: proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom)
     }
     .onAppear { lookAtDevice() }
     .onChange(of: shownScheme) { _, _ in lookAtDevice() }
@@ -312,12 +325,13 @@ public struct VirgaThemeRoot<Content: View>: View {
     .task { await everyMinute() }
   }
 
-  private func themed(width: CGFloat) -> some View {
+  private func themed(width: CGFloat, height: CGFloat) -> some View {
     let attributes = preferences.rootAttributes
     let measured = width > 0 ? width : 390
     let tokens = cache.resolve(attributes, width: Double(measured))
     let theme = VirgaTheme(
-      tokens: tokens, attributes: attributes, windowWidth: measured, reduceMotion: reduceMotion, dynamicTypeSize: dynamicTypeSize)
+      tokens: tokens, attributes: attributes, windowWidth: measured, windowHeight: height, reduceMotion: reduceMotion,
+      dynamicTypeSize: dynamicTypeSize)
     let system: ColorScheme = preferences.systemDark ? .dark : .light
     // Only override the window when the page's scheme isn't the device's:
     // otherwise SwiftUI's colorScheme stays the device's, and a change to it

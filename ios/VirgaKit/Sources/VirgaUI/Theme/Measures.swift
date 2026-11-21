@@ -22,6 +22,25 @@
 import SwiftUI
 import VirgaCore
 
+/// A CSS `clamp(min, share × extent, max)` of the window's width (vw) or
+/// height (svh).
+public struct Clamp: Sendable {
+  public var min: CGFloat
+  public var share: CGFloat
+  public var max: CGFloat
+
+  public init(min: CGFloat, share: CGFloat, max: CGFloat) {
+    self.min = min
+    self.share = share
+    self.max = max
+  }
+
+  /// The length for a window this wide (or tall).
+  public func of(_ extent: CGFloat) -> CGFloat {
+    Swift.min(self.max, Swift.max(self.min, extent * share))
+  }
+}
+
 public enum Measure {
   // MARK: controls.css (the touch block's reaches, which ThemeKit doesn't read)
 
@@ -257,14 +276,14 @@ public enum Measure {
   public enum Landing {
     /// `.landing-main { padding-top: clamp(32px, 7svh, 72px); padding-bottom: 56px }`;
     /// a phone's 24 and 40.
-    public static let mainSpaceAboveMin: CGFloat = 32
-    public static let mainSpaceAboveShare: CGFloat = 0.07
-    public static let mainSpaceAboveMax: CGFloat = 72
     public static let mainSpaceBelow: CGFloat = 56
     public static let phoneMainSpaceAbove: CGFloat = 24
     public static let phoneMainSpaceBelow: CGFloat = 40
+    /// `.landing-main { padding-top: clamp(32px, 7svh, 72px) }`
+    public static let mainSpaceAbove = Clamp(min: 32, share: 0.07, max: 72)
     /// `.landing-hero { gap: 48px clamp(40px, 6vw, 88px) }`; a phone's 40.
     public static let heroGap: CGFloat = 48
+    public static let heroColumnGap = Clamp(min: 40, share: 0.06, max: 88)
     public static let phoneHeroGap: CGFloat = 40
     /// `.landing-copy { gap: 20px; max-width: 560px }`; 620 under 900.
     public static let copyGap: CGFloat = 20
@@ -283,16 +302,62 @@ public enum Measure {
     public static let pointIconSpaceBelow: CGFloat = 4
     /// `.landing-points p { max-width: 44ch }`
     public static let pointMeasure: CGFloat = 44
-    /// `.landing-foot { padding-top: 20px; padding-bottom: 32px; gap: 8px 32px }`
+    /// `.landing-foot { padding-top: 20px; padding-bottom: 32px; gap: 8px 32px }`,
+    /// its words held to 78ch.
     public static let footSpaceAbove: CGFloat = 20
     public static let footSpaceBelow: CGFloat = 32
     public static let footGap: CGFloat = 8
+    public static let footColumnGap: CGFloat = 32
+    public static let footMeasure: CGFloat = 78
+    /// `.landing-points`: three to a row from 720.
+    public static let pointsRow: CGFloat = 720
+
+    // The sketch (app.css), and the picture's own data in Landing.jsx.
+    /// `.landing-sketch { gap: clamp(22px, 2.6vw, 34px); padding-top: 34px }`
+    public static let sketchGap = Clamp(min: 22, share: 0.026, max: 34)
+    public static let sketchSpaceAbove: CGFloat = 34
+    /// `.sketch-figures { gap: 0 clamp(12px, 1.8vw, 24px) }`, `.sketch-lists { gap: 0 clamp(20px, 3vw, 40px) }`
+    public static let sketchFigureGap = Clamp(min: 12, share: 0.018, max: 24)
+    public static let sketchListGap = Clamp(min: 20, share: 0.03, max: 40)
+    /// `.sketch-word { height: 6px; border-radius: 3px }`, `--strong { height: 8px; opacity: 0.82 }`,
+    /// `.sketch-number { height: clamp(18px, 2.4vw, 30px); opacity: 0.84 }`.
+    public static let sketchWord: CGFloat = 6
+    public static let sketchRadius: CGFloat = 3
+    public static let sketchStrong: CGFloat = 8
+    public static let sketchStrongOpacity: Double = 0.82
+    public static let sketchNumber = Clamp(min: 18, share: 0.024, max: 30)
+    public static let sketchNumberOpacity: Double = 0.84
+    /// `.sketch-figure { gap: 10px; padding-top: 12px; border-top: 2px }`
+    public static let sketchCellGap: CGFloat = 10
+    public static let sketchCellPadding: CGFloat = 12
+    public static let sketchFigureRule: CGFloat = 2
+    /// `.sketch-tabs .sketch-word { width: 30px }`
+    public static let sketchTab: CGFloat = 30
+    /// `.sketch-row { gap: 10px; height: 34px }`, its count 18 wide at 0.6, a face 16.
+    public static let sketchRowGap: CGFloat = 10
+    public static let sketchRow: CGFloat = 34
+    public static let sketchCount: CGFloat = 18
+    public static let sketchCountOpacity: Double = 0.6
+    public static let sketchFace: CGFloat = 16
+    /// `.sketch-heat { gap: 3px }`, a cell 12 tall, radius 2.
+    public static let sketchHeatGap: CGFloat = 3
+    public static let sketchHeatCell: CGFloat = 12
+    public static let sketchHeatRadius: CGFloat = 2
+    /// The chart's svg: `viewBox="0 0 520 176"`, its grid at 12, 88 and 164,
+    /// the line's reach to (512, 22) dashed `2 6`, its dots r 3.5 and 4.5,
+    /// the strokes 2.
+    public static let sketchBox = CGSize(width: 520, height: 176)
+    public static let sketchChartAspect: CGFloat = 520.0 / 176.0
+    public static let sketchGridLines: [CGFloat] = [12, 88, 164]
+    public static let sketchEnd = CGPoint(x: 512, y: 22)
+    public static let sketchDash: [CGFloat] = [2, 6]
+    public static let sketchLineWidth: CGFloat = 2
+    public static let sketchOpenDot: CGFloat = 7
+    public static let sketchDot: CGFloat = 9
     /// `.landing-narrow { gap: 18px; max-width: 560px …; padding: clamp(32px, 10svh, 104px) … 56px }`
     public static let narrowGap: CGFloat = 18
     public static let narrowMaxWidth: CGFloat = 560
-    public static let narrowSpaceAboveMin: CGFloat = 32
-    public static let narrowSpaceAboveShare: CGFloat = 0.10
-    public static let narrowSpaceAboveMax: CGFloat = 104
+    public static let narrowSpaceAbove = Clamp(min: 32, share: 0.10, max: 104)
     /// `.return-code { margin-top: 8px }`
     public static let codeSpaceAbove: CGFloat = 8
     /// `.app-status { top: 40svh }`
@@ -303,9 +368,7 @@ public enum Measure {
 
   public enum Legal {
     /// `.legal-main { padding: clamp(28px, 7svh, 64px) … 64px }`; under 760, 20 and 40.
-    public static let mainSpaceAboveMin: CGFloat = 28
-    public static let mainSpaceAboveShare: CGFloat = 0.07
-    public static let mainSpaceAboveMax: CGFloat = 64
+    public static let mainSpaceAbove = Clamp(min: 28, share: 0.07, max: 64)
     public static let mainSpaceBelow: CGFloat = 64
     public static let tabletSpaceAbove: CGFloat = 20
     public static let tabletSpaceBelow: CGFloat = 40
@@ -343,6 +406,11 @@ public enum Measure {
     public static let cellPadding = EdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
     public static let blockPadding: CGFloat = 14
     public static let blockCellGap: CGFloat = 10
+    /// `.legal-table td::before { margin-bottom: 2px }`
+    public static let blockLabelGap: CGFloat = 2
+    /// `.legal-contents ol { columns: 2 240px; column-gap: 40px; padding-left: 1.8em }`
+    public static let contentsColumnGap: CGFloat = 40
+    public static let contentsIndentEm: CGFloat = 1.8
     /// `.legal-dialog-links { margin-bottom: 12px }`, `a { gap: 5px }`, its glyph 13.
     public static let dialogLinksSpaceBelow: CGFloat = 12
     public static let dialogLinkGap: CGFloat = 5
@@ -362,6 +430,10 @@ public enum Measure {
     /// `.signin-flow { gap: 8px }`, `.signin-step { gap: 12px }`.
     public static let flowGap: CGFloat = 8
     public static let stepGap: CGFloat = 12
+    /// `@keyframes signin-step-in { from { transform: translateY(6px) } }`
+    public static let stepRise: CGFloat = 6
+    /// `.signin-step > .field-label { margin-bottom: -4px }`
+    public static let labelPull: CGFloat = 4
     /// `.signin-title { letter-spacing: -0.005em; line-height: 1.3 }`
     public static let titleTracking: ThemeLength = .em(-0.005)
     public static let titleLineHeight: Double = 1.3
@@ -396,6 +468,8 @@ public enum Measure {
     public static let identityGap: CGFloat = 12
     public static let identityHeight: CGFloat = 70
     public static let identityPadding: CGFloat = 12
+    /// `.signin-identity-text { gap: 2px }`
+    public static let identityTextGap: CGFloat = 2
     /// `.signin-bone--avatar` 44; `--name` 46% × 14; `--meta` 68% × 11, 3 above and below.
     public static let boneAvatar: CGFloat = 44
     public static let boneNameShare: CGFloat = 0.46
@@ -408,10 +482,14 @@ public enum Measure {
     /// `.signin-wick { height: 2px; max-width: 420px }`
     public static let wickHeight: CGFloat = 2
     public static let wickMaxWidth: CGFloat = 420
+    /// `.signin-wick:not([data-phase='waiting']) span { animation: signin-pulse 1.5s }`
+    public static let wickPulseSeconds: Double = 1.5
     /// `.signin-host { gap: 12px; min-height: 60px; padding: 10px 0 }`
     public static let hostGap: CGFloat = 12
     public static let hostHeight: CGFloat = 60
     public static let hostPadding: CGFloat = 10
+    /// The host row's ExternalLink, 15.
+    public static let hostIcon: CGFloat = 15
     /// `.dialog.signin-how { width: min(600px, …) }`, `.signin-how-body { gap: 16px }`
     public static let howWidth: CGFloat = 600
     public static let howGap: CGFloat = 16
@@ -423,6 +501,12 @@ public enum Measure {
     public static let howGlyphIcon: CGFloat = 18
     public static let howLinkWidth: CGFloat = 88
     public static let howLinkIcon: CGFloat = 14
+    /// `.signin-how-link svg { padding: 4px }` on the dialog's ground.
+    public static let howLinkIconPadding: CGFloat = 4
+    /// `.signin-how-link::before { border-top: 1px dashed }`: a browser's dash, about 3.
+    public static let howDash: CGFloat = 3
+    /// `.signin-how-asks { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) }`
+    public static let asksMinWidth: CGFloat = 200
     /// `.signin-how-asks { gap: 16px 28px }`, `h3 { margin-bottom: 8px; padding-bottom: 8px }`,
     /// `ul { gap: 7px }`, `li { gap: 8px; line-height: 1.4 }`, its glyph 14.
     public static let asksGap: CGFloat = 28
@@ -456,6 +540,8 @@ public enum Measure {
     public static let rememberedTextGap: CGFloat = 1
     public static let rememberedLineHeight: Double = 1.3
     public static let disabledOpacity: Double = 0.7
+    /// `.remembered-chevron`, 16.
+    public static let rememberedChevron: CGFloat = 16
     /// `.session-notices { top: 12px; width: min(560px, 100vw - 32px); gap: 8px }`
     public static let noticesTop: CGFloat = 12
     public static let noticesWidth: CGFloat = 560
@@ -514,6 +600,8 @@ public enum Measure {
     public static let accentChoiceHeight: CGFloat = 40
     public static let phoneAccentChoiceHeight: CGFloat = 44
     public static let accentSwatch: CGFloat = 22
+    public static let accentPaddingLeading: CGFloat = 5
+    public static let accentPaddingTrailing: CGFloat = 2
 
     /// settings.css's own sky tiles: each sky's wash written out, since every
     /// tile shows its own sky whatever the page's is.

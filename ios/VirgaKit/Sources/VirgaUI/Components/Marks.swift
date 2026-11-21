@@ -222,6 +222,34 @@ struct MetaItemView: View {
   }
 }
 
+/// One piece of a meta line drawn by its caller (a badge, a link): the
+/// line's words and size, and its dot after it unless it is the last.
+public struct MetaPiece<Content: View>: View {
+  @Environment(\.virgaTheme) private var theme
+  private let isLast: Bool
+  private let content: Content
+
+  public init(isLast: Bool, @ViewBuilder content: () -> Content) {
+    self.isLast = isLast
+    self.content = content()
+  }
+
+  public var body: some View {
+    let size = theme.points(ThemeKit.metaFontSize)
+    HStack(spacing: 0) {
+      content
+      if !isLast {
+        Text("·")
+          .padding(.leading, theme.points(ThemeKit.metaDotMargin.left))
+          .padding(.trailing, theme.points(ThemeKit.metaDotMargin.right))
+          .accessibilityHidden(true)
+      }
+    }
+    .virgaText(size: size, lineHeight: ThemeKit.metaLineHeight)
+    .foregroundStyle(theme.color(ThemeKit.metaInk))
+  }
+}
+
 // MARK: - Dot
 
 public enum DotState: Sendable {
