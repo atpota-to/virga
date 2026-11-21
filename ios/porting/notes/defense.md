@@ -1,10 +1,10 @@
-# defense (the pure engine): porting notes
+# defense: porting notes
 
 A snapshot of what the agents that ported and audited this domain handed on (November 2026).
 The code and ios/parity/modules/*.json are the truth; read this for orientation, the API
 map, and the known gaps and deliberate differences.
 
-Status: ported, audited.
+Status: ported, audited. The pure engine in an earlier wave; harvest, scan, veto, the service calls, the page model and the hooks on 2026-11-21 (the section at the end, which supersedes this file's remarks that call them pending).
 Parity cases at port time: 1604, plus 886 added by the audit.
 Tests at the time: The whole package passed swift test: VirgaDefenseTests 77 tests in 11 suites (2 new behaviour tests, both confirmed to fail on the porter's scorer), VirgaCoreTests 126 tests in 25 suites, and the placeholder targets. PARITY_ALLOW_PENDING=1 npx vitest run ios/parity passed (36 tests), npx eslint ios is clean, and the generators pass prettier --check. The defense-early fixtures went from 1,604 to 2,490 cases. Fuzz runs not kept in the fixtures also matched: 20,000 parseCommand, 6,667 parsePostScan, 6,667 parseActor and 200,000 trustScore. Commit aca8e84 on ios/w2-early-defense, not pushed.
 
@@ -101,3 +101,120 @@ CONVENTIONS
 - low (fixed) ios/parity/modules/defense.json (harvest.js, scan.js): The pending notes were incomplete. harvest.js left out HarvestTotals and the pure helpers that still need porting. scan.js left out ScanStageHandler, that readPostInput needs VirgaPosting's parsePostLink, and which pure pieces (canaryCandidates, STAGES, ScanError, scanErrorFrom) come with it. Both notes are rewritten. Everything else in the map checked out: statuses, the score.js partial note, the headers, and stamps with no drift.
 - low (open) src/defense/command.js facetLinks/facetMentions: Not fixed: a truthy facet uri or did that isn't a string comes back as its String() form. The web returns the raw value, so a numeric mention DID would make the web's actor the number 5 where Swift gives "5". This only happens with malformed facets, and the Swift API is [String].
 - low (open) src/defense/score.js, radar.js, plan.js, limit.js: I confirmed the porter's documented deviations and left them as they are: - A profile count that isn't a number reads as 0. - A NaN trust (only from a negative follower count) becomes Int 0. - sectorAt(NaN) returns 0. - estimateWrites caps writes at 1e15. - chunks(_, 0) fails a precondition (the web loops forever). - mapLimit waits for in-flight items, already cancelled, after the first error. I found two more of the same kind: Thresholds decoded with null fields take the defaults, where the web reads `>= null` as `>= 0`; and Limit.pause waits for delays over 2^31-1 ms, which setTimeout fires at once. Thresholds come from code and the delays are 1 s and 3 s, so neither can happen today.
+
+## The rest of the engine (2026-11-21)
+
+Ported, then audited. Parity cases at port time: 995, plus 3 added by the audit.
+Tests at the time: The whole package passes swift test on Linux with Swift 6.4.2. VirgaDefenseTests now has 144 tests in 23 suites (was 138), and the defense suite passed 3 runs out of 3 after the deflake; before it, 1 run in 3 failed. The other targets' suites pass unchanged: 194, 57, 190, 99, 79, 69 and 172 tests, plus 1. PARITY_ALLOW_PENDING=1 npx vitest run ios/parity: 109 passed. npx eslint ios is clean, and the edited generators pass prettier --check. Commits on ios/w5-a: abb69f9 (a stopped harvest resolves, the lists follow the session, veto test deflaked) and 717e9db (3 new parity cases: defense.harvest page-cap-negative and only-unknown-kinds, defense.scan kept-with-no-reason).
+
+### API for the code that builds on it
+
+All in VirgaDefense (import VirgaDefense). Paths are under ios/VirgaKit/Sources/VirgaDefense/. The web's AbortSignal is task cancellation throughout.
+
+LIMIT (Limit.swift). One change from the porter's summary:
+- Limit.mapLimit(_ items, _ limit, stopsWhenCancelled: Bool = true, _ fn) async throws -> [R].
+- `stopsWhenCancelled: false` is the web's mapLimit called without `{ signal }`: every item is still started once the task is cancelled, and fn decides what a stop means. harvestPost uses false.
+
+HARVEST (Harvest.swift; the functions are statics on the existing `Harvest` struct)
+- Constants: Harvest.maxPages (60), Harvest.kindOrder, Harvest.constellationDown (the exact sentence).
+- Harvest.isDid(_ String?) and isDid(_ JSONValue?).
+- Harvest.engagementKind(collection:path:) and engagementKind(_ BacklinkSource).
+- Harvest.harvestPost(_ uri, maxPages: = 60, only: [String]? = nil, onProgress: HarvestProgressHandler? = nil, transport: = HTTP.transport, clock: = HTTP.clock, now: @Sendable () -> Date = Date()) async throws -> Harvest.
+  - Throws HarvestError(message) when Constellation doesn't answer the counts call.
+  - Throws CancellationError only when stopped before Constellation listed the sources. Stopped later, it resolves as the web's does: the sources not yet read come back failed (and in `unread`) without a request, truncated is true, and every progress report is still made.
+  - Throws JSError TypeError (V8's spread message) for records that aren't a list.
+  - Progress reports are awaited, in counting order (0…n), all delivered before it returns.
+- Types: HarvestProgress {done, total}; typealias HarvestProgressHandler = @Sendable (HarvestProgress) async -> Void.
+
+SCORE (Score+Relationships.swift)
+- Score.publicRelationships(appview: = AppConfig.appview, transport: = HTTP.transport) -> GetRelationships.
+  - Goes through Atproto.fetchWithTimeout (15 s deadline).
+  - Throws DefenseFetchError("HTTP <s> from getRelationships", status:) or "getRelationships answered with no list".
+- Score.createScorer's getRelationships defaults to publicRelationships().
+
+ERRORS (Support/StatusErrors.swift)
+- XRPCError, BackendError, PublicXrpcError, AtprotoHTTPError and VirgaSession's JSError conform to HTTPStatusError, so Score.retryable reads their status. XRPCError's status 1 means no response and is not retried, as on the web.
+- DefenseFetchError(message, status: Int?): HTTPStatusError, JSErrorConvertible.
+- protocol CausedError { var cause: (any Error)? }: ScoreError, VetoUnreadable and ScanError conform.
+
+VETO (Veto.swift, ReasonMap.swift)
+- ReasonMap: did → reason, as a JS Map. Keys compare by code unit, kept in insertion order; ExpressibleByDictionaryLiteral.
+  - Members: subscript(did:), has, set, keys, entries [Entry{did, reason}], count, merging (other wins), dictionary ([String: String], for createScorer's protectedSet). Encodes as an object.
+- VetoUnreadable(message, cause:): code "veto-unreadable", name "VetoUnreadable".
+- Veto.CurationLimits(lists: 20, membersPerList: 5000); Veto.curationLimits.
+- Veto.followedNow(_ owner, _ dids, appview:, transport:) async throws -> ReasonMap.
+- Veto.curationMembers(_ owner, appview:, transport:, limits:) async throws -> ReasonMap (did → list name).
+- Veto.vetoed(ownerDid: String?, holderDid:, dids: [String?], kept: ReasonMap, curation: Veto.Curation? (nil reads it), follows: Veto.Follows?, appview:, transport:, limits:) async throws -> ReasonMap.
+  - typealias Follows = @Sendable (owner, [String]) async throws -> ReasonMap; typealias Curation = @Sendable () async throws -> ReasonMap.
+  - Both reads run side by side; when both fail, the first to fail is thrown.
+  - A stop throws CancellationError, never VetoUnreadable.
+
+SCAN (Scan.swift)
+- ScanError(message, code: ScanError.Code {link, author, aborted, permission, vouches, read, harvest}, cause:): name "ScanError"; LocalizedError text = message.
+- ScanStage {key, label}; Scan.stages, Scan.canaryCandidates (150), Scan.canaryRequiredAt (20).
+- PostInput {did?, handle?, rkey}; Scan.readPostInput(_ String?) -> PostInput?.
+- Scan.resolvePost(_ input, resolveHandle: Scan.ResolveHandle) async throws -> ScanPost.
+- CanaryArchive {following: [Follow{did?, followedAt?}], followers: [Account{did?}], inbound: [Account{did?}]}, decoded leniently.
+- Scan.canaryCandidates(_ archive, ownerDid:, limit: = 150, timeZone: TimeZone? = nil) -> [String].
+- Scan.signedInProfiles(_ agent: XRPCAgent) -> GetProfiles: withProxy("bsky_appview", "did:web:api.bsky.app"), then app.bsky.actor.getProfiles.
+- Scan.readCurationLists(_ owner, appview:, transport:) async throws -> ReasonMap: best effort ("on your list “name”"); rethrows a stop.
+- Scan.scanErrorFrom(_ error, aborted: Bool = false) -> ScanError.
+- Scan.runScan(input:, ownerDid:, getProfiles:, candidates: = [], onStage: ScanStageHandler?, resolveHandle: ResolveHandle?, harvest: HarvestRead?, getRelationships: GetRelationships?, readCurated: ReadCurated?, kept: ReasonMap?, retryDelaysMs: [Double]?, transport: = HTTP.transport, now: = Date(), timeZone: TimeZone? = nil) async throws(ScanError) -> ScanResult.
+  - A nil read means the web's default over `transport`: PublicAppView.resolveHandle, Harvest.harvestPost, Score.publicRelationships, readCurationLists.
+  - `now` stamps startedAt and finishedAt and is the scorer's clock.
+  - Stopped part way through the default harvest, the scan still reports the canary stage, as the web does, then throws ScanError aborted ("The scan was stopped.").
+  - typealias ResolveHandle = @Sendable (String) async throws -> String?; HarvestRead = @Sendable (uri, @escaping HarvestProgressHandler) async throws -> Harvest; ReadCurated = @Sendable (owner) async throws -> ReasonMap.
+- Page wiring, as DefensePage.jsx does it: ScanStore.shared.startScan(did, input: text) { onStage in try await Scan.runScan(input: text, ownerDid: did, getProfiles: Scan.signedInProfiles(agent), candidates: Scan.canaryCandidates(archive, ownerDid: did), onStage: onStage) }.
+
+DEFENSE SERVICE (DefenseService.swift)
+- Every call takes VirgaBackend? (session.backendFor(did)); nil throws DefenseService.needsBackend() (BackendError code NEEDS_BACKEND, status 0).
+- Results are the server's JSONValue (`body.data ?? body`).
+- fetchLists(_), createList(_, name:purpose:description:), keepAccount(_, did, reason?), unkeepAccount(_, did).
+- planAndApprove(_, listId: JSONValue, postUri: String?, rows: Encodable, totals: Encodable, bands: [String], note: String?).
+  - The page sends rows = Plan.planRows output and totals = {participants, ...byBand}; a nil postUri or note is sent as null, as the page's `|| null` and cleanNote give.
+- fetchHistory(_, before: JSONValue?, list: String?), undoAdds(_, planId: JSONValue?, ids: [JSONValue]?, note: String?).
+- fetchLink(_), makeLinkCode(_), unlinkModerator(_), chooseLinkList(_, JSONValue?).
+- defenseErrorMessage(_ error) and defenseErrorMessage(code:message:).
+- Reading .list or .planId from a null answer throws JSError TypeError, as the web does.
+
+MODELS (DefenseModels.swift)
+- @MainActor protocol DefenseSession { did; accounts: [SessionAccount]; authMode; capabilitiesFor(_:); backendFor(_:); signIn(_:_:) }. SessionModel conforms.
+- DefenseAccountModel(session:): did, account, caps, asking: Asking? (.busy | .error(String)), askFor(_ level: AppConfig.DefenseLevel?) async (nil means the web's false).
+- DefenseListsModel(did:, session:, sleep: = Task.sleep):
+  - Observed: did, data: JSONValue?, error: String?, loading.
+  - Computed: requester, waiting. Static pollMs = 15 000.
+  - start() async (mount): the first read. From then until stop() it follows the session: when what backendFor(did) reads changes (SessionModel's account rows, e.g. a sign-out or a new sign-in), it runs update(did:), so a new requester (or none) reads the lists again and a signed-out account's lists clear.
+  - update(did:) async: when the did or the requester's (did, token) changes, the poll is reset at once, over the lists still shown, then the lists are read. The view still calls it when the open account changes, e.g. from .task(id:).
+  - stop(): unmount. Ends the poll and stops following the session; a read under way is not stopped.
+  - refresh() async -> JSONValue? (discardable).
+  - While waiting it polls every 15 s.
+
+PAGE MODEL (PageModel.swift; numbers take locale: String? = nil, meaning the active locale)
+- postsToScan(_ posts: [Post]?, now:, days: = 30, limit: = 4, timeZone:, facts: (Post) -> PostToScanFacts?) -> [Post], plus a [JSONValue] overload.
+- vouchPhrase(_ ScanRow, _ VouchCheck = .canary, locale:), didPhrase, protectedPhrase -> String?, describeRow -> RowDescription {title, lines}, rowFacts -> [String].
+- stageLine / stageLabel / stageCount / stageFraction, taking ScanState? or (stage:progress:).
+- inertCell (String and JSONValue overloads), engagementKinds(_ Participant), scanCsvHeader, scanCsvRows(_ ScanSummary?) -> [[JSONValue]].
+
+TEST SUPPORT (internal to VirgaDefenseTests)
+- Replay.swift: expectReplay(c, ordered:, sortedWaits:) { transport, clock in }, Fixed.now, date(ms:), Heard<T>.
+- ScriptedAppView mirrors _defense.js scripted.
+- DefenseModelsTests.swift holds a FakeSession (a DefenseSession, not @Observable, so it isn't followed) and a Ticker sleeper; both are file-private, so copy them to reuse.
+- VetoBehaviourTests.swift has a private answered(_:on:) helper that waits for a MockTransport request.
+
+### Known gaps and deliberate differences
+
+- runScan passes createScorer a [String: String] protectedSet (the wave-1 API), so its keys compare by canonical equivalence: a non-DID curation member with a Kelvin sign would protect the ASCII DID it is equivalent to. It fails safe. The scorer's selves, alreadyListed and blockers Sets work the same way.
+- DefenseListsModel follows the session through Observation on what SessionModel.backendFor reads (its rows). A token replaced in the secret store without any change to the account rows wouldn't be noticed until the next update(did:) or poll. Sign-in and sign-out both change the rows. A session that isn't @Observable (such as the tests' FakeSession) isn't followed; the view's update(did:) still works.
+- Carried over from the porter and confirmed. HarvestSource.count, distinctDids and UnreadKind.count are Int: the web keeps the raw value, so a fractional count is truncated and a string count is concatenated on the web. A non-string backlink rkey or collection comes back in String form. A truthy cursor that stringifies to '' isn't sent. signedInProfiles gives [] where the SDK would throw InvalidResponse (a known network gap). Limit.mapLimit cancels and awaits in-flight items after the first failure. canaryCandidates skips null followers and non-string DIDs. postsToScan reads counts as numbers only. scanCsvRows orders the engagement column from the row's records. DefenseService answers stay JSONValue (planAndApprove ignores a non-object approve answer, which the web would spread key by key). console.warn calls are dropped. `now` also drives the scorer's clock and harvestedAt.
+- Wiring the app still needs VirgaArchive, which the other chain owns, to supply CanaryArchive's following, followers and inbound and the post rows for postsToScan. VirgaUI then starts scans through ScanStore.startScan with Scan.runScan and Scan.signedInProfiles(agent), calls DefenseListsModel.start(), update(did:) and stop() from the view, and binds DefenseAccountModel.
+- Possible web bugs, low (none fixed). The porter's six are confirmed (the useDefenseLists seq race, canaryCandidates' null follower, harvest's spread TypeError, followedNow keeping unasked DIDs, createList/planAndApprove on a null answer, drainSource's `??` retry). Two new ones: (1) src/defense/useDefense.js useDefenseLists computes `waiting = (state.data?.lists || []).some((l) => l.waiting > 0)` during render, so a null entry in lists, or a lists value that is truthy but not an array, throws and crashes the page; the port reads both as nothing waiting. (2) src/defense/defenseService.js planAndApprove's `{ planId: plan.planId, ...approved }` spreads a string or array answer into numbered keys.
+
+### The audit
+
+- **medium**, src/defense/harvest.js harvestPost (mapLimit without signal) / drainSource: If the caller stopped a harvest after Constellation had listed the sources, the port threw CancellationError, but the web resolves. harvest.js calls mapLimit without `{ signal }`, so every source is still drained: Constellation's client answers null at once with no request, those sources come back failed and unread, and all progress reports are made. The port's Limit.mapLimit always checked cancellation before starting each item. Fixed: Limit.mapLimit gained `stopsWhenCancelled: Bool = true` (false means the web's call without a signal), and harvestPost passes false. Three new tests: HarvestBehaviour.aHarvestStoppedPartWayResolvesWithTheRestUnread, ScanBehaviour.stoppedPartWayThroughTheWebsHarvestSaysSo (the scan still reaches the canary stage and is then stopped by the curation read, as on the web) and LimitBehaviour.withoutTheSignalEveryItemIsStillStarted. The first two fail on the old code.
+- **medium**, src/defense/useDefense.js useDefenseLists (req = backendFor(did) per render; refresh effect): DefenseListsModel didn't follow the session. The hook re-renders whenever the session changes and reads backendFor(did) again, so a sign-out (no requester) or a new requester reads the lists again, and a sign-out clears them. The model only did this when the view called update(did:), and a SwiftUI view keyed on the did (.task(id:)) never sees a sign-out or a token change, so it kept showing a signed-out account's lists. Fixed: between start() and stop(), the model tracks session.backendFor(did) with withObservationTracking (SessionModel's rows are observed) and runs update(did:) when it changes. Tests: DefenseModelsOverTheSession.followsTheSessionWhenTheAccountIsSignedOut, which fails on the old model, and followsNothingOnceStopped.
+- **low**, src/defense/useDefense.js useDefenseLists (interval effect deps [waiting, refresh]): On a requester change, update(did:) waited for the new read before resetting the poll. The hook's interval effect runs again at the same commit, before the read comes back. Meanwhile the old timer could fire and start a second read that overtook the first. Fixed: the poll is reset first, over the lists still shown, then the read runs. Test: DefenseListsModelBehaviour.setsTheTimerAgainAtOnceForANewRequester, which fails on the old order.
+- **medium**, src/defense/veto.js vetoed (Promise.all, first rejection wins) — test only: VetoBehaviour.theReadThatFailsFirstIsTheFailure was flaky: it failed in 1 of 3 runs of the whole defense suite. It relied on a 30 ms sleep to order the two failing reads, and under the parallel parity load the slow read sometimes won. Fixed: the slow read now waits until the fast read's request has been made, then 250 ms more. The defense suite then passed 3 runs out of 3, plus one full-package run.
+- **low**, src/defense/harvest.js harvestPost; src/defense/scan.js runScan protectedSet: Fixture coverage was thin in three spots. Added harvestPost with maxPages -1 (reads nothing, truncated but not failed), harvestPost with `only` naming unknown kinds, a repeated kind and a case look-alike ('Like'), and runScan with an empty reason kept by hand: it still replaces the curation list's reason in `new Map([...curated, ...kept])`, and the score falls back to its own ('you follow them') or to no protection. The Swift port matched all three as it was.
+- **low** (left as it is), src/defense/scan.js runScan → score.js createScorer protectedSet.get(did): Not fixed: runScan hands createScorer `protectedSet.dictionary`, a [String: String]. That is the wave-1 scorer's API, and Swift's String keys use canonical equivalence. A curation-list member such as 'did:plc:\u{212A}…' (Kelvin sign) would protect the ASCII 'did:plc:K…' in Swift but not on the web, and two canonically equal keys collapse into one. This fails safe (it protects more people, never fewer) and needs a non-DID member from the AppView.
+- **low** (left as it is), src/defense/{scan,veto,defenseService,pageModel,harvest}.js: Checked and confirmed, no change needed. readPostInput, resolvePost, canaryCandidates, scanErrorFrom (including AbortError, TimeoutError and a missing scope in the cause), STAGES and its copy, followedNow, curationMembers and vetoed. Every DefenseService call and every word of defenseErrorMessage (including the Kelvin-sign code case). Every pageModel export. engagementKind, isDid and the fold/sort/unread logic. The module map (all 16 files ported, headers present, no drift) and the porter's documented gaps.

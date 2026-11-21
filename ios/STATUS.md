@@ -27,7 +27,7 @@ when the port is complete.
 | posting-text | VirgaPosting | ported, audited | facets, links, mentions, hashtags, thread splitting, gates, embeds, compose intents, the posting events bus (mentions' default fetch still to be wired) |
 | timers | VirgaPosting | ported, audited | the timer rule model and every sentence in five locales and seven zones, the lifespan editor's model; the server calls wait behind `TimerRequester` |
 | insights (tables) | VirgaInsights | ported, audited | routes, the dashboard catalog and layouts, registries, settings sections, the command palette, lucide → SF Symbol mapping |
-| defense (engine) | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits |
+| defense | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits; harvest, scan, veto, the service calls, the page model, DefenseAccountModel and DefenseListsModel |
 | session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession); the app still has to hand it a WebAuthenticator, the archive's reset and a FileStore delete (notes/session.md) |
 | theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
 | archive | VirgaArchive | ported, audited | the store over FileStore, the first build and later syncs, the analytics, periods, chart formats, follower log, sync progress, exports, ArchiveModel (useAnalyticsArchive) |
@@ -49,7 +49,7 @@ The order follows the dependencies between the web modules.
 3. **Composer** (VirgaPosting):
    - Port `composerModel.js`, `src/posting/composer/*.js`, `autosave.js`, `settings.js`, `adviser/setup.js`, `pendingCompose.js`, `postingQueue.js`, `publishActions.js`, `repeat.js`, `images.js` and `video.js`.
    - Also wire the seams earlier waves left: `VirgaBackend` → timers' `TimerRequester`, and Mentions' default fetch → VirgaNetwork.
-4. **Rest of Defense**: `harvest.js`, `scan.js`, `veto.js`, `publicRelationships` in `score.js`, `defenseService.js`, `useDefense.js`, `pageModel.js`.
+4. ~~**Rest of Defense**~~ Done on 2026-11-21 (notes/defense.md, its last section).
 5. **Templates**: `src/posting/templates/*.js`, `library/templateEditorModel.js`.
 6. **Rest of insights** (needs the archive): `reports/models.js`, `annotations.js`, `useAnnotations.js`, `share/shareSpec.js`, `share/chartImage.js` (layout maths), `tools/interactionModel.js`.
 7. **Publishing and drafts** (needs the composer): `publish.js`, `publishRecord.js`, `linkCard.js`, `drafts/*.js`.
@@ -89,8 +89,8 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 50 bugs in the web app the
-  porters found and reproduced rather than fixed. Seven are visible to people.
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 56 bugs in the web app the
+  porters found and reproduced rather than fixed. Eight are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21
   (no fixture changed). It is still recursive, so a value nested about

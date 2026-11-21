@@ -75,6 +75,13 @@ visible to people: they are marked **visible**.
 - src/defense/scanStore.js startScan: the `if (controller.signal.aborted) set(did, IDLE)` branch can never run, because stopScan, a new startScan and resetScansForTests all remove the controller before aborting it, so current() is already false. It is harmless dead code.
 - src/defense/command.js parseActor's DID pattern (/^did:[a-z]+:[a-zA-Z0-9._%-]+$/) rejects colons in the identifier, so a did:web with a path (did:web:example.com:user) is not read as an account. harvest.js's DID_SYNTAX accepts it.
 
+- src/defense/useDefense.js useDefenseLists: refresh() doesn't advance seq when there is no requester, so if the account changes to one without a long session while an earlier read is in flight, that read still has the latest seq and sets the previous account's lists.
+- src/defense/scan.js canaryCandidates: `followers.map((f) => f.did)` throws a TypeError on a null entry, though `following` (`!f?.did`) and `inbound` (`e?.did`) tolerate nulls.
+- src/defense/harvest.js drainSource: a source whose page has `records` (or `linking_records`) that is an object, a number or true makes `rows.push(...)` throw, failing the whole harvest rather than marking that one source failed (the harvest-level effect of constellation.js backlinkRows, under Network).
+- src/defense/harvest.js drainSource: `(await read()) ?? ...` asks again only when a page is null or undefined; a page that parsed to false, 0 or '' counts as a failed source without the second try.
+- src/defense/veto.js followedNow: a relationship row for a DID that wasn't asked about, with `following` set, is still added to the result, although the doc says 'Of `dids`' (harmless in vetoed, which reads only the DIDs it asked about).
+- **visible** src/defense/defenseService.js createList and planAndApprove: when the server's 200 answer isn't JSON (the requester returns null), `data(...).list` and `plan.planId` throw "Cannot read properties of null (reading 'list')", and defenseErrorMessage shows that to the person.
+
 ## Session and sign-in (src/session, src/signin)
 
 - **visible** src/signin/identity.js normalizeSignInInput decodes a pasted bsky.app profile link before it checks whether the result is an address, so `https://bsky.app/profile/https%3A%2F%2Fevil.example` becomes `https://evil.example` and is read as a host address: a link that looks like a Bluesky profile starts a sign-in at another host. The card shown before leaving does name that host. Reproduced in Node (fixture session.signin).
