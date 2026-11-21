@@ -21,9 +21,14 @@ public enum Limit {
   /// no further items are started after it, nor after the task is
   /// cancelled. (Items already in flight are cancelled and awaited, where
   /// the web leaves them to finish unread.)
+  ///
+  /// `stopsWhenCancelled: false` is the web's call without `{ signal }`
+  /// (harvest.js's): every item is still started once the task is
+  /// cancelled, and `fn` decides what a stop means for it.
   public static func mapLimit<T: Sendable, R: Sendable>(
     _ items: [T],
     _ limit: Int,
+    stopsWhenCancelled: Bool = true,
     _ fn: @escaping @Sendable (_ item: T, _ index: Int) async throws -> R
   ) async throws -> [R] {
     let lanes = Swift.max(1, Swift.min(limit, items.count))
@@ -34,7 +39,7 @@ public enum Limit {
         group.addTask {
           var done: [(Int, R)] = []
           while state.withLock({ !$0.failed && $0.next < count }) {
-            try Task.checkCancellation()
+            if stopsWhenCancelled { try Task.checkCancellation() }
             let taken: Int? = state.withLock { s in
               guard !s.failed, s.next < count else { return nil }
               s.next += 1

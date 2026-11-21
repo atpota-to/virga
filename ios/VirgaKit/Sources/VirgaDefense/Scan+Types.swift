@@ -1,11 +1,8 @@
-// Ports src/defense/scan.js: its data shapes only.
+// Ports src/defense/scan.js: its data shapes.
 //
 // What `runScan` resolves to (a summary, with the post, the canary and when
 // it ran) and the stages it reports, which the scan store keeps and the page
-// shows. The scan itself (resolving the post, the harvest, the canary's
-// candidates from the archive, the signed-in getProfiles, the curation
-// lists) needs VirgaNetwork and VirgaSession, and comes in wave 2, building
-// these same structs.
+// shows. The scan itself is Scan.swift.
 
 import Foundation
 

@@ -366,7 +366,7 @@ public struct ScoreError: Error, LocalizedError, CustomStringConvertible, Sendab
 }
 
 /// A failed read that says what HTTP status it got, if any (score.js reads
-/// `err.status`). VirgaNetwork's errors conform to it in wave 2; an error
+/// `err.status`). VirgaNetwork's errors conform to it (StatusErrors.swift); an error
 /// that doesn't is read as no answer at all, which is worth asking again.
 public protocol HTTPStatusError: Error {
   /// The HTTP status, or nil (or 0) when there was no answer.

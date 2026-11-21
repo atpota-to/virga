@@ -60,6 +60,24 @@ import VirgaCore
     #expect(started.wrappedValue < 1000)
   }
 
+  @Test func withoutTheSignalEveryItemIsStillStarted() async throws {
+    // mapLimit(items, limit, fn) with no `{ signal }`: a stop is fn's to
+    // read, and every item still runs.
+    let started = Locked(0)
+    let task = Task {
+      // Stopped before it starts.
+      withUnsafeCurrentTask { $0?.cancel() }
+      return try await Limit.mapLimit(Array(0..<50), 2, stopsWhenCancelled: false) { item, _ in
+        started.withLock { $0 += 1 }
+        return Task.isCancelled ? -1 : item
+      }
+    }
+    let out = try await task.value
+    #expect(out.count == 50)
+    #expect(started.wrappedValue == 50)
+    #expect(out.allSatisfy { $0 == -1 })
+  }
+
   @Test func pauseWaitsAndEndsEarlyWhenCancelled() async throws {
     let clock = ContinuousClock()
     let waited = await clock.measure { await Limit.pause(30) }

@@ -1,0 +1,2336 @@
+{
+  "name": "defense.relationships",
+  "sources": [
+    "src/defense/score.js"
+  ],
+  "cases": [
+    {
+      "id": "answered",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a",
+          "did:plc:b",
+          "did:plc:c"
+        ],
+        "answers": [
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa&others=did%3Aplc%3Ab&others=did%3Aplc%3Ac",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:a\",\"followedBy\":\"at://did:plc:a/app.bsky.graph.follow/x\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:b\",\"following\":\"at://did:plc:owner/app.bsky.graph.follow/b\",\"followedBy\":\"at://did:plc:b/app.bsky.graph.follow/x\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:c\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:a",
+            "followedBy": "at://did:plc:a/app.bsky.graph.follow/x"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:b",
+            "following": "at://did:plc:owner/app.bsky.graph.follow/b",
+            "followedBy": "at://did:plc:b/app.bsky.graph.follow/x"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "encoded",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:web:example.com:me",
+        "dids": [
+          "did:plc:é",
+          "did:web:a b",
+          "did:plc:x#y",
+          "did:plc:1+1=2",
+          "did:plc:😀"
+        ],
+        "answers": [
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aweb%3Aexample.com%3Ame&others=did%3Aplc%3A%C3%A9&others=did%3Aweb%3Aa%20b&others=did%3Aplc%3Ax%23y&others=did%3Aplc%3A1%2B1%3D2&others=did%3Aplc%3A%F0%9F%98%80",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:é\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:web:a b\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:x#y\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:1+1=2\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:😀\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:é"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:web:a b"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:x#y"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:1+1=2"
+          },
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:😀"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nobody",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "relationships": []
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"relationships\":[]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": []
+      }
+    },
+    {
+      "id": "other-appview",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "appview": "https://appview.example.org",
+        "answers": [
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.example.org/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:a\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "$type": "app.bsky.graph.defs#relationship",
+            "did": "did:plc:a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "not-found-actor",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:gone"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "relationships": [
+                {
+                  "$type": "app.bsky.graph.defs#notFoundActor",
+                  "actor": "did:plc:gone",
+                  "notFound": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Agone",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"relationships\":[{\"$type\":\"app.bsky.graph.defs#notFoundActor\",\"actor\":\"did:plc:gone\",\"notFound\":true}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "$type": "app.bsky.graph.defs#notFoundActor",
+            "actor": "did:plc:gone",
+            "notFound": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bad-gateway",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 502,
+            "json": {
+              "error": "Down"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Down\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "HTTP 502 from getRelationships"
+      }
+    },
+    {
+      "id": "rate-limited",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 429,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 429,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "HTTP 429 from getRelationships"
+      }
+    },
+    {
+      "id": "bad-request",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 400,
+            "json": {
+              "error": "InvalidRequest"
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 400,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InvalidRequest\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "HTTP 400 from getRelationships"
+      }
+    },
+    {
+      "id": "no-list",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {}
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "getRelationships answered with no list"
+      }
+    },
+    {
+      "id": "list-null",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "relationships": null
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"relationships\":null}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "getRelationships answered with no list"
+      }
+    },
+    {
+      "id": "list-object",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": {
+              "relationships": {
+                "did": "did:plc:a"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"relationships\":{\"did\":\"did:plc:a\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "getRelationships answered with no list"
+      }
+    },
+    {
+      "id": "body-null",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "json": null
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "getRelationships answered with no list"
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "text": "<!DOCTYPE html>"
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "<!DOCTYPE html>"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Unexpected token '<', \"<!DOCTYPE html>\" is not valid JSON"
+      }
+    },
+    {
+      "id": "empty-body",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          {
+            "status": 200,
+            "text": ""
+          }
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": ""
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Unexpected end of JSON input"
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "publicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:a"
+        ],
+        "answers": [
+          "offline"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Aa",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "fetch failed"
+      }
+    },
+    {
+      "id": "three-batches",
+      "fn": "scoreWithPublicRelationships",
+      "input": {
+        "ownerDid": "did:plc:owner",
+        "dids": [
+          "did:plc:p00",
+          "did:plc:p01",
+          "did:plc:p02",
+          "did:plc:p03",
+          "did:plc:p04",
+          "did:plc:p05",
+          "did:plc:p06",
+          "did:plc:p07",
+          "did:plc:p08",
+          "did:plc:p09",
+          "did:plc:p10",
+          "did:plc:p11",
+          "did:plc:p12",
+          "did:plc:p13",
+          "did:plc:p14",
+          "did:plc:p15",
+          "did:plc:p16",
+          "did:plc:p17",
+          "did:plc:p18",
+          "did:plc:p19",
+          "did:plc:p20",
+          "did:plc:p21",
+          "did:plc:p22",
+          "did:plc:p23",
+          "did:plc:p24",
+          "did:plc:p25",
+          "did:plc:p26",
+          "did:plc:p27",
+          "did:plc:p28",
+          "did:plc:p29",
+          "did:plc:p30",
+          "did:plc:p31",
+          "did:plc:p32",
+          "did:plc:p33",
+          "did:plc:p34",
+          "did:plc:p35",
+          "did:plc:p36",
+          "did:plc:p37",
+          "did:plc:p38",
+          "did:plc:p39",
+          "did:plc:p40",
+          "did:plc:p41",
+          "did:plc:p42",
+          "did:plc:p43",
+          "did:plc:p44",
+          "did:plc:p45",
+          "did:plc:p46",
+          "did:plc:p47",
+          "did:plc:p48",
+          "did:plc:p49",
+          "did:plc:p50",
+          "did:plc:p51",
+          "did:plc:p52",
+          "did:plc:p53",
+          "did:plc:p54",
+          "did:plc:p55",
+          "did:plc:p56",
+          "did:plc:p57",
+          "did:plc:p58",
+          "did:plc:p59",
+          "did:plc:p60",
+          "did:plc:p61",
+          "did:plc:p62",
+          "did:plc:p63",
+          "did:plc:p64",
+          "did:plc:p65",
+          "did:plc:p66",
+          "did:plc:p67",
+          "did:plc:p68",
+          "did:plc:p69"
+        ],
+        "follows": [
+          "did:plc:p45"
+        ],
+        "failFirst": "did:plc:p30"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Ap00&others=did%3Aplc%3Ap01&others=did%3Aplc%3Ap02&others=did%3Aplc%3Ap03&others=did%3Aplc%3Ap04&others=did%3Aplc%3Ap05&others=did%3Aplc%3Ap06&others=did%3Aplc%3Ap07&others=did%3Aplc%3Ap08&others=did%3Aplc%3Ap09&others=did%3Aplc%3Ap10&others=did%3Aplc%3Ap11&others=did%3Aplc%3Ap12&others=did%3Aplc%3Ap13&others=did%3Aplc%3Ap14&others=did%3Aplc%3Ap15&others=did%3Aplc%3Ap16&others=did%3Aplc%3Ap17&others=did%3Aplc%3Ap18&others=did%3Aplc%3Ap19&others=did%3Aplc%3Ap20&others=did%3Aplc%3Ap21&others=did%3Aplc%3Ap22&others=did%3Aplc%3Ap23&others=did%3Aplc%3Ap24&others=did%3Aplc%3Ap25&others=did%3Aplc%3Ap26&others=did%3Aplc%3Ap27&others=did%3Aplc%3Ap28&others=did%3Aplc%3Ap29",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p00\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p01\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p02\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p03\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p04\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p05\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p06\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p07\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p08\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p09\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p10\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p11\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p12\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p13\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p14\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p15\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p16\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p17\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p18\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p19\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p20\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p21\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p22\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p23\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p24\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p25\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p26\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p27\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p28\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p29\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Ap30&others=did%3Aplc%3Ap31&others=did%3Aplc%3Ap32&others=did%3Aplc%3Ap33&others=did%3Aplc%3Ap34&others=did%3Aplc%3Ap35&others=did%3Aplc%3Ap36&others=did%3Aplc%3Ap37&others=did%3Aplc%3Ap38&others=did%3Aplc%3Ap39&others=did%3Aplc%3Ap40&others=did%3Aplc%3Ap41&others=did%3Aplc%3Ap42&others=did%3Aplc%3Ap43&others=did%3Aplc%3Ap44&others=did%3Aplc%3Ap45&others=did%3Aplc%3Ap46&others=did%3Aplc%3Ap47&others=did%3Aplc%3Ap48&others=did%3Aplc%3Ap49&others=did%3Aplc%3Ap50&others=did%3Aplc%3Ap51&others=did%3Aplc%3Ap52&others=did%3Aplc%3Ap53&others=did%3Aplc%3Ap54&others=did%3Aplc%3Ap55&others=did%3Aplc%3Ap56&others=did%3Aplc%3Ap57&others=did%3Aplc%3Ap58&others=did%3Aplc%3Ap59",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Busy\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Ap60&others=did%3Aplc%3Ap61&others=did%3Aplc%3Ap62&others=did%3Aplc%3Ap63&others=did%3Aplc%3Ap64&others=did%3Aplc%3Ap65&others=did%3Aplc%3Ap66&others=did%3Aplc%3Ap67&others=did%3Aplc%3Ap68&others=did%3Aplc%3Ap69",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p60\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p61\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p62\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p63\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p64\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p65\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p66\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p67\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p68\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p69\"}]}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://public.api.bsky.app/xrpc/app.bsky.graph.getRelationships?actor=did%3Aplc%3Aowner&others=did%3Aplc%3Ap30&others=did%3Aplc%3Ap31&others=did%3Aplc%3Ap32&others=did%3Aplc%3Ap33&others=did%3Aplc%3Ap34&others=did%3Aplc%3Ap35&others=did%3Aplc%3Ap36&others=did%3Aplc%3Ap37&others=did%3Aplc%3Ap38&others=did%3Aplc%3Ap39&others=did%3Aplc%3Ap40&others=did%3Aplc%3Ap41&others=did%3Aplc%3Ap42&others=did%3Aplc%3Ap43&others=did%3Aplc%3Ap44&others=did%3Aplc%3Ap45&others=did%3Aplc%3Ap46&others=did%3Aplc%3Ap47&others=did%3Aplc%3Ap48&others=did%3Aplc%3Ap49&others=did%3Aplc%3Ap50&others=did%3Aplc%3Ap51&others=did%3Aplc%3Ap52&others=did%3Aplc%3Ap53&others=did%3Aplc%3Ap54&others=did%3Aplc%3Ap55&others=did%3Aplc%3Ap56&others=did%3Aplc%3Ap57&others=did%3Aplc%3Ap58&others=did%3Aplc%3Ap59",
+              "method": "GET",
+              "headers": {
+                "accept": "application/json"
+              },
+              "body": null,
+              "timeoutMs": 15000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actor\":\"did:plc:owner\",\"relationships\":[{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p30\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p31\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p32\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p33\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p34\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p35\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p36\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p37\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p38\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p39\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p40\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p41\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p42\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p43\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p44\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p45\",\"following\":\"at://did:plc:owner/app.bsky.graph.follow/p45\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p46\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p47\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p48\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p49\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p50\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p51\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p52\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p53\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p54\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p55\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p56\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p57\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p58\"},{\"$type\":\"app.bsky.graph.defs#relationship\",\"did\":\"did:plc:p59\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "scores": {
+            "did:plc:p00": {
+              "did": "did:plc:p00",
+              "handle": "p00.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 0,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 0,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p01": {
+              "did": "did:plc:p01",
+              "handle": "p01.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 5,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 10,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p02": {
+              "did": "did:plc:p02",
+              "handle": "p02.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 7,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 20,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p03": {
+              "did": "did:plc:p03",
+              "handle": "p03.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 7,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 30,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p04": {
+              "did": "did:plc:p04",
+              "handle": "p04.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 8,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 40,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p05": {
+              "did": "did:plc:p05",
+              "handle": "p05.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 9,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 50,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p06": {
+              "did": "did:plc:p06",
+              "handle": "p06.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 9,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 60,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p07": {
+              "did": "did:plc:p07",
+              "handle": "p07.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 9,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 70,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p08": {
+              "did": "did:plc:p08",
+              "handle": "p08.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 10,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 80,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p09": {
+              "did": "did:plc:p09",
+              "handle": "p09.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 10,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 90,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p10": {
+              "did": "did:plc:p10",
+              "handle": "p10.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 10,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 100,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p11": {
+              "did": "did:plc:p11",
+              "handle": "p11.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 10,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 110,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p12": {
+              "did": "did:plc:p12",
+              "handle": "p12.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 10,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 120,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p13": {
+              "did": "did:plc:p13",
+              "handle": "p13.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 130,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p14": {
+              "did": "did:plc:p14",
+              "handle": "p14.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 140,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p15": {
+              "did": "did:plc:p15",
+              "handle": "p15.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 150,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p16": {
+              "did": "did:plc:p16",
+              "handle": "p16.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 160,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p17": {
+              "did": "did:plc:p17",
+              "handle": "p17.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 170,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p18": {
+              "did": "did:plc:p18",
+              "handle": "p18.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 180,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p19": {
+              "did": "did:plc:p19",
+              "handle": "p19.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 11,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 190,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p20": {
+              "did": "did:plc:p20",
+              "handle": "p20.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 200,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p21": {
+              "did": "did:plc:p21",
+              "handle": "p21.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 210,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p22": {
+              "did": "did:plc:p22",
+              "handle": "p22.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 220,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p23": {
+              "did": "did:plc:p23",
+              "handle": "p23.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 230,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p24": {
+              "did": "did:plc:p24",
+              "handle": "p24.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 240,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p25": {
+              "did": "did:plc:p25",
+              "handle": "p25.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 250,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p26": {
+              "did": "did:plc:p26",
+              "handle": "p26.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 260,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p27": {
+              "did": "did:plc:p27",
+              "handle": "p27.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 270,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p28": {
+              "did": "did:plc:p28",
+              "handle": "p28.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 280,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p29": {
+              "did": "did:plc:p29",
+              "handle": "p29.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 290,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p30": {
+              "did": "did:plc:p30",
+              "handle": "p30.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 300,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p31": {
+              "did": "did:plc:p31",
+              "handle": "p31.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 12,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 310,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p32": {
+              "did": "did:plc:p32",
+              "handle": "p32.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 320,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p33": {
+              "did": "did:plc:p33",
+              "handle": "p33.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 330,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p34": {
+              "did": "did:plc:p34",
+              "handle": "p34.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 340,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p35": {
+              "did": "did:plc:p35",
+              "handle": "p35.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 350,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p36": {
+              "did": "did:plc:p36",
+              "handle": "p36.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 360,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p37": {
+              "did": "did:plc:p37",
+              "handle": "p37.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 370,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p38": {
+              "did": "did:plc:p38",
+              "handle": "p38.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 380,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p39": {
+              "did": "did:plc:p39",
+              "handle": "p39.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 390,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p40": {
+              "did": "did:plc:p40",
+              "handle": "p40.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 400,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p41": {
+              "did": "did:plc:p41",
+              "handle": "p41.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 410,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p42": {
+              "did": "did:plc:p42",
+              "handle": "p42.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 420,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p43": {
+              "did": "did:plc:p43",
+              "handle": "p43.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 430,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p44": {
+              "did": "did:plc:p44",
+              "handle": "p44.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 440,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p45": {
+              "did": "did:plc:p45",
+              "handle": "p45.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "PROTECTED",
+              "trust": 100,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 450,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": true,
+              "protectedReason": "you follow them"
+            },
+            "did:plc:p46": {
+              "did": "did:plc:p46",
+              "handle": "p46.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 460,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p47": {
+              "did": "did:plc:p47",
+              "handle": "p47.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 470,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p48": {
+              "did": "did:plc:p48",
+              "handle": "p48.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 480,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p49": {
+              "did": "did:plc:p49",
+              "handle": "p49.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 490,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p50": {
+              "did": "did:plc:p50",
+              "handle": "p50.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 13,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 500,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p51": {
+              "did": "did:plc:p51",
+              "handle": "p51.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 510,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p52": {
+              "did": "did:plc:p52",
+              "handle": "p52.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 520,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p53": {
+              "did": "did:plc:p53",
+              "handle": "p53.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 530,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p54": {
+              "did": "did:plc:p54",
+              "handle": "p54.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 540,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p55": {
+              "did": "did:plc:p55",
+              "handle": "p55.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 550,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p56": {
+              "did": "did:plc:p56",
+              "handle": "p56.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 560,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p57": {
+              "did": "did:plc:p57",
+              "handle": "p57.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 570,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p58": {
+              "did": "did:plc:p58",
+              "handle": "p58.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 580,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p59": {
+              "did": "did:plc:p59",
+              "handle": "p59.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 590,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p60": {
+              "did": "did:plc:p60",
+              "handle": "p60.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 600,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p61": {
+              "did": "did:plc:p61",
+              "handle": "p61.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 610,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p62": {
+              "did": "did:plc:p62",
+              "handle": "p62.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 620,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p63": {
+              "did": "did:plc:p63",
+              "handle": "p63.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 630,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p64": {
+              "did": "did:plc:p64",
+              "handle": "p64.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 640,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p65": {
+              "did": "did:plc:p65",
+              "handle": "p65.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 650,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p66": {
+              "did": "did:plc:p66",
+              "handle": "p66.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 660,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p67": {
+              "did": "did:plc:p67",
+              "handle": "p67.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 670,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p68": {
+              "did": "did:plc:p68",
+              "handle": "p68.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 680,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            },
+            "did:plc:p69": {
+              "did": "did:plc:p69",
+              "handle": "p69.test",
+              "displayName": null,
+              "avatar": null,
+              "missing": false,
+              "band": "UNKNOWN",
+              "trust": 14,
+              "alreadyListed": false,
+              "blocksYou": false,
+              "vouches": 0,
+              "followers": 690,
+              "follows": 0,
+              "posts": 0,
+              "ageDays": null,
+              "postsPerDay": null,
+              "mutual": false,
+              "followsYou": false,
+              "youFollow": false,
+              "protectedReason": null
+            }
+          },
+          "vouchCheck": "unavailable"
+        }
+      }
+    }
+  ]
+}

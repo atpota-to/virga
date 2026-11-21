@@ -25,8 +25,14 @@
       "synced": "202b501d6fdb"
     },
     "src/defense/defenseService.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/DefenseService.swift"
+      ],
+      "fixtures": [
+        "defense.service"
+      ],
+      "synced": "88352c8d61df"
     },
     "src/defense/dmMessage.js": {
       "status": "ported",
@@ -39,11 +45,15 @@
       "synced": "51896cd6e947"
     },
     "src/defense/harvest.js": {
-      "status": "pending",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Harvest.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Harvest+Types.swift"
       ],
-      "note": "Only its data shapes so far (Harvest, HarvestTotals, Participant, HarvestSource, EngagementRecord, UnreadKind), which score.js and radar.js read. harvestPost reads Constellation and comes with VirgaNetwork in wave 2, with the module's pure helpers (engagementKind, KIND_ORDER, primaryKind, isDid, MAX_PAGES), building these same structs."
+      "fixtures": [
+        "defense.harvest"
+      ],
+      "synced": "6bcbb7e74758"
     },
     "src/defense/historyModel.js": {
       "status": "ported",
@@ -76,8 +86,14 @@
       "synced": "ac391cadf6a9"
     },
     "src/defense/pageModel.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/PageModel.swift"
+      ],
+      "fixtures": [
+        "defense.pageModel"
+      ],
+      "synced": "4e29a9bf5b17"
     },
     "src/defense/plan.js": {
       "status": "ported",
@@ -100,11 +116,15 @@
       "synced": "4f3c28c978af"
     },
     "src/defense/scan.js": {
-      "status": "pending",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Scan.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Scan+Types.swift"
       ],
-      "note": "Only its data shapes so far (ScanResult, ScanPost, ScanStageReport, ScanStageHandler), which ScanStore keeps. runScan needs VirgaNetwork and VirgaSession (resolveHandle, the signed-in getProfiles, publicRelationships, curation lists through veto.js, isMissingScopeError) and VirgaPosting's parsePostLink (readPostInput), and comes in wave 2 with the rest of the module (STAGES, ScanError, scanErrorFrom, canaryCandidates, CANARY_CANDIDATES, CANARY_REQUIRED_AT). ScanStageHandler and Scorer's onProgress are async, so the port awaits each report."
+      "fixtures": [
+        "defense.scan"
+      ],
+      "synced": "695f28bbdd08"
     },
     "src/defense/scanStore.js": {
       "status": "ported",
@@ -114,25 +134,35 @@
       "synced": "15baa5dfb174"
     },
     "src/defense/score.js": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaDefense/Score.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Score+Scorer.swift",
-        "ios/VirgaKit/Sources/VirgaDefense/Score+Types.swift"
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Types.swift",
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Relationships.swift"
       ],
       "fixtures": [
-        "defense-early.score"
+        "defense-early.score",
+        "defense.relationships"
       ],
-      "note": "All but publicRelationships, the one read score.js makes itself (the public app.bsky.graph.getRelationships through fetchWithTimeout and config’s APPVIEW): it comes with VirgaNetwork in wave 2. Until then Score.createScorer takes getRelationships from its caller, where the web defaults it to publicRelationships().",
       "synced": "1007ad5be340"
     },
     "src/defense/useDefense.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/DefenseModels.swift"
+      ],
+      "synced": "4e491cdce08a"
     },
     "src/defense/veto.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Veto.swift"
+      ],
+      "fixtures": [
+        "defense.veto"
+      ],
+      "synced": "4910b0d3a794"
     }
   }
 }
