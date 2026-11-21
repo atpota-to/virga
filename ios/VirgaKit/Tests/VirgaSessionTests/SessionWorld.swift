@@ -204,11 +204,13 @@ struct World {
     authMode: String = "browser",
     authenticator: (any WebAuthenticator)? = nil,
     getProfile: (@Sendable (String) async throws -> JSONValue?)?,
+    transport given: MockTransport? = nil,
+    clock fixed: NetworkClock? = nil,
     answer: @escaping Answer = World.fine
   ) {
     let state = Recorder()
-    let transport = MockTransport()
-    transport.on(.any) { request in answer(request.url, request) }
+    let transport = given ?? MockTransport()
+    if given == nil { transport.on(.any) { request in answer(request.url, request) } }
     let heard = Heard()
     let env = SessionEnvironment(
       storage: storage,
@@ -217,14 +219,15 @@ struct World {
       browser: browser,
       backendUrl: People.server,
       transport: transport,
-      clock: NetworkClock(
-        // Date.now(): a millisecond on at each reading, so two touches of
-        // the account list are never at the same time.
-        now: { heard.clock.withLock { $0 += 1; return $0 } },
-        sleep: { ms in
-          heard.waits.withLock { $0.append(ms) }
-          await Task.yield()
-        }),
+      clock: fixed
+        ?? NetworkClock(
+          // Date.now(): a millisecond on at each reading, so two touches of
+          // the account list are never at the same time.
+          now: { heard.clock.withLock { $0 += 1; return $0 } },
+          sleep: { ms in
+            heard.waits.withLock { $0.append(ms) }
+            await Task.yield()
+          }),
       backendReturn: backendReturn,
       onCallbackPath: onCallbackPath,
       authMode: authMode,

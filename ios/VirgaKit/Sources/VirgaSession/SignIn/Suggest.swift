@@ -73,7 +73,9 @@ public enum SignInSuggest {
       }
       return SignInSuggestion(did: did, handle: handle, displayName: displayName, avatar: actor["avatar"].truthy?.stringValue)
     }
-    return Array(usable.prefix(max(0, limit)))
+    // `.slice(0, limit)`: a negative limit counts back from the end.
+    let end = limit < 0 ? max(usable.count + limit, 0) : min(limit, usable.count)
+    return Array(usable[..<end])
   }
 
   /// `moveActive(index, count, key)`: which suggestion a key moves to.

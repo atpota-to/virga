@@ -1695,6 +1695,338 @@
       "input": {
         "events": [
           {
+            "type": "host-known",
+            "trip": 1,
+            "host": "bsky.social"
+          },
+          {
+            "type": "leave",
+            "host": "bsky.social"
+          },
+          {
+            "type": "notice",
+            "notice": {
+              "about": "field",
+              "text": "Couldn’t find @x. Check the spelling, or type the whole handle (it looks like you.bsky.social)."
+            }
+          },
+          {
+            "type": "typed"
+          },
+          {
+            "type": "hosts"
+          },
+          {
+            "type": "not-me"
+          },
+          {
+            "type": "cancel"
+          }
+        ]
+      },
+      "output": [
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": null,
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": true
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": {
+              "about": "field",
+              "text": "Couldn’t find @x. Check the spelling, or type the whole handle (it looks like you.bsky.social)."
+            },
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": true
+        },
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signin",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": true
+        }
+      ]
+    },
+    {
+      "id": "flowReducer#23",
+      "fn": "flowReducer",
+      "input": {
+        "events": [
+          {
+            "type": "hosts"
+          },
+          {
+            "type": "find"
+          },
+          {
+            "type": "hosts-back"
+          },
+          {
+            "type": "find"
+          },
+          {
+            "type": "lookup-failed",
+            "notice": {
+              "about": "lookup",
+              "text": "Couldn’t look up @mira.example.com just now.",
+              "anyway": "mira.example.com"
+            }
+          },
+          {
+            "type": "leave",
+            "host": "bsky.social",
+            "purpose": "signup"
+          },
+          {
+            "type": "stalled",
+            "trip": 1
+          },
+          {
+            "type": "host-known",
+            "trip": 1,
+            "host": "later.example"
+          },
+          {
+            "type": "trip-failed",
+            "trip": 1,
+            "notice": {
+              "about": "lookup",
+              "text": "Couldn’t look up @again just now.",
+              "anyway": "again"
+            }
+          }
+        ]
+      },
+      "output": [
+        {
+          "state": {
+            "step": "hosts",
+            "identity": null,
+            "notice": null,
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "hosts",
+            "identity": null,
+            "notice": null,
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": true
+        },
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": null,
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "finding",
+            "identity": null,
+            "notice": null,
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": {
+              "about": "lookup",
+              "text": "Couldn’t look up @mira.example.com just now.",
+              "anyway": "mira.example.com"
+            },
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 0
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signup",
+              "from": "entry",
+              "phase": "waiting"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signup",
+              "from": "entry",
+              "phase": "stalled"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        },
+        {
+          "state": {
+            "step": "leaving",
+            "identity": null,
+            "notice": null,
+            "leaving": {
+              "trip": 1,
+              "host": "bsky.social",
+              "purpose": "signup",
+              "from": "entry",
+              "phase": "stalled"
+            },
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": true
+        },
+        {
+          "state": {
+            "step": "entry",
+            "identity": null,
+            "notice": {
+              "about": "lookup",
+              "text": "Couldn’t look up @again just now.",
+              "anyway": "again"
+            },
+            "leaving": null,
+            "hostsFrom": "entry",
+            "trips": 1
+          },
+          "same": false
+        }
+      ]
+    },
+    {
+      "id": "flowReducer#24",
+      "fn": "flowReducer",
+      "input": {
+        "events": [
+          {
             "type": "find"
           },
           {
@@ -5139,6 +5471,140 @@
       }
     },
     {
+      "id": "unavailable",
+      "fn": "signUpAt",
+      "input": {
+        "failures": [
+          {
+            "code": "VIRGA_CLIENT_UNAVAILABLE",
+            "message": "x"
+          }
+        ],
+        "options": {}
+      },
+      "output": {
+        "calls": [
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "intent": "add",
+              "prompt": "create"
+            }
+          }
+        ],
+        "error": "x"
+      }
+    },
+    {
+      "id": "not-allowed",
+      "fn": "signUpAt",
+      "input": {
+        "failures": [
+          {
+            "code": "REDIRECT_NOT_ALLOWED",
+            "message": "x"
+          }
+        ],
+        "options": {}
+      },
+      "output": {
+        "calls": [
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "intent": "add",
+              "prompt": "create"
+            }
+          }
+        ],
+        "error": "x"
+      }
+    },
+    {
+      "id": "internal",
+      "fn": "signUpAt",
+      "input": {
+        "failures": [
+          {
+            "code": "INTERNAL",
+            "message": "x"
+          }
+        ],
+        "options": {}
+      },
+      "output": {
+        "calls": [
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "intent": "add",
+              "prompt": "create"
+            }
+          }
+        ],
+        "error": "x"
+      }
+    },
+    {
+      "id": "aborted-message",
+      "fn": "signUpAt",
+      "input": {
+        "failures": [
+          {
+            "message": "The request was Aborted"
+          }
+        ],
+        "options": {}
+      },
+      "output": {
+        "calls": [
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "intent": "add",
+              "prompt": "create"
+            }
+          }
+        ],
+        "error": "The request was Aborted"
+      }
+    },
+    {
+      "id": "code-not-a-string",
+      "fn": "signUpAt",
+      "input": {
+        "failures": [
+          {
+            "code": 7,
+            "message": "x"
+          }
+        ],
+        "options": {
+          "mode": "backend"
+        }
+      },
+      "output": {
+        "calls": [
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "mode": "backend",
+              "intent": "add",
+              "prompt": "create"
+            }
+          },
+          {
+            "hostUrl": "https://old.example",
+            "options": {
+              "mode": "backend",
+              "intent": "add"
+            }
+          }
+        ],
+        "result": "gone"
+      }
+    },
+    {
       "id": "keeps-options",
       "fn": "signUpAt",
       "input": {
@@ -5605,6 +6071,110 @@
         "cleanTyped": "",
         "normalized": "",
         "kind": "empty",
+        "suggestQuery": null
+      }
+    },
+    {
+      "id": "typed#34",
+      "fn": "typed",
+      "input": {
+        "raw": "m"
+      },
+      "output": {
+        "cleanTyped": "m",
+        "normalized": "m",
+        "kind": "handle",
+        "suggestQuery": null
+      }
+    },
+    {
+      "id": "typed#35",
+      "fn": "typed",
+      "input": {
+        "raw": "@m"
+      },
+      "output": {
+        "cleanTyped": "@m",
+        "normalized": "m",
+        "kind": "handle",
+        "suggestQuery": null
+      }
+    },
+    {
+      "id": "typed#36",
+      "fn": "typed",
+      "input": {
+        "raw": " @Mir"
+      },
+      "output": {
+        "cleanTyped": " @Mir",
+        "normalized": "mir",
+        "kind": "handle",
+        "suggestQuery": "mir"
+      }
+    },
+    {
+      "id": "typed#37",
+      "fn": "typed",
+      "input": {
+        "raw": "mi"
+      },
+      "output": {
+        "cleanTyped": "mi",
+        "normalized": "mi",
+        "kind": "handle",
+        "suggestQuery": "mi"
+      }
+    },
+    {
+      "id": "typed#38",
+      "fn": "typed",
+      "input": {
+        "raw": "mira.example"
+      },
+      "output": {
+        "cleanTyped": "mira.example",
+        "normalized": "mira.example",
+        "kind": "handle",
+        "suggestQuery": "mira.example"
+      }
+    },
+    {
+      "id": "typed#39",
+      "fn": "typed",
+      "input": {
+        "raw": "@@"
+      },
+      "output": {
+        "cleanTyped": "@@",
+        "normalized": "",
+        "kind": "empty",
+        "suggestQuery": null
+      }
+    },
+    {
+      "id": "typed#40",
+      "fn": "typed",
+      "input": {
+        "raw": "😀"
+      },
+      "output": {
+        "cleanTyped": "😀",
+        "normalized": "😀",
+        "kind": "handle",
+        "suggestQuery": "😀"
+      }
+    },
+    {
+      "id": "typed#41",
+      "fn": "typed",
+      "input": {
+        "raw": "é"
+      },
+      "output": {
+        "cleanTyped": "é",
+        "normalized": "é",
+        "kind": "handle",
         "suggestQuery": null
       }
     },
@@ -9252,6 +9822,125 @@
       }
     },
     {
+      "id": "limit-negative",
+      "fn": "searchAccounts",
+      "input": {
+        "term": "a",
+        "limit": -2,
+        "answer": {
+          "status": 200,
+          "json": {
+            "actors": [
+              {
+                "did": "did:plc:0",
+                "handle": "a0.example"
+              },
+              {
+                "did": "did:plc:1",
+                "handle": "a1.example"
+              },
+              {
+                "did": "did:plc:2",
+                "handle": "a2.example"
+              },
+              {
+                "did": "did:plc:3",
+                "handle": "a3.example"
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.searchActorsTypeahead?q=a&limit=-2",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 6000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actors\":[{\"did\":\"did:plc:0\",\"handle\":\"a0.example\"},{\"did\":\"did:plc:1\",\"handle\":\"a1.example\"},{\"did\":\"did:plc:2\",\"handle\":\"a2.example\"},{\"did\":\"did:plc:3\",\"handle\":\"a3.example\"}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "did": "did:plc:0",
+            "handle": "a0.example",
+            "displayName": null,
+            "avatar": null
+          },
+          {
+            "did": "did:plc:1",
+            "handle": "a1.example",
+            "displayName": null,
+            "avatar": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "limit-past-the-list",
+      "fn": "searchAccounts",
+      "input": {
+        "term": "a",
+        "limit": 50,
+        "answer": {
+          "status": 200,
+          "json": {
+            "actors": [
+              {
+                "did": "did:plc:a",
+                "handle": "a.example",
+                "displayName": 42
+              }
+            ]
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.searchActorsTypeahead?q=a&limit=50",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 6000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actors\":[{\"did\":\"did:plc:a\",\"handle\":\"a.example\",\"displayName\":42}]}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": [
+          {
+            "did": "did:plc:a",
+            "handle": "a.example",
+            "displayName": null,
+            "avatar": null
+          }
+        ]
+      }
+    },
+    {
       "id": "no-list",
       "fn": "searchAccounts",
       "input": {
@@ -9278,6 +9967,43 @@
               },
               "body": {
                 "$text": "{}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": []
+      }
+    },
+    {
+      "id": "list-not-a-list",
+      "fn": "searchAccounts",
+      "input": {
+        "term": "mir",
+        "answer": {
+          "status": 200,
+          "json": {
+            "actors": "did:plc:a"
+          }
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://appview.test/xrpc/app.bsky.actor.searchActorsTypeahead?q=mir&limit=5",
+              "method": "GET",
+              "headers": {},
+              "body": null,
+              "timeoutMs": 6000
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"actors\":\"did:plc:a\"}"
               }
             }
           }

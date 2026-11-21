@@ -229,6 +229,26 @@ const SEQUENCES = [
     { type: 'hosts-back' },
   ],
   [
+    { type: 'host-known', trip: 1, host: 'bsky.social' },
+    { type: 'leave', host: 'bsky.social' },
+    { type: 'notice', notice: notFoundNotice('x') },
+    { type: 'typed' },
+    { type: 'hosts' },
+    { type: 'not-me' },
+    { type: 'cancel' },
+  ],
+  [
+    { type: 'hosts' },
+    { type: 'find' },
+    { type: 'hosts-back' },
+    { type: 'find' },
+    { type: 'lookup-failed', notice: lookupFailedNotice('mira.example.com') },
+    { type: 'leave', host: 'bsky.social', purpose: 'signup' },
+    { type: 'stalled', trip: 1 },
+    { type: 'host-known', trip: 1, host: 'later.example' },
+    { type: 'trip-failed', trip: 1, notice: lookupFailedNotice('again') },
+  ],
+  [
     { type: 'find' },
     { type: 'find' },
     { type: 'found', identity: MIRA },
@@ -390,6 +410,31 @@ export default async function cases() {
           options: {},
         },
         {
+          $id: 'unavailable',
+          failures: [{ code: 'VIRGA_CLIENT_UNAVAILABLE', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'not-allowed',
+          failures: [{ code: 'REDIRECT_NOT_ALLOWED', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'internal',
+          failures: [{ code: 'INTERNAL', message: 'x' }],
+          options: {},
+        },
+        {
+          $id: 'aborted-message',
+          failures: [{ message: 'The request was Aborted' }],
+          options: {},
+        },
+        {
+          $id: 'code-not-a-string',
+          failures: [{ code: 7, message: 'x' }],
+          options: { mode: 'backend' },
+        },
+        {
           $id: 'keeps-options',
           failures: [{ code: 'AUTHORIZE_FAILED', message: 'x' }],
           options: {
@@ -455,6 +500,14 @@ export default async function cases() {
         'did:PLC:abc',
         '@did:plc:abc',
         '​',
+        'm',
+        '@m',
+        ' @Mir',
+        'mi',
+        'mira.example',
+        '@@',
+        '😀',
+        'é',
       ].map((raw) => ({ raw })),
       ({ raw }) => {
         const normalized = normalizeSignInInput(raw);
@@ -830,7 +883,33 @@ export default async function cases() {
             })),
           }),
         },
+        {
+          $id: 'limit-negative',
+          term: 'a',
+          limit: -2,
+          answer: json({
+            actors: Array.from({ length: 4 }, (_, i) => ({
+              did: `did:plc:${i}`,
+              handle: `a${i}.example`,
+            })),
+          }),
+        },
+        {
+          $id: 'limit-past-the-list',
+          term: 'a',
+          limit: 50,
+          answer: json({
+            actors: [
+              { did: 'did:plc:a', handle: 'a.example', displayName: 42 },
+            ],
+          }),
+        },
         { $id: 'no-list', term: 'mir', answer: json({}) },
+        {
+          $id: 'list-not-a-list',
+          term: 'mir',
+          answer: json({ actors: 'did:plc:a' }),
+        },
         {
           $id: 'not-json',
           term: 'mir',
