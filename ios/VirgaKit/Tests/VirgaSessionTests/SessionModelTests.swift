@@ -225,6 +225,24 @@ private struct ModelWorld {
     #expect(w.model.error == nil)
   }
 
+  @Test func dropsADeclinedSignInsErrorOnceTheNextOneComesBack() async throws {
+    let s = Stores()
+    let declined = Locked(true)
+    let sheet = Sheet(tabStorage: s.tabStorage) { base, nonce in
+      declined.withLock { first in
+        defer { first = false }
+        return first ? "\(base)?error=access_denied" : "\(base)?n=\(nonce)#session=\(token)&did=\(mira)"
+      }
+    }
+    let w = ModelWorld(s, authenticator: sheet)
+    await w.model.start()
+    try await w.model.signIn("mira.example.com")
+    #expect(w.model.error != nil)
+    try await w.model.signIn("mira.example.com")
+    #expect(w.model.error == nil)
+    #expect(w.model.did == mira)
+  }
+
   @Test func throwsASignInThatCouldntStart() async {
     let w = ModelWorld { url, _ in
       url.contains("/api/oauth/login")

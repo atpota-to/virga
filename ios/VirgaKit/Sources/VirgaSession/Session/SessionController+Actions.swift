@@ -139,19 +139,32 @@ extension SessionController {
   /// left as it is, where the web's new page would build it afresh. A start
   /// still under way finishes first, so the two never race to open an
   /// account. `finishing` brackets it, as `loading` covers that page load.
+  ///
+  /// The page load starts with no error (an earlier sign-in's goes, and
+  /// this one's, if it carries one, takes its place) and with no profile
+  /// fetched yet, so the names and pictures are read again as that load
+  /// reads them: the rows that lack them and the open account.
   public func completeSignIn(_ result: BackendClient.BackendReturn) async {
     set.finishing(true)
     defer { set.finishing(false) }
     if let started { await started.value }
+    set.error(nil)
     let openBefore = Accounts.takeOpenAtSignIn(env.tabStorage)
     let list = applyBackendReturn(result, openBefore: openBefore, list: rows())
     refreshRows()
     guard case .session = result else { return }
-    guard let first = Accounts.pickActiveAccount(list, Accounts.readActiveDid(env.storage)) else { return }
+    refreshed.removeAll()
+    guard let first = Accounts.pickActiveAccount(list, Accounts.readActiveDid(env.storage)) else {
+      Task { await self.refreshDisplay() }
+      return
+    }
     // What start() goes on to do, unless the account it would open is the
     // one open now and wasn't the one that signed in (that one was built
     // again above, as the page load builds every account again).
-    if Optional(first.did).jsEquals(active.did) && built[JSKey(first.did)] != nil { return }
+    if Optional(first.did).jsEquals(active.did) && built[JSKey(first.did)] != nil {
+      Task { await self.refreshDisplay() }
+      return
+    }
     await openStarting(first, list: list)
   }
 

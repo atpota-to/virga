@@ -1222,6 +1222,90 @@ private func deadGrant(_ url: String) -> MockTransport.Response {
     #expect(BackendClient.readSigninPending(tab) == nil)
   }
 
+  /// A sheet that answers each sign-in in turn: `outcomes[0]` the first,
+  /// and so on (the last one again once they run out).
+  struct Sheets: WebAuthenticator {
+    let tabStorage: InMemoryKeyValueStore
+    let did: String
+    let token: String
+    let outcomes: [Sheet.Outcome]
+    let used = Locked(0)
+
+    func authenticate(url: String, callbackHost: String, callbackPath: String) async throws -> String {
+      let n = used.withLock { n -> Int in
+        defer { n += 1 }
+        return n
+      }
+      var sheet = Sheet(tabStorage: tabStorage, did: did, token: token)
+      sheet.outcome = outcomes[min(n, outcomes.count - 1)]
+      return try await sheet.authenticate(url: url, callbackHost: callbackHost, callbackPath: callbackPath)
+    }
+  }
+
+  @Test func clearsTheErrorAnEarlierSignInLeftOnceOneComesBack() async throws {
+    // On the web each return is a page load of its own, which starts with
+    // no error: a declined sign-in's words don't outlive the next one.
+    let tab = InMemoryKeyValueStore()
+    let sheet = Sheets(tabStorage: tab, did: mira, token: token, outcomes: [.declines, .returns])
+    let w = World(tabStorage: tab, authMode: "backend", authenticator: sheet, answer: authorize)
+    try await w.ctrl.signIn("mira.example.com")
+    #expect(OAuthClient.callbackErrorMessage(w.state.error) == "Access wasn’t granted, so you’re not signed in.")
+    try await w.ctrl.signIn("mira.example.com")
+    #expect(w.state.error == nil)
+    #expect(w.state.active.did == mira)
+  }
+
+  @Test func replacesAnEarlierSignInsErrorWithThisOnes() async throws {
+    let tab = InMemoryKeyValueStore()
+    let sheet = Sheets(tabStorage: tab, did: mira, token: token, outcomes: [.declines, .empty])
+    let w = World(tabStorage: tab, authMode: "backend", authenticator: sheet, answer: authorize)
+    try await w.ctrl.signIn("mira.example.com")
+    try await w.ctrl.signIn("mira.example.com")
+    #expect(JSErrorFields(w.state.error)?.params?["error"] == "callback_failed")
+  }
+
+  @Test func keepsTheErrorOfASignInThatWasCalledOff() async throws {
+    // A sheet closed before it came back is no page load: nothing changes.
+    let tab = InMemoryKeyValueStore()
+    let sheet = Sheets(tabStorage: tab, did: mira, token: token, outcomes: [.declines, .closes])
+    let w = World(tabStorage: tab, authMode: "backend", authenticator: sheet, answer: authorize)
+    try await w.ctrl.signIn("mira.example.com")
+    _ = await thrown { try await w.ctrl.signIn("mira.example.com") }
+    #expect(OAuthClient.callbackErrorMessage(w.state.error) == "Access wasn’t granted, so you’re not signed in.")
+  }
+
+  @Test func readsTheNamesAgainForAnAccountSignedBackInForItsOwnSake() async throws {
+    // The page load a return makes on the web reads the public profile of
+    // every row that lacks a name or a picture, and of the open account.
+    let s = Stores()
+    s.remember(mira, "backend", token: token, at: 2)
+    s.remember(lab, "backend", at: 1)
+    Accounts.markSignedOut(s.storage, lab)
+    Accounts.writeActiveDid(s.storage, mira)
+    let found = Locked(false)
+    let asked = Locked<[String]>([])
+    let w = World(
+      storage: s.storage, tabStorage: s.tabStorage, secrets: s.secrets, authMode: "backend",
+      authenticator: Sheet(tabStorage: s.tabStorage, did: lab, token: token2),
+      getProfile: { did in
+        asked.withLock { $0.append(did) }
+        // Lab's profile can't be read until it has signed back in.
+        guard did == mira || found.wrappedValue else { return nil }
+        return ["did": .string(did), "handle": .string(did == mira ? "mira.example.com" : "lab.example.org")]
+      },
+      answer: authorize)
+    await w.ctrl.startOnce()
+    #expect(await eventually { asked.wrappedValue.contains(lab) && w.row(mira)?.handle == "mira.example.com" })
+    #expect(w.row(lab)?.handle == nil)
+    found.set(true)
+    try await w.ctrl.signIn("lab.example.org", SignInOptions(intent: "reauth", did: lab))
+    #expect(w.state.active.did == mira)
+    let read = await eventually { w.row(lab)?.handle == "lab.example.org" && asked.wrappedValue.filter { $0 == mira }.count == 2 }
+    #expect(read)
+    // And the list the views show follows.
+    #expect(await eventually { w.state.rows.first { $0.did == lab }?.handle == "lab.example.org" })
+  }
+
   @Test func waitsForAStartUnderWayBeforeTakingAReturn() async {
     let s = Stores()
     s.remember(mira, "browser", at: 2)
