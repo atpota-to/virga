@@ -39,11 +39,15 @@
       "synced": "51896cd6e947"
     },
     "src/defense/harvest.js": {
-      "status": "pending",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Harvest.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Harvest+Types.swift"
       ],
-      "note": "Only its data shapes so far (Harvest, HarvestTotals, Participant, HarvestSource, EngagementRecord, UnreadKind), which score.js and radar.js read. harvestPost reads Constellation and comes with VirgaNetwork in wave 2, with the module's pure helpers (engagementKind, KIND_ORDER, primaryKind, isDid, MAX_PAGES), building these same structs."
+      "fixtures": [
+        "defense.harvest"
+      ],
+      "synced": "6bcbb7e74758"
     },
     "src/defense/historyModel.js": {
       "status": "ported",
@@ -114,16 +118,17 @@
       "synced": "15baa5dfb174"
     },
     "src/defense/score.js": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaDefense/Score.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Score+Scorer.swift",
-        "ios/VirgaKit/Sources/VirgaDefense/Score+Types.swift"
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Types.swift",
+        "ios/VirgaKit/Sources/VirgaDefense/Score+Relationships.swift"
       ],
       "fixtures": [
-        "defense-early.score"
+        "defense-early.score",
+        "defense.relationships"
       ],
-      "note": "All but publicRelationships, the one read score.js makes itself (the public app.bsky.graph.getRelationships through fetchWithTimeout and config’s APPVIEW): it comes with VirgaNetwork in wave 2. Until then Score.createScorer takes getRelationships from its caller, where the web defaults it to publicRelationships().",
       "synced": "1007ad5be340"
     },
     "src/defense/useDefense.js": {

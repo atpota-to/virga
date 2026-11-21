@@ -18,10 +18,9 @@
 // and the summary. Every read is injected: `getProfiles` (the owner's signed-
 // in `app.bsky.actor.getProfiles`, as `[JSONValue]` profiles, read loosely as
 // the web reads them) and `getRelationships` (the public
-// `app.bsky.graph.getRelationships`). score.js's own `publicRelationships`,
-// the one read it makes itself (fetchWithTimeout against config's APPVIEW),
-// comes with VirgaNetwork in wave 2; until then a caller passes
-// `getRelationships`.
+// `app.bsky.graph.getRelationships`), which defaults to score.js's own
+// `publicRelationships` (Score+Relationships.swift), the one read it makes
+// itself.
 
 import Foundation
 import VirgaCore
@@ -177,14 +176,15 @@ public enum Score {
   }
 
   /// Build a scorer for one owner (Score+Scorer.swift). Throws when there is
-  /// no owner, as the web's does. `now` is the web's `Date.now()` (an
+  /// no owner, as the web's does. `getRelationships` defaults to
+  /// `publicRelationships()`, as the web's does. `now` is the web's `Date.now()` (an
   /// account's age is counted from it); `timeZone` is the zone a profile's
   /// `createdAt` without an offset is read in (nil: AppLocale's active zone,
   /// the web's local time).
   public static func createScorer(
     ownerDid: String,
     getProfiles: @escaping GetProfiles,
-    getRelationships: @escaping GetRelationships,
+    getRelationships: @escaping GetRelationships = Score.publicRelationships(),
     canary: String? = nil,
     refindCanary: (@Sendable () async throws -> String?)? = nil,
     protectedSet: [String: String] = [:],
