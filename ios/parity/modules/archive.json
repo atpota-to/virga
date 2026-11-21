@@ -5,52 +5,131 @@
   "summary": "The archive: store, first build and syncs, analytics, periods, chart formatting and exports.",
   "files": {
     "src/archive/ArchiveContext.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveContext.swift"
+      ],
+      "note": "isBuilt is ported (ArchiveContext.isBuilt, and ArchiveModel.isBuilt). ArchiveProvider and useArchive are React context: VirgaUI passes the account's ArchiveModel down through the SwiftUI environment instead, and the context's nowMs (one per change of data) is ArchiveModel.nowMs, moved on every change of data.rev. The account's profile the provider carries comes from the session.",
+      "synced": "d463c42e9280"
     },
     "src/archive/exports.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveExports.swift"
+      ],
+      "fixtures": [
+        "archive.exports"
+      ],
+      "note": "fileStem, exportArchive, exportPosts and exportRows are ported and held to the fixture (the text, name and type each download hands over). downloadText's browser plumbing (a Blob URL, an anchor's click, the revoke timer) is the UI's: here it returns an ExportFile, which VirgaUI saves or shares with fileExporter or ShareLink.",
+      "synced": "ddf4f392496c"
     },
     "src/archive/postChanges.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/PostChanges.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "note": "Ported in full. applyPostChanges' sameRow compares scalars by value (strings by code unit) and a list or object never as equal, which is what the web's !== gives for the rows its callers pass (postRowsFor always makes new objects): a held row noted again reads as changed and is written again, as on the web. Swift returns nil for 'unchanged' (the web returns the same array).",
+      "synced": "f82e59502b83"
     },
     "src/archive/useAnalyticsArchive.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveModel.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveModel+Sync.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveData.swift"
+      ],
+      "fixtures": [
+        "archive.model"
+      ],
+      "note": "ArchiveModel (@MainActor @Observable) has every state and action of the hook: data, actors, sync, syncError, runSync, setFollow, notePosted, noteDeleted, wantActors, checkActivity, deleteArchive, cancelSync, plus the exports. Mount and unmount are start() and stop(); the profile read up front, like the web's, isn't stopped by a call-off; the posting events bus (VirgaPosting) comes in as ArchiveEnvironment.postsChanged. Held to fixture archive.model: four scenarios replayed request by request, with every state of the sync bar and the archive after each step. The download and parse progress of the repo CAR reach the bar through an AsyncStream, in order.",
+      "synced": "45349f2d6747"
     },
     "src/charts/format.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Charts/ChartFormat.swift"
+      ],
+      "fixtures": [
+        "archive.format"
+      ],
+      "synced": "457d038fd14c"
     },
     "src/lib/analytics.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/Analytics.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsRows.swift"
+      ],
+      "fixtures": [
+        "archive.analytics",
+        "archive.buckets"
+      ],
+      "synced": "1027cacc5a50"
     },
     "src/lib/analyticsExport.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsExport.swift"
+      ],
+      "fixtures": [
+        "archive.exports"
+      ],
+      "note": "Ported in full. archiveJson writes the document's own members in the web's order (held by the fixture's key list); inside a row or the meta, members are written sorted, where the web keeps each object's insertion order. A reader can't tell the difference.",
+      "synced": "20f4879fa0b0"
     },
     "src/lib/analyticsStore.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsStore.swift"
+      ],
+      "note": "IndexedDB is VirgaCore's FileStore here: one database per DID under analytics/<encodeURIComponent(name)>/, its schema (version 1, the same stores and key paths) in schema.json, each write a segment replayed in order, and calls served one at a time in the order they came (as IndexedDB runs one connection's transactions), rows as the web's JSON, read back in IndexedDB's key order (numbers, then strings by code unit; the memory fallback keeps first-write order as the web's Map does). A database above version 1 is served from memory, as a VersionError open is on the web. The blocked-by-another-tab wait (BLOCKED_WAIT_MS, onblocked, onversionchange) has no iOS case: nothing else opens the files; blocked is always false. deleteDatabase(name, files:) stands in for indexedDB.deleteDatabase and closes an open handle as onversionchange does. Keys other than strings and numbers (dates, arrays, binary) are skipped.",
+      "synced": "1ba020e4948f"
     },
     "src/lib/analyticsSync.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsSync.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsRows.swift"
+      ],
+      "fixtures": [
+        "archive.sync",
+        "archive.model"
+      ],
+      "note": "Ported in full. The web's AbortSignal is the task's cancellation; the requests the web makes without it (the Agent's reads of followers, follows, notifications and likes) run in a task of their own, so calling a sweep off lets the one already out be answered and its page kept, as on the web. onPage and onProgress are @Sendable async closures (awaited in order) so a @MainActor model can take them. The eight-at-a-time list checks keep Lists you're on in the order the lists were asked for, which is the web's order when its answers arrive as fast as they're asked (and arbitrary on either side otherwise).",
+      "synced": "e713880d194d"
     },
     "src/lib/followerLog.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/FollowerLog.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "synced": "99a4b6529ab7"
     },
     "src/lib/periods.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/Periods.swift"
+      ],
+      "fixtures": [
+        "archive.periods"
+      ],
+      "synced": "dc1de3a8db26"
     },
     "src/lib/syncProgress.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/SyncProgress.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "synced": "dd4f0d26f1de"
     }
   }
 }
