@@ -76,7 +76,8 @@ private let invalid: MockTransport.Response = .failure("FRONTEND_SESSION_INVALID
     s.remember(mira, "browser")
     let w = World(storage: s.storage, secrets: s.secrets, backendReturn: sessionReturn(mira, token, intent: "reauth"))
     await w.ctrl.startOnce()
-    #expect(await eventually { w.browser.state.wrappedValue.signOuts.contains { $0.did == mira && $0.session == nil } })
+    let ended = await eventually { w.browser.state.wrappedValue.signOuts.contains { $0.did == mira && $0.session == nil } }
+    #expect(ended)
   }
 
   @Test func showsAReturnThatCameBackWithAnErrorAndChangesNothing() async {
@@ -381,7 +382,8 @@ private let invalid: MockTransport.Response = .failure("FRONTEND_SESSION_INVALID
     #expect(w.heard.waits.wrappedValue.contains(2_500))
     #expect(w.ctrl.statusOf(mira) == .needsSignIn)
     #expect(w.token(mira) == nil)
-    #expect(w.state.events.contains(SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])))
+    let expired = SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])
+    #expect(w.state.events.contains(expired))
   }
 
   @Test func neverMarksItDeadForAServerThatLostTheGrantOrAnswered503() async {
@@ -408,7 +410,8 @@ private let invalid: MockTransport.Response = .failure("FRONTEND_SESSION_INVALID
     }
     let agent = try #require(w.state.active.agent)
     _ = try? await agent.query("app.bsky.actor.getPreferences")
-    #expect(await eventually { w.state.events.contains(SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])) })
+    let expired = SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])
+    #expect(await eventually { w.state.events.contains(expired) })
     #expect(w.ctrl.statusOf(mira) == .needsSignIn)
   }
 
@@ -422,7 +425,8 @@ private let invalid: MockTransport.Response = .failure("FRONTEND_SESSION_INVALID
     #expect(w.ctrl.statusOf(lab) == .needsSignIn)
     #expect(w.state.events.isEmpty)
     w.browser.drop(mira, revoked: false)
-    #expect(w.state.events == [SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])])
+    let expired = SessionEvent(name: Accounts.sessionExpiredEvent, detail: ["did": .string(mira)])
+    #expect(w.state.events == [expired])
   }
 
   @Test func ignoresADroppedSessionThatIsntABrowserOne() async {
@@ -707,21 +711,24 @@ private func deadGrant(_ url: String) -> MockTransport.Response {
   private func row(_ mode: String, scope: String? = nil) -> AccountRow { AccountRow(did: mira, mode: mode, scope: scope) }
 
   @Test func letsALongSessionScheduleAndUseTheAdviserABrowserOneNeither() {
-    #expect(
-      SessionController.capabilitiesFrom(row("backend"), .ready)
-        == AccountCapabilities(
-          mode: "backend", canPost: true, canSchedule: true, canUseAi: true, defense: "unknown", lists: "unknown", canWriteLists: true,
-          missing: []))
-    #expect(
-      SessionController.capabilitiesFrom(row("browser"), .ready)
-        == AccountCapabilities(
-          mode: "browser", canPost: true, canSchedule: false, canUseAi: false, defense: "unknown", lists: "unknown", canWriteLists: false,
-          missing: []))
+    let long = AccountCapabilities(
+      mode: "backend", canPost: true, canSchedule: true, canUseAi: true, defense: "unknown", lists: "unknown", canWriteLists: true,
+      missing: [])
+    let browser = AccountCapabilities(
+      mode: "browser", canPost: true, canSchedule: false, canUseAi: false, defense: "unknown", lists: "unknown", canWriteLists: false,
+      missing: [])
+    let longFound = SessionController.capabilitiesFrom(row("backend"), .ready)
+    let browserFound = SessionController.capabilitiesFrom(row("browser"), .ready)
+    #expect(longFound == long)
+    #expect(browserFound == browser)
     #expect(SessionController.capabilitiesFrom(row("backend"), .unknown).canSchedule)
     let gone = SessionController.capabilitiesFrom(row("backend"), .needsSignIn)
-    #expect(!gone.canPost && !gone.canSchedule && !gone.canUseAi)
+    #expect(!gone.canPost)
+    #expect(!gone.canSchedule)
+    #expect(!gone.canUseAi)
     let none = SessionController.capabilitiesFrom(nil, .needsSignIn)
-    #expect(none.mode == nil && !none.canPost)
+    #expect(none.mode == nil)
+    #expect(!none.canPost)
   }
 
   @Test func cantPostFromAGrantWithoutThePostingPermissionsAndSaysWhatsMissing() {
@@ -729,25 +736,33 @@ private func deadGrant(_ url: String) -> MockTransport.Response {
     #expect(!caps.canPost)
     for token in AppConfig.postingTokens { #expect(caps.missing.contains(token)) }
     let full = SessionController.capabilitiesFrom(row("browser", scope: AppConfig.oauthScope), .ready)
-    #expect(full.canPost && full.missing.isEmpty)
+    #expect(full.canPost)
+    #expect(full.missing.isEmpty)
   }
 
   @Test func saysWhetherTheGrantHoldsDefensesPermissionWithoutCountingItAsMissingFromAnOrdinaryOne() {
     let plain = SessionController.capabilitiesFrom(row("browser", scope: AppConfig.oauthScope), .ready)
-    #expect(plain.defense == "missing" && plain.missing.isEmpty)
+    #expect(plain.defense == "missing")
+    #expect(plain.missing.isEmpty)
     let defense = SessionController.capabilitiesFrom(row("browser", scope: AppConfig.defenseScope), .ready)
-    #expect(defense.defense == "granted" && defense.missing.isEmpty)
+    #expect(defense.defense == "granted")
+    #expect(defense.missing.isEmpty)
     #expect(SessionController.capabilitiesFrom(row("backend", scope: "atproto \(AppConfig.defenseTokens[0])"), .ready).defense == "granted")
     #expect(SessionController.capabilitiesFrom(row("browser"), .ready).defense == "unknown")
   }
 
   @Test func saysWhetherTheGrantWritesListsAndLetsOnlyALongSessionHaveThemWritten() {
     let lists = SessionController.capabilitiesFrom(row("backend", scope: AppConfig.listsScope), .ready)
-    #expect(lists.defense == "granted" && lists.lists == "granted" && lists.canWriteLists)
+    #expect(lists.defense == "granted")
+    #expect(lists.lists == "granted")
+    #expect(lists.canWriteLists)
     let scan = SessionController.capabilitiesFrom(row("backend", scope: AppConfig.defenseScope), .ready)
-    #expect(scan.defense == "granted" && scan.lists == "missing" && !scan.canWriteLists)
+    #expect(scan.defense == "granted")
+    #expect(scan.lists == "missing")
+    #expect(!scan.canWriteLists)
     let browser = SessionController.capabilitiesFrom(row("browser", scope: AppConfig.listsScope), .ready)
-    #expect(browser.lists == "granted" && !browser.canWriteLists)
+    #expect(browser.lists == "granted")
+    #expect(!browser.canWriteLists)
     #expect(!SessionController.capabilitiesFrom(row("backend", scope: AppConfig.listsScope), .needsSignIn).canWriteLists)
   }
 }

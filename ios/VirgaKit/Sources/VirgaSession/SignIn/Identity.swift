@@ -53,6 +53,11 @@ public struct SignInHost: Sendable, Hashable, Codable {
   public var host: String?
   public var pds: String?
 
+  public init(host: String? = nil, pds: String? = nil) {
+    self.host = host
+    self.pds = pds
+  }
+
   enum CodingKeys: String, CodingKey { case host, pds }
 
   public func encode(to encoder: Encoder) throws {

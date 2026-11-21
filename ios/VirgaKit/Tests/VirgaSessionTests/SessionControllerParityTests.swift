@@ -73,7 +73,10 @@ private func runSignIn(_ c: ParityCase, _ transport: MockTransport, _ clock: Rec
   @Test func noActive() throws {
     let c = try Parity.cases(fixture, fn: "NO_ACTIVE")[0]
     let none = SessionController.noActive
-    #expect(none.did == nil && none.agent == nil && none.session == nil && none.mode == nil)
+    #expect(none.did == nil)
+    #expect(none.agent == nil)
+    #expect(none.session == nil)
+    #expect(none.mode == nil)
     expectParity(["did": .null, "agent": .null, "session": .null, "mode": .null], c)
   }
 

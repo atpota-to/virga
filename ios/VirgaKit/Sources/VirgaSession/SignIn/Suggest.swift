@@ -16,6 +16,13 @@ public struct SignInSuggestion: Sendable, Hashable, Codable, AccountLike {
   public var displayName: String?
   public var avatar: String?
 
+  public init(did: String, handle: String? = nil, displayName: String? = nil, avatar: String? = nil) {
+    self.did = did
+    self.handle = handle
+    self.displayName = displayName
+    self.avatar = avatar
+  }
+
   enum CodingKeys: String, CodingKey { case did, handle, displayName, avatar }
 
   public func encode(to encoder: Encoder) throws {

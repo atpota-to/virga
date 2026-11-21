@@ -52,6 +52,13 @@ public struct SessionInfo: Sendable {
   public var did: String
   public var mode: String
   public var oauth: (any BrowserOAuthSession)?
+
+  public init(sub: String, did: String, mode: String, oauth: (any BrowserOAuthSession)? = nil) {
+    self.sub = sub
+    self.did = did
+    self.mode = mode
+    self.oauth = oauth
+  }
 }
 
 /// `{ did, agent, session, mode }`, always published together.
@@ -74,6 +81,12 @@ public struct SessionTarget: Sendable {
   public var did: String
   public var agent: XRPCAgent
   public var pdsUrl: String
+
+  public init(did: String, agent: XRPCAgent, pdsUrl: String) {
+    self.did = did
+    self.agent = agent
+    self.pdsUrl = pdsUrl
+  }
 }
 
 /// `capabilitiesFrom`'s answer: what an account can do here.
@@ -89,6 +102,20 @@ public struct AccountCapabilities: Sendable, Hashable, Codable {
   public var canWriteLists: Bool
   /// The tokens Virga asks for that the session wasn't granted.
   public var missing: [String]
+
+  public init(
+    mode: String?, canPost: Bool, canSchedule: Bool, canUseAi: Bool, defense: String, lists: String, canWriteLists: Bool,
+    missing: [String]
+  ) {
+    self.mode = mode
+    self.canPost = canPost
+    self.canSchedule = canSchedule
+    self.canUseAi = canUseAi
+    self.defense = defense
+    self.lists = lists
+    self.canWriteLists = canWriteLists
+    self.missing = missing
+  }
 
   enum CodingKeys: String, CodingKey { case mode, canPost, canSchedule, canUseAi, defense, lists, canWriteLists, missing }
 
