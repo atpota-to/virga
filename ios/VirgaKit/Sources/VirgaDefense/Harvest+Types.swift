@@ -1,10 +1,9 @@
-// Ports src/defense/harvest.js: its data shapes only.
+// Ports src/defense/harvest.js: its data shapes.
 //
 // What `harvestPost` resolves to: everyone who engaged with a post, how, and
 // what Constellation left unread. score.js (`withoutSelves`, `summarise`)
-// and radar.js read these; the harvest itself reads Constellation and comes
-// with VirgaNetwork in wave 2, building these same structs. Field names are
-// the web's, so a harvest encodes to the JSON harvest.js gives.
+// and radar.js read these; the harvest itself is Harvest.swift. Field names
+// are the web's, so a harvest encodes to the JSON harvest.js gives.
 
 import Foundation
 

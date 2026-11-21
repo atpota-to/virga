@@ -40,7 +40,7 @@ public struct ScanState: Sendable {
   public var progress: Progress?
   /// done: what it found.
   public var result: ScanResult?
-  /// failed: why (scan.js's ScanError, in wave 2, or whatever the run threw).
+  /// failed: why (scan.js's ScanError, from Scan.runScan, or whatever the run threw).
   public var error: (any Error)?
 
   public init(
@@ -122,7 +122,7 @@ public final class ScanStore {
     return { [weak self] in self?.listeners[id] = nil }
   }
 
-  /// Start a scan for `did`. `run` does the work (runScan, in wave 2) and
+  /// Start a scan for `did`. `run` does the work (Scan.runScan) and
   /// returns its result, reporting each stage through the handler it is
   /// given. The state goes `running` (with the stage and its progress),
   /// then `done` (with `result`) or `failed` (with `error`); a scan that was

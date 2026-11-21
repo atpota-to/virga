@@ -104,11 +104,15 @@
       "synced": "4f3c28c978af"
     },
     "src/defense/scan.js": {
-      "status": "pending",
+      "status": "ported",
       "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/Scan.swift",
         "ios/VirgaKit/Sources/VirgaDefense/Scan+Types.swift"
       ],
-      "note": "Only its data shapes so far (ScanResult, ScanPost, ScanStageReport, ScanStageHandler), which ScanStore keeps. runScan needs VirgaNetwork and VirgaSession (resolveHandle, the signed-in getProfiles, publicRelationships, curation lists through veto.js, isMissingScopeError) and VirgaPosting's parsePostLink (readPostInput), and comes in wave 2 with the rest of the module (STAGES, ScanError, scanErrorFrom, canaryCandidates, CANARY_CANDIDATES, CANARY_REQUIRED_AT). ScanStageHandler and Scorer's onProgress are async, so the port awaits each report."
+      "fixtures": [
+        "defense.scan"
+      ],
+      "synced": "695f28bbdd08"
     },
     "src/defense/scanStore.js": {
       "status": "ported",
