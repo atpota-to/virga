@@ -30,6 +30,7 @@ when the port is complete.
 | defense (engine) | VirgaDefense | ported, audited | bands, scoring, canary candidates, the radar's layout, the moderator's commands, plans, history, limits |
 | session | VirgaSession | ported, audited | accounts, scopes, health, the Terms and their agreement, sign-in a step at a time, the session controller and SessionModel (useAtprotoSession); the app still has to hand it a WebAuthenticator, the archive's reset and a FileStore delete (notes/session.md) |
 | theme | VirgaCore/Theme | ported, audited | the tokens from the CSS and a resolver, the kit's measures; `ios/DESIGN.md` for the screens, corrected by the audit |
+| archive | VirgaArchive | ported, audited | the store over FileStore, the first build and later syncs, the analytics, periods, chart formats, follower log, sync progress, exports, ArchiveModel (useAnalyticsArchive) |
 | demo world | VirgaDemo | ported, audited | the web harness's made-up accounts, crowd, repo, views, CAR builder and card images, for previews, demo mode and UI tests |
 
 Per-domain notes (API, gaps, deliberate differences): `ios/porting/notes/`.
@@ -44,7 +45,7 @@ The order follows the dependencies between the web modules.
 
    The briefs are in `ios/porting/port-wave.workflow.js`; the last arguments
    used are described in ios/porting/README.md.
-2. **Archive** (VirgaArchive): `src/lib/analytics*.js`, `periods.js`, `charts/format.js`, `followerLog.js`, `syncProgress.js`, `src/archive/*`. The store goes over `FileStore`, the sweeps over the XRPC client, and `useAnalyticsArchive` becomes an `ArchiveModel`.
+2. ~~**Archive**~~ Done on 2026-11-21 (notes/archive.md).
 3. **Composer** (VirgaPosting):
    - Port `composerModel.js`, `src/posting/composer/*.js`, `autosave.js`, `settings.js`, `adviser/setup.js`, `pendingCompose.js`, `postingQueue.js`, `publishActions.js`, `repeat.js`, `images.js` and `video.js`.
    - Also wire the seams earlier waves left: `VirgaBackend` → timers' `TimerRequester`, and Mentions' default fetch → VirgaNetwork.
@@ -88,7 +89,7 @@ The order follows the dependencies between the web modules.
   up.
 - **Fixtures** live in the repository (about 22 MB). Keep new ones under
   about 1 MB each.
-- **Bugs.** `ios/porting/WEB-BUGS.md` lists 41 bugs in the web app the
+- **Bugs.** `ios/porting/WEB-BUGS.md` lists 50 bugs in the web app the
   porters found and reproduced rather than fixed. Seven are visible to people.
 - **Harness limits.** The fixture writer's `toJSON` in
   `ios/parity/cases/_helpers.js` keeps a `__proto__` key since 2026-11-21

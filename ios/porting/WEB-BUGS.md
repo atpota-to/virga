@@ -28,6 +28,18 @@ visible to people: they are marked **visible**.
 - src/lib/constellation.js backlinkRows returns `records`/`linking_records` whatever its type, so a non-array (e.g. a string) is spread character by character by harvest.js and analyticsSync.js.
 - src/lib/atproto.js getPlcHistory puts the DID into the URL unencoded while getDidDocument encodes it (harmless for real did:plc ids).
 
+## Archive (src/lib/analytics*.js, src/archive)
+
+- src/lib/analyticsSync.js sweepOutbound: when the likes walk fails, the result reports `complete: true` alongside the error (the error `break`s out before `complete = complete && finished`); fixture archive.sync case likes-fail. The hook checks `error` first, so nothing shows.
+- src/lib/analyticsSync.js sweepBlocks: a list name is cut with `name.slice(0, 120)` by UTF-16 unit, which can keep half of an emoji (a lone surrogate) in Lists you're on.
+- src/lib/analyticsSync.js sweepBlocks: when one list check fails, Promise.all rejects and the sweep returns, but the other workers keep running and keep reporting 'check' progress, which can still move the blocks segment of the bar until the repo step begins.
+- src/lib/analyticsSync.js: the Agent's reads (getFollowers, listRecords, listNotifications) get no AbortSignal, so Cancel waits for the request already out, with no limit but the Agent's own, before the sync stops.
+- src/lib/analytics.js topActors: byKind is a plain object, so an event kind named like an Object.prototype member ('constructor', '__proto__') gives a garbage or missing count. Unreachable with the notification reasons the archive keeps.
+- src/lib/analytics.js compactPostFromFeedItem / compactPostFromRecord: a truthy non-string uri throws (`uri.split`), ending the posts sweep with an exception rather than skipping the row. Unreachable with lexicon-valid AppView answers.
+- src/archive/postChanges.js sameRow compares a row's lists with `!==`, by reference. The rows a post is noted with always come fresh from postRowsFor, so a held post noted again always reads as changed, is written again and moves `rev`. The module's own test passes only because it hands in the same object twice.
+- src/archive/useAnalyticsArchive.js setFollow stamps createdAt with `new Date()` where the rest of the hook reads Date.now() (harmless; it is why the generator pins the Date constructor).
+- src/lib/periods.js: a stray doc comment sits above periodLine's own (cosmetic).
+
 ## Repo (src/lib/carRepo.js, recordCid.js)
 
 - src/lib/carRepo.js applies an MST entry's prefix length `p` (a count of UTF-8 bytes, per the MST spec and as atproto writers emit it) as a UTF-16 slice, `prevKey.slice(0, e.p)`. For a key with non-ASCII characters before the shared prefix ends, the reconstructed key is wrong, and it can contain a lone surrogate. There is no live impact, because atproto collection NSIDs and rkeys are ASCII. The Swift port reproduces the web's behaviour, and the fixture case 'key prefix splits a two-byte char' shows it.
