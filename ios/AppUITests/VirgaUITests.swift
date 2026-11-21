@@ -1,7 +1,8 @@
 // End-to-end checks of the app in its demo mode (a made-up world, no
 // network), like the web app's harness, on an iPhone and on an iPad: the
 // shell reaches every part and each page has its header; Settings changes
-// the sky and the accent; the account menu opens; the sign-in finds a
+// the sky and the accent; the account menu opens; the first build runs;
+// the command palette finds a page; Settings › Data; the sign-in finds a
 // handle; the front page, the Terms and the agreement. Each screen worth
 // looking at is kept as a screenshot (an XCTAttachment kept always, a name
 // per screen), which CI exports from each result bundle into the
@@ -203,6 +204,60 @@ final class VirgaUITests: XCTestCase {
     part(app, "dashboard").tap()
     waitForHome(app)
     snapshot("dashboard-day")
+  }
+
+  /// The first build, pressed: its steps while it runs, then whatever the
+  /// demo's network lets it reach (the stub turns the archive's reads
+  /// away, so the steps fail and the page says what went wrong).
+  func testTheFirstBuildRuns() {
+    let app = launch()
+    waitForHome(app)
+    snapshot("first-run")
+    element(app, "first-run-build").tap()
+    let steps = element(app, "sync-steps")
+    let failed = element(app, "first-run-error")
+    let started = steps.waitForExistence(timeout: 5) || failed.exists
+    snapshot("first-run-building")
+    XCTAssertTrue(started, "the build didn't start")
+    _ = failed.waitForExistence(timeout: 60)
+    snapshot("first-run-after")
+  }
+
+  /// The command palette, from Search, with a few letters typed; then one
+  /// of its pages, gone to.
+  func testThePaletteFindsAPage() {
+    let app = launch()
+    waitForHome(app)
+    let search = element(app, "palette-open")
+    XCTAssertTrue(search.waitForExistence(timeout: 5), "no Search")
+    search.tap()
+    let field = element(app, "palette-field")
+    XCTAssertTrue(field.waitForExistence(timeout: 5), "the palette didn't open")
+    field.typeText("appear")
+    let option = app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier BEGINSWITH 'palette-' AND label == %@", "Appearance")).firstMatch
+    XCTAssertTrue(option.waitForExistence(timeout: 5), "no Appearance in the palette")
+    snapshot("palette")
+    option.tap()
+    waitForTitle(app, "Appearance")
+  }
+
+  /// Settings › Data and sync, before the first build.
+  func testSettingsData() {
+    let app = launch()
+    waitForHome(app)
+    element(app, "account-menu").tap()
+    let settings = button(app, "Accounts and settings")
+    XCTAssertTrue(settings.waitForExistence(timeout: 5))
+    settings.tap()
+    let desk = isDesk(app)
+    waitForTitle(app, desk ? "Account" : "Settings")
+    let data = element(app, desk ? "nav-settings-data" : "settings-data")
+    XCTAssertTrue(data.waitForExistence(timeout: 5))
+    data.tap()
+    waitForTitle(app, "Data and sync")
+    XCTAssertTrue(element(app, "data-sync").exists, "no Build your archive")
+    snapshot("settings-data")
   }
 
   func testTheFrontPageForSomeoneSignedOut() {
