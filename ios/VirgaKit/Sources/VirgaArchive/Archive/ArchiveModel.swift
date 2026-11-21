@@ -158,7 +158,7 @@ public final class ArchiveModel {
   // MARK: - Reading
 
   /// Whether the archive has anything to chart yet (ArchiveContext's isBuilt).
-  public var isBuilt: Bool { data.loaded && data.meta.posts != nil }
+  public var isBuilt: Bool { ArchiveContext.isBuilt(data) }
 
   /// Whether a sync is under way.
   public var isSyncing: Bool { syncTask != nil }
