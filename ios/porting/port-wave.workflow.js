@@ -4,7 +4,7 @@
 // how to run it again. Args: { wtA, branchA, wtB, branchB, swift, context,
 // files: { <domain>: [web files] }, chainA: [step], chainB: [step] }, where a
 // step is { domain, target, brief, mapName?, auditOnly?, portNote?,
-// portSummaryPath? }.
+// portSummaryPath? }, and `session` is the Claude-Session trailer's URL.
 
 export const meta = {
   name: 'ios-port-wave',
@@ -38,7 +38,7 @@ ${args.context ? '## What earlier waves built (merged into your base)\n' + args.
 - If you find uncommitted changes or a commit titled "WIP:" from an earlier attempt that was interrupted, don't start over: read what it did (git log -p, git diff), check it against the web code, keep what's right, and finish it.
 - Commit in ${wt} on ${branch} (\`git add -A ios\`). Message: a short summary line, a body, then exactly these two trailer lines:
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_014phnNr9z1acDrdxx98Huz8
+  Claude-Session: ${args.session || 'https://claude.ai/code/session_014phnNr9z1acDrdxx98Huz8'}
   Don't push. Don't write any model name in code, comments or commit messages.`
 
 const PORT_SCHEMA = {
