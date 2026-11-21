@@ -189,6 +189,60 @@ final class FakePostingEvents: @unchecked Sendable {
     #expect(!transport.requests.contains { $0.url.contains("listRecords") })
   }
 
+  /// The profile is read without the sync's signal on the web, so a sync
+  /// called off while it is read still measures the followers step by its
+  /// counter before stopping.
+  @Test func callingASyncOffWhileTheProfileIsReadStillMeasuresByIt() async {
+    let transport = MockTransport()
+    let holder = Locked<ArchiveModel?>(nil)
+    transport.on(.path("/xrpc/app.bsky.actor.getProfile")) { _ in
+      let m = holder.wrappedValue
+      await MainActor.run { m?.cancelSync() }
+      try Task.checkCancellation()
+      return .json(["did": .string(me), "handle": "owner.test", "followersCount": 2])
+    }
+    smallWorld(transport)
+    let m = model(transport)
+    holder.set(m)
+    var states: [SyncState?] = []
+    m.syncObserver = { states.append($0) }
+    await m.start()
+    await m.runSync()
+    #expect(m.syncError == nil)
+    let first = states.first ?? nil
+    #expect(first?.step == "followers")
+    #expect(first?.fraction == 0)
+    #expect(!transport.requests.contains { $0.url.contains("getFollowers") })
+  }
+
+  /// The PDS is looked up without the sync's signal on the web, so a call-off
+  /// while it's being looked up lands in the download, after the repo step
+  /// has begun: the bar closes the blocks step, and the sync goes no further.
+  @Test func callingASyncOffWhileThePDSIsLookedUpEndsInTheRepoStep() async {
+    let transport = MockTransport()
+    let holder = Locked<ArchiveModel?>(nil)
+    transport.on(.urlPrefix("https://plc.directory/")) { _ in
+      let m = holder.wrappedValue
+      await MainActor.run { m?.cancelSync() }
+      try Task.checkCancellation()
+      return .json(["id": .string(me), "service": [["id": "#atproto_pds", "serviceEndpoint": "https://pds.example"]]])
+    }
+    smallWorld(transport)
+    let m = model(transport)
+    holder.set(m)
+    var states: [SyncState?] = []
+    m.syncObserver = { states.append($0) }
+    await m.start()
+    await m.runSync()
+    #expect(m.syncError == nil)
+    #expect(m.sync == nil)
+    #expect(states.contains { $0?.step == "repo" })
+    let last = states.dropLast().last ?? nil
+    #expect(last?.step == nil)
+    #expect(last?.done == ["followers", "following", "blocks"])
+    #expect(!states.contains { $0?.step == "posts" })
+  }
+
   @Test func cancellingTheMountCallsOffItsSync() async {
     let transport = MockTransport()
     smallWorld(transport)

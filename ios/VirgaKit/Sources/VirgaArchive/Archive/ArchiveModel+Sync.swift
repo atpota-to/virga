@@ -103,8 +103,10 @@ extension ArchiveModel {
 
     body: do {
       // One public profile read up front: Bluesky's own counters, the
-      // yardstick the sweeps are measured against.
-      let prof = try? await Atproto.getProfile(did, transport: transport)
+      // yardstick the sweeps are measured against. Read without the sync's
+      // signal on the web, so calling the sync off doesn't stop it.
+      let did = self.did
+      let prof = try? await AnalyticsSync.unaborted { try await Atproto.getProfile(did, transport: transport) }
       let profFollowers = prof?["followersCount"]?.doubleValue
       let profFollows = prof?["followsCount"]?.doubleValue
       let profPosts = prof?["postsCount"]?.doubleValue
@@ -187,6 +189,9 @@ extension ArchiveModel {
       // which needs the whole repo this once rather than a diff.
       let postsShapeOld = data.meta.posts != nil && data.meta.posts?.shape != Analytics.postRowVersion
       do {
+        // Without the sync's signal on the web too, and here the DID
+        // document cache reads in a task of its own: a call-off lands in the
+        // download, once the repo step has begun.
         let pds = try await Atproto.resolvePds(did, transport: transport, clock: clock, cache: env.didDocuments)
         let carTransport = RepoTransport(transport: transport)
         func pull(_ since: String?) async throws -> (parsed: RepoCarContents, size: Int) {
