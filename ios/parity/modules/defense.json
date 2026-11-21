@@ -148,8 +148,11 @@
       "synced": "1007ad5be340"
     },
     "src/defense/useDefense.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaDefense/DefenseModels.swift"
+      ],
+      "synced": "4e491cdce08a"
     },
     "src/defense/veto.js": {
       "status": "ported",
