@@ -8,9 +8,10 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/App/AppRoot.swift",
-        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift"
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/ArchiveHost.swift"
       ],
-      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account) and useProfile. Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the archive's and the dashboards' providers (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
+      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account), useProfile, and the archive's provider (ArchiveHost, one ArchiveModel per signed-in account, its store in the app's file store; deleting an account's data deletes its archive and starts every store handle afresh). Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the dashboards' provider (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
       "synced": "cb6343e81939"
     },
     "src/accounts/AccountMenu.jsx": {

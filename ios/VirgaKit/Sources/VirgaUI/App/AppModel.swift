@@ -6,7 +6,13 @@
 // has no counterpart here): the stores, the preferences, the session with
 // its environment, the agreement's model, the open account's profile, the
 // session notices, and the lookups the sign-in makes. VirgaRootView puts
-// each in the environment.
+// each in the environment. The open account's archive (ArchiveProvider's
+// useAnalyticsArchive) is made here too, one per signed-in account, and
+// held by the view around the shell (App/ArchiveHost.swift).
+//
+// The session's two hooks into the archive are wired here: deleting an
+// account's data deletes its archive's store, and then every store handle
+// is started afresh (analyticsStore.js's resetAnalyticsStore).
 //
 // Demo mode (`-VirgaDemo YES`, read from UserDefaults' argument domain)
 // starts signed in as the demo world's first account (World.me, with
@@ -24,6 +30,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaDemo
 import VirgaNetwork
@@ -117,6 +124,11 @@ public final class AppModel {
   /// are wired to Virga's server: a long session's sign-out then says it
   /// couldn't check, as the web does when the read fails.
   @ObservationIgnored public let pendingWork: PendingWorkServices?
+  /// What the archive reads the public network through, and its clock.
+  @ObservationIgnored let archiveTransport: any HTTPTransport
+  @ObservationIgnored let archiveClock: NetworkClock
+  /// The open account's archive, while its shell is up.
+  @ObservationIgnored private var openArchive: ArchiveModel?
   @ObservationIgnored private var started = false
 
   init(
@@ -128,6 +140,8 @@ public final class AppModel {
     self.stores = stores
     self.lookups = lookups
     self.pendingWork = nil
+    archiveTransport = environment.transport
+    archiveClock = environment.clock
     preferences = PreferencesModel(
       store: stores.keyValue, languages: Locale.preferredLanguages, timeZone: .current, systemDark: SystemAppearance.isDark())
     let session = SessionModel(env: environment)
@@ -144,6 +158,53 @@ public final class AppModel {
     guard !started else { return }
     started = true
     await session.start()
+  }
+
+  // MARK: The archive
+
+  /// The open account's archive, as ArchiveProvider makes it: the account's
+  /// agent and handle (the profile's, or what the account list remembers),
+  /// over the app's file store, read through the session's transport and
+  /// clock. The view that holds it starts it and stops it (ArchiveHost).
+  ///
+  /// Posts made in the app reach it through VirgaPosting's posting events;
+  /// `postsChanged` stays unwired until the composer is ported, as nothing
+  /// in the app posts yet.
+  /// The open account's archive: the one already made for it, or a new one.
+  public func archive(for did: String) -> ArchiveModel {
+    if let open = openArchive, open.did.jsEquals(did) { return open }
+    let made = makeArchive(did: did)
+    openArchive = made
+    return made
+  }
+
+  /// The account's shell has gone (signed out, or another account opened):
+  /// its archive stops, and the next sign-in makes another.
+  public func closeArchive(_ archive: ArchiveModel) {
+    archive.stop()
+    if openArchive === archive { openArchive = nil }
+  }
+
+  func makeArchive(did: String) -> ArchiveModel {
+    let remembered = session.accounts.first { $0.did.jsEquals(did) }
+    let handle = profile.profile?.handle ?? remembered?.handle
+    let environment = ArchiveEnvironment(
+      files: stores.files, transport: archiveTransport, clock: archiveClock, postsChanged: nil)
+    return ArchiveModel(agent: session.did.jsEquals(did) ? session.agent : nil, did: did, handle: handle, environment: environment)
+  }
+
+  /// The session's `resetAnalyticsStore`: every store handle starts afresh
+  /// (the web drops them all, whichever account's data went).
+  static let resetArchiveStores: @Sendable (String?) async -> Void = { _ in
+    AnalyticsStore.resetAnalyticsStore()
+  }
+
+  /// The session's `deleteDatabase`: `virga-analytics:<did>` is the
+  /// archive's store, deleted from the app's file store. The posting store
+  /// (`virga-posting:<did>`) isn't ported yet, so there is nothing of it to
+  /// delete, and the answer is that nothing went.
+  static func deleteDatabase(files: any FileStore) -> @Sendable (String) async -> Bool {
+    { name in await AnalyticsStore.deleteDatabase(name, files: files) }
   }
 
   // MARK: Building it
@@ -164,7 +225,8 @@ public final class AppModel {
     let stores = AppStores.device()
     let environment = SessionEnvironment(
       storage: stores.keyValue, tabStorage: stores.tab, secrets: stores.secrets, backendUrl: flags.backendURL,
-      authMode: flags.authMode, authenticator: SystemWebAuthenticator())
+      authMode: flags.authMode, resetAnalyticsStore: resetArchiveStores, deleteDatabase: deleteDatabase(files: stores.files),
+      authenticator: SystemWebAuthenticator())
     return AppModel(
       flags: flags, isDemo: false, stores: stores, environment: environment, lookups: .network,
       fetchProfile: { did in try await Atproto.getProfile(did) }, reporterTransport: HTTP.transport)
@@ -200,7 +262,8 @@ public final class AppModel {
       transport: transport, authMode: "backend",
       getProfile: { did in world.views.person(did) },
       resolvePdsUrl: { _ in World.pds },
-      rememberPdsUrl: { _, _ in })
+      rememberPdsUrl: { _, _ in },
+      resetAnalyticsStore: resetArchiveStores, deleteDatabase: deleteDatabase(files: stores.files))
     return AppModel(
       flags: flags, isDemo: true, stores: stores, environment: environment, lookups: DemoNetwork.lookups(world),
       fetchProfile: { did in world.views.person(did) }, reporterTransport: transport)
