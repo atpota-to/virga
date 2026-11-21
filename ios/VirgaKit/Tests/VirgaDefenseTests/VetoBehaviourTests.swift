@@ -15,6 +15,15 @@ private struct Mine: Error, LocalizedError {
   var errorDescription: String? { "mine" }
 }
 
+/// Returns once `transport` has been asked for `method`, and a quarter of a
+/// second more: time for that read's failure to be counted first.
+private func answered(_ method: String, on transport: MockTransport) async {
+  while !transport.requests.contains(where: { $0.url.contains(method) }) {
+    try? await Task.sleep(nanoseconds: 1_000_000)
+  }
+  try? await Task.sleep(nanoseconds: 250_000_000)
+}
+
 @Suite struct VetoBehaviour {
   @Test func aStoppedFollowsReadIsTheStopNotUnreadable() async throws {
     let transport = MockTransport()
@@ -49,11 +58,13 @@ private struct Mine: Error, LocalizedError {
   }
 
   @Test func theReadThatFailsFirstIsTheFailure() async throws {
-    // The follows fail at once; the lists take a while, then fail too.
+    // The follows fail at once; the lists fail too, but only well after the
+    // follows' answer came back (waiting for it first, so a busy machine
+    // can't put the slow read ahead).
     let first = MockTransport()
     first.on(.path("/xrpc/app.bsky.graph.getRelationships"), respond: .status(502))
     first.on(.path("/xrpc/app.bsky.graph.getLists")) { _ in
-      try await Task.sleep(nanoseconds: 30_000_000)
+      await answered("getRelationships", on: first)
       return .status(502)
     }
     do {
@@ -67,7 +78,7 @@ private struct Mine: Error, LocalizedError {
 
     let second = MockTransport()
     second.on(.path("/xrpc/app.bsky.graph.getRelationships")) { _ in
-      try await Task.sleep(nanoseconds: 30_000_000)
+      await answered("getLists", on: second)
       return .status(502)
     }
     second.on(.path("/xrpc/app.bsky.graph.getLists"), respond: .status(502))

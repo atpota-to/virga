@@ -89,6 +89,47 @@ private let noRelationships: GetRelationships = { _, dids in dids.map { ["did": 
     #expect(clock.now - begun < .seconds(30))
   }
 
+  @Test func stoppedPartWayThroughTheWebsHarvestSaysSo() async throws {
+    // The default harvest resolves when stopped part way (as harvest.js
+    // does), so the scan goes on to the canary stage, where the curation
+    // read stops it: "The scan was stopped.", as on the web.
+    let transport = MockTransport()
+    let outer = Locked<Task<ScanResult, any Error>?>(nil)
+    // Five sources: more than are read side by side, so some are still to
+    // start when the stop comes.
+    var paths: [String: JSONValue] = [:]
+    for i in 0..<5 { paths[".subject.uri\(i)"] = ["records": .number(Double(9 - i))] }
+    let listed: JSONValue = ["links": ["app.bsky.feed.like": .object(paths)]]
+    transport.on(.path("/links/all")) { _ in
+      while outer.wrappedValue == nil { await Task.yield() }
+      return .json(listed)
+    }
+    transport.on(.path("/xrpc/blue.microcosm.links.getBacklinks")) { _ in
+      outer.wrappedValue?.cancel()
+      return .json(["records": [["did": "did:plc:a", "rkey": "r"]], "cursor": "c1"])
+    }
+    transport.on(.any, respond: .json(["lists": []]))
+    let heard = Heard<String>()
+    let task = Task {
+      try await Scan.runScan(
+        input: postURI, ownerDid: owner, getProfiles: profiles, candidates: [canary],
+        onStage: { heard.add($0.stage) }, getRelationships: noRelationships, retryDelaysMs: [0, 0],
+        transport: transport)
+    }
+    outer.withLock { $0 = task }
+    do {
+      _ = try await task.value
+      Issue.record("a stopped scan should throw")
+    } catch {
+      #expect((error as? ScanError)?.code == .aborted)
+      #expect((error as? ScanError)?.message == "The scan was stopped.")
+    }
+    #expect(heard.all.contains("canary"))
+    #expect(!heard.all.contains("score"))
+    // The second page was never asked for.
+    #expect(!transport.requests.contains { $0.url.contains("cursor=") })
+  }
+
   @Test func aStopWhileReadingTheListsIsAStopNotAnEmptyList() async throws {
     let transport = MockTransport()
     transport.on(.any, respond: .hang)

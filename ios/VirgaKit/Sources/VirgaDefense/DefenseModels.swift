@@ -10,6 +10,9 @@
 // useDefenseLists. The view starts the lists model from its `.task`
 // (`start()`), tells it when the account changes (`update(did:)`), and
 // stops it when it goes (`stop()`): the hook's mount, props and unmount.
+// Between those the lists model follows the session itself, as the hook
+// re-renders with it: a sign-out, or a new sign-in's token, gives the
+// account another requester (or none), and the lists are read again.
 
 import Foundation
 import Observation
@@ -111,6 +114,10 @@ public final class DefenseListsModel {
   /// The requester the last read used, as (DID, token): the web's `req`,
   /// whose identity changes with the account and its token.
   @ObservationIgnored private var requesterKey: [String?]?
+  /// Between start() and stop(): the session is followed.
+  @ObservationIgnored private var watching = false
+  /// A change of the session is being listened for.
+  @ObservationIgnored private var armed = false
 
   /// - Parameters:
   ///   - did: the account whose lists these are.
@@ -144,29 +151,62 @@ public final class DefenseListsModel {
     return [did, req.flatMap { $0.token() }]
   }
 
-  /// The hook's mount: the first read.
+  /// The hook's mount: the first read, and from then on the session is
+  /// followed (a session that is an @Observable, as SessionModel is).
   public func start() async {
+    watching = true
+    watchSession()
     await refresh()
   }
 
   /// The hook's `did` changed, or the session did: when that changes the
   /// requester (another account, or a new token), the lists are read again.
+  /// As the hook's two effects at that commit: the timer is set again at
+  /// once for the new requester (over the lists still shown, so while they
+  /// have something waiting), and the lists are read.
   public func update(did: String?) async {
     let changed = !did.jsEquals(self.did)
     self.did = did
     guard changed || requesterKey.map({ !Self.same($0, currentKey()) }) ?? true else { return }
-    await refresh()
     syncPolling(restart: true)
+    await refresh()
   }
 
   private static func same(_ a: [String?], _ b: [String?]) -> Bool {
     a.count == b.count && zip(a, b).allSatisfy { $0.jsEquals($1) }
   }
 
-  /// The hook's unmount: no more reads on a timer.
+  /// The hook's unmount: no more reads on a timer, and the session no
+  /// longer followed.
   public func stop() {
+    watching = false
+    stopPolling()
+  }
+
+  private func stopPolling() {
     poll?.cancel()
     poll = nil
+  }
+
+  /// The hook re-renders whenever the session changes, and reads
+  /// `backendFor(did)` again: here, a change to what the requester is made
+  /// from (SessionModel's accounts) looks at it again, through update(did:).
+  private func watchSession() {
+    guard watching, !armed else { return }
+    armed = true
+    let session = self.session
+    let did = self.did
+    withObservationTracking {
+      _ = session.backendFor(did)
+    } onChange: { [weak self] in
+      Task { @MainActor [weak self] in
+        guard let self else { return }
+        self.armed = false
+        guard self.watching else { return }
+        self.watchSession()
+        await self.update(did: self.did)
+      }
+    }
   }
 
   /// `refresh()`: read the lists again. Answers what was read, or nil (no
@@ -207,7 +247,7 @@ public final class DefenseListsModel {
   /// otherwise; a new one when the requester changed.
   private func syncPolling(restart: Bool = false) {
     guard waiting else {
-      stop()
+      stopPolling()
       return
     }
     if poll != nil && !restart { return }

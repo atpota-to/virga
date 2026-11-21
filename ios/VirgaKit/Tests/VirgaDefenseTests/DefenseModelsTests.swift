@@ -310,6 +310,39 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     #expect(model.data?["lists"]?[0]?["name"] == "Fresh")
   }
 
+  @Test func setsTheTimerAgainAtOnceForANewRequester() async {
+    // useDefenseLists' interval effect runs again at the commit that brings
+    // a new requester, before that requester's read comes back.
+    let s = session()
+    s.tokens[lab] = "vg_lab"
+    s.accounts[1].mode = "backend"
+    let release = Locked(false)
+    s.transport.on(.path("/api/defense/lists")) { request in
+      if request.headers.get("authorization") == "Bearer vg_lab" {
+        while !release.wrappedValue { try await Task.sleep(nanoseconds: 1_000_000) }
+      }
+      return .json(lists(waiting: 1))
+    }
+    let ticker = Ticker()
+    let model = DefenseListsModel(did: mira, session: s, sleep: ticker.sleep)
+    await model.start()
+    await eventually { ticker.sleeping == 1 }
+    #expect(ticker.asked.count == 1)
+    let switching = Task { await model.update(did: lab) }
+    await eventually { ticker.asked.count == 2 && ticker.sleeping == 1 }
+    #expect(ticker.asked.count == 2)
+    #expect(ticker.sleeping == 1)
+    #expect(model.loading)
+    release.withLock { $0 = true }
+    await switching.value
+    #expect(!model.loading)
+    #expect(model.waiting)
+    // Still waiting: the timer set at the change goes on.
+    #expect(ticker.asked.count == 2)
+    #expect(ticker.sleeping == 1)
+    model.stop()
+  }
+
   @Test func followsTheAccountAndItsToken() async {
     let s = session()
     s.tokens[lab] = "vg_lab"
@@ -359,5 +392,52 @@ private func lists(waiting: Int, name: String = "Pile-on") -> JSONValue {
     #expect(account.did == nil)
     #expect(account.account == nil)
     #expect(account.caps == session.capabilitiesFor(nil))
+  }
+
+  @Test func followsTheSessionWhenTheAccountIsSignedOut() async throws {
+    // The hook re-renders with the session: once the account is signed out
+    // it has no requester, and its lists go, with nothing more asked.
+    let storage = InMemoryKeyValueStore()
+    let secrets = InMemorySecretStore()
+    _ = Accounts.writeAccounts(storage, [AccountRow(did: mira, handle: "mira.example.com", mode: "backend", lastUsed: 1, addedAt: 1)])
+    _ = Accounts.writeBackendToken(secrets, mira, token)
+    let transport = MockTransport()
+    transport.on(.path("/api/defense/lists"), respond: .json(lists(waiting: 0)))
+    transport.on(.path("/api/oauth/logout"), respond: .json(["success": true]))
+    let session = SessionModel(
+      env: SessionEnvironment(
+        storage: storage, tabStorage: InMemoryKeyValueStore(), secrets: secrets, backendUrl: server, transport: transport))
+
+    let lists = DefenseListsModel(did: mira, session: session)
+    await lists.start()
+    #expect(lists.data?["writes"] == true)
+    await session.signOutAccount(mira)
+    await eventually { lists.data == nil }
+    #expect(lists.data == nil)
+    #expect(lists.requester == nil)
+    #expect(lists.error == nil)
+    #expect(transport.requests.filter { $0.url.hasSuffix("/api/defense/lists") }.count == 1)
+    lists.stop()
+  }
+
+  @Test func followsNothingOnceStopped() async throws {
+    let storage = InMemoryKeyValueStore()
+    let secrets = InMemorySecretStore()
+    _ = Accounts.writeAccounts(storage, [AccountRow(did: mira, handle: "mira.example.com", mode: "backend", lastUsed: 1, addedAt: 1)])
+    _ = Accounts.writeBackendToken(secrets, mira, token)
+    let transport = MockTransport()
+    transport.on(.path("/api/defense/lists"), respond: .json(lists(waiting: 0)))
+    transport.on(.path("/api/oauth/logout"), respond: .json(["success": true]))
+    let session = SessionModel(
+      env: SessionEnvironment(
+        storage: storage, tabStorage: InMemoryKeyValueStore(), secrets: secrets, backendUrl: server, transport: transport))
+
+    let lists = DefenseListsModel(did: mira, session: session)
+    await lists.start()
+    lists.stop()
+    await session.signOutAccount(mira)
+    try await Task.sleep(nanoseconds: 50_000_000)
+    // Unmounted: what it last read stays, as a hook's state goes with it.
+    #expect(lists.data?["writes"] == true)
   }
 }

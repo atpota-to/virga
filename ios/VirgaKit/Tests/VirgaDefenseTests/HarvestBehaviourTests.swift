@@ -62,6 +62,42 @@ private func sources(_ n: Int) -> JSONValue {
     #expect(harvest.participants.map(\.did) == ["did:plc:first"])
   }
 
+  @Test func aHarvestStoppedPartWayResolvesWithTheRestUnread() async throws {
+    // harvest.js pages its sources with no signal (mapLimit without
+    // `{ signal }`): once the caller stops, each source still to read asks
+    // Constellation, whose client answers null at once, so it comes back
+    // failed, and the harvest resolves rather than throwing.
+    let transport = MockTransport()
+    let outer = Locked<Task<Harvest, any Error>?>(nil)
+    transport.on(.path("/links/all")) { _ in
+      while outer.wrappedValue == nil { await Task.yield() }
+      return .json(sources(5))
+    }
+    transport.on(.path("/xrpc/blue.microcosm.links.getBacklinks")) { _ in
+      // The caller stops the harvest while the first sources are read.
+      outer.wrappedValue?.cancel()
+      return .status(404)
+    }
+    let heard = Heard<HarvestProgress>()
+    let task = Task {
+      try await Harvest.harvestPost(
+        post, onProgress: { heard.add($0) }, transport: transport, clock: .instant(now: Fixed.now),
+        now: { date(ms: Fixed.now) })
+    }
+    outer.withLock { $0 = task }
+    let harvest = try await task.value
+    #expect(harvest.sources?.count == 5)
+    #expect(harvest.sources?.allSatisfy(\.failed) == true)
+    #expect(harvest.participants.isEmpty)
+    #expect(harvest.truncated)
+    #expect(harvest.unread == [UnreadKind(kind: "other", count: 100 + 99 + 98 + 97 + 96)])
+    #expect(heard.all.map(\.done) == Array(0...5))
+    // At most the three sources read side by side asked anything; the rest
+    // never left the device.
+    let asked = transport.requests.filter { $0.url.contains("getBacklinks") }.count
+    #expect((1...3).contains(asked), "\(asked) pages asked")
+  }
+
   @Test func reportsProgressInOrderWhateverOrderSourcesFinishIn() async throws {
     let transport = MockTransport()
     transport.on(.path("/links/all"), respond: .json(sources(7)))

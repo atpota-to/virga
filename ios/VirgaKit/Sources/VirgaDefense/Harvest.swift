@@ -15,8 +15,11 @@
 // The functions live on the `Harvest` struct (Harvest+Types.swift), which is
 // what `harvestPost` resolves to. The web's AbortSignal is task
 // cancellation: Constellation's client answers nil once the task is
-// cancelled, a failed page isn't asked for again, and no further source is
-// started.
+// cancelled, and a failed page isn't asked for again. The web pages its
+// sources without the signal (mapLimit with no `{ signal }`), so a harvest
+// stopped part way still resolves: the sources it hadn't read come back
+// failed, asking nothing, and every progress report is made. Only a stop
+// before Constellation listed the sources throws.
 
 import Foundation
 import VirgaCore
@@ -211,7 +214,9 @@ extension Harvest {
   /// up, every one before this returns or throws. `now` is when the harvest
   /// is stamped (`harvestedAt`). Throws HarvestError when Constellation
   /// didn't answer the counts call, and CancellationError when the task was
-  /// cancelled before it did.
+  /// cancelled before it did. Cancelled later, it resolves as the web's
+  /// does: the sources not yet read come back failed (and unread), without
+  /// a request.
   public static func harvestPost(
     _ uri: String,
     maxPages: Int = Harvest.maxPages,
@@ -246,7 +251,9 @@ extension Harvest {
     queue.yield(HarvestProgress(done: 0, total: total))
     let drained: [Drained]
     do {
-      drained = try await Limit.mapLimit(live, sourceConcurrency) { src, _ in
+      // No `{ signal }`, as on the web: a stop leaves the sources still to
+      // read failed (Constellation answers nil without asking), not thrown.
+      drained = try await Limit.mapLimit(live, sourceConcurrency, stopsWhenCancelled: false) { src, _ in
         let out = try await drainSource(uri, src.source, maxPages: maxPages, transport: transport, clock: clock)
         done.withLock { n in
           n += 1
