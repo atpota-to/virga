@@ -242,7 +242,7 @@
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "note": "a few of its measures (the landing page's bar, title, lede and points, the return screen's title, the restoring message and its animation) are in ThemeKit (VirgaCore/Theme, from ios/parity/cases/_themeKit.js); it sets no theme tokens, and the pages' layout (the landing hero and sketch, the narrow column) comes with VirgaUI (wave 4)",
       "synced": "989bc46fd9c1"
     },
     "src/styles/base.css": {
@@ -255,7 +255,7 @@
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "note": "the page's type (body size, line height, numerals, headings, links, code), focus outline, selection and the sky's wash (body's gradient) are measures in ThemeKit (VirgaCore/Theme); it sets no theme tokens, and the element resets and helper classes (.visually-hidden, .skip-link) come with VirgaUI (wave 4)",
       "synced": "25a6fa774758"
     },
     "src/styles/controls.css": {
@@ -268,7 +268,7 @@
       "fixtures": [
         "ui.themeKit"
       ],
-      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4)",
+      "note": "246 of its declarations, the kit's measures (sizes, paddings, gaps, radii, weights, colours, borders, shadows, transitions, the coarse pointer's sizes and the invalid field's own focus tokens), are in ThemeKit (VirgaCore/Theme, listed in ios/parity/cases/_themeKit.js); how each control is laid out (the components themselves) comes with VirgaUI (wave 4)",
       "synced": "68853fcaa0a5"
     },
     "src/styles/theme.css": {
@@ -284,7 +284,7 @@
         "ui.theme",
         "ui.themeKit"
       ],
-      "note": "design tokens in VirgaCore/Theme; component styles come with VirgaUI (wave 4). Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
+      "note": "every token it sets on <html> and the cascade that picks them, in VirgaCore/Theme; the measures of its high-contrast rules for components (focus outline, a pressed key's line, the switch, heat cells, bar tracks, the current page, the image labels) are in ThemeKit, and drawing them comes with VirgaUI (wave 4), the switch knob's scale(0.7) among them. Its forced-colours rules are recorded but never apply: no device the app runs on has them.",
       "synced": "6fa7f1283fe1"
     },
     "src/tools/tools.css": {

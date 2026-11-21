@@ -230,4 +230,87 @@ private func attributes(_ c: ParityCase) throws -> RootAttributes {
       #expect(d == nil, "\(c): \(d ?? "")")
     }
   }
+
+  /// Each measure that says var() or color-mix(), through the theme in a few
+  /// states, part by part as ui.themeKit.js lays it out: what
+  /// `theme.resolve(_:)`, `theme.points(of:)` and `theme.color(of:)` give.
+  @Test func everyMeasureThroughTheTheme() throws {
+    let entries = Dictionary(ThemeKit.entries.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
+    let cases = try Parity.cases("ui.themeKit", fn: "resolved")
+    let leastCases: Int = 300
+    #expect(cases.count >= leastCases)
+    var mismatches = Mismatches()
+    for c in cases {
+      let name = try #require(c["name"].stringValue)
+      let e = try #require(entries[name], "ThemeKit has no \(name)")
+      let theme = ThemeTokens.resolve(try attributes(c), viewportWidth: try #require(c["width"].doubleValue))
+      mismatches.check(try resolved(e.value, in: theme), c.output, "\(c)")
+    }
+    #expect(mismatches.list.isEmpty, "\(mismatches.report)")
+  }
+
+  /// A field that is the trouble declares --focus-ring and --focus again
+  /// (and high contrast --focus once more): `theme.declaring(_:)` with the
+  /// kit's values, as DESIGN.md says to use it.
+  @Test func anInvalidFieldDeclaresItsOwnRing() throws {
+    let cases = try Parity.cases("ui.themeKit", fn: "declaring")
+    #expect(cases.count == 4)
+    for c in cases {
+      let attrs = try attributes(c)
+      let theme = ThemeTokens.resolve(attrs, viewportWidth: try #require(c["width"].doubleValue))
+      let focus = attrs.contrast == .high ? ThemeKit.highContrastInvalidFocus : ThemeKit.invalidFocus
+      let field = theme.declaring([(.focusRing, ThemeKit.invalidFocusRing), (.focus, focus)])
+      let actual: JSONValue = [
+        "--focus-ring": try field[.focusRing].map { try JSONValue(encoding: $0) } ?? .null,
+        "--focus": try field[.focus].map { try JSONValue(encoding: $0) } ?? .null,
+      ]
+      let d = Parity.diff(actual, c.output, strictNulls: true)
+      #expect(d == nil, "\(c): \(d ?? "")")
+    }
+  }
+}
+
+/// A kit value in a theme, in the shapes ui.themeKit.js's `resolved` cases
+/// write: each length as `{ length, px }`, each colour or other value as
+/// `{ value }` (with `px` when it is a length), nil where a var() leads
+/// nowhere.
+private func resolved(_ kit: ThemeKitValue, in theme: ResolvedTheme) throws -> JSONValue {
+  func lengthPart(_ l: ThemeLength?) throws -> JSONValue {
+    guard let l else { return .null }
+    guard let out = theme.resolve(l) else { return ["length": .null, "px": .null] }
+    return ["length": try JSONValue(encoding: out), "px": theme.points(of: l).map(JSONValue.number) ?? .null]
+  }
+  func valuePart(_ v: ThemeValue?) throws -> JSONValue {
+    guard let v else { return .null }
+    guard let out = theme.resolve(v) else { return ["value": .null] }
+    if case .length(let l) = out {
+      return ["value": try JSONValue(encoding: out), "px": l.points(in: theme.lengthContext).map(JSONValue.number) ?? .null]
+    }
+    return ["value": try JSONValue(encoding: out)]
+  }
+  switch kit {
+  case .length(let l):
+    return try lengthPart(l)
+  case .box(let b):
+    return [
+      "top": try lengthPart(b.top), "right": try lengthPart(b.right),
+      "bottom": try lengthPart(b.bottom), "left": try lengthPart(b.left),
+    ]
+  case .gap(let g):
+    return ["row": try lengthPart(g.row), "column": try lengthPart(g.column)]
+  case .value(let v):
+    return try valuePart(v)
+  case .shadow(let layers):
+    return try valuePart(.shadow(layers))
+  case .border(let b):
+    return ["width": try lengthPart(b.width), "color": try valuePart(b.color)]
+  case .gradient(let g):
+    return ["stops": .array(try g.stops.map { ["color": try valuePart($0.color), "position": try lengthPart($0.position)] })]
+  case .transitions(let list):
+    return ["easings": .array(try list.map { try valuePart($0.easing) })]
+  case .animation(let a):
+    return ["easing": try valuePart(a.easing)]
+  case .number, .time, .keyword:
+    return .null
+  }
 }
