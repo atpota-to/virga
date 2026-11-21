@@ -164,10 +164,10 @@ column `--time-col` (112) wide, so lists that share it line up.
 
 One look per job. Use these, in these places, and nothing else.
 
-- **Button** (`Button.jsx`): a pill. *Primary* is filled with ink and is the
-  one thing to do: New post (always there, in the sidebar or the tab bar), and
-  inside a page only the button that confirms what you opened (a dialog, a
-  sheet, the composer). *Quiet* (the default) is an outline in `--line-2`.
+- **Button** (`Button.jsx`): a pill. *Primary* is filled with ink (its edge
+  the fill's colour, as Danger's is) and is the one thing to do: New post
+  (always there, in the sidebar or the tab bar), and inside a page only the
+  button that confirms what you opened (a dialog, a sheet, the composer). *Quiet* (the default) is an outline in `--line-2`.
   *Ghost* has no edge until pressed: an icon alone (⋯, ✕) or the few quiet
   words that keep a button's shape (Show 10 more, Save as draft). *Danger* is a
   confirm dialog's red: `--danger` with white words by day, but at night the
