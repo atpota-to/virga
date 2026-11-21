@@ -68,8 +68,12 @@
       "synced": "20f4879fa0b0"
     },
     "src/lib/analyticsStore.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsStore.swift"
+      ],
+      "note": "IndexedDB is VirgaCore's FileStore here: one database per DID under analytics/<encodeURIComponent(name)>/, its schema (version 1, the same stores and key paths) in schema.json, each write a segment replayed in order, rows as the web's JSON, read back in IndexedDB's key order (numbers, then strings by code unit; the memory fallback keeps first-write order as the web's Map does). A database above version 1 is served from memory, as a VersionError open is on the web. The blocked-by-another-tab wait (BLOCKED_WAIT_MS, onblocked, onversionchange) has no iOS case: nothing else opens the files; blocked is always false. deleteDatabase(name, files:) stands in for indexedDB.deleteDatabase and closes an open handle as onversionchange does. Keys other than strings and numbers (dates, arrays, binary) are skipped.",
+      "synced": "1ba020e4948f"
     },
     "src/lib/analyticsSync.js": {
       "status": "pending",
