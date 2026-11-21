@@ -3,6 +3,9 @@
 // localStorage in a UserDefaults suite of the app's own, its IndexedDB under
 // Application Support, a long session's token in the Keychain.
 
+// VirgaUI exists only where UIKit does (iOS); a `swift build` on a Mac
+// skips these with it.
+#if canImport(UIKit)
 import Foundation
 import Security
 import VirgaCore
@@ -154,3 +157,4 @@ final class SecretStoreTests: XCTestCase {
     XCTAssertNil(AppStores.secretStore(service: service).secret(for: "virga:backend-token:did:plc:none"))
   }
 }
+#endif

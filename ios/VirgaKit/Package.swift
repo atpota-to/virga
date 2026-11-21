@@ -108,6 +108,16 @@ targets.append(
     swiftSettings: [.swiftLanguageMode(.v5)]
   )
 )
+// The app's stores on Apple's own storage (UserDefaults, the file system,
+// the Keychain). Run by `ios/scripts/xcodebuild.sh package-test` on an iOS
+// Simulator.
+targets.append(
+  .testTarget(
+    name: "VirgaUITests",
+    dependencies: ["VirgaUI", "VirgaCore", "VirgaSession"],
+    swiftSettings: [.swiftLanguageMode(.v5)]
+  )
+)
 #endif
 
 let package = Package(
