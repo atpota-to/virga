@@ -103,6 +103,8 @@ targets.append(
   .target(
     name: "VirgaUI",
     dependencies: logicTargets.map { .target(name: $0) },
+    // Instrument Sans (SIL OFL, its licence beside it), registered at launch.
+    resources: [.copy("Resources/Fonts")],
     swiftSettings: [.swiftLanguageMode(.v5)]
   )
 )
