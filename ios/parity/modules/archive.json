@@ -31,8 +31,17 @@
       "synced": "f82e59502b83"
     },
     "src/archive/useAnalyticsArchive.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveModel.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveModel+Sync.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveData.swift"
+      ],
+      "fixtures": [
+        "archive.model"
+      ],
+      "note": "ArchiveModel (@MainActor @Observable) has every state and action of the hook: data, actors, sync, syncError, runSync, setFollow, notePosted, noteDeleted, wantActors, checkActivity, deleteArchive, cancelSync, plus the exports. Mount and unmount are start() and stop(); the posting events bus (VirgaPosting) comes in as ArchiveEnvironment.postsChanged. Held to fixture archive.model: four scenarios replayed request by request, with every state of the sync bar and the archive after each step. The download and parse progress of the repo CAR reach the bar through an AsyncStream, in order.",
+      "synced": "45349f2d6747"
     },
     "src/charts/format.js": {
       "status": "ported",
@@ -76,8 +85,17 @@
       "synced": "1ba020e4948f"
     },
     "src/lib/analyticsSync.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsSync.swift",
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/AnalyticsRows.swift"
+      ],
+      "fixtures": [
+        "archive.sync",
+        "archive.model"
+      ],
+      "note": "Ported in full. The web's AbortSignal is the task's cancellation. onPage and onProgress are @Sendable async closures (awaited in order) so a @MainActor model can take them. The eight-at-a-time list checks keep Lists you're on in the order the lists were asked for, which is the web's order when its answers arrive as fast as they're asked (and arbitrary on either side otherwise).",
+      "synced": "e713880d194d"
     },
     "src/lib/followerLog.js": {
       "status": "ported",
