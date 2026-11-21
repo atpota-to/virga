@@ -13,16 +13,29 @@
       "swift": []
     },
     "src/archive/postChanges.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/PostChanges.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "note": "Ported in full. applyPostChanges compares a row's lists (tags, links, mentions, langs) by value where the web's !== compares them by reference, so a held row noted again with equal but separate lists reads as unchanged here and changed on the web; the rows that come back are the same either way. Swift returns nil for 'unchanged' (the web returns the same array).",
+      "synced": "f82e59502b83"
     },
     "src/archive/useAnalyticsArchive.js": {
       "status": "pending",
       "swift": []
     },
     "src/charts/format.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Charts/ChartFormat.swift"
+      ],
+      "fixtures": [
+        "archive.format"
+      ],
+      "synced": "457d038fd14c"
     },
     "src/lib/analytics.js": {
       "status": "ported",
@@ -49,16 +62,34 @@
       "swift": []
     },
     "src/lib/followerLog.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/FollowerLog.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "synced": "99a4b6529ab7"
     },
     "src/lib/periods.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/Periods.swift"
+      ],
+      "fixtures": [
+        "archive.periods"
+      ],
+      "synced": "dc1de3a8db26"
     },
     "src/lib/syncProgress.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaArchive/Lib/SyncProgress.swift"
+      ],
+      "fixtures": [
+        "archive.progress"
+      ],
+      "synced": "dd4f0d26f1de"
     }
   }
 }

@@ -13,9 +13,9 @@ import VirgaCore
 /// (ms); `since` is the sync before it, so it happened in between.
 public struct FollowerLogEntry: ArchiveRecord {
   public var did: String
-  public var handle: String
-  public var displayName: String
-  public var avatar: String
+  public var handle: String?
+  public var displayName: String?
+  public var avatar: String?
   public var followedAt: String?
   public var kind: String
   public var at: Double?
@@ -23,7 +23,7 @@ public struct FollowerLogEntry: ArchiveRecord {
   public var extra: [String: JSONValue]
 
   public init(
-    did: String, handle: String, displayName: String, avatar: String, followedAt: String?, kind: String,
+    did: String, handle: String?, displayName: String?, avatar: String?, followedAt: String?, kind: String,
     at: Double?, since: Double?, extra: [String: JSONValue] = [:]
   ) {
     self.did = did
@@ -43,17 +43,17 @@ public struct FollowerLogEntry: ArchiveRecord {
     guard json.objectValue != nil else { return nil }
     let f = JSONFields(json)
     self.init(
-      did: f.string("did") ?? "", handle: f.string("handle") ?? "", displayName: f.string("displayName") ?? "",
-      avatar: f.string("avatar") ?? "", followedAt: f.string("followedAt"), kind: f.string("kind") ?? "",
+      did: f.string("did") ?? "", handle: f.string("handle"), displayName: f.string("displayName"),
+      avatar: f.string("avatar"), followedAt: f.string("followedAt"), kind: f.string("kind") ?? "",
       at: f.double("at"), since: f.double("since"), extra: f.extra(Self.known))
   }
 
   public var json: JSONValue {
     var b = JSONBuilder(extra)
     b.put("did", did)
-    b.put("handle", handle)
-    b.put("displayName", displayName)
-    b.put("avatar", avatar)
+    b.putIfPresent("handle", handle)
+    b.putIfPresent("displayName", displayName)
+    b.putIfPresent("avatar", avatar)
     b.put("followedAt", followedAt)
     b.put("kind", kind)
     b.putIfPresent("at", at)

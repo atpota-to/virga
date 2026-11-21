@@ -110,17 +110,41 @@ public enum PostChanges {
     return true
   }
 
-  /// `a !== b` negated, for the values a row holds: an array or object is
-  /// only equal to itself, so two rows holding lists differ unless both
-  /// lack them.
+  /// `a === b` for the values a row holds. The web compares a row's lists
+  /// by reference, so a held row noted again with equal but separate lists
+  /// reads as changed there; values have no identity here, so lists compare
+  /// by value. The rows that come back are the same either way.
   static func strictEqual(_ a: JSONValue?, _ b: JSONValue?) -> Bool {
     switch (a, b) {
     case (.none, .none): return true
-    case (.some(.null), .some(.null)): return true
-    case (.some(.string(let x)), .some(.string(let y))): return x.jsEquals(y)
-    case (.some(.number(let x)), .some(.number(let y))): return x == y
-    case (.some(.bool(let x)), .some(.bool(let y))): return x == y
+    case (.some(let x), .some(let y)): return JSONSameValue.same(x, y)
     default: return false
     }
+  }
+}
+
+/// Deep equality of JSON values, strings by code unit.
+enum JSONSameValue {
+  static func same(_ a: JSONValue, _ b: JSONValue) -> Bool {
+    var stack: [(JSONValue, JSONValue)] = [(a, b)]
+    while let (x, y) = stack.popLast() {
+      switch (x, y) {
+      case (.null, .null): continue
+      case (.bool(let p), .bool(let q)): if p != q { return false }
+      case (.number(let p), .number(let q)): if p != q { return false }
+      case (.string(let p), .string(let q)): if !p.jsEquals(q) { return false }
+      case (.array(let p), .array(let q)):
+        guard p.count == q.count else { return false }
+        stack.append(contentsOf: zip(p, q).map { ($0, $1) })
+      case (.object(let p), .object(let q)):
+        guard p.count == q.count else { return false }
+        for (key, value) in p {
+          guard let other = q.jsValue(key) else { return false }
+          stack.append((value, other))
+        }
+      default: return false
+      }
+    }
+    return true
   }
 }
