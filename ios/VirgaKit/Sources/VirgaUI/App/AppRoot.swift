@@ -82,9 +82,11 @@ public struct AppRoot: View {
     case .needs:
       TermsGateView().id(did).sessionNotices()
     case .accepted:
-      ShellView(store: app.stores.keyValue, did: did)
-        .id(did)
-        .sessionNotices()
+      ArchiveHost(archive: app.archive(for: did)) {
+        ShellView(store: app.stores.keyValue, did: did)
+      }
+      .id(did)
+      .sessionNotices()
     }
   }
 

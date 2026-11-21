@@ -8,9 +8,10 @@
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/App/AppRoot.swift",
-        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift"
+        "ios/VirgaKit/Sources/VirgaUI/App/AppModel.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/ArchiveHost.swift"
       ],
-      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account) and useProfile. Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the archive's and the dashboards' providers (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
+      "note": "The app's states (the legal pages, restoring, a sign-in that came back without a session, the agreement screen and its checking line, the front page, the shell, remade per account), useProfile, and the archive's provider (ArchiveHost, one ArchiveModel per signed-in account, its store in the app's file store; deleting an account's data deletes its archive and starts every store handle afresh). Not yet: the composer's provider and a compose link kept from before a sign-in (pendingCompose.js, VirgaPosting's), the dashboards' provider (the shell reads the stored dashboards itself, ShellDashboards.swift), keepScansFor (Defense), and drawing the shell again when the formats change. On iOS a sign-in comes back into the running app, so a failed one is the session's error on whatever page is up.",
       "synced": "cb6343e81939"
     },
     "src/accounts/AccountMenu.jsx": {
@@ -18,7 +19,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Accounts/AccountMenu.swift"
       ],
-      "note": "All of it but the compact menu's Sync now (the archive's, VirgaArchive). A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out goes through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired to Virga's server; until then the sign-out says it couldn't check, as the web does when the read fails.",
+      "note": "All of it, with the compact menu's Sync now once there is an archive to sync. A native Menu: an account's row carries a person glyph, since a native menu item can't show the picture. The pending-work read before a long session's sign-out goes through AppModel.pendingWork, nil until VirgaPosting's schedule and timer services are wired to Virga's server; until then the sign-out says it couldn't check, as the web does when the read fails.",
       "synced": "4612f9ce83da"
     },
     "src/accounts/AccountsSettings.jsx": {
@@ -88,11 +89,11 @@
       "synced": "9ac3b99eb983"
     },
     "src/components/Delta.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Components/Figures.swift"
       ],
-      "note": "DeltaView draws the change; its words are charts/format.js's deltaText(pct), which comes with VirgaArchive's port of that module, so a caller passes the text until then.",
+      "note": "DeltaView(pct:title:plain:) draws ChartFormat.deltaText(pct) (charts/format.js, VirgaArchive): nil is \"new\"; a caller with no comparison at all (the web's undefined) draws none. The title is read by VoiceOver as a hint.",
       "synced": "1b9ce44616e4"
     },
     "src/components/Dialog.jsx": {
@@ -256,9 +257,10 @@
     "src/settings/SettingsPage.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Settings/SettingsPage.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Settings/DataSection.swift"
       ],
-      "note": "The index (a phone's), Account, Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy and the agreement's date). Not yet: Data and sync (the archive), Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside); About's line on when the repo was last read (the archive).",
+      "note": "The index (a phone's), Account, Data and sync (the archive's line, the sync's steps and Cancel, what failed, Sync now or the rest of a build, Rebuild posts and its dialog, the JSON and CSV exports through the system's exporter, where it is kept with the app folder's size for the web's storage estimate, and Delete this archive with its dialog, the toast and the way home), Appearance (the sky, the accent with its swatches, contrast, density, the sidebar, numbers and dates), Permissions and About (with the Terms and the Privacy Policy, the agreement's date, and when the repo was last read). Not yet: Dashboards (their editing) and Posting (the posting settings), each of which shows its header and says it isn't in the app yet; Appearance's live sky (the hillside). Data's \"Keep it when space runs low\" is shown only where the browser can be asked (navigator.storage.persist), which iOS has no counterpart for, so it isn't drawn.",
       "synced": "f20273b17b6a"
     },
     "src/settings/settings.css": {
@@ -275,19 +277,27 @@
       "swift": []
     },
     "src/shell/CommandPalette.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift"
+      ],
+      "note": "The palette as a full-height sheet, over VirgaInsights' Commands (buildCommands with CommandContext.app, paletteGroups, rememberRecent and parseRecent under virga:palette-recent, moveActive): the field on its line with Close, the groups, each option's icon (the account's picture for another account), title, hint (under the title on a phone, once there is a search) and tick, the empty line, the foot beside the sidebar, the result count read out, and the arrows, Home, End, Return and Escape on a hardware keyboard. Search in the app bar, the sidebar and the rail opens it, and ⌘K. Running: an address through the navigator, Sync, the period (with the web's toast), the sky, another account; New post goes to the composer's address. Not yet: Customize this dashboard and New dashboard, left out of the list until the dashboards' editing is ported, and the composer itself.",
+      "synced": "5138c6649f81"
     },
     "src/shell/FirstRun.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift"
+      ],
+      "note": "The first build's page, word for word: what a build reads and where it goes, the store's warning when the archive would only last the session, Build your archive (a full sync), the steps while it runs (SyncSteps), and what failed. Shown by RoutedPage where a route needs the archive and it isn't built.",
+      "synced": "4a80158934c6"
     },
     "src/shell/MobileNav.jsx": {
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift"
       ],
-      "note": "The tab bar and the app bar: on a part's front page the mark and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, and the account, in the navigation bar. Not yet: Search (the command palette) and the account menu's Sync now (the archive).",
+      "note": "The tab bar and the app bar: on a part's front page the mark, Search and the account in the page's content, scrolling away with the sky; inside a part the system's back button with the page above's name, Search and the account, in the navigation bar; Search opens the command palette, and the account's menu holds Sync now once there is an archive.",
       "synced": "25b2e5064862"
     },
     "src/shell/Shell.jsx": {
@@ -298,7 +308,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellNavigator.swift",
         "ios/VirgaKit/Sources/VirgaUI/Shell/ShellDashboards.swift"
       ],
-      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, and the titles. Not yet: the first run and the sync's places (the archive), the command palette and its shortcut, New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
+      "note": "The shell by the window's width (a split view with the sidebar from 900, a stack with the app bar and tab bar under), the address as its state, every route to a page (a page not ported yet shows its header and says so), NotFound, the dashboard redirect and the last dashboard looked at, the titles, the archive's opening line and the first build's page where a route needs it, and the sync's places (the sidebar's card, or the strip at the top of the page, neither while the first build's page is up). The command palette (from Search, and ⌘K on a hardware keyboard) and the toasts are mounted here. Not yet: New dashboard, the composer and its shortcut (New post goes to the composer's address), and the live sky.",
       "synced": "2463a24deec2"
     },
     "src/shell/Sidebar.jsx": {
@@ -306,25 +316,35 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Sidebar.swift"
       ],
-      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail. Not yet: Search or jump to… (the command palette), New dashboard, the archive's lines at the foot (SyncCard), and the mark's five taps (the live sky).",
+      "note": "The parts as words with the open one's pages, the account, New post, folding to the rail, and the archive's lines at the foot (SyncCard, brief beside the first build's page; on the rail Sync now is in the account's menu). Search or jump to… with its shortcut (a search glyph on the rail) opens the command palette. Not yet: New dashboard, and the mark's five taps (the live sky).",
       "synced": "908f8b702854"
     },
     "src/shell/SyncStatus.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift"
+      ],
+      "note": "overallFraction, syncHeadline, syncStepText, syncWhen, useArchiveCounts and runFor (SyncStatus), SyncCard at the sidebar's foot, SyncBanner at the top of a phone's page and beside the folded rail (drawn by VirgaPage), and SyncSteps on the first build's page. The steps' names and lines are VirgaArchive's SyncProgress. The role=status lines are read as updating frequently.",
+      "synced": "9359b4bab20c"
     },
     "src/shell/bits.jsx": {
       "status": "partial",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The mark, the page header, toasts, and useIsNarrow (the theme's hasSidebar). Not yet: the period picker, its range dialog and usePeriod (they need src/lib/periods.js and analytics.js, VirgaArchive's), and useSkyTaps (the live sky).",
+      "note": "The mark, the page header, toasts (ToastCenter and ToastStack; nothing pushes one yet), useIsNarrow (the theme's hasSidebar), usePeriod (PreferencesModel.period(), setPeriod, setCustomPeriod over VirgaArchive's Periods), PeriodPicker (the presets and Custom; on a phone Custom is its calendar alone) and RangeDialog (two days on the system's date picker in the active time zone, checked as they are picked, with the web's three problems and its line on what the range covers). Not yet: useSkyTaps (the live sky).",
       "synced": "a49f9d2a00e7"
     },
     "src/shell/commandPalette.css": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Shell/CommandPalette.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Theme/Measures.swift"
+      ],
+      "note": "The field (no box, a 2-point rule in ink, 52 tall, --text-lg and 16 from 374 down), Close on its line, the list's groups and options (40 tall, 48 on a phone, the highlighted one on --hover), the tick, the empty line, the foot and the keys (.kbd), a phone's hints under the titles and waiting for a search. The sheet is the system's at every width: the web's dialog near the top of a wide screen (620 wide, 12vh down) has no counterpart.",
+      "synced": "68cfeed12a57"
     },
     "src/shell/shell.css": {
       "status": "partial",
@@ -335,9 +355,12 @@
         "ios/VirgaKit/Sources/VirgaUI/Shell/MobileNav.swift",
         "ios/VirgaKit/Sources/VirgaUI/Components/PageHeader.swift",
         "ios/VirgaKit/Sources/VirgaUI/Components/Dialog.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Shell/Bits.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/SyncStatus.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/FirstRun.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/PeriodPicker.swift"
       ],
-      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts. Not yet: the sync's places and the first run (the archive), and the range dialog's fields (the period picker).",
+      "note": "The shell, its figure size, the sidebar and rail, the page header and body, the app bar and tab bar, dialogs, choices and toasts, the sync's places, the first run, the period picker and the range dialog's fields. The sidebar's search row and the app bar's Search button too. Not yet: the sidebar list's overflow fades.",
       "synced": "e21d87c5ffe7"
     },
     "src/signin/HandleField.jsx": {

@@ -4,6 +4,7 @@
 // Ports src/signin/signin.css (its measures)
 // Ports src/accounts/accounts.css (its measures)
 // Ports src/settings/settings.css (its measures)
+// Ports src/shell/commandPalette.css (its measures)
 //
 // The measures of the stylesheets ThemeKit doesn't read yet (ThemeKit holds
 // theme.css, base.css, controls.css and app.css; ios/parity/cases/
@@ -150,6 +151,102 @@ public enum Measure {
     public static let currentDot: CGFloat = 7
     /// A 44px disc on the rail: `.sidebar[data-collapsed] .nav-link`.
     public static let railDisc: CGFloat = 44
+  }
+
+  /// shell.css's sync places (.sync-card, .sync-banner, .sync-steps).
+  public enum Sync {
+    /// `.sync-card { gap: 4px }`; `.sync-card-row, .sync-card-title { gap: 8px }`.
+    public static let cardGap: CGFloat = 4
+    public static let rowGap: CGFloat = 8
+    /// `.sync-card-sub { line-height: 1.4 }`
+    public static let subLineHeight: Double = 1.4
+    /// `.sync-card .progress { margin: 4px 0 }`
+    public static let cardProgressSpace: CGFloat = 4
+    /// `.sync-card > .btn { gap: 6px; min-height: 24px; margin-top: 2px }`, 44 to touch.
+    public static let linkGap: CGFloat = 6
+    public static let linkHeight: CGFloat = 24
+    public static let linkSpaceAbove: CGFloat = 2
+    public static let linkIcon: CGFloat = 14
+    /// `.sidebar .sync-card-counts` is hidden on a window this short or
+    /// shorter (`max-height: 860px`).
+    public static let countsHiddenAtHeight: CGFloat = 860
+    /// `.sync-banner { min-height: 36px; gap: 16px; margin-bottom: 4px }`,
+    /// its progress a 2px line along its foot.
+    public static let bannerHeight: CGFloat = 36
+    public static let bannerGap: CGFloat = 16
+    public static let bannerSpaceBelow: CGFloat = 4
+    public static let bannerProgress: CGFloat = 2
+    /// `.sync-banner-step::before { margin: 0 6px }`
+    public static let bannerDotSpace: CGFloat = 6
+    /// `.sync-steps-wrap { gap: 12px }`, `.sync-steps { gap: 12px }` in
+    /// three columns (two from 479 down), `.sync-step { gap: 6px }`,
+    /// `.sync-step-name { gap: 6px }`, its tick 13.
+    public static let stepsGap: CGFloat = 12
+    public static let stepColumns = 3
+    public static let narrowStepColumns = 2
+    public static let narrowStepsAt: CGFloat = 479
+    public static let stepGap: CGFloat = 6
+    public static let tick: CGFloat = 13
+  }
+
+  /// commandPalette.css.
+  public enum Palette {
+    /// `.palette-search { margin: 0 56px 0 20px; border-bottom: 2px }`, its
+    /// input 52 tall, 30 in for the 18-point glyph, its words --text-lg (16
+    /// from 374 down).
+    public static let fieldLeading: CGFloat = 20
+    public static let fieldTrailing: CGFloat = 56
+    public static let fieldRule: CGFloat = 2
+    public static let fieldHeight: CGFloat = 52
+    public static let fieldIcon: CGFloat = 18
+    public static let fieldIconGap: CGFloat = 12
+    public static let narrowFieldSize: CGFloat = 16
+    public static let fieldSpaceAbove: CGFloat = 4
+    /// `.palette-list { padding: 8px 10px 10px }`, `.palette-group + .palette-group { margin-top: 8px }`,
+    /// `.palette-group-head { padding: 8px 10px 4px }`.
+    public static let list = EdgeInsets(top: 8, leading: 10, bottom: 10, trailing: 10)
+    public static let groupGap: CGFloat = 8
+    public static let groupHead = EdgeInsets(top: 8, leading: 10, bottom: 4, trailing: 10)
+    /// `.palette-option { gap: 10px; min-height: 40px; padding: 5px 10px }`, 48 on a phone;
+    /// its icon 24 wide (a 16 glyph), the tick 15, a phone's hint 1 under its title.
+    public static let optionGap: CGFloat = 10
+    public static let optionHeight: CGFloat = 40
+    public static let phoneOptionHeight: CGFloat = 48
+    public static let optionPadding = EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
+    public static let optionIcon: CGFloat = 24
+    public static let optionGlyph: CGFloat = 16
+    public static let mark: CGFloat = 15
+    public static let phoneHintGap: CGFloat = 1
+    /// `.palette-empty { padding: 28px 12px 32px }`
+    public static let empty = EdgeInsets(top: 28, leading: 12, bottom: 32, trailing: 12)
+    /// `.palette-foot { gap: 18px; padding: 9px 20px 11px }`, its keys 4 from their words.
+    public static let foot = EdgeInsets(top: 9, leading: 20, bottom: 11, trailing: 20)
+    public static let footGap: CGFloat = 18
+    public static let footKeyGap: CGFloat = 4
+    /// `.kbd { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 5px }`
+    public static let keySize: CGFloat = 20
+    public static let keyPadding: CGFloat = 5
+    public static let keyRadius: CGFloat = 5
+    /// The sidebar's row: its glyph 15 (`.sidebar-search > svg`).
+    public static let sidebarIcon: CGFloat = 15
+  }
+
+  /// shell.css's `.range-fields`: `repeat(auto-fit, minmax(180px, 1fr))`, 16 apart.
+  public enum Period {
+    public static let fieldMinWidth: CGFloat = 180
+    public static let fieldsGap: CGFloat = 16
+  }
+
+  /// shell.css's `.first-run`.
+  public enum FirstRun {
+    /// `.first-run-card { gap: 20px; max-width: 640px }`
+    public static let cardGap: CGFloat = 20
+    public static let cardMaxWidth: CGFloat = 640
+    /// `.first-run-list li { gap: 12px; padding: 12px 0 }`, its icon 16, 3 down.
+    public static let itemGap: CGFloat = 12
+    public static let itemPadding: CGFloat = 12
+    public static let icon: CGFloat = 16
+    public static let iconSpaceAbove: CGFloat = 3
   }
 
   public enum Brand {

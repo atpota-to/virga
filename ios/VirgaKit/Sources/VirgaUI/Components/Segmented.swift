@@ -26,14 +26,19 @@ public struct SegmentedOption<Value: Hashable>: Identifiable {
   public var systemImage: String?
   /// What VoiceOver reads instead of the label (the web's aria-label).
   public var accessibilityLabel: String?
+  /// The glyph alone, its words kept as its name (a phone's Custom key).
+  public var iconOnly: Bool
 
   public var id: Value { value }
 
-  public init(_ value: Value, _ label: String, systemImage: String? = nil, accessibilityLabel: String? = nil) {
+  public init(
+    _ value: Value, _ label: String, systemImage: String? = nil, accessibilityLabel: String? = nil, iconOnly: Bool = false
+  ) {
     self.value = value
     self.label = label
     self.systemImage = systemImage
     self.accessibilityLabel = accessibilityLabel
+    self.iconOnly = iconOnly
   }
 }
 
@@ -107,12 +112,14 @@ struct SegmentedKey<Value: Hashable>: View {
         }
         // The word in bold holds the key's width, so pressing doesn't nudge
         // the keys beside it.
-        ZStack {
-          Text(option.label)
-            .virgaText(size: fontSize, weight: ThemeKit.segmentedOnWeight)
-            .hidden()
-          Text(option.label)
-            .virgaText(size: fontSize, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight)
+        if !(option.iconOnly && option.systemImage != nil) {
+          ZStack {
+            Text(option.label)
+              .virgaText(size: fontSize, weight: ThemeKit.segmentedOnWeight)
+              .hidden()
+            Text(option.label)
+              .virgaText(size: fontSize, weight: isOn ? ThemeKit.segmentedOnWeight : ThemeKit.segmentedKeyWeight)
+          }
         }
       }
       .lineLimit(1)

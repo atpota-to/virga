@@ -7,9 +7,10 @@
     "src/archive/ArchiveContext.jsx": {
       "status": "partial",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveContext.swift"
+        "ios/VirgaKit/Sources/VirgaArchive/Archive/ArchiveContext.swift",
+        "ios/VirgaKit/Sources/VirgaUI/App/ArchiveHost.swift"
       ],
-      "note": "isBuilt is ported (ArchiveContext.isBuilt, and ArchiveModel.isBuilt). ArchiveProvider and useArchive are React context: VirgaUI passes the account's ArchiveModel down through the SwiftUI environment instead, and the context's nowMs (one per change of data) is ArchiveModel.nowMs, moved on every change of data.rev. The account's profile the provider carries comes from the session.",
+      "note": "isBuilt is ported (ArchiveContext.isBuilt, and ArchiveModel.isBuilt). ArchiveProvider and useArchive are React context: VirgaUI passes the account's ArchiveModel down through the SwiftUI environment instead, and the context's nowMs (one per change of data) is ArchiveModel.nowMs, moved on every change of data.rev. The account's profile the provider carries comes from the session. VirgaUI's ArchiveHost is the provider: one model per signed-in account (AppModel.archive(for:)), started from .task when the shell appears and stopped when it goes.",
       "synced": "d463c42e9280"
     },
     "src/archive/exports.js": {

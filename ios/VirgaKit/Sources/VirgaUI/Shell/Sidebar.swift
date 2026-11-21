@@ -10,12 +10,19 @@
 // a 72-point rail of icons, the part you are in on a tinted disc, the
 // button that opens it again at the foot over the account.
 //
-// Not here yet: Search or jump to… (the command palette), New dashboard
-// (its dialog comes with the dashboards), and the archive's lines at the
-// foot (the sync, VirgaArchive's).
+// At its foot, the archive's lines (SyncCard): when it was synced and Sync
+// now, or the sync under way; only the first line beside the first build's
+// page, which shows the steps itself. Folded, the rail has the fold button
+// and the account there instead, and Sync now is in the account's menu.
+//
+// Under New post, "Search or jump to…" with its shortcut opens the command
+// palette (a search glyph on the rail).
+//
+// Not here yet: New dashboard (its dialog comes with the dashboards).
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaInsights
 
@@ -34,8 +41,13 @@ public struct Sidebar: View {
   @Environment(ShellDashboards.self) private var dashboards
   @Environment(PreferencesModel.self) private var preferences
   @Environment(AppModel.self) private var app
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
+  private let firstRun: Bool
 
-  public init() {}
+  /// - Parameter firstRun: whether the page is the first build's.
+  public init(firstRun: Bool = false) {
+    self.firstRun = firstRun
+  }
 
   private var collapsed: Bool { preferences.prefs.sidebar == .collapsed }
 
@@ -69,6 +81,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary))
       .environment(\.virgaFillsWidth, true)
       .accessibilityIdentifier("sidebar-new-post")
+      SidebarSearch()
       ScrollView(.vertical, showsIndicators: false) {
         VStack(alignment: .leading, spacing: Measure.Sidebar.navGap) {
           ForEach(sections) { section in
@@ -76,6 +89,9 @@ public struct Sidebar: View {
           }
         }
         .padding(.vertical, Measure.Sidebar.navGap)
+      }
+      if let archive {
+        SyncCard(archive: archive, brief: firstRun)
       }
     }
     .padding(.top, theme.pageTop)
@@ -98,6 +114,7 @@ public struct Sidebar: View {
       .buttonStyle(.virga(.primary, icon: true))
       .accessibilityLabel("New post")
       .accessibilityIdentifier("sidebar-new-post")
+      PaletteButton()
       ScrollView(.vertical, showsIndicators: false) {
         VStack(spacing: Measure.Sidebar.railNavGap) {
           ForEach(sections) { section in

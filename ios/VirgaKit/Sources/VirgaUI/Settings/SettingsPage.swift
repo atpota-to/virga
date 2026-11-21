@@ -9,15 +9,17 @@
 // 760 down the control goes under the words, except a switch or a word or
 // two of state.
 //
-// Here now: Account (AccountsSettings), Appearance (the sky, the accent
-// with its swatches, contrast, density, the sidebar, numbers and dates),
-// Permissions, and About (with the Terms and the Privacy Policy). Data and
-// sync, Dashboards and Posting need the archive, the dashboards' editing
-// and the posting settings, which come later; each shows its header and
-// says so. Appearance's live sky waits for the hillside.
+// Here now: Account (AccountsSettings), Data and sync (DataSection.swift),
+// Appearance (the sky, the accent with its swatches, contrast, density, the
+// sidebar, numbers and dates), Permissions, and About (with the Terms and
+// the Privacy Policy, and when the repo was last read). Dashboards and
+// Posting need the dashboards' editing and the posting settings, which
+// come later; each shows its header and says so. Appearance's live sky
+// waits for the hillside.
 
 #if canImport(UIKit)
 import SwiftUI
+import VirgaArchive
 import VirgaCore
 import VirgaInsights
 import VirgaSession
@@ -47,6 +49,7 @@ public struct SettingsPage: View {
   private func sectionBody(_ key: String) -> some View {
     switch key {
     case "account": AccountsSettings()
+    case "data": DataSection()
     case "appearance": AppearanceSection()
     case "permissions": PermissionsSection()
     case "about": AboutSection()
@@ -592,6 +595,7 @@ struct AboutSection: View {
   @Environment(\.virgaTheme) private var theme
   @Environment(AppModel.self) private var app
   @Environment(SessionModel.self) private var session
+  @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   @State private var reading: String?
 
   /// When this device noted that the account agreed to the current documents.
@@ -627,6 +631,13 @@ struct AboutSection: View {
       SettingsSectionView(title: "Where the data comes from", sub: nil) {
         ForEach(Self.sources(host: host), id: \.0) { source in
           SourceRow(name: source.0, text: source.1)
+        }
+        if let read = archive?.data.meta.repo?.syncedAt, read != 0, read.isFinite {
+          Text("Your repo was last read \(Time.relativeTime(read, now: SyncStatus.now())), on \(Time.formatDateShort(read)).")
+            .virgaText(.textSm)
+            .foregroundStyle(theme.muted)
+            .padding(.top, theme.points(ThemeKit.cardCaptionSpaceAbove))
+            .accessibilityIdentifier("about-repo-read")
         }
       }
     }
