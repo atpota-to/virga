@@ -148,7 +148,8 @@ struct ScheduleLinkedText: View {
       case .link(let text, let path):
         var link = AttributedString(text)
         link.link = InternalLink.url(path)
-        link.underlineStyle = .single
+        // Named in full: SwiftUI's and UIKit's attribute scopes both have an underlineStyle.
+        link.underlineStyle = Text.LineStyle.single
         out += link
       }
     }
@@ -251,6 +252,9 @@ struct QueueCalendarView: View {
   var caption = true
   var lead: [ScheduleLinkedText.Piece]?
   var after: [ScheduleLinkedText.Piece]?
+  /// The calendar's own width (`.sched-cal { container-type: inline-size }`),
+  /// for its day heads.
+  @State private var width: CGFloat = 0
 
   /// One of the grid's rows: a time of day (the nth slot of that minute on a day).
   struct GridLine: Identifiable {
@@ -270,11 +274,19 @@ struct QueueCalendarView: View {
     VStack(alignment: .leading, spacing: 0) {
       CalendarGrid(
         days: days, lines: grid.lines, rowOf: grid.rowOf, now: now, occupancy: occupancy, onPick: onPick,
-        highlight: highlight, zone: device)
+        highlight: highlight, zone: device, wideHeads: width >= Measure.Schedule.calWideHead)
       if caption {
         captionLine(days: days, laterCount: model?.laterCount ?? 0)
       }
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { width = geometry.size.width }
+          .onChange(of: geometry.size.width) { _, next in width = next }
+      }
+    )
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("queue-calendar")
   }
@@ -374,6 +386,8 @@ struct CalendarGrid: View {
   let onPick: ((JSONValue) -> Void)?
   let highlight: JSONValue?
   let zone: TimeZone
+  /// The day's name beside its date: the calendar is 520 or wider.
+  let wideHeads: Bool
 
   var body: some View {
     let phone = theme.isPhone
@@ -386,7 +400,7 @@ struct CalendarGrid: View {
           .gridCellUnsizedAxes(.vertical)
           .accessibilityHidden(true)
         ForEach(Array(days.enumerated()), id: \.element.key) { d, day in
-          CalendarDayHead(day: day, today: d == 0, zone: zone)
+          CalendarDayHead(day: day, today: d == 0, zone: zone, wide: wideHeads)
             .accessibilitySortPriority(Double((days.count - d) * 1000 + 999))
         }
       }
@@ -439,6 +453,8 @@ struct CalendarDayHead: View {
   let day: CalendarDay
   let today: Bool
   let zone: TimeZone
+  /// `@container (min-width: 520px)`: the calendar has room for the name beside the date.
+  let wide: Bool
 
   var body: some View {
     let locale = AppLocale.activeLocale()
@@ -446,9 +462,6 @@ struct CalendarDayHead: View {
     let date = JSDate.fields(day.date, timeZone: zone).map { "\($0.date)" } ?? ""
     let long = AppLocale.toLocaleDateString(
       day.date, DateFormatOptions(weekday: "long", month: "long", day: "numeric"), locale: locale, timeZone: zone)
-    // `@container (min-width: 520px)`: the page's column, beside the sidebar where there is one.
-    let column = Swift.min(theme.contentMax, theme.windowWidth - (theme.hasSidebar ? theme.sidebarW : 0) - theme.pagePad * 2)
-    let wide = column >= Measure.Schedule.calWideHead
     Group {
       if wide {
         HStack(spacing: Measure.Schedule.calHeadGap) {

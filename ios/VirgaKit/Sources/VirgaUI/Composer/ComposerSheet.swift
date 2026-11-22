@@ -38,10 +38,20 @@ struct ComposerSheet: View {
       } else {
         ComposerHead(title: title) { controller.closeComposer() }
       }
-      ScrollView {
-        ComposerBody(controller: controller)
-          .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
-          .padding(.bottom, theme.space4)
+      ScrollViewReader { proxy in
+        ScrollView {
+          ComposerBody(controller: controller)
+            .padding(.horizontal, theme.composerNarrow ? ComposerMeasure.phoneSide : ComposerMeasure.side)
+            .padding(.bottom, theme.space4)
+        }
+        // SCHEDULE: the when panel opens under the post's settings, which on
+        // a phone can be below the foot of the sheet: brought into view.
+        .onChange(of: controller.scheduling.whenOpen) { _, open in
+          guard open else { return }
+          DispatchQueue.main.async {
+            withAnimation(theme.motion.control) { proxy.scrollTo(ComposerWhenPanel.anchor) }
+          }
+        }
       }
       .scrollDismissesKeyboard(.interactively)
       .sheet(item: $controller.dialog) { dialog in

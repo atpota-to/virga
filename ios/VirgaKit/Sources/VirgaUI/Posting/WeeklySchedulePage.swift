@@ -66,7 +66,10 @@ struct WeeklySchedulePage: View {
   @Environment(ToastCenter.self) private var toasts: ToastCenter?
   @Environment(ArchiveModel.self) private var archive: ArchiveModel?
   let did: String?
+  private let store: (any KeyValueStore)?
   @State private var settings: PostingSettingsModel
+  /// The settings stopped as the page went: a new one when it comes back.
+  @State private var settingsStopped = false
   @State private var load: ScheduledListLoad
   @State private var error = ""
   @State private var resetting = false
@@ -74,6 +77,7 @@ struct WeeklySchedulePage: View {
 
   init(app: AppModel, did: String?) {
     self.did = did
+    store = app.stores.keyValue
     _settings = State(
       initialValue: PostingSettingsModel(did: did, store: app.stores.keyValue, language: Locale.preferredLanguages.first))
     _load = State(
@@ -122,10 +126,17 @@ struct WeeklySchedulePage: View {
         side(now: now, queued: queued, rows: rows, off: off, empty: empty)
       }
     }
-    .task { load.start() }
+    .task {
+      if settingsStopped {
+        settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
+        settingsStopped = false
+      }
+      load.start()
+    }
     .onDisappear {
       load.stop()
       settings.stop()
+      settingsStopped = true
     }
     .scheduleActionDialog(
       isPresented: $resetting, title: "Start again from the default?", confirmLabel: "Use the default",

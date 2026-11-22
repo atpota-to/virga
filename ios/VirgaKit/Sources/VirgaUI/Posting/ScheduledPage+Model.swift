@@ -49,7 +49,11 @@ final class ScheduledPageModel {
   @ObservationIgnored let requester: VirgaBackend?
   @ObservationIgnored let transport: any HTTPTransport
   @ObservationIgnored let clock: NetworkClock
-  let settings: PostingSettingsModel
+  @ObservationIgnored let store: (any KeyValueStore)?
+  /// The account's posting settings (the weekly schedule). A new one after
+  /// the page comes back, since a stopped one no longer hears changes made
+  /// on the weekly schedule's page.
+  private(set) var settings: PostingSettingsModel
   let load: ScheduledListLoad
 
   var now: Double = ScheduleText.now()
@@ -66,6 +70,7 @@ final class ScheduledPageModel {
 
   @ObservationIgnored private var ticker: Task<Void, Never>?
   @ObservationIgnored private var litTask: Task<Void, Never>?
+  @ObservationIgnored private var settingsStopped = false
 
   init(
     session: SessionModel, store: (any KeyValueStore)?, did: String?, transport: any HTTPTransport, clock: NetworkClock
@@ -74,6 +79,7 @@ final class ScheduledPageModel {
     self.session = session
     self.transport = transport
     self.clock = clock
+    self.store = store
     let requester = session.backendFor(did)
     self.requester = requester
     settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
@@ -87,6 +93,10 @@ final class ScheduledPageModel {
   /// The read, and the clock: relative times move on, and a post whose
   /// time has come is looked for again (once a minute, never mid-drag).
   func start() {
+    if settingsStopped {
+      settings = PostingSettingsModel(did: did, store: store, language: Locale.preferredLanguages.first)
+      settingsStopped = false
+    }
     load.start()
     ticker?.cancel()
     ticker = Task { [weak self] in
@@ -104,6 +114,7 @@ final class ScheduledPageModel {
     litTask?.cancel()
     load.stop()
     settings.stop()
+    settingsStopped = true
   }
 
   func tick() {

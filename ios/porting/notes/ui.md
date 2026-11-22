@@ -332,6 +332,13 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   `scheduled-post-now-dialog`, `scheduled-remove-dialog`, `weekly-schedule`, `weekly-schedule-changed`,
   `weekly-schedule-add`, `weekly-schedule-copy`, `weekly-schedule-reset`, `weekly-schedule-ahead`,
   `settings-posting-queue` (each `-ipad` on the iPad). A step the demo can't reach is skipped.
+- Coming back to a page: on a phone the weekly schedule is pushed over Scheduled posts, and a page that
+  goes stops its PostingSettingsModel (it no longer hears changes). Both pages make a new one when they
+  appear again (`ScheduledPageModel.start()`, WeeklySchedulePage's `.task`), so a week changed on the
+  pushed page is the one drawn after Back. The week ahead's day heads put the name beside the date from
+  520 wide, measured on the calendar itself (in the weekly schedule's side column it is narrower than
+  the page). The composer brings its when panel into view as it opens (a ScrollViewReader round the
+  sheet's ScrollView, `ComposerWhenPanel.anchor`), as the web's scrollIntoView does.
 - Not yet: Set a timer on a timer note (TimerDialog.jsx comes with the timers' page; the row offers
   Dismiss), the timers' page's and the timer and when dialogs' rules of schedule.css. Deliberate
   differences: useFocusAfterRemoval is the system's; the date, the time and a new weekly time are the

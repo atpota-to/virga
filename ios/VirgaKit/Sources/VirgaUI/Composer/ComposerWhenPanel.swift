@@ -18,6 +18,9 @@ struct ComposerWhenPanel: View {
   let controller: ComposerController
   let disabled: Bool
 
+  /// The panel's place in the composer's scroll, to bring it into view as it opens.
+  static let anchor = "composer-when-panel"
+
   var body: some View {
     let state = controller.state
     let mode = state.schedule?.mode ?? ""
@@ -25,6 +28,7 @@ struct ComposerWhenPanel: View {
     Group {
       if open && (mode == "at" || mode == "queue") {
         panel(mode: mode)
+          .id(Self.anchor)
       } else if !open && mode == "queue" {
         queueNote
       }
