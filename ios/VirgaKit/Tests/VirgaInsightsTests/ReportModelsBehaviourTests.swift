@@ -6,6 +6,7 @@ import Foundation
 import Testing
 import VirgaArchive
 import VirgaCore
+import VirgaRepo
 import VirgaTestSupport
 @testable import VirgaInsights
 
@@ -100,5 +101,18 @@ import VirgaTestSupport
     cache.clear()
     _ = ReportModels.cached(in: cache, archive(), "probe", nil, []) { () -> Int in runs += 1; return 1 }
     #expect(runs == 2)
+  }
+}
+
+@Suite struct ReportArchiveBehaviour {
+  @Test func passesTheArchivesRowsThrough() {
+    let rows = [
+      AtmosphereRow(uri: "at://did:plc:me/fyi.unravel.frontpage.post/3k2a", collection: "fyi.unravel.frontpage.post", at: 1_794_000_000_000),
+      AtmosphereRow(uri: "at://did:plc:me/sh.tangled.repo/3k2b", collection: "sh.tangled.repo", at: 1_794_100_000_000),
+    ]
+    let archive = ReportArchive(did: "did:plc:me", data: ArchiveData(loaded: true, atmosphere: rows, rev: 2))
+    #expect(archive.atmosphere == rows)
+    #expect(archive.rev == 2)
+    #expect(ReportArchive(did: "did:plc:me").atmosphere.isEmpty)
   }
 }
