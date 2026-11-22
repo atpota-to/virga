@@ -225,7 +225,7 @@ struct PostBlock: View {
     let numbered = numberChoice ?? (controller.settings.threadNumbering == "counter")
     let parts = over ? ThreadEdits.splitTexts(controller.state.posts, post.id, numbering: numbered ? .counter : .off) : nil
     return HStack(spacing: theme.space3) {
-      if !theme.isPhone { PostTools(controller: controller, post: post, disabled: disabled) }
+      if !theme.composerToolsInFoot { PostTools(controller: controller, post: post, disabled: disabled) }
       if !offer && parts != nil {
         Button("Split into a thread") { controller.split(post.id, numbered: numbered) }
           .buttonStyle(.linkAction)

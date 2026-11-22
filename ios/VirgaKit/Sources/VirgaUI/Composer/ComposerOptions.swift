@@ -69,7 +69,7 @@ struct ComposerOptions: View {
   var body: some View {
     let state = controller.state
     let replying = state.reply != nil
-    let phone = theme.isPhone
+    let phone = theme.composerNarrow
     VStack(alignment: .leading, spacing: phone ? 0 : ComposerMeasure.optionsTop) {
       Rectangle().fill(theme.rule).frame(height: 1)
       if phone {

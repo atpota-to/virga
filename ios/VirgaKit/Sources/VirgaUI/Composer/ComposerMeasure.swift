@@ -66,6 +66,22 @@ enum ComposerMeasure {
   /// phone's `8px 12px 10px 20px`.
   static let foot = EdgeInsets(top: 12, leading: 24, bottom: 16, trailing: 24)
   static let phoneFoot = EdgeInsets(top: 8, leading: 20, bottom: 10, trailing: 12)
+  /// `.composer-bar { gap: 10px; min-height: 56px; padding: 6px 12px 6px 20px }`
+  /// (the safe area's inset is the sheet's own), `.composer-bar-close {
+  /// min-height: 44px; font-weight: 500 }`.
+  static let barGap: CGFloat = 10
+  static let barHeight: CGFloat = 56
+  static let bar = EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 12)
+  static let barCloseHeight: CGFloat = 44
+}
+
+extension VirgaTheme {
+  /// composer.css `(max-width: 640px)`: the sheet fills the screen, with
+  /// Close, its title and the send button in a bar held at the top.
+  var composerNarrow: Bool { windowWidth <= Breakpoint.composer }
+  /// composer.css `(max-width: 760px)`: the post's tools are in the foot,
+  /// once, for the post being written in.
+  var composerToolsInFoot: Bool { windowWidth <= Breakpoint.tablet }
 }
 
 #endif
