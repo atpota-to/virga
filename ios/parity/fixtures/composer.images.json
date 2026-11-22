@@ -1,0 +1,2727 @@
+{
+  "name": "composer.images",
+  "sources": [
+    "src/posting/lib/images.js"
+  ],
+  "cases": [
+    {
+      "id": "imagesConstants",
+      "fn": "imagesConstants",
+      "input": {},
+      "output": {
+        "MAX_IMAGES": 4,
+        "IMAGE_BUDGET": {
+          "maxSizeMB": 1.9,
+          "maxDimension": 4000
+        },
+        "CARD_THUMB_BUDGET": {
+          "maxSizeMB": 0.95,
+          "maxDimension": 1920
+        },
+        "IMAGE_MIME_TYPES": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/heic",
+          "image/heif",
+          "image/avif"
+        ]
+      }
+    },
+    {
+      "id": "isImageFile#1",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#2",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.jpg",
+          "type": "image/jpeg",
+          "size": 1992294,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#3",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#4",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#5",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "dot.gif",
+          "type": "image/gif",
+          "size": 3,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#6",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "type": "image/webp",
+          "size": 2048
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#7",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#8",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.b.c.png",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#9",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "name.",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#10",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": ".hidden",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#11",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "scan",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isImageFile#12",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "doc.pdf",
+          "type": "application/pdf",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isImageFile#13",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "x.png",
+          "type": "",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isImageFile#14",
+      "fn": "isImageFile",
+      "input": {
+        "file": null
+      },
+      "output": false
+    },
+    {
+      "id": "isImageFile#15",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "type": 5
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isImageFile#16",
+      "fn": "isImageFile",
+      "input": {
+        "file": {
+          "type": "image/"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "small-png/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/ok-fractional",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1199.5,
+            "height": 800.4
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/no-decode",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": null
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/decode-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": "throw"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/decode-zero",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 0,
+            "height": 10
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/compress-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "throw"
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/compress-null",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": null
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/compress-empty",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 0
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/still-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1992295
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/card-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1006632
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/card-ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 943718
+          },
+          "decode": {
+            "width": 1920,
+            "height": 1080
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "photo.jpg",
+            "type": "image/jpeg",
+            "size": 943718
+          },
+          "mime": "image/jpeg",
+          "size": 943718,
+          "aspectRatio": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "photo.jpg",
+              "type": "image/jpeg",
+              "size": 943718
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "small-png/timeout",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "photo.png",
+          "type": "image/png",
+          "size": 1000,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "hang",
+          "timeoutMs": 5
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "photo.png",
+              "type": "image/png",
+              "size": 1000
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "at-budget/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.jpg",
+          "type": "image/jpeg",
+          "size": 1992294,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "a.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 1992294
+            },
+            {
+              "maxSizeMB": 1.8999996185302734,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "a.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/ok-fractional",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1199.5,
+            "height": 800.4
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/no-decode",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": null
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/decode-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": "throw"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/decode-zero",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 0,
+            "height": 10
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/compress-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "throw"
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/compress-null",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": null
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/compress-empty",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 0
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/still-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1992295
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/card-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1006632
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 0.95,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/card-ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 943718
+          },
+          "decode": {
+            "width": 1920,
+            "height": 1080
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "big.jpg",
+            "type": "image/jpeg",
+            "size": 943718
+          },
+          "mime": "image/jpeg",
+          "size": 943718,
+          "aspectRatio": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 0.95,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "big.jpg",
+              "type": "image/jpeg",
+              "size": 943718
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "over-budget/timeout",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "big.jpeg",
+          "type": "image/jpeg",
+          "size": 1992295,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "hang",
+          "timeoutMs": 5
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "big.jpeg",
+              "type": "image/jpeg",
+              "size": 1992295
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/ok-fractional",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1199.5,
+            "height": 800.4
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/no-decode",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": null
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/decode-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": "throw"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/decode-zero",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 0,
+            "height": 10
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/compress-throws",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "throw"
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/compress-null",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": null
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/compress-empty",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 0
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/still-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1992295
+          }
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/card-too-big",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 1006632
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "$throws": "This image is still too large after shrinking it, so it wasn’t added.",
+        "code": "IMAGE_TOO_LARGE",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 0.95,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/card-ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 943718
+          },
+          "decode": {
+            "width": 1920,
+            "height": 1080
+          },
+          "budget": "card"
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "IMG_0001.jpg",
+            "type": "image/jpeg",
+            "size": 943718
+          },
+          "mime": "image/jpeg",
+          "size": 943718,
+          "aspectRatio": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 0.95,
+              "maxWidthOrHeight": 1920,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "IMG_0001.jpg",
+              "type": "image/jpeg",
+              "size": 943718
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "huge-heic/timeout",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "IMG_0001.HEIC",
+          "type": "image/heic",
+          "size": 12582912,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": "hang",
+          "timeoutMs": 5
+        }
+      },
+      "output": {
+        "$throws": "This image couldn’t be prepared for posting, so it wasn’t added. Try saving it as a JPEG or PNG first.",
+        "code": "IMAGE_PROCESSING_FAILED",
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "IMG_0001.HEIC",
+              "type": "image/heic",
+              "size": 12582912
+            },
+            {
+              "maxSizeMB": 1.9,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 0.8,
+              "alwaysKeepResolution": false,
+              "preserveExif": false
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tiny/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "dot.gif",
+          "type": "image/gif",
+          "size": 3,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "dot.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "dot.gif",
+              "type": "image/gif",
+              "size": 3
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "dot.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-name/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "type": "image/webp",
+          "size": 2048
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "image.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "type": "image/webp",
+              "size": 2048
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "image.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "empty-name/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "image.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "image.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "dots/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.b.c.png",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "a.b.c.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "a.b.c.png",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "a.b.c.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "trailing-dot/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "name.",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "name..jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "name.",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "name..jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "hidden/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": ".hidden",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": ".jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": ".hidden",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": ".jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "no-extension/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "scan",
+          "type": "image/png",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "result": {
+          "file": {
+            "$file": true,
+            "name": "scan.jpg",
+            "type": "image/jpeg",
+            "size": 500
+          },
+          "mime": "image/jpeg",
+          "size": 500,
+          "aspectRatio": {
+            "width": 1200,
+            "height": 800
+          }
+        },
+        "calls": [
+          [
+            "compress",
+            {
+              "$file": true,
+              "name": "scan",
+              "type": "image/png",
+              "size": 10
+            },
+            {
+              "maxSizeMB": 0.01,
+              "maxWidthOrHeight": 4000,
+              "useWebWorker": true,
+              "fileType": "image/jpeg",
+              "initialQuality": 1,
+              "alwaysKeepResolution": true,
+              "preserveExif": false
+            }
+          ],
+          [
+            "decode",
+            {
+              "$file": true,
+              "name": "scan.jpg",
+              "type": "image/jpeg",
+              "size": 500
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "not-image/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "doc.pdf",
+          "type": "application/pdf",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "$throws": "That file isn’t an image.",
+        "code": "NOT_AN_IMAGE",
+        "calls": []
+      }
+    },
+    {
+      "id": "no-type/ok",
+      "fn": "prepareImage",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "x.png",
+          "type": "",
+          "size": 10,
+          "lastModified": 0
+        },
+        "script": {
+          "compress": {
+            "size": 500
+          },
+          "decode": {
+            "width": 1200,
+            "height": 800
+          }
+        }
+      },
+      "output": {
+        "$throws": "That file isn’t an image.",
+        "code": "NOT_AN_IMAGE",
+        "calls": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,3193 @@
+{
+  "name": "composer.video",
+  "sources": [
+    "src/posting/lib/video.js"
+  ],
+  "cases": [
+    {
+      "id": "videoConstants",
+      "fn": "videoConstants",
+      "input": {},
+      "output": {
+        "VIDEO_SERVICE_HOST": "video.bsky.app",
+        "VIDEO_SERVICE_URL": "https://video.bsky.app",
+        "VIDEO_SERVICE_DID": "did:web:video.bsky.app",
+        "VIDEO_MAX_SIZE_BYTES": 300000000,
+        "VIDEO_MAX_SIZE_LABEL": "300 MB",
+        "VIDEO_MAX_DURATION_SECONDS": 600,
+        "VIDEO_SUPPORTED_MIME_TYPES": [
+          "video/mp4",
+          "video/quicktime",
+          "video/webm",
+          "video/mpeg"
+        ],
+        "VIDEO_FILE_INPUT_ACCEPT": "video/mp4,video/quicktime,video/webm,video/mpeg",
+        "VIDEO_ALT_MAX_GRAPHEMES": 1000,
+        "VIDEO_UPLOAD_TOKEN_TTL_SECONDS": 1800,
+        "VIDEO_POLL_MAX_TIME_MS": 1800000,
+        "VIDEO_POLL_INTERVAL_MS": 1500,
+        "VIDEO_POLL_FAILURE_INTERVAL_MS": 5000,
+        "VIDEO_POLL_MAX_CONSECUTIVE_FAILURES": 50,
+        "VIDEO_POLL_MAX_COMPLETED_WITHOUT_BLOB": 5
+      }
+    },
+    {
+      "id": "videoServiceUrl#1",
+      "fn": "videoServiceUrl",
+      "input": {
+        "route": "/xrpc/app.bsky.video.getUploadLimits",
+        "entries": []
+      },
+      "output": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits"
+    },
+    {
+      "id": "videoServiceUrl#2",
+      "fn": "videoServiceUrl",
+      "input": {
+        "route": "/xrpc/app.bsky.video.getJobStatus",
+        "params": [
+          [
+            "jobId",
+            "j 1/ü"
+          ]
+        ],
+        "entries": [
+          [
+            "jobId",
+            "j 1/ü"
+          ]
+        ]
+      },
+      "output": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1%2F%C3%BC"
+    },
+    {
+      "id": "videoServiceUrl#3",
+      "fn": "videoServiceUrl",
+      "input": {
+        "route": "/xrpc/x",
+        "params": [
+          [
+            "a",
+            null
+          ],
+          [
+            "b",
+            5
+          ],
+          [
+            "c",
+            true
+          ],
+          [
+            "a",
+            "again"
+          ]
+        ],
+        "entries": [
+          [
+            "a",
+            "again"
+          ],
+          [
+            "b",
+            5
+          ],
+          [
+            "c",
+            true
+          ]
+        ]
+      },
+      "output": "https://video.bsky.app/xrpc/x?a=again&b=5&c=true"
+    },
+    {
+      "id": "videoServiceUrl#4",
+      "fn": "videoServiceUrl",
+      "input": {
+        "route": "/xrpc/x",
+        "params": [
+          [
+            "did",
+            "did:plc:mira"
+          ],
+          [
+            "name",
+            "abc.mp4"
+          ]
+        ],
+        "entries": [
+          [
+            "did",
+            "did:plc:mira"
+          ],
+          [
+            "name",
+            "abc.mp4"
+          ]
+        ]
+      },
+      "output": "https://video.bsky.app/xrpc/x?did=did%3Aplc%3Amira&name=abc.mp4"
+    },
+    {
+      "id": "videoServiceUrl#5",
+      "fn": "videoServiceUrl",
+      "input": {
+        "route": "no-slash",
+        "params": [],
+        "entries": []
+      },
+      "output": "https://video.bsky.app/no-slash"
+    },
+    {
+      "id": "formatVideoSize#1",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": 0
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "formatVideoSize#2",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": 1
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "formatVideoSize#3",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": 1234567
+      },
+      "output": "1.2 MB"
+    },
+    {
+      "id": "formatVideoSize#4",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": 300000000
+      },
+      "output": "300.0 MB"
+    },
+    {
+      "id": "formatVideoSize#5",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": 49950000
+      },
+      "output": "50.0 MB"
+    },
+    {
+      "id": "formatVideoSize#6",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": -5
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "formatVideoSize#7",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": "x"
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "formatVideoSize#8",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": null
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "formatVideoSize#9",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": "2500000"
+      },
+      "output": "2.5 MB"
+    },
+    {
+      "id": "formatVideoSize#10",
+      "fn": "formatVideoSize",
+      "input": {
+        "bytes": null
+      },
+      "output": "0.0 MB"
+    },
+    {
+      "id": "validateVideoFile#1",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mp4",
+          "type": "video/mp4",
+          "size": 1000,
+          "lastModified": 0
+        }
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "id": "validateVideoFile#2",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mov",
+          "type": "video/quicktime",
+          "size": 300000000,
+          "lastModified": 0
+        }
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "id": "validateVideoFile#3",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mov",
+          "type": "video/quicktime",
+          "size": 300000001,
+          "lastModified": 0
+        }
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_TOO_LARGE",
+        "message": "Videos can be up to 300 MB; this one is 300.0 MB."
+      }
+    },
+    {
+      "id": "validateVideoFile#4",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mkv",
+          "type": "video/x-matroska",
+          "size": 10,
+          "lastModified": 0
+        }
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_TYPE",
+        "message": "Videos can be MP4, MOV, WebM or MPEG."
+      }
+    },
+    {
+      "id": "validateVideoFile#5",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mp4",
+          "type": "video/mp4",
+          "size": 0,
+          "lastModified": 0
+        }
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_EMPTY",
+        "message": "This video file is empty."
+      }
+    },
+    {
+      "id": "validateVideoFile#6",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": null
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_MISSING",
+        "message": "Choose a video to add."
+      }
+    },
+    {
+      "id": "validateVideoFile#7",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "type": "video/mp4",
+          "size": "10"
+        }
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_MISSING",
+        "message": "Choose a video to add."
+      }
+    },
+    {
+      "id": "validateVideoFile#8",
+      "fn": "validateVideoFile",
+      "input": {
+        "file": {
+          "type": "video/mp4",
+          "size": -1
+        }
+      },
+      "output": {
+        "ok": false,
+        "code": "VIDEO_EMPTY",
+        "message": "This video file is empty."
+      }
+    },
+    {
+      "id": "normalizeJobStatus#1",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "jobStatus": {
+            "jobId": "j1",
+            "state": "JOB_STATE_COMPLETED",
+            "blob": {
+              "$type": "blob",
+              "ref": {
+                "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+              },
+              "mimeType": "video/mp4",
+              "size": 7700058
+            }
+          }
+        }
+      },
+      "output": {
+        "jobId": "j1",
+        "state": "JOB_STATE_COMPLETED",
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+          },
+          "mimeType": "video/mp4",
+          "size": 7700058
+        }
+      }
+    },
+    {
+      "id": "normalizeJobStatus#2",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "jobId": "j1",
+          "state": "JOB_STATE_COMPLETED",
+          "error": "already_exists"
+        }
+      },
+      "output": {
+        "jobId": "j1",
+        "state": "JOB_STATE_COMPLETED",
+        "error": "already_exists"
+      }
+    },
+    {
+      "id": "normalizeJobStatus#3",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "error": "InvalidToken",
+          "message": "bad token"
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#4",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "jobStatus": "x",
+          "state": "S"
+        }
+      },
+      "output": {
+        "jobStatus": "x",
+        "state": "S"
+      }
+    },
+    {
+      "id": "normalizeJobStatus#5",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": {
+          "jobStatus": {
+            "other": 1
+          }
+        }
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#6",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": null
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#7",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": "nope"
+      },
+      "output": null
+    },
+    {
+      "id": "normalizeJobStatus#8",
+      "fn": "normalizeJobStatus",
+      "input": {
+        "result": []
+      },
+      "output": null
+    },
+    {
+      "id": "isUsableVideoBlob#1",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": {
+          "$type": "blob",
+          "ref": {
+            "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+          },
+          "mimeType": "video/mp4",
+          "size": 7700058
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isUsableVideoBlob#2",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": {
+          "cid": "bafkrei",
+          "mimeType": "video/mp4"
+        }
+      },
+      "output": true
+    },
+    {
+      "id": "isUsableVideoBlob#3",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": {
+          "ref": {
+            "$link": ""
+          }
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isUsableVideoBlob#4",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": {
+          "cid": ""
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isUsableVideoBlob#5",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": {
+          "ref": "bafy"
+        }
+      },
+      "output": false
+    },
+    {
+      "id": "isUsableVideoBlob#6",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": "bafy"
+      },
+      "output": false
+    },
+    {
+      "id": "isUsableVideoBlob#7",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": null
+      },
+      "output": false
+    },
+    {
+      "id": "isUsableVideoBlob#8",
+      "fn": "isUsableVideoBlob",
+      "input": {
+        "blob": []
+      },
+      "output": false
+    },
+    {
+      "id": "videoLimitMessage#1",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "User is not allowed to upload videos"
+      },
+      "output": "This account isn’t able to upload videos."
+    },
+    {
+      "id": "videoLimitMessage#2",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "Uploading is disabled at the moment"
+      },
+      "output": "Video uploads are turned off for now. Try again later."
+    },
+    {
+      "id": "videoLimitMessage#3",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "Failed to get user's upload stats"
+      },
+      "output": "Couldn’t tell whether this account can upload video right now. Try again."
+    },
+    {
+      "id": "videoLimitMessage#4",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "User has exceeded daily upload bytes limit"
+      },
+      "output": "This account has reached today’s video upload limit. It resets tomorrow."
+    },
+    {
+      "id": "videoLimitMessage#5",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "User has exceeded daily upload videos limit"
+      },
+      "output": "This account has reached today’s limit on videos. It resets tomorrow."
+    },
+    {
+      "id": "videoLimitMessage#6",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "Account is not old enough to upload videos"
+      },
+      "output": "This account isn’t old enough to upload video yet."
+    },
+    {
+      "id": "videoLimitMessage#7",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "Confirm your email address to upload videos"
+      },
+      "output": "Confirm this account’s email address to upload video."
+    },
+    {
+      "id": "videoLimitMessage#8",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": "Something new"
+      },
+      "output": "Something new"
+    },
+    {
+      "id": "videoLimitMessage#9",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": ""
+      },
+      "output": "This account can’t upload video right now."
+    },
+    {
+      "id": "videoLimitMessage#10",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": null
+      },
+      "output": "This account can’t upload video right now."
+    },
+    {
+      "id": "videoLimitMessage#11",
+      "fn": "videoLimitMessage",
+      "input": {
+        "message": 5
+      },
+      "output": "5"
+    },
+    {
+      "id": "ok",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true,\"remainingDailyVideos\":3,\"remainingDailyBytes\":9000000000}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "canUpload": true,
+          "remainingDailyVideos": 3,
+          "remainingDailyBytes": 9000000000
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":false,\"message\":\"User has exceeded daily upload videos limit\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "canUpload": false,
+          "message": "User has exceeded daily upload videos limit"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "server-error",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"InternalError\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t check this account’s video limits. Try again.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "oops"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t check this account’s video limits. Try again.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "null-body",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "null"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t check this account’s video limits. Try again.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-token",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          null
+        ]
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "Couldn’t get permission to upload the video.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mint-throws",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "throw"
+        ]
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "PDS said no",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "getVideoUploadLimits",
+      "input": {
+        "tokens": [
+          "tok-limits"
+        ]
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-limits"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "fetch failed",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ready-at-once",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "progress-then-ready",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_ENCODING\",\"progress\":40,\"message\":\"encoding\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_ENCODING\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          10,
+          10
+        ],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": [
+          {
+            "state": "JOB_STATE_ENCODING",
+            "progress": 40,
+            "message": "encoding"
+          },
+          {
+            "state": "JOB_STATE_ENCODING",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "failed",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_FAILED\",\"error\":\"bad_codec\",\"failureCode\":7}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "bad_codec",
+        "progress": [
+          {
+            "state": "JOB_STATE_FAILED",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "failed-with-message",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_FAILED\",\"message\":\"Too long\",\"error\":\"x\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Too long",
+        "progress": [
+          {
+            "state": "JOB_STATE_FAILED",
+            "progress": 0,
+            "message": "Too long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "failed-bare",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_FAILED\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "The video service couldn’t process this video.",
+        "progress": [
+          {
+            "state": "JOB_STATE_FAILED",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "already-exists-blob",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"state\":\"JOB_STATE_COMPLETED\",\"error\":\"already_exists\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "jobId": "j1",
+          "state": "JOB_STATE_COMPLETED",
+          "error": "already_exists",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "completed-no-blob",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "maxCompletedWithoutBlobPolls": 2
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          10,
+          10
+        ],
+        "$throws": "Video processing finished without returning a video. Try adding it again.",
+        "progress": [
+          {
+            "state": "JOB_STATE_COMPLETED",
+            "progress": 0
+          },
+          {
+            "state": "JOB_STATE_COMPLETED",
+            "progress": 0
+          },
+          {
+            "state": "JOB_STATE_COMPLETED",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "already-exists-no-blob",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "maxCompletedWithoutBlobPolls": 1
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"error\":\"already_exists\"}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"error\":\"already_exists\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          10
+        ],
+        "$throws": "This video was already processed, but the service didn’t send it back. Trim or re-save the video and try again.",
+        "progress": [
+          {
+            "state": "JOB_STATE_COMPLETED",
+            "progress": 0
+          },
+          {
+            "state": "JOB_STATE_COMPLETED",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "server-errors",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 502,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 503,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"x\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          20,
+          20,
+          20
+        ],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "malformed",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"nope\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"nope\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          20,
+          20
+        ],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "not-json",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {}
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "x"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "x"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "x"
+              }
+            }
+          }
+        ],
+        "waits": [
+          20,
+          30
+        ],
+        "$throws": "Unexpected token 'x', \"x\" is not valid JSON",
+        "progress": []
+      }
+    },
+    {
+      "id": "not-json-then-error",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "maxConsecutiveFailures": 2
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "x"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "x"
+              }
+            }
+          }
+        ],
+        "waits": [
+          20
+        ],
+        "$throws": "Unexpected token 'x', \"x\" is not valid JSON",
+        "progress": []
+      }
+    },
+    {
+      "id": "recovers",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "failureIntervalMs": 5000
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 500,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          5000,
+          5000
+        ],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "offline",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "pollIntervalMs": 250
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [
+          500,
+          750
+        ],
+        "$throws": "fetch failed",
+        "progress": []
+      }
+    },
+    {
+      "id": "out-of-time",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "maxPollTimeMs": -1
+        }
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "This video is still processing after a long wait. Try adding it again later.",
+        "progress": []
+      }
+    },
+    {
+      "id": "legacy-blob",
+      "fn": "pollVideoJobStatus",
+      "input": {
+        "options": {
+          "maxConsecutiveFailures": 5
+        }
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j+1",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer tok-job"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"cid\":\"bafkreilegacy\",\"mimeType\":\"video/mp4\"}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "jobId": "j1",
+          "did": "did:plc:mira",
+          "state": "JOB_STATE_COMPLETED",
+          "blob": {
+            "cid": "bafkreilegacy",
+            "mimeType": "video/mp4"
+          }
+        },
+        "progress": []
+      }
+    },
+    {
+      "id": "processes",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mov",
+          "type": "video/quicktime",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2",
+          "t3"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mov",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/quicktime"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobId\":\"j9\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_CREATED\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j9",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t3"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j1\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_ENCODING\",\"progress\":0.5}}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j9",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t3"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j9\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [
+          10
+        ],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          },
+          "jobId": "j9"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          },
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getJobStatus"
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          },
+          {
+            "phase": "processing",
+            "progress": 0
+          },
+          {
+            "phase": "processing",
+            "progress": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "processes/no-pds",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mov",
+          "type": "video/quicktime",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2",
+          "t3"
+        ],
+        "pdsUrl": "not a url"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t find this account’s server to upload the video to.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "id": "blob-at-once",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobId\":\"j9\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          },
+          "jobId": "j9"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "already-sent",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.webm",
+          "type": "video/webm",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.webm",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/webm"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobId\":\"j9\",\"state\":\"JOB_STATE_COMPLETED\",\"error\":\"already_exists\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          },
+          "jobId": "j9"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "already-sent-no-blob",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2",
+          "t3"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 409,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobId\":\"j9\",\"state\":\"JOB_STATE_COMPLETED\",\"error\":\"already_exists\"}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getJobStatus?jobId=j9",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t3"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobStatus\":{\"jobId\":\"j9\",\"did\":\"did:plc:mira\",\"state\":\"JOB_STATE_COMPLETED\",\"blob\":{\"$type\":\"blob\",\"ref\":{\"$link\":\"bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm\"},\"mimeType\":\"video/mp4\",\"size\":7700058}}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreidsxjshc4mdpfla27q4hg5mr2w6dq24mwkzhzu3ykbow4ojvdu5nm"
+            },
+            "mimeType": "video/mp4",
+            "size": 7700058
+          },
+          "jobId": "j9"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          },
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getJobStatus"
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          },
+          {
+            "phase": "processing",
+            "progress": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "legacy",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mpeg",
+          "type": "video/mpeg",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mpeg",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mpeg"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"jobId\":\"j9\",\"blob\":{\"cid\":\"bafkreilegacy\"}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreilegacy"
+            },
+            "mimeType": "video/mpeg",
+            "size": 12
+          },
+          "jobId": "j9"
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "legacy-with-size",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"blob\":{\"cid\":\"bafkreilegacy\",\"mimeType\":\"video/quicktime\",\"size\":99}}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "result": {
+          "blob": {
+            "$type": "blob",
+            "ref": {
+              "$link": "bafkreilegacy"
+            },
+            "mimeType": "video/quicktime",
+            "size": 99
+          },
+          "jobId": null
+        },
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "refused",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 403,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"error\":\"Forbidden\",\"message\":\"User is not allowed to upload videos\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "This account isn’t able to upload videos.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "refused-bare",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 413,
+              "headers": {
+                "content-type": "text/plain"
+              },
+              "body": {
+                "$text": "too big"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "This account can’t upload video right now.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-job",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"state\":\"JOB_STATE_CREATED\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "The video service didn’t start processing this video. Try again.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "upload-offline",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          "t2"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          },
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.uploadVideo?did=did%3Aplc%3Amira&name=lmnopqropqrs.mp4",
+              "method": "POST",
+              "headers": {
+                "authorization": "Bearer t2",
+                "content-type": "video/mp4"
+              },
+              "body": {
+                "$bytes": "AAAAAAAAAAAAAAAA"
+              },
+              "timeoutMs": null
+            },
+            "response": {
+              "$error": "fetch failed"
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t reach the video service. Check your connection and try again.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          },
+          {
+            "phase": "uploading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "limit",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":false,\"message\":\"Confirm your email address to upload videos\"}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Confirm this account’s email address to upload video.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "id": "limit-bare",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":false}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "This account can’t upload video right now.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-upload-token",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1",
+          null
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [
+          {
+            "request": {
+              "url": "https://video.bsky.app/xrpc/app.bsky.video.getUploadLimits",
+              "method": "GET",
+              "headers": {
+                "authorization": "Bearer t1"
+              },
+              "body": null,
+              "timeoutMs": null
+            },
+            "response": {
+              "status": 200,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "body": {
+                "$text": "{\"canUpload\":true}"
+              }
+            }
+          }
+        ],
+        "waits": [],
+        "$throws": "Couldn’t get permission to upload the video.",
+        "auth": [
+          {
+            "aud": "did:web:video.bsky.app",
+            "lxm": "app.bsky.video.getUploadLimits"
+          },
+          {
+            "aud": "did:web:pds.example.com",
+            "lxm": "com.atproto.repo.uploadBlob",
+            "exp": 1773577800
+          }
+        ],
+        "progress": [
+          {
+            "phase": "checking"
+          }
+        ]
+      }
+    },
+    {
+      "id": "not-a-video",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.png",
+          "type": "image/png",
+          "size": 12,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "Videos can be MP4, MOV, WebM or MPEG.",
+        "auth": [],
+        "progress": []
+      }
+    },
+    {
+      "id": "empty",
+      "fn": "uploadVideo",
+      "input": {
+        "file": {
+          "$file": true,
+          "name": "a.mp4",
+          "type": "video/mp4",
+          "size": 0,
+          "lastModified": 0
+        },
+        "tokens": [
+          "t1"
+        ],
+        "pdsUrl": "https://pds.example.com"
+      },
+      "output": {
+        "exchanges": [],
+        "waits": [],
+        "$throws": "This video file is empty.",
+        "auth": [],
+        "progress": []
+      }
+    }
+  ]
+}

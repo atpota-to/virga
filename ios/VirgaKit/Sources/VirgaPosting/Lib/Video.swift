@@ -239,7 +239,11 @@ public enum Video {
   ]
 
   /// An absolute video-service URL, dropping nullish params.
+  /// `route` is the path set as the URL's pathname (a leading '/' is
+  /// supplied when missing, as the setter does); `params` are the entries
+  /// of the web's params object, in order.
   public static func videoServiceUrl(_ route: String, _ params: [(String, JSONValue?)] = []) -> String {
+    let route = PostingJS.hasPrefix(route, "/") ? route : "/" + route
     var pairs: [(String, String)] = []
     for (key, value) in params {
       guard let value, !value.isNull else { continue }
@@ -288,8 +292,10 @@ public enum Video {
     // An array is an object too, but has no jobId, state or blob.
     guard let result, case .object = result else { return nil }
     let status: JSONValue = ComposerJS.isObject(result["jobStatus"]) ? result["jobStatus"]! : result
-    return ComposerJS.truthy(status["jobId"]) || ComposerJS.truthy(status["state"]) || ComposerJS.truthy(status["blob"])
-      ? status : nil
+    // (Not `cond ? status : nil`: JSONValue takes a nil literal as null.)
+    guard ComposerJS.truthy(status["jobId"]) || ComposerJS.truthy(status["state"]) || ComposerJS.truthy(status["blob"])
+    else { return nil }
+    return status
   }
 
   /// Whether a blob is one a record can carry. Only a blob the service sent

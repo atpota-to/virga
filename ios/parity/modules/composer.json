@@ -166,12 +166,26 @@
       "synced": "c34d64024c05"
     },
     "src/posting/lib/images.js": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Images.swift"
+      ],
+      "fixtures": [
+        "composer.images"
+      ],
+      "note": "The pixel work (browser-image-compression's re-encode and decodeImageSize's createImageBitmap/<img> decode) is the ImageEncoder protocol, which VirgaUI implements over ImageIO; prepareImage's decisions (budgets, options, refusals, name, type, aspect ratio, the timeout) and uploadImage are ported and held to the fixture over a scripted encoder.",
+      "synced": "1b22cd163a1e"
     },
     "src/posting/lib/video.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaPosting/Lib/Video.swift"
+      ],
+      "fixtures": [
+        "composer.video"
+      ],
+      "note": "Nothing here needs AVFoundation: the bytes are the app's, sent through HTTPTransport, tokens minted by VideoServiceAuthAgent (XRPCAgent). videoServiceUrl prefixes a route without its '/' as the pathname setter does; other pathname-setter escaping isn't reproduced (routes are constants).",
+      "synced": "d1fa5b3f987a"
     },
     "src/posting/schedule/postingQueue.js": {
       "status": "ported",
