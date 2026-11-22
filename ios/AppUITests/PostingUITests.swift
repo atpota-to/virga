@@ -89,10 +89,16 @@ final class PostingUITests: XCTestCase {
 
     // Use: the composer opens with the template applied; this one asks its
     // two questions, in the library's dialog on it.
+    // Straight after the editor's sheet closes, as in go(): wait until Use
+    // can be pressed, and press once more if the composer isn't coming.
     let use = app.buttons["Use “Event reminder”"].firstMatch
     XCTAssertTrue(use.waitForExistence(timeout: 5), "no Use for Event reminder")
+    let usable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: use)
+    wait(for: [usable], timeout: 10)
     use.tap()
-    XCTAssertTrue(element(app, "composer-title").waitForExistence(timeout: 10), "Use didn't open the composer")
+    let composerTitle = element(app, "composer-title")
+    if !composerTitle.waitForExistence(timeout: 3), use.isHittable { use.tap() }
+    XCTAssertTrue(composerTitle.waitForExistence(timeout: 10), "Use didn't open the composer")
     XCTAssertTrue(element(app, "template-question-0").waitForExistence(timeout: 15), "Use didn't apply the template")
     snapshot("posting-template-use")
     element(app, "library-close").tap()
