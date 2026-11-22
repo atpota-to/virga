@@ -22,13 +22,18 @@ import VirgaCore
 
 public struct ChipStyle: ButtonStyle {
   public var isOn: Bool
+  /// A long answer wraps inside its chip, at most the row's width, its
+  /// words from the start (`.lib-answers > .chip { max-width: 100%;
+  /// white-space: normal; text-align: left }`), rather than one line.
+  public var wraps: Bool
 
-  public init(isOn: Bool) {
+  public init(isOn: Bool, wraps: Bool = false) {
     self.isOn = isOn
+    self.wraps = wraps
   }
 
   public func makeBody(configuration: Configuration) -> some View {
-    ChipBody(label: configuration.label, isOn: isOn, isPressed: configuration.isPressed)
+    ChipBody(label: configuration.label, isOn: isOn, isPressed: configuration.isPressed, wraps: wraps)
   }
 }
 
@@ -38,6 +43,7 @@ struct ChipBody<Label: View>: View {
   let label: Label
   let isOn: Bool
   let isPressed: Bool
+  var wraps = false
 
   var body: some View {
     let fill = isOn ? theme.color(ThemeKit.chipOnFill) : Color.clear
@@ -45,7 +51,9 @@ struct ChipBody<Label: View>: View {
     let ink = isOn ? theme.color(ThemeKit.chipOnInk) : (isPressed ? theme.ink : theme.color(ThemeKit.chipInk))
     label
       .virgaText(size: theme.points(ThemeKit.chipFontSize), weight: isOn ? ThemeKit.chipOnWeight : ThemeKit.chipWeight)
-      .lineLimit(1)
+      .lineLimit(wraps ? nil : 1)
+      .multilineTextAlignment(.leading)
+      .fixedSize(horizontal: false, vertical: wraps)
       .foregroundStyle(ink)
       .padding(.horizontal, theme.points(ThemeKit.chipPadding.left))
       .frame(minHeight: theme.points(ThemeKit.touchChipHeight))

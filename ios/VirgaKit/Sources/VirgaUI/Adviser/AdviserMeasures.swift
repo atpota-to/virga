@@ -24,9 +24,9 @@ extension Measure {
     /// `.adviser-busy-goals { gap: 6px }`, each `gap: 6px; padding: 2px 10px` in a pill.
     public static let goalsGap: CGFloat = 6
     public static let goalPadding = EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10)
-    /// `.adviser-busy-actions { gap: 8px }`; on a phone each takes an equal share, 44 tall.
+    /// `.adviser-busy-actions { gap: 8px }`; from 640 down each takes an
+    /// equal share, 44 tall (the kit's fill-width buttons).
     public static let busyActionsGap: CGFloat = 8
-    public static let phoneBusyAction: CGFloat = 44
 
     // MARK: The sheet
 
@@ -97,6 +97,8 @@ extension Measure {
     /// `.style-start, .style-result { gap: 12px }`, `.style-actions { gap: 8px }`, `.style-intro { max-width: 65ch }`.
     public static let styleGap: CGFloat = 12
     public static let styleActionsGap: CGFloat = 8
+    /// `.style-sample .input { width: auto; min-width: 112px }`
+    public static let styleSampleMin: CGFloat = 112
     public static let styleIntroMeasure: CGFloat = 65
     /// `.style-progress { gap: 10px; padding: 4px 0 4px 14px }`, a dot 7 across, 10 from its words.
     public static let progressGap: CGFloat = 10

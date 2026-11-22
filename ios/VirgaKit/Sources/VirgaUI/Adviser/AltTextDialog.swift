@@ -14,6 +14,7 @@
 
 #if canImport(UIKit)
 import SwiftUI
+import UIKit
 import VirgaCore
 import VirgaPosting
 
@@ -52,26 +53,22 @@ struct AltTextDialog: View {
       canGenerate
       ? AltTextModel.altTextUsageLine(AdviserUsageStore.readAdviserUsage(did, feature: .altText, now: now, store: store), now: now) : ""
     let postText = context
-    DialogFrame(title: "Alt text", onClose: onClose, hasActions: true) {
+    // `data-autofocus` on the description: the dialog opens with the cursor in it.
+    DialogFrame(title: "Alt text", onClose: onClose, hasActions: true, autofocus: true) {
       VStack(alignment: .leading, spacing: Measure.Adviser.dialogBodyGap) {
         if let preview = image.previewUrl {
-          LocalPicture(url: preview)
-            .frame(maxWidth: .infinity, maxHeight: theme.isPhone ? Measure.Adviser.phoneAltPreviewMax : Measure.Adviser.altPreviewMax)
-            .clipShape(RoundedRectangle(cornerRadius: theme.radiusLg))
-            .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line, lineWidth: 1))
-            .accessibilityHidden(true)
+          AltTextPreview(url: preview, cap: theme.composerNarrow ? Measure.Adviser.phoneAltPreviewMax : Measure.Adviser.altPreviewMax)
         }
         if canGenerate && !canRevise { kindChoice }
         description(count: count, canGenerate: canGenerate, canRevise: canRevise)
         if limited {
-          Callout(tone: .warn) {
-            Text(
-              "\(usageLine.isEmpty ? "This month’s free descriptions are used up. They start again on the first of the month." : usageLine) You can still write it yourself."
-            )
-          }
+          let words =
+            "\(usageLine.isEmpty ? "This month’s free descriptions are used up. They start again on the first of the month." : usageLine) You can still write it yourself."
+          // role="alert", though it's a warning.
+          Callout(tone: .warn, alert: words) { Text(words) }
         }
         if !error.isEmpty {
-          Callout(tone: .danger) { Text(error) }
+          Callout(tone: .danger, error)
         }
         if canRevise { revise }
         if canGenerate {
@@ -154,7 +151,7 @@ struct AltTextDialog: View {
         }
       }
       .frame(minHeight: Measure.Adviser.tallyHeight)
-      TextField(
+      VirgaTextField(
         "What’s in the image, and what matters about it for this post",
         text: Binding(
           get: { alt },
@@ -170,15 +167,18 @@ struct AltTextDialog: View {
       .virgaTextArea(invalid: count.over, editor: false)
       .foregroundStyle(pending != nil ? theme.muted : theme.ink)
       .disabled(pending != nil)
+      .dialogAutofocus()
       .accessibilityLabel("Description")
       .accessibilityIdentifier("describe-text")
       FlowLayout(spacing: theme.space3, lineSpacing: theme.space1) {
         FieldHint("\(count.label)\(count.over ? " · too long" : "")", isOver: count.over)
         if !busyLine.isEmpty {
-          FieldHint(busyLine).accessibilityAddTraits(.updatesFrequently)
+          FieldHint(busyLine)
         }
       }
     }
+    // `role="status"`: Describing the image… read out as it starts.
+    .toolAnnounces(busyLine.isEmpty ? nil : busyLine)
   }
 
   /// `Revise it`: the quick notes (ranked against the description), It’s a…,
@@ -189,7 +189,7 @@ struct AltTextDialog: View {
     for id in selected where !ids.contains(id) { ids.append(id) }
     let offered = ids.compactMap { id in AltTextFollowUp.altTextQuickNotes.first { $0.id == id } }
     let noteMax = AltTextFollowUp.altTextNoteMax
-    let field = TextField("What should change? For example: it’s my dog, Juniper", text: $note)
+    let field = VirgaTextField("What should change? For example: it’s my dog, Juniper", text: $note)
       .virgaField()
       .focused($noteFocused)
       .disabled(pending != nil)
@@ -222,10 +222,11 @@ struct AltTextDialog: View {
       }
       .accessibilityElement(children: .contain)
       .accessibilityLabel("Quick notes")
-      if theme.isPhone {
+      // From 640 down the row is a column, Revise its width.
+      if theme.composerNarrow {
         VStack(alignment: .leading, spacing: Measure.Adviser.altGroupGap) {
           field
-          go
+          go.environment(\.virgaFillsWidth, true)
         }
       } else {
         HStack(spacing: Measure.Adviser.altGroupGap) {
@@ -296,6 +297,44 @@ struct AltTextDialog: View {
     if count.over { return }
     onSave(alt.jsTrimmed())
     onClose()
+  }
+}
+
+/// `.alt-dialog-preview`: the whole picture (`object-fit: contain`), no
+/// larger than it is, at most the dialog's width and `cap` tall, centred,
+/// its edge and its --surface-3 ground round the picture itself.
+struct AltTextPreview: View {
+  @Environment(\.virgaTheme) private var theme
+  let url: String
+  let cap: CGFloat
+  @State private var image: UIImage?
+
+  var body: some View {
+    // A ZStack, not a Group: a Group's modifiers go on each view inside it,
+    // and before the picture is read there is none, so `.task` would never
+    // run to read it.
+    ZStack {
+      if let image {
+        let size = image.size
+        let aspect = size.height > 0 ? size.width / size.height : 1
+        Image(uiImage: image)
+          .resizable()
+          .aspectRatio(aspect, contentMode: .fit)
+          .frame(maxWidth: min(size.width, cap * aspect), maxHeight: min(size.height, cap))
+          .background(theme.surface3)
+          .clipShape(RoundedRectangle(cornerRadius: theme.radiusLg))
+          .overlay(RoundedRectangle(cornerRadius: theme.radiusLg).strokeBorder(theme.line, lineWidth: 1))
+      }
+    }
+    .frame(maxWidth: .infinity)
+    .accessibilityHidden(true)
+    .task(id: url) {
+      guard let parsed = URL(string: url), parsed.isFileURL else {
+        image = nil
+        return
+      }
+      image = UIImage(contentsOfFile: parsed.path)
+    }
   }
 }
 

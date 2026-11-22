@@ -53,7 +53,7 @@ struct PostPreviewCard: View {
         Text("No text").virgaText(compact ? .textSm : .textBase).foregroundStyle(theme.muted)
       }
       if m.embed != nil || (m.author == nil && at != nil) || hasCounts || hasLink {
-        FlowLayout(spacing: Measure.Posting.previewFootGap, lineSpacing: Measure.Posting.previewFootRowGap) {
+        PreviewFootLayout(spacing: Measure.Posting.previewFootGap, lineSpacing: Measure.Posting.previewFootRowGap, pushesLast: hasLink) {
           if let embed = m.embed {
             Label(embed, systemImage: "paperclip").labelStyle(PreviewLabelStyle())
           }
@@ -67,14 +67,18 @@ struct PostPreviewCard: View {
             }
           }
           if hasLink, let url = m.url.flatMap(URL.init(string:)) {
+            // `.post-preview-link`: at the end of its line, in ink, underlined
+            // as a link is, and 44 to press.
             Button {
               openURL(url)
             } label: {
-              Label("Bluesky", systemImage: Glyph.externalLink).labelStyle(PreviewLabelStyle())
+              Label("Bluesky", systemImage: Glyph.externalLink).labelStyle(PreviewLabelStyle(underlined: true))
                 .foregroundStyle(theme.ink)
+                .touchReach(horizontal: Measure.LinkAction.reachSides, vertical: Measure.LinkAction.reachAbove)
             }
             .buttonStyle(.plain)
             .accessibilityAddTraits(.isLink)
+            .accessibilityRemoveTraits(.isButton)
           }
         }
         .virgaText(.textSm)
@@ -105,12 +109,55 @@ struct PostPreviewCard: View {
   }
 }
 
-/// `.post-preview-embed`, `.post-preview-counts > span`: a glyph and its words, 4 apart.
+/// `.post-preview-embed`, `.post-preview-counts > span`, `.post-preview-link`:
+/// a 13-point glyph and its words, 4 apart, the glyph grown with Dynamic
+/// Type as the words are; a link's words underlined.
 struct PreviewLabelStyle: LabelStyle {
+  @Environment(\.virgaTheme) private var theme
+  var underlined = false
+
   func makeBody(configuration: Configuration) -> some View {
     HStack(spacing: Measure.Posting.previewIconGap) {
-      configuration.icon.font(.system(size: Measure.Posting.previewIcon))
-      configuration.title
+      configuration.icon.virgaGlyph(Measure.Posting.previewIcon, beside: theme.textSm)
+      configuration.title.modifier(LinkUnderline(drawn: underlined))
+    }
+  }
+}
+
+/// `.post-preview-foot`: a wrapping row (`flex-wrap: wrap; gap: 6px 14px`)
+/// whose last item, the link (`.post-preview-link { margin-left: auto }`),
+/// is pushed to the end of whichever line it's on.
+struct PreviewFootLayout: Layout {
+  var spacing: CGFloat
+  var lineSpacing: CGFloat
+  var pushesLast: Bool
+
+  private var flow: FlowLayout { FlowLayout(spacing: spacing, lineSpacing: lineSpacing, alignment: .center) }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let maxWidth = proposal.width ?? .infinity
+    let sizes = subviews.map { $0.sizeThatFits(ProposedViewSize(width: maxWidth, height: nil)) }
+    let rows = flow.lines(sizes, maxWidth: maxWidth)
+    let natural = rows.map(\.width).max() ?? 0
+    let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, rows.count - 1))
+    // With its last item pushed to the end, the row takes the whole width.
+    let width = pushesLast && maxWidth.isFinite ? maxWidth : min(maxWidth, natural)
+    return CGSize(width: width, height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    let sizes = subviews.map { $0.sizeThatFits(ProposedViewSize(width: bounds.width, height: nil)) }
+    var y = bounds.minY
+    for line in flow.lines(sizes, maxWidth: bounds.width) {
+      var x = bounds.minX
+      for index in line.indices {
+        let size = sizes[index]
+        if pushesLast && index == subviews.count - 1 { x = max(x, bounds.maxX - size.width) }
+        subviews[index].place(
+          at: CGPoint(x: x, y: y + (line.height - size.height) / 2), proposal: ProposedViewSize(width: size.width, height: size.height))
+        x += size.width + spacing
+      }
+      y += line.height + lineSpacing
     }
   }
 }

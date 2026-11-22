@@ -80,18 +80,52 @@ struct AdviserReadSheet: View {
         Button("Close", action: onKeepEditing).buttonStyle(.virga(.primary))
           .accessibilityIdentifier("adviser-close")
       } else {
-        Button("Keep editing", action: onKeepEditing)
-          .buttonStyle(.virga(actions.primary == "edit" ? .primary : .quiet))
-          .accessibilityIdentifier("adviser-sheet-keep-editing")
-        if actions.draft, let onSaveDraft {
-          Button("Save as draft", action: onSaveDraft).buttonStyle(.virga)
+        // `.dialog-actions { flex-wrap: wrap }`: all three on one line where
+        // they fit (sharing it on a phone), else the last on a line of its
+        // own, else one under another.
+        ViewThatFits(in: .horizontal) {
+          HStack(spacing: Measure.Dialog.actionsGap) { choices(actions) }
+          VStack(alignment: .trailing, spacing: Measure.Dialog.actionsGap) {
+            HStack(spacing: Measure.Dialog.actionsGap) {
+              keepEditing(actions)
+              saveDraft(actions)
+            }
+            publish(actions)
+          }
+          VStack(alignment: .trailing, spacing: Measure.Dialog.actionsGap) { choices(actions) }
         }
-        if let publish = actions.publish, let onPublishAnyway {
-          Button(publish.label, action: onPublishAnyway)
-            .buttonStyle(.virga(actions.primary == "publish" ? .primary : .quiet))
-            .accessibilityIdentifier("adviser-sheet-publish")
-        }
+        // Offered the whole foot before the dialog's Spacer takes the rest.
+        .layoutPriority(1)
       }
+    }
+  }
+
+  @ViewBuilder
+  private func choices(_ actions: AdviserSheetActions) -> some View {
+    keepEditing(actions)
+    saveDraft(actions)
+    publish(actions)
+  }
+
+  private func keepEditing(_ actions: AdviserSheetActions) -> some View {
+    Button("Keep editing", action: onKeepEditing)
+      .buttonStyle(.virga(actions.primary == "edit" ? .primary : .quiet))
+      .accessibilityIdentifier("adviser-sheet-keep-editing")
+  }
+
+  @ViewBuilder
+  private func saveDraft(_ actions: AdviserSheetActions) -> some View {
+    if actions.draft, let onSaveDraft {
+      Button("Save as draft", action: onSaveDraft).buttonStyle(.virga)
+    }
+  }
+
+  @ViewBuilder
+  private func publish(_ actions: AdviserSheetActions) -> some View {
+    if let publish = actions.publish, let onPublishAnyway {
+      Button(publish.label, action: onPublishAnyway)
+        .buttonStyle(.virga(actions.primary == "publish" ? .primary : .quiet))
+        .accessibilityIdentifier("adviser-sheet-publish")
     }
   }
 }
@@ -104,10 +138,13 @@ struct AdviserNotice: View {
   var body: some View {
     switch read.status {
     case "error":
-      Callout(tone: .danger, systemImage: AdviserGlyph.conflict) {
+      let said = read.error.flatMap { $0.isEmpty ? nil : $0 } ?? "The adviser couldn’t read this post."
+      let after = "Nothing was changed. You can try again, or post it as it is."
+      // role="alert": read out as it appears.
+      Callout(tone: .danger, systemImage: AdviserGlyph.conflict, alert: "\(said) \(after)") {
         VStack(alignment: .leading, spacing: theme.space1) {
-          Text(read.error.flatMap { $0.isEmpty ? nil : $0 } ?? "The adviser couldn’t read this post.")
-          Text("Nothing was changed. You can try again, or post it as it is.")
+          Text(said)
+          Text(after)
         }
       }
     case "limit":
@@ -127,7 +164,7 @@ struct AdviserNotice: View {
   private func empty(_ symbol: String, _ title: String, _ words: String) -> some View {
     VStack(alignment: .leading, spacing: Measure.Adviser.emptyGap) {
       Image(systemName: symbol)
-        .font(.system(size: Measure.Adviser.emptyIcon))
+        .virgaGlyph(Measure.Adviser.emptyIcon, beside: theme.textMd)
         .foregroundStyle(theme.ink2)
         .padding(.bottom, theme.space1)
         .accessibilityHidden(true)
@@ -165,7 +202,7 @@ struct AdviserReadView: View {
       if let verdict = model.verdict {
         HStack(spacing: Measure.Adviser.verdictGap) {
           Image(systemName: Self.verdictGlyph(verdict))
-            .font(.system(size: Measure.Adviser.verdictIcon))
+            .virgaGlyph(Measure.Adviser.verdictIcon, beside: theme.textMd)
             .foregroundStyle(Self.tone(verdict, theme))
             .accessibilityHidden(true)
           Text(AdviserSheetView.verdictCopy[verdict] ?? "")
@@ -176,12 +213,7 @@ struct AdviserReadView: View {
         .accessibilityIdentifier("adviser-verdict")
       }
       VStack(alignment: .leading, spacing: Measure.Adviser.draftGap) {
-        FlowLayout(spacing: Measure.Adviser.draftMetaGap, lineSpacing: theme.space1) {
-          Text(Self.capitalise(AdviserSheet.adviserDraftLabel(read.scenario, !(read.context?.thread ?? []).isEmpty)))
-          if let tone = model.tone { Text("Tone: \(tone)") }
-        }
-        .virgaText(.textSm)
-        .foregroundStyle(theme.muted)
+        draftMeta(model)
         VStack(alignment: .leading, spacing: Measure.Adviser.draftPostsGap) {
           ForEach(Array(visible), id: \.offset) { index, post in
             draftPost(post, index: index, total: total, model: model, taken: taken)
@@ -192,7 +224,8 @@ struct AdviserReadView: View {
             Text(tally)
               .virgaText(.textSm)
               .foregroundStyle(theme.muted)
-              .accessibilityAddTraits(.updatesFrequently)
+              // `aria-live="polite"`: the count of slips left, read out as fixes are taken.
+              .toolAnnounces(tally)
             Spacer(minLength: 0)
             if !remaining.isEmpty, let onApplyFix {
               Button {
@@ -226,7 +259,7 @@ struct AdviserReadView: View {
           Text("Fine against").virgaText(.textSm).foregroundStyle(theme.muted)
           ForEach(Array(model.met.enumerated()), id: \.offset) { _, label in
             HStack(spacing: Measure.Adviser.metItemGap) {
-              Image(systemName: AdviserGlyph.check).font(.system(size: Measure.Adviser.metIcon)).foregroundStyle(theme.ok)
+              Image(systemName: AdviserGlyph.check).virgaGlyph(Measure.Adviser.metIcon, beside: theme.textSm).foregroundStyle(theme.ok)
                 .accessibilityHidden(true)
               Text(label.jsString).virgaText(.textSm).foregroundStyle(theme.ink2)
             }
@@ -239,7 +272,8 @@ struct AdviserReadView: View {
       }
       if !contextLine.isEmpty {
         HStack(alignment: .top, spacing: Measure.Adviser.contextGap) {
-          Image(systemName: AdviserGlyph.info).font(.system(size: Measure.Adviser.contextIcon)).padding(.top, 3).accessibilityHidden(true)
+          Image(systemName: AdviserGlyph.info).virgaGlyph(Measure.Adviser.contextIcon, beside: theme.textSm).padding(.top, 3)
+            .accessibilityHidden(true)
           Text(contextLine).fixedSize(horizontal: false, vertical: true)
         }
         .virgaText(.textSm)
@@ -271,11 +305,98 @@ struct AdviserReadView: View {
     for segment in post.segments {
       words = words + self.segment(segment, model: model, taken: taken, underline: nil, keys: [])
     }
+    let untaken = Self.fixKeys(post.segments).filter { !taken.jsIncludes($0) }
+    let fixes = untaken.compactMap { key in model.fixes.first { $0.key.jsEquals(key) } }
     return words
       .virgaText(.textMd, lineHeight: Measure.Adviser.draftLineHeight)
       .foregroundStyle(theme.ink)
       .tint(theme.ink)
       .fixedSize(horizontal: false, vertical: true)
+      // What VoiceOver hears: "Post 1/2", a fix as the change it makes, a
+      // taken one as "Fixed:", a note's number as "note 1"; each fix still
+      // to take is an action of its own.
+      .accessibilityLabel(spoken(post, label: label, model: model, taken: taken))
+      .accessibilityActions {
+        if let onApplyFix {
+          ForEach(fixes, id: \.key) { fix in
+            Button(Self.changeLabel(fix)) { onApplyFix([fix]) }
+          }
+        }
+      }
+  }
+
+  /// `aria-label` "Change “found” to “replacement”".
+  static func changeLabel(_ fix: AdviserSheetFix) -> String {
+    "Change “\(fix.issue["found"]?.stringValue ?? "")” to “\(fix.issue["replacement"]?.stringValue ?? "")”"
+  }
+
+  /// The fixes in a post's segments, in order, those inside a passage too.
+  static func fixKeys(_ segments: [AdviserSegment]) -> [String] {
+    var out: [String] = []
+    for segment in segments {
+      switch segment {
+      case .text:
+        break
+      case .fix(let key, _):
+        out.append(key)
+      case .span(_, let children):
+        out += fixKeys(children)
+      }
+    }
+    return out
+  }
+
+  /// A post's words as VoiceOver reads them, with the web's hidden words.
+  private func spoken(_ post: AdviserMarkedPost, label: String, model: AdviserSheetModel, taken: [String]) -> String {
+    var out = label.isEmpty ? "" : "Post \(label) "
+    for segment in post.segments {
+      out += spoken(segment, model: model, taken: taken)
+    }
+    return out
+  }
+
+  private func spoken(_ segment: AdviserSegment, model: AdviserSheetModel, taken: [String]) -> String {
+    switch segment {
+    case .text(let text):
+      return text
+    case .fix(let key, let text):
+      guard let fix = model.fixes.first(where: { $0.key.jsEquals(key) }) else { return text }
+      let found = fix.issue["found"]?.stringValue ?? text
+      let replacement = fix.issue["replacement"]?.stringValue ?? ""
+      if taken.jsIncludes(key) { return "Fixed: \(replacement)" }
+      return onApplyFix == nil ? "\(found) \(replacement)" : Self.changeLabel(fix)
+    case .span(let keys, let children):
+      var out = ""
+      for child in children {
+        out += spoken(child, model: model, taken: taken)
+      }
+      let numbers = keys.compactMap { model.mark($0) }.map(\.number).sorted()
+      if !numbers.isEmpty {
+        out += (numbers.count > 1 ? " notes " : " note ") + numbers.map(String.init).joined(separator: ",")
+      }
+      return out
+    }
+  }
+
+  /// `.adviser-draft-meta`: the kind of post at the start and its tone at
+  /// the end (`justify-content: space-between`), the tone under it where
+  /// both don't fit.
+  private func draftMeta(_ model: AdviserSheetModel) -> some View {
+    let kind = Text(Self.capitalise(AdviserSheet.adviserDraftLabel(read.scenario, !(read.context?.thread ?? []).isEmpty)))
+    let tone = model.tone.map { Text("Tone: \($0)") }
+    return ViewThatFits(in: .horizontal) {
+      HStack(alignment: .firstTextBaseline, spacing: 0) {
+        kind.fixedSize()
+        Spacer(minLength: Measure.Adviser.draftMetaGap)
+        if let tone { tone.fixedSize() }
+      }
+      VStack(alignment: .leading, spacing: theme.space1) {
+        kind.fixedSize(horizontal: false, vertical: true)
+        if let tone { tone.fixedSize(horizontal: false, vertical: true) }
+      }
+    }
+    .virgaText(.textSm)
+    .foregroundStyle(theme.muted)
   }
 
   /// One piece of a marked post, as text: plain words, a fix (struck
@@ -375,7 +496,7 @@ struct AdviserReadView: View {
         Text("\(number)").virgaText(.textXs, weight: VirgaWeight.semibold)
       } else {
         Image(systemName: note.tone == "conflict" ? AdviserGlyph.conflict : note.tone == "caution" ? AdviserGlyph.caution : AdviserGlyph.info)
-          .font(.system(size: Measure.Adviser.noteMarkerIcon))
+          .virgaGlyph(Measure.Adviser.noteMarkerIcon, beside: theme.textBase)
       }
     }
     .foregroundStyle(ink)

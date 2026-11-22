@@ -40,10 +40,11 @@ extension Measure {
     public static let gridGap: CGFloat = 16
     /// `.tpl-shortcut { gap: 6px }`
     public static let shortcutGap: CGFloat = 6
-    /// `.tpl-actions { gap: 8px; padding: 14px 24px 20px }`; `.tpl-actions-note { flex: 1 1 200px }`.
+    /// `.tpl-actions { gap: 8px; padding: 14px 24px 20px }`, 12 18 16 at 560
+    /// and under; `.tpl-actions-note { flex: 1 1 200px }`.
     public static let actionsGap: CGFloat = 8
-    public static let actionsTop: CGFloat = 14
-    public static let actionsBottom: CGFloat = 20
+    public static let actionsPadding = EdgeInsets(top: 14, leading: 24, bottom: 20, trailing: 24)
+    public static let phoneActionsPadding = EdgeInsets(top: 12, leading: 18, bottom: 16, trailing: 18)
     public static let actionsNoteMin: CGFloat = 200
     /// `textarea rows=5`, and a choice question's `rows=3`.
     public static let textRows: CGFloat = 5
@@ -73,9 +74,10 @@ extension Measure {
     /// `.lib-preview-attach { gap: 2px; padding: 9px 12px }`
     public static let attachCardGap: CGFloat = 2
     public static let attachCardPadding = EdgeInsets(top: 9, leading: 12, bottom: 9, trailing: 12)
-    /// `.lib-bone-card { gap: 8px }`, a bone 10 tall.
+    /// `.lib-bone-card { gap: 8px }`, a bone 10 tall, a title's 12.
     public static let boneGap: CGFloat = 8
     public static let boneHeight: CGFloat = 10
+    public static let titleBoneHeight: CGFloat = 12
 
     // MARK: The Templates page (hub.css)
 

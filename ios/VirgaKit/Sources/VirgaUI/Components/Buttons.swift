@@ -10,7 +10,7 @@
 // pressed through 44), large (46). An icon alone is a circle; a ghost icon is
 // 44 square. A button that is a state (Following) is its word alone, quiet
 // (`isOn`); the one destructive button a page may show is the outline with
-// red words (`destructive`). Disabled is 45%. Weight 500; 600 primary and
+// red words (`destructive`), or a ghost's red words. Disabled is 45%. Weight 500; 600 primary and
 // danger. Every finger size is the touch block's (pointer: coarse is every
 // iPhone and iPad).
 //
@@ -179,9 +179,11 @@ struct VirgaButtonBody<Label: View>: View {
       let fill = theme.color(value)
       return Paint(fill: fill, edge: fill, ink: theme.color(ThemeKit.dangerButtonInk), weight: ThemeKit.primaryButtonWeight)
     case .ghost:
+      // A destructive ghost (Forget my style) keeps its red, pressed or not.
+      let ink = style.destructive
+        ? theme.color(ThemeKit.destructiveButtonInk) : (isPressed ? theme.ink : theme.color(ThemeKit.ghostButtonInk))
       return Paint(
-        fill: isPressed ? theme.color(ThemeKit.ghostButtonHoverFill) : .clear, edge: .clear,
-        ink: isPressed ? theme.ink : theme.color(ThemeKit.ghostButtonInk), weight: ThemeKit.buttonWeight)
+        fill: isPressed ? theme.color(ThemeKit.ghostButtonHoverFill) : .clear, edge: .clear, ink: ink, weight: ThemeKit.buttonWeight)
     case .quiet:
       let ink = style.destructive ? theme.color(ThemeKit.destructiveButtonInk) : theme.color(ThemeKit.buttonInk)
       let pressedEdge = style.destructive ? theme.danger : theme.color(ThemeKit.buttonHoverEdge)

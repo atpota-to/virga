@@ -119,16 +119,13 @@ struct TemplatesPage: View {
     .task { model.start() }
     .onDisappear { model.stop() }
     .onChange(of: templates.map(\.rkey), initial: true) { _, _ in openFromAddress(templates) }
+    // On the template it opened on until it has gone; an address's editor
+    // goes back to the page's own address once it has.
     .templateEditor(
-      isPresented: Binding(
-        get: { editing != nil },
-        set: { open in
-          if !open {
-            editing = nil
-            if id != nil { navigate(PostingRoutes.postingPageByKey["templates"]?.path ?? "/posting/templates") }
-          }
-        }),
-      did: did, template: editing?.template)
+      item: $editing, did: did, template: { $0.template },
+      onDismiss: {
+        if id != nil { navigate(PostingRoutes.postingPageByKey["templates"]?.path ?? "/posting/templates") }
+      })
     .postingConfirm(
       isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), title: "Delete this template?",
       onConfirm: {
@@ -286,7 +283,8 @@ struct TemplatesPage: View {
         Button {
           editing = Editing(template: t)
         } label: {
-          title
+          // 44 to press, without looking any bigger.
+          title.touchReach(horizontal: 0, vertical: Measure.LinkAction.reachAbove)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("template-name-\(t.rkey)")
