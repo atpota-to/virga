@@ -187,6 +187,9 @@ public final class ComposerController {
   @ObservationIgnored var videoJobs: [String: (file: ComposerFile, did: String, task: Task<Void, Never>)] = [:]
   @ObservationIgnored var seenAccounts: Set<JSKey> = []
   @ObservationIgnored var settingsCache: [JSKey: PostingSettings] = [:]
+  /// Each account's Bluesky default reply settings as last read (the web's
+  /// blueskyGates): the Replies row and the post that goes out agree.
+  @ObservationIgnored let blueskyGates = BlueskyGatesCache()
 
   init(
     session: SessionModel, store: (any KeyValueStore)?, transport: any HTTPTransport,
@@ -672,16 +675,21 @@ public final class ComposerController {
   func resolveGates() {
     let did = state.asDid
     guard !did.isEmpty, !state.gates.custom, state.reply == nil else { return }
-    let settings = settingsFor(did)
     gatesInfo = (did: did, status: "loading", source: nil, notice: nil)
-    let session = self.session
     Task {
-      let agent = try? await session.agentFor(did)
-      let r = await PostingSettingsStore.resolveDefaultGates(settings, agent: agent?.gatesAgent)
+      let r = await self.resolveGatesFor(did)
       guard self.state.asDid.jsEquals(did) else { return }
       if !self.state.gates.custom { self.dispatch(.setDefaultGates(r.gates)) }
       self.gatesInfo = (did: did, status: "ready", source: r.source, notice: r.notice)
     }
+  }
+
+  /// The gates a new post from `did` starts with: its posting settings,
+  /// else its Bluesky setting through the cache (Composer.jsx's
+  /// resolveGatesFor), else everyone.
+  func resolveGatesFor(_ did: String) async -> ResolvedDefaultGates {
+    let session = self.session
+    return await blueskyGates.resolve(settingsFor(did), did: did) { try await session.agentFor(did).gatesAgent }
   }
 }
 #endif

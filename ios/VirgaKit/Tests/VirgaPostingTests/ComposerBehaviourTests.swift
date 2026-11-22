@@ -268,3 +268,100 @@ final class SignallingStore: KeyValueStore, Sendable {
     #expect(Autosave.loadSessionDraft("did:plc:wren", session: session) == nil)
   }
 }
+
+/// Composer.jsx's blueskyGates: each account's Bluesky default reply
+/// settings, a good read kept 5 minutes and a failed one 30 seconds, read
+/// for the Replies row and again when the post goes out.
+@Suite struct BlueskyGatesCacheBehaviour {
+  static let mira = "did:plc:mira"
+  static let following: JSONValue = [
+    "preferences": [
+      [
+        "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+        "threadgateAllowRules": [["$type": "app.bsky.feed.threadgate#followingRule"]],
+      ]
+    ]
+  ]
+
+  struct Failed: Error {}
+
+  /// An agent whose getPreferences answers `following` until `failing` is set.
+  static func agent(reads: Locked<Int>, failing: Locked<Bool>) -> FakeGatesAgent {
+    FakeGatesAgent(preferences: {
+      reads.withLock { $0 += 1 }
+      if failing.wrappedValue { throw Failed() }
+      return following
+    })
+  }
+
+  static var settings: PostingSettings { PostingSettingsStore.readPostingSettings(mira, store: InMemoryKeyValueStore()) }
+
+  /// The writer saw "only people you follow" when the composer opened; a
+  /// read that fails at Post still sends the post with that gate.
+  @Test func aGoodReadIsKeptFiveMinutes() async {
+    let clock = Locked<Double>(1_000)
+    let reads = Locked(0)
+    let failing = Locked(false)
+    let cache = BlueskyGatesCache(now: { clock.wrappedValue })
+    let agent = Self.agent(reads: reads, failing: failing)
+    let shown = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(shown.source == "bluesky")
+    #expect(shown.gates["reply"] == [["type": "following"]])
+    failing.set(true)
+    let fresh: Double = 1_000 + BlueskyGatesCache.cacheMs - 1
+    clock.set(fresh)
+    let sent = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(sent == shown)
+    #expect(reads.wrappedValue == 1)
+    // Once it's old, Bluesky is asked again, and a failure says so.
+    let old: Double = 1_000 + BlueskyGatesCache.cacheMs
+    clock.set(old)
+    let later = await cache.resolve(Self.settings, did: Self.mira) { agent }
+    #expect(reads.wrappedValue == 2)
+    #expect(later.source == "everyone")
+    #expect(later.gates == ["custom": false, "reply": .null, "quotes": true])
+    #expect(later.notice == "Couldn’t read your reply settings from Bluesky, so anyone can reply and quote this post.")
+  }
+
+  @Test func aFailedReadIsKeptThirtySeconds() async {
+    let clock = Locked<Double>(0)
+    let reads = Locked(0)
+    let failing = Locked(true)
+    let cache = BlueskyGatesCache(now: { clock.wrappedValue })
+    let agent = Self.agent(reads: reads, failing: failing)
+    #expect(await cache.read(Self.mira) { agent } == nil)
+    failing.set(false)
+    clock.set(BlueskyGatesCache.failureCacheMs - 1)
+    #expect(await cache.read(Self.mira) { agent } == nil)
+    #expect(reads.wrappedValue == 1)
+    clock.set(BlueskyGatesCache.failureCacheMs)
+    #expect(await cache.read(Self.mira) { agent } == PostGates(reply: [.following], quotes: true).json)
+    #expect(reads.wrappedValue == 2)
+  }
+
+  /// No agent (the account can't be reached) is a failed read, kept as one.
+  @Test func noAgentIsAFailedRead() async {
+    let asked = Locked(0)
+    let cache = BlueskyGatesCache(now: { 0 })
+    let none: @Sendable () async throws -> (any GatesAgent)? = {
+      asked.withLock { $0 += 1 }
+      throw Failed()
+    }
+    let r = await cache.resolve(Self.settings, did: Self.mira, agent: none)
+    #expect(r.source == "everyone")
+    #expect(r.notice != nil)
+    _ = await cache.resolve(Self.settings, did: Self.mira, agent: none)
+    #expect(asked.wrappedValue == 1)
+  }
+
+  @Test func eachAccountHasItsOwn() async {
+    let reads = Locked(0)
+    let failing = Locked(false)
+    let cache = BlueskyGatesCache(now: { 0 })
+    let agent = Self.agent(reads: reads, failing: failing)
+    _ = await cache.read(Self.mira) { agent }
+    _ = await cache.read("did:plc:wren") { agent }
+    _ = await cache.read(Self.mira) { agent }
+    #expect(reads.wrappedValue == 2)
+  }
+}

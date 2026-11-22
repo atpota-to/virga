@@ -551,8 +551,7 @@ extension ComposerController {
 
   func ensureGates(_ s: ComposerState) async -> ComposerState {
     if s.reply != nil || s.gates.custom { return s }
-    let agent = try? await session.agentFor(s.asDid)
-    let r = await PostingSettingsStore.resolveDefaultGates(settingsFor(s.asDid), agent: agent?.gatesAgent)
+    let r = await resolveGatesFor(s.asDid)
     if state.asDid.jsEquals(s.asDid), !state.gates.custom { dispatch(.setDefaultGates(r.gates)) }
     var out = s
     out.json["gates"] = r.gates
