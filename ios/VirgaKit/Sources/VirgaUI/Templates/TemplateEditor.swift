@@ -233,7 +233,7 @@ struct TemplateEditorForm: View {
     let kind = EditorDrafts.templateEmbedKind(start.embed)
     guard kind == "post" || kind == "feed" || kind == "list" else { return }
     let views = await LibrarySources.hydrateEmbedViews([start.embed ?? .null], transport: transport)
-    guard let view = views[uri: start.embed?["record"]?["uri"]?.stringValue ?? ""] else { return }
+    guard let view = views[start.embed?["record"]?["uri"]?.stringValue ?? ""] else { return }
     if view == .string(Library.missing) {
       link = LinkState(status: "ready", summary: TemplateAttachSummary(by: "Gone", title: "What this quotes has been deleted."))
     } else {
@@ -837,3 +837,8 @@ struct TrailingIconLabelStyle: LabelStyle {
   }
 }
 #endif
+
+private extension String {
+  /// The string, or nil when it's empty: the web's `text || fallback`.
+  var nonEmpty: String? { isEmpty ? nil : self }
+}
