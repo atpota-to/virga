@@ -140,9 +140,10 @@
         "ios/VirgaKit/Sources/VirgaUI/Reports/ReportPage.swift",
         "ios/VirgaKit/Sources/VirgaUI/Reports/MoreReports.swift",
         "ios/VirgaKit/Sources/VirgaUI/Reports/ContentReport.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportExtras.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Reports/ReportExtras.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
       ],
-      "note": "ReportsIndex and every report: Followers (Total, With blocks, per bucket; the unfollow figure; newest followers; biggest days with the post that day or the day before; How this is counted), Posts, Engagement (received or given, by kind; top posts), Content, Blocks, People (by kind; everyone, not following or following) and Atmosphere, each chart with its table and notes. Add to dashboard (REPORT_WIDGET, AddToDashboard) is a link action in the header beside the period picker, where the web puts it on the line under the chart (and in a phone's ⋯); the new-dashboard toast has no Open it link (a toast here holds words only).",
+      "note": "ReportsIndex and every report: Followers (Total, With blocks, per bucket; the unfollow figure; newest followers; biggest days with the post that day or the day before; How this is counted), Posts, Engagement (received or given, by kind; top posts), Content, Blocks, People (by kind; everyone, not following or following) and Atmosphere, each chart with its table and notes. Add to dashboard (REPORT_WIDGET, AddToDashboard) is a link action in the header beside the period picker, where the web puts it on the line under the chart (and in a phone's ⋯); the new-dashboard toast has no Open it link (a toast here holds words only). A report address that names none is RoutedPage's NoReportPage: its header and See every report.",
       "synced": "18e37669d694"
     },
     "src/reports/parts.jsx": {
