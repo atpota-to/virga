@@ -18,7 +18,7 @@ import UniformTypeIdentifiers
 import VirgaCore
 import VirgaPosting
 
-/// A movie picked from the library, copied to a temporary file.
+/// A movie picked from the library, copied into the composer's temporary folder.
 struct PickedMovie: Transferable {
   let url: URL
 
@@ -27,7 +27,7 @@ struct PickedMovie: Transferable {
       SentTransferredFile(movie.url)
     } importing: { received in
       let ext = received.file.pathExtension.isEmpty ? "mov" : received.file.pathExtension
-      let copy = FileManager.default.temporaryDirectory.appendingPathComponent("composer-\(UUID().uuidString).\(ext)")
+      let copy = TemporaryComposerFiles.folder.appendingPathComponent("composer-\(UUID().uuidString).\(ext)")
       try FileManager.default.copyItem(at: received.file, to: copy)
       return PickedMovie(url: copy)
     }
@@ -208,7 +208,13 @@ struct PostBlock: View {
       requireAltText: controller.settings.requireAltText, disabled: disabled,
       onAlt: { id in controller.dialog = .alt(postId: post.id, imageId: id) },
       onMove: { from, to in controller.dispatch(.moveImage(index: index, from: from, to: to)) },
-      onRemove: { id in controller.dispatch(.removeImage(index: index, id: id)) })
+      onRemove: { id in
+        let posts = controller.state.posts
+        let file = posts.indices.contains(index) ? posts[index].images.first(where: { $0.id.jsEquals(id) })?.file : nil
+        controller.dispatch(.removeImage(index: index, id: id))
+        // revokeLater: its file goes unless something else still holds it.
+        controller.letGo(files: file.map { [$0] } ?? [])
+      })
     if let video = post.video {
       VideoAttachment(
         video: video, disabled: disabled, onAlt: { controller.dialog = .videoAlt(postId: post.id) },

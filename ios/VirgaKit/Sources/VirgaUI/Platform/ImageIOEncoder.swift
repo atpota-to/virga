@@ -10,7 +10,7 @@
 // and `alwaysKeepResolution` is off; the last try is the answer, and
 // prepareImage refuses it if it is still over. Nothing of the original's
 // metadata is copied, so no EXIF (and no location) goes out. The output is
-// a new temporary file, its ref the path.
+// a new file in the composer's temporary folder, its ref the path.
 
 #if canImport(UIKit)
 import Foundation
@@ -90,7 +90,7 @@ public struct ImageIOEncoder: ImageEncoder {
 
   static func write(_ data: Data, like file: ComposerFile, type: UTType) throws -> ComposerFile {
     let ext = type.preferredFilenameExtension ?? "jpg"
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent("virga-\(UUID().uuidString).\(ext)")
+    let url = TemporaryComposerFiles.folder.appendingPathComponent("virga-\(UUID().uuidString).\(ext)")
     try data.write(to: url, options: .atomic)
     let stem = (file.name as NSString?)?.deletingPathExtension
     return ComposerFile(

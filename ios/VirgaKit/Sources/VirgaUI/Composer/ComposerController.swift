@@ -652,6 +652,9 @@ public final class ComposerController {
     let gone = !asDidNow.isEmpty && seenAccounts.contains(JSKey(asDidNow)) && !present.contains(JSKey(asDidNow))
     seenAccounts = present
     guard gone else { return }
+    // Its files go once the post is replaced, unless a kept post holds them.
+    let old = state
+    defer { letGo(of: old) }
     let home = present.contains(JSKey(activeDid)) ? activeDid : (session.accounts.first?.did ?? "")
     loadToken += 1
     error = nil

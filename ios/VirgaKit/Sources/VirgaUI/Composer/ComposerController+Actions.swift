@@ -41,6 +41,8 @@ extension ComposerController {
 
   /// Files picked, pasted or dropped for a post.
   func addFiles(_ postId: String, _ files: [ComposerFile], allowVideo: Bool = true) async {
+    // The originals: only the prepared copies (and a video taken) are kept.
+    defer { letGo(files: files) }
     let index = indexOfPost(postId)
     guard index >= 0 else { return }
     let post = state.posts[index]
@@ -68,6 +70,7 @@ extension ComposerController {
 
   /// Pictures that arrive with their alt text already written (an intent's).
   func addDescribedImages(_ postId: String, _ images: [JSONValue]) async {
+    defer { letGo(files: images.compactMap { ComposerFile(json: $0["file"]) }) }
     bump(postId, images.count)
     var notes: [String] = []
     for item in images {
@@ -225,6 +228,7 @@ extension ComposerController {
     videoJobs[post.id]?.task.cancel()
     videoJobs[post.id] = nil
     dispatch(.setVideo(index: index, video: nil))
+    letGo(files: post.video?.file.map { [$0] } ?? [])
   }
 
   func retryVideo(_ index: Int) {
@@ -625,6 +629,7 @@ extension ComposerController {
     if !old.asDid.jsEquals(did) { ComposerRestore.clearKept(old.asDid, store: store, now: now) }
     let home = activeDid.isEmpty ? did : activeDid
     loadState(baseState(home))
+    letGo(of: old)
     scheduling.forget()  // SCHEDULE
     notices = []
     showTags = false
@@ -645,12 +650,14 @@ extension ComposerController {
         guard ok == "clear" else { return }
       }
       let did = state.asDid.isEmpty ? activeDid : state.asDid
+      let old = state
       loadToken += 1
       autosaver.cancel()
       for job in videoJobs.values { job.task.cancel() }
       videoJobs = [:]
       ComposerRestore.clearKept(did, store: store, now: now)
       loadState(baseState(did))
+      letGo(of: old)
       scheduling.forget()  // SCHEDULE
       loads = [:]
       notices = []
