@@ -84,8 +84,12 @@ public struct ArchiveEnvironment: Sendable {
   public var clock: NetworkClock
   /// The DID documents read so far (atproto.js's cache).
   public var didDocuments: PromiseCache<JSONValue>
-  /// Where local days fall, and the words' locale.
-  public var timeZone: TimeZone
+  /// Where local days fall, and the words' locale. A nil zone is the
+  /// active one (AppLocale's: the device's), read each time it is needed,
+  /// as the web reads the browser's: an environment made before the app
+  /// set it (at launch it is still UTC) or kept while the device changes
+  /// zone doesn't hold on to a zone that is no longer the device's.
+  public var timeZone: TimeZone?
   public var locale: String?
   /// Posts made or deleted elsewhere in the app.
   public var postsChanged: PostsChangedListener?
@@ -93,7 +97,7 @@ public struct ArchiveEnvironment: Sendable {
   public init(
     files: (any FileStore)?, registry: AnalyticsStoreRegistry = .shared, transport: any HTTPTransport = HTTP.transport,
     clock: NetworkClock = HTTP.clock, didDocuments: PromiseCache<JSONValue> = Atproto.didDocumentCache,
-    timeZone: TimeZone = AppLocale.activeTimeZone(), locale: String? = nil, postsChanged: PostsChangedListener? = nil
+    timeZone: TimeZone? = nil, locale: String? = nil, postsChanged: PostsChangedListener? = nil
   ) {
     self.files = files
     self.registry = registry
@@ -174,7 +178,7 @@ public final class ArchiveModel {
   /// Whether a sync is under way.
   public var isSyncing: Bool { syncTask != nil }
 
-  var timeZone: TimeZone { env.timeZone }
+  var timeZone: TimeZone { env.timeZone ?? AppLocale.activeTimeZone() }
   var locale: String? { env.locale }
   func clockNow() -> Double { env.clock.now() }
 
