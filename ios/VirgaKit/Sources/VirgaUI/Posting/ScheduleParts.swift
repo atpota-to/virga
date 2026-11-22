@@ -5,9 +5,11 @@
 // What the scheduled posts' page, the weekly schedule and Settings ›
 // Posting share: the time-zone picker (TimezoneSelect), a switch with its
 // words (ScheduleSwitch), the week ahead as a calendar (QueueCalendarView),
-// the question before an action (`.scheduleActionDialog`), and the list's
-// read (ScheduledListLoad, hubParts' useLoad over listScheduled, read again
-// whenever a scheduling or timer event names the account).
+// the question before an action (`.scheduleActionDialog`, which the
+// Timers page asks too; a post it quotes is HubQuote, Posting/HubParts.swift),
+// and the list's read (ScheduledListLoad, hubParts' useLoad over
+// listScheduled, read again whenever a scheduling or timer event names the
+// account).
 //
 // Differences: SwitchButton is Settings' SettingsSwitch; useFocusAfterRemoval
 // is the system's (VoiceOver moves on to what took the row's place by
@@ -654,22 +656,6 @@ struct ScheduleActionDialog<Message: View>: ViewModifier {
     } catch {
       self.error = ScheduleText.message(error) ?? "That didn’t work. Try again."
     }
-  }
-}
-
-/// A quoted post in a dialog (`.hub-quote`): its first 200 characters.
-struct ScheduleQuote: View {
-  @Environment(\.virgaTheme) private var theme
-  let text: String
-
-  var body: some View {
-    Text(text.jsSlice(0, 200))
-      .virgaText(.textBase)
-      .foregroundStyle(theme.ink2)
-      .fixedSize(horizontal: false, vertical: true)
-      .padding(.vertical, Measure.Schedule.quotePad)
-      .padding(.leading, Measure.Schedule.quoteIndent)
-      .overlay(alignment: .leading) { Rectangle().fill(theme.line2).frame(width: Measure.Schedule.quoteRule) }
   }
 }
 

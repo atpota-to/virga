@@ -73,10 +73,8 @@ extension Measure {
     public static let mainGap: CGFloat = 4
     public static let rowTextLineHeight: Double = 1.4
     public static let rowTextLines = 2
-    /// hub.css: `.hub-quote { padding: 2px 0 2px 14px; border-left: 2px solid var(--line-2) }`.
-    public static let quoteIndent: CGFloat = 14
-    public static let quotePad: CGFloat = 2
-    public static let quoteRule: CGFloat = 2
+    /// The words a question quotes (`.slice(0, 200)`), drawn by HubQuote (`.hub-quote`, Measure.Hub).
+    public static let quoteMax = 200
 
     /// ScheduledPage.jsx's bone for the limits line, `style={{ width: 260 }}`.
     public static let limitsBoneWidth: CGFloat = 260

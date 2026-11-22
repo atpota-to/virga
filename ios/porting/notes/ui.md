@@ -290,7 +290,8 @@ Posting/WhenPicker.swift, Composer/ComposerController+Schedule.swift, Composer/C
   `ScheduleSwitch` (the web's Switch), `QueueCalendarView(schedule:rows:now:onPick:occupancy:highlight:
   caption:lead:after:)` (a SwiftUI Grid; VoiceOver reads it day by day through sort priorities),
   `.scheduleActionDialog(isPresented:title:confirmLabel:busyLabel:cancelLabel:danger:onConfirm:message:)`
-  (ActionDialog), `ScheduleQuote`, `ScheduleLinkedText` (words with links the navigator follows, through
+  (ActionDialog, which the Timers page asks too, its quoted post a `HubQuote`), `ScheduleLinkedText`
+  (words with links the navigator follows, through
   `InternalLink`), `ScheduledListLoad` (hubParts' useLoad over listScheduled, with the limits when asked,
   read again on `virga:scheduled-changed` / `virga:timers-changed` for the account), and the small
   helpers `ScheduleIds` (ids compared as `===`), `ScheduleText`, `ScheduleSaid` (a sentence as an error,
@@ -390,8 +391,10 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
 - `LifespanDefaultsCard(did:model:)` (Posting/LifespanDefaults.swift, from Settings › Posting) reads
   getLimits with a long session, so its editor checks the free timers and its caption starts with
   timerLimitsLine.
-- The Timers page's question is `TimersCancelDialog` (scheduleParts.jsx's ActionDialog as that page asks
-  it: Keep it, the action in ink, a refusal's words kept). `Measure.Hub` (HubMeasures.swift) names the
+- The Timers page's question is `TimersCancelDialog`: TimersPage.jsx's words over SCHEDULING's
+  `.scheduleActionDialog` (Keep it, the action in ink, the busy label, a refusal's words kept; its
+  identifiers `schedule-dialog`, `-keep`, `-confirm`, `-error`). A dialog's quoted post on every
+  posting page, Scheduled posts' included, is `HubQuote`. `Measure.Hub` (HubMeasures.swift) names the
   measures of hub.css and of schedule.css's Timers and timer-dialog rules that these pages use.
 - Identifiers: `posting-hub`, `posting-nav` (`posting-nav-<key>`), `hub-next`, `hub-retry`, `hub-drafts`,
   `hub-draft-open`, `hub-posted`; `drafts-page`, `drafts-list`, `draft-row-<id>`, `draft-open`, `row-menu`,
@@ -399,7 +402,7 @@ THE POSTING PAGES (Posting/: HubPage, DraftsPage, PostedPage, TimersPage, TimerD
   `schedule-draft-confirm`; `posted-page`, `posted-search`, `posted-list`, `posted-row`, `posted-more`,
   `posted-error`, `posted-gates-dialog`, `posted-gates-save`; `timer-dialog`, `timer-dialog-start`,
   `timer-dialog-set`, `timer-dialog-acts`, `timer-dialog-error`; `timers-page`, `timers-live`,
-  `timers-waiting`, `timers-failed`, `timer-row`, `timer-cancel`, `timer-cancel-confirm`,
+  `timers-waiting`, `timers-failed`, `timer-row`, `timer-cancel`, `schedule-dialog-confirm`,
   `timer-waiting-row`, `timers-settled`, `timers-limits`, `timers-empty`; `default-timer-caption`.
 - PostingPagesUITests (`testThePostingPagesOnTheDemo`, no archive build, over the demo server's seeded
   rows): `posting-hub`, `posting-hub-posted`, `posting-drafts` (or `-empty`), `posting-drafts-menu`,

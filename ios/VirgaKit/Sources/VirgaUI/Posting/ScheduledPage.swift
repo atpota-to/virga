@@ -376,26 +376,26 @@ struct ScheduledDialogs: ViewModifier {
         confirmLabel: failed ? "Dismiss" : "Remove", busyLabel: "Removing…", danger: true, onConfirm: run
       ) {
         Text(cancelWords)
-        if !text.isEmpty { ScheduleQuote(text: text) }
+        if !text.isEmpty { HubQuote(text: text.jsSlice(0, Measure.Schedule.quoteMax)) }
       }
       .scheduleActionDialog(
         isPresented: shown(.now), title: "Post this now?", confirmLabel: "Post now", busyLabel: "Posting…", onConfirm: run
       ) {
         Text(postNowWords)
-        if !text.isEmpty { ScheduleQuote(text: text) }
+        if !text.isEmpty { HubQuote(text: text.jsSlice(0, Measure.Schedule.quoteMax)) }
       }
       .scheduleActionDialog(
         isPresented: shown(.skip), title: "Skip this one?", confirmLabel: "Skip it", busyLabel: "Skipping…", onConfirm: run
       ) {
         Text(skipWords)
-        if !text.isEmpty { ScheduleQuote(text: text) }
+        if !text.isEmpty { HubQuote(text: text.jsSlice(0, Measure.Schedule.quoteMax)) }
       }
       .scheduleActionDialog(
         isPresented: shown(.stop), title: "Stop this post repeating?", confirmLabel: "Stop repeating", busyLabel: "Stopping…",
         onConfirm: run
       ) {
         Text(stopWords)
-        if !text.isEmpty { ScheduleQuote(text: text) }
+        if !text.isEmpty { HubQuote(text: text.jsSlice(0, Measure.Schedule.quoteMax)) }
       }
   }
 }

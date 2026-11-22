@@ -1,6 +1,5 @@
 // Ports src/posting/pages/TimersPage.jsx
 // Ports src/posting/pages/schedule.css (.sched-page, .sched-timer, .sched-rule, .sched-row-why, .sched-acted, .sched-settled, .sched-limits)
-// Ports src/posting/pages/scheduleParts.jsx (ActionDialog, as the Timers page asks before calling a timer off)
 //
 // Posts on a timer: what's counting down (and when each acts), scheduled
 // posts that start a timer when they go out, and timers that gave up, each
@@ -14,6 +13,10 @@
 // that has come due is looked for again. Posts a timer deleted leave the
 // archive too: the settled list is read once a visit, and again whenever
 // a timer that was counting down drops off.
+//
+// The question before calling a timer off is scheduleParts' ActionDialog
+// (`.scheduleActionDialog`, Posting/ScheduleParts.swift), in the words
+// TimersPage.jsx gives it.
 //
 // iOS: the focus after a row goes is the system's to place. A row whose
 // model can't be worked out (timerRowModel throws on a corrupt `acted`) is
@@ -501,54 +504,34 @@ struct TimersWaitingRow: View {
 
 // MARK: - The question
 
-/// `ActionDialog`, as the Timers page asks it: what calling the timer off
-/// does, a way out ("Keep it"), and the action. A refusal's words stay in
-/// the dialog.
+/// TimersPage.jsx's ActionDialog: what calling the timer off does, a way
+/// out ("Keep it"), and the action, over the scheduling pages' one
+/// (`.scheduleActionDialog`), which keeps a refusal's words in the dialog.
 struct TimersCancelDialog: ViewModifier {
   @Binding var asking: TimersCancelAsk?
   let onConfirm: (JSONValue) async throws -> Void
-  @State private var busy = false
-  @State private var error = ""
 
   func body(content: Content) -> some View {
     let failed = asking?.row["status"] == "failed"
+    let words: String =
+      failed ? "It goes from this list. The post stays up." : "The post stays up, as it is now, and its timer slot is freed."
+    let snippet = asking?.row["snippet"]
+    let quote: String = snippet?.isTruthy == true ? (snippet?.jsString ?? "").jsSlice(0, Measure.Hub.cancelQuoteMax) : ""
     content
-      .virgaDialog(
-        isPresented: Binding(get: { asking != nil }, set: { if !$0 && !busy { asking = nil } }),
-        title: failed ? "Dismiss this timer?" : "Call this timer off?"
+      .scheduleActionDialog(
+        isPresented: Binding(get: { asking != nil }, set: { if !$0 { asking = nil } }),
+        title: failed ? "Dismiss this timer?" : "Call this timer off?",
+        confirmLabel: failed ? "Dismiss" : "Call it off", busyLabel: "Calling it off…", onConfirm: confirm
       ) {
-        VStack(alignment: .leading, spacing: Measure.Hub.confirmGap) {
-          Text(failed ? "It goes from this list. The post stays up." : "The post stays up, as it is now, and its timer slot is freed.")
-            .fixedSize(horizontal: false, vertical: true)
-          let snippet = asking?.row["snippet"]?.jsString ?? ""
-          if asking?.row["snippet"]?.isTruthy == true { HubQuote(text: snippet.jsSlice(0, Measure.Hub.cancelQuoteMax)) }
-          if !error.isEmpty { Callout(tone: .danger) { Text(error) } }
-        }
-        .fixedSize(horizontal: false, vertical: true)
-      } actions: {
-        Button("Keep it") { asking = nil }
-          .buttonStyle(.virga)
-          .disabled(busy)
-        Button(busy ? "Calling it off…" : failed ? "Dismiss" : "Call it off") { Task { await confirm() } }
-          .buttonStyle(.virga(.primary))
-          .disabled(busy)
-          .accessibilityIdentifier("timer-cancel-confirm")
+        Text(words)
+        if !quote.isEmpty { HubQuote(text: quote) }
       }
-      .onChange(of: asking?.id) { _, _ in error = "" }
   }
 
-  private func confirm() async {
+  @MainActor
+  private func confirm() async throws {
     guard let row = asking?.row else { return }
-    busy = true
-    error = ""
-    defer { busy = false }
-    do {
-      try await onConfirm(row)
-      asking = nil
-    } catch {
-      let said = (error as? LocalizedError)?.errorDescription ?? ""
-      self.error = said.isEmpty ? "That didn’t work. Try again." : said
-    }
+    try await onConfirm(row)
   }
 }
 #endif

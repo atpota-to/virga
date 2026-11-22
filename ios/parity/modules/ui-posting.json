@@ -204,7 +204,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/TimersPage.swift"
       ],
-      "note": "The full buckets' warnings (fullTimerBuckets), the timers counting down, the scheduled posts that start one when they go out (waitingTimerRows, their facts, rule and Edit) and the timers that gave up (timerSections over groupTimers), each headed by its count with the first's line; each timer row (timerRowModel: its words as the way to the post, when it acts as the key fact with the time, its kind, extensions, rule, failure in red, resolution, what it did), Call off or Dismiss with its question (TimersCancelDialog, the page's ActionDialog: Keep it, the refusal's words, NOT_CANCELLABLE or 409 said plainly, the list read again); Show settled timers, read while open; the limits line (timerLimitsLine with timerUsage); the unreadable, unavailable, loading and empty states (Posted as a link, New post); countdowns every 30 seconds and a due timer read again; posts a timer deleted handed to the archive once a launch (the settled list read once a visit and when a live timer drops off). iOS: the focus after a row goes is the system's to place; a row whose model throws (a corrupt acted step) is left out.",
+      "note": "The full buckets' warnings (fullTimerBuckets), the timers counting down, the scheduled posts that start one when they go out (waitingTimerRows, their facts, rule and Edit) and the timers that gave up (timerSections over groupTimers), each headed by its count with the first's line; each timer row (timerRowModel: its words as the way to the post, when it acts as the key fact with the time, its kind, extensions, rule, failure in red, resolution, what it did), Call off or Dismiss with its question (TimersCancelDialog, the page's words over scheduleParts' ActionDialog, .scheduleActionDialog: Keep it, the refusal's words, NOT_CANCELLABLE or 409 said plainly, the list read again); Show settled timers, read while open; the limits line (timerLimitsLine with timerUsage); the unreadable, unavailable, loading and empty states (Posted as a link, New post); countdowns every 30 seconds and a due timer read again; posts a timer deleted handed to the archive once a launch (the settled list read once a visit and when a live timer drops off). iOS: the focus after a row goes is the system's to place; a row whose model throws (a corrupt acted step) is left out.",
       "synced": "805b5d8e8d3e"
     },
     "src/posting/pages/WeeklySchedulePage.jsx": {
@@ -219,9 +219,10 @@
       "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
-        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift"
       ],
-      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled.",
+      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled; the scheduling pages read their list through their own useLoad, ScheduledListLoad (ScheduleParts), over listScheduled with the limits.",
       "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
@@ -230,7 +231,7 @@
         "ios/VirgaKit/Sources/VirgaUI/Posting/ScheduleParts.swift",
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "TimezoneSelect (this device's zone first, then every zone the device knows sorted by code unit, an unknown stored zone kept), SwitchButton (Settings' SettingsSwitch), Switch (ScheduleSwitch: the words press it too), QueueCalendar (QueueCalendarView over buildCalendarDays: calendarRows' rows with rowLabel, a column a day with today in ink, the marks open, taken, off the week's times and lit, a taken one pressed with onPick, each mark's label, VoiceOver reading day by day, the caption with lead and after, links followed by the navigator), ActionDialog (scheduleActionDialog: Keep it, the busy label, a failure kept in the dialog) and hubParts' useLoad as the pages read the list (ScheduledListLoad). useFocusAfterRemoval is the system's; RowTime, which no page draws, isn't ported.",
+      "note": "TimezoneSelect (this device's zone first, then every zone the device knows sorted by code unit, an unknown stored zone kept), SwitchButton (Settings' SettingsSwitch), Switch (ScheduleSwitch: the words press it too), QueueCalendar (QueueCalendarView over buildCalendarDays: calendarRows' rows with rowLabel, a column a day with today in ink, the marks open, taken, off the week's times and lit, a taken one pressed with onPick, each mark's label, VoiceOver reading day by day, the caption with lead and after, links followed by the navigator), ActionDialog (scheduleActionDialog: Keep it, the busy label, a failure kept in the dialog; Scheduled posts' four questions and Timers' call-off, each quoting its post with HubQuote) and hubParts' useLoad as the pages read the list (ScheduledListLoad). useFocusAfterRemoval is the system's; RowTime, which no page draws, isn't ported.",
       "synced": "ac722e1dce2e"
     },
     "src/posting/ui/AdviserBusy.jsx": {
