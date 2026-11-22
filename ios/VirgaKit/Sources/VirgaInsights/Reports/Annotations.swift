@@ -142,7 +142,7 @@ public enum Annotations {
   /// digits (the web's `n${Date.now().toString(36)}${…random}`).
   public static func newId(now: Double = Date().timeIntervalSince1970 * 1000) -> String {
     let digits = Array("0123456789abcdefghijklmnopqrstuvwxyz")
-    let time = String(UInt64(Swift.max(0, now)), radix: 36)
+    let time = String(now.isFinite && now > 0 ? UInt64(now) : 0, radix: 36)
     let random = String((0..<4).map { _ in digits[Int.random(in: 0..<36)] })
     return "n\(time)\(random)"
   }
