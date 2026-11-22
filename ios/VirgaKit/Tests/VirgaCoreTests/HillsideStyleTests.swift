@@ -136,6 +136,17 @@ import VirgaTestSupport
     #expect(again)
   }
 
+  /// Demo mode's UI tests widen the window (SkyTapsButton.windowMs); the
+  /// default stays the web's 1.5 seconds.
+  @Test func aWiderWindowCountsSlowerTaps() {
+    #expect(SkyTaps().windowMs == SkyTaps.window)
+    var wide = SkyTaps(windowMs: 60_000)
+    let times: [Double] = [0, 1_500, 3_100, 4_600, 6_200]
+    #expect(times.map { wide.tap(now: $0) } == [false, false, false, false, true])
+    var web = SkyTaps()
+    #expect(times.map { web.tap(now: $0) } == [false, false, false, false, false])
+  }
+
   @Test func theToastSaysWhichWay() {
     #expect(SkyTaps.toast(wasOn: true) == "The live sky is put away.")
     #expect(SkyTaps.toast(wasOn: false) == "The live sky is out. Settings › Appearance puts it away again.")

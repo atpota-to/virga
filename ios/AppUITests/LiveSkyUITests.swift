@@ -28,7 +28,9 @@ final class LiveSkyUITests: XCTestCase {
 
   private func launch(_ extra: [String] = []) -> XCUIApplication {
     let app = XCUIApplication()
-    app.launchArguments += ["-VirgaDemo", "YES"] + extra
+    // A minute between the mark's taps: XCTest's own pace can't then start
+    // useSkyTaps' count again (SkyTapsButton.windowMs).
+    app.launchArguments += ["-VirgaDemo", "YES", "-VirgaDemoSkyTapsWindow", "60000"] + extra
     app.launch()
     return app
   }
@@ -85,29 +87,15 @@ final class LiveSkyUITests: XCTestCase {
     wait(for: [drawn], timeout: seconds)
   }
 
-  /// Five taps on the mark, each within a second and a half of the last, as
-  /// useSkyTaps counts them. XCTest waits for the app to settle before every
-  /// tap, and a drawing live sky can stretch that past the window (run 60:
-  /// 1.55 seconds between the first two taps on an iPhone), so the count
-  /// starts again. The test times its own taps and keeps on until five in a
-  /// row came under 1.3 seconds apart; it stops there, so the app's count,
-  /// restarted at zero once it acts, can't reach five a second time.
+  /// Five taps on the mark. Demo mode's window is a minute here (`launch`),
+  /// so the test needn't keep XCTest's pace inside the web's 1.5 seconds:
+  /// timing the taps (bc0433c) still missed on a CI iPhone, where every tap
+  /// came 1.3 to 1.5 seconds after the last, and one event of five taps
+  /// (6fd27b9) makes the button act once.
   private func tapTheMarkFiveTimes(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
     let mark = element(app, "brand")
     XCTAssertTrue(mark.waitForExistence(timeout: 10), "no mark to tap", file: file, line: line)
-    // Not one event of five taps (tap(withNumberOfTaps: 5)): the button acts
-    // once for it, and 6a7229d failed this on the iPad as well.
-    var run = 0
-    var last = Date.distantPast
-    var taps = 0
-    while run < 5, taps < 15 {
-      mark.tap()
-      let now = Date()
-      run = now.timeIntervalSince(last) < 1.3 ? run + 1 : 1
-      last = now
-      taps += 1
-    }
-    XCTAssertEqual(run, 5, "no five taps in a row came close enough together", file: file, line: line)
+    for _ in 0..<5 { mark.tap() }
   }
 
   /// The settings page's Appearance, from the account menu.

@@ -23,13 +23,19 @@ public struct SkyTaps: Hashable, Sendable {
 
   private var n = 0
   private var at: Double = 0
+  /// This count's window: the web's 1.5 seconds, unless demo mode's UI
+  /// tests widen it (`-VirgaDemoSkyTapsWindow`), because XCTest's taps can
+  /// come further apart than a person's.
+  public let windowMs: Double
 
-  public init() {}
+  public init(windowMs: Double = SkyTaps.window) {
+    self.windowMs = windowMs
+  }
 
   /// A tap at `now` (epoch milliseconds, as `Date.now()`): whether it was
   /// the fifth in a row, which turns the live sky.
   public mutating func tap(now: Double) -> Bool {
-    n = now - at < Self.window ? n + 1 : 1
+    n = now - at < windowMs ? n + 1 : 1
     at = now
     if n >= Self.needed {
       n = 0
