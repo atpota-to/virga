@@ -47,8 +47,15 @@
       "synced": "19dcb674517d"
     },
     "src/reports/annotations.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/Annotations.swift"
+      ],
+      "fixtures": [
+        "insights.annotations"
+      ],
+      "note": "All of it, over VirgaCore's KeyValueStore with the web's key and byte-exact JSON. Ids are injected (`id:`; Annotations.newId gives the web's form, n + the time in base 36 + four random base-36 digits). Deliberate differences, in input the app never writes: a day must be a string (the web would keep ['2026-10-03'], which String() reads as that day); and a label cut at 80 UTF-16 units through an emoji keeps U+FFFD here where the web keeps the lone half surrogate and writes it as \\ud83d (both read back as U+FFFD).",
+      "synced": "b0b01c4fe658"
     },
     "src/reports/models.js": {
       "status": "ported",
@@ -80,8 +87,15 @@
       "synced": "e4c9cfb2e819"
     },
     "src/reports/useAnnotations.js": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaInsights/Reports/AnnotationsModel.swift"
+      ],
+      "fixtures": [
+        "insights.annotations"
+      ],
+      "note": "useAnnotations is AnnotationsModel (@MainActor @Observable): list, add(day, label), remove(id), each reading and writing the store as the hook does; the window's 'virga:annotations-changed' event is AnnotationsChanges, which every model for the DID hears. useChartMarks is AnnotationsModel.chartMarks(archive, series, unit, milestones:) (and Annotations.chartMarks), the milestones cached per archive revision under the web's key.",
+      "synced": "caf75b37f2fa"
     },
     "src/settings/radioKeys.js": {
       "status": "ported",
