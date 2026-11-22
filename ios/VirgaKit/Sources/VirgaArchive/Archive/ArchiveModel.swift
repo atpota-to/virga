@@ -146,8 +146,13 @@ public final class ArchiveModel {
   @ObservationIgnored var attemptedActors = Set<JSKey>()
   @ObservationIgnored var stopListening: (@Sendable () -> Void)?
   /// Moves on every stop(): a mount whose store opens after it was
-  /// stopped does nothing more (the effect's `cancelled` flag).
+  /// stopped does nothing more (the effect's `cancelled` flag), and one
+  /// stopped while it reads the store neither listens nor syncs.
   @ObservationIgnored var mounts = 0
+  /// The first read of the store while it runs, so a mount made during it
+  /// (after another was stopped part way) waits for the data rather than
+  /// finding the store open and nothing read.
+  @ObservationIgnored var reading: Task<Void, Never>?
   /// Hears every change of `sync` (tests read the bar's whole history).
   @ObservationIgnored var syncObserver: ((SyncState?) -> Void)?
 
@@ -221,8 +226,17 @@ public final class ArchiveModel {
       let opened = await AnalyticsStore.openAnalyticsStore(did, files: env.files, registry: env.registry)
       if Task.isCancelled || mount != mounts { return }
       store = opened
-      await reload(opened)
+      let read = Task { _ = await self.reload(opened) }
+      reading = read
+      await read.value
+      if reading == read { reading = nil }
+    } else if let reading {
+      await reading.value
     }
+    // Stopped while the store was read: on the web the listener and the
+    // auto-sync are effects of the mounted component, and go with it. What
+    // was read stays, for the next mount.
+    if Task.isCancelled || mount != mounts { return }
     if stopListening == nil, let listen = env.postsChanged {
       stopListening = listen(did) { [weak self] detail in
         Task { @MainActor in

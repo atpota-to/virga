@@ -39,6 +39,32 @@ private final class Calls: Sendable {
   func record(_ batch: [String]) { batches.withLock { $0.append(batch) } }
 }
 
+/// A one-way signal across tasks: `wait()` returns once `open()` has been
+/// called, however the two are scheduled.
+private final class Latch: Sendable {
+  private let state = Locked<(open: Bool, waiting: [CheckedContinuation<Void, Never>])>((false, []))
+
+  func open() {
+    let waiting = state.withLock { s -> [CheckedContinuation<Void, Never>] in
+      s.open = true
+      defer { s.waiting = [] }
+      return s.waiting
+    }
+    for waiter in waiting { waiter.resume() }
+  }
+
+  func wait() async {
+    await withCheckedContinuation { (waiter: CheckedContinuation<Void, Never>) in
+      let isOpen = state.withLock { s -> Bool in
+        if s.open { return true }
+        s.waiting.append(waiter)
+        return false
+      }
+      if isOpen { waiter.resume() }
+    }
+  }
+}
+
 @Suite struct ScorerBehaviour {
   @Test func carriesTheCanaryInEveryBatchAsAPassenger() async throws {
     let calls = Calls()
@@ -81,20 +107,35 @@ private final class Calls: Sendable {
     #expect(result.scores.count == 100)
   }
 
-  @Test func stopsReadingProfilesOnceWhoYouFollowHasFailed() async throws {
+  /// score.js aborts the profile half once who-you-follow has failed: the
+  /// batch out hears the stop, and no batch after it is asked. Who you
+  /// follow fails only once a batch is out, and that batch is out until the
+  /// stop reaches it, so the order is the test's, not the scheduler's.
+  @Test(.timeLimit(.minutes(1))) func stopsReadingProfilesOnceWhoYouFollowHasFailed() async throws {
     let calls = Calls()
+    let asked = Latch()
+    let heardTheStop = Locked(false)
     let scorer = try Score.createScorer(
       ownerDid: owner,
       getProfiles: { batch in
-        try await Task.sleep(nanoseconds: 5_000_000)
         calls.record(batch)
+        asked.open()
+        do {
+          try await Task.sleep(nanoseconds: 3_600_000_000_000)
+        } catch {
+          heardTheStop.set(true)
+          throw error
+        }
         return batch.map { prof($0, known: $0 == canary ? 3 : 0) }
       },
-      getRelationships: { _, _ in throw Refused(httpStatus: 400) },
+      getRelationships: { _, _ in
+        await asked.wait()
+        throw Refused(httpStatus: 400)
+      },
       canary: canary, retryDelaysMs: noWait, concurrency: 1)
     await #expect(throws: ScoreError.self) { _ = try await scorer.score(dids(240)) }
-    try await Task.sleep(nanoseconds: 30_000_000)
-    #expect(calls.count <= 1)
+    #expect(calls.count == 1)
+    #expect(heardTheStop.wrappedValue)
   }
 
   @Test func stopsAskingAnUncountedBatchOnceTheScoreIsAbandoned() async throws {
