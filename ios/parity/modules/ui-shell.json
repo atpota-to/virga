@@ -152,8 +152,14 @@
       "synced": "c7dcc1d90849"
     },
     "src/defense/defense.css": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefenseMeasures.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Defense/RadarView.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Defense/DefensePage.swift"
+      ],
+      "note": "Measure.Defense names its measures (the 44rem column, the bands' 10rem, the marks, the confirm's 34rem, the new list's 12rem, the keep form's 14rem, the link code, and the radar's: its 600, its 1000-unit square, the rings' and marks' widths, the labels' places, the callout and the legend); the views draw its rules (prose, the field, your posts, the progress, the failure, the result, the radar's colours in the page's tokens, the ticks, the lists, the plans). Its forced-colours rules never apply on iOS, and the hover rules have no pointer.",
+      "synced": "d06f1fa302bc"
     },
     "src/hillside/Hillside.jsx": {
       "status": "pending",

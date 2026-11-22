@@ -243,6 +243,10 @@ struct ToolPersonRow: View {
   var history = true
   var rel = true
   var extra: AnyView? = nil
+  /// `lead`: what comes first, before the face (a scan's band mark).
+  var lead: AnyView? = nil
+  /// The row picked out (a scan's account found from the radar).
+  var picked = false
 
   var body: some View {
     // A card passed in (someone who has since left the follower list, as
@@ -258,6 +262,7 @@ struct ToolPersonRow: View {
     if followsYou { items.append(MetaItem("follows you", id: "rel")) }
     for (i, fact) in meta.enumerated() { items.append(MetaItem(fact, id: "fact-\(i)")) }
     return HStack(alignment: .center, spacing: theme.isPhone ? Measure.Tools.phonePersonRowGap : Measure.Tools.personRowGap) {
+      if let lead { lead }
       Avatar(src: card?.avatar, name: card?.avatarName ?? "?")
       VStack(alignment: .leading, spacing: 0) {
         Button {
@@ -297,6 +302,11 @@ struct ToolPersonRow: View {
       if let extra { extra }
     }
     .padding(.vertical, theme.rowPad)
+    .background {
+      if picked {
+        LinearGradient(stops: [.init(color: theme.accentTint, location: 0), .init(color: .clear, location: 0.7)], startPoint: .leading, endPoint: .trailing)
+      }
+    }
     .overlay(alignment: .bottom) { Rectangle().fill(theme.line).frame(height: 1) }
   }
 }
