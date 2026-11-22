@@ -158,13 +158,15 @@ public struct RoutedPage: View {
     }
   }
 
-  /// PostingPage: a page that runs on Virga's server shows NeedsBackend
-  /// instead for an account without a long session; Templates
-  /// (Posting/TemplatesPage.swift), keyed by the open account, with the
-  /// part of the address after it; Scheduled posts and the weekly schedule
-  /// (Posting/ScheduledPage.swift, WeeklySchedulePage.swift), keyed by the
-  /// open account; every other posting page its header (PostingHeader) and
-  /// that it isn't here yet.
+  /// PostingPage: a page that runs on Virga's server (`needsBackend`:
+  /// Scheduled, the weekly schedule, Timers) shows NeedsBackend under its
+  /// header, without its access line, for an account that can't schedule;
+  /// otherwise the page, keyed by the open account (so a switch never shows
+  /// one account's page state under another's name), with the part of the
+  /// address after it where it takes one: the overview (HubPage), Drafts,
+  /// Posted, Timers, Templates, the Library, Scheduled posts
+  /// (ScheduledPage) and the weekly schedule (WeeklySchedulePage) (Posting/,
+  /// Library/).
   @ViewBuilder
   private func posting(_ key: String?, id: String?) -> some View {
     let pageKey = key == "compose" ? "hub" : (key ?? "hub")
@@ -175,6 +177,14 @@ public struct RoutedPage: View {
         NeedsBackendNotice(did: did)
       }
       .id(did ?? "")
+    } else if pageKey == "hub" {
+      HubPage(session: app.session, did: did).id(did ?? "")
+    } else if pageKey == "drafts" {
+      DraftsPage(session: app.session, did: did, id: id).id(did ?? "")
+    } else if pageKey == "posted" {
+      PostedPage(did: did).id(did ?? "")
+    } else if pageKey == "timers" {
+      TimersPage(did: did).id(did ?? "")
     } else if pageKey == "templates" {
       TemplatesPage(session: app.session, did: app.session.did, id: id)
         .id(app.session.did ?? "")
@@ -186,7 +196,9 @@ public struct RoutedPage: View {
     } else if pageKey == "schedule" {
       WeeklySchedulePage(app: app, did: did).id(did ?? "")
     } else {
-      UnportedPage(PostingHeader.model(pageKey))
+      // A key POSTING_PAGES doesn't have: nothing, as PostingPage.jsx's
+      // null (the route parser turns such an address away first).
+      EmptyView()
     }
   }
 

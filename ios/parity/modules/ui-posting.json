@@ -5,11 +5,11 @@
   "summary": "The composer and the posting pages as SwiftUI screens.",
   "files": {
     "src/posting/PostingPage.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Shell/RoutedPage.swift"
       ],
-      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend) shows NeedsBackend under its header without its access line for an account that can't schedule; Templates is TemplatesPage, keyed by the open account, with the part of the address after it; Scheduled posts and the weekly schedule are ScheduledPage and WeeklySchedulePage, keyed by the open account. Not yet: the hub, Drafts, Timers and Posted pages, which show their header and that they aren't in the app yet.",
+      "note": "RoutedPage's posting case: a page that needs Virga's server (needsBackend: Scheduled, the weekly schedule, Timers) shows NeedsBackend under its header without its access line for an account that can't schedule; otherwise the page, keyed by the open account, with the part of the address after it where it takes one: the overview (HubPage), Drafts, Scheduled posts (ScheduledPage), the weekly schedule (WeeklySchedulePage), Timers, Posted, Templates and the Library. A key with no page draws nothing, as the web's null.",
       "synced": "bef217b0e836"
     },
     "src/posting/PostingSettingsSection.jsx": {
@@ -17,7 +17,7 @@
       "swift": [
         "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
       ],
-      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place.",
+      "note": "Whose settings (every signed-in account, and the open one even when it needs a sign-in, by accountName with its @handle) when there is more than one, then the cards over that account's PostingSettingsModel (usePostingSettings), made again for another account: New posts, and with a long session the Weekly queue, the Default timer (LifespanDefaultsCard, Posting/LifespanDefaults.swift) and the Post adviser (AdviserSettingsCard); without one, NeedsBackend in their place.",
       "synced": "981c47d09ca4"
     },
     "src/posting/composer/Composer.jsx": {
@@ -151,12 +151,20 @@
       "synced": "8e7bb01d7704"
     },
     "src/posting/pages/DraftsPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "partial",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/DraftsPage.swift"
+      ],
+      "note": "The account's drafts a page at a time (DraftsPageList, useDraftList: Show more, read again on the drafts' event), the count and its line, each row's words (three lines, No text yet), draftMeta, the line about pictures saved elsewhere or why it can't be posted or scheduled, Open and the row's menu (Post now, Schedule…, Delete draft; a spinner while it works), the notices after an action (warnings, failures, the permission notice on a missing scope), No drafts yet with New post, the failure with Try again, the captions (Bluesky's limit past 50, a long session for scheduling), the delete question with the draft's words, and Schedule this draft (the queue's next open time on its button from nextOpenSlot, the usage line and the room problem, the hints, the deleted-after note, a refusal's words) over DraftActions.postDraftNow and scheduleDraft with DraftActionDeps.live (the account's target, its long session's requester and timers, the composer's files and ImageIO, this device's draft media). /posting/drafts/<id> opens the draft and goes back to /posting/drafts; stray draft files are pruned once a launch while the composer is closed. Not yet: the time is WhenPicker's Date and Time fields as the system's pickers (a minute from now onwards) in place of WhenPicker, which the scheduling chain ports; the focus after a row goes is the system's to place.",
+      "synced": "a03ba8db66b8"
     },
     "src/posting/pages/HubPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubPage.swift"
+      ],
+      "note": "HubPage over its own reads (PostingLoad, the web's useLoad, each read again on its posting event): Going out next with All scheduled (scheduledOverview's next four, each led by its day over its hour and how it goes out, Queue or Going out now; then those that didn't go out, the status in red over when they were due, and why in a sentence with Retry (retryScheduled, its toasts) and see what happened; NeedsBackend without a long session; the bones, the failure with Try again, Scheduling isn't available, and Nothing is scheduled), Latest drafts with All drafts (the latest three, their words or No text yet, their first three facts and Open, which opens the draft in the composer; the permission notice or its sentence on a missing scope; No drafts), Recently posted with All posts (mergePostRows of the archive's posts and the author feed's latest ten, five shown, each the way to it on Bluesky with PostMeta, a post in a thread of the account's own not called a reply; Nothing posted yet), two columns wider than 1180 and one narrower, and without the sidebar the row of posting pages (PostingNav) with their counts (drafts with +, scheduled waiting, timers counting down, templates). The overview's timers are read only for that row. iOS: Retry and see what happened are words in the sentence, each pressed through a finger's reach.",
+      "synced": "4203620a867d"
     },
     "src/posting/pages/LibraryPage.jsx": {
       "status": "ported",
@@ -166,8 +174,12 @@
       "synced": "651aefa9c328"
     },
     "src/posting/pages/PostedPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostedPage.swift"
+      ],
+      "note": "The archive's posts with the author feed's newer ones laid over them (mergePostRows, Not in the archive yet once built), Only your latest posts are listed with Build your archive before it is, the search and the filter (postedFilters) over the count (countPhrase) and Newest first., the bones while the archive opens or the feed is first read, Show 30 more and the feed's next page with 30 of 1,031 when the whole is known, the empty sentences, the caption about a long session; each row's words as the way to it on Bluesky with PostMeta and its menu over postRowActions, every action reading the post as it is now (readPostNow, GONE leaving the list): Reply, Quote, Post again (postAgainSeed, fetchPostImages from the account's PDS, postAgainIntent and its notes in a toast), Who can reply and quote or Who can quote (readPostGates, PostedGatesDialog over the composer's GatesEditor or Allow quote posts, updatePostGates), Put on a timer (PostTimerDialog), Save as a template (templateSeedFrom into the template editor), Open on Bluesky, Delete (its question; deletePost, the archive told through emitPostsChanged). iOS: the focus after a post goes is the system's to place.",
+      "synced": "bb83a8860a95"
     },
     "src/posting/pages/ScheduledPage.jsx": {
       "status": "partial",
@@ -188,8 +200,12 @@
       "synced": "8c1a4a3607f8"
     },
     "src/posting/pages/TimersPage.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimersPage.swift"
+      ],
+      "note": "The full buckets' warnings (fullTimerBuckets), the timers counting down, the scheduled posts that start one when they go out (waitingTimerRows, their facts, rule and Edit) and the timers that gave up (timerSections over groupTimers), each headed by its count with the first's line; each timer row (timerRowModel: its words as the way to the post, when it acts as the key fact with the time, its kind, extensions, rule, failure in red, resolution, what it did), Call off or Dismiss with its question (TimersCancelDialog, the page's ActionDialog: Keep it, the refusal's words, NOT_CANCELLABLE or 409 said plainly, the list read again); Show settled timers, read while open; the limits line (timerLimitsLine with timerUsage); the unreadable, unavailable, loading and empty states (Posted as a link, New post); countdowns every 30 seconds and a due timer read again; posts a timer deleted handed to the archive once a launch (the settled list read once a visit and when a live timer drops off). iOS: the focus after a row goes is the system's to place; a row whose model throws (a corrupt acted step) is left out.",
+      "synced": "805b5d8e8d3e"
     },
     "src/posting/pages/WeeklySchedulePage.jsx": {
       "status": "ported",
@@ -200,11 +216,12 @@
       "synced": "44f7531586a4"
     },
     "src/posting/pages/hubParts.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/PostingParts.swift",
+        "ios/VirgaKit/Sources/VirgaUI/Posting/HubParts.swift"
       ],
-      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog). The rest (the post rows, the posting nav, the long-session notice) come with the pages that use them.",
+      "note": "RowSkeleton, LoadError and ConfirmDialog (busy, and a refusal's message kept in the dialog) in PostingParts; useLoad as PostingLoad (HubParts): a read for a key, again when the key changes or one of its posting events arrives for the account, loading only until the first answer, a failed reload keeping what's on screen, idle when not enabled.",
       "synced": "7e2519aca49f"
     },
     "src/posting/pages/scheduleParts.jsx": {
@@ -265,11 +282,11 @@
       "synced": "e2152ec2eb90"
     },
     "src/posting/ui/LifespanDefaults.jsx": {
-      "status": "partial",
+      "status": "ported",
       "swift": [
-        "ios/VirgaKit/Sources/VirgaUI/Settings/PostingSettingsSection.swift"
+        "ios/VirgaKit/Sources/VirgaUI/Posting/LifespanDefaults.swift"
       ],
-      "note": "Default timer: Start new posts with a timer (its hint when off), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is) under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption with See posts on a timer. Not yet: the timers in use (scheduleService.js's getLimits and timerLimitsLine), so the caption starts at its second sentence as the web's does when the limits can't be read.",
+      "note": "LifespanDefaultsCard in Settings › Posting: Start new posts with a timer (its hint when off), the rule's editor (LifespanRuleEditor, a length and never a set time, its changes keeping the timer on or off as it is, checked against the account's limits) under the row when on and behind The rule it will use: … when off, saved never pinned to a time, the refusal, and the caption: with a long session the timers in use (getLimits, timerLimitsLine) first, then the rest with See posts on a timer.",
       "synced": "ae76e34b01e2"
     },
     "src/posting/ui/LifespanEditor.jsx": {
@@ -331,8 +348,12 @@
       "synced": "fe2c9d7e0bd4"
     },
     "src/posting/ui/TimerDialog.jsx": {
-      "status": "pending",
-      "swift": []
+      "status": "ported",
+      "swift": [
+        "ios/VirgaKit/Sources/VirgaUI/Posting/TimerDialog.swift"
+      ],
+      "note": "PostTimerDialog (the composer's stand-in already holds the name TimerDialog), presented by .postTimerDialog($post, did:onArmed:) with a PostTimerTarget (also made from a timer note's TimerNoteArm): the owner from the post's URI, Change this post's timer or Put this post on a timer, the post's words or A post with no words of its own, NeedsBackend with Close without a long session, the bones while the limits, the timers and (when not given) the post's reply and createdAt are read, the timer it already has (its rule taking the editor's place), Start counting From now or From when it went up (relative), the rule's editor (LifespanRuleEditor with the fit, limits and holds, no toggle, counting from timerStart), when it first acts (firstActAt, the elapsed and floor leads), Set the timer or Replace the timer through createTimer (Setting…, Checking… while a lost answer is confirmed), and every refusal's words.",
+      "synced": "9eb426ca841a"
     },
     "src/posting/ui/WhenPicker.jsx": {
       "status": "ported",
