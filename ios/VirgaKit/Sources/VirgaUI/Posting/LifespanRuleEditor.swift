@@ -58,6 +58,19 @@ struct LifespanRuleEditor: View {
   static var shownPresets: [SelfDestruct.LifespanPreset] { SelfDestruct.lifespanPresets.filter { shownLengths.contains($0.seconds) } }
   static func isShownChoice(_ choice: String) -> Bool { Int(choice).map { shownLengths.contains($0) } ?? false }
 
+  /// The selects' choices: the units, the comparisons, At most's counts
+  /// and the quoters' follower counts.
+  static var unitChoices: [SelectChoice<String>] { SelfDestruct.lifespanUnits.map { SelectChoice($0.key, $0.label) } }
+  static var operatorChoices: [SelectChoice<String>] {
+    SelfDestruct.operators.map { (o: SelfDestruct.Operator) -> SelectChoice<String> in SelectChoice(o.key, "\(o.symbol) \(o.label)") }
+  }
+  static var extensionChoices: [SelectChoice<Int>] {
+    LifespanModel.extensionChoices.map { (n: Int) -> SelectChoice<Int> in SelectChoice(n, n == 1 ? "once" : "\(n) times") }
+  }
+  static var followerChoices: [SelectChoice<Int>] {
+    LifespanModel.followerThresholds.map { (n: Int) -> SelectChoice<Int> in SelectChoice(n, "\(AppLocale.formatNumber(n)) followers") }
+  }
+
   var body: some View {
     let rule = SelfDestruct.normalizeTimer(value)
     let choice = LifespanModel.lengthChoice(rule)
@@ -215,7 +228,7 @@ struct LifespanRuleEditor: View {
                       unit = next
                       if let s = SelfDestruct.lifespanFromParts(.string(amount), next) { emit(LifespanModel.withLength(rule, s)) }
                     }),
-                  options: SelfDestruct.lifespanUnits.map { SelectChoice($0.key, $0.label) })
+                  options: Self.unitChoices)
               }
               .frame(maxWidth: Measure.Lifespan.unitWidth)
             }
@@ -391,7 +404,7 @@ struct LifespanRuleEditor: View {
                   selection: Binding(
                     get: { rule.conditions.maxExtensions },
                     set: { emit(LifespanModel.withConditions(rule, ["maxExtensions": .number(Double($0))])) }),
-                  options: LifespanModel.extensionChoices.map { SelectChoice($0, $0 == 1 ? "once" : "\($0) times") })
+                  options: Self.extensionChoices)
                 // `.lse-inline-field .lse-op { width: auto }`
                 .fixedSize(horizontal: true, vertical: false)
               }
@@ -409,7 +422,9 @@ struct LifespanRuleEditor: View {
     let op = clause?.op.rawValue ?? ops[metric] ?? "gte"
     // A metric another row holds can't be chosen here (the web's disabled
     // options), so it isn't offered.
-    let metricChoices = SelfDestruct.metrics.filter { $0.key == metric || !rows.contains($0.key) }.map { SelectChoice($0.key, $0.label) }
+    let metricChoices: [SelectChoice<String>] = SelfDestruct.metrics.filter { $0.key == metric || !rows.contains($0.key) }.map {
+      SelectChoice($0.key, $0.label)
+    }
     let metricPicker = VirgaSelect(
       "What it counts", selection: Binding(get: { metric }, set: { changeRowMetric(rule, from: metric, to: $0) }),
       options: metricChoices)
@@ -424,7 +439,7 @@ struct LifespanRuleEditor: View {
             ops[metric] = next
           }
         }),
-      options: SelfDestruct.operators.map { SelectChoice($0.key, "\($0.symbol) \($0.label)") })
+      options: Self.operatorChoices)
     let number = VirgaTextField(
       "off",
       text: Binding(
@@ -503,7 +518,7 @@ struct LifespanRuleEditor: View {
             selection: Binding(
               get: { filter?.followersOver ?? 10_000 },
               set: { emit(LifespanModel.withQuoteFilter(rule, ["followersOver": .number(Double($0))])) }),
-            options: LifespanModel.followerThresholds.map { SelectChoice($0, "\(AppLocale.formatNumber($0)) followers") })
+            options: Self.followerChoices)
           // `.lse-check-with .lse-op { width: auto }`
           .fixedSize(horizontal: true, vertical: false)
           .disabled(filter?.followersOver == nil)
@@ -564,15 +579,18 @@ struct LifespanRuleEditor: View {
 
 /// `role="status"` and `aria-live="polite"`: words read out when they
 /// change (and, for a status that arrives with them, as it appears),
-/// queued after what VoiceOver is saying rather than cutting it off.
+/// queued after what VoiceOver is saying rather than cutting it off. An
+/// editor kept out of reach (a closed disclosure's, which disables what it
+/// keeps, as a closed `<details>` hides it) says nothing.
 struct LifespanPoliteStatus: ViewModifier {
+  @Environment(\.isEnabled) private var isEnabled
   let words: String
   let onAppear: Bool
 
   func body(content: Content) -> some View {
     content
-      .onAppear { if onAppear { Self.post(words) } }
-      .onChange(of: words) { _, next in Self.post(next) }
+      .onAppear { if onAppear && isEnabled { Self.post(words) } }
+      .onChange(of: words) { _, next in if isEnabled { Self.post(next) } }
   }
 
   @MainActor

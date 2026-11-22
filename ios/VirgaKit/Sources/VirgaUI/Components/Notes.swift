@@ -287,7 +287,7 @@ public struct Disclosure<Content: View>: View {
     Button {
       withAnimation(theme.motion.chevron) { open.toggle() }
     } label: {
-      HStack(alignment: settingsRow ? .firstTextBaseline : .center, spacing: Measure.Disclosure.gap) {
+      HStack(alignment: settingsRow ? VerticalAlignment.firstTextBaseline : VerticalAlignment.center, spacing: Measure.Disclosure.gap) {
         // The arrow is drawn, not read (`summary::before`).
         Image(systemName: Glyph.chevronRight)
           .virgaGlyph(Measure.Disclosure.chevron, weight: .semibold, beside: theme.textSm)
